@@ -1,41 +1,40 @@
-namespace ClinicFlow.Domain.Common
+namespace ClinicFlow.Domain.Common;
+
+public abstract class BaseEntity
 {
-    public abstract class BaseEntity
+    public Guid Id { get; private set; }
+    public DateTime CreatedAt { get; private set; }
+    public DateTime UpdatedAt { get; private set; }
+    public bool IsDeleted { get; private set; }
+
+    private readonly IList<IDomainEvent> _domainEvents = [];
+    public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
+
+    protected BaseEntity()
     {
-        public Guid Id { get; private set; }
-        public DateTime CreatedAt { get; private set; }
-        public DateTime UpdatedAt { get; private set; }
-        public bool IsDeleted { get; private set; }
+        Id = Guid.NewGuid();
+        CreatedAt = DateTime.UtcNow;
+        IsDeleted = false;
+    }
 
-        private readonly List<IDomainEvent> _domainEvents = [];
-        public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
+    public void AddDomainEvent(IDomainEvent domainEvent)
+    {
+        _domainEvents.Add(domainEvent);
+    }
 
-        protected BaseEntity()
-        {
-            Id = Guid.NewGuid();
-            CreatedAt = DateTime.UtcNow;
-            IsDeleted = false;
-        }
+    public void RemoveDomainEvent(IDomainEvent domainEvent)
+    {
+        _domainEvents.Remove(domainEvent);
+    }
 
-        public void AddDomainEvent(IDomainEvent domainEvent)
-        {
-            _domainEvents.Add(domainEvent);
-        }
+    public void ClearDomainEvents()
+    {
+        _domainEvents.Clear();
+    }
 
-        public void RemoveDomainEvent(IDomainEvent domainEvent)
-        {
-            _domainEvents.Remove(domainEvent);
-        }
-
-        public void ClearDomainEvents()
-        {
-            _domainEvents.Clear();
-        }
-
-        public void MarkAsDeleted()
-        {
-            IsDeleted = true;
-            UpdatedAt = DateTime.UtcNow;
-        }
+    public void MarkAsDeleted()
+    {
+        IsDeleted = true;
+        UpdatedAt = DateTime.UtcNow;
     }
 }

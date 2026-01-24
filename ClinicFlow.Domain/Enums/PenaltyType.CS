@@ -1,9 +1,8 @@
-namespace ClinicFlow.Domain.Enums
+namespace ClinicFlow.Domain.Enums;
+
+public enum PenaltyType
 {
-    public enum PenaltyType
-    {
-        Warning = 1,
-        StrongWarning = 2,
-        TemporaryBlock = 3,
-    }
+    Warning = 1,
+    StrongWarning = 2,
+    TemporaryBlock = 3,
 }

@@ -1,33 +1,32 @@
-namespace ClinicFlow.Domain.Common
+namespace ClinicFlow.Domain.Common;
+
+public abstract class ValueObject
 {
-    public abstract class ValueObject
+    protected static bool EqualOperator(ValueObject left, ValueObject right) => left?.Equals(right) ?? right is null;
+
+    protected static bool NotEqualOperator(ValueObject left, ValueObject right) => !EqualOperator(left, right);
+
+    protected abstract IEnumerable<object> GetEqualityComponents();
+
+    public override bool Equals(object? obj)
     {
-        protected static bool EqualOperator(ValueObject left, ValueObject right) => left?.Equals(right) ?? right is null;
+        if (obj == null || obj.GetType() != GetType())
+            return false;
 
-        protected static bool NotEqualOperator(ValueObject left, ValueObject right) => !EqualOperator(left, right);
+        var other = (ValueObject)obj;
 
-        protected abstract IEnumerable<object> GetEqualityComponents();
+        return GetEqualityComponents().SequenceEqual(other.GetEqualityComponents());
+    }
 
-        public override bool Equals(object? obj)
+    public override int GetHashCode()
+    {
+        var hash = new HashCode();
+
+        foreach (var component in GetEqualityComponents())
         {
-            if (obj == null || obj.GetType() != GetType())
-                return false;
-
-            var other = (ValueObject)obj;
-
-            return GetEqualityComponents().SequenceEqual(other.GetEqualityComponents());
+            hash.Add(component?.GetHashCode() ?? 0);
         }
 
-        public override int GetHashCode()
-        {
-            var hash = new HashCode();
-
-            foreach (var component in GetEqualityComponents())
-            {
-                hash.Add(component?.GetHashCode() ?? 0);
-            }
-            
-            return hash.ToHashCode();
-        }
+        return hash.ToHashCode();
     }
 }

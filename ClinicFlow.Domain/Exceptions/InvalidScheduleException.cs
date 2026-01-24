@@ -1,6 +1,5 @@
-namespace ClinicFlow.Domain.Exceptions
+namespace ClinicFlow.Domain.Exceptions;
+
+public class InvalidScheduleException(string message) : DomainException(message)
 {
-    public class InvalidScheduleException(string message) : DomainException(message)
-    {
-    }
 }

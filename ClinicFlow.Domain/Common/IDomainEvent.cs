@@ -1,6 +1,5 @@
-namespace ClinicFlow.Domain.Common
+namespace ClinicFlow.Domain.Common;
+
+public interface IDomainEvent
 {
-    public interface IDomainEvent
-    {
-    }
 }
