@@ -1,43 +1,68 @@
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Enums;
+using ClinicFlow.Domain.Exceptions;
 
 namespace ClinicFlow.Domain.Entities
 {
     public class Patient : BaseEntity
     {
-        public Guid UserId { get; set; }
-        public DateTime DateOfBirth { get; set; }
-        public string BloodType { get; set; } = string.Empty;
-        public string Allergies { get; set; } = string.Empty;
-        public string ChronicConditions { get; set; } = string.Empty;
-        public string EmergencyContactName { get; set; } = string.Empty;
-        public string EmergencyContactPhone { get; set; } = string.Empty;
+        public Guid UserId { get; private set; }
+        public DateTime DateOfBirth { get; private set; }
+        public string BloodType { get; private set; } = string.Empty;
+        public string Allergies { get; private set; } = string.Empty;
+        public string ChronicConditions { get; private set; } = string.Empty;
+        public string EmergencyContactName { get; private set; } = string.Empty;
+        public string EmergencyContactPhone { get; private set; } = string.Empty;
 
-        public User User { get; set; }
-        public ICollection<Appointment> Appointments { get; set; }
-        public ICollection<MedicalRecord> MedicalRecords { get; set; }
-        public ICollection<PatientPenalty> Penalties { get; set; }
+        public User User { get; private set; }
+        public ICollection<Appointment> Appointments { get; private set; }
+        public ICollection<MedicalRecord> MedicalRecords { get; private set; }
+        public ICollection<PatientPenalty> Penalties { get; private set; }
 
-        public Patient()
+        private Patient() 
         {
             Appointments = [];
             MedicalRecords = [];
             Penalties = [];
         }
+
+        public Patient(Guid userId, DateTime dateOfBirth, string bloodType, string allergies, string chronicConditions, string emergencyContactName, string emergencyContactPhone) : this()
+        {
+            UserId = userId;
+            DateOfBirth = dateOfBirth;
+            BloodType = bloodType;
+            Allergies = allergies;
+            ChronicConditions = chronicConditions;
+            EmergencyContactName = emergencyContactName;
+            EmergencyContactPhone = emergencyContactPhone;
+        }
+
         public int GetAge()
         {
             var today = DateTime.Today;
             var age = today.Year - DateOfBirth.Year;
-            if (DateOfBirth.Date > today.AddYears(-age)) age--;
+
+            if (DateOfBirth.AddYears(age) > today) age--;
+
             return age;
         }
 
-        public bool IsBlockedFromBooking()
-        {
-            var activeBlock = Penalties.Where(p => p.PenaltyType == PenaltyType.TemporaryBlock)
-            .Where(p => p.BlockedUntil.HasValue && p.BlockedUntil > DateTime.UtcNow).Any();
+        public bool IsBlockedFromBooking() => Penalties.Any(p => p.PenaltyType == PenaltyType.TemporaryBlock && p.BlockedUntil.HasValue && p.BlockedUntil > DateTime.UtcNow);
 
-            return activeBlock;
+        public void EnsureNotBlocked()
+        {
+            if (IsBlockedFromBooking())
+            {
+                var blockedUntil = Penalties
+                    .Where(p => p.PenaltyType == PenaltyType.TemporaryBlock && p.BlockedUntil > DateTime.UtcNow)
+                    .Max(p => p.BlockedUntil) ?? DateTime.UtcNow;
+                throw new PatientBlockedException(blockedUntil);
+            }
+        }
+        
+        public void AddPenalty(PatientPenalty penalty)
+        {
+            Penalties.Add(penalty);
         }
     }
 }

@@ -15,10 +15,8 @@ namespace ClinicFlow.Domain.Entities
         {
             IsActive = true;
         }
-        
-        public bool IsAvailableAt(TimeSpan time)
-        {
-            return IsActive && time >= StartTime && time < EndTime;
-        }
+
+        public bool IsAvailableAt(TimeSpan time) => IsActive && time >= StartTime && time < EndTime;
+
     }
 }
