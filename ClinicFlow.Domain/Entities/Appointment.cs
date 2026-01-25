@@ -26,11 +26,6 @@ public class Appointment : BaseEntity
 
     public int RescheduleCount { get; private set; }
 
-    public Patient? Patient { get; private set; }
-    public Doctor? Doctor { get; private set; }
-    public AppointmentType? AppointmentType { get; private set; }
-    public MedicalRecord? MedicalRecord { get; private set; }
-
     // EF Core constructor
     private Appointment()
     {
@@ -48,25 +43,9 @@ public class Appointment : BaseEntity
         RescheduleCount = 0;
     }
 
-    public static Appointment Schedule(Patient patient, Doctor doctor, DateTime scheduledDate, TimeRange timeRange, Guid appointmentTypeId,
-     IEnumerable<Appointment> existingDoctorAppointments)
+    internal static Appointment Schedule(Guid patientId, Guid doctorId, Guid appointmentTypeId, DateTime scheduledDate, TimeRange timeRange)
     {
-        if (patient.IsBlockedFromBooking())
-        {
-            var blockUntil = patient.Penalties
-                .Where(p => p.PenaltyType == PenaltyType.TemporaryBlock && p.BlockedUntil > DateTime.UtcNow).Max(p => p.BlockedUntil) ?? DateTime.UtcNow;
-
-            throw new PatientBlockedException(blockUntil);
-        }
-
-        if (HasScheduleConflict(existingDoctorAppointments, scheduledDate, timeRange))
-            throw new AppointmentConflictException(doctor.Id, scheduledDate.Add(timeRange.Start));
-
-        var appointment = new Appointment(patient.Id, doctor.Id, appointmentTypeId, scheduledDate, timeRange)
-        {
-            Patient = patient,
-            Doctor = doctor
-        };
+        var appointment = new Appointment(patientId, doctorId, appointmentTypeId, scheduledDate, timeRange);
 
         appointment.AddDomainEvent(new AppointmentScheduledEvent(appointment));
 
@@ -130,7 +109,7 @@ public class Appointment : BaseEntity
         AddDomainEvent(new AppointmentRescheduledEvent(this, previousDate, previousTimeRange));
     }
 
-    private static bool HasScheduleConflict(IEnumerable<Appointment> appointments, DateTime scheduledDate, TimeRange timeRange) =>
+    internal static bool HasScheduleConflict(IEnumerable<Appointment> appointments, DateTime scheduledDate, TimeRange timeRange) =>
         appointments.Any(a => a.ScheduledDate.Date == scheduledDate.Date && a.IsActive() && a.TimeRange.OverlapsWith(timeRange));
 
     private bool IsActive() => Status != AppointmentStatus.Cancelled && Status != AppointmentStatus.LateCancellation;
