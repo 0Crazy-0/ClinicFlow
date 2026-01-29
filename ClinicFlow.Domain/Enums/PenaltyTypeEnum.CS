@@ -1,6 +1,6 @@
 namespace ClinicFlow.Domain.Enums;
 
-public enum PenaltyType
+public enum PenaltyTypeEnum
 {
     Warning = 1,
     StrongWarning = 2,

@@ -14,26 +14,16 @@ public class Patient : BaseEntity
     public string EmergencyContactName { get; private set; } = string.Empty;
     public string EmergencyContactPhone { get; private set; } = string.Empty;
 
-    public User User { get; private set; }
-    public ICollection<Appointment> Appointments { get; private set; }
-    public ICollection<MedicalRecord> MedicalRecords { get; private set; }
-    public ICollection<PatientPenalty> Penalties { get; private set; }
-
-    private Patient()
-    {
-        User = null!;
-        Appointments = [];
-        MedicalRecords = [];
-        Penalties = [];
-    }
+    // EF Core constructor
+    private Patient() { }
 
     public Patient(Guid userId, DateTime dateOfBirth, string bloodType, string allergies, string chronicConditions, string emergencyContactName, string emergencyContactPhone) : this()
     {
         UserId = userId;
         DateOfBirth = dateOfBirth;
         BloodType = bloodType;
-        Allergies = allergies;
         ChronicConditions = chronicConditions;
+        Allergies = allergies;
         EmergencyContactName = emergencyContactName;
         EmergencyContactPhone = emergencyContactPhone;
     }
@@ -48,21 +38,18 @@ public class Patient : BaseEntity
         return age;
     }
 
-    public bool IsBlockedFromBooking() => Penalties.Any(p => p.PenaltyType == PenaltyType.TemporaryBlock && p.BlockedUntil.HasValue && p.BlockedUntil > DateTime.UtcNow);
-
-    public void EnsureNotBlocked()
+    private bool IsBlockedFromBooking(IEnumerable<PatientPenalty> penalties, out DateTime? blockedUntil)
     {
-        if (IsBlockedFromBooking())
-        {
-            var blockedUntil = Penalties
-                .Where(p => p.PenaltyType == PenaltyType.TemporaryBlock && p.BlockedUntil > DateTime.UtcNow)
-                .Max(p => p.BlockedUntil) ?? DateTime.UtcNow;
-            throw new PatientBlockedException(blockedUntil);
-        }
+        var activePenalties = penalties.Where(p => p.PenaltyType is PenaltyTypeEnum.TemporaryBlock && p.BlockedUntil.HasValue && p.BlockedUntil > DateTime.UtcNow).ToList();
+
+        blockedUntil = activePenalties.Any() ? activePenalties.Max(p => p.BlockedUntil) : null;
+
+        return activePenalties.Any();
     }
 
-    public void AddPenalty(PatientPenalty penalty)
+    public void EnsureNotBlocked(IEnumerable<PatientPenalty> penalties)
     {
-        Penalties.Add(penalty);
+        if (IsBlockedFromBooking(penalties, out var blockedUntil))
+            throw new PatientBlockedException(blockedUntil ?? DateTime.UtcNow);
     }
 }

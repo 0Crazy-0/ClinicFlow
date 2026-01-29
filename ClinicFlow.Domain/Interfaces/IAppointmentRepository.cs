@@ -13,5 +13,5 @@ public interface IAppointmentRepository
     Task DeleteAsync(Guid id);
     Task<bool> HasConflictAsync(Guid doctorId, DateTime scheduledDate, TimeSpan startTime, TimeSpan endTime);
     Task<List<Appointment>> GetUpcomingByPatientAsync(Guid patientId);
-    Task<List<Appointment>> GetByStatusAsync(AppointmentStatus status);
+    Task<List<Appointment>> GetByStatusAsync(AppointmentStatusEnum status);
 }

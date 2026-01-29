@@ -15,7 +15,7 @@ public class Appointment : BaseEntity
     public DateTime ScheduledDate { get; private set; }
     public TimeRange TimeRange { get; private set; }
 
-    public AppointmentStatus Status { get; private set; }
+    public AppointmentStatusEnum Status { get; private set; }
     public string PatientNotes { get; private set; } = string.Empty;
     public string ReceptionistNotes { get; private set; } = string.Empty;
 
@@ -39,7 +39,7 @@ public class Appointment : BaseEntity
         AppointmentTypeId = appointmentTypeId;
         ScheduledDate = scheduledDate;
         TimeRange = timeRange;
-        Status = AppointmentStatus.Scheduled;
+        Status = AppointmentStatusEnum.Scheduled;
         RescheduleCount = 0;
     }
 
@@ -59,20 +59,20 @@ public class Appointment : BaseEntity
         return hoursUntilAppointment >= minHoursBeforeAppointment;
     }
 
-    public bool CanBeRescheduled() => RescheduleCount < 1 && Status is AppointmentStatus.Scheduled;
+    public bool CanBeRescheduled() => RescheduleCount < 1 && Status is AppointmentStatusEnum.Scheduled;
 
     public void Cancel(Guid userId, string? reason, int minHours)
     {
-        if (Status is AppointmentStatus.Cancelled || Status is AppointmentStatus.LateCancellation)
-            return;
+        if (Status is AppointmentStatusEnum.Cancelled || Status is AppointmentStatusEnum.LateCancellation)
+            throw new InvalidOperationException($"Cannot cancel appointment. Current status: {Status}");
 
         if (!CanBeCancelled(minHours))
         {
-            Status = AppointmentStatus.LateCancellation;
+            Status = AppointmentStatusEnum.LateCancellation;
         }
         else
         {
-            Status = AppointmentStatus.Cancelled;
+            Status = AppointmentStatusEnum.Cancelled;
         }
 
         CancelledAt = DateTime.UtcNow;
@@ -84,17 +84,17 @@ public class Appointment : BaseEntity
 
     public void Confirm()
     {
-        if (Status != AppointmentStatus.Scheduled)
-            throw new InvalidOperationException("Solo se pueden confirmar citas programadas.");
+        if (Status is not AppointmentStatusEnum.Scheduled)
+            throw new InvalidOperationException("Only scheduled appointments can be confirmed.");
 
-        Status = AppointmentStatus.Confirmed;
+        Status = AppointmentStatusEnum.Confirmed;
         ConfirmedAt = DateTime.UtcNow;
     }
 
     public void Reschedule(DateTime newDate, TimeRange newTimeRange, IEnumerable<Appointment> existingDoctorAppointments)
     {
         if (!CanBeRescheduled())
-            throw new InvalidOperationException("Esta cita no puede ser reprogramada.");
+            throw new InvalidOperationException("This appointment cannot be rescheduled.");
 
         if (HasScheduleConflict(existingDoctorAppointments, newDate, newTimeRange))
             throw new AppointmentConflictException(DoctorId, newDate.Add(newTimeRange.Start));
@@ -112,7 +112,7 @@ public class Appointment : BaseEntity
     internal static bool HasScheduleConflict(IEnumerable<Appointment> appointments, DateTime scheduledDate, TimeRange timeRange) =>
         appointments.Any(a => a.ScheduledDate.Date == scheduledDate.Date && a.IsActive() && a.TimeRange.OverlapsWith(timeRange));
 
-    private bool IsActive() => Status != AppointmentStatus.Cancelled && Status != AppointmentStatus.LateCancellation;
+    private bool IsActive() => Status != AppointmentStatusEnum.Cancelled && Status is not AppointmentStatusEnum.LateCancellation;
 
     public DateTime GetScheduledDateTime() => ScheduledDate.Add(TimeRange.Start);
 }

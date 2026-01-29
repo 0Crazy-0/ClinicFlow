@@ -1,21 +1,16 @@
 using ClinicFlow.Domain.Common;
+using ClinicFlow.Domain.ValueObjects;
 
 namespace ClinicFlow.Domain.Entities;
 
 public class Schedule : BaseEntity
 {
-    public Guid DoctorId { get; set; }
-    public DayOfWeek DayOfWeek { get; set; }
-    public TimeSpan StartTime { get; set; }
-    public TimeSpan EndTime { get; set; }
-    public bool IsActive { get; set; }
-    public Doctor Doctor { get; set; }
-
+    public Guid DoctorId { get; private set; }
+    public DayOfWeek DayOfWeek { get; private set; }
+    public TimeRange TimeRange { get; private set; }
+    public bool IsActive { get; private set; }
     public Schedule()
     {
         IsActive = true;
     }
-
-    public bool IsAvailableAt(TimeSpan time) => IsActive && time >= StartTime && time < EndTime;
-
 }

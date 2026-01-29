@@ -1,6 +1,6 @@
 namespace ClinicFlow.Domain.Enums;
 
-public enum UserRole
+public enum UserRoleEnum
 {
     Patient = 1,
     Doctor = 2,
