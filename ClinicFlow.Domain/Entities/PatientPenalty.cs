@@ -10,4 +10,25 @@ public class PatientPenalty : BaseEntity
     public PenaltyTypeEnum PenaltyType { get; private set; }
     public string Reason { get; private set; } = string.Empty;
     public DateTime? BlockedUntil { get; private set; }
+    // EF Core constructor
+    private PatientPenalty() { }
+
+    private PatientPenalty(Guid patientId, Guid? appointmentId, PenaltyTypeEnum penaltyType, string reason, DateTime? blockedUntil)
+    {
+        PatientId = patientId;
+        AppointmentId = appointmentId;
+        PenaltyType = penaltyType;
+        Reason = reason;
+        BlockedUntil = blockedUntil;
+    }
+
+    public static PatientPenalty CreateWarning(Guid patientId, Guid? appointmentId, string reason)
+    {
+        return new PatientPenalty(patientId, appointmentId, PenaltyTypeEnum.Warning, reason, null);
+    }
+
+    public static PatientPenalty CreateBlock(Guid patientId, string reason, DateTime blockedUntil)
+    {
+        return new PatientPenalty(patientId, null, PenaltyTypeEnum.TemporaryBlock, reason, blockedUntil);
+    }
 }
