@@ -18,6 +18,7 @@ public class TimeRange : ValueObject
 
     public TimeSpan Duration => End - Start;
 
+    // Check if two time ranges overlap
     public bool OverlapsWith(TimeRange other) => Start < other.End && other.Start < End;
 
 

@@ -4,9 +4,11 @@ using ClinicFlow.Domain.ValueObjects;
 using ClinicFlow.Domain.Interfaces;
 
 namespace ClinicFlow.Domain.Services;
+
 public class AppointmentSchedulingService(IAppointmentRepository appointmentRepository)
 {
-    public async Task<Appointment> ScheduleAppointmentAsync(Patient patient, IEnumerable<PatientPenalty> penalties, Doctor doctor, DateTime scheduledDate, TimeRange timeRange, Guid appointmentTypeId)
+    public async Task<Appointment> ScheduleAppointmentAsync(Patient patient, IEnumerable<PatientPenalty> penalties, Doctor doctor, DateTime scheduledDate,
+        TimeRange timeRange, Guid appointmentTypeId)
     {
         patient.EnsureNotBlocked(penalties);
 

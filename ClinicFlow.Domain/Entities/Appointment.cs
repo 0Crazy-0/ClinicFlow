@@ -52,14 +52,15 @@ public class Appointment : BaseEntity
         return appointment;
     }
 
-    public bool CanBeCancelled(int minHoursBeforeAppointment)
+    private bool CanBeCancelled(int minHoursBeforeAppointment)
     {
         var appointmentDateTime = ScheduledDate.Add(TimeRange.Start);
         var hoursUntilAppointment = (appointmentDateTime - DateTime.UtcNow).TotalHours;
+
         return hoursUntilAppointment >= minHoursBeforeAppointment;
     }
 
-    public bool CanBeRescheduled() => RescheduleCount < 1 && Status is AppointmentStatusEnum.Scheduled;
+    private bool CanBeRescheduled() => RescheduleCount < 1 && Status is AppointmentStatusEnum.Scheduled;
 
     public void Cancel(Guid userId, string? reason, int minHours)
     {
@@ -109,10 +110,12 @@ public class Appointment : BaseEntity
         AddDomainEvent(new AppointmentRescheduledEvent(this, previousDate, previousTimeRange));
     }
 
-    internal static bool HasScheduleConflict(IEnumerable<Appointment> appointments, DateTime scheduledDate, TimeRange timeRange) =>
-        appointments.Any(a => a.ScheduledDate.Date == scheduledDate.Date && a.IsActive() && a.TimeRange.OverlapsWith(timeRange));
+    private static bool HasScheduleConflict(IEnumerable<Appointment> appointments, DateTime scheduledDate, TimeRange timeRange) =>
+        appointments.Any(a => a.ScheduledDate.Date == scheduledDate.Date && (a.IsActive() || a.Status is AppointmentStatusEnum.LateCancellation)
+        && a.TimeRange.OverlapsWith(timeRange));
 
-    private bool IsActive() => Status != AppointmentStatusEnum.Cancelled && Status is not AppointmentStatusEnum.LateCancellation;
+    private bool IsActive() => Status is not AppointmentStatusEnum.Cancelled && Status is not AppointmentStatusEnum.LateCancellation;
 
     public DateTime GetScheduledDateTime() => ScheduledDate.Add(TimeRange.Start);
 }
+
