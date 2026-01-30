@@ -1,6 +1,6 @@
 namespace ClinicFlow.Domain.Exceptions;
 
-public class PatientBlockedException(DateTime blockedUntil)
- : DomainException($"The patient is blocked until {blockedUntil:yyyy-MM-dd} due to late cancellations")
+public class PatientBlockedException(DateTime blockedUntil) : DomainException($"Patient is blocked from booking appointments until {blockedUntil}.")
 {
+    public DateTime BlockedUntil { get; } = blockedUntil;
 }
