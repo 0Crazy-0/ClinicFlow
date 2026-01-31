@@ -5,6 +5,7 @@ namespace ClinicFlow.Domain.Tests.Common;
 
 public class ValueObjectTests
 {
+    #region Test Helper Class
     private class TestValueObject(int id, string name) : ValueObject
     {
         public int Id { get; } = id;
@@ -16,7 +17,9 @@ public class ValueObjectTests
             yield return Name;
         }
     }
+    #endregion
 
+    #region Equality Tests
     [Fact]
     public void Equals_ShouldReturnTrue_WhenValuesAreSame()
     {
@@ -67,4 +70,5 @@ public class ValueObjectTests
         (obj1 == obj2).Should().BeTrue();
         (obj1 != obj2).Should().BeFalse();
     }
+    #endregion
 }

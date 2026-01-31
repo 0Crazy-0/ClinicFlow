@@ -5,6 +5,7 @@ namespace ClinicFlow.Domain.Tests.ValueObjects;
 
 public class TimeRangeTests
 {
+    #region Constructor
     [Fact]
     public void Constructor_ShouldThrowException_WhenStartIsAfterEnd()
     {
@@ -19,7 +20,9 @@ public class TimeRangeTests
         act.Should().Throw<ArgumentException>()
             .WithMessage("Start time must be before end time.");
     }
+    #endregion
 
+    #region Duration
     [Fact]
     public void Duration_ShouldReturnCorrectDifference()
     {
@@ -34,7 +37,9 @@ public class TimeRangeTests
         // Assert
         duration.Should().Be(TimeSpan.FromMinutes(90));
     }
+    #endregion
 
+    #region Equality
     [Fact]
     public void Equality_ShouldWorkCorrectly()
     {
@@ -47,4 +52,5 @@ public class TimeRangeTests
         (tr1 == tr2).Should().BeTrue();
         (tr1 != tr3).Should().BeTrue();
     }
+    #endregion
 }
