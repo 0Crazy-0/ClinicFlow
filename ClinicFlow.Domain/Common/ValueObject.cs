@@ -2,9 +2,9 @@ namespace ClinicFlow.Domain.Common;
 
 public abstract class ValueObject
 {
-    protected static bool EqualOperator(ValueObject left, ValueObject right) => left?.Equals(right) ?? right is null;
+    protected static bool EqualOperator(ValueObject? left, ValueObject? right) => left?.Equals(right) ?? right is null;
 
-    protected static bool NotEqualOperator(ValueObject left, ValueObject right) => !EqualOperator(left, right);
+    protected static bool NotEqualOperator(ValueObject? left, ValueObject? right) => !EqualOperator(left, right);
 
     protected abstract IEnumerable<object> GetEqualityComponents();
 
@@ -23,10 +23,12 @@ public abstract class ValueObject
         var hash = new HashCode();
 
         foreach (var component in GetEqualityComponents())
-        {
             hash.Add(component?.GetHashCode() ?? 0);
-        }
-
+        
         return hash.ToHashCode();
     }
+
+    public static bool operator ==(ValueObject? left, ValueObject? right) => EqualOperator(left, right);
+
+    public static bool operator !=(ValueObject? left, ValueObject? right) => NotEqualOperator(left, right);
 }

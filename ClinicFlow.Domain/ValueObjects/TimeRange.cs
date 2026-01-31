@@ -6,6 +6,7 @@ public class TimeRange : ValueObject
 {
     public TimeSpan Start { get; }
     public TimeSpan End { get; }
+    public TimeSpan Duration => End - Start;
 
     public TimeRange(TimeSpan start, TimeSpan end)
     {
@@ -16,11 +17,8 @@ public class TimeRange : ValueObject
         End = end;
     }
 
-    public TimeSpan Duration => End - Start;
-
     // Check if two time ranges overlap
     public bool OverlapsWith(TimeRange other) => Start < other.End && other.Start < End;
-
 
     protected override IEnumerable<object> GetEqualityComponents()
     {
