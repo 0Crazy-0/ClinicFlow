@@ -10,7 +10,7 @@ public abstract class ValueObject
 
     public override bool Equals(object? obj)
     {
-        if (obj is null || obj.GetType() != GetType())
+        if (obj?.GetType() != GetType())
             return false;
 
         var other = (ValueObject)obj;
