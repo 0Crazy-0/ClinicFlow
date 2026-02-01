@@ -16,8 +16,7 @@ public class PatientPenaltyServiceTests
         _repositoryMock = new Mock<IPatientPenaltyRepository>();
         _service = new PatientPenaltyService(_repositoryMock.Object);
     }
-
-    #region ApplyPenaltyAsync
+    
     [Fact]
     public async Task ApplyPenaltyAsync_ShouldAddWarning_WhenCalled()
     {
@@ -88,5 +87,4 @@ public class PatientPenaltyServiceTests
         // Verify NO NEW block was added
         _repositoryMock.Verify(x => x.AddAsync(It.Is<PatientPenalty>(p => p.PenaltyType == PenaltyTypeEnum.TemporaryBlock)), Times.Never);
     }
-    #endregion
 }

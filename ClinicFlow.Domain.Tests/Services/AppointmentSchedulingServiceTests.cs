@@ -19,8 +19,7 @@ public class AppointmentSchedulingServiceTests
         _repositoryMock = new Mock<IAppointmentRepository>();
         _service = new AppointmentSchedulingService(_repositoryMock.Object);
     }
-
-    #region ScheduleAppointmentAsync
+    
     [Fact]
     public async Task ScheduleAppointmentAsync_ShouldThrowException_WhenPatientIsBlocked()
     {
@@ -84,9 +83,7 @@ public class AppointmentSchedulingServiceTests
         result.DoctorId.Should().Be(doctor.Id);
         result.Status.Should().Be(AppointmentStatusEnum.Scheduled);
     }
-    #endregion
 
-    #region Helpers
+    // Helpers
     private Patient CreatePatient() => new(Guid.NewGuid(), DateTime.UtcNow.AddYears(-30), "O+", "None", "None", "Mom", "555-5555");
-    #endregion
 }

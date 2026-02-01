@@ -17,8 +17,6 @@ public class AppointmentCancellationServiceTests
         _sut = new AppointmentCancellationService();
     }
 
-    #region CancelAppointment Tests
-
     [Fact]
     public void CancelAppointment_ShouldCancel_WhenAdminCancels()
     {
@@ -142,9 +140,7 @@ public class AppointmentCancellationServiceTests
         act.Should().Throw<UnauthorizedAccessException>().WithMessage("User is not authorized to cancel this appointment.");
     }
 
-    #endregion
-
-    #region Helpers
+    // Helpers
 
     private Appointment CreateAppointment(DateTime scheduledDateTime) => Appointment.Schedule(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), scheduledDateTime.Date,
         new TimeRange(scheduledDateTime.TimeOfDay, scheduledDateTime.TimeOfDay.Add(TimeSpan.FromHours(1))));
@@ -209,5 +205,4 @@ public class AppointmentCancellationServiceTests
             }
         }
     }
-    #endregion
 }

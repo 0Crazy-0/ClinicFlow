@@ -8,7 +8,7 @@ namespace ClinicFlow.Domain.Tests.Entities;
 
 public class AppointmentTests
 {
-    #region Schedule
+// Schedule
     [Fact]
     public void Schedule_ShouldCreateAppointment_WhenValidDataProvided()
     {
@@ -33,9 +33,8 @@ public class AppointmentTests
         appointment.RescheduleCount.Should().Be(0);
         appointment.DomainEvents.Should().ContainSingle(e => e is AppointmentScheduledEvent);
     }
-    #endregion
 
-    #region Cancel
+    // Cancel
     [Fact]
     public void Cancel_ShouldSetStatusToCancelled_WhenCalledWithValidParams()
     {
@@ -83,9 +82,8 @@ public class AppointmentTests
         // Assert
         act.Should().Throw<InvalidOperationException>().WithMessage($"Cannot cancel appointment. Current status: {AppointmentStatusEnum.Cancelled}");
     }
-    #endregion
 
-    #region Confirm
+    // Confirm
     [Fact]
     public void Confirm_ShouldSetStatusToConfirmed_WhenStatusIsScheduled()
     {
@@ -113,9 +111,8 @@ public class AppointmentTests
         // Assert
         act.Should().Throw<InvalidOperationException>();
     }
-    #endregion
 
-    #region Reschedule
+    // Reschedule
     [Fact]
     public void Reschedule_ShouldUpdateDateAndTime_WhenValid()
     {
@@ -130,12 +127,9 @@ public class AppointmentTests
         // Assert
         appointment.ScheduledDate.Should().Be(newDate);
     }
-    #endregion
 
-    #region Helpers
+    // Helpers
 
     private Appointment CreateAppointment(DateTime scheduledDateTime) => Appointment.Schedule(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), scheduledDateTime.Date,
         new TimeRange(scheduledDateTime.TimeOfDay, scheduledDateTime.TimeOfDay.Add(TimeSpan.FromHours(1))));
-
-    #endregion
 }

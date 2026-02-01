@@ -6,7 +6,7 @@ namespace ClinicFlow.Domain.Tests.Entities;
 
 public class PatientTests
 {
-    #region EnsureNotBlocked
+// EnsureNotBlocked
     [Fact]
     public void EnsureNotBlocked_ShouldNotThrow_WhenNoPenalties()
     {
@@ -73,9 +73,7 @@ public class PatientTests
         // Assert
         act.Should().Throw<PatientBlockedException>().Where(e => e.BlockedUntil == blockedUntil);
     }
-    #endregion
 
-    #region Helpers
+    // Helpers
     private Patient CreatePatient() => new(Guid.NewGuid(), DateTime.UtcNow.AddYears(-30), "O+", "None", "None", "Mom", "555-5555");
-    #endregion
 }
