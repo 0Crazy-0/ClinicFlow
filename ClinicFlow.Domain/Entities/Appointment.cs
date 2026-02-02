@@ -60,7 +60,7 @@ public class Appointment : BaseEntity
     internal void Cancel(Guid cancelledByUserId, string? reason, AppointmentTypeEnum appointmentType)
     {
         if (Status is AppointmentStatusEnum.Cancelled or AppointmentStatusEnum.LateCancellation)
-            throw new InvalidOperationException($"Cannot cancel appointment. Current status: {Status}");
+            throw new AppointmentCancellationNotAllowedException(Status);
 
         if (!CanBeCancelled(appointmentType))
         {
@@ -81,7 +81,7 @@ public class Appointment : BaseEntity
     public void Confirm()
     {
         if (Status is not AppointmentStatusEnum.Scheduled)
-            throw new InvalidOperationException("Only scheduled appointments can be confirmed.");
+            throw new AppointmentConfirmationNotAllowedException("Only scheduled appointments can be confirmed");
 
         Status = AppointmentStatusEnum.Confirmed;
         ConfirmedAt = DateTime.UtcNow;
@@ -92,7 +92,7 @@ public class Appointment : BaseEntity
     public void Reschedule(DateTime newDate, TimeRange newTimeRange, IEnumerable<Appointment> existingDoctorAppointments)
     {
         if (!CanBeRescheduled())
-            throw new InvalidOperationException("This appointment cannot be rescheduled.");
+            throw new AppointmentReschedulingNotAllowedException("This appointment cannot be rescheduled");
 
         if (HasScheduleConflict(existingDoctorAppointments, newDate, newTimeRange))
             throw new AppointmentConflictException(DoctorId, newDate.Add(newTimeRange.Start));

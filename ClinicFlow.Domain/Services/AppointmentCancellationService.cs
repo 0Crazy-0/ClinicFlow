@@ -23,7 +23,7 @@ public class AppointmentCancellationService
         {
             if (initiator.DoctorId == appointment.DoctorId) return;
             
-            throw new UnauthorizedAccessException("Doctors can only cancel their own appointments.");
+            throw new AppointmentCancellationUnauthorizedException("Doctors can only cancel their own appointments.");
         }
 
         if (initiator.Role is UserRoleEnum.Patient)
@@ -41,10 +41,10 @@ public class AppointmentCancellationService
 
                 if (allowedFamilyTypes.Contains(appointmentType.Type)) return;
 
-                throw new UnauthorizedAccessException($"Family members cannot cancel appointments of type: {appointmentType.Type}");
+                throw new AppointmentCancellationUnauthorizedException($"Family members cannot cancel appointments of type: {appointmentType.Type}");
             }
         }
-        throw new UnauthorizedAccessException("User is not authorized to cancel this appointment.");
+        throw new AppointmentCancellationUnauthorizedException("User is not authorized to cancel this appointment.");
     }
 
     private static void ValidateCancellationReason(UserRoleEnum role, string? reason)

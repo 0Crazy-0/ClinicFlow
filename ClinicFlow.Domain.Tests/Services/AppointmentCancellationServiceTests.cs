@@ -77,7 +77,7 @@ public class AppointmentCancellationServiceTests
         var act = () => _sut.CancelAppointment(appointment, otherDoctor, type, false, "Mistake");
 
         // Assert
-        act.Should().Throw<UnauthorizedAccessException>().WithMessage("Doctors can only cancel their own appointments.");
+        act.Should().Throw<AppointmentCancellationUnauthorizedException>().WithMessage("Doctors can only cancel their own appointments.");
     }
 
     [Fact]
@@ -122,7 +122,7 @@ public class AppointmentCancellationServiceTests
         var act = () => _sut.CancelAppointment(appointment, familyUser, type, true, "Grandma fails");
 
         // Assert
-        act.Should().Throw<UnauthorizedAccessException>().WithMessage($"Family members cannot cancel appointments of type: {AppointmentTypeEnum.Procedure}");
+        act.Should().Throw<AppointmentCancellationUnauthorizedException>().WithMessage($"Family members cannot cancel appointments of type: {AppointmentTypeEnum.Procedure}");
     }
 
     [Fact]
@@ -137,7 +137,7 @@ public class AppointmentCancellationServiceTests
         var act = () => _sut.CancelAppointment(appointment, stranger, type, false, "Hacking"); // isAuthorizedFamilyMember = false
 
         // Assert
-        act.Should().Throw<UnauthorizedAccessException>().WithMessage("User is not authorized to cancel this appointment.");
+        act.Should().Throw<AppointmentCancellationUnauthorizedException>().WithMessage("User is not authorized to cancel this appointment.");
     }
 
     // Helpers

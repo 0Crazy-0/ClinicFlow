@@ -1,4 +1,5 @@
 using ClinicFlow.Domain.Common;
+using ClinicFlow.Domain.Exceptions;
 
 namespace ClinicFlow.Domain.ValueObjects;
 
@@ -11,7 +12,7 @@ public class TimeRange : ValueObject
     public TimeRange(TimeSpan start, TimeSpan end)
     {
         if (start >= end)
-            throw new ArgumentException("Start time must be before end time.");
+            throw new InvalidTimeRangeException("Start time must be before end time.");
 
         Start = start;
         End = end;

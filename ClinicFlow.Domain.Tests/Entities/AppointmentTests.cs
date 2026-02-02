@@ -3,6 +3,7 @@ using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Events;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
+using ClinicFlow.Domain.Exceptions;
 
 namespace ClinicFlow.Domain.Tests.Entities;
 
@@ -81,7 +82,7 @@ public class AppointmentTests
         var act = () => appointment.Cancel(userId, "Second", AppointmentTypeEnum.FirstConsultation);
 
         // Assert
-        act.Should().Throw<InvalidOperationException>().WithMessage($"Cannot cancel appointment. Current status: {AppointmentStatusEnum.Cancelled}");
+        act.Should().Throw<AppointmentCancellationNotAllowedException>().Where(e => e.CurrentStatus == AppointmentStatusEnum.Cancelled);
     }
 
     // Cancellation Policy Logic Verification
@@ -138,7 +139,7 @@ public class AppointmentTests
         var act = () => appointment.Confirm();
 
         // Assert
-        act.Should().Throw<InvalidOperationException>();
+        act.Should().Throw<AppointmentConfirmationNotAllowedException>();
     }
 
     // Reschedule

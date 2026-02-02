@@ -1,5 +1,6 @@
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
+using ClinicFlow.Domain.Exceptions;
 
 namespace ClinicFlow.Domain.Tests.ValueObjects;
 
@@ -17,8 +18,7 @@ public class TimeRangeTests
         var act = () => new TimeRange(start, end);
 
         // Assert
-        act.Should().Throw<ArgumentException>()
-            .WithMessage("Start time must be before end time.");
+        act.Should().Throw<InvalidTimeRangeException>().WithMessage("Start time must be before end time.");
     }
 
     // Duration
