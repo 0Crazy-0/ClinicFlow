@@ -26,7 +26,7 @@ public class AppointmentCancellationServiceTests
         var type = CreateAppointmentType(AppointmentTypeEnum.Checkup);
 
         // Act
-        _sut.CancelAppointment(appointment, adminUser, type, false, "Admin Override", 24);
+        _sut.CancelAppointment(appointment, adminUser, type, false, "Admin Override");
 
         // Assert
         appointment.Status.Should().Be(AppointmentStatusEnum.Cancelled);
@@ -44,7 +44,7 @@ public class AppointmentCancellationServiceTests
         var type = CreateAppointmentType(AppointmentTypeEnum.Checkup);
 
         // Act
-        var act = () => _sut.CancelAppointment(appointment, receptionist, type, false, "", 24);
+        var act = () => _sut.CancelAppointment(appointment, receptionist, type, false, "");
 
         // Assert
         act.Should().Throw<BusinessRuleValidationException>().WithMessage("Staff members must provide a reason for cancellation.");
@@ -59,7 +59,7 @@ public class AppointmentCancellationServiceTests
         var type = CreateAppointmentType(AppointmentTypeEnum.Checkup);
 
         // Act
-        _sut.CancelAppointment(appointment, doctorUser, type, false, "Not feeling well", 24);
+        _sut.CancelAppointment(appointment, doctorUser, type, false, "Not feeling well");
 
         // Assert
         appointment.Status.Should().Be(AppointmentStatusEnum.Cancelled);
@@ -74,7 +74,7 @@ public class AppointmentCancellationServiceTests
         var type = CreateAppointmentType(AppointmentTypeEnum.Checkup);
 
         // Act
-        var act = () => _sut.CancelAppointment(appointment, otherDoctor, type, false, "Mistake", 24);
+        var act = () => _sut.CancelAppointment(appointment, otherDoctor, type, false, "Mistake");
 
         // Assert
         act.Should().Throw<UnauthorizedAccessException>().WithMessage("Doctors can only cancel their own appointments.");
@@ -89,7 +89,7 @@ public class AppointmentCancellationServiceTests
         var type = CreateAppointmentType(AppointmentTypeEnum.Checkup);
 
         // Act
-        _sut.CancelAppointment(appointment, patientUser, type, false, null, 24); // Optional reason
+        _sut.CancelAppointment(appointment, patientUser, type, false, null); // Optional reason
 
         // Assert
         appointment.Status.Should().Be(AppointmentStatusEnum.Cancelled);
@@ -104,7 +104,7 @@ public class AppointmentCancellationServiceTests
         var type = CreateAppointmentType(AppointmentTypeEnum.Checkup); // Allowed type
 
         // Act
-        _sut.CancelAppointment(appointment, familyUser, type, true, "Mom can't make it", 24);
+        _sut.CancelAppointment(appointment, familyUser, type, true, "Mom can't make it");
 
         // Assert
         appointment.Status.Should().Be(AppointmentStatusEnum.Cancelled);
@@ -119,7 +119,7 @@ public class AppointmentCancellationServiceTests
         var type = CreateAppointmentType(AppointmentTypeEnum.Procedure); // Restricted
 
         // Act
-        var act = () => _sut.CancelAppointment(appointment, familyUser, type, true, "Grandma fails", 24);
+        var act = () => _sut.CancelAppointment(appointment, familyUser, type, true, "Grandma fails");
 
         // Assert
         act.Should().Throw<UnauthorizedAccessException>().WithMessage($"Family members cannot cancel appointments of type: {AppointmentTypeEnum.Procedure}");
@@ -134,7 +134,7 @@ public class AppointmentCancellationServiceTests
         var type = CreateAppointmentType(AppointmentTypeEnum.Checkup);
 
         // Act
-        var act = () => _sut.CancelAppointment(appointment, stranger, type, false, "Hacking", 24); // isAuthorizedFamilyMember = false
+        var act = () => _sut.CancelAppointment(appointment, stranger, type, false, "Hacking"); // isAuthorizedFamilyMember = false
 
         // Assert
         act.Should().Throw<UnauthorizedAccessException>().WithMessage("User is not authorized to cancel this appointment.");
