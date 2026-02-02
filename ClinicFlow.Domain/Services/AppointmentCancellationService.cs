@@ -6,12 +6,12 @@ namespace ClinicFlow.Domain.Services;
 
 public class AppointmentCancellationService
 {
-    public void CancelAppointment(Appointment appointment, User initiator, AppointmentType appointmentType, bool isAuthorizedFamilyMember, string? reason, int minHours)
+    public void CancelAppointment(Appointment appointment, User initiator, AppointmentType appointmentType, bool isAuthorizedFamilyMember, string? reason)
     {
         ValidateCancellationPermission(appointment, initiator, appointmentType, isAuthorizedFamilyMember);
         ValidateCancellationReason(initiator.Role, reason);
 
-        appointment.Cancel(initiator.Id, reason, minHours);
+        appointment.Cancel(initiator.Id, reason, appointmentType.Type);
     }
 
     private static void ValidateCancellationPermission(Appointment appointment, User initiator, AppointmentType appointmentType, bool isFamilyMember)
