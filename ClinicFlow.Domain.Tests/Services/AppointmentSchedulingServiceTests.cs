@@ -19,7 +19,8 @@ public class AppointmentSchedulingServiceTests
         _repositoryMock = new Mock<IAppointmentRepository>();
         _service = new AppointmentSchedulingService(_repositoryMock.Object);
     }
-    
+
+    // ScheduleAppointmentAsync
     [Fact]
     public async Task ScheduleAppointmentAsync_ShouldThrowException_WhenPatientIsBlocked()
     {
@@ -84,6 +85,50 @@ public class AppointmentSchedulingServiceTests
         result.Status.Should().Be(AppointmentStatusEnum.Scheduled);
     }
 
+    // RescheduleAppointmentAsync
+    [Fact]
+    public async Task RescheduleAppointmentAsync_ShouldThrowException_WhenConflictExists()
+    {
+        // Arrange
+        var appointment = CreateAppointment(DateTime.UtcNow.AddDays(1).Date.AddHours(9));
+        var newDate = DateTime.UtcNow.AddDays(2);
+        var newTimeRange = new TimeRange(TimeSpan.FromHours(10), TimeSpan.FromHours(11));
+
+        // Create a conflicting appointment
+        var conflictingAppointment = CreateAppointment(newDate.Date.AddHours(10));
+
+        _repositoryMock.Setup(x => x.GetByDoctorIdAsync(appointment.DoctorId, newDate.Date)).ReturnsAsync([conflictingAppointment]);
+
+        // Act
+        var act = () => _service.RescheduleAppointmentAsync(appointment, newDate, newTimeRange);
+
+        // Assert
+        await act.Should().ThrowAsync<AppointmentConflictException>();
+    }
+
+    [Fact]
+    public async Task RescheduleAppointmentAsync_ShouldSucceed_WhenNoConflict()
+    {
+        // Arrange
+        var appointment = CreateAppointment(DateTime.UtcNow.AddDays(1).Date.AddHours(9));
+
+        var newDate = DateTime.UtcNow.AddDays(2);
+        var newTimeRange = new TimeRange(TimeSpan.FromHours(10), TimeSpan.FromHours(11));
+
+        _repositoryMock.Setup(x => x.GetByDoctorIdAsync(appointment.DoctorId, newDate.Date)).ReturnsAsync([]);
+
+        // Act
+        await _service.RescheduleAppointmentAsync(appointment, newDate, newTimeRange);
+
+        // Assert
+        appointment.ScheduledDate.Should().Be(newDate);
+        appointment.TimeRange.Should().Be(newTimeRange);
+        appointment.RescheduleCount.Should().Be(1);
+    }
+
     // Helpers
+    private Appointment CreateAppointment(DateTime scheduledDateTime) => Appointment.Schedule(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), scheduledDateTime.Date,
+        new TimeRange(scheduledDateTime.TimeOfDay, scheduledDateTime.TimeOfDay.Add(TimeSpan.FromHours(1))));
+
     private Patient CreatePatient() => new(Guid.NewGuid(), DateTime.UtcNow.AddYears(-30), "O+", "None", "None", "Mom", "555-5555");
 }

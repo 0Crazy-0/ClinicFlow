@@ -9,7 +9,6 @@ namespace ClinicFlow.Domain.Tests.Entities;
 
 public class AppointmentTests
 {
-// Schedule
     // Schedule
     [Fact]
     public void Schedule_ShouldCreateAppointment_WhenValidDataProvided()
@@ -41,7 +40,7 @@ public class AppointmentTests
     public void Cancel_ShouldSetStatusToCancelled_WhenCalledWithValidParams()
     {
         // Arrange - FirstConsultation requires 24h
-        var appointment = CreateAppointment(DateTime.UtcNow.AddHours(48));
+        var appointment = CreateAppointment(DateTime.UtcNow.AddDays(2));
         var userId = Guid.NewGuid();
 
         // Act
@@ -73,7 +72,7 @@ public class AppointmentTests
     public void Cancel_ShouldThrowException_WhenAlreadyCancelled()
     {
         // Arrange
-        var appointment = CreateAppointment(DateTime.UtcNow.AddHours(48));
+        var appointment = CreateAppointment(DateTime.UtcNow.AddDays(2));
         var userId = Guid.NewGuid();
 
         appointment.Cancel(userId, "First", AppointmentTypeEnum.FirstConsultation);
@@ -132,14 +131,12 @@ public class AppointmentTests
     {
         // Arrange
         var appointment = CreateAppointment(DateTime.UtcNow.AddDays(1));
-        var userId = Guid.NewGuid();
-        appointment.Cancel(userId, "Cancelled", AppointmentTypeEnum.FirstConsultation);
 
-        // Act
-        var act = () => appointment.Confirm();
+        //Act 
+        appointment.Cancel(Guid.NewGuid(), "Cancelled", AppointmentTypeEnum.FirstConsultation);
 
-        // Assert
-        act.Should().Throw<AppointmentConfirmationNotAllowedException>();
+        //Assert
+        appointment.Invoking(x => x.Confirm()).Should().Throw<AppointmentConfirmationNotAllowedException>();
     }
 
     // Reschedule
@@ -152,14 +149,14 @@ public class AppointmentTests
         var newTimeRange = new TimeRange(TimeSpan.FromHours(14), TimeSpan.FromHours(15));
 
         // Act
-        appointment.Reschedule(newDate, newTimeRange, []);
+        appointment.Reschedule(newDate, newTimeRange);
 
         // Assert
         appointment.ScheduledDate.Should().Be(newDate);
+        appointment.TimeRange.Should().Be(newTimeRange);
     }
 
     // Helpers
-
     private Appointment CreateAppointment(DateTime scheduledDateTime) => Appointment.Schedule(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), scheduledDateTime.Date,
         new TimeRange(scheduledDateTime.TimeOfDay, scheduledDateTime.TimeOfDay.Add(TimeSpan.FromHours(1))));
 }
