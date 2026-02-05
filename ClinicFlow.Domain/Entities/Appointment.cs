@@ -89,13 +89,10 @@ public class Appointment : BaseEntity
         AddDomainEvent(new AppointmentConfirmedEvent(this));
     }
 
-    public void Reschedule(DateTime newDate, TimeRange newTimeRange, IEnumerable<Appointment> existingDoctorAppointments)
+    public void Reschedule(DateTime newDate, TimeRange newTimeRange)
     {
         if (!CanBeRescheduled())
             throw new AppointmentReschedulingNotAllowedException("This appointment cannot be rescheduled");
-
-        if (HasScheduleConflict(existingDoctorAppointments, newDate, newTimeRange))
-            throw new AppointmentConflictException(DoctorId, newDate.Add(newTimeRange.Start));
 
         var previousDate = ScheduledDate;
         var previousTimeRange = TimeRange;
@@ -130,11 +127,4 @@ public class Appointment : BaseEntity
 
 
     private bool CanBeRescheduled() => RescheduleCount < 1 && Status is AppointmentStatusEnum.Scheduled;
-
-    private bool IsActive() => Status is not AppointmentStatusEnum.Cancelled && Status is not AppointmentStatusEnum.LateCancellation;
-
-    // Validations (Private)
-    private static bool HasScheduleConflict(IEnumerable<Appointment> appointments, DateTime scheduledDate, TimeRange timeRange) =>
-        appointments.Any(a => a.ScheduledDate.Date == scheduledDate.Date && (a.IsActive() || a.Status is AppointmentStatusEnum.LateCancellation)
-        && a.TimeRange.OverlapsWith(timeRange));
 }
