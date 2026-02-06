@@ -22,12 +22,12 @@ public class PatientPenalty : BaseEntity
         BlockedUntil = blockedUntil;
     }
 
-    public static PatientPenalty CreateWarning(Guid patientId, Guid? appointmentId, string reason)
+    internal static PatientPenalty CreateWarning(Guid patientId, Guid? appointmentId, string reason)
     {
         return new PatientPenalty(patientId, appointmentId, PenaltyTypeEnum.Warning, reason, null);
     }
 
-    public static PatientPenalty CreateBlock(Guid patientId, string reason, DateTime blockedUntil)
+    internal static PatientPenalty CreateBlock(Guid patientId, string reason, DateTime blockedUntil)
     {
         return new PatientPenalty(patientId, null, PenaltyTypeEnum.TemporaryBlock, reason, blockedUntil);
     }

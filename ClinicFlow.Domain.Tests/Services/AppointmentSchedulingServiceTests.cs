@@ -27,19 +27,16 @@ public class AppointmentSchedulingServiceTests
         // Arrange
         var patient = CreatePatient();
         var doctor = new Doctor(Guid.NewGuid(), "12345", Guid.NewGuid(), "Dr. House", 101);
-        var penalties = new List<PatientPenalty>
-        {
-            PatientPenalty.CreateBlock(patient.Id, "Blocked", DateTime.UtcNow.AddDays(1))
-        };
+        var scheduledDate = DateTime.UtcNow.AddDays(1);
+        var penalties = new List<PatientPenalty> { PatientPenalty.CreateBlock(patient.Id, "Blocked", scheduledDate) };
 
         // Act
-        var act = () => _service.ScheduleAppointmentAsync(patient, penalties, doctor, DateTime.UtcNow.AddDays(1),
-            new TimeRange(TimeSpan.FromHours(9), TimeSpan.FromHours(10)), Guid.NewGuid());
+        var act = () => _service.ScheduleAppointmentAsync(patient, penalties, doctor, scheduledDate, new TimeRange(TimeSpan.FromHours(9), TimeSpan.FromHours(10)), Guid.NewGuid());
 
         // Assert
         await act.Should().ThrowAsync<PatientBlockedException>();
 
-        _repositoryMock.Verify(x => x.HasConflictAsync(It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<TimeSpan>(), It.IsAny<TimeSpan>()), Times.Never);
+        _repositoryMock.Verify(x => x.HasConflictAsync(It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<TimeRange>()), Times.Never);
     }
 
     [Fact]
@@ -52,8 +49,7 @@ public class AppointmentSchedulingServiceTests
         var scheduledDate = DateTime.UtcNow.AddDays(1);
         var timeRange = new TimeRange(TimeSpan.FromHours(9), TimeSpan.FromHours(10));
 
-        _repositoryMock.Setup(x => x.HasConflictAsync(doctor.Id, scheduledDate, timeRange.Start, timeRange.End))
-            .ReturnsAsync(true);
+        _repositoryMock.Setup(x => x.HasConflictAsync(doctor.Id, scheduledDate, timeRange)).ReturnsAsync(true);
 
         // Act
         var act = () => _service.ScheduleAppointmentAsync(patient, penalties, doctor, scheduledDate, timeRange, Guid.NewGuid());
@@ -73,7 +69,7 @@ public class AppointmentSchedulingServiceTests
         var timeRange = new TimeRange(TimeSpan.FromHours(9), TimeSpan.FromHours(10));
         var appointmentTypeId = Guid.NewGuid();
 
-        _repositoryMock.Setup(x => x.HasConflictAsync(doctor.Id, scheduledDate, timeRange.Start, timeRange.End)).ReturnsAsync(false);
+        _repositoryMock.Setup(x => x.HasConflictAsync(doctor.Id, scheduledDate, timeRange)).ReturnsAsync(false);
 
         // Act
         var result = await _service.ScheduleAppointmentAsync(patient, penalties, doctor, scheduledDate, timeRange, appointmentTypeId);
@@ -92,7 +88,6 @@ public class AppointmentSchedulingServiceTests
         // Arrange
         var appointment = CreateAppointment(DateTime.UtcNow.AddDays(1).Date.AddHours(9));
         var newDate = DateTime.UtcNow.AddDays(2);
-        var newTimeRange = new TimeRange(TimeSpan.FromHours(10), TimeSpan.FromHours(11));
 
         // Create a conflicting appointment
         var conflictingAppointment = CreateAppointment(newDate.Date.AddHours(10));
@@ -100,7 +95,7 @@ public class AppointmentSchedulingServiceTests
         _repositoryMock.Setup(x => x.GetByDoctorIdAsync(appointment.DoctorId, newDate.Date)).ReturnsAsync([conflictingAppointment]);
 
         // Act
-        var act = () => _service.RescheduleAppointmentAsync(appointment, newDate, newTimeRange);
+        var act = () => _service.RescheduleAppointmentAsync(appointment, newDate,  new TimeRange(TimeSpan.FromHours(10), TimeSpan.FromHours(11)));
 
         // Assert
         await act.Should().ThrowAsync<AppointmentConflictException>();

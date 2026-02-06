@@ -47,7 +47,7 @@ public class Patient : BaseEntity
         return activePenalties.Any();
     }
 
-    public void EnsureNotBlocked(IEnumerable<PatientPenalty> penalties)
+    internal void EnsureNotBlocked(IEnumerable<PatientPenalty> penalties)
     {
         if (IsBlockedFromBooking(penalties, out var blockedUntil))
             throw new PatientBlockedException(blockedUntil ?? DateTime.UtcNow);
