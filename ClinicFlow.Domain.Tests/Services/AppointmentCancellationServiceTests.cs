@@ -17,29 +17,65 @@ public class AppointmentCancellationServiceTests
         _sut = new AppointmentCancellationService();
     }
 
-    [Fact]
-    public void CancelAppointment_ShouldCancel_WhenAdminCancels()
+    [Theory]
+    [InlineData(UserRoleEnum.Admin, false, false, AppointmentTypeEnum.Checkup)]
+    [InlineData(UserRoleEnum.Doctor, true, false, AppointmentTypeEnum.Checkup)]
+    [InlineData(UserRoleEnum.Patient, true, false, AppointmentTypeEnum.Checkup)]
+    [InlineData(UserRoleEnum.Patient, false, true, AppointmentTypeEnum.Checkup)]
+    public void CancelAppointment_ShouldSucceed_WhenAuthorized(UserRoleEnum role, bool isOwn, bool isFamily, AppointmentTypeEnum typeEnum)
     {
         // Arrange
-        var appointment = CreateAppointment(DateTime.UtcNow.AddHours(48));
-        var adminUser = CreateUser(UserRoleEnum.Admin);
-        var type = CreateAppointmentType(AppointmentTypeEnum.Checkup);
+        var appointment = CreateAppointment(DateTime.UtcNow.AddDays(2));
+
+        Guid? doctorId = null;
+        Guid? patientId = null;
+
+        if (role is UserRoleEnum.Doctor) doctorId = isOwn ? appointment.DoctorId : Guid.NewGuid();
+        else if (role is UserRoleEnum.Patient) patientId = isOwn ? appointment.PatientId : Guid.NewGuid();
+
+        var type = CreateAppointmentType(typeEnum);
+        var user = CreateUser(role, doctorId, patientId);
 
         // Act
-        _sut.CancelAppointment(appointment, adminUser, type, false, "Admin Override");
+        _sut.CancelAppointment(appointment, user, type, isFamily, "Valid Reason");
 
         // Assert
         appointment.Status.Should().Be(AppointmentStatusEnum.Cancelled);
-        appointment.CancelledByUserId.Should().Be(adminUser.Id);
-        appointment.DomainEvents.OfType<AppointmentCancelledEvent>().Single();
 
+        if (role is UserRoleEnum.Admin) appointment.CancelledByUserId.Should().Be(user.Id);
+
+
+        appointment.DomainEvents.OfType<AppointmentCancelledEvent>().Single();
+    }
+
+    [Theory]
+    [InlineData(UserRoleEnum.Doctor, false, false, AppointmentTypeEnum.Checkup, "Doctors can only cancel their own appointments.")]
+    [InlineData(UserRoleEnum.Patient, false, true, AppointmentTypeEnum.Procedure, "Family members cannot cancel appointments of type: Procedure")]
+    [InlineData(UserRoleEnum.Patient, false, false, AppointmentTypeEnum.Checkup, "User is not authorized to cancel this appointment.")]
+    public void CancelAppointment_ShouldThrowUnauthorized_WhenNotAuthorized(UserRoleEnum role, bool isOwn, bool isFamily, AppointmentTypeEnum typeEnum, string expectedMessage)
+    {
+        // Arrange
+        var appointment = CreateAppointment(DateTime.UtcNow.AddDays(2));
+
+        // Ensure we don't accidentally match IDs
+        Guid? doctorId = role is UserRoleEnum.Doctor && !isOwn ? Guid.NewGuid() : null;
+        Guid? patientId = role is UserRoleEnum.Patient && !isOwn ? Guid.NewGuid() : null;
+
+        var type = CreateAppointmentType(typeEnum);
+        var user = CreateUser(role, doctorId, patientId);
+
+        // Act
+        var act = () => _sut.CancelAppointment(appointment, user, type, isFamily, "Reason");
+
+        // Assert
+        act.Should().Throw<AppointmentCancellationUnauthorizedException>().WithMessage(expectedMessage);
     }
 
     [Fact]
     public void CancelAppointment_ShouldThrowBusinessRuleValidationException_WhenStaffCancelsWithoutReason()
     {
         // Arrange
-        var appointment = CreateAppointment(DateTime.UtcNow.AddHours(48));
+        var appointment = CreateAppointment(DateTime.UtcNow.AddDays(2));
         var receptionist = CreateUser(UserRoleEnum.Receptionist);
         var type = CreateAppointmentType(AppointmentTypeEnum.Checkup);
 
@@ -48,96 +84,6 @@ public class AppointmentCancellationServiceTests
 
         // Assert
         act.Should().Throw<BusinessRuleValidationException>().WithMessage("Staff members must provide a reason for cancellation.");
-    }
-
-    [Fact]
-    public void CancelAppointment_ShouldSucceed_WhenDoctorCancelsOwnAppointment()
-    {
-        // Arrange
-        var appointment = CreateAppointment(DateTime.UtcNow.AddHours(48));
-        var doctorUser = CreateUser(UserRoleEnum.Doctor, doctorId: appointment.DoctorId);
-        var type = CreateAppointmentType(AppointmentTypeEnum.Checkup);
-
-        // Act
-        _sut.CancelAppointment(appointment, doctorUser, type, false, "Not feeling well");
-
-        // Assert
-        appointment.Status.Should().Be(AppointmentStatusEnum.Cancelled);
-    }
-
-    [Fact]
-    public void CancelAppointment_ShouldThrowUnauthorized_WhenDoctorCancelsOtherAppointment()
-    {
-        // Arrange
-        var appointment = CreateAppointment(DateTime.UtcNow.AddHours(48));
-        var otherDoctor = CreateUser(UserRoleEnum.Doctor, doctorId: Guid.NewGuid());
-        var type = CreateAppointmentType(AppointmentTypeEnum.Checkup);
-
-        // Act
-        var act = () => _sut.CancelAppointment(appointment, otherDoctor, type, false, "Mistake");
-
-        // Assert
-        act.Should().Throw<AppointmentCancellationUnauthorizedException>().WithMessage("Doctors can only cancel their own appointments.");
-    }
-
-    [Fact]
-    public void CancelAppointment_ShouldSucceed_WhenPatientCancelsOwnAppointment()
-    {
-        // Arrange
-        var appointment = CreateAppointment(DateTime.UtcNow.AddHours(48));
-        var patientUser = CreateUser(UserRoleEnum.Patient, patientId: appointment.PatientId);
-        var type = CreateAppointmentType(AppointmentTypeEnum.Checkup);
-
-        // Act
-        _sut.CancelAppointment(appointment, patientUser, type, false, null); // Optional reason
-
-        // Assert
-        appointment.Status.Should().Be(AppointmentStatusEnum.Cancelled);
-    }
-
-    [Fact]
-    public void CancelAppointment_ShouldSucceed_WhenFamilyMemberCancelsAllowedType()
-    {
-        // Arrange
-        var appointment = CreateAppointment(DateTime.UtcNow.AddHours(48));
-        var familyUser = CreateUser(UserRoleEnum.Patient, patientId: Guid.NewGuid()); // Different ID
-        var type = CreateAppointmentType(AppointmentTypeEnum.Checkup); // Allowed type
-
-        // Act
-        _sut.CancelAppointment(appointment, familyUser, type, true, "Mom can't make it");
-
-        // Assert
-        appointment.Status.Should().Be(AppointmentStatusEnum.Cancelled);
-    }
-
-    [Fact]
-    public void CancelAppointment_ShouldThrowUnauthorized_WhenFamilyMemberCancelsRestrictedType()
-    {
-        // Arrange
-        var appointment = CreateAppointment(DateTime.UtcNow.AddHours(48));
-        var familyUser = CreateUser(UserRoleEnum.Patient, patientId: Guid.NewGuid());
-        var type = CreateAppointmentType(AppointmentTypeEnum.Procedure); // Restricted
-
-        // Act
-        var act = () => _sut.CancelAppointment(appointment, familyUser, type, true, "Grandma fails");
-
-        // Assert
-        act.Should().Throw<AppointmentCancellationUnauthorizedException>().WithMessage($"Family members cannot cancel appointments of type: {AppointmentTypeEnum.Procedure}");
-    }
-
-    [Fact]
-    public void CancelAppointment_ShouldThrowUnauthorized_WhenUnrelatedPatientCancels()
-    {
-        // Arrange
-        var appointment = CreateAppointment(DateTime.UtcNow.AddHours(48));
-        var stranger = CreateUser(UserRoleEnum.Patient, patientId: Guid.NewGuid());
-        var type = CreateAppointmentType(AppointmentTypeEnum.Checkup);
-
-        // Act
-        var act = () => _sut.CancelAppointment(appointment, stranger, type, false, "Hacking"); // isAuthorizedFamilyMember = false
-
-        // Assert
-        act.Should().Throw<AppointmentCancellationUnauthorizedException>().WithMessage("User is not authorized to cancel this appointment.");
     }
 
     // Helpers
@@ -149,21 +95,20 @@ public class AppointmentCancellationServiceTests
     {
         var user = new User();
 
-        SetPrivateProperty(user, "Role", role); // Assuming user has 'Id' which is auto generated or we rely on default
-        SetPrivateProperty(user, "Id", Guid.NewGuid());
+        SetPrivateProperty(user, nameof(User.Role), role);
 
-        if (doctorId.HasValue) SetPrivateProperty(user, "DoctorId", doctorId.Value);
-        if (patientId.HasValue) SetPrivateProperty(user, "PatientId", patientId.Value);
-        
+        if (doctorId.HasValue) SetPrivateProperty(user, nameof(User.DoctorId), doctorId.Value);
+        if (patientId.HasValue) SetPrivateProperty(user, nameof(User.PatientId), patientId.Value);
+
         return user;
     }
 
     private AppointmentType CreateAppointmentType(AppointmentTypeEnum typeEnum)
     {
-        var type = (AppointmentType)Activator.CreateInstance(typeof(AppointmentType), true)!;
+        var type = new AppointmentType();
 
-        SetPrivateProperty(type, "Type", typeEnum);
-        
+        SetPrivateProperty(type, nameof(type.Type), typeEnum);
+
         return type;
     }
 
@@ -171,38 +116,17 @@ public class AppointmentCancellationServiceTests
     {
         var type = obj.GetType();
 
-        PropertyInfo? prop = null;
-        
         while (type != null)
         {
-            prop = type.GetProperty(propertyName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+            var prop = type.GetProperty(propertyName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
 
-            if (prop != null && prop.GetSetMethod(true) != null) break;
+            if (prop != null)
+            {
+                prop.SetValue(obj, value);
+                return;
+            }
 
             type = type.BaseType;
-        }
-
-        if (prop != null)
-        {
-            prop.SetValue(obj, value);
-        }
-        else
-        {
-            // Fallback for when property is not found or has no setter - try backing field
-            type = obj.GetType();
-
-            while (type != null)
-            {
-                var field = type.GetField($"<{propertyName}>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
-
-                if (field != null)
-                {
-                    field.SetValue(obj, value);
-                    return;
-                }
-                
-                type = type.BaseType;
-            }
         }
     }
 }
