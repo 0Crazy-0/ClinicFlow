@@ -16,13 +16,12 @@ public class AppointmentCancellationService
 
     private static void ValidateCancellationPermission(Appointment appointment, User initiator, AppointmentType appointmentType, bool isFamilyMember)
     {
-        if (initiator.Role is UserRoleEnum.Admin or UserRoleEnum.Receptionist)
-            return;
+        if (initiator.Role is UserRoleEnum.Admin or UserRoleEnum.Receptionist) return;
 
         if (initiator.Role is UserRoleEnum.Doctor)
         {
             if (initiator.DoctorId == appointment.DoctorId) return;
-            
+
             throw new AppointmentCancellationUnauthorizedException("Doctors can only cancel their own appointments.");
         }
 
@@ -51,7 +50,6 @@ public class AppointmentCancellationService
     {
         bool isStaff = role is UserRoleEnum.Admin or UserRoleEnum.Receptionist;
 
-        if (isStaff && string.IsNullOrWhiteSpace(reason))
-            throw new BusinessRuleValidationException("Staff members must provide a reason for cancellation.");
+        if (isStaff && string.IsNullOrWhiteSpace(reason)) throw new BusinessRuleValidationException("Staff members must provide a reason for cancellation.");
     }
 }
