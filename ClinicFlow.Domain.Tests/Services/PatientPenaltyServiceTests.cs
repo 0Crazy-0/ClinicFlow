@@ -3,6 +3,7 @@ using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Services;
 using Moq;
+using FluentAssertions;
 
 namespace ClinicFlow.Domain.Tests.Services;
 
@@ -16,7 +17,7 @@ public class PatientPenaltyServiceTests
         _repositoryMock = new Mock<IPatientPenaltyRepository>();
         _service = new PatientPenaltyService(_repositoryMock.Object);
     }
-    
+
     [Fact]
     public async Task ApplyPenaltyAsync_ShouldAddWarning_WhenCalled()
     {
@@ -31,8 +32,7 @@ public class PatientPenaltyServiceTests
         await _service.ApplyPenaltyAsync(patientId, appointmentId, reason);
 
         // Assert
-        _repositoryMock.Verify(x => x.AddAsync(It.Is<PatientPenalty>(p => p.PatientId == patientId && p.PenaltyType == PenaltyTypeEnum.Warning && p.Reason == reason)),
-            Times.Once);
+        _repositoryMock.Verify(x => x.AddAsync(It.Is<PatientPenalty>(p => p.PatientId == patientId && p.PenaltyType == PenaltyTypeEnum.Warning && p.Reason == reason)), Times.Once);
     }
 
     [Fact]
@@ -41,6 +41,7 @@ public class PatientPenaltyServiceTests
         // Arrange
         var patientId = Guid.NewGuid();
         var appointmentId = Guid.NewGuid();
+
         // Simulating 2 existing warnings
         var existingPenalties = new List<PatientPenalty>
         {
@@ -50,17 +51,18 @@ public class PatientPenaltyServiceTests
 
         _repositoryMock.Setup(x => x.GetByPatientIdAsync(patientId)).ReturnsAsync(existingPenalties);
 
+        var capturedPenalties = new List<PatientPenalty>();
+        
+        _repositoryMock.Setup(x => x.AddAsync(It.IsAny<PatientPenalty>())).Callback<PatientPenalty>(capturedPenalties.Add);
+
         // Act
         // This call will add the 3rd warning, triggering the block logic
         await _service.ApplyPenaltyAsync(patientId, appointmentId, "Warning 3");
 
         // Assert
-        // Verify warning was added
-        _repositoryMock.Verify(x => x.AddAsync(It.Is<PatientPenalty>(p => p.PenaltyType == PenaltyTypeEnum.Warning)), Times.Once);
-
-        // Verify block was added
-        _repositoryMock.Verify(x => x.AddAsync(It.Is<PatientPenalty>(p => p.PenaltyType == PenaltyTypeEnum.TemporaryBlock && p.Reason == "Automatic block due to 3 strikes")),
-             Times.Once);
+        capturedPenalties.Should().HaveCount(2);
+        capturedPenalties.Should().ContainSingle(p => p.PenaltyType == PenaltyTypeEnum.Warning);
+        capturedPenalties.Should().ContainSingle(p => p.PenaltyType == PenaltyTypeEnum.TemporaryBlock && p.Reason == "Automatic block due to 3 strikes");
     }
 
     [Fact]
@@ -77,14 +79,15 @@ public class PatientPenaltyServiceTests
 
         _repositoryMock.Setup(x => x.GetByPatientIdAsync(patientId)).ReturnsAsync(existingPenalties);
 
+        var capturedPenalties = new List<PatientPenalty>();
+        
+        _repositoryMock.Setup(x => x.AddAsync(It.IsAny<PatientPenalty>())).Callback<PatientPenalty>(capturedPenalties.Add);
+
         // Act
         await _service.ApplyPenaltyAsync(patientId, Guid.NewGuid(), "Warning 3");
 
         // Assert
-        // Verify warning was added
-        _repositoryMock.Verify(x => x.AddAsync(It.Is<PatientPenalty>(p => p.PenaltyType == PenaltyTypeEnum.Warning)), Times.Once);
-
-        // Verify NO NEW block was added
-        _repositoryMock.Verify(x => x.AddAsync(It.Is<PatientPenalty>(p => p.PenaltyType == PenaltyTypeEnum.TemporaryBlock)), Times.Never);
+        capturedPenalties.Should().HaveCount(1);
+        capturedPenalties.Should().ContainSingle(p => p.PenaltyType == PenaltyTypeEnum.Warning);
     }
 }
