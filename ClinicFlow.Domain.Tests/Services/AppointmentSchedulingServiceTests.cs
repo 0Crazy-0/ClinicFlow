@@ -95,7 +95,7 @@ public class AppointmentSchedulingServiceTests
         _repositoryMock.Setup(x => x.GetByDoctorIdAsync(appointment.DoctorId, newDate.Date)).ReturnsAsync([conflictingAppointment]);
 
         // Act
-        var act = () => _service.RescheduleAppointmentAsync(appointment, newDate,  new TimeRange(TimeSpan.FromHours(10), TimeSpan.FromHours(11)));
+        var act = () => _service.RescheduleAppointmentAsync(appointment, newDate, new TimeRange(TimeSpan.FromHours(10), TimeSpan.FromHours(11)));
 
         // Assert
         await act.Should().ThrowAsync<AppointmentConflictException>();
@@ -119,6 +119,26 @@ public class AppointmentSchedulingServiceTests
         appointment.ScheduledDate.Should().Be(newDate);
         appointment.TimeRange.Should().Be(newTimeRange);
         appointment.RescheduleCount.Should().Be(1);
+    }
+
+    [Fact]
+    public async Task RescheduleAppointmentAsync_ShouldThrowException_WhenReschedulingNotAllowed()
+    {
+        // Arrange
+        var appointment = CreateAppointment(DateTime.UtcNow.AddDays(1).Date.AddHours(9));
+        var newDate = DateTime.UtcNow.AddDays(2);
+        var newTimeRange = new TimeRange(TimeSpan.FromHours(10), TimeSpan.FromHours(11));
+
+        // Simulate that the appointment has already been rescheduled once
+        appointment.Reschedule(DateTime.UtcNow.AddDays(1).Date.AddHours(10), newTimeRange);
+
+        _repositoryMock.Setup(x => x.GetByDoctorIdAsync(appointment.DoctorId, newDate.Date)).ReturnsAsync([]);
+
+        // Act
+        var act = () => _service.RescheduleAppointmentAsync(appointment, newDate, newTimeRange);
+
+        // Assert
+        await act.Should().ThrowAsync<AppointmentReschedulingNotAllowedException>().WithMessage("Cannot reschedule appointment: This appointment cannot be rescheduled");
     }
 
     // Helpers
