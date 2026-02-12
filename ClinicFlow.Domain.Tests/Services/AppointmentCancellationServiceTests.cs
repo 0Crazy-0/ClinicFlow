@@ -86,6 +86,21 @@ public class AppointmentCancellationServiceTests
         act.Should().Throw<BusinessRuleValidationException>().WithMessage("Staff members must provide a reason for cancellation.");
     }
 
+    [Fact]
+    public void CancelAppointment_ShouldThrowInvalidAppointmentTypeException_WhenTypeIsUnknown()
+    {
+        // Arrange
+        var appointment = CreateAppointment(DateTime.UtcNow.AddDays(2));
+        var receptionist = CreateUser(UserRoleEnum.Receptionist);
+        var type = CreateAppointmentType((AppointmentTypeEnum)999); // Unknown type
+
+        // Act
+        var act = () => _sut.CancelAppointment(appointment, receptionist, type, false, "Reason");
+
+        // Assert
+        act.Should().Throw<InvalidAppointmentTypeException>().WithMessage("Unknown appointment type: 999");
+    }
+
     // Helpers
 
     private Appointment CreateAppointment(DateTime scheduledDateTime) => Appointment.Schedule(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), scheduledDateTime.Date,
