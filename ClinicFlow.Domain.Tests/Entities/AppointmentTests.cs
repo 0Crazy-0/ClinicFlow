@@ -39,12 +39,13 @@ public class AppointmentTests
     [Fact]
     public void Cancel_ShouldSetStatusToCancelled_WhenCalledWithValidParams()
     {
-        // Arrange - FirstConsultation requires 24h
+        // Arrange - Specialty requires 24h
         var appointment = CreateAppointment(DateTime.UtcNow.AddDays(2));
         var userId = Guid.NewGuid();
+        var specialty = CreateSpecialty(24);
 
         // Act
-        appointment.Cancel(userId, "Reason", AppointmentTypeEnum.FirstConsultation);
+        appointment.Cancel(userId, "Reason", specialty);
 
         // Assert
         appointment.Status.Should().Be(AppointmentStatusEnum.Cancelled);
@@ -57,12 +58,13 @@ public class AppointmentTests
     [Fact]
     public void Cancel_ShouldSetStatusToLateCancellation_WhenNoticePeriodIsInsufficient()
     {
-        // Arrange - FirstConsultation requires 24h
+        // Arrange - Specialty requires 24h
         var appointment = CreateAppointment(DateTime.UtcNow.AddHours(2));
         var userId = Guid.NewGuid();
+        var specialty = CreateSpecialty(24);
 
         // Act
-        appointment.Cancel(userId, "Urgent", AppointmentTypeEnum.FirstConsultation);
+        appointment.Cancel(userId, "Urgent", specialty);
 
         // Assert
         appointment.Status.Should().Be(AppointmentStatusEnum.LateCancellation);
@@ -74,11 +76,12 @@ public class AppointmentTests
         // Arrange
         var appointment = CreateAppointment(DateTime.UtcNow.AddDays(2));
         var userId = Guid.NewGuid();
+        var specialty = CreateSpecialty(24);
 
-        appointment.Cancel(userId, "First", AppointmentTypeEnum.FirstConsultation);
+        appointment.Cancel(userId, "First", specialty);
 
         // Act
-        var act = () => appointment.Cancel(userId, "Second", AppointmentTypeEnum.FirstConsultation);
+        var act = () => appointment.Cancel(userId, "Second", specialty);
 
         // Assert
         act.Should().Throw<AppointmentCancellationNotAllowedException>().Where(e => e.CurrentStatus == AppointmentStatusEnum.Cancelled);
@@ -87,24 +90,21 @@ public class AppointmentTests
     // Cancellation Policy Logic Verification
 
     [Theory]
-    [InlineData(AppointmentTypeEnum.FirstConsultation, 25, AppointmentStatusEnum.Cancelled)]
-    [InlineData(AppointmentTypeEnum.FirstConsultation, 23, AppointmentStatusEnum.LateCancellation)]
-    [InlineData(AppointmentTypeEnum.FollowUp, 13, AppointmentStatusEnum.Cancelled)]
-    [InlineData(AppointmentTypeEnum.FollowUp, 11, AppointmentStatusEnum.LateCancellation)]
-    [InlineData(AppointmentTypeEnum.Emergency, 3, AppointmentStatusEnum.Cancelled)]
-    [InlineData(AppointmentTypeEnum.Emergency, 1, AppointmentStatusEnum.LateCancellation)]
-    [InlineData(AppointmentTypeEnum.Checkup, 25, AppointmentStatusEnum.Cancelled)]
-    [InlineData(AppointmentTypeEnum.Checkup, 23, AppointmentStatusEnum.LateCancellation)]
-    [InlineData(AppointmentTypeEnum.Procedure, 49, AppointmentStatusEnum.Cancelled)]
-    [InlineData(AppointmentTypeEnum.Procedure, 47, AppointmentStatusEnum.LateCancellation)]
-    public void Cancel_ShouldEnforceMinimumHoursPolicy(AppointmentTypeEnum typeEnum, int hoursUntilAppointment, AppointmentStatusEnum expectedStatus)
+    [InlineData(24, 25, AppointmentStatusEnum.Cancelled)]
+    [InlineData(24, 23, AppointmentStatusEnum.LateCancellation)]
+    [InlineData(12, 13, AppointmentStatusEnum.Cancelled)]
+    [InlineData(12, 11, AppointmentStatusEnum.LateCancellation)]
+    [InlineData(2, 3, AppointmentStatusEnum.Cancelled)]
+    [InlineData(2, 1, AppointmentStatusEnum.LateCancellation)]
+    public void Cancel_ShouldEnforceMinimumHoursPolicy(int minHours, int hoursUntilAppointment, AppointmentStatusEnum expectedStatus)
     {
         // Arrange
         var appointment = CreateAppointment(DateTime.UtcNow.AddHours(hoursUntilAppointment));
         var userId = Guid.NewGuid();
+        var specialty = CreateSpecialty(minHours);
 
         // Act
-        appointment.Cancel(userId, "Test Policy", typeEnum);
+        appointment.Cancel(userId, "Test Policy", specialty);
 
         // Assert
         appointment.Status.Should().Be(expectedStatus);
@@ -131,9 +131,10 @@ public class AppointmentTests
     {
         // Arrange
         var appointment = CreateAppointment(DateTime.UtcNow.AddDays(1));
+        var specialty = CreateSpecialty(24);
 
         //Act 
-        appointment.Cancel(Guid.NewGuid(), "Cancelled", AppointmentTypeEnum.FirstConsultation);
+        appointment.Cancel(Guid.NewGuid(), "Cancelled", specialty);
 
         //Assert
         appointment.Invoking(x => x.Confirm()).Should().Throw<AppointmentConfirmationNotAllowedException>();
@@ -159,4 +160,9 @@ public class AppointmentTests
     // Helpers
     private Appointment CreateAppointment(DateTime scheduledDateTime) => Appointment.Schedule(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), scheduledDateTime.Date,
         new TimeRange(scheduledDateTime.TimeOfDay, scheduledDateTime.TimeOfDay.Add(TimeSpan.FromHours(1))));
+
+    private MedicalSpecialty CreateSpecialty(int minCancellationHours)
+    {
+        return MedicalSpecialty.Create("Test Specialty", "Description", 30, minCancellationHours);
+    }
 }

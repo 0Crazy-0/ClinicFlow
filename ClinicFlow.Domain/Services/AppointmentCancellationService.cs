@@ -1,17 +1,23 @@
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions;
+using ClinicFlow.Domain.Interfaces;
 
 namespace ClinicFlow.Domain.Services;
 
-public class AppointmentCancellationService
+public class AppointmentCancellationService(IMedicalSpecialtyRepository medicalSpecialtyRepository, IDoctorRepository doctorRepository)
 {
-    public void CancelAppointment(Appointment appointment, User initiator, AppointmentType appointmentType, bool isAuthorizedFamilyMember, string? reason)
+    public async Task CancelAppointmentAsync(Appointment appointment, User initiator, AppointmentType appointmentType, bool isAuthorizedFamilyMember, string? reason)
     {
         ValidateCancellationPermission(appointment, initiator, appointmentType, isAuthorizedFamilyMember);
         ValidateCancellationReason(initiator.Role, reason);
 
-        appointment.Cancel(initiator.Id, reason, appointmentType.Type);
+        var doctor = await doctorRepository.GetByIdAsync(appointment.DoctorId) ?? throw new EntityNotFoundException(nameof(Doctor), appointment.DoctorId);
+
+        var specialty = await medicalSpecialtyRepository.GetByIdAsync(doctor.MedicalSpecialtyId) ??
+            throw new EntityNotFoundException(nameof(MedicalSpecialty), doctor.MedicalSpecialtyId);
+
+        appointment.Cancel(initiator.Id, reason, specialty);
     }
 
     private static void ValidateCancellationPermission(Appointment appointment, User initiator, AppointmentType appointmentType, bool isFamilyMember)

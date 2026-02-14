@@ -3,7 +3,6 @@ using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Events;
 using ClinicFlow.Domain.Exceptions;
 using ClinicFlow.Domain.ValueObjects;
-using ClinicFlow.Domain.Policies;
 
 namespace ClinicFlow.Domain.Entities;
 
@@ -57,12 +56,12 @@ public class Appointment : BaseEntity
 
     // Public Domain Methods
 
-    internal void Cancel(Guid cancelledByUserId, string? reason, AppointmentTypeEnum appointmentType)
+    internal void Cancel(Guid cancelledByUserId, string? reason, MedicalSpecialty specialty)
     {
         if (Status is AppointmentStatusEnum.Cancelled or AppointmentStatusEnum.LateCancellation)
             throw new AppointmentCancellationNotAllowedException(Status);
 
-        if (!CanBeCancelled(appointmentType))
+        if (!CanBeCancelled(specialty))
         {
             Status = AppointmentStatusEnum.LateCancellation;
         }
@@ -106,25 +105,11 @@ public class Appointment : BaseEntity
 
     // Business Rules (Private)
 
-    private bool CanBeCancelled(AppointmentTypeEnum appointmentType)
+    private bool CanBeCancelled(MedicalSpecialty specialty)
     {
-        var minHoursBeforeAppointment = GetMinimumCancellationHours(appointmentType);
-        var appointmentDateTime = ScheduledDate.Add(TimeRange.Start);
-        var hoursUntilAppointment = (appointmentDateTime - DateTime.UtcNow).TotalHours;
-
-        return hoursUntilAppointment >= minHoursBeforeAppointment;
+        return specialty.IsCancellationAllowed(ScheduledDate.Add(TimeRange.Start));
     }
 
-    private int GetMinimumCancellationHours(AppointmentTypeEnum appointmentType) => appointmentType switch
-    {
-        AppointmentTypeEnum.FirstConsultation => CancellationPolicies.FirstConsultationHours,
-        AppointmentTypeEnum.FollowUp => CancellationPolicies.FollowUpHours,
-        AppointmentTypeEnum.Emergency => CancellationPolicies.EmergencyHours,
-        AppointmentTypeEnum.Checkup => CancellationPolicies.CheckupHours,
-        AppointmentTypeEnum.Procedure => CancellationPolicies.ProcedureHours,
-        _ => throw new InvalidAppointmentTypeException($"Unknown appointment type: {appointmentType}")
-    };
-
-
     private bool CanBeRescheduled() => RescheduleCount < 1 && Status is AppointmentStatusEnum.Scheduled;
+
 }

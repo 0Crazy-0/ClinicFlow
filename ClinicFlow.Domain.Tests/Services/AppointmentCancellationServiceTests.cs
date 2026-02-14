@@ -3,18 +3,25 @@ using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Events;
 using ClinicFlow.Domain.Exceptions;
+using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
+using Moq;
+
 namespace ClinicFlow.Domain.Tests.Services;
 
 public class AppointmentCancellationServiceTests
 {
     private readonly AppointmentCancellationService _sut;
+    private readonly Mock<IMedicalSpecialtyRepository> _medicalSpecialtyRepositoryMock;
+    private readonly Mock<IDoctorRepository> _doctorRepositoryMock;
 
     public AppointmentCancellationServiceTests()
     {
-        _sut = new AppointmentCancellationService();
+        _medicalSpecialtyRepositoryMock = new Mock<IMedicalSpecialtyRepository>();
+        _doctorRepositoryMock = new Mock<IDoctorRepository>();
+        _sut = new AppointmentCancellationService(_medicalSpecialtyRepositoryMock.Object, _doctorRepositoryMock.Object);
     }
 
     [Theory]
@@ -22,7 +29,7 @@ public class AppointmentCancellationServiceTests
     [InlineData(UserRoleEnum.Doctor, true, false, AppointmentTypeEnum.Checkup)]
     [InlineData(UserRoleEnum.Patient, true, false, AppointmentTypeEnum.Checkup)]
     [InlineData(UserRoleEnum.Patient, false, true, AppointmentTypeEnum.Checkup)]
-    public void CancelAppointment_ShouldSucceed_WhenAuthorized(UserRoleEnum role, bool isOwn, bool isFamily, AppointmentTypeEnum typeEnum)
+    public async Task CancelAppointment_ShouldSucceed_WhenAuthorized(UserRoleEnum role, bool isOwn, bool isFamily, AppointmentTypeEnum typeEnum)
     {
         // Arrange
         var appointment = CreateAppointment(DateTime.UtcNow.AddDays(2));
@@ -36,8 +43,10 @@ public class AppointmentCancellationServiceTests
         var type = CreateAppointmentType(typeEnum);
         var user = CreateUser(role, doctorId, patientId);
 
+        SetupRepositories(appointment.DoctorId, 24); // 24h min cancellation
+
         // Act
-        _sut.CancelAppointment(appointment, user, type, isFamily, "Valid Reason");
+        await _sut.CancelAppointmentAsync(appointment, user, type, isFamily, "Valid Reason");
 
         // Assert
         appointment.Status.Should().Be(AppointmentStatusEnum.Cancelled);
@@ -52,7 +61,7 @@ public class AppointmentCancellationServiceTests
     [InlineData(UserRoleEnum.Doctor, false, false, AppointmentTypeEnum.Checkup, "Doctors can only cancel their own appointments.")]
     [InlineData(UserRoleEnum.Patient, false, true, AppointmentTypeEnum.Procedure, "Family members cannot cancel appointments of type: Procedure")]
     [InlineData(UserRoleEnum.Patient, false, false, AppointmentTypeEnum.Checkup, "User is not authorized to cancel this appointment.")]
-    public void CancelAppointment_ShouldThrowUnauthorized_WhenNotAuthorized(UserRoleEnum role, bool isOwn, bool isFamily, AppointmentTypeEnum typeEnum, string expectedMessage)
+    public async Task CancelAppointment_ShouldThrowUnauthorized_WhenNotAuthorized(UserRoleEnum role, bool isOwn, bool isFamily, AppointmentTypeEnum typeEnum, string expectedMessage)
     {
         // Arrange
         var appointment = CreateAppointment(DateTime.UtcNow.AddDays(2));
@@ -65,14 +74,14 @@ public class AppointmentCancellationServiceTests
         var user = CreateUser(role, doctorId, patientId);
 
         // Act
-        var act = () => _sut.CancelAppointment(appointment, user, type, isFamily, "Reason");
+        var act = () => _sut.CancelAppointmentAsync(appointment, user, type, isFamily, "Reason");
 
         // Assert
-        act.Should().Throw<AppointmentCancellationUnauthorizedException>().WithMessage(expectedMessage);
+        await act.Should().ThrowAsync<AppointmentCancellationUnauthorizedException>().WithMessage(expectedMessage);
     }
 
     [Fact]
-    public void CancelAppointment_ShouldThrowBusinessRuleValidationException_WhenStaffCancelsWithoutReason()
+    public async Task CancelAppointment_ShouldThrowBusinessRuleValidationException_WhenStaffCancelsWithoutReason()
     {
         // Arrange
         var appointment = CreateAppointment(DateTime.UtcNow.AddDays(2));
@@ -80,28 +89,28 @@ public class AppointmentCancellationServiceTests
         var type = CreateAppointmentType(AppointmentTypeEnum.Checkup);
 
         // Act
-        var act = () => _sut.CancelAppointment(appointment, receptionist, type, false, "");
+        var act = () => _sut.CancelAppointmentAsync(appointment, receptionist, type, false, "");
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage("Staff members must provide a reason for cancellation.");
-    }
-
-    [Fact]
-    public void CancelAppointment_ShouldThrowInvalidAppointmentTypeException_WhenTypeIsUnknown()
-    {
-        // Arrange
-        var appointment = CreateAppointment(DateTime.UtcNow.AddDays(2));
-        var receptionist = CreateUser(UserRoleEnum.Receptionist);
-        var type = CreateAppointmentType((AppointmentTypeEnum)999); // Unknown type
-
-        // Act
-        var act = () => _sut.CancelAppointment(appointment, receptionist, type, false, "Reason");
-
-        // Assert
-        act.Should().Throw<InvalidAppointmentTypeException>().WithMessage("Unknown appointment type: 999");
+        await act.Should().ThrowAsync<BusinessRuleValidationException>().WithMessage("Staff members must provide a reason for cancellation.");
     }
 
     // Helpers
+
+    private void SetupRepositories(Guid doctorId, int minCancellationHours)
+    {
+        var doctor = (Doctor)Activator.CreateInstance(typeof(Doctor), true)!;
+
+        SetPrivateProperty(doctor, nameof(Doctor.MedicalSpecialtyId), Guid.NewGuid());
+        
+        _doctorRepositoryMock.Setup(x => x.GetByIdAsync(doctorId)).ReturnsAsync(doctor);
+
+        var specialty = (MedicalSpecialty)Activator.CreateInstance(typeof(MedicalSpecialty), true)!;
+        
+        SetPrivateProperty(specialty, nameof(MedicalSpecialty.MinCancellationHours), minCancellationHours);
+
+        _medicalSpecialtyRepositoryMock.Setup(x => x.GetByIdAsync(doctor.MedicalSpecialtyId)).ReturnsAsync(specialty);
+    }
 
     private Appointment CreateAppointment(DateTime scheduledDateTime) => Appointment.Schedule(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), scheduledDateTime.Date,
         new TimeRange(scheduledDateTime.TimeOfDay, scheduledDateTime.TimeOfDay.Add(TimeSpan.FromHours(1))));

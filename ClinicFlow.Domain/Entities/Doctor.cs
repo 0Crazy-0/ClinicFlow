@@ -9,8 +9,7 @@ public class Doctor : BaseEntity
     public string LicenseNumber { get; private set; } = string.Empty;
     public string Biography { get; private set; } = string.Empty;
     public int ConsultationRoomNumber { get; private set; }
-    public Guid Specialty { get; private set; }
-    
+
     // EF Core constructor
     private Doctor() { }
     public Doctor(Guid userId, string licenseNumber, Guid medicalSpecialtyId, string biography, int consultationRoomNumber)
