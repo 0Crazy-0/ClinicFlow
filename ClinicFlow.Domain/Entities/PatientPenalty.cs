@@ -10,6 +10,7 @@ public class PatientPenalty : BaseEntity
     public PenaltyTypeEnum PenaltyType { get; private set; }
     public string Reason { get; private set; } = string.Empty;
     public DateTime? BlockedUntil { get; private set; }
+    
     // EF Core constructor
     private PatientPenalty() { }
 
@@ -22,6 +23,7 @@ public class PatientPenalty : BaseEntity
         BlockedUntil = blockedUntil;
     }
 
+    // Factory Methods
     internal static PatientPenalty CreateWarning(Guid patientId, Guid? appointmentId, string reason)
     {
         return new PatientPenalty(patientId, appointmentId, PenaltyTypeEnum.Warning, reason, null);

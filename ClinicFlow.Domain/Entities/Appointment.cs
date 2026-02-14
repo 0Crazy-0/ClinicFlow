@@ -43,8 +43,7 @@ public class Appointment : BaseEntity
         RescheduleCount = 0;
     }
 
-    // Factory Methods
-
+    // Factory Method
     internal static Appointment Schedule(Guid patientId, Guid doctorId, Guid appointmentTypeId, DateTime scheduledDate, TimeRange timeRange)
     {
         var appointment = new Appointment(patientId, doctorId, appointmentTypeId, scheduledDate, timeRange);
@@ -55,7 +54,6 @@ public class Appointment : BaseEntity
     }
 
     // Public Domain Methods
-
     internal void Cancel(Guid cancelledByUserId, string? reason, MedicalSpecialty specialty)
     {
         if (Status is AppointmentStatusEnum.Cancelled or AppointmentStatusEnum.LateCancellation)
@@ -104,7 +102,6 @@ public class Appointment : BaseEntity
     }
 
     // Business Rules (Private)
-
     private bool CanBeCancelled(MedicalSpecialty specialty)
     {
         return specialty.IsCancellationAllowed(ScheduledDate.Add(TimeRange.Start));

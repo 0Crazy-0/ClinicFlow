@@ -17,7 +17,7 @@ public class Patient : BaseEntity
     // EF Core constructor
     private Patient() { }
 
-    public Patient(Guid userId, DateTime dateOfBirth, string bloodType, string allergies, string chronicConditions, string emergencyContactName, string emergencyContactPhone) : this()
+    private Patient(Guid userId, DateTime dateOfBirth, string bloodType, string allergies, string chronicConditions, string emergencyContactName, string emergencyContactPhone) : this()
     {
         UserId = userId;
         DateOfBirth = dateOfBirth;
@@ -26,6 +26,16 @@ public class Patient : BaseEntity
         Allergies = allergies;
         EmergencyContactName = emergencyContactName;
         EmergencyContactPhone = emergencyContactPhone;
+    }
+
+    // Factory Method
+    internal static Patient Create(Guid userId, DateTime dateOfBirth, string bloodType, string allergies, string chronicConditions, string emergencyContactName, string emergencyContactPhone)
+    {
+        if (dateOfBirth > DateTime.UtcNow) throw new BusinessRuleValidationException("Date of birth cannot be in the future.");
+        if (string.IsNullOrWhiteSpace(emergencyContactName)) throw new BusinessRuleValidationException("Emergency contact name cannot be empty.");
+        if (string.IsNullOrWhiteSpace(emergencyContactPhone)) throw new BusinessRuleValidationException("Emergency contact phone cannot be empty.");
+
+        return new Patient(userId, dateOfBirth, bloodType, allergies, chronicConditions, emergencyContactName, emergencyContactPhone);
     }
 
     public int GetAge()
@@ -49,7 +59,6 @@ public class Patient : BaseEntity
 
     internal void EnsureNotBlocked(IEnumerable<PatientPenalty> penalties)
     {
-        if (IsBlockedFromBooking(penalties, out var blockedUntil))
-            throw new PatientBlockedException(blockedUntil ?? DateTime.UtcNow);
+        if (IsBlockedFromBooking(penalties, out var blockedUntil)) throw new PatientBlockedException(blockedUntil ?? DateTime.UtcNow);
     }
 }

@@ -117,23 +117,12 @@ public class AppointmentCancellationServiceTests
 
     private User CreateUser(UserRoleEnum role, Guid? doctorId = null, Guid? patientId = null)
     {
-        var user = new User();
-
-        SetPrivateProperty(user, nameof(User.Role), role);
-
-        if (doctorId.HasValue) SetPrivateProperty(user, nameof(User.DoctorId), doctorId.Value);
-        if (patientId.HasValue) SetPrivateProperty(user, nameof(User.PatientId), patientId.Value);
-
-        return user;
+        return User.Create("test@clinic.com", "hashedpassword", "Test User", "555-0000", role, doctorId, patientId);
     }
 
     private AppointmentType CreateAppointmentType(AppointmentTypeEnum typeEnum)
     {
-        var type = new AppointmentType();
-
-        SetPrivateProperty(type, nameof(type.Type), typeEnum);
-
-        return type;
+        return AppointmentType.Create(typeEnum, typeEnum.ToString(), "Test description", TimeSpan.FromMinutes(30));
     }
 
     private void SetPrivateProperty(object obj, string propertyName, object value)

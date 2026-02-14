@@ -26,7 +26,7 @@ public class AppointmentSchedulingServiceTests
     {
         // Arrange
         var patient = CreatePatient();
-        var doctor = new Doctor(Guid.NewGuid(), "12345", Guid.NewGuid(), "Dr. House", 101);
+        var doctor = Doctor.Create(Guid.NewGuid(), "12345", Guid.NewGuid(), "Dr. House", 101);
         var scheduledDate = DateTime.UtcNow.AddDays(1);
         var penalties = new List<PatientPenalty> { PatientPenalty.CreateBlock(patient.Id, "Blocked", scheduledDate) };
 
@@ -44,7 +44,7 @@ public class AppointmentSchedulingServiceTests
     {
         // Arrange
         var patient = CreatePatient();
-        var doctor = new Doctor(Guid.NewGuid(), "12345", Guid.NewGuid(), "Dr. House", 101);
+        var doctor = Doctor.Create(Guid.NewGuid(), "12345", Guid.NewGuid(), "Dr. House", 101);
         var penalties = new List<PatientPenalty>();
         var scheduledDate = DateTime.UtcNow.AddDays(1);
         var timeRange = new TimeRange(TimeSpan.FromHours(9), TimeSpan.FromHours(10));
@@ -63,7 +63,7 @@ public class AppointmentSchedulingServiceTests
     {
         // Arrange
         var patient = CreatePatient();
-        var doctor = new Doctor(Guid.NewGuid(), "12345", Guid.NewGuid(), "Dr. House", 101);
+        var doctor = Doctor.Create(Guid.NewGuid(), "12345", Guid.NewGuid(), "Dr. House", 101);
         var penalties = new List<PatientPenalty>();
         var scheduledDate = DateTime.UtcNow.AddDays(1);
         var timeRange = new TimeRange(TimeSpan.FromHours(9), TimeSpan.FromHours(10));
@@ -145,5 +145,5 @@ public class AppointmentSchedulingServiceTests
     private Appointment CreateAppointment(DateTime scheduledDateTime) => Appointment.Schedule(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), scheduledDateTime.Date,
         new TimeRange(scheduledDateTime.TimeOfDay, scheduledDateTime.TimeOfDay.Add(TimeSpan.FromHours(1))));
 
-    private Patient CreatePatient() => new(Guid.NewGuid(), DateTime.UtcNow.AddYears(-30), "O+", "None", "None", "Mom", "555-5555");
+    private Patient CreatePatient() => Patient.Create(Guid.NewGuid(), DateTime.UtcNow.AddYears(-30), "O+", "None", "None", "Mom", "555-5555");
 }
