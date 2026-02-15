@@ -1,0 +1,30 @@
+name: .NET CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    # Run the job inside a Debian 12 (Bookworm) container
+    container:
+      image: mcr.microsoft.com/dotnet/sdk:10.0-bookworm-slim
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Verify Debian OS
+      run: cat /etc/os-release dotnet --version
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --no-restore
+
+    - name: Test
+      run: dotnet test --no-build --verbosity normal
