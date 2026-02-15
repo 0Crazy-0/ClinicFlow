@@ -10,15 +10,13 @@ jobs:
   build:
     runs-on: ubuntu-latest
     
-    # Run the job inside a Debian 12 (Bookworm) container
-    container:
-      image: mcr.microsoft.com/dotnet/sdk:10.0-bookworm-slim
-    
     steps:
     - uses: actions/checkout@v4
     
-    - name: Verify Debian OS
-      run: cat /etc/os-release dotnet --version
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 10.0.x
 
     - name: Restore dependencies
       run: dotnet restore
