@@ -5,8 +5,8 @@ namespace ClinicFlow.Domain.Entities;
 
 public class Doctor : BaseEntity
 {
-    public Guid UserId { get; private set; }
-    public Guid MedicalSpecialtyId { get; private set; }
+    public Guid UserId { get; init; }
+    public Guid MedicalSpecialtyId { get; init; }
     public string LicenseNumber { get; private set; } = string.Empty;
     public string Biography { get; private set; } = string.Empty;
     public int ConsultationRoomNumber { get; private set; }

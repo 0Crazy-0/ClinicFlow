@@ -8,9 +8,9 @@ namespace ClinicFlow.Domain.Entities;
 
 public class Appointment : BaseEntity
 {
-    public Guid PatientId { get; private set; }
-    public Guid DoctorId { get; private set; }
-    public Guid AppointmentTypeId { get; private set; }
+    public Guid PatientId { get; init; }
+    public Guid DoctorId { get; init; }
+    public Guid AppointmentTypeId { get; init; }
 
     public DateTime ScheduledDate { get; private set; }
     public TimeRange TimeRange { get; private set; }

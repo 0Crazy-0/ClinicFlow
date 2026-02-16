@@ -5,12 +5,12 @@ namespace ClinicFlow.Domain.Entities;
 
 public class PatientPenalty : BaseEntity
 {
-    public Guid PatientId { get; private set; }
-    public Guid? AppointmentId { get; private set; }
+    public Guid PatientId { get; init; }
+    public Guid? AppointmentId { get; init; }
     public PenaltyTypeEnum PenaltyType { get; private set; }
     public string Reason { get; private set; } = string.Empty;
     public DateTime? BlockedUntil { get; private set; }
-    
+
     // EF Core constructor
     private PatientPenalty() { }
 

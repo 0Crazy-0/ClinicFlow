@@ -6,7 +6,7 @@ namespace ClinicFlow.Domain.Entities;
 
 public class Patient : BaseEntity
 {
-    public Guid UserId { get; private set; }
+    public Guid UserId { get; init; }
     public DateTime DateOfBirth { get; private set; }
     public string BloodType { get; private set; } = string.Empty;
     public string Allergies { get; private set; } = string.Empty;

@@ -6,8 +6,8 @@ namespace ClinicFlow.Domain.Entities;
 
 public class User : BaseEntity
 {
-    public Guid? DoctorId { get; private set; }
-    public Guid? PatientId { get; private set; }
+    public Guid? DoctorId { get; init; }
+    public Guid? PatientId { get; init; }
     public UserRoleEnum Role { get; private set; }
     public DateTime? LastLoginAt { get; private set; }
     public string Email { get; private set; } = string.Empty;
