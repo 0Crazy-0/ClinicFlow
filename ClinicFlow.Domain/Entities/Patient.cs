@@ -54,9 +54,9 @@ public class Patient : BaseEntity
     {
         var activePenalties = penalties.Where(p => p.Type is PenaltyType.TemporaryBlock && p.BlockedUntil.HasValue && p.BlockedUntil > DateTime.UtcNow).ToList();
 
-        blockedUntil = activePenalties.Any() ? activePenalties.Max(p => p.BlockedUntil) : null;
+        blockedUntil = activePenalties.Count > 0 ? activePenalties.Max(p => p.BlockedUntil) : null;
 
-        return activePenalties.Any();
+        return activePenalties.Count > 0;
     }
 
     internal static void EnsureNotBlocked(IEnumerable<PatientPenalty> penalties)
