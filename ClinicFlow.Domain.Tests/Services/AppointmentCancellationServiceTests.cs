@@ -53,7 +53,7 @@ public class AppointmentCancellationServiceTests
 
         if (role is UserRole.Admin) appointment.CancelledByUserId.Should().Be(user.Id);
 
-        appointment.DomainEvents.OfType<AppointmentCancelledEvent>().Single();
+        appointment.DomainEvents.OfType<AppointmentCancelledEvent>().Should().ContainSingle();
     }
 
     [Theory]

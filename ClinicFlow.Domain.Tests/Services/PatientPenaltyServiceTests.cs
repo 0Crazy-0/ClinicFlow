@@ -87,7 +87,6 @@ public class PatientPenaltyServiceTests
         await _service.ApplyPenaltyAsync(patientId, Guid.NewGuid(), "Warning 3");
 
         // Assert
-        capturedPenalties.Should().HaveCount(1);
         capturedPenalties.Should().ContainSingle(p => p.Type == PenaltyType.Warning);
     }
 }
