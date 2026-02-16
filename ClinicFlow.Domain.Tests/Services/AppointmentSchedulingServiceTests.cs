@@ -78,7 +78,7 @@ public class AppointmentSchedulingServiceTests
         result.Should().NotBeNull();
         result.PatientId.Should().Be(patient.Id);
         result.DoctorId.Should().Be(doctor.Id);
-        result.Status.Should().Be(AppointmentStatusEnum.Scheduled);
+        result.Status.Should().Be(AppointmentStatus.Scheduled);
     }
 
     // RescheduleAppointmentAsync

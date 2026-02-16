@@ -17,7 +17,8 @@ public class Patient : BaseEntity
     // EF Core constructor
     private Patient() { }
 
-    private Patient(Guid userId, DateTime dateOfBirth, string bloodType, string allergies, string chronicConditions, string emergencyContactName, string emergencyContactPhone) : this()
+    private Patient(Guid userId, DateTime dateOfBirth, string bloodType, string allergies, string chronicConditions, string emergencyContactName,
+        string emergencyContactPhone) : this()
     {
         UserId = userId;
         DateOfBirth = dateOfBirth;
@@ -29,7 +30,8 @@ public class Patient : BaseEntity
     }
 
     // Factory Method
-    internal static Patient Create(Guid userId, DateTime dateOfBirth, string bloodType, string allergies, string chronicConditions, string emergencyContactName, string emergencyContactPhone)
+    internal static Patient Create(Guid userId, DateTime dateOfBirth, string bloodType, string allergies, string chronicConditions, string emergencyContactName,
+        string emergencyContactPhone)
     {
         if (dateOfBirth > DateTime.UtcNow) throw new BusinessRuleValidationException("Date of birth cannot be in the future.");
         if (string.IsNullOrWhiteSpace(emergencyContactName)) throw new BusinessRuleValidationException("Emergency contact name cannot be empty.");
@@ -50,7 +52,7 @@ public class Patient : BaseEntity
 
     private static bool IsBlockedFromBooking(IEnumerable<PatientPenalty> penalties, out DateTime? blockedUntil)
     {
-        var activePenalties = penalties.Where(p => p.PenaltyType is PenaltyTypeEnum.TemporaryBlock && p.BlockedUntil.HasValue && p.BlockedUntil > DateTime.UtcNow).ToList();
+        var activePenalties = penalties.Where(p => p.Type is PenaltyType.TemporaryBlock && p.BlockedUntil.HasValue && p.BlockedUntil > DateTime.UtcNow).ToList();
 
         blockedUntil = activePenalties.Any() ? activePenalties.Max(p => p.BlockedUntil) : null;
 

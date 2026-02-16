@@ -1,6 +1,6 @@
 namespace ClinicFlow.Domain.Enums;
 
-public enum AppointmentTypeEnum
+public enum AppointmentType
 {
     FirstConsultation = 1,
     FollowUp = 2,

@@ -23,7 +23,7 @@ public class AppointmentSchedulingService(IAppointmentRepository appointmentRepo
     {
         var existingAppointments = await appointmentRepository.GetByDoctorIdAsync(appointment.DoctorId, newDate.Date);
 
-        if (existingAppointments.Any(a => a.Id != appointment.Id && a.Status is not AppointmentStatusEnum.Cancelled && a.TimeRange.OverlapsWith(newTimeRange)))
+        if (existingAppointments.Any(a => a.Id != appointment.Id && a.Status is not AppointmentStatus.Cancelled && a.TimeRange.OverlapsWith(newTimeRange)))
             throw new AppointmentConflictException(appointment.DoctorId, newDate.Add(newTimeRange.Start));
 
         appointment.Reschedule(newDate, newTimeRange);

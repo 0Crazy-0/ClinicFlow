@@ -32,7 +32,7 @@ public class PatientPenaltyServiceTests
         await _service.ApplyPenaltyAsync(patientId, appointmentId, reason);
 
         // Assert
-        _repositoryMock.Verify(x => x.AddAsync(It.Is<PatientPenalty>(p => p.PatientId == patientId && p.PenaltyType == PenaltyTypeEnum.Warning && p.Reason == reason)), Times.Once);
+        _repositoryMock.Verify(x => x.AddAsync(It.Is<PatientPenalty>(p => p.PatientId == patientId && p.Type == PenaltyType.Warning && p.Reason == reason)), Times.Once);
     }
 
     [Fact]
@@ -61,8 +61,8 @@ public class PatientPenaltyServiceTests
 
         // Assert
         capturedPenalties.Should().HaveCount(2);
-        capturedPenalties.Should().ContainSingle(p => p.PenaltyType == PenaltyTypeEnum.Warning);
-        capturedPenalties.Should().ContainSingle(p => p.PenaltyType == PenaltyTypeEnum.TemporaryBlock && p.Reason == "Automatic block due to 3 strikes");
+        capturedPenalties.Should().ContainSingle(p => p.Type == PenaltyType.Warning);
+        capturedPenalties.Should().ContainSingle(p => p.Type == PenaltyType.TemporaryBlock && p.Reason == "Automatic block due to 3 strikes");
     }
 
     [Fact]
@@ -88,6 +88,6 @@ public class PatientPenaltyServiceTests
 
         // Assert
         capturedPenalties.Should().HaveCount(1);
-        capturedPenalties.Should().ContainSingle(p => p.PenaltyType == PenaltyTypeEnum.Warning);
+        capturedPenalties.Should().ContainSingle(p => p.Type == PenaltyType.Warning);
     }
 }

@@ -15,7 +15,7 @@ public class Appointment : BaseEntity
     public DateTime ScheduledDate { get; private set; }
     public TimeRange TimeRange { get; private set; }
 
-    public AppointmentStatusEnum Status { get; private set; }
+    public AppointmentStatus Status { get; private set; }
     public string PatientNotes { get; private set; } = string.Empty;
     public string ReceptionistNotes { get; private set; } = string.Empty;
 
@@ -39,7 +39,7 @@ public class Appointment : BaseEntity
         AppointmentTypeId = appointmentTypeId;
         ScheduledDate = scheduledDate;
         TimeRange = timeRange;
-        Status = AppointmentStatusEnum.Scheduled;
+        Status = AppointmentStatus.Scheduled;
         RescheduleCount = 0;
     }
 
@@ -56,16 +56,16 @@ public class Appointment : BaseEntity
     // Public Domain Methods
     internal void Cancel(Guid cancelledByUserId, string? reason, MedicalSpecialty specialty)
     {
-        if (Status is AppointmentStatusEnum.Cancelled or AppointmentStatusEnum.LateCancellation)
+        if (Status is AppointmentStatus.Cancelled or AppointmentStatus.LateCancellation)
             throw new AppointmentCancellationNotAllowedException(Status);
 
         if (!CanBeCancelled(specialty))
         {
-            Status = AppointmentStatusEnum.LateCancellation;
+            Status = AppointmentStatus.LateCancellation;
         }
         else
         {
-            Status = AppointmentStatusEnum.Cancelled;
+            Status = AppointmentStatus.Cancelled;
         }
 
         CancelledAt = DateTime.UtcNow;
@@ -77,9 +77,9 @@ public class Appointment : BaseEntity
 
     public void Confirm()
     {
-        if (Status is not AppointmentStatusEnum.Scheduled) throw new AppointmentConfirmationNotAllowedException("Only scheduled appointments can be confirmed");
+        if (Status is not AppointmentStatus.Scheduled) throw new AppointmentConfirmationNotAllowedException("Only scheduled appointments can be confirmed");
 
-        Status = AppointmentStatusEnum.Confirmed;
+        Status = AppointmentStatus.Confirmed;
         ConfirmedAt = DateTime.UtcNow;
 
         AddDomainEvent(new AppointmentConfirmedEvent(this));
@@ -105,6 +105,6 @@ public class Appointment : BaseEntity
         return specialty.IsCancellationAllowed(ScheduledDate.Add(TimeRange.Start));
     }
 
-    private bool CanBeRescheduled() => RescheduleCount < 1 && Status is AppointmentStatusEnum.Scheduled;
+    private bool CanBeRescheduled() => RescheduleCount < 1 && Status is AppointmentStatus.Scheduled;
 
 }

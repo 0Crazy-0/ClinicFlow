@@ -30,7 +30,7 @@ public class AppointmentTests
         appointment.AppointmentTypeId.Should().Be(appointmentTypeId);
         appointment.ScheduledDate.Should().Be(scheduledDate);
         appointment.TimeRange.Should().Be(timeRange);
-        appointment.Status.Should().Be(AppointmentStatusEnum.Scheduled);
+        appointment.Status.Should().Be(AppointmentStatus.Scheduled);
         appointment.RescheduleCount.Should().Be(0);
         appointment.DomainEvents.Should().ContainSingle(e => e is AppointmentScheduledEvent);
     }
@@ -48,7 +48,7 @@ public class AppointmentTests
         appointment.Cancel(userId, "Reason", specialty);
 
         // Assert
-        appointment.Status.Should().Be(AppointmentStatusEnum.Cancelled);
+        appointment.Status.Should().Be(AppointmentStatus.Cancelled);
         appointment.CancelledByUserId.Should().Be(userId);
 
         var evt = appointment.DomainEvents.OfType<AppointmentCancelledEvent>().Single();
@@ -67,7 +67,7 @@ public class AppointmentTests
         appointment.Cancel(userId, "Urgent", specialty);
 
         // Assert
-        appointment.Status.Should().Be(AppointmentStatusEnum.LateCancellation);
+        appointment.Status.Should().Be(AppointmentStatus.LateCancellation);
     }
 
     [Fact]
@@ -84,19 +84,19 @@ public class AppointmentTests
         var act = () => appointment.Cancel(userId, "Second", specialty);
 
         // Assert
-        act.Should().Throw<AppointmentCancellationNotAllowedException>().Where(e => e.CurrentStatus == AppointmentStatusEnum.Cancelled);
+        act.Should().Throw<AppointmentCancellationNotAllowedException>().Where(e => e.CurrentStatus == AppointmentStatus.Cancelled);
     }
 
     // Cancellation Policy Logic Verification
 
     [Theory]
-    [InlineData(24, 25, AppointmentStatusEnum.Cancelled)]
-    [InlineData(24, 23, AppointmentStatusEnum.LateCancellation)]
-    [InlineData(12, 13, AppointmentStatusEnum.Cancelled)]
-    [InlineData(12, 11, AppointmentStatusEnum.LateCancellation)]
-    [InlineData(2, 3, AppointmentStatusEnum.Cancelled)]
-    [InlineData(2, 1, AppointmentStatusEnum.LateCancellation)]
-    public void Cancel_ShouldEnforceMinimumHoursPolicy(int minHours, int hoursUntilAppointment, AppointmentStatusEnum expectedStatus)
+    [InlineData(24, 25, AppointmentStatus.Cancelled)]
+    [InlineData(24, 23, AppointmentStatus.LateCancellation)]
+    [InlineData(12, 13, AppointmentStatus.Cancelled)]
+    [InlineData(12, 11, AppointmentStatus.LateCancellation)]
+    [InlineData(2, 3, AppointmentStatus.Cancelled)]
+    [InlineData(2, 1, AppointmentStatus.LateCancellation)]
+    public void Cancel_ShouldEnforceMinimumHoursPolicy(int minHours, int hoursUntilAppointment, AppointmentStatus expectedStatus)
     {
         // Arrange
         var appointment = CreateAppointment(DateTime.UtcNow.AddHours(hoursUntilAppointment));
@@ -123,7 +123,7 @@ public class AppointmentTests
         appointment.Confirm();
 
         // Assert
-        appointment.Status.Should().Be(AppointmentStatusEnum.Confirmed);
+        appointment.Status.Should().Be(AppointmentStatus.Confirmed);
     }
 
     [Fact]

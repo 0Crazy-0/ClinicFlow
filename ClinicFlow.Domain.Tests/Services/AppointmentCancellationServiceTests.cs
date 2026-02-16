@@ -25,11 +25,11 @@ public class AppointmentCancellationServiceTests
     }
 
     [Theory]
-    [InlineData(UserRoleEnum.Admin, false, false, AppointmentTypeEnum.Checkup)]
-    [InlineData(UserRoleEnum.Doctor, true, false, AppointmentTypeEnum.Checkup)]
-    [InlineData(UserRoleEnum.Patient, true, false, AppointmentTypeEnum.Checkup)]
-    [InlineData(UserRoleEnum.Patient, false, true, AppointmentTypeEnum.Checkup)]
-    public async Task CancelAppointment_ShouldSucceed_WhenAuthorized(UserRoleEnum role, bool isOwn, bool isFamily, AppointmentTypeEnum typeEnum)
+    [InlineData(UserRole.Admin, false, false, AppointmentType.Checkup)]
+    [InlineData(UserRole.Doctor, true, false, AppointmentType.Checkup)]
+    [InlineData(UserRole.Patient, true, false, AppointmentType.Checkup)]
+    [InlineData(UserRole.Patient, false, true, AppointmentType.Checkup)]
+    public async Task CancelAppointment_ShouldSucceed_WhenAuthorized(UserRole role, bool isOwn, bool isFamily, AppointmentType typeEnum)
     {
         // Arrange
         var appointment = CreateAppointment(DateTime.UtcNow.AddDays(2));
@@ -37,8 +37,8 @@ public class AppointmentCancellationServiceTests
         Guid? doctorId = null;
         Guid? patientId = null;
 
-        if (role is UserRoleEnum.Doctor) doctorId = isOwn ? appointment.DoctorId : Guid.NewGuid();
-        else if (role is UserRoleEnum.Patient) patientId = isOwn ? appointment.PatientId : Guid.NewGuid();
+        if (role is UserRole.Doctor) doctorId = isOwn ? appointment.DoctorId : Guid.NewGuid();
+        else if (role is UserRole.Patient) patientId = isOwn ? appointment.PatientId : Guid.NewGuid();
 
         var type = CreateAppointmentType(typeEnum);
         var user = CreateUser(role, doctorId, patientId);
@@ -49,25 +49,25 @@ public class AppointmentCancellationServiceTests
         await _sut.CancelAppointmentAsync(appointment, user, type, isFamily, "Valid Reason");
 
         // Assert
-        appointment.Status.Should().Be(AppointmentStatusEnum.Cancelled);
+        appointment.Status.Should().Be(AppointmentStatus.Cancelled);
 
-        if (role is UserRoleEnum.Admin) appointment.CancelledByUserId.Should().Be(user.Id);
+        if (role is UserRole.Admin) appointment.CancelledByUserId.Should().Be(user.Id);
 
         appointment.DomainEvents.OfType<AppointmentCancelledEvent>().Single();
     }
 
     [Theory]
-    [InlineData(UserRoleEnum.Doctor, false, false, AppointmentTypeEnum.Checkup, "Doctors can only cancel their own appointments.")]
-    [InlineData(UserRoleEnum.Patient, false, true, AppointmentTypeEnum.Procedure, "Family members cannot cancel appointments of type: Procedure")]
-    [InlineData(UserRoleEnum.Patient, false, false, AppointmentTypeEnum.Checkup, "User is not authorized to cancel this appointment.")]
-    public async Task CancelAppointment_ShouldThrowUnauthorized_WhenNotAuthorized(UserRoleEnum role, bool isOwn, bool isFamily, AppointmentTypeEnum typeEnum, string expectedMessage)
+    [InlineData(UserRole.Doctor, false, false, AppointmentType.Checkup, "Doctors can only cancel their own appointments.")]
+    [InlineData(UserRole.Patient, false, true, AppointmentType.Procedure, "Family members cannot cancel appointments of type: Procedure")]
+    [InlineData(UserRole.Patient, false, false, AppointmentType.Checkup, "User is not authorized to cancel this appointment.")]
+    public async Task CancelAppointment_ShouldThrowUnauthorized_WhenNotAuthorized(UserRole role, bool isOwn, bool isFamily, AppointmentType typeEnum, string expectedMessage)
     {
         // Arrange
         var appointment = CreateAppointment(DateTime.UtcNow.AddDays(2));
 
         // Ensure we don't accidentally match IDs
-        Guid? doctorId = role is UserRoleEnum.Doctor && !isOwn ? Guid.NewGuid() : null;
-        Guid? patientId = role is UserRoleEnum.Patient && !isOwn ? Guid.NewGuid() : null;
+        Guid? doctorId = role is UserRole.Doctor && !isOwn ? Guid.NewGuid() : null;
+        Guid? patientId = role is UserRole.Patient && !isOwn ? Guid.NewGuid() : null;
 
         var type = CreateAppointmentType(typeEnum);
         var user = CreateUser(role, doctorId, patientId);
@@ -84,8 +84,8 @@ public class AppointmentCancellationServiceTests
     {
         // Arrange
         var appointment = CreateAppointment(DateTime.UtcNow.AddDays(2));
-        var receptionist = CreateUser(UserRoleEnum.Receptionist);
-        var type = CreateAppointmentType(AppointmentTypeEnum.Checkup);
+        var receptionist = CreateUser(UserRole.Receptionist);
+        var type = CreateAppointmentType(AppointmentType.Checkup);
 
         // Act
         var act = () => _sut.CancelAppointmentAsync(appointment, receptionist, type, false, "");
@@ -114,14 +114,14 @@ public class AppointmentCancellationServiceTests
     private static Appointment CreateAppointment(DateTime scheduledDateTime) => Appointment.Schedule(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), scheduledDateTime.Date,
         new TimeRange(scheduledDateTime.TimeOfDay, scheduledDateTime.TimeOfDay.Add(TimeSpan.FromHours(1))));
 
-    private static User CreateUser(UserRoleEnum role, Guid? doctorId = null, Guid? patientId = null)
+    private static User CreateUser(UserRole role, Guid? doctorId = null, Guid? patientId = null)
     {
         return User.Create("test@clinic.com", "hashedpassword", "Test User", "555-0000", role, doctorId, patientId);
     }
 
-    private static AppointmentType CreateAppointmentType(AppointmentTypeEnum typeEnum)
+    private static AppointmentTypeDefinition CreateAppointmentType(AppointmentType typeEnum)
     {
-        return AppointmentType.Create(typeEnum, typeEnum.ToString(), "Test description", TimeSpan.FromMinutes(30));
+        return AppointmentTypeDefinition.Create(typeEnum, typeEnum.ToString(), "Test description", TimeSpan.FromMinutes(30));
     }
 
     private static void SetPrivateProperty(object obj, string propertyName, object value)

@@ -17,7 +17,7 @@ public class PatientPenaltyService(IPatientPenaltyRepository penaltyRepository)
 
         var existingPenalties = await penaltyRepository.GetByPatientIdAsync(patientId);
     
-        var totalWarnings = existingPenalties.Count(p => p.PenaltyType is PenaltyTypeEnum.Warning);
+        var totalWarnings = existingPenalties.Count(p => p.Type is PenaltyType.Warning);
 
         if (!existingPenalties.Contains(newPenalty))
             totalWarnings++;
@@ -25,7 +25,7 @@ public class PatientPenaltyService(IPatientPenaltyRepository penaltyRepository)
 
         if (totalWarnings >= StrikesThreshold)
         {
-            var isBlocked = existingPenalties.Any(p => p.PenaltyType is PenaltyTypeEnum.TemporaryBlock && p.BlockedUntil > DateTime.UtcNow);
+            var isBlocked = existingPenalties.Any(p => p.Type is PenaltyType.TemporaryBlock && p.BlockedUntil > DateTime.UtcNow);
 
             if (!isBlocked)
             {

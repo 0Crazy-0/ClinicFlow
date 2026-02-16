@@ -1,6 +1,6 @@
 namespace ClinicFlow.Domain.Enums;
 
-public enum AppointmentStatusEnum
+public enum AppointmentStatus
 {
     Scheduled = 1,
     Confirmed = 2,

@@ -7,9 +7,9 @@ namespace ClinicFlow.Domain.Services;
 
 public class AppointmentCancellationService(IMedicalSpecialtyRepository medicalSpecialtyRepository, IDoctorRepository doctorRepository)
 {
-    public async Task CancelAppointmentAsync(Appointment appointment, User initiator, AppointmentType appointmentType, bool isAuthorizedFamilyMember, string? reason)
+    public async Task CancelAppointmentAsync(Appointment appointment, User initiator, AppointmentTypeDefinition appointmentTypeDefinition, bool isAuthorizedFamilyMember, string? reason)
     {
-        ValidateCancellationPermission(appointment, initiator, appointmentType, isAuthorizedFamilyMember);
+        ValidateCancellationPermission(appointment, initiator, appointmentTypeDefinition, isAuthorizedFamilyMember);
         ValidateCancellationReason(initiator.Role, reason);
 
         var doctor = await doctorRepository.GetByIdAsync(appointment.DoctorId) ?? throw new EntityNotFoundException(nameof(Doctor), appointment.DoctorId);
@@ -20,18 +20,18 @@ public class AppointmentCancellationService(IMedicalSpecialtyRepository medicalS
         appointment.Cancel(initiator.Id, reason, specialty);
     }
 
-    private static void ValidateCancellationPermission(Appointment appointment, User initiator, AppointmentType appointmentType, bool isFamilyMember)
+    private static void ValidateCancellationPermission(Appointment appointment, User initiator, AppointmentTypeDefinition appointmentTypeDefinition, bool isFamilyMember)
     {
-        if (initiator.Role is UserRoleEnum.Admin or UserRoleEnum.Receptionist) return;
+        if (initiator.Role is UserRole.Admin or UserRole.Receptionist) return;
 
-        if (initiator.Role is UserRoleEnum.Doctor)
+        if (initiator.Role is UserRole.Doctor)
         {
             if (initiator.DoctorId == appointment.DoctorId) return;
 
             throw new AppointmentCancellationUnauthorizedException("Doctors can only cancel their own appointments.");
         }
 
-        if (initiator.Role is UserRoleEnum.Patient)
+        if (initiator.Role is UserRole.Patient)
         {
             if (initiator.PatientId == appointment.PatientId) return;
 
@@ -39,22 +39,22 @@ public class AppointmentCancellationService(IMedicalSpecialtyRepository medicalS
             {
                 var allowedFamilyTypes = new[]
                 {
-                    AppointmentTypeEnum.Checkup,
-                    AppointmentTypeEnum.FollowUp,
-                    AppointmentTypeEnum.FirstConsultation
+                    AppointmentType.Checkup,
+                    AppointmentType.FollowUp,
+                    AppointmentType.FirstConsultation
                 };
 
-                if (allowedFamilyTypes.Contains(appointmentType.Type)) return;
+                if (allowedFamilyTypes.Contains(appointmentTypeDefinition.Type)) return;
 
-                throw new AppointmentCancellationUnauthorizedException($"Family members cannot cancel appointments of type: {appointmentType.Type}");
+                throw new AppointmentCancellationUnauthorizedException($"Family members cannot cancel appointments of type: {appointmentTypeDefinition.Type}");
             }
         }
         throw new AppointmentCancellationUnauthorizedException("User is not authorized to cancel this appointment.");
     }
 
-    private static void ValidateCancellationReason(UserRoleEnum role, string? reason)
+    private static void ValidateCancellationReason(UserRole role, string? reason)
     {
-        bool isStaff = role is UserRoleEnum.Admin or UserRoleEnum.Receptionist;
+        bool isStaff = role is UserRole.Admin or UserRole.Receptionist;
 
         if (isStaff && string.IsNullOrWhiteSpace(reason)) throw new BusinessRuleValidationException("Staff members must provide a reason for cancellation.");
     }

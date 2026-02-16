@@ -8,7 +8,7 @@ public class User : BaseEntity
 {
     public Guid? DoctorId { get; init; }
     public Guid? PatientId { get; init; }
-    public UserRoleEnum Role { get; private set; }
+    public UserRole Role { get; private set; }
     public DateTime? LastLoginAt { get; private set; }
     public string Email { get; private set; } = string.Empty;
     public string PasswordHash { get; private set; } = string.Empty;
@@ -22,7 +22,7 @@ public class User : BaseEntity
         IsActive = true;
     }
 
-    private User(string email, string passwordHash, string fullName, string phoneNumber, UserRoleEnum role, Guid? doctorId = null, Guid? patientId = null) : this()
+    private User(string email, string passwordHash, string fullName, string phoneNumber, UserRole role, Guid? doctorId = null, Guid? patientId = null) : this()
     {
         Email = email;
         PasswordHash = passwordHash;
@@ -34,7 +34,7 @@ public class User : BaseEntity
     }
 
     // Factory Method
-    internal static User Create(string email, string passwordHash, string fullName, string phoneNumber, UserRoleEnum role, Guid? doctorId = null, Guid? patientId = null)
+    internal static User Create(string email, string passwordHash, string fullName, string phoneNumber, UserRole role, Guid? doctorId = null, Guid? patientId = null)
     {
         if (string.IsNullOrWhiteSpace(email)) throw new BusinessRuleValidationException("Email cannot be empty.");
         if (string.IsNullOrWhiteSpace(fullName)) throw new BusinessRuleValidationException("Full name cannot be empty.");
