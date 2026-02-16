@@ -22,11 +22,6 @@ public abstract class BaseEntity
         _domainEvents.Add(domainEvent);
     }
 
-    public void RemoveDomainEvent(IDomainEvent domainEvent)
-    {
-        _domainEvents.Remove(domainEvent);
-    }
-
     public void ClearDomainEvents()
     {
         _domainEvents.Clear();
