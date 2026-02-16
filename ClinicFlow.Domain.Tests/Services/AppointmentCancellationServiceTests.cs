@@ -53,7 +53,6 @@ public class AppointmentCancellationServiceTests
 
         if (role is UserRoleEnum.Admin) appointment.CancelledByUserId.Should().Be(user.Id);
 
-
         appointment.DomainEvents.OfType<AppointmentCancelledEvent>().Single();
     }
 
@@ -112,20 +111,20 @@ public class AppointmentCancellationServiceTests
         _medicalSpecialtyRepositoryMock.Setup(x => x.GetByIdAsync(doctor.MedicalSpecialtyId)).ReturnsAsync(specialty);
     }
 
-    private Appointment CreateAppointment(DateTime scheduledDateTime) => Appointment.Schedule(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), scheduledDateTime.Date,
+    private static Appointment CreateAppointment(DateTime scheduledDateTime) => Appointment.Schedule(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), scheduledDateTime.Date,
         new TimeRange(scheduledDateTime.TimeOfDay, scheduledDateTime.TimeOfDay.Add(TimeSpan.FromHours(1))));
 
-    private User CreateUser(UserRoleEnum role, Guid? doctorId = null, Guid? patientId = null)
+    private static User CreateUser(UserRoleEnum role, Guid? doctorId = null, Guid? patientId = null)
     {
         return User.Create("test@clinic.com", "hashedpassword", "Test User", "555-0000", role, doctorId, patientId);
     }
 
-    private AppointmentType CreateAppointmentType(AppointmentTypeEnum typeEnum)
+    private static AppointmentType CreateAppointmentType(AppointmentTypeEnum typeEnum)
     {
         return AppointmentType.Create(typeEnum, typeEnum.ToString(), "Test description", TimeSpan.FromMinutes(30));
     }
 
-    private void SetPrivateProperty(object obj, string propertyName, object value)
+    private static void SetPrivateProperty(object obj, string propertyName, object value)
     {
         var type = obj.GetType();
 

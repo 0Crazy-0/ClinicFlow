@@ -77,8 +77,7 @@ public class Appointment : BaseEntity
 
     public void Confirm()
     {
-        if (Status is not AppointmentStatusEnum.Scheduled)
-            throw new AppointmentConfirmationNotAllowedException("Only scheduled appointments can be confirmed");
+        if (Status is not AppointmentStatusEnum.Scheduled) throw new AppointmentConfirmationNotAllowedException("Only scheduled appointments can be confirmed");
 
         Status = AppointmentStatusEnum.Confirmed;
         ConfirmedAt = DateTime.UtcNow;
@@ -88,8 +87,7 @@ public class Appointment : BaseEntity
 
     public void Reschedule(DateTime newDate, TimeRange newTimeRange)
     {
-        if (!CanBeRescheduled())
-            throw new AppointmentReschedulingNotAllowedException("This appointment cannot be rescheduled");
+        if (!CanBeRescheduled()) throw new AppointmentReschedulingNotAllowedException("This appointment cannot be rescheduled");
 
         var previousDate = ScheduledDate;
         var previousTimeRange = TimeRange;

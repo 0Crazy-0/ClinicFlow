@@ -158,10 +158,10 @@ public class AppointmentTests
     }
 
     // Helpers
-    private Appointment CreateAppointment(DateTime scheduledDateTime) => Appointment.Schedule(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), scheduledDateTime.Date,
+    private static Appointment CreateAppointment(DateTime scheduledDateTime) => Appointment.Schedule(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), scheduledDateTime.Date,
         new TimeRange(scheduledDateTime.TimeOfDay, scheduledDateTime.TimeOfDay.Add(TimeSpan.FromHours(1))));
 
-    private MedicalSpecialty CreateSpecialty(int minCancellationHours)
+    private static MedicalSpecialty CreateSpecialty(int minCancellationHours)
     {
         return MedicalSpecialty.Create("Test Specialty", "Description", 30, minCancellationHours);
     }

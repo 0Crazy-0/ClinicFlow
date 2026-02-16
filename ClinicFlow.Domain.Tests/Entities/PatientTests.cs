@@ -11,11 +11,10 @@ public class PatientTests
     public void EnsureNotBlocked_ShouldNotThrow_WhenNoPenalties()
     {
         // Arrange
-        var patient = CreatePatient();
         var penalties = new List<PatientPenalty>();
 
         // Act
-        var act = () => patient.EnsureNotBlocked(penalties);
+        var act = () => Patient.EnsureNotBlocked(penalties);
 
         // Assert
         act.Should().NotThrow();
@@ -33,7 +32,7 @@ public class PatientTests
         };
 
         // Act
-        var act = () => patient.EnsureNotBlocked(penalties);
+        var act = () => Patient.EnsureNotBlocked(penalties);
 
         // Assert
         act.Should().NotThrow();
@@ -50,7 +49,7 @@ public class PatientTests
         };
 
         // Act
-        var act = () => patient.EnsureNotBlocked(penalties);
+        var act = () => Patient.EnsureNotBlocked(penalties);
 
         // Assert
         act.Should().NotThrow();
@@ -68,12 +67,12 @@ public class PatientTests
         };
 
         // Act
-        var act = () => patient.EnsureNotBlocked(penalties);
+        var act = () => Patient.EnsureNotBlocked(penalties);
 
         // Assert
         act.Should().Throw<PatientBlockedException>().Where(e => e.BlockedUntil == blockedUntil);
     }
 
     // Helpers
-    private Patient CreatePatient() => Patient.Create(Guid.NewGuid(), DateTime.UtcNow.AddYears(-30), "O+", "None", "None", "Mom", "555-5555");
+    private static Patient CreatePatient() => Patient.Create(Guid.NewGuid(), DateTime.UtcNow.AddYears(-30), "O+", "None", "None", "Mom", "555-5555");
 }

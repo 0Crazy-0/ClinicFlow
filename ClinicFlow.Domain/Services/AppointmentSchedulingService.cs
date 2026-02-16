@@ -11,7 +11,7 @@ public class AppointmentSchedulingService(IAppointmentRepository appointmentRepo
     public async Task<Appointment> ScheduleAppointmentAsync(Patient patient, IEnumerable<PatientPenalty> penalties, Doctor doctor, DateTime scheduledDate,
         TimeRange timeRange, Guid appointmentTypeId)
     {
-        patient.EnsureNotBlocked(penalties);
+        Patient.EnsureNotBlocked(penalties);
 
         if (await appointmentRepository.HasConflictAsync(doctor.Id, scheduledDate, timeRange)) 
             throw new AppointmentConflictException(doctor.Id, scheduledDate.Add(timeRange.Start));

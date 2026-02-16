@@ -48,7 +48,7 @@ public class Patient : BaseEntity
         return age;
     }
 
-    private bool IsBlockedFromBooking(IEnumerable<PatientPenalty> penalties, out DateTime? blockedUntil)
+    private static bool IsBlockedFromBooking(IEnumerable<PatientPenalty> penalties, out DateTime? blockedUntil)
     {
         var activePenalties = penalties.Where(p => p.PenaltyType is PenaltyTypeEnum.TemporaryBlock && p.BlockedUntil.HasValue && p.BlockedUntil > DateTime.UtcNow).ToList();
 
@@ -57,7 +57,7 @@ public class Patient : BaseEntity
         return activePenalties.Any();
     }
 
-    internal void EnsureNotBlocked(IEnumerable<PatientPenalty> penalties)
+    internal static void EnsureNotBlocked(IEnumerable<PatientPenalty> penalties)
     {
         if (IsBlockedFromBooking(penalties, out var blockedUntil)) throw new PatientBlockedException(blockedUntil ?? DateTime.UtcNow);
     }
