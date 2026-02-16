@@ -5,7 +5,7 @@ namespace ClinicFlow.Domain.Entities;
 
 public class Schedule : BaseEntity
 {
-    public Guid DoctorId { get; private set; }
+    public Guid DoctorId { get; init; }
     public DayOfWeek DayOfWeek { get; private set; }
     public TimeRange TimeRange { get; private set; }
     public bool IsActive { get; private set; }
