@@ -35,6 +35,29 @@ public class AppointmentTests
         appointment.DomainEvents.Should().ContainSingle(e => e is AppointmentScheduledEvent);
     }
 
+    [Theory]
+    [InlineData("00000000-0000-0000-0000-000000000000", "11111111-1111-1111-1111-111111111111", "22222222-2222-2222-2222-222222222222", "Patient ID cannot be empty.")]
+    [InlineData("11111111-1111-1111-1111-111111111111", "00000000-0000-0000-0000-000000000000", "22222222-2222-2222-2222-222222222222", "Doctor ID cannot be empty.")]
+    [InlineData("11111111-1111-1111-1111-111111111111", "22222222-2222-2222-2222-222222222222", "00000000-0000-0000-0000-000000000000", "Appointment type ID cannot be empty.")]
+    public void Schedule_ShouldThrowException_WhenIdIsEmpty(string patientIdStr, string doctorIdStr, string appointmentTypeIdStr, string expectedMessage)
+    {
+        // Arrange & Act
+        var act = () => Appointment.Schedule(Guid.Parse(patientIdStr), Guid.Parse(doctorIdStr), Guid.Parse(appointmentTypeIdStr), DateTime.UtcNow.AddDays(1), new TimeRange(TimeSpan.FromHours(9), TimeSpan.FromHours(10)));
+
+        // Assert
+        act.Should().Throw<InvalidAppointmentException>().WithMessage(expectedMessage);
+    }
+
+    [Fact]
+    public void Schedule_ShouldThrowException_WhenTimeRangeIsNull()
+    {
+        // Arrange & Act
+        var act = () => Appointment.Schedule(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow.AddDays(1), null!);
+
+        // Assert
+        act.Should().Throw<InvalidAppointmentException>().WithMessage("Time range cannot be null.");
+    }
+
     // Cancel
     [Fact]
     public void Cancel_ShouldSetStatusToCancelled_WhenCalledWithValidParams()
@@ -161,8 +184,6 @@ public class AppointmentTests
     private static Appointment CreateAppointment(DateTime scheduledDateTime) => Appointment.Schedule(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), scheduledDateTime.Date,
         new TimeRange(scheduledDateTime.TimeOfDay, scheduledDateTime.TimeOfDay.Add(TimeSpan.FromHours(1))));
 
-    private static MedicalSpecialty CreateSpecialty(int minCancellationHours)
-    {
-        return MedicalSpecialty.Create("Test Specialty", "Description", 30, minCancellationHours);
-    }
+    private static MedicalSpecialty CreateSpecialty(int minCancellationHours) => MedicalSpecialty.Create("Test Specialty", "Description", 30, minCancellationHours);
+
 }

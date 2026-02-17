@@ -11,19 +11,15 @@ public class Appointment : BaseEntity
     public Guid PatientId { get; init; }
     public Guid DoctorId { get; init; }
     public Guid AppointmentTypeId { get; init; }
-
     public DateTime ScheduledDate { get; private set; }
     public TimeRange TimeRange { get; private set; }
-
     public AppointmentStatus Status { get; private set; }
     public string PatientNotes { get; private set; } = string.Empty;
     public string ReceptionistNotes { get; private set; } = string.Empty;
-
     public DateTime? ConfirmedAt { get; private set; }
     public DateTime? CancelledAt { get; private set; }
     public string? CancellationReason { get; private set; }
     public Guid? CancelledByUserId { get; private set; }
-
     public int RescheduleCount { get; private set; }
 
     // EF Core constructor
@@ -46,6 +42,11 @@ public class Appointment : BaseEntity
     // Factory Method
     internal static Appointment Schedule(Guid patientId, Guid doctorId, Guid appointmentTypeId, DateTime scheduledDate, TimeRange timeRange)
     {
+        if (patientId == Guid.Empty) throw new InvalidAppointmentException("Patient ID cannot be empty.");
+        if (doctorId == Guid.Empty) throw new InvalidAppointmentException("Doctor ID cannot be empty.");
+        if (appointmentTypeId == Guid.Empty) throw new InvalidAppointmentException("Appointment type ID cannot be empty.");
+        if (timeRange is null) throw new InvalidAppointmentException("Time range cannot be null.");
+
         var appointment = new Appointment(patientId, doctorId, appointmentTypeId, scheduledDate, timeRange);
 
         appointment.AddDomainEvent(new AppointmentScheduledEvent(appointment));
@@ -56,17 +57,10 @@ public class Appointment : BaseEntity
     // Public Domain Methods
     internal void Cancel(Guid cancelledByUserId, string? reason, MedicalSpecialty specialty)
     {
-        if (Status is AppointmentStatus.Cancelled or AppointmentStatus.LateCancellation)
-            throw new AppointmentCancellationNotAllowedException(Status);
+        if (Status is AppointmentStatus.Cancelled or AppointmentStatus.LateCancellation) throw new AppointmentCancellationNotAllowedException(Status);
 
-        if (!CanBeCancelled(specialty))
-        {
-            Status = AppointmentStatus.LateCancellation;
-        }
-        else
-        {
-            Status = AppointmentStatus.Cancelled;
-        }
+        if (!CanBeCancelled(specialty)) Status = AppointmentStatus.LateCancellation;
+        else Status = AppointmentStatus.Cancelled;
 
         CancelledAt = DateTime.UtcNow;
         CancelledByUserId = cancelledByUserId;
@@ -100,11 +94,7 @@ public class Appointment : BaseEntity
     }
 
     // Business Rules (Private)
-    private bool CanBeCancelled(MedicalSpecialty specialty)
-    {
-        return specialty.IsCancellationAllowed(ScheduledDate.Add(TimeRange.Start));
-    }
+    private bool CanBeCancelled(MedicalSpecialty specialty) => specialty.IsCancellationAllowed(ScheduledDate.Add(TimeRange.Start));
 
     private bool CanBeRescheduled() => RescheduleCount < 1 && Status is AppointmentStatus.Scheduled;
-
 }
