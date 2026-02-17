@@ -3,7 +3,7 @@ using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Events;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
-using ClinicFlow.Domain.Exceptions;
+using ClinicFlow.Domain.Exceptions.Appointments;
 
 namespace ClinicFlow.Domain.Tests.Entities;
 

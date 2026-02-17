@@ -1,6 +1,6 @@
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Events;
-using ClinicFlow.Domain.Exceptions;
+using ClinicFlow.Domain.Exceptions.MedicalRecords;
 
 namespace ClinicFlow.Domain.Entities;
 

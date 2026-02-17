@@ -1,4 +1,4 @@
-namespace ClinicFlow.Domain.Exceptions;
+namespace ClinicFlow.Domain.Exceptions.Base;
 
 public class BusinessRuleValidationException(string message) : DomainException(message)
 {

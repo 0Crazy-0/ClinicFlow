@@ -1,5 +1,6 @@
 using ClinicFlow.Domain.Entities;
-using ClinicFlow.Domain.Exceptions;
+using ClinicFlow.Domain.Exceptions.Appointments;
+using ClinicFlow.Domain.Exceptions.Scheduling;
 using ClinicFlow.Domain.ValueObjects;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Enums;

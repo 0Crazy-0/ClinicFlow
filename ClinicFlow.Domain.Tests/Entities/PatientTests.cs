@@ -1,5 +1,5 @@
 using ClinicFlow.Domain.Entities;
-using ClinicFlow.Domain.Exceptions;
+using ClinicFlow.Domain.Exceptions.Patients;
 using FluentAssertions;
 
 namespace ClinicFlow.Domain.Tests.Entities;

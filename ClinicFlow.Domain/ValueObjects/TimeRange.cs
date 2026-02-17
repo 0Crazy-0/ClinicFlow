@@ -1,4 +1,4 @@
-using ClinicFlow.Domain.Exceptions;
+using ClinicFlow.Domain.Exceptions.Scheduling;
 
 namespace ClinicFlow.Domain.ValueObjects;
 

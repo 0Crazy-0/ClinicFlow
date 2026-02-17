@@ -1,6 +1,7 @@
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Enums;
-using ClinicFlow.Domain.Exceptions;
+using ClinicFlow.Domain.Exceptions.Base;
+using ClinicFlow.Domain.Exceptions.Patients;
 
 namespace ClinicFlow.Domain.Entities;
 

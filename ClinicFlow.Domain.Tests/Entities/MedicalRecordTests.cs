@@ -1,6 +1,6 @@
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Events;
-using ClinicFlow.Domain.Exceptions;
+using ClinicFlow.Domain.Exceptions.MedicalRecords;
 using FluentAssertions;
 
 namespace ClinicFlow.Domain.Tests.Entities;
