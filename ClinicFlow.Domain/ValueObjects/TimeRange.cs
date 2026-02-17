@@ -1,12 +1,11 @@
-using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Exceptions;
 
 namespace ClinicFlow.Domain.ValueObjects;
 
-public class TimeRange : ValueObject
+public record TimeRange
 {
-    public TimeSpan Start { get; init; }
-    public TimeSpan End { get; init; }
+    public TimeSpan Start { get; }
+    public TimeSpan End { get; }
     public TimeSpan Duration => End - Start;
 
     public TimeRange(TimeSpan start, TimeSpan end)
@@ -24,17 +23,11 @@ public class TimeRange : ValueObject
 
         return Start < other.End && other.Start < End;
     }
-    
+
     public bool Covers(TimeRange other)
     {
         if (other is null) throw new InvalidTimeRangeException("Time range cannot be null.");
 
         return Start <= other.Start && End >= other.End;
-    }
-
-    protected override IEnumerable<object> GetEqualityComponents()
-    {
-        yield return Start;
-        yield return End;
     }
 }
