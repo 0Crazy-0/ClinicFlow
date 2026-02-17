@@ -12,12 +12,14 @@ namespace ClinicFlow.Domain.Tests.Services;
 public class AppointmentSchedulingServiceTests
 {
     private readonly Mock<IAppointmentRepository> _repositoryMock;
+    private readonly Mock<IScheduleRepository> _scheduleRepositoryMock;
     private readonly AppointmentSchedulingService _service;
 
     public AppointmentSchedulingServiceTests()
     {
         _repositoryMock = new Mock<IAppointmentRepository>();
-        _service = new AppointmentSchedulingService(_repositoryMock.Object);
+        _scheduleRepositoryMock = new Mock<IScheduleRepository>();
+        _service = new AppointmentSchedulingService(_repositoryMock.Object, _scheduleRepositoryMock.Object);
     }
 
     // ScheduleAppointmentAsync
@@ -40,6 +42,45 @@ public class AppointmentSchedulingServiceTests
     }
 
     [Fact]
+    public async Task ScheduleAppointmentAsync_ShouldThrowException_WhenDoctorHasNoSchedule()
+    {
+        // Arrange
+        var doctor = Doctor.Create(Guid.NewGuid(), "12345", Guid.NewGuid(), "Dr. House", 101);
+        var scheduledDate = DateTime.UtcNow.AddDays(1);
+
+        _scheduleRepositoryMock.Setup(x => x.GetByDoctorAndDayAsync(doctor.Id, scheduledDate.DayOfWeek)).ReturnsAsync((Schedule?)null);
+
+        // Act
+        var act = () => _service.ScheduleAppointmentAsync(CreatePatient(), [], doctor, scheduledDate, new TimeRange(TimeSpan.FromHours(9), TimeSpan.FromHours(10)),
+            Guid.NewGuid());
+
+        // Assert
+        await act.Should().ThrowAsync<DoctorNotAvailableException>();
+
+        _repositoryMock.Verify(x => x.HasConflictAsync(It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<TimeRange>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task ScheduleAppointmentAsync_ShouldThrowException_WhenOutsideDoctorSchedule()
+    {
+        // Arrange
+        var doctor = Doctor.Create(Guid.NewGuid(), "12345", Guid.NewGuid(), "Dr. House", 101);
+        var scheduledDate = DateTime.UtcNow.AddDays(1);
+
+        var schedule = CreateSchedule(doctor.Id, scheduledDate.DayOfWeek, new TimeRange(TimeSpan.FromHours(8), TimeSpan.FromHours(16)));
+        _scheduleRepositoryMock.Setup(x => x.GetByDoctorAndDayAsync(doctor.Id, scheduledDate.DayOfWeek)).ReturnsAsync(schedule);
+
+        // Act
+        var act = () => _service.ScheduleAppointmentAsync(CreatePatient(), [], doctor, scheduledDate,
+            new TimeRange(TimeSpan.FromHours(17), TimeSpan.FromHours(18)), Guid.NewGuid()); // Outside working hours
+
+        // Assert
+        await act.Should().ThrowAsync<DoctorNotAvailableException>();
+
+        _repositoryMock.Verify(x => x.HasConflictAsync(It.IsAny<Guid>(), It.IsAny<DateTime>(), It.IsAny<TimeRange>()), Times.Never);
+    }
+
+    [Fact]
     public async Task ScheduleAppointmentAsync_ShouldThrowException_WhenConflictExists()
     {
         // Arrange
@@ -49,6 +90,7 @@ public class AppointmentSchedulingServiceTests
         var scheduledDate = DateTime.UtcNow.AddDays(1);
         var timeRange = new TimeRange(TimeSpan.FromHours(9), TimeSpan.FromHours(10));
 
+        SetupValidSchedule(doctor.Id, scheduledDate.DayOfWeek);
         _repositoryMock.Setup(x => x.HasConflictAsync(doctor.Id, scheduledDate, timeRange)).ReturnsAsync(true);
 
         // Act
@@ -69,6 +111,7 @@ public class AppointmentSchedulingServiceTests
         var timeRange = new TimeRange(TimeSpan.FromHours(9), TimeSpan.FromHours(10));
         var appointmentTypeId = Guid.NewGuid();
 
+        SetupValidSchedule(doctor.Id, scheduledDate.DayOfWeek);
         _repositoryMock.Setup(x => x.HasConflictAsync(doctor.Id, scheduledDate, timeRange)).ReturnsAsync(false);
 
         // Act
@@ -83,6 +126,25 @@ public class AppointmentSchedulingServiceTests
 
     // RescheduleAppointmentAsync
     [Fact]
+    public async Task RescheduleAppointmentAsync_ShouldThrowException_WhenDoctorNotAvailable()
+    {
+        // Arrange
+        var appointment = CreateAppointment(DateTime.UtcNow.AddDays(1).Date.AddHours(9));
+        var newDate = DateTime.UtcNow.AddDays(2);
+        var newTimeRange = new TimeRange(TimeSpan.FromHours(10), TimeSpan.FromHours(11));
+
+        _scheduleRepositoryMock.Setup(x => x.GetByDoctorAndDayAsync(appointment.DoctorId, newDate.DayOfWeek)).ReturnsAsync((Schedule?)null);
+
+        // Act
+        var act = () => _service.RescheduleAppointmentAsync(appointment, newDate, newTimeRange);
+
+        // Assert
+        await act.Should().ThrowAsync<DoctorNotAvailableException>();
+
+        _repositoryMock.Verify(x => x.GetByDoctorIdAsync(It.IsAny<Guid>(), It.IsAny<DateTime>()), Times.Never);
+    }
+
+    [Fact]
     public async Task RescheduleAppointmentAsync_ShouldThrowException_WhenConflictExists()
     {
         // Arrange
@@ -92,6 +154,7 @@ public class AppointmentSchedulingServiceTests
         // Create a conflicting appointment
         var conflictingAppointment = CreateAppointment(newDate.Date.AddHours(10));
 
+        SetupValidSchedule(appointment.DoctorId, newDate.DayOfWeek);
         _repositoryMock.Setup(x => x.GetByDoctorIdAsync(appointment.DoctorId, newDate.Date)).ReturnsAsync([conflictingAppointment]);
 
         // Act
@@ -110,6 +173,7 @@ public class AppointmentSchedulingServiceTests
         var newDate = DateTime.UtcNow.AddDays(2);
         var newTimeRange = new TimeRange(TimeSpan.FromHours(10), TimeSpan.FromHours(11));
 
+        SetupValidSchedule(appointment.DoctorId, newDate.DayOfWeek);
         _repositoryMock.Setup(x => x.GetByDoctorIdAsync(appointment.DoctorId, newDate.Date)).ReturnsAsync([]);
 
         // Act
@@ -132,6 +196,7 @@ public class AppointmentSchedulingServiceTests
         // Simulate that the appointment has already been rescheduled once
         appointment.Reschedule(DateTime.UtcNow.AddDays(1).Date.AddHours(10), newTimeRange);
 
+        SetupValidSchedule(appointment.DoctorId, newDate.DayOfWeek);
         _repositoryMock.Setup(x => x.GetByDoctorIdAsync(appointment.DoctorId, newDate.Date)).ReturnsAsync([]);
 
         // Act
@@ -146,4 +211,13 @@ public class AppointmentSchedulingServiceTests
         new TimeRange(scheduledDateTime.TimeOfDay, scheduledDateTime.TimeOfDay.Add(TimeSpan.FromHours(1))));
 
     private static Patient CreatePatient() => Patient.Create(Guid.NewGuid(), DateTime.UtcNow.AddYears(-30), "O+", "None", "None", "Mom", "555-5555");
+
+    private static Schedule CreateSchedule(Guid doctorId, DayOfWeek dayOfWeek, TimeRange timeRange) => Schedule.Create(doctorId, dayOfWeek, timeRange);
+
+    private void SetupValidSchedule(Guid doctorId, DayOfWeek dayOfWeek)
+    {
+        var schedule = CreateSchedule(doctorId, dayOfWeek, new TimeRange(TimeSpan.FromHours(8), TimeSpan.FromHours(18)));
+        _scheduleRepositoryMock.Setup(x => x.GetByDoctorAndDayAsync(doctorId, dayOfWeek)).ReturnsAsync(schedule);
+    }
 }
+

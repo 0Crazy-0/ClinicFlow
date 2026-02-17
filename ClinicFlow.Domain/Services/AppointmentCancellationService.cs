@@ -52,6 +52,7 @@ public class AppointmentCancellationService(IMedicalSpecialtyRepository medicalS
         throw new AppointmentCancellationUnauthorizedException("User is not authorized to cancel this appointment.");
     }
 
+    // Helper
     private static void ValidateCancellationReason(UserRole role, string? reason)
     {
         bool isStaff = role is UserRole.Admin or UserRole.Receptionist;
