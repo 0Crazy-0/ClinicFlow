@@ -1,6 +1,6 @@
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Enums;
-using ClinicFlow.Domain.Exceptions.Base;
+using ClinicFlow.Domain.Exceptions.Appointments;
 
 namespace ClinicFlow.Domain.Entities;
 
@@ -25,8 +25,8 @@ public class AppointmentTypeDefinition : BaseEntity
     // Factory Method
     internal static AppointmentTypeDefinition Create(AppointmentType type, string name, string description, TimeSpan durationMinutes)
     {
-        if (string.IsNullOrWhiteSpace(name)) throw new BusinessRuleValidationException("Appointment type name cannot be empty.");
-        if (durationMinutes <= TimeSpan.Zero) throw new BusinessRuleValidationException("Duration must be positive.");
+        if (string.IsNullOrWhiteSpace(name)) throw new InvalidAppointmentTypeException("Appointment type name cannot be empty.");
+        if (durationMinutes <= TimeSpan.Zero) throw new InvalidAppointmentTypeException("Duration must be positive.");
 
         return new AppointmentTypeDefinition(type, name, description, durationMinutes);
     }
