@@ -8,12 +8,17 @@ public record TimeRange
     public TimeSpan End { get; }
     public TimeSpan Duration => End - Start;
 
-    public TimeRange(TimeSpan start, TimeSpan end)
+    private TimeRange(TimeSpan start, TimeSpan end)
+    {
+        Start = start;
+        End = end;
+    }
+    // Factory Method
+    internal static TimeRange Create(TimeSpan start, TimeSpan end)
     {
         if (start >= end) throw new InvalidTimeRangeException("Start time must be before end time.");
 
-        Start = start;
-        End = end;
+        return new TimeRange(start, end);
     }
 
     // Check if two time ranges overlap

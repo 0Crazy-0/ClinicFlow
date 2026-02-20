@@ -11,7 +11,7 @@ public class TimeRangeTests
     public void Constructor_ShouldThrowException_WhenStartIsAfterEnd()
     {
         // Arrange & Act
-        var act = () => new TimeRange(TimeSpan.FromHours(10), TimeSpan.FromHours(9));
+        var act = () => TimeRange.Create(TimeSpan.FromHours(10), TimeSpan.FromHours(9));
 
         // Assert
         act.Should().Throw<InvalidTimeRangeException>().WithMessage("Start time must be before end time.");
@@ -22,7 +22,7 @@ public class TimeRangeTests
     public void Duration_ShouldReturnCorrectDifference()
     {
         // Arrange
-        var timeRange = new TimeRange(TimeSpan.FromHours(9), TimeSpan.FromHours(10.5)); // 1.5 hours
+        var timeRange = TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(10.5)); // 1.5 hours
 
         // Act & Assert
         timeRange.Duration.Should().Be(TimeSpan.FromMinutes(90));
@@ -33,9 +33,9 @@ public class TimeRangeTests
     public void Equality_ShouldWorkCorrectly()
     {
         // Arrange
-        var tr1 = new TimeRange(TimeSpan.FromHours(9), TimeSpan.FromHours(10));
-        var tr2 = new TimeRange(TimeSpan.FromHours(9), TimeSpan.FromHours(10));
-        var tr3 = new TimeRange(TimeSpan.FromHours(10), TimeSpan.FromHours(11));
+        var tr1 = TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(10));
+        var tr2 = TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(10));
+        var tr3 = TimeRange.Create(TimeSpan.FromHours(10), TimeSpan.FromHours(11));
 
         // Act & Assert
         (tr1 == tr2).Should().BeTrue();
@@ -47,7 +47,7 @@ public class TimeRangeTests
     public void OverlapsWith_ShouldThrowException_WhenOtherIsNull()
     {
         // Arrange
-        var range = new TimeRange(TimeSpan.FromHours(9), TimeSpan.FromHours(10));
+        var range = TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(10));
 
         // Act
         var act = () => range.OverlapsWith(null!);
@@ -66,10 +66,10 @@ public class TimeRangeTests
     public void OverlapsWith_ShouldReturnCorrectResult(double start, double end, double otherStart, double otherEnd, bool expected)
     {
         // Arrange
-        var range = new TimeRange(TimeSpan.FromHours(start), TimeSpan.FromHours(end));
+        var range = TimeRange.Create(TimeSpan.FromHours(start), TimeSpan.FromHours(end));
 
         // Act & Assert
-        range.OverlapsWith(new TimeRange(TimeSpan.FromHours(otherStart), TimeSpan.FromHours(otherEnd))).Should().Be(expected);
+        range.OverlapsWith(TimeRange.Create(TimeSpan.FromHours(otherStart), TimeSpan.FromHours(otherEnd))).Should().Be(expected);
     }
 
     // Covers
@@ -77,7 +77,7 @@ public class TimeRangeTests
     public void Covers_ShouldThrowException_WhenOtherIsNull()
     {
         // Arrange
-        var range = new TimeRange(TimeSpan.FromHours(9), TimeSpan.FromHours(10));
+        var range = TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(10));
 
         // Act
         var act = () => range.Covers(null!);
@@ -97,9 +97,9 @@ public class TimeRangeTests
     public void Covers_ShouldReturnCorrectResult(double start, double end, double otherStart, double otherEnd, bool expected)
     {
         // Arrange
-        var range = new TimeRange(TimeSpan.FromHours(start), TimeSpan.FromHours(end));
+        var range = TimeRange.Create(TimeSpan.FromHours(start), TimeSpan.FromHours(end));
 
         // Act & Assert
-        range.Covers(new TimeRange(TimeSpan.FromHours(otherStart), TimeSpan.FromHours(otherEnd))).Should().Be(expected);
+        range.Covers(TimeRange.Create(TimeSpan.FromHours(otherStart), TimeSpan.FromHours(otherEnd))).Should().Be(expected);
     }
 }

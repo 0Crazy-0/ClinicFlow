@@ -13,7 +13,7 @@ public class ScheduleTests
         // Arrange
         var doctorId = Guid.NewGuid();
         var dayOfWeek = DayOfWeek.Monday;
-        var timeRange = new TimeRange(TimeSpan.FromHours(9), TimeSpan.FromHours(17));
+        var timeRange = TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(17));
 
         // Act
         var schedule = Schedule.Create(doctorId, dayOfWeek, timeRange);
@@ -32,7 +32,7 @@ public class ScheduleTests
     public void Create_ShouldThrowException_WhenInvalidParameters(string doctorIdStr, DayOfWeek dayOfWeek, double startHour, double endHour, string expectedMessage)
     {
         // Arrange & Act
-        var act = () => Schedule.Create(Guid.Parse(doctorIdStr), dayOfWeek, new TimeRange(TimeSpan.FromHours(startHour), TimeSpan.FromHours(endHour)));
+        var act = () => Schedule.Create(Guid.Parse(doctorIdStr), dayOfWeek, TimeRange.Create(TimeSpan.FromHours(startHour), TimeSpan.FromHours(endHour)));
 
         // Assert
         act.Should().Throw<InvalidScheduleException>().WithMessage(expectedMessage);
@@ -59,10 +59,10 @@ public class ScheduleTests
     public void CoversTimeRange_ShouldReturnExpectedResult(double scheduleStart, double scheduleEnd, double requestedStart, double requestedEnd, bool expected)
     {
         // Arrange
-        var schedule = Schedule.Create(Guid.NewGuid(), DayOfWeek.Monday, new TimeRange(TimeSpan.FromHours(scheduleStart), TimeSpan.FromHours(scheduleEnd)));
+        var schedule = Schedule.Create(Guid.NewGuid(), DayOfWeek.Monday, TimeRange.Create(TimeSpan.FromHours(scheduleStart), TimeSpan.FromHours(scheduleEnd)));
 
         // Act & Assert
-        schedule.CoversTimeRange(new TimeRange(TimeSpan.FromHours(requestedStart), TimeSpan.FromHours(requestedEnd))).Should().Be(expected);
+        schedule.CoversTimeRange(TimeRange.Create(TimeSpan.FromHours(requestedStart), TimeSpan.FromHours(requestedEnd))).Should().Be(expected);
 
     }
 }

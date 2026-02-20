@@ -18,7 +18,7 @@ public class AppointmentTests
         var doctorId = Guid.NewGuid();
         var appointmentTypeId = Guid.NewGuid();
         var scheduledDate = DateTime.UtcNow.Date.AddDays(1);
-        var timeRange = new TimeRange(TimeSpan.FromHours(9), TimeSpan.FromHours(10));
+        var timeRange = TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(10));
 
         // Act
         var appointment = Appointment.Schedule(patientId, doctorId, appointmentTypeId, scheduledDate, timeRange);
@@ -42,7 +42,7 @@ public class AppointmentTests
     public void Schedule_ShouldThrowException_WhenIdIsEmpty(string patientIdStr, string doctorIdStr, string appointmentTypeIdStr, string expectedMessage)
     {
         // Arrange & Act
-        var act = () => Appointment.Schedule(Guid.Parse(patientIdStr), Guid.Parse(doctorIdStr), Guid.Parse(appointmentTypeIdStr), DateTime.UtcNow.AddDays(1), new TimeRange(TimeSpan.FromHours(9), TimeSpan.FromHours(10)));
+        var act = () => Appointment.Schedule(Guid.Parse(patientIdStr), Guid.Parse(doctorIdStr), Guid.Parse(appointmentTypeIdStr), DateTime.UtcNow.AddDays(1), TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(10)));
 
         // Assert
         act.Should().Throw<InvalidAppointmentException>().WithMessage(expectedMessage);
@@ -170,7 +170,7 @@ public class AppointmentTests
         // Arrange
         var appointment = CreateAppointment(DateTime.UtcNow.AddDays(1));
         var newDate = DateTime.UtcNow.Date.AddDays(2);
-        var newTimeRange = new TimeRange(TimeSpan.FromHours(14), TimeSpan.FromHours(15));
+        var newTimeRange = TimeRange.Create(TimeSpan.FromHours(14), TimeSpan.FromHours(15));
 
         // Act
         appointment.Reschedule(newDate, newTimeRange);
@@ -182,7 +182,7 @@ public class AppointmentTests
 
     // Helpers
     private static Appointment CreateAppointment(DateTime scheduledDateTime) => Appointment.Schedule(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), scheduledDateTime.Date,
-        new TimeRange(scheduledDateTime.TimeOfDay, scheduledDateTime.TimeOfDay.Add(TimeSpan.FromHours(1))));
+        TimeRange.Create(scheduledDateTime.TimeOfDay, scheduledDateTime.TimeOfDay.Add(TimeSpan.FromHours(1))));
 
     private static MedicalSpecialty CreateSpecialty(int minCancellationHours) => MedicalSpecialty.Create("Test Specialty", "Description", 30, minCancellationHours);
 
