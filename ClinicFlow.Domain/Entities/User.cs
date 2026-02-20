@@ -1,6 +1,7 @@
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Base;
+using ClinicFlow.Domain.ValueObjects;
 
 namespace ClinicFlow.Domain.Entities;
 
@@ -10,10 +11,10 @@ public class User : BaseEntity
     public Guid? PatientId { get; init; }
     public UserRole Role { get; private set; }
     public DateTime? LastLoginAt { get; private set; }
-    public string Email { get; private set; } = string.Empty;
+    public EmailAddress Email { get; private set; } = null!;
     public string PasswordHash { get; private set; } = string.Empty;
-    public string FullName { get; private set; } = string.Empty;
-    public string PhoneNumber { get; private set; } = string.Empty;
+    public PersonName FullName { get; private set; } = null!;
+    public PhoneNumber PhoneNumber { get; private set; } = null!;
     public bool IsActive { get; private set; }
 
     // EF Core constructor
@@ -22,7 +23,7 @@ public class User : BaseEntity
         IsActive = true;
     }
 
-    private User(string email, string passwordHash, string fullName, string phoneNumber, UserRole role, Guid? doctorId = null, Guid? patientId = null) : this()
+    private User(EmailAddress email, string passwordHash, PersonName fullName, PhoneNumber phoneNumber, UserRole role, Guid? doctorId = null, Guid? patientId = null) : this()
     {
         Email = email;
         PasswordHash = passwordHash;
@@ -34,12 +35,8 @@ public class User : BaseEntity
     }
 
     // Factory Method
-    internal static User Create(string email, string passwordHash, string fullName, string phoneNumber, UserRole role, Guid? doctorId = null, Guid? patientId = null)
+    internal static User Create(EmailAddress email, string passwordHash, PersonName fullName, PhoneNumber phoneNumber, UserRole role, Guid? doctorId = null, Guid? patientId = null)
     {
-        if (string.IsNullOrWhiteSpace(email)) throw new BusinessRuleValidationException("Email cannot be empty.");
-        if (string.IsNullOrWhiteSpace(fullName)) throw new BusinessRuleValidationException("Full name cannot be empty.");
-        if (string.IsNullOrWhiteSpace(phoneNumber)) throw new BusinessRuleValidationException("Phone number cannot be empty.");
-
         return new User(email, passwordHash, fullName, phoneNumber, role, doctorId, patientId);
     }
 }

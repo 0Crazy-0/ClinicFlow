@@ -30,7 +30,7 @@ public class AppointmentSchedulingServiceTests
     {
         // Arrange
         var patient = CreatePatient();
-        var doctor = Doctor.Create(Guid.NewGuid(), "12345", Guid.NewGuid(), "Dr. House", 101);
+        var doctor = Doctor.Create(Guid.NewGuid(), MedicalLicenseNumber.Create("12345"), Guid.NewGuid(), "Dr. House", 101);
         var scheduledDate = DateTime.UtcNow.AddDays(1);
         var penalties = new List<PatientPenalty> { PatientPenalty.CreateBlock(patient.Id, "Blocked", scheduledDate) };
 
@@ -47,7 +47,7 @@ public class AppointmentSchedulingServiceTests
     public async Task ScheduleAppointmentAsync_ShouldThrowException_WhenDoctorHasNoSchedule()
     {
         // Arrange
-        var doctor = Doctor.Create(Guid.NewGuid(), "12345", Guid.NewGuid(), "Dr. House", 101);
+        var doctor = Doctor.Create(Guid.NewGuid(), MedicalLicenseNumber.Create("12345"), Guid.NewGuid(), "Dr. House", 101);
         var scheduledDate = DateTime.UtcNow.AddDays(1);
 
         _scheduleRepositoryMock.Setup(x => x.GetByDoctorAndDayAsync(doctor.Id, scheduledDate.DayOfWeek)).ReturnsAsync((Schedule?)null);
@@ -66,7 +66,7 @@ public class AppointmentSchedulingServiceTests
     public async Task ScheduleAppointmentAsync_ShouldThrowException_WhenOutsideDoctorSchedule()
     {
         // Arrange
-        var doctor = Doctor.Create(Guid.NewGuid(), "12345", Guid.NewGuid(), "Dr. House", 101);
+        var doctor = Doctor.Create(Guid.NewGuid(), MedicalLicenseNumber.Create("12345"), Guid.NewGuid(), "Dr. House", 101);
         var scheduledDate = DateTime.UtcNow.AddDays(1);
 
         var schedule = CreateSchedule(doctor.Id, scheduledDate.DayOfWeek, TimeRange.Create(TimeSpan.FromHours(8), TimeSpan.FromHours(16)));
@@ -87,7 +87,7 @@ public class AppointmentSchedulingServiceTests
     {
         // Arrange
         var patient = CreatePatient();
-        var doctor = Doctor.Create(Guid.NewGuid(), "12345", Guid.NewGuid(), "Dr. House", 101);
+        var doctor = Doctor.Create(Guid.NewGuid(), MedicalLicenseNumber.Create("12345"), Guid.NewGuid(), "Dr. House", 101);
         var penalties = new List<PatientPenalty>();
         var scheduledDate = DateTime.UtcNow.AddDays(1);
         var timeRange = TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(10));
@@ -107,7 +107,7 @@ public class AppointmentSchedulingServiceTests
     {
         // Arrange
         var patient = CreatePatient();
-        var doctor = Doctor.Create(Guid.NewGuid(), "12345", Guid.NewGuid(), "Dr. House", 101);
+        var doctor = Doctor.Create(Guid.NewGuid(), MedicalLicenseNumber.Create("12345"), Guid.NewGuid(), "Dr. House", 101);
         var penalties = new List<PatientPenalty>();
         var scheduledDate = DateTime.UtcNow.AddDays(1);
         var timeRange = TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(10));
@@ -212,7 +212,8 @@ public class AppointmentSchedulingServiceTests
     private static Appointment CreateAppointment(DateTime scheduledDateTime) => Appointment.Schedule(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), scheduledDateTime.Date,
         TimeRange.Create(scheduledDateTime.TimeOfDay, scheduledDateTime.TimeOfDay.Add(TimeSpan.FromHours(1))));
 
-    private static Patient CreatePatient() => Patient.Create(Guid.NewGuid(), DateTime.UtcNow.AddYears(-30), "O+", "None", "None", "Mom", "555-5555");
+    private static Patient CreatePatient() => Patient.Create(Guid.NewGuid(), DateTime.UtcNow.AddYears(-30), BloodType.Create("O+"), "None", "None",
+        EmergencyContact.Create("Mom", "555-5555"));
 
     private static Schedule CreateSchedule(Guid doctorId, DayOfWeek dayOfWeek, TimeRange timeRange) => Schedule.Create(doctorId, dayOfWeek, timeRange);
 

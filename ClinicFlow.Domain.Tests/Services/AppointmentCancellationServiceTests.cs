@@ -102,11 +102,11 @@ public class AppointmentCancellationServiceTests
         var doctor = (Doctor)Activator.CreateInstance(typeof(Doctor), true)!;
 
         SetPrivateProperty(doctor, nameof(Doctor.MedicalSpecialtyId), Guid.NewGuid());
-        
+
         _doctorRepositoryMock.Setup(x => x.GetByIdAsync(doctorId)).ReturnsAsync(doctor);
 
         var specialty = (MedicalSpecialty)Activator.CreateInstance(typeof(MedicalSpecialty), true)!;
-        
+
         SetPrivateProperty(specialty, nameof(MedicalSpecialty.MinCancellationHours), minCancellationHours);
 
         _medicalSpecialtyRepositoryMock.Setup(x => x.GetByIdAsync(doctor.MedicalSpecialtyId)).ReturnsAsync(specialty);
@@ -115,15 +115,12 @@ public class AppointmentCancellationServiceTests
     private static Appointment CreateAppointment(DateTime scheduledDateTime) => Appointment.Schedule(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), scheduledDateTime.Date,
         TimeRange.Create(scheduledDateTime.TimeOfDay, scheduledDateTime.TimeOfDay.Add(TimeSpan.FromHours(1))));
 
-    private static User CreateUser(UserRole role, Guid? doctorId = null, Guid? patientId = null)
-    {
-        return User.Create("test@clinic.com", "hashedpassword", "Test User", "555-0000", role, doctorId, patientId);
-    }
 
-    private static AppointmentTypeDefinition CreateAppointmentType(AppointmentType typeEnum)
-    {
-        return AppointmentTypeDefinition.Create(typeEnum, typeEnum.ToString(), "Test description", TimeSpan.FromMinutes(30));
-    }
+    private static User CreateUser(UserRole role, Guid? doctorId = null, Guid? patientId = null) => User.Create(EmailAddress.Create("test@clinic.com"), "hashedpassword",
+        PersonName.Create("Test User"), PhoneNumber.Create("555-0000"), role, doctorId, patientId);
+
+    private static AppointmentTypeDefinition CreateAppointmentType(AppointmentType typeEnum) => AppointmentTypeDefinition.Create(typeEnum, typeEnum.ToString(),
+        "Test description", TimeSpan.FromMinutes(30));
 
     private static void SetPrivateProperty(object obj, string propertyName, object value)
     {

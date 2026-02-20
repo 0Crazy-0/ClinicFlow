@@ -2,11 +2,13 @@ using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Exceptions.Patients;
 using FluentAssertions;
 
+using ClinicFlow.Domain.ValueObjects;
+
 namespace ClinicFlow.Domain.Tests.Entities;
 
 public class PatientTests
 {
-// EnsureNotBlocked
+    // EnsureNotBlocked
     [Fact]
     public void EnsureNotBlocked_ShouldNotThrow_WhenNoPenalties()
     {
@@ -74,5 +76,6 @@ public class PatientTests
     }
 
     // Helpers
-    private static Patient CreatePatient() => Patient.Create(Guid.NewGuid(), DateTime.UtcNow.AddYears(-30), "O+", "None", "None", "Mom", "555-5555");
+    private static Patient CreatePatient() => Patient.Create(Guid.NewGuid(), DateTime.UtcNow.AddYears(-30), BloodType.Create("O+"), "None", "None",
+        EmergencyContact.Create("Mom", "555-5555"));
 }

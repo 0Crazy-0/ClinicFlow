@@ -2,6 +2,7 @@ using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Exceptions.Patients;
+using ClinicFlow.Domain.ValueObjects;
 
 namespace ClinicFlow.Domain.Entities;
 
@@ -9,36 +10,30 @@ public class Patient : BaseEntity
 {
     public Guid UserId { get; init; }
     public DateTime DateOfBirth { get; private set; }
-    public string BloodType { get; private set; } = string.Empty;
+    public BloodType BloodType { get; private set; } = null!;
     public string Allergies { get; private set; } = string.Empty;
     public string ChronicConditions { get; private set; } = string.Empty;
-    public string EmergencyContactName { get; private set; } = string.Empty;
-    public string EmergencyContactPhone { get; private set; } = string.Empty;
+    public EmergencyContact EmergencyContact { get; private set; } = null!;
 
     // EF Core constructor
     private Patient() { }
 
-    private Patient(Guid userId, DateTime dateOfBirth, string bloodType, string allergies, string chronicConditions, string emergencyContactName,
-        string emergencyContactPhone) : this()
+    private Patient(Guid userId, DateTime dateOfBirth, BloodType bloodType, string allergies, string chronicConditions, EmergencyContact emergencyContact) : this()
     {
         UserId = userId;
         DateOfBirth = dateOfBirth;
         BloodType = bloodType;
         ChronicConditions = chronicConditions;
         Allergies = allergies;
-        EmergencyContactName = emergencyContactName;
-        EmergencyContactPhone = emergencyContactPhone;
+        EmergencyContact = emergencyContact;
     }
 
     // Factory Method
-    internal static Patient Create(Guid userId, DateTime dateOfBirth, string bloodType, string allergies, string chronicConditions, string emergencyContactName,
-        string emergencyContactPhone)
+    internal static Patient Create(Guid userId, DateTime dateOfBirth, BloodType bloodType, string allergies, string chronicConditions, EmergencyContact emergencyContact)
     {
         if (dateOfBirth > DateTime.UtcNow) throw new BusinessRuleValidationException("Date of birth cannot be in the future.");
-        if (string.IsNullOrWhiteSpace(emergencyContactName)) throw new BusinessRuleValidationException("Emergency contact name cannot be empty.");
-        if (string.IsNullOrWhiteSpace(emergencyContactPhone)) throw new BusinessRuleValidationException("Emergency contact phone cannot be empty.");
 
-        return new Patient(userId, dateOfBirth, bloodType, allergies, chronicConditions, emergencyContactName, emergencyContactPhone);
+        return new Patient(userId, dateOfBirth, bloodType, allergies, chronicConditions, emergencyContact);
     }
 
     public int GetAge()
