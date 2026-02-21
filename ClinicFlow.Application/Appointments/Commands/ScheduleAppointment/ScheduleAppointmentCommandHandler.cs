@@ -8,7 +8,7 @@ using MediatR;
 namespace ClinicFlow.Application.Appointments.Commands.ScheduleAppointment;
 
 public class ScheduleAppointmentCommandHandler(IPatientRepository patientRepository, IDoctorRepository doctorRepository, IPatientPenaltyRepository penaltyRepository,
-    IAppointmentRepository appointmentRepository, AppointmentSchedulingService schedulingService, IUnitOfWork unitOfWork) : IRequestHandler<ScheduleAppointmentCommand, Guid>
+    IScheduleRepository scheduleRepository, IAppointmentRepository appointmentRepository, AppointmentSchedulingService schedulingService, IUnitOfWork unitOfWork) : IRequestHandler<ScheduleAppointmentCommand, Guid>
 {
     public async Task<Guid> Handle(ScheduleAppointmentCommand request, CancellationToken cancellationToken)
     {
@@ -20,7 +20,11 @@ public class ScheduleAppointmentCommandHandler(IPatientRepository patientReposit
 
         var timeRange = TimeRange.Create(request.StartTime, request.EndTime);
 
-        var appointment = await schedulingService.ScheduleAppointmentAsync(patient, penalties, doctor, request.ScheduledDate, timeRange, request.AppointmentTypeId);
+        var doctorSchedule = await scheduleRepository.GetByDoctorAndDayAsync(doctor.Id, request.ScheduledDate.DayOfWeek);
+
+        var hasConflict = await appointmentRepository.HasConflictAsync(doctor.Id, request.ScheduledDate, timeRange);
+
+        var appointment = schedulingService.ScheduleAppointment(patient, penalties, doctor, request.ScheduledDate, timeRange, request.AppointmentTypeId, doctorSchedule, hasConflict);
 
         await appointmentRepository.CreateAsync(appointment);
 

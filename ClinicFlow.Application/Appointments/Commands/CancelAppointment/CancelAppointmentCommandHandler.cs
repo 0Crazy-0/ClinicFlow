@@ -7,7 +7,8 @@ using MediatR;
 namespace ClinicFlow.Application.Appointments.Commands.CancelAppointment;
 
 public class CancelAppointmentCommandHandler(IAppointmentRepository appointmentRepository, IUserRepository userRepository,
-    IAppointmentTypeDefinitionRepository appointmentTypeDefinitionRepository, AppointmentCancellationService cancellationService, IUnitOfWork unitOfWork) : IRequestHandler<CancelAppointmentCommand>
+    IAppointmentTypeDefinitionRepository appointmentTypeDefinitionRepository, IDoctorRepository doctorRepository, IMedicalSpecialtyRepository medicalSpecialtyRepository, 
+    AppointmentCancellationService cancellationService, IUnitOfWork unitOfWork) : IRequestHandler<CancelAppointmentCommand>
 {
     public async Task Handle(CancelAppointmentCommand request, CancellationToken cancellationToken)
     {
@@ -18,7 +19,12 @@ public class CancelAppointmentCommandHandler(IAppointmentRepository appointmentR
         var appointmentType = await appointmentTypeDefinitionRepository.GetByIdAsync(appointment.AppointmentTypeId)
             ?? throw new EntityNotFoundException(nameof(AppointmentTypeDefinition), appointment.AppointmentTypeId);
 
-        await cancellationService.CancelAppointmentAsync(appointment, initiator, appointmentType, request.IsAuthorizedFamilyMember, request.Reason);
+        var doctor = await doctorRepository.GetByIdAsync(appointment.DoctorId) ?? throw new EntityNotFoundException(nameof(Doctor), appointment.DoctorId);
+
+        var specialty = await medicalSpecialtyRepository.GetByIdAsync(doctor.MedicalSpecialtyId) ??
+            throw new EntityNotFoundException(nameof(MedicalSpecialty), doctor.MedicalSpecialtyId);
+
+        cancellationService.CancelAppointment(appointment, initiator, appointmentType, request.IsAuthorizedFamilyMember, specialty, request.Reason);
 
         await appointmentRepository.UpdateAsync(appointment);
 
