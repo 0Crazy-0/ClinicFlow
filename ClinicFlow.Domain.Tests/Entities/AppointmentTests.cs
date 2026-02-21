@@ -4,6 +4,7 @@ using ClinicFlow.Domain.Events;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
 using ClinicFlow.Domain.Exceptions.Appointments;
+using ClinicFlow.Domain.Exceptions.Base;
 
 namespace ClinicFlow.Domain.Tests.Entities;
 
@@ -45,7 +46,7 @@ public class AppointmentTests
         var act = () => Appointment.Schedule(Guid.Parse(patientIdStr), Guid.Parse(doctorIdStr), Guid.Parse(appointmentTypeIdStr), DateTime.UtcNow.AddDays(1), TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(10)));
 
         // Assert
-        act.Should().Throw<InvalidAppointmentException>().WithMessage(expectedMessage);
+        act.Should().Throw<DomainValidationException>().WithMessage(expectedMessage);
     }
 
     [Fact]
@@ -55,7 +56,7 @@ public class AppointmentTests
         var act = () => Appointment.Schedule(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow.AddDays(1), null!);
 
         // Assert
-        act.Should().Throw<InvalidAppointmentException>().WithMessage("Time range cannot be null.");
+        act.Should().Throw<DomainValidationException>().WithMessage("Time range cannot be null.");
     }
 
     // Cancel

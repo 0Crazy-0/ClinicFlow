@@ -1,4 +1,5 @@
 using ClinicFlow.Domain.Entities;
+using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Exceptions.Scheduling;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
@@ -35,7 +36,7 @@ public class ScheduleTests
         var act = () => Schedule.Create(Guid.Parse(doctorIdStr), dayOfWeek, TimeRange.Create(TimeSpan.FromHours(startHour), TimeSpan.FromHours(endHour)));
 
         // Assert
-        act.Should().Throw<InvalidScheduleException>().WithMessage(expectedMessage);
+        act.Should().Throw<DomainValidationException>().WithMessage(expectedMessage);
     }
 
     [Fact]
@@ -45,7 +46,7 @@ public class ScheduleTests
         var act = () => Schedule.Create(Guid.NewGuid(), DayOfWeek.Monday, null!);
 
         // Assert
-        act.Should().Throw<InvalidScheduleException>().WithMessage("Time range cannot be null.");
+        act.Should().Throw<DomainValidationException>().WithMessage("Time range cannot be null.");
     }
 
     [Theory]

@@ -40,7 +40,7 @@ public class DoctorTests
         var act = () => Doctor.Create(Guid.NewGuid(), MedicalLicenseNumber.Create("12345"), Guid.NewGuid(), "Biography", roomNumber);
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage("Consultation room number must be positive.");
+        act.Should().Throw<DomainValidationException>().WithMessage("Consultation room number must be positive.");
     }
 
     [Fact]
@@ -50,7 +50,7 @@ public class DoctorTests
         var act = () => Doctor.Create(Guid.Empty, MedicalLicenseNumber.Create("12345"), Guid.NewGuid(), "Biography", 101);
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage("User ID cannot be empty.");
+        act.Should().Throw<DomainValidationException>().WithMessage("User ID cannot be empty.");
     }
 
     [Fact]
@@ -60,6 +60,6 @@ public class DoctorTests
         var act = () => Doctor.Create(Guid.NewGuid(), MedicalLicenseNumber.Create("12345"), Guid.Empty, "Biography", 101);
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage("Medical specialty ID cannot be empty.");
+        act.Should().Throw<DomainValidationException>().WithMessage("Medical specialty ID cannot be empty.");
     }
 }

@@ -1,6 +1,6 @@
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Events;
-using ClinicFlow.Domain.Exceptions.MedicalRecords;
+using ClinicFlow.Domain.Exceptions.Base;
 using FluentAssertions;
 
 namespace ClinicFlow.Domain.Tests.Entities;
@@ -54,7 +54,7 @@ public class MedicalRecordTests
         var act = () => MedicalRecord.Create(Guid.Parse(patientIdStr), Guid.Parse(doctorIdStr), Guid.Parse(appointmentIdStr), "Headache");
 
         // Assert
-        act.Should().Throw<InvalidMedicalRecordException>().WithMessage(expectedMessage);
+        act.Should().Throw<DomainValidationException>().WithMessage(expectedMessage);
     }
 
     [Theory]
@@ -67,7 +67,7 @@ public class MedicalRecordTests
         var act = () => MedicalRecord.Create(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), chiefComplaint!);
 
         // Assert
-        act.Should().Throw<InvalidMedicalRecordException>().WithMessage("Chief complaint cannot be empty.");
+        act.Should().Throw<DomainValidationException>().WithMessage("Chief complaint cannot be empty.");
     }
 
     //AddDiagnosis
@@ -97,7 +97,7 @@ public class MedicalRecordTests
         var act = () => record.AddDiagnosis(diagnosis!);
 
         // Assert
-        act.Should().Throw<InvalidMedicalRecordException>().WithMessage("Diagnosis cannot be empty.");
+        act.Should().Throw<DomainValidationException>().WithMessage("Diagnosis cannot be empty.");
     }
 
     //PrescribeTreatment
@@ -129,7 +129,7 @@ public class MedicalRecordTests
         var act = () => record.PrescribeTreatment(treatment!, medications!);
 
         // Assert
-        act.Should().Throw<InvalidMedicalRecordException>().WithMessage(expectedMessage);
+        act.Should().Throw<DomainValidationException>().WithMessage(expectedMessage);
     }
 
     //RecordLabResults
@@ -159,7 +159,7 @@ public class MedicalRecordTests
         var act = () => record.RecordLabResults(labResults!);
 
         // Assert
-        act.Should().Throw<InvalidMedicalRecordException>().WithMessage("Lab results cannot be empty.");
+        act.Should().Throw<DomainValidationException>().WithMessage("Lab results cannot be empty.");
     }
 
     //AddDoctorNotes
@@ -189,7 +189,7 @@ public class MedicalRecordTests
         var act = () => record.AddDoctorNotes(notes!);
 
         // Assert
-        act.Should().Throw<InvalidMedicalRecordException>().WithMessage("Doctor notes cannot be empty.");
+        act.Should().Throw<DomainValidationException>().WithMessage("Doctor notes cannot be empty.");
     }
 
     //SetFollowUpInstructions
@@ -220,7 +220,7 @@ public class MedicalRecordTests
         var act = () => record.SetFollowUpInstructions(instructions!);
 
         // Assert
-        act.Should().Throw<InvalidMedicalRecordException>().WithMessage("Follow-up instructions cannot be empty.");
+        act.Should().Throw<DomainValidationException>().WithMessage("Follow-up instructions cannot be empty.");
     }
 
     // Helper

@@ -37,7 +37,7 @@ public class MedicalSpecialtyTests
         var act = () => MedicalSpecialty.Create(name!, "Description", 30, 24);
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage("Specialty name cannot be empty.");
+        act.Should().Throw<DomainValidationException>().WithMessage("Specialty name cannot be empty.");
     }
 
     [Theory]
@@ -49,7 +49,7 @@ public class MedicalSpecialtyTests
         var act = () => MedicalSpecialty.Create("Cardiology", "Description", duration, 24);
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage("Duration must be positive.");
+        act.Should().Throw<DomainValidationException>().WithMessage("Duration must be positive.");
     }
 
     [Fact]
@@ -59,7 +59,7 @@ public class MedicalSpecialtyTests
         var act = () => MedicalSpecialty.Create("Cardiology", "Description", 30, -1);
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage("Cancellation hours cannot be negative.");
+        act.Should().Throw<DomainValidationException>().WithMessage("Cancellation hours cannot be negative.");
     }
 
     // IsCancellationAllowed

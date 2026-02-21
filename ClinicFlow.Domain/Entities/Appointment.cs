@@ -2,6 +2,7 @@ using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Events;
 using ClinicFlow.Domain.Exceptions.Appointments;
+using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.ValueObjects;
 
 namespace ClinicFlow.Domain.Entities;
@@ -42,10 +43,10 @@ public class Appointment : BaseEntity
     // Factory Method
     internal static Appointment Schedule(Guid patientId, Guid doctorId, Guid appointmentTypeId, DateTime scheduledDate, TimeRange timeRange)
     {
-        if (patientId == Guid.Empty) throw new InvalidAppointmentException("Patient ID cannot be empty.");
-        if (doctorId == Guid.Empty) throw new InvalidAppointmentException("Doctor ID cannot be empty.");
-        if (appointmentTypeId == Guid.Empty) throw new InvalidAppointmentException("Appointment type ID cannot be empty.");
-        if (timeRange is null) throw new InvalidAppointmentException("Time range cannot be null.");
+        if (patientId == Guid.Empty) throw new DomainValidationException("Patient ID cannot be empty.");
+        if (doctorId == Guid.Empty) throw new DomainValidationException("Doctor ID cannot be empty.");
+        if (appointmentTypeId == Guid.Empty) throw new DomainValidationException("Appointment type ID cannot be empty.");
+        if (timeRange is null) throw new DomainValidationException("Time range cannot be null.");
 
         var appointment = new Appointment(patientId, doctorId, appointmentTypeId, scheduledDate, timeRange);
 

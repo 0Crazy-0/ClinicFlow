@@ -58,7 +58,7 @@ public class UserTests
         var act = () => User.Create(EmailAddress.Create("test@clinic.com"), invalidHash!, PersonName.Create("John Doe"), PhoneNumber.Create("555-1234"), UserRole.Doctor);
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage("Password hash cannot be empty.");
+        act.Should().Throw<DomainValidationException>().WithMessage("Password hash cannot be empty.");
     }
 
     [Fact]
@@ -68,7 +68,7 @@ public class UserTests
         var act = () => User.Create(EmailAddress.Create("test@clinic.com"), "hash", PersonName.Create("John Doe"), PhoneNumber.Create("555-1234"), UserRole.Doctor, Guid.Empty);
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage("Doctor ID cannot be empty.");
+        act.Should().Throw<DomainValidationException>().WithMessage("Doctor ID cannot be empty.");
     }
 
     [Fact]
@@ -79,6 +79,6 @@ public class UserTests
             patientId: Guid.Empty);
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage("Patient ID cannot be empty.");
+        act.Should().Throw<DomainValidationException>().WithMessage("Patient ID cannot be empty.");
     }
 }

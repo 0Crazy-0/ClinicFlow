@@ -1,5 +1,5 @@
 using ClinicFlow.Domain.Common;
-using ClinicFlow.Domain.Exceptions.Scheduling;
+using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.ValueObjects;
 
 namespace ClinicFlow.Domain.Entities;
@@ -25,9 +25,9 @@ public class Schedule : BaseEntity
     // Factory Method
     internal static Schedule Create(Guid doctorId, DayOfWeek dayOfWeek, TimeRange timeRange)
     {
-        if (doctorId == Guid.Empty) throw new InvalidScheduleException("Doctor ID cannot be empty.");
-        if (!Enum.IsDefined(dayOfWeek)) throw new InvalidScheduleException("Invalid day of the week.");
-        if (timeRange is null) throw new InvalidScheduleException("Time range cannot be null.");
+        if (doctorId == Guid.Empty) throw new DomainValidationException("Doctor ID cannot be empty.");
+        if (!Enum.IsDefined(dayOfWeek)) throw new DomainValidationException("Invalid day of the week.");
+        if (timeRange is null) throw new DomainValidationException("Time range cannot be null.");
 
         return new Schedule(doctorId, dayOfWeek, timeRange);
     }

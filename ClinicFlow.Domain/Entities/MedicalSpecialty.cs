@@ -24,9 +24,9 @@ public class MedicalSpecialty : BaseEntity
     // Factory Method
     internal static MedicalSpecialty Create(string name, string description, int typicalDurationMinutes, int minCancellationHours)
     {
-        if (string.IsNullOrWhiteSpace(name)) throw new BusinessRuleValidationException("Specialty name cannot be empty.");
-        if (typicalDurationMinutes <= 0) throw new BusinessRuleValidationException("Duration must be positive.");
-        if (minCancellationHours < 0) throw new BusinessRuleValidationException("Cancellation hours cannot be negative.");
+        if (string.IsNullOrWhiteSpace(name)) throw new DomainValidationException("Specialty name cannot be empty.");
+        if (typicalDurationMinutes <= 0) throw new DomainValidationException("Duration must be positive.");
+        if (minCancellationHours < 0) throw new DomainValidationException("Cancellation hours cannot be negative.");
 
         return new MedicalSpecialty(name, description, typicalDurationMinutes, minCancellationHours);
     }

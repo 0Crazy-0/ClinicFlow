@@ -42,7 +42,7 @@ public class PatientTests
         var act = () => Patient.Create(Guid.NewGuid(), DateTime.UtcNow.AddDays(1), BloodType.Create("O+"), "None", "None", EmergencyContact.Create("Mom", "555-5555"));
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage("Date of birth cannot be in the future.");
+        act.Should().Throw<DomainValidationException>().WithMessage("Date of birth cannot be in the future.");
     }
 
     [Fact]
@@ -52,7 +52,7 @@ public class PatientTests
         var act = () => Patient.Create(Guid.Empty, DateTime.UtcNow.AddYears(-30), BloodType.Create("O+"), "None", "None", EmergencyContact.Create("Mom", "555-5555"));
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage("User ID cannot be empty.");
+        act.Should().Throw<DomainValidationException>().WithMessage("User ID cannot be empty.");
     }
 
     // GetAge
