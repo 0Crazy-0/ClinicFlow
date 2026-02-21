@@ -42,4 +42,24 @@ public class DoctorTests
         // Assert
         act.Should().Throw<BusinessRuleValidationException>().WithMessage("Consultation room number must be positive.");
     }
+
+    [Fact]
+    public void Create_ShouldThrowException_WhenUserIdIsEmpty()
+    {
+        // Arrange & Act
+        var act = () => Doctor.Create(Guid.Empty, MedicalLicenseNumber.Create("12345"), Guid.NewGuid(), "Biography", 101);
+
+        // Assert
+        act.Should().Throw<BusinessRuleValidationException>().WithMessage("User ID cannot be empty.");
+    }
+
+    [Fact]
+    public void Create_ShouldThrowException_WhenMedicalSpecialtyIdIsEmpty()
+    {
+        // Arrange & Act
+        var act = () => Doctor.Create(Guid.NewGuid(), MedicalLicenseNumber.Create("12345"), Guid.Empty, "Biography", 101);
+
+        // Assert
+        act.Should().Throw<BusinessRuleValidationException>().WithMessage("Medical specialty ID cannot be empty.");
+    }
 }

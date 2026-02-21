@@ -45,6 +45,16 @@ public class PatientTests
         act.Should().Throw<BusinessRuleValidationException>().WithMessage("Date of birth cannot be in the future.");
     }
 
+    [Fact]
+    public void Create_ShouldThrowException_WhenUserIdIsEmpty()
+    {
+        // Arrange & Act
+        var act = () => Patient.Create(Guid.Empty, DateTime.UtcNow.AddYears(-30), BloodType.Create("O+"), "None", "None", EmergencyContact.Create("Mom", "555-5555"));
+
+        // Assert
+        act.Should().Throw<BusinessRuleValidationException>().WithMessage("User ID cannot be empty.");
+    }
+
     // GetAge
     [Fact]
     public void GetAge_ShouldReturnCorrectAge()

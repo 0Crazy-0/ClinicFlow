@@ -31,6 +31,7 @@ public class Patient : BaseEntity
     // Factory Method
     internal static Patient Create(Guid userId, DateTime dateOfBirth, BloodType bloodType, string allergies, string chronicConditions, EmergencyContact emergencyContact)
     {
+        if (userId == Guid.Empty) throw new BusinessRuleValidationException("User ID cannot be empty.");
         if (dateOfBirth > DateTime.UtcNow) throw new BusinessRuleValidationException("Date of birth cannot be in the future.");
 
         return new Patient(userId, dateOfBirth, bloodType, allergies, chronicConditions, emergencyContact);

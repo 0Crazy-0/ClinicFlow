@@ -1,6 +1,7 @@
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.ValueObjects;
+using ClinicFlow.Domain.Exceptions.Base;
 using FluentAssertions;
 
 namespace ClinicFlow.Domain.Tests.Entities;
@@ -47,14 +48,37 @@ public class UserTests
         user.PatientId.Should().Be(patientId);
     }
 
-    [Fact]
-    public void Create_ShouldHaveNullOptionalIds_WhenNotProvided()
+    [Theory]
+    [InlineData("")]
+    [InlineData(" ")]
+    [InlineData(null)]
+    public void Create_ShouldThrowException_WhenPasswordHashIsEmpty(string? invalidHash)
     {
         // Arrange & Act
-        var user = User.Create(EmailAddress.Create("admin@clinic.com"), "hash", PersonName.Create("Admin"), PhoneNumber.Create("555-9999"), UserRole.Admin);
+        var act = () => User.Create(EmailAddress.Create("test@clinic.com"), invalidHash!, PersonName.Create("John Doe"), PhoneNumber.Create("555-1234"), UserRole.Doctor);
 
         // Assert
-        user.DoctorId.Should().BeNull();
-        user.PatientId.Should().BeNull();
+        act.Should().Throw<BusinessRuleValidationException>().WithMessage("Password hash cannot be empty.");
+    }
+
+    [Fact]
+    public void Create_ShouldThrowException_WhenDoctorIdIsEmpty()
+    {
+        // Arrange & Act
+        var act = () => User.Create(EmailAddress.Create("test@clinic.com"), "hash", PersonName.Create("John Doe"), PhoneNumber.Create("555-1234"), UserRole.Doctor, Guid.Empty);
+
+        // Assert
+        act.Should().Throw<BusinessRuleValidationException>().WithMessage("Doctor ID cannot be empty.");
+    }
+
+    [Fact]
+    public void Create_ShouldThrowException_WhenPatientIdIsEmpty()
+    {
+        // Arrange & Act
+        var act = () => User.Create(EmailAddress.Create("test@clinic.com"), "hash", PersonName.Create("John Doe"), PhoneNumber.Create("555-1234"), UserRole.Patient,
+            patientId: Guid.Empty);
+
+        // Assert
+        act.Should().Throw<BusinessRuleValidationException>().WithMessage("Patient ID cannot be empty.");
     }
 }

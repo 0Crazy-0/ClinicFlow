@@ -37,6 +37,10 @@ public class User : BaseEntity
     // Factory Method
     internal static User Create(EmailAddress email, string passwordHash, PersonName fullName, PhoneNumber phoneNumber, UserRole role, Guid? doctorId = null, Guid? patientId = null)
     {
+        if (string.IsNullOrWhiteSpace(passwordHash)) throw new BusinessRuleValidationException("Password hash cannot be empty.");
+        if (doctorId.HasValue && doctorId.Value == Guid.Empty) throw new BusinessRuleValidationException("Doctor ID cannot be empty.");
+        if (patientId.HasValue && patientId.Value == Guid.Empty) throw new BusinessRuleValidationException("Patient ID cannot be empty.");
+
         return new User(email, passwordHash, fullName, phoneNumber, role, doctorId, patientId);
     }
 }
