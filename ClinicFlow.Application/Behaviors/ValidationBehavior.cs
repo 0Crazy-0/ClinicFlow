@@ -7,7 +7,7 @@ namespace ClinicFlow.Application.Behaviors;
 public class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidator<TRequest>> validators) : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
 {
-    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken = default)
+    public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
         if (validators.Any())
         {
@@ -19,6 +19,6 @@ public class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidator<TReq
 
             if (failures.Count > 0) throw new ValidationException(failures);
         }
-        return await next();
+        return await next(cancellationToken);
     }
 }
