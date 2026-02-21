@@ -1,4 +1,6 @@
 using ClinicFlow.Domain.Entities;
+using ClinicFlow.Domain.Enums;
+using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Exceptions.Patients;
 using FluentAssertions;
 
@@ -8,6 +10,54 @@ namespace ClinicFlow.Domain.Tests.Entities;
 
 public class PatientTests
 {
+    // Create
+    [Fact]
+    public void Create_ShouldCreatePatient_WhenValidParameters()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var dateOfBirth = DateTime.UtcNow.AddYears(-30);
+        var bloodType = BloodType.Create("O+");
+        var allergies = "Penicillin";
+        var chronicConditions = "None";
+        var emergencyContact = EmergencyContact.Create("Mom", "555-5555");
+
+        // Act
+        var patient = Patient.Create(userId, dateOfBirth, bloodType, allergies, chronicConditions, emergencyContact);
+
+        // Assert
+        patient.Should().NotBeNull();
+        patient.UserId.Should().Be(userId);
+        patient.DateOfBirth.Should().Be(dateOfBirth);
+        patient.BloodType.Should().Be(bloodType);
+        patient.Allergies.Should().Be(allergies);
+        patient.ChronicConditions.Should().Be(chronicConditions);
+        patient.EmergencyContact.Should().Be(emergencyContact);
+    }
+
+    [Fact]
+    public void Create_ShouldThrowException_WhenDateOfBirthIsInTheFuture()
+    {
+        // Arrange & Act
+        var act = () => Patient.Create(Guid.NewGuid(), DateTime.UtcNow.AddDays(1), BloodType.Create("O+"), "None", "None", EmergencyContact.Create("Mom", "555-5555"));
+
+        // Assert
+        act.Should().Throw<BusinessRuleValidationException>().WithMessage("Date of birth cannot be in the future.");
+    }
+
+    // GetAge
+    [Fact]
+    public void GetAge_ShouldReturnCorrectAge()
+    {
+        // Arrange
+        var yearsAgo = 25;
+        var patient = Patient.Create(Guid.NewGuid(), DateTime.Today.AddYears(-yearsAgo), BloodType.Create("A+"), "None", "None", EmergencyContact.Create("Dad", "555-1111"));
+
+        // Act & Assert
+        patient.GetAge().Should().Be(yearsAgo);
+
+    }
+
     // EnsureNotBlocked
     [Fact]
     public void EnsureNotBlocked_ShouldNotThrow_WhenNoPenalties()
@@ -45,10 +95,7 @@ public class PatientTests
     {
         // Arrange
         var patient = CreatePatient();
-        var penalties = new List<PatientPenalty>
-        {
-            PatientPenalty.CreateBlock(patient.Id, "Old Block", DateTime.UtcNow.AddDays(-1))
-        };
+        var penalties = new List<PatientPenalty> { CreateExpiredBlock(patient.Id, "Old Block", DateTime.UtcNow.AddDays(-1)) };
 
         // Act
         var act = () => Patient.EnsureNotBlocked(penalties);
@@ -63,10 +110,7 @@ public class PatientTests
         // Arrange
         var patient = CreatePatient();
         var blockedUntil = DateTime.UtcNow.AddDays(10);
-        var penalties = new List<PatientPenalty>
-        {
-            PatientPenalty.CreateBlock(patient.Id, "Active Block", blockedUntil)
-        };
+        var penalties = new List<PatientPenalty> { PatientPenalty.CreateBlock(patient.Id, "Active Block", blockedUntil) };
 
         // Act
         var act = () => Patient.EnsureNotBlocked(penalties);
@@ -78,4 +122,16 @@ public class PatientTests
     // Helpers
     private static Patient CreatePatient() => Patient.Create(Guid.NewGuid(), DateTime.UtcNow.AddYears(-30), BloodType.Create("O+"), "None", "None",
         EmergencyContact.Create("Mom", "555-5555"));
+
+    private static PatientPenalty CreateExpiredBlock(Guid patientId, string reason, DateTime blockedUntil)
+    {
+        var penalty = (PatientPenalty)Activator.CreateInstance(typeof(PatientPenalty), true)!;
+
+        typeof(PatientPenalty).GetProperty(nameof(PatientPenalty.PatientId))!.SetValue(penalty, patientId);
+        typeof(PatientPenalty).GetProperty(nameof(PatientPenalty.Type))!.SetValue(penalty, PenaltyType.TemporaryBlock);
+        typeof(PatientPenalty).GetProperty(nameof(PatientPenalty.Reason))!.SetValue(penalty, reason);
+        typeof(PatientPenalty).GetProperty(nameof(PatientPenalty.BlockedUntil))!.SetValue(penalty, blockedUntil);
+
+        return penalty;
+    }
 }

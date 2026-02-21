@@ -1,5 +1,6 @@
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Enums;
+using ClinicFlow.Domain.Exceptions.Base;
 
 namespace ClinicFlow.Domain.Entities;
 
@@ -26,11 +27,19 @@ public class PatientPenalty : BaseEntity
     // Factory Methods
     internal static PatientPenalty CreateWarning(Guid patientId, Guid? appointmentId, string reason)
     {
+        if (patientId == Guid.Empty) throw new BusinessRuleValidationException("Patient ID cannot be empty.");
+        if (string.IsNullOrWhiteSpace(reason)) throw new BusinessRuleValidationException("Penalty reason cannot be empty.");
+
         return new PatientPenalty(patientId, appointmentId, PenaltyType.Warning, reason, null);
     }
 
     internal static PatientPenalty CreateBlock(Guid patientId, string reason, DateTime blockedUntil)
     {
+        if (patientId == Guid.Empty) throw new BusinessRuleValidationException("Patient ID cannot be empty.");
+        if (string.IsNullOrWhiteSpace(reason)) throw new BusinessRuleValidationException("Penalty reason cannot be empty.");
+        if (blockedUntil <= DateTime.UtcNow) throw new BusinessRuleValidationException("Blocked until date must be in the future.");
+
         return new PatientPenalty(patientId, null, PenaltyType.TemporaryBlock, reason, blockedUntil);
     }
+
 }
