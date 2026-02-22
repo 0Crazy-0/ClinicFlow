@@ -6,18 +6,28 @@ using ClinicFlow.Domain.Interfaces;
 
 namespace ClinicFlow.Domain.Services;
 
-public class AppointmentCancellationService
+public class AppointmentCancellationService(IAppointmentRepository appointmentRepository, IUserRepository userRepository, IAppointmentTypeDefinitionRepository
+    appointmentTypeDefinitionRepository, IMedicalSpecialtyRepository medicalSpecialtyRepository, IDoctorRepository doctorRepository)
 {
-    public void CancelAppointment(Appointment appointment, User initiator, AppointmentTypeDefinition appointmentTypeDefinition, bool isAuthorizedFamilyMember,
-        MedicalSpecialty specialty, string? reason)
+    public async Task CancelAppointmentAsync(Guid appointmentId, Guid initiatorId, bool isAuthorizedFamilyMember, string? reason)
     {
+        var appointment = await appointmentRepository.GetByIdAsync(appointmentId) ?? throw new EntityNotFoundException(nameof(Appointment), appointmentId);
+
+        var initiator = await userRepository.GetByIdAsync(initiatorId) ?? throw new EntityNotFoundException(nameof(User), initiatorId);
+
+        var appointmentTypeDefinition = await appointmentTypeDefinitionRepository.GetByIdAsync(appointment.AppointmentTypeId) ?? throw new EntityNotFoundException(nameof(AppointmentTypeDefinition), appointment.AppointmentTypeId);
+
         ValidateCancellationPermission(appointment, initiator, appointmentTypeDefinition, isAuthorizedFamilyMember);
         ValidateCancellationReason(initiator.Role, reason);
+
+        var doctor = await doctorRepository.GetByIdAsync(appointment.DoctorId) ?? throw new EntityNotFoundException(nameof(Doctor), appointment.DoctorId);
+
+        var specialty = await medicalSpecialtyRepository.GetByIdAsync(doctor.MedicalSpecialtyId) ?? 
+            throw new EntityNotFoundException(nameof(MedicalSpecialty), doctor.MedicalSpecialtyId);
 
         appointment.Cancel(initiator.Id, reason, specialty);
     }
 
-    // Helpers
     private static void ValidateCancellationPermission(Appointment appointment, User initiator, AppointmentTypeDefinition appointmentTypeDefinition, bool isFamilyMember)
     {
         if (initiator.Role is UserRole.Admin or UserRole.Receptionist) return;
@@ -50,6 +60,7 @@ public class AppointmentCancellationService
         throw new AppointmentCancellationUnauthorizedException("User is not authorized to cancel this appointment.");
     }
 
+    // Helper
     private static void ValidateCancellationReason(UserRole role, string? reason)
     {
         bool isStaff = role is UserRole.Admin or UserRole.Receptionist;

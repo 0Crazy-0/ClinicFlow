@@ -4,19 +4,32 @@ using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Events;
 using ClinicFlow.Domain.Exceptions.Appointments;
 using ClinicFlow.Domain.Exceptions.Base;
+using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
+using Moq;
 
 namespace ClinicFlow.Domain.Tests.Services;
 
 public class AppointmentCancellationServiceTests
 {
     private readonly AppointmentCancellationService _sut;
+    private readonly Mock<IAppointmentRepository> _appointmentRepositoryMock;
+    private readonly Mock<IUserRepository> _userRepositoryMock;
+    private readonly Mock<IAppointmentTypeDefinitionRepository> _appointmentTypeDefinitionRepositoryMock;
+    private readonly Mock<IMedicalSpecialtyRepository> _medicalSpecialtyRepositoryMock;
+    private readonly Mock<IDoctorRepository> _doctorRepositoryMock;
 
     public AppointmentCancellationServiceTests()
     {
-        _sut = new AppointmentCancellationService();
+        _appointmentRepositoryMock = new Mock<IAppointmentRepository>();
+        _userRepositoryMock = new Mock<IUserRepository>();
+        _appointmentTypeDefinitionRepositoryMock = new Mock<IAppointmentTypeDefinitionRepository>();
+        _medicalSpecialtyRepositoryMock = new Mock<IMedicalSpecialtyRepository>();
+        _doctorRepositoryMock = new Mock<IDoctorRepository>();
+        _sut = new AppointmentCancellationService(_appointmentRepositoryMock.Object, _userRepositoryMock.Object, _appointmentTypeDefinitionRepositoryMock.Object, 
+        _medicalSpecialtyRepositoryMock.Object, _doctorRepositoryMock.Object);
     }
 
     [Theory]
@@ -24,7 +37,7 @@ public class AppointmentCancellationServiceTests
     [InlineData(UserRole.Doctor, true, false, AppointmentType.Checkup)]
     [InlineData(UserRole.Patient, true, false, AppointmentType.Checkup)]
     [InlineData(UserRole.Patient, false, true, AppointmentType.Checkup)]
-    public void CancelAppointment_ShouldSucceed_WhenAuthorized(UserRole role, bool isOwn, bool isFamily, AppointmentType typeEnum)
+    public async Task CancelAppointment_ShouldSucceed_WhenAuthorized(UserRole role, bool isOwn, bool isFamily, AppointmentType typeEnum)
     {
         // Arrange
         var appointment = CreateAppointment(DateTime.UtcNow.AddDays(2));
@@ -38,8 +51,13 @@ public class AppointmentCancellationServiceTests
         var type = CreateAppointmentType(typeEnum);
         var user = CreateUser(role, doctorId, patientId);
 
+        SetupAppointmentRepository(appointment);
+        SetupUserRepository(user);
+        SetupAppointmentTypeDefinitionRepository(appointment.AppointmentTypeId, type);
+        SetupDoctorAndSpecialtyRepositories(appointment.DoctorId, 24);
+
         // Act
-        _sut.CancelAppointment(appointment, user, type, isFamily, CreateSpecialty(24), "Valid Reason");
+        await _sut.CancelAppointmentAsync(appointment.Id, user.Id, isFamily, "Valid Reason");
 
         // Assert
         appointment.Status.Should().Be(AppointmentStatus.Cancelled);
@@ -53,7 +71,7 @@ public class AppointmentCancellationServiceTests
     [InlineData(UserRole.Doctor, false, false, AppointmentType.Checkup, "Doctors can only cancel their own appointments.")]
     [InlineData(UserRole.Patient, false, true, AppointmentType.Procedure, "Family members cannot cancel appointments of type: Procedure")]
     [InlineData(UserRole.Patient, false, false, AppointmentType.Checkup, "User is not authorized to cancel this appointment.")]
-    public void CancelAppointment_ShouldThrowUnauthorized_WhenNotAuthorized(UserRole role, bool isOwn, bool isFamily, AppointmentType typeEnum, string expectedMessage)
+    public async Task CancelAppointment_ShouldThrowUnauthorized_WhenNotAuthorized(UserRole role, bool isOwn, bool isFamily, AppointmentType typeEnum, string expectedMessage)
     {
         // Arrange
         var appointment = CreateAppointment(DateTime.UtcNow.AddDays(2));
@@ -65,37 +83,60 @@ public class AppointmentCancellationServiceTests
         var type = CreateAppointmentType(typeEnum);
         var user = CreateUser(role, doctorId, patientId);
 
+        SetupAppointmentRepository(appointment);
+        SetupUserRepository(user);
+        SetupAppointmentTypeDefinitionRepository(appointment.AppointmentTypeId, type);
+
         // Act
-        var act = () => _sut.CancelAppointment(appointment, user, type, isFamily, CreateSpecialty(24), "Reason");
+        var act = () => _sut.CancelAppointmentAsync(appointment.Id, user.Id, isFamily, "Reason");
 
         // Assert
-        act.Should().Throw<AppointmentCancellationUnauthorizedException>().WithMessage(expectedMessage);
+        await act.Should().ThrowAsync<AppointmentCancellationUnauthorizedException>().WithMessage(expectedMessage);
     }
 
     [Fact]
-    public void CancelAppointment_ShouldThrowBusinessRuleValidationException_WhenStaffCancelsWithoutReason()
+    public async Task CancelAppointment_ShouldThrowBusinessRuleValidationException_WhenStaffCancelsWithoutReason()
     {
         // Arrange
         var appointment = CreateAppointment(DateTime.UtcNow.AddDays(2));
         var receptionist = CreateUser(UserRole.Receptionist);
         var type = CreateAppointmentType(AppointmentType.Checkup);
 
+        SetupAppointmentRepository(appointment);
+        SetupUserRepository(receptionist);
+        SetupAppointmentTypeDefinitionRepository(appointment.AppointmentTypeId, type);
+
         // Act
-        var act = () => _sut.CancelAppointment(appointment, receptionist, type, false, CreateSpecialty(24), "");
+        var act = () => _sut.CancelAppointmentAsync(appointment.Id, receptionist.Id, false, "");
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage("Staff members must provide a reason for cancellation.");
+        await act.Should().ThrowAsync<BusinessRuleValidationException>().WithMessage("Staff members must provide a reason for cancellation.");
     }
 
     // Helpers
 
-    private static MedicalSpecialty CreateSpecialty(int minCancellationHours)
+    private void SetupAppointmentRepository(Appointment appointment) =>
+        _appointmentRepositoryMock.Setup(x => x.GetByIdAsync(appointment.Id)).ReturnsAsync(appointment);
+
+    private void SetupUserRepository(User user) =>
+        _userRepositoryMock.Setup(x => x.GetByIdAsync(user.Id)).ReturnsAsync(user);
+
+    private void SetupAppointmentTypeDefinitionRepository(Guid appointmentTypeId, AppointmentTypeDefinition type) =>
+        _appointmentTypeDefinitionRepositoryMock.Setup(x => x.GetByIdAsync(appointmentTypeId)).ReturnsAsync(type);
+
+    private void SetupDoctorAndSpecialtyRepositories(Guid doctorId, int minCancellationHours)
     {
+        var doctor = (Doctor)Activator.CreateInstance(typeof(Doctor), true)!;
+
+        SetPrivateProperty(doctor, nameof(Doctor.MedicalSpecialtyId), Guid.NewGuid());
+
+        _doctorRepositoryMock.Setup(x => x.GetByIdAsync(doctorId)).ReturnsAsync(doctor);
+
         var specialty = (MedicalSpecialty)Activator.CreateInstance(typeof(MedicalSpecialty), true)!;
 
         SetPrivateProperty(specialty, nameof(MedicalSpecialty.MinCancellationHours), minCancellationHours);
 
-        return specialty;
+        _medicalSpecialtyRepositoryMock.Setup(x => x.GetByIdAsync(doctor.MedicalSpecialtyId)).ReturnsAsync(specialty);
     }
 
     private static Appointment CreateAppointment(DateTime scheduledDateTime) => Appointment.Schedule(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), scheduledDateTime.Date,

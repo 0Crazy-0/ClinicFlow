@@ -7,8 +7,8 @@ using MediatR;
 
 namespace ClinicFlow.Application.Appointments.Commands.ScheduleAppointment;
 
-public class ScheduleAppointmentCommandHandler(IPatientRepository patientRepository, IDoctorRepository doctorRepository, IPatientPenaltyRepository penaltyRepository,
-    IScheduleRepository scheduleRepository, IAppointmentRepository appointmentRepository, AppointmentSchedulingService schedulingService, IUnitOfWork unitOfWork) : IRequestHandler<ScheduleAppointmentCommand, Guid>
+public class ScheduleAppointmentCommandHandler(IPatientRepository patientRepository, IDoctorRepository doctorRepository,
+    IAppointmentRepository appointmentRepository, AppointmentSchedulingService schedulingService, IUnitOfWork unitOfWork) : IRequestHandler<ScheduleAppointmentCommand, Guid>
 {
     public async Task<Guid> Handle(ScheduleAppointmentCommand request, CancellationToken cancellationToken)
     {
@@ -16,15 +16,9 @@ public class ScheduleAppointmentCommandHandler(IPatientRepository patientReposit
 
         var doctor = await doctorRepository.GetByIdAsync(request.DoctorId) ?? throw new EntityNotFoundException(nameof(Doctor), request.DoctorId);
 
-        var penalties = await penaltyRepository.GetByPatientIdAsync(request.PatientId);
-
         var timeRange = TimeRange.Create(request.StartTime, request.EndTime);
 
-        var doctorSchedule = await scheduleRepository.GetByDoctorAndDayAsync(doctor.Id, request.ScheduledDate.DayOfWeek);
-
-        var hasConflict = await appointmentRepository.HasConflictAsync(doctor.Id, request.ScheduledDate, timeRange);
-
-        var appointment = schedulingService.ScheduleAppointment(patient, penalties, doctor, request.ScheduledDate, timeRange, request.AppointmentTypeId, doctorSchedule, hasConflict);
+        var appointment = await schedulingService.ScheduleAppointmentAsync(patient.Id, doctor.Id, request.ScheduledDate, timeRange, request.AppointmentTypeId);
 
         await appointmentRepository.CreateAsync(appointment);
 
