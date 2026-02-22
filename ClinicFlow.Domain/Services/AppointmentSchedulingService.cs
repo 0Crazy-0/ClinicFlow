@@ -6,7 +6,7 @@ using ClinicFlow.Domain.Enums;
 
 namespace ClinicFlow.Domain.Services;
 
-public class AppointmentSchedulingService
+public static class AppointmentSchedulingService
 {
     public static Appointment ScheduleAppointment(Patient patient, IEnumerable<PatientPenalty> penalties, Doctor doctor, DateTime scheduledDate,
         TimeRange timeRange, Guid appointmentTypeId, Schedule? doctorSchedule, bool hasConflict)

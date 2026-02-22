@@ -5,7 +5,7 @@ using ClinicFlow.Domain.Exceptions.Base;
 
 namespace ClinicFlow.Domain.Services;
 
-public class AppointmentCancellationService
+public static class AppointmentCancellationService
 {
     public static void CancelAppointment(Appointment appointment, User initiator, AppointmentTypeDefinition appointmentTypeDefinition, bool isAuthorizedFamilyMember,
         MedicalSpecialty specialty, string? reason)
