@@ -11,13 +11,6 @@ namespace ClinicFlow.Domain.Tests.Services;
 
 public class AppointmentSchedulingServiceTests
 {
-    private readonly AppointmentSchedulingService _sut;
-
-    public AppointmentSchedulingServiceTests()
-    {
-        _sut = new AppointmentSchedulingService();
-    }
-
     // ScheduleAppointmentAsync
     [Fact]
     public async Task ScheduleAppointmentAsync_ShouldThrowException_WhenPatientIsBlocked()
@@ -29,7 +22,7 @@ public class AppointmentSchedulingServiceTests
         var penalties = new List<PatientPenalty> { PatientPenalty.CreateBlock(patient.Id, "Blocked", scheduledDate) };
 
         // Act
-        var act = () => _sut.ScheduleAppointment(patient, penalties, doctor, scheduledDate, TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(10)), Guid.NewGuid(), null, false);
+        var act = () => AppointmentSchedulingService.ScheduleAppointment(patient, penalties, doctor, scheduledDate, TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(10)), Guid.NewGuid(), null, false);
 
         // Assert
         act.Should().Throw<PatientBlockedException>();
@@ -43,7 +36,7 @@ public class AppointmentSchedulingServiceTests
         var scheduledDate = DateTime.UtcNow.AddDays(1);
 
         // Act
-        var act = () => _sut.ScheduleAppointment(CreatePatient(), [], doctor, scheduledDate, TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(10)),
+        var act = () => AppointmentSchedulingService.ScheduleAppointment(CreatePatient(), [], doctor, scheduledDate, TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(10)),
             Guid.NewGuid(), null, false);
 
         // Assert
@@ -60,7 +53,7 @@ public class AppointmentSchedulingServiceTests
         var schedule = CreateSchedule(doctor.Id, scheduledDate.DayOfWeek, TimeRange.Create(TimeSpan.FromHours(8), TimeSpan.FromHours(16)));
 
         // Act
-        var act = () => _sut.ScheduleAppointment(CreatePatient(), [], doctor, scheduledDate,
+        var act = () => AppointmentSchedulingService.ScheduleAppointment(CreatePatient(), [], doctor, scheduledDate,
             TimeRange.Create(TimeSpan.FromHours(17), TimeSpan.FromHours(18)), Guid.NewGuid(), schedule, false); // Outside working hours
 
         // Assert
@@ -80,7 +73,7 @@ public class AppointmentSchedulingServiceTests
         var schedule = CreateValidSchedule(doctor.Id, scheduledDate.DayOfWeek);
 
         // Act
-        var act = () => _sut.ScheduleAppointment(patient, penalties, doctor, scheduledDate, timeRange, Guid.NewGuid(), schedule, true);
+        var act = () => AppointmentSchedulingService.ScheduleAppointment(patient, penalties, doctor, scheduledDate, timeRange, Guid.NewGuid(), schedule, true);
 
         // Assert
         act.Should().Throw<AppointmentConflictException>();
@@ -100,7 +93,7 @@ public class AppointmentSchedulingServiceTests
         var schedule = CreateValidSchedule(doctor.Id, scheduledDate.DayOfWeek);
 
         // Act
-        var result = _sut.ScheduleAppointment(patient, penalties, doctor, scheduledDate, timeRange, appointmentTypeId, schedule, false);
+        var result = AppointmentSchedulingService.ScheduleAppointment(patient, penalties, doctor, scheduledDate, timeRange, appointmentTypeId, schedule, false);
 
         // Assert
         result.Should().NotBeNull();
@@ -119,7 +112,7 @@ public class AppointmentSchedulingServiceTests
         var newTimeRange = TimeRange.Create(TimeSpan.FromHours(10), TimeSpan.FromHours(11));
 
         // Act
-        var act = () => _sut.RescheduleAppointment(appointment, newDate, newTimeRange, null, []);
+        var act = () => AppointmentSchedulingService.RescheduleAppointment(appointment, newDate, newTimeRange, null, []);
 
         // Assert
         act.Should().Throw<DoctorNotAvailableException>();
@@ -138,7 +131,7 @@ public class AppointmentSchedulingServiceTests
         var schedule = CreateValidSchedule(appointment.DoctorId, newDate.DayOfWeek);
 
         // Act
-        var act = () => _sut.RescheduleAppointment(appointment, newDate, TimeRange.Create(TimeSpan.FromHours(10), TimeSpan.FromHours(11)), schedule, [conflictingAppointment]);
+        var act = () => AppointmentSchedulingService.RescheduleAppointment(appointment, newDate, TimeRange.Create(TimeSpan.FromHours(10), TimeSpan.FromHours(11)), schedule, [conflictingAppointment]);
 
         // Assert
         act.Should().Throw<AppointmentConflictException>();
@@ -156,7 +149,7 @@ public class AppointmentSchedulingServiceTests
         var schedule = CreateValidSchedule(appointment.DoctorId, newDate.DayOfWeek);
 
         // Act
-        _sut.RescheduleAppointment(appointment, newDate, newTimeRange, schedule, []);
+        AppointmentSchedulingService.RescheduleAppointment(appointment, newDate, newTimeRange, schedule, []);
 
         // Assert
         appointment.ScheduledDate.Should().Be(newDate);
@@ -178,7 +171,7 @@ public class AppointmentSchedulingServiceTests
         var schedule = CreateValidSchedule(appointment.DoctorId, newDate.DayOfWeek);
 
         // Act
-        var act = () => _sut.RescheduleAppointment(appointment, newDate, newTimeRange, schedule, []);
+        var act = () => AppointmentSchedulingService.RescheduleAppointment(appointment, newDate, newTimeRange, schedule, []);
 
         // Assert
         act.Should().Throw<AppointmentReschedulingNotAllowedException>().WithMessage("Cannot reschedule appointment: This appointment cannot be rescheduled");
@@ -193,7 +186,7 @@ public class AppointmentSchedulingServiceTests
 
     private static Schedule CreateSchedule(Guid doctorId, DayOfWeek dayOfWeek, TimeRange timeRange) => Schedule.Create(doctorId, dayOfWeek, timeRange);
 
-    private Schedule CreateValidSchedule(Guid doctorId, DayOfWeek dayOfWeek) => CreateSchedule(doctorId, dayOfWeek, TimeRange.Create(TimeSpan.FromHours(8), TimeSpan.FromHours(18)));
+    private static Schedule CreateValidSchedule(Guid doctorId, DayOfWeek dayOfWeek) => CreateSchedule(doctorId, dayOfWeek, TimeRange.Create(TimeSpan.FromHours(8), TimeSpan.FromHours(18)));
 
 }
 

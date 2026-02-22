@@ -7,8 +7,8 @@ using MediatR;
 namespace ClinicFlow.Application.Appointments.Commands.CancelAppointment;
 
 public class CancelAppointmentCommandHandler(IAppointmentRepository appointmentRepository, IUserRepository userRepository,
-    IAppointmentTypeDefinitionRepository appointmentTypeDefinitionRepository, IDoctorRepository doctorRepository, IMedicalSpecialtyRepository medicalSpecialtyRepository, 
-    AppointmentCancellationService cancellationService, IUnitOfWork unitOfWork) : IRequestHandler<CancelAppointmentCommand>
+    IAppointmentTypeDefinitionRepository appointmentTypeDefinitionRepository, IDoctorRepository doctorRepository, IMedicalSpecialtyRepository medicalSpecialtyRepository,
+    IUnitOfWork unitOfWork) : IRequestHandler<CancelAppointmentCommand>
 {
     public async Task Handle(CancelAppointmentCommand request, CancellationToken cancellationToken)
     {
@@ -24,7 +24,7 @@ public class CancelAppointmentCommandHandler(IAppointmentRepository appointmentR
         var specialty = await medicalSpecialtyRepository.GetByIdAsync(doctor.MedicalSpecialtyId) ??
             throw new EntityNotFoundException(nameof(MedicalSpecialty), doctor.MedicalSpecialtyId);
 
-        cancellationService.CancelAppointment(appointment, initiator, appointmentType, request.IsAuthorizedFamilyMember, specialty, request.Reason);
+        AppointmentCancellationService.CancelAppointment(appointment, initiator, appointmentType, request.IsAuthorizedFamilyMember, specialty, request.Reason);
 
         await appointmentRepository.UpdateAsync(appointment);
 

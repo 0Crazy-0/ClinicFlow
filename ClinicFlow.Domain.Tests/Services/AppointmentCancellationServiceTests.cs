@@ -12,13 +12,6 @@ namespace ClinicFlow.Domain.Tests.Services;
 
 public class AppointmentCancellationServiceTests
 {
-    private readonly AppointmentCancellationService _sut;
-
-    public AppointmentCancellationServiceTests()
-    {
-        _sut = new AppointmentCancellationService();
-    }
-
     [Theory]
     [InlineData(UserRole.Admin, false, false, AppointmentType.Checkup)]
     [InlineData(UserRole.Doctor, true, false, AppointmentType.Checkup)]
@@ -39,7 +32,7 @@ public class AppointmentCancellationServiceTests
         var user = CreateUser(role, doctorId, patientId);
 
         // Act
-        _sut.CancelAppointment(appointment, user, type, isFamily, CreateSpecialty(24), "Valid Reason");
+        AppointmentCancellationService.CancelAppointment(appointment, user, type, isFamily, CreateSpecialty(24), "Valid Reason");
 
         // Assert
         appointment.Status.Should().Be(AppointmentStatus.Cancelled);
@@ -66,7 +59,7 @@ public class AppointmentCancellationServiceTests
         var user = CreateUser(role, doctorId, patientId);
 
         // Act
-        var act = () => _sut.CancelAppointment(appointment, user, type, isFamily, CreateSpecialty(24), "Reason");
+        var act = () => AppointmentCancellationService.CancelAppointment(appointment, user, type, isFamily, CreateSpecialty(24), "Reason");
 
         // Assert
         act.Should().Throw<AppointmentCancellationUnauthorizedException>().WithMessage(expectedMessage);
@@ -81,7 +74,7 @@ public class AppointmentCancellationServiceTests
         var type = CreateAppointmentType(AppointmentType.Checkup);
 
         // Act
-        var act = () => _sut.CancelAppointment(appointment, receptionist, type, false, CreateSpecialty(24), "");
+        var act = () => AppointmentCancellationService.CancelAppointment(appointment, receptionist, type, false, CreateSpecialty(24), "");
 
         // Assert
         act.Should().Throw<BusinessRuleValidationException>().WithMessage("Staff members must provide a reason for cancellation.");
