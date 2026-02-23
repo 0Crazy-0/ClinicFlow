@@ -2,8 +2,14 @@ using ClinicFlow.Domain.Exceptions.Base;
 
 namespace ClinicFlow.Domain.ValueObjects;
 
+/// <summary>
+/// Value object representing a validated person's full name.
+/// </summary>
 public record PersonName
 {
+    /// <summary>
+    /// The trimmed full name string.
+    /// </summary>
     public string FullName { get; }
 
     private PersonName(string fullName)
@@ -11,7 +17,10 @@ public record PersonName
         FullName = fullName;
     }
     
-    // Factory Method
+    /// <summary>
+    /// Creates a <see cref="PersonName"/> after validating length constraints.
+    /// </summary>
+    /// <exception cref="BusinessRuleValidationException">Thrown when the value is empty or shorter than 2 characters.</exception>
     internal static PersonName Create(string fullName)
     {
         if (string.IsNullOrWhiteSpace(fullName)) throw new BusinessRuleValidationException("Name cannot be empty.");
@@ -23,6 +32,7 @@ public record PersonName
         return new PersonName(trimmed);
     }
 
+    /// <inheritdoc/>
     public override string ToString() => FullName;
 
 }

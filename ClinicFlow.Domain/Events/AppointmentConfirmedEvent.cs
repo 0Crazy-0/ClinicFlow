@@ -3,4 +3,7 @@ using ClinicFlow.Domain.Entities;
 
 namespace ClinicFlow.Domain.Events;
 
+/// <summary>
+/// Raised when an appointment transitions to the confirmed status.
+/// </summary>
 public record AppointmentConfirmedEvent(Appointment Appointment) : IDomainEvent;

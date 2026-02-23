@@ -4,17 +4,60 @@ using ClinicFlow.Domain.Exceptions.Base;
 
 namespace ClinicFlow.Domain.Entities;
 
+/// <summary>
+/// Represents a clinical encounter record linked to a specific appointment.
+/// Captures diagnosis, treatment, lab results, and follow-up instructions.
+/// </summary>
 public class MedicalRecord : BaseEntity
 {
+    /// <summary>
+    /// Identifier of the patient this record belongs to.
+    /// </summary>
     public Guid PatientId { get; init; }
+
+    /// <summary>
+    /// Identifier of the doctor who created the record.
+    /// </summary>
     public Guid DoctorId { get; init; }
+
+    /// <summary>
+    /// Identifier of the appointment that originated this record.
+    /// </summary>
     public Guid AppointmentId { get; init; }
+
+    /// <summary>
+    /// Primary symptom or reason for the visit as reported by the patient.
+    /// </summary>
     public string ChiefComplaint { get; private set; } = string.Empty;
+
+    /// <summary>
+    /// Clinical diagnosis determined by the doctor.
+    /// </summary>
     public string Diagnosis { get; private set; } = string.Empty;
+
+    /// <summary>
+    /// Prescribed treatment plan.
+    /// </summary>
     public string Treatment { get; private set; } = string.Empty;
+
+    /// <summary>
+    /// Medications prescribed during this encounter.
+    /// </summary>
     public string Medications { get; private set; } = string.Empty;
+
+    /// <summary>
+    /// Laboratory results associated with this encounter.
+    /// </summary>
     public string LabResults { get; private set; } = string.Empty;
+
+    /// <summary>
+    /// Free-text notes written by the doctor.
+    /// </summary>
     public string DoctorNotes { get; private set; } = string.Empty;
+
+    /// <summary>
+    /// Instructions for the patient's post-visit follow-up.
+    /// </summary>
     public string FollowUpInstructions { get; private set; } = string.Empty;
 
     // EF Core constructor
@@ -28,7 +71,10 @@ public class MedicalRecord : BaseEntity
         ChiefComplaint = chiefComplaint;
     }
 
-    // Factory Method
+    /// <summary>
+    /// Creates a new medical record and raises a <see cref="MedicalRecordCreatedEvent"/>.
+    /// </summary>
+    /// <exception cref="DomainValidationException">Thrown when any required identifier is empty or the chief complaint is blank.</exception>
     internal static MedicalRecord Create(Guid patientId, Guid doctorId, Guid appointmentId, string chiefComplaint)
     {
         if (patientId == Guid.Empty) throw new DomainValidationException("Patient ID cannot be empty.");
@@ -43,7 +89,10 @@ public class MedicalRecord : BaseEntity
         return record;
     }
 
-    // Domain Methods
+    /// <summary>
+    /// Records a clinical diagnosis for this encounter.
+    /// </summary>
+    /// <exception cref="DomainValidationException">Thrown when the diagnosis text is blank.</exception>
     internal void AddDiagnosis(string diagnosis)
     {
         if (string.IsNullOrWhiteSpace(diagnosis)) throw new DomainValidationException("Diagnosis cannot be empty.");
@@ -51,6 +100,10 @@ public class MedicalRecord : BaseEntity
         Diagnosis = diagnosis;
     }
 
+    /// <summary>
+    /// Records the prescribed treatment and medications.
+    /// </summary>
+    /// <exception cref="DomainValidationException">Thrown when either treatment or medications text is blank.</exception>
     internal void PrescribeTreatment(string treatment, string medications)
     {
         if (string.IsNullOrWhiteSpace(treatment)) throw new DomainValidationException("Treatment cannot be empty.");
@@ -60,6 +113,10 @@ public class MedicalRecord : BaseEntity
         Medications = medications;
     }
 
+    /// <summary>
+    /// Records laboratory results for this encounter.
+    /// </summary>
+    /// <exception cref="DomainValidationException">Thrown when the lab results text is blank.</exception>
     internal void RecordLabResults(string labResults)
     {
         if (string.IsNullOrWhiteSpace(labResults)) throw new DomainValidationException("Lab results cannot be empty.");
@@ -67,6 +124,10 @@ public class MedicalRecord : BaseEntity
         LabResults = labResults;
     }
 
+    /// <summary>
+    /// Adds or replaces the doctor's clinical notes.
+    /// </summary>
+    /// <exception cref="DomainValidationException">Thrown when the notes text is blank.</exception>
     internal void AddDoctorNotes(string notes)
     {
         if (string.IsNullOrWhiteSpace(notes)) throw new DomainValidationException("Doctor notes cannot be empty.");
@@ -74,6 +135,10 @@ public class MedicalRecord : BaseEntity
         DoctorNotes = notes;
     }
 
+    /// <summary>
+    /// Sets follow-up care instructions for the patient.
+    /// </summary>
+    /// <exception cref="DomainValidationException">Thrown when the instructions text is blank.</exception>
     internal void SetFollowUpInstructions(string instructions)
     {
         if (string.IsNullOrWhiteSpace(instructions)) throw new DomainValidationException("Follow-up instructions cannot be empty.");

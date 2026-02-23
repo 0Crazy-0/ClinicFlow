@@ -2,8 +2,14 @@ using ClinicFlow.Domain.Exceptions.Base;
 
 namespace ClinicFlow.Domain.ValueObjects;
 
+/// <summary>
+/// Value object representing a validated medical license number.
+/// </summary>
 public record MedicalLicenseNumber
 {
+    /// <summary>
+    /// The trimmed license number string.
+    /// </summary>
     public string Value { get; }
 
     private MedicalLicenseNumber(string value)
@@ -11,7 +17,10 @@ public record MedicalLicenseNumber
         Value = value;
     }
     
-    // Factory Method
+    /// <summary>
+    /// Creates a <see cref="MedicalLicenseNumber"/> after validating length constraints.
+    /// </summary>
+    /// <exception cref="BusinessRuleValidationException">Thrown when the value is empty or shorter than 4 characters.</exception>
     internal static MedicalLicenseNumber Create(string licenseNumber)
     {
         if (string.IsNullOrWhiteSpace(licenseNumber)) throw new BusinessRuleValidationException("Medical license number cannot be empty.");
@@ -23,6 +32,7 @@ public record MedicalLicenseNumber
         return new MedicalLicenseNumber(trimmed);
     }
 
+    /// <inheritdoc/>
     public override string ToString() => Value;
 
 }

@@ -5,8 +5,19 @@ using ClinicFlow.Domain.Exceptions.Base;
 
 namespace ClinicFlow.Domain.Services;
 
+/// <summary>
+/// Domain service that orchestrates appointment cancellation, enforcing authorization
+/// and business rules such as required cancellation reasons for staff members.
+/// </summary>
 public static class AppointmentCancellationService
 {
+    /// <summary>
+    /// Cancels an appointment after validating the initiator's permission and any required cancellation reason.
+    /// </summary>
+    /// <param name="isAuthorizedFamilyMember">Indicates whether the initiator is an authorized family member of the patient.</param>
+    /// <param name="specialty">The medical specialty, used to evaluate the cancellation notice policy.</param>
+    /// <exception cref="AppointmentCancellationUnauthorizedException">Thrown when the initiator is not authorized to cancel the appointment.</exception>
+    /// <exception cref="BusinessRuleValidationException">Thrown when a staff member does not provide a cancellation reason.</exception>
     public static void CancelAppointment(Appointment appointment, User initiator, AppointmentTypeDefinition appointmentTypeDefinition, bool isAuthorizedFamilyMember,
         MedicalSpecialty specialty, string? reason)
     {

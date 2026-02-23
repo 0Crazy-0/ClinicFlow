@@ -3,6 +3,9 @@ using ClinicFlow.Domain.Exceptions.Base;
 
 namespace ClinicFlow.Domain.ValueObjects;
 
+/// <summary>
+/// Value object representing a validated phone number.
+/// </summary>
 public partial record PhoneNumber
 {
     private const string PhoneRegexPattern = @"^\+?(\d[\d-. ]+)?(\([\d-. ]+\))?[\d-. ]+\d$";
@@ -10,6 +13,9 @@ public partial record PhoneNumber
     [GeneratedRegex(PhoneRegexPattern)]
     private static partial Regex PhoneRegex();
 
+    /// <summary>
+    /// The trimmed phone number string.
+    /// </summary>
     public string Value { get; }
 
     private PhoneNumber(string value)
@@ -17,7 +23,10 @@ public partial record PhoneNumber
         Value = value;
     }
     
-    // Factory Method
+    /// <summary>
+    /// Creates a <see cref="PhoneNumber"/> after validating format and length constraints.
+    /// </summary>
+    /// <exception cref="BusinessRuleValidationException">Thrown when the value is empty, has an invalid format, or is shorter than 7 digits.</exception>
     internal static PhoneNumber Create(string number)
     {
         if (string.IsNullOrWhiteSpace(number)) throw new BusinessRuleValidationException("Phone number cannot be empty.");
@@ -29,6 +38,7 @@ public partial record PhoneNumber
         return new PhoneNumber(trimmed);
     }
 
+    /// <inheritdoc/>
     public override string ToString() => Value;
 
 }

@@ -2,10 +2,24 @@ using ClinicFlow.Domain.Exceptions.Scheduling;
 
 namespace ClinicFlow.Domain.ValueObjects;
 
+/// <summary>
+/// Value object representing a continuous block of time defined by a start and end <see cref="TimeSpan"/>.
+/// </summary>
 public record TimeRange
 {
+    /// <summary>
+    /// The start time of the range.
+    /// </summary>
     public TimeSpan Start { get; }
+
+    /// <summary>
+    /// The end time of the range.
+    /// </summary>
     public TimeSpan End { get; }
+
+    /// <summary>
+    /// The total duration of the time range.
+    /// </summary>
     public TimeSpan Duration => End - Start;
 
     private TimeRange(TimeSpan start, TimeSpan end)
@@ -13,7 +27,11 @@ public record TimeRange
         Start = start;
         End = end;
     }
-    // Factory Method
+
+    /// <summary>
+    /// Creates a <see cref="TimeRange"/> after ensuring the start time precedes the end time.
+    /// </summary>
+    /// <exception cref="InvalidTimeRangeException">Thrown when the start time is greater than or equal to the end time.</exception>
     internal static TimeRange Create(TimeSpan start, TimeSpan end)
     {
         if (start >= end) throw new InvalidTimeRangeException("Start time must be before end time.");
@@ -21,7 +39,10 @@ public record TimeRange
         return new TimeRange(start, end);
     }
 
-    // Check if two time ranges overlap
+    /// <summary>
+    /// Checks whether this time range overlaps with another time range.
+    /// </summary>
+    /// <exception cref="InvalidTimeRangeException">Thrown when the other time range is null.</exception>
     public bool OverlapsWith(TimeRange other)
     {
         if (other is null) throw new InvalidTimeRangeException("Time range cannot be null.");
@@ -29,6 +50,10 @@ public record TimeRange
         return Start < other.End && other.Start < End;
     }
 
+    /// <summary>
+    /// Checks whether this time range completely encompasses another time range.
+    /// </summary>
+    /// <exception cref="InvalidTimeRangeException">Thrown when the other time range is null.</exception>
     public bool Covers(TimeRange other)
     {
         if (other is null) throw new InvalidTimeRangeException("Time range cannot be null.");
