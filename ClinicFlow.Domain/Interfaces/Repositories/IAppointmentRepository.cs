@@ -20,6 +20,11 @@ public interface IAppointmentRepository
     Task<IList<Appointment>> GetByDoctorIdAsync(Guid doctorId, DateTime date);
 
     /// <summary>
+    /// Retrieves all appointments within a specific date range.
+    /// </summary>
+    Task<IList<Appointment>> GetByDateRangeAsync(DateTime startDate, DateTime endDate);
+
+    /// <summary>
     /// Retrieves all appointments for a given patient.
     /// </summary>
     Task<IList<Appointment>> GetByPatientIdAsync(Guid patientId);
