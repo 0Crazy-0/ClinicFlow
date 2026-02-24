@@ -1,6 +1,6 @@
 using ClinicFlow.Domain.Entities;
 
-namespace ClinicFlow.Domain.Interfaces;
+namespace ClinicFlow.Domain.Interfaces.Repositories;
 
 /// <summary>
 /// Repository contract for <see cref="Patient"/> persistence operations.

@@ -1,6 +1,6 @@
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
-using ClinicFlow.Domain.Interfaces;
+using ClinicFlow.Domain.Interfaces.Repositories;
 
 namespace ClinicFlow.Domain.Services;
 

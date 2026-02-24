@@ -2,7 +2,7 @@ using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.ValueObjects;
 
-namespace ClinicFlow.Domain.Interfaces;
+namespace ClinicFlow.Domain.Interfaces.Repositories;
 
 /// <summary>
 /// Repository contract for <see cref="Appointment"/> persistence operations.
