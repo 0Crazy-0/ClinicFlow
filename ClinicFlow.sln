@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClinicFlow.Domain.Tests", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClinicFlow.Application", "ClinicFlow.Application\ClinicFlow.Application.csproj", "{096A974C-AC44-47DA-BC01-496D553C22F0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClinicFlow.Application.Tests", "ClinicFlow.Application.Tests\ClinicFlow.Application.Tests.csproj", "{A1272C40-7606-4E33-900A-DE6B1E3BFCBF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,18 @@ Global
 		{096A974C-AC44-47DA-BC01-496D553C22F0}.Release|x64.Build.0 = Release|Any CPU
 		{096A974C-AC44-47DA-BC01-496D553C22F0}.Release|x86.ActiveCfg = Release|Any CPU
 		{096A974C-AC44-47DA-BC01-496D553C22F0}.Release|x86.Build.0 = Release|Any CPU
+		{A1272C40-7606-4E33-900A-DE6B1E3BFCBF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1272C40-7606-4E33-900A-DE6B1E3BFCBF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1272C40-7606-4E33-900A-DE6B1E3BFCBF}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A1272C40-7606-4E33-900A-DE6B1E3BFCBF}.Debug|x64.Build.0 = Debug|Any CPU
+		{A1272C40-7606-4E33-900A-DE6B1E3BFCBF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A1272C40-7606-4E33-900A-DE6B1E3BFCBF}.Debug|x86.Build.0 = Debug|Any CPU
+		{A1272C40-7606-4E33-900A-DE6B1E3BFCBF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1272C40-7606-4E33-900A-DE6B1E3BFCBF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1272C40-7606-4E33-900A-DE6B1E3BFCBF}.Release|x64.ActiveCfg = Release|Any CPU
+		{A1272C40-7606-4E33-900A-DE6B1E3BFCBF}.Release|x64.Build.0 = Release|Any CPU
+		{A1272C40-7606-4E33-900A-DE6B1E3BFCBF}.Release|x86.ActiveCfg = Release|Any CPU
+		{A1272C40-7606-4E33-900A-DE6B1E3BFCBF}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
