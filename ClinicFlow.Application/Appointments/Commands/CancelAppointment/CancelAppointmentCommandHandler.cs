@@ -1,4 +1,5 @@
 using ClinicFlow.Domain.Entities;
+using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
@@ -8,8 +9,9 @@ using MediatR;
 namespace ClinicFlow.Application.Appointments.Commands.CancelAppointment;
 
 public class CancelAppointmentCommandHandler(IAppointmentRepository appointmentRepository, IUserRepository userRepository,
-    IAppointmentTypeDefinitionRepository appointmentTypeDefinitionRepository, IDoctorRepository doctorRepository, IMedicalSpecialtyRepository medicalSpecialtyRepository,
-    IUnitOfWork unitOfWork) : IRequestHandler<CancelAppointmentCommand>
+    IAppointmentTypeDefinitionRepository appointmentTypeDefinitionRepository, IDoctorRepository doctorRepository,
+    IMedicalSpecialtyRepository medicalSpecialtyRepository, IPatientPenaltyRepository patientPenaltyRepository, IUnitOfWork unitOfWork)
+    : IRequestHandler<CancelAppointmentCommand>
 {
     public async Task Handle(CancelAppointmentCommand request, CancellationToken cancellationToken)
     {
@@ -28,6 +30,16 @@ public class CancelAppointmentCommandHandler(IAppointmentRepository appointmentR
         AppointmentCancellationService.CancelAppointment(appointment, initiator, appointmentType, request.IsAuthorizedFamilyMember, specialty, request.Reason);
 
         await appointmentRepository.UpdateAsync(appointment);
+
+        if (appointment.Status is AppointmentStatus.LateCancellation)
+        {
+            var existingPenalties = await patientPenaltyRepository.GetByPatientIdAsync(appointment.PatientId);
+            var newPenalties = PatientPenaltyService.ApplyPenalty(appointment.PatientId, existingPenalties, appointment.Id, "Late cancellation");
+
+            foreach (var penalty in newPenalties)
+                await patientPenaltyRepository.AddAsync(penalty);
+
+        }
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
