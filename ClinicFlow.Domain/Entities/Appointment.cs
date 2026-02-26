@@ -165,6 +165,20 @@ public class Appointment : BaseEntity
         AddDomainEvent(new AppointmentRescheduledEvent(this, previousDate, previousTimeRange));
     }
 
+    /// <summary>
+    /// Marks the appointment as a no-show, indicating the patient did not attend.
+    /// </summary>
+    /// <exception cref="DomainValidationException">Thrown when the appointment is not in a status that can be marked as no-show.</exception>
+    public void MarkAsNoShow()
+    {
+        if (Status is not (AppointmentStatus.Scheduled or AppointmentStatus.Confirmed))
+            throw new DomainValidationException("Only scheduled or confirmed appointments can be marked as No-Show.");
+
+        Status = AppointmentStatus.NoShow;
+
+        AddDomainEvent(new AppointmentMarkedAsNoShowEvent(this));
+    }
+
     // Business Rules (Private)
     private bool CanBeCancelled(MedicalSpecialty specialty) => specialty.IsCancellationAllowed(ScheduledDate.Add(TimeRange.Start));
 
