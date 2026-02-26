@@ -19,6 +19,7 @@ public class CancelAppointmentCommandHandlerTests
     private readonly Mock<IDoctorRepository> _doctorRepositoryMock;
     private readonly Mock<IMedicalSpecialtyRepository> _specialtyRepositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+    private readonly Mock<IPatientPenaltyRepository> _penaltyRepositoryMock;
     private readonly CancelAppointmentCommandHandler _sut;
 
     public CancelAppointmentCommandHandlerTests()
@@ -29,9 +30,10 @@ public class CancelAppointmentCommandHandlerTests
         _doctorRepositoryMock = new Mock<IDoctorRepository>();
         _specialtyRepositoryMock = new Mock<IMedicalSpecialtyRepository>();
         _unitOfWorkMock = new Mock<IUnitOfWork>();
+        _penaltyRepositoryMock = new Mock<IPatientPenaltyRepository>();
 
         _sut = new CancelAppointmentCommandHandler(_appointmentRepositoryMock.Object, _userRepositoryMock.Object,
-        _appointmentTypeRepositoryMock.Object, _doctorRepositoryMock.Object, _specialtyRepositoryMock.Object, _unitOfWorkMock.Object);
+        _appointmentTypeRepositoryMock.Object, _doctorRepositoryMock.Object, _specialtyRepositoryMock.Object, _penaltyRepositoryMock.Object, _unitOfWorkMock.Object);
     }
 
     [Fact]
@@ -56,12 +58,47 @@ public class CancelAppointmentCommandHandlerTests
         _appointmentTypeRepositoryMock.Setup(x => x.GetByIdAsync(appointment.AppointmentTypeId)).ReturnsAsync(type);
         _doctorRepositoryMock.Setup(x => x.GetByIdAsync(appointment.DoctorId)).ReturnsAsync(doctor);
         _specialtyRepositoryMock.Setup(x => x.GetByIdAsync(doctor.MedicalSpecialtyId)).ReturnsAsync(specialty);
+        _penaltyRepositoryMock.Setup(x => x.GetByPatientIdAsync(appointment.PatientId)).ReturnsAsync([]);
 
         // Act
         await _sut.Handle(command, CancellationToken.None);
 
         // Assert
         _appointmentRepositoryMock.Verify(x => x.UpdateAsync(It.Is<Appointment>(a => a.Status == AppointmentStatus.Cancelled)), Times.Once);
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldApplyPenalty_WhenCancellationIsLate()
+    {
+        // Arrange
+        var command = new CancelAppointmentCommand(Guid.NewGuid(), Guid.NewGuid(), false, "Late cancel reason");
+
+        var doctorId = Guid.NewGuid();
+        var patientId = Guid.NewGuid();
+        var specialtyId = Guid.NewGuid();
+        var appointmentTypeId = Guid.NewGuid();
+
+        // Appointment is scheduled 2 hours from now, which violates 24h minimum notice
+        var appointment = CreateAppointment(command.AppointmentId, doctorId, patientId, appointmentTypeId, DateTime.UtcNow.AddHours(2));
+        var user = CreateUser(command.InitiatorUserId, UserRole.Patient, patientId: patientId);
+        var type = CreateAppointmentType(appointmentTypeId, AppointmentType.Checkup);
+        var doctor = CreateDoctor(doctorId, specialtyId);
+        var specialty = CreateSpecialty(specialtyId, 24);
+
+        _appointmentRepositoryMock.Setup(x => x.GetByIdAsync(command.AppointmentId)).ReturnsAsync(appointment);
+        _userRepositoryMock.Setup(x => x.GetByIdAsync(command.InitiatorUserId)).ReturnsAsync(user);
+        _appointmentTypeRepositoryMock.Setup(x => x.GetByIdAsync(appointment.AppointmentTypeId)).ReturnsAsync(type);
+        _doctorRepositoryMock.Setup(x => x.GetByIdAsync(appointment.DoctorId)).ReturnsAsync(doctor);
+        _specialtyRepositoryMock.Setup(x => x.GetByIdAsync(doctor.MedicalSpecialtyId)).ReturnsAsync(specialty);
+        _penaltyRepositoryMock.Setup(x => x.GetByPatientIdAsync(appointment.PatientId)).ReturnsAsync([]);
+
+        // Act
+        await _sut.Handle(command, CancellationToken.None);
+
+        // Assert
+        _appointmentRepositoryMock.Verify(x => x.UpdateAsync(It.Is<Appointment>(a => a.Status == AppointmentStatus.LateCancellation)), Times.Once);
+        _penaltyRepositoryMock.Verify(x => x.AddAsync(It.Is<PatientPenalty>(p => p.Type == PenaltyType.Warning)), Times.AtLeastOnce);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 

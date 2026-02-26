@@ -181,6 +181,49 @@ public class AppointmentTests
         appointment.TimeRange.Should().Be(newTimeRange);
     }
 
+    // MarkAsNoShow
+    [Fact]
+    public void MarkAsNoShow_ShouldSetStatusToNoShow_WhenStatusIsScheduled()
+    {
+        // Arrange
+        var appointment = CreateAppointment(DateTime.UtcNow.AddDays(1));
+
+        // Act
+        appointment.MarkAsNoShow();
+
+        // Assert
+        appointment.Status.Should().Be(AppointmentStatus.NoShow);
+        appointment.DomainEvents.Should().ContainSingle(e => e is AppointmentMarkedAsNoShowEvent);
+    }
+
+    [Fact]
+    public void MarkAsNoShow_ShouldSetStatusToNoShow_WhenStatusIsConfirmed()
+    {
+        // Arrange
+        var appointment = CreateAppointment(DateTime.UtcNow.AddDays(1));
+        appointment.Confirm();
+        appointment.ClearDomainEvents(); // Clear confirmation event
+
+        // Act
+        appointment.MarkAsNoShow();
+
+        // Assert
+        appointment.Status.Should().Be(AppointmentStatus.NoShow);
+        appointment.DomainEvents.Should().ContainSingle(e => e is AppointmentMarkedAsNoShowEvent);
+    }
+
+    [Fact]
+    public void MarkAsNoShow_ShouldThrowException_WhenStatusIsCancelled()
+    {
+        // Arrange
+        var appointment = CreateAppointment(DateTime.UtcNow.AddDays(2));
+        var specialty = CreateSpecialty(24);
+        appointment.Cancel(Guid.NewGuid(), "Reason", specialty);
+        
+        // Act && Assert
+        appointment.Invoking(x => x.MarkAsNoShow()).Should().Throw<DomainValidationException>().WithMessage("Only scheduled or confirmed appointments can be marked as No-Show.");
+    }
+
     // Helpers
     private static Appointment CreateAppointment(DateTime scheduledDateTime) => Appointment.Schedule(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), scheduledDateTime.Date,
         TimeRange.Create(scheduledDateTime.TimeOfDay, scheduledDateTime.TimeOfDay.Add(TimeSpan.FromHours(1))));
