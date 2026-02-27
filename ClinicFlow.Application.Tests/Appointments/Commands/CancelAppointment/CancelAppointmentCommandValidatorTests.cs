@@ -1,5 +1,5 @@
 using ClinicFlow.Application.Appointments.Commands.CancelAppointment;
-using FluentAssertions;
+using FluentValidation.TestHelper;
 
 namespace ClinicFlow.Application.Tests.Appointments.Commands.CancelAppointment;
 
@@ -19,10 +19,10 @@ public class CancelAppointmentCommandValidatorTests
         var command = new CancelAppointmentCommand(Guid.NewGuid(), Guid.NewGuid(), false, "Reason");
 
         // Act
-        var result = _sut.Validate(command);
+        var result = _sut.TestValidate(command);
 
         // Assert
-        result.IsValid.Should().BeTrue();
+        result.ShouldNotHaveAnyValidationErrors();
     }
 
     [Fact]
@@ -32,11 +32,10 @@ public class CancelAppointmentCommandValidatorTests
         var command = new CancelAppointmentCommand(Guid.Empty, Guid.NewGuid(), false, "Reason");
 
         // Act
-        var result = _sut.Validate(command);
+        var result = _sut.TestValidate(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(x => x.PropertyName == nameof(command.AppointmentId));
+        result.ShouldHaveValidationErrorFor(x => x.AppointmentId);
     }
 
     [Fact]
@@ -46,10 +45,9 @@ public class CancelAppointmentCommandValidatorTests
         var command = new CancelAppointmentCommand(Guid.NewGuid(), Guid.Empty, false, "Reason");
 
         // Act
-        var result = _sut.Validate(command);
+        var result = _sut.TestValidate(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(x => x.PropertyName == nameof(command.InitiatorUserId));
+        result.ShouldHaveValidationErrorFor(x => x.InitiatorUserId);
     }
 }

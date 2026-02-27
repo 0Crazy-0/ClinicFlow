@@ -1,5 +1,5 @@
 using ClinicFlow.Application.Appointments.Commands.ScheduleAppointment;
-using FluentAssertions;
+using FluentValidation.TestHelper;
 
 namespace ClinicFlow.Application.Tests.Appointments.Commands.ScheduleAppointment;
 
@@ -19,10 +19,10 @@ public class ScheduleAppointmentCommandValidatorTests
         var command = new ScheduleAppointmentCommand(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow.Date.AddDays(1), new TimeSpan(10, 0, 0), new TimeSpan(11, 0, 0));
 
         // Act
-        var result = _sut.Validate(command);
+        var result = _sut.TestValidate(command);
 
         // Assert
-        result.IsValid.Should().BeTrue();
+        result.ShouldNotHaveAnyValidationErrors();
     }
 
     [Fact]
@@ -32,11 +32,10 @@ public class ScheduleAppointmentCommandValidatorTests
         var command = new ScheduleAppointmentCommand(Guid.Empty, Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow.Date.AddDays(1), new TimeSpan(10, 0, 0), new TimeSpan(11, 0, 0));
 
         // Act
-        var result = _sut.Validate(command);
+        var result = _sut.TestValidate(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(x => x.PropertyName == nameof(command.PatientId));
+        result.ShouldHaveValidationErrorFor(x => x.PatientId);
     }
 
     [Fact]
@@ -46,11 +45,10 @@ public class ScheduleAppointmentCommandValidatorTests
         var command = new ScheduleAppointmentCommand(Guid.NewGuid(), Guid.Empty, Guid.NewGuid(), DateTime.UtcNow.Date.AddDays(1), new TimeSpan(10, 0, 0), new TimeSpan(11, 0, 0));
 
         // Act
-        var result = _sut.Validate(command);
+        var result = _sut.TestValidate(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(x => x.PropertyName == nameof(command.DoctorId));
+        result.ShouldHaveValidationErrorFor(x => x.DoctorId);
     }
 
     [Fact]
@@ -60,11 +58,10 @@ public class ScheduleAppointmentCommandValidatorTests
         var command = new ScheduleAppointmentCommand(Guid.NewGuid(), Guid.NewGuid(), Guid.Empty, DateTime.UtcNow.Date.AddDays(1), new TimeSpan(10, 0, 0), new TimeSpan(11, 0, 0));
 
         // Act
-        var result = _sut.Validate(command);
+        var result = _sut.TestValidate(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(x => x.PropertyName == nameof(command.AppointmentTypeId));
+        result.ShouldHaveValidationErrorFor(x => x.AppointmentTypeId);
     }
 
     [Fact]
@@ -74,11 +71,10 @@ public class ScheduleAppointmentCommandValidatorTests
         var command = new ScheduleAppointmentCommand(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow.Date.AddDays(-1), new TimeSpan(10, 0, 0), new TimeSpan(11, 0, 0));
 
         // Act
-        var result = _sut.Validate(command);
+        var result = _sut.TestValidate(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(x => x.PropertyName == nameof(command.ScheduledDate));
+        result.ShouldHaveValidationErrorFor(x => x.ScheduledDate);
     }
 
     [Fact]
@@ -88,11 +84,10 @@ public class ScheduleAppointmentCommandValidatorTests
         var command = new ScheduleAppointmentCommand(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow.Date.AddDays(1), new TimeSpan(11, 0, 0), new TimeSpan(10, 0, 0));
 
         // Act
-        var result = _sut.Validate(command);
+        var result = _sut.TestValidate(command);
 
         // Assert
-        result.IsValid.Should().BeFalse();
-        result.Errors.Should().Contain(x => x.PropertyName == nameof(command.StartTime));
-        result.Errors.Should().Contain(x => x.PropertyName == nameof(command.EndTime));
+        result.ShouldHaveValidationErrorFor(x => x.StartTime);
+        result.ShouldHaveValidationErrorFor(x => x.EndTime);
     }
 }
