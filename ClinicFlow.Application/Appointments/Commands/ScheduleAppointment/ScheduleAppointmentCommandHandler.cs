@@ -1,5 +1,3 @@
-using ClinicFlow.Domain.Entities;
-using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.Services;
@@ -8,24 +6,22 @@ using MediatR;
 
 namespace ClinicFlow.Application.Appointments.Commands.ScheduleAppointment;
 
-public class ScheduleAppointmentCommandHandler(IPatientRepository patientRepository, IDoctorRepository doctorRepository, IPatientPenaltyRepository penaltyRepository,
+public class ScheduleAppointmentCommandHandler(IPatientPenaltyRepository penaltyRepository,
     IScheduleRepository scheduleRepository, IAppointmentRepository appointmentRepository, IUnitOfWork unitOfWork) : IRequestHandler<ScheduleAppointmentCommand, Guid>
 {
     public async Task<Guid> Handle(ScheduleAppointmentCommand request, CancellationToken cancellationToken)
     {
-        var patient = await patientRepository.GetByIdAsync(request.PatientId) ?? throw new EntityNotFoundException(nameof(Patient), request.PatientId);
-
-        var doctor = await doctorRepository.GetByIdAsync(request.DoctorId) ?? throw new EntityNotFoundException(nameof(Doctor), request.DoctorId);
 
         var penalties = await penaltyRepository.GetByPatientIdAsync(request.PatientId);
 
         var timeRange = TimeRange.Create(request.StartTime, request.EndTime);
 
-        var doctorSchedule = await scheduleRepository.GetByDoctorAndDayAsync(doctor.Id, request.ScheduledDate.DayOfWeek);
+        var doctorSchedule = await scheduleRepository.GetByDoctorAndDayAsync(request.DoctorId, request.ScheduledDate.DayOfWeek);
 
-        var hasConflict = await appointmentRepository.HasConflictAsync(doctor.Id, request.ScheduledDate, timeRange);
+        var hasConflict = await appointmentRepository.HasConflictAsync(request.DoctorId, request.ScheduledDate, timeRange);
 
-        var appointment = AppointmentSchedulingService.ScheduleAppointment(patient, penalties, doctor, request.ScheduledDate, timeRange, request.AppointmentTypeId, doctorSchedule, hasConflict);
+        var appointment = AppointmentSchedulingService.ScheduleAppointment(request.PatientId, penalties, request.DoctorId, request.ScheduledDate, timeRange,
+            request.AppointmentTypeId, doctorSchedule, hasConflict);
 
         await appointmentRepository.CreateAsync(appointment);
 
