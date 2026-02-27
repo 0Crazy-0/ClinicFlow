@@ -3,6 +3,7 @@ using ClinicFlow.Application.Appointments.Commands.MarkAppointmentAsNoShow;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Appointments;
+using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.ValueObjects;
@@ -114,6 +115,56 @@ public class MarkAppointmentAsNoShowCommandHandlerTests
 
         // Assert
         await act.Should().ThrowAsync<AppointmentCancellationUnauthorizedException>().WithMessage("User is not authorized to mark this appointment as No-Show.");
+    }
+
+    [Fact]
+    public async Task Handle_ShouldThrowEntityNotFound_WhenAppointmentDoesNotExist()
+    {
+        // Arrange
+        var command = new MarkAppointmentAsNoShowCommand(Guid.NewGuid(), Guid.NewGuid());
+
+        _appointmentRepositoryMock.Setup(x => x.GetByIdAsync(command.AppointmentId)).ReturnsAsync((Appointment?)null);
+
+        // Act
+        var act = async () => await _sut.Handle(command, CancellationToken.None);
+
+        // Assert
+        await act.Should().ThrowAsync<EntityNotFoundException>();
+    }
+
+    [Fact]
+    public async Task Handle_ShouldThrowEntityNotFound_WhenUserDoesNotExist()
+    {
+        // Arrange
+        var command = new MarkAppointmentAsNoShowCommand(Guid.NewGuid(), Guid.NewGuid());
+        var appointment = CreateAppointment(command.AppointmentId, Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow.AddDays(-1));
+
+        _appointmentRepositoryMock.Setup(x => x.GetByIdAsync(command.AppointmentId)).ReturnsAsync(appointment);
+        _userRepositoryMock.Setup(x => x.GetByIdAsync(command.InitiatorUserId)).ReturnsAsync((User?)null);
+
+        // Act
+        var act = async () => await _sut.Handle(command, CancellationToken.None);
+
+        // Assert
+        await act.Should().ThrowAsync<EntityNotFoundException>();
+    }
+
+    [Fact]
+    public async Task Handle_ShouldThrowUnauthorized_WhenUserIsDoctorButDoctorIdIsNull()
+    {
+        // Arrange
+        var command = new MarkAppointmentAsNoShowCommand(Guid.NewGuid(), Guid.NewGuid());
+        var appointment = CreateAppointment(command.AppointmentId, Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow.AddDays(-1));
+        var user = CreateUser(command.InitiatorUserId, UserRole.Doctor, doctorId: null);
+
+        _appointmentRepositoryMock.Setup(x => x.GetByIdAsync(command.AppointmentId)).ReturnsAsync(appointment);
+        _userRepositoryMock.Setup(x => x.GetByIdAsync(command.InitiatorUserId)).ReturnsAsync(user);
+
+        // Act
+        var act = async () => await _sut.Handle(command, CancellationToken.None);
+
+        // Assert
+        await act.Should().ThrowAsync<AppointmentCancellationUnauthorizedException>().WithMessage("Doctors can only mark their own appointments as No-Show.");
     }
 
     // Helpers
