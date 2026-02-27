@@ -7,9 +7,6 @@ namespace ClinicFlow.Domain.ValueObjects;
 /// </summary>
 public record PersonName
 {
-    /// <summary>
-    /// The trimmed full name string.
-    /// </summary>
     public string FullName { get; }
 
     private PersonName(string fullName)

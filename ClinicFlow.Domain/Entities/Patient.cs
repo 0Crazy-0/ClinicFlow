@@ -12,34 +12,16 @@ namespace ClinicFlow.Domain.Entities;
 /// </summary>
 public class Patient : BaseEntity
 {
-    /// <summary>
-    /// Identifier of the associated user account.
-    /// </summary>
     public Guid UserId { get; init; }
 
-    /// <summary>
-    /// Patient's date of birth.
-    /// </summary>
     public DateTime DateOfBirth { get; private set; }
 
-    /// <summary>
-    /// Patient's blood type.
-    /// </summary>
     public BloodType BloodType { get; private set; } = null!;
 
-    /// <summary>
-    /// Known allergies of the patient (free-text).
-    /// </summary>
     public string Allergies { get; private set; } = string.Empty;
 
-    /// <summary>
-    /// Known chronic conditions of the patient (free-text).
-    /// </summary>
     public string ChronicConditions { get; private set; } = string.Empty;
 
-    /// <summary>
-    /// Emergency contact information for the patient.
-    /// </summary>
     public EmergencyContact EmergencyContact { get; private set; } = null!;
 
     // EF Core constructor

@@ -7,8 +7,5 @@ namespace ClinicFlow.Domain.Interfaces.Repositories;
 /// </summary>
 public interface IMedicalSpecialtyRepository
 {
-    /// <summary>
-    /// Retrieves a medical specialty by its unique identifier.
-    /// </summary>
     Task<MedicalSpecialty?> GetByIdAsync(Guid id);
 }

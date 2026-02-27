@@ -9,29 +9,14 @@ namespace ClinicFlow.Domain.Entities;
 /// </summary>
 public class Doctor : BaseEntity
 {
-    /// <summary>
-    /// Identifier of the associated user account.
-    /// </summary>
     public Guid UserId { get; init; }
 
-    /// <summary>
-    /// Identifier of the doctor's medical specialty.
-    /// </summary>
     public Guid MedicalSpecialtyId { get; init; }
 
-    /// <summary>
-    /// The doctor's official medical license number.
-    /// </summary>
     public MedicalLicenseNumber LicenseNumber { get; private set; } = null!;
 
-    /// <summary>
-    /// Short biographical text about the doctor.
-    /// </summary>
     public string Biography { get; private set; } = string.Empty;
 
-    /// <summary>
-    /// Room number assigned for consultations.
-    /// </summary>
     public int ConsultationRoomNumber { get; private set; }
 
     // EF Core constructor

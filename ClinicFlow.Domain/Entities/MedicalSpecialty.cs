@@ -8,14 +8,8 @@ namespace ClinicFlow.Domain.Entities;
 /// </summary>
 public class MedicalSpecialty : BaseEntity
 {
-    /// <summary>
-    /// Display name of the medical specialty.
-    /// </summary>
     public string Name { get; private set; } = string.Empty;
 
-    /// <summary>
-    /// Description of the medical specialty.
-    /// </summary>
     public string Description { get; private set; } = string.Empty;
 
     /// <summary>

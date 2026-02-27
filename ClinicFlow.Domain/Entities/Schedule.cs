@@ -9,24 +9,12 @@ namespace ClinicFlow.Domain.Entities;
 /// </summary>
 public class Schedule : BaseEntity
 {
-    /// <summary>
-    /// Identifier of the doctor who owns this schedule slot.
-    /// </summary>
     public Guid DoctorId { get; init; }
 
-    /// <summary>
-    /// Day of the week for this availability slot.
-    /// </summary>
     public DayOfWeek DayOfWeek { get; private set; }
 
-    /// <summary>
-    /// Start and end time of the availability window.
-    /// </summary>
     public TimeRange TimeRange { get; private set; }
 
-    /// <summary>
-    /// Indicates whether this schedule slot is currently active.
-    /// </summary>
     public bool IsActive { get; private set; }
 
     // EF Core constructor

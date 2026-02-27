@@ -7,19 +7,10 @@ namespace ClinicFlow.Domain.ValueObjects;
 /// </summary>
 public record TimeRange
 {
-    /// <summary>
-    /// The start time of the range.
-    /// </summary>
     public TimeSpan Start { get; }
 
-    /// <summary>
-    /// The end time of the range.
-    /// </summary>
     public TimeSpan End { get; }
 
-    /// <summary>
-    /// The total duration of the time range.
-    /// </summary>
     public TimeSpan Duration => End - Start;
 
     private TimeRange(TimeSpan start, TimeSpan end)

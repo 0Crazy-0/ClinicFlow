@@ -9,24 +9,12 @@ namespace ClinicFlow.Domain.Entities;
 /// </summary>
 public class PatientPenalty : BaseEntity
 {
-    /// <summary>
-    /// Identifier of the patient who received the penalty.
-    /// </summary>
     public Guid PatientId { get; init; }
 
-    /// <summary>
-    /// Identifier of the appointment that triggered the penalty, if applicable.
-    /// </summary>
     public Guid? AppointmentId { get; init; }
 
-    /// <summary>
-    /// Classification of the penalty (warning or temporary block).
-    /// </summary>
     public PenaltyType Type { get; private set; }
 
-    /// <summary>
-    /// Explanation of why the penalty was issued.
-    /// </summary>
     public string Reason { get; private set; } = string.Empty;
 
     /// <summary>

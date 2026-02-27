@@ -10,19 +10,10 @@ namespace ClinicFlow.Domain.Entities;
 /// </summary>
 public class MedicalRecord : BaseEntity
 {
-    /// <summary>
-    /// Identifier of the patient this record belongs to.
-    /// </summary>
     public Guid PatientId { get; init; }
 
-    /// <summary>
-    /// Identifier of the doctor who created the record.
-    /// </summary>
     public Guid DoctorId { get; init; }
 
-    /// <summary>
-    /// Identifier of the appointment that originated this record.
-    /// </summary>
     public Guid AppointmentId { get; init; }
 
     /// <summary>
@@ -30,34 +21,16 @@ public class MedicalRecord : BaseEntity
     /// </summary>
     public string ChiefComplaint { get; private set; } = string.Empty;
 
-    /// <summary>
-    /// Clinical diagnosis determined by the doctor.
-    /// </summary>
     public string Diagnosis { get; private set; } = string.Empty;
 
-    /// <summary>
-    /// Prescribed treatment plan.
-    /// </summary>
     public string Treatment { get; private set; } = string.Empty;
 
-    /// <summary>
-    /// Medications prescribed during this encounter.
-    /// </summary>
     public string Medications { get; private set; } = string.Empty;
 
-    /// <summary>
-    /// Laboratory results associated with this encounter.
-    /// </summary>
     public string LabResults { get; private set; } = string.Empty;
 
-    /// <summary>
-    /// Free-text notes written by the doctor.
-    /// </summary>
     public string DoctorNotes { get; private set; } = string.Empty;
 
-    /// <summary>
-    /// Instructions for the patient's post-visit follow-up.
-    /// </summary>
     public string FollowUpInstructions { get; private set; } = string.Empty;
 
     // EF Core constructor

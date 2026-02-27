@@ -13,9 +13,6 @@ public partial record PhoneNumber
     [GeneratedRegex(PhoneRegexPattern)]
     private static partial Regex PhoneRegex();
 
-    /// <summary>
-    /// The trimmed phone number string.
-    /// </summary>
     public string Value { get; }
 
     private PhoneNumber(string value)

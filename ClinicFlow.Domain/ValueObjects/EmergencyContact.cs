@@ -7,14 +7,8 @@ namespace ClinicFlow.Domain.ValueObjects;
 /// </summary>
 public record EmergencyContact
 {
-    /// <summary>
-    /// Full name of the emergency contact person.
-    /// </summary>
     public PersonName Name { get; }
 
-    /// <summary>
-    /// Phone number of the emergency contact person.
-    /// </summary>
     public PhoneNumber PhoneNumber { get; }
 
     private EmergencyContact(PersonName name, PhoneNumber phoneNumber)

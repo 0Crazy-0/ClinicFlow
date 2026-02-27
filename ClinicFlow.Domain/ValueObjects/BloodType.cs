@@ -7,9 +7,6 @@ namespace ClinicFlow.Domain.ValueObjects;
 /// </summary>
 public record BloodType
 {
-    /// <summary>
-    /// The normalized blood type string.
-    /// </summary>
     public string Value { get; }
 
     private static readonly HashSet<string> ValidBloodTypes = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];

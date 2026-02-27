@@ -5,19 +5,10 @@ namespace ClinicFlow.Domain.Common;
 /// </summary>
 public abstract class BaseEntity
 {
-    /// <summary>
-    /// Unique identifier for the entity.
-    /// </summary>
     public Guid Id { get; private set; }
 
-    /// <summary>
-    /// UTC timestamp of when the entity was created.
-    /// </summary>
     public DateTime CreatedAt { get; private set; }
 
-    /// <summary>
-    /// UTC timestamp of the last modification.
-    /// </summary>
     public DateTime UpdatedAt { get; private set; }
 
     /// <summary>

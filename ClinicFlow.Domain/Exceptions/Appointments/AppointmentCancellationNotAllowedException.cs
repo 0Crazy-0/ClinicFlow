@@ -8,8 +8,5 @@ namespace ClinicFlow.Domain.Exceptions.Appointments;
 /// </summary>
 public class AppointmentCancellationNotAllowedException(AppointmentStatus currentStatus) : DomainException($"Cannot cancel appointment. Current status: {currentStatus}")
 {
-    /// <summary>
-    /// The appointment status that prevented cancellation.
-    /// </summary>
     public AppointmentStatus CurrentStatus { get; } = currentStatus;
 }

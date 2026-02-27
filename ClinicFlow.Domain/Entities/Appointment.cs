@@ -13,69 +13,30 @@ namespace ClinicFlow.Domain.Entities;
 /// </summary>
 public class Appointment : BaseEntity
 {
-    /// <summary>
-    /// Identifier of the patient for this appointment.
-    /// </summary>
     public Guid PatientId { get; init; }
 
-    /// <summary>
-    /// Identifier of the attending doctor.
-    /// </summary>
     public Guid DoctorId { get; init; }
 
-    /// <summary>
-    /// Identifier of the appointment type definition.
-    /// </summary>
     public Guid AppointmentTypeId { get; init; }
 
-    /// <summary>
-    /// Date on which the appointment is scheduled.
-    /// </summary>
     public DateTime ScheduledDate { get; private set; }
 
-    /// <summary>
-    /// Start and end time window for the appointment.
-    /// </summary>
     public TimeRange TimeRange { get; private set; }
 
-    /// <summary>
-    /// Current lifecycle status of the appointment.
-    /// </summary>
     public AppointmentStatus Status { get; private set; }
 
-    /// <summary>
-    /// Optional notes provided by the patient.
-    /// </summary>
     public string PatientNotes { get; private set; } = string.Empty;
 
-    /// <summary>
-    /// Optional notes added by the receptionist.
-    /// </summary>
     public string ReceptionistNotes { get; private set; } = string.Empty;
 
-    /// <summary>
-    /// UTC timestamp of when the appointment was confirmed, if applicable.
-    /// </summary>
     public DateTime? ConfirmedAt { get; private set; }
 
-    /// <summary>
-    /// UTC timestamp of when the appointment was cancelled, if applicable.
-    /// </summary>
     public DateTime? CancelledAt { get; private set; }
 
-    /// <summary>
-    /// Reason provided for cancellation, if any.
-    /// </summary>
     public string? CancellationReason { get; private set; }
 
-    /// <summary>
-    /// Identifier of the user who cancelled the appointment, if applicable.
-    /// </summary>
     public Guid? CancelledByUserId { get; private set; }
 
-    /// <summary>
-    /// Number of times this appointment has been rescheduled.
-    /// </summary>
     public int RescheduleCount { get; private set; }
 
     // EF Core constructor

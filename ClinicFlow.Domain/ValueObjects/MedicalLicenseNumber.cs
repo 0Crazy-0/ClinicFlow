@@ -7,9 +7,6 @@ namespace ClinicFlow.Domain.ValueObjects;
 /// </summary>
 public record MedicalLicenseNumber
 {
-    /// <summary>
-    /// The trimmed license number string.
-    /// </summary>
     public string Value { get; }
 
     private MedicalLicenseNumber(string value)

@@ -21,39 +21,18 @@ public class User : BaseEntity
     /// </summary>
     public Guid? PatientId { get; init; }
 
-    /// <summary>
-    /// Role assigned to this user within the system.
-    /// </summary>
     public UserRole Role { get; private set; }
 
-    /// <summary>
-    /// UTC timestamp of the user's most recent login, if any.
-    /// </summary>
     public DateTime? LastLoginAt { get; private set; }
 
-    /// <summary>
-    /// User's email address used for authentication.
-    /// </summary>
     public EmailAddress Email { get; private set; } = null!;
 
-    /// <summary>
-    /// Hashed password for authentication.
-    /// </summary>
     public string PasswordHash { get; private set; } = string.Empty;
 
-    /// <summary>
-    /// User's full name.
-    /// </summary>
     public PersonName FullName { get; private set; } = null!;
 
-    /// <summary>
-    /// User's contact phone number.
-    /// </summary>
     public PhoneNumber PhoneNumber { get; private set; } = null!;
 
-    /// <summary>
-    /// Indicates whether the user account is active.
-    /// </summary>
     public bool IsActive { get; private set; }
 
     // EF Core constructor

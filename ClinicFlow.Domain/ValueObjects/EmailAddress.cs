@@ -13,9 +13,6 @@ public partial record EmailAddress
     [GeneratedRegex(EmailRegexPattern)]
     private static partial Regex EmailRegex();
 
-    /// <summary>
-    /// The normalized, lowercase email address string.
-    /// </summary>
     public string Value { get; }
 
     private EmailAddress(string value)
