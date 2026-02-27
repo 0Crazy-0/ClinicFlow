@@ -112,7 +112,7 @@ public class Appointment : BaseEntity
     /// Reschedules the appointment to a new date and time range. Only one reschedule is allowed per appointment.
     /// </summary>
     /// <exception cref="AppointmentReschedulingNotAllowedException">Thrown when the appointment has already been rescheduled or is not in a reschedulable status.</exception>
-    public void Reschedule(DateTime newDate, TimeRange newTimeRange)
+    internal void Reschedule(DateTime newDate, TimeRange newTimeRange)
     {
         if (!CanBeRescheduled()) throw new AppointmentReschedulingNotAllowedException("This appointment cannot be rescheduled");
 
