@@ -11,7 +11,7 @@ public class CardiologyPreSurgicalPolicy : IMedicalRecordValidationPolicy
         && appointmentType is AppointmentType.Procedure;
 
 
-    public void Validate(IEnumerable<ClinicalDetailRecord> providedDetails)
+    public void Validate(IEnumerable<IClinicalDetailRecord> providedDetails)
     {
         if (!providedDetails.OfType<CardiologyClinicalDetail>().Any())
             throw new BusinessRuleValidationException("Cardiology details like Blood Pressure are mandatory for cardiology procedures.");

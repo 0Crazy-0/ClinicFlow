@@ -1,6 +1,6 @@
 namespace ClinicFlow.Domain.Entities.ClinicalDetails;
 
-public class FirstVisitDetail : ClinicalDetailRecord
+public class FirstVisitDetail : IClinicalDetailRecord
 {
     public string FamilyMedicalHistory { get; private set; } = string.Empty;
 

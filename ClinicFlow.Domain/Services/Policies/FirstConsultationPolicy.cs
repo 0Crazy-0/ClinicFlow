@@ -9,7 +9,7 @@ public class FirstConsultationPolicy : IMedicalRecordValidationPolicy
 {
     public bool AppliesTo(MedicalSpecialty specialty, AppointmentType appointmentType) => appointmentType is AppointmentType.FirstConsultation;
 
-    public void Validate(IEnumerable<ClinicalDetailRecord> providedDetails)
+    public void Validate(IEnumerable<IClinicalDetailRecord> providedDetails)
     {
         if (!providedDetails.OfType<FirstVisitDetail>().Any())
             throw new BusinessRuleValidationException("First visit details (e.g. Family History, Allergies) are mandatory for the first consultation.");

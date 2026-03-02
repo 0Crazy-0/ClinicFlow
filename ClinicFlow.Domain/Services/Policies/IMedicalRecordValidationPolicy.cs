@@ -18,5 +18,5 @@ public interface IMedicalRecordValidationPolicy
     /// Validates the provided clinical details against the business rules of this policy.
     /// Throws DomainRuleException if validation fails.
     /// </summary>
-    void Validate(IEnumerable<ClinicalDetailRecord> providedDetails);
+    void Validate(IEnumerable<IClinicalDetailRecord> providedDetails);
 }

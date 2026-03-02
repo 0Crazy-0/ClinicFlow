@@ -12,5 +12,5 @@ public class MedicalEncounterContext
     public Appointment Appointment { get; init; } = null!;
     public AppointmentType AppointmentCategory { get; init; }
     public MedicalSpecialty DoctorSpecialty { get; init; } = null!;
-    public IEnumerable<ClinicalDetailRecord> ProvidedDetails { get; init; } = [];
+    public IEnumerable<IClinicalDetailRecord> ProvidedDetails { get; init; } = [];
 }

@@ -2,7 +2,7 @@ using ClinicFlow.Domain.Exceptions.Base;
 
 namespace ClinicFlow.Domain.Entities.ClinicalDetails;
 
-public class DentalClinicalDetail : ClinicalDetailRecord
+public class DentalClinicalDetail : IClinicalDetailRecord
 {
     public string Odontogram { get; private set; } = string.Empty;
     public bool HasGingivitis { get; private set; }

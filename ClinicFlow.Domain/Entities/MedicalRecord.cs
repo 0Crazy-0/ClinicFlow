@@ -22,12 +22,12 @@ public class MedicalRecord : BaseEntity
     /// </summary>
     public string ChiefComplaint { get; private set; } = string.Empty;
 
-    private readonly List<ClinicalDetailRecord> _clinicalDetails = [];
+    private readonly List<IClinicalDetailRecord> _clinicalDetails = [];
 
     /// <summary>
     /// A structured collection of clinical details (e.g., Cardiology flags, Dental odontograms, etc.) collected during the encounter.
     /// </summary>
-    public IReadOnlyCollection<ClinicalDetailRecord> ClinicalDetails => _clinicalDetails.AsReadOnly();
+    public IReadOnlyCollection<IClinicalDetailRecord> ClinicalDetails => _clinicalDetails.AsReadOnly();
 
     // EF Core constructor
     private MedicalRecord() { }
@@ -64,7 +64,7 @@ public class MedicalRecord : BaseEntity
     /// </summary>
     /// <param name="detail">The specific detail object containing medical data.</param>
     /// <exception cref="DomainValidationException">Thrown if the provided detail is null or a detail of that type was already added.</exception>
-    internal void AddClinicalDetail(ClinicalDetailRecord detail)
+    internal void AddClinicalDetail(IClinicalDetailRecord detail)
     {
         if (detail is null) throw new DomainValidationException("Clinical detail cannot be null.");
 
@@ -79,6 +79,6 @@ public class MedicalRecord : BaseEntity
     /// Retrieves a specific clinical detail by its type, or null if not present.
     /// Useful for queries or view models that need to extract specialized data.
     /// </summary>
-    public T? GetClinicalDetail<T>() where T : ClinicalDetailRecord => _clinicalDetails.OfType<T>().FirstOrDefault();
+    public T? GetClinicalDetail<T>() where T : IClinicalDetailRecord => _clinicalDetails.OfType<T>().FirstOrDefault();
 
 }

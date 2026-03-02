@@ -2,7 +2,7 @@ using ClinicFlow.Domain.Exceptions.Base;
 
 namespace ClinicFlow.Domain.Entities.ClinicalDetails;
 
-public class CardiologyClinicalDetail : ClinicalDetailRecord
+public class CardiologyClinicalDetail : IClinicalDetailRecord
 {
     public int SystolicBloodPressure { get; private set; }
     public int DiastolicBloodPressure { get; private set; }
