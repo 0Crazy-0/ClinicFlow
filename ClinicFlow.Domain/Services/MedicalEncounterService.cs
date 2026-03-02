@@ -16,8 +16,8 @@ public class MedicalEncounterService(IEnumerable<IMedicalRecordValidationPolicy>
     /// <exception cref="BusinessRuleValidationException">Thrown if any domain rule is violated.</exception>
     public void ValidateAndCompleteRecord(MedicalRecord record, MedicalEncounterContext context)
     {
-        if (record is null) throw new ArgumentNullException(nameof(record));
-        if (context is null) throw new ArgumentNullException(nameof(context));
+        if (record is null) throw new DomainValidationException("The medical record is required and cannot be null.");
+        if (context is null) throw new DomainValidationException("The medical encounter context is required and cannot be null.");
         if (context.ExpectedDoctor is null) throw new BusinessRuleValidationException("Expected doctor context is missing.");
         if (context.Appointment is null) throw new BusinessRuleValidationException("Appointment context is missing.");
         if (context.DoctorSpecialty is null) throw new BusinessRuleValidationException("Doctor specialty context is missing.");
