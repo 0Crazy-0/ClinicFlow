@@ -1,4 +1,5 @@
 using ClinicFlow.Domain.Common;
+using ClinicFlow.Domain.Entities.ClinicalDetails;
 using ClinicFlow.Domain.Events;
 using ClinicFlow.Domain.Exceptions.Base;
 
@@ -21,17 +22,12 @@ public class MedicalRecord : BaseEntity
     /// </summary>
     public string ChiefComplaint { get; private set; } = string.Empty;
 
-    public string Diagnosis { get; private set; } = string.Empty;
+    private readonly List<ClinicalDetailRecord> _clinicalDetails = [];
 
-    public string Treatment { get; private set; } = string.Empty;
-
-    public string Medications { get; private set; } = string.Empty;
-
-    public string LabResults { get; private set; } = string.Empty;
-
-    public string DoctorNotes { get; private set; } = string.Empty;
-
-    public string FollowUpInstructions { get; private set; } = string.Empty;
+    /// <summary>
+    /// A structured collection of clinical details (e.g., Cardiology flags, Dental odontograms, etc.) collected during the encounter.
+    /// </summary>
+    public IReadOnlyCollection<ClinicalDetailRecord> ClinicalDetails => _clinicalDetails.AsReadOnly();
 
     // EF Core constructor
     private MedicalRecord() { }
@@ -63,59 +59,26 @@ public class MedicalRecord : BaseEntity
     }
 
     /// <summary>
-    /// Records a clinical diagnosis for this encounter.
+    /// Adds a strongly-typed clinical detail to this medical record.
+    /// Used primarily by the <see cref="Services.MedicalEncounterService"/> after enforcing domain policies.
     /// </summary>
-    /// <exception cref="DomainValidationException">Thrown when the diagnosis text is blank.</exception>
-    internal void AddDiagnosis(string diagnosis)
+    /// <param name="detail">The specific detail object containing medical data.</param>
+    /// <exception cref="DomainValidationException">Thrown if the provided detail is null or a detail of that type was already added.</exception>
+    internal void AddClinicalDetail(ClinicalDetailRecord detail)
     {
-        if (string.IsNullOrWhiteSpace(diagnosis)) throw new DomainValidationException("Diagnosis cannot be empty.");
+        if (detail is null) throw new DomainValidationException("Clinical detail cannot be null.");
 
-        Diagnosis = diagnosis;
+        // It is a valid domain rule to prevent duplicate types of details per encounter (usually)
+        if (_clinicalDetails.Any(d => d.GetType() == detail.GetType()))
+            throw new DomainValidationException($"A clinical detail of type {detail.GetType().Name} already exists in this medical record.");
+
+        _clinicalDetails.Add(detail);
     }
 
     /// <summary>
-    /// Records the prescribed treatment and medications.
+    /// Retrieves a specific clinical detail by its type, or null if not present.
+    /// Useful for queries or view models that need to extract specialized data.
     /// </summary>
-    /// <exception cref="DomainValidationException">Thrown when either treatment or medications text is blank.</exception>
-    internal void PrescribeTreatment(string treatment, string medications)
-    {
-        if (string.IsNullOrWhiteSpace(treatment)) throw new DomainValidationException("Treatment cannot be empty.");
-        if (string.IsNullOrWhiteSpace(medications)) throw new DomainValidationException("Medications cannot be empty.");
+    public T? GetClinicalDetail<T>() where T : ClinicalDetailRecord => _clinicalDetails.OfType<T>().FirstOrDefault();
 
-        Treatment = treatment;
-        Medications = medications;
-    }
-
-    /// <summary>
-    /// Records laboratory results for this encounter.
-    /// </summary>
-    /// <exception cref="DomainValidationException">Thrown when the lab results text is blank.</exception>
-    internal void RecordLabResults(string labResults)
-    {
-        if (string.IsNullOrWhiteSpace(labResults)) throw new DomainValidationException("Lab results cannot be empty.");
-
-        LabResults = labResults;
-    }
-
-    /// <summary>
-    /// Adds or replaces the doctor's clinical notes.
-    /// </summary>
-    /// <exception cref="DomainValidationException">Thrown when the notes text is blank.</exception>
-    internal void AddDoctorNotes(string notes)
-    {
-        if (string.IsNullOrWhiteSpace(notes)) throw new DomainValidationException("Doctor notes cannot be empty.");
-
-        DoctorNotes = notes;
-    }
-
-    /// <summary>
-    /// Sets follow-up care instructions for the patient.
-    /// </summary>
-    /// <exception cref="DomainValidationException">Thrown when the instructions text is blank.</exception>
-    internal void SetFollowUpInstructions(string instructions)
-    {
-        if (string.IsNullOrWhiteSpace(instructions)) throw new DomainValidationException("Follow-up instructions cannot be empty.");
-
-        FollowUpInstructions = instructions;
-    }
 }
