@@ -1,6 +1,7 @@
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.Services;
+using ClinicFlow.Domain.Services.Contexts;
 using ClinicFlow.Domain.ValueObjects;
 using MediatR;
 
@@ -20,8 +21,15 @@ public class ScheduleAppointmentCommandHandler(IPatientPenaltyRepository penalty
 
         var hasConflict = await appointmentRepository.HasConflictAsync(request.DoctorId, request.ScheduledDate, timeRange);
 
-        var appointment = AppointmentSchedulingService.ScheduleAppointment(request.PatientId, penalties, request.DoctorId, request.ScheduledDate, timeRange,
-            request.AppointmentTypeId, doctorSchedule, hasConflict);
+        var context = new AppointmentSchedulingContext
+        {
+            Penalties = penalties,
+            DoctorSchedule = doctorSchedule,
+            HasConflict = hasConflict
+        };
+
+        var appointment = AppointmentSchedulingService.ScheduleAppointment(request.PatientId, request.DoctorId, request.ScheduledDate, timeRange,
+            request.AppointmentTypeId, context);
 
         await appointmentRepository.CreateAsync(appointment);
 

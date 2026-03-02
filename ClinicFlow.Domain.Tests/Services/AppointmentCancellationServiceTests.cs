@@ -5,6 +5,7 @@ using ClinicFlow.Domain.Events;
 using ClinicFlow.Domain.Exceptions.Appointments;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Services;
+using ClinicFlow.Domain.Services.Contexts;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
 
@@ -32,7 +33,15 @@ public class AppointmentCancellationServiceTests
         var user = CreateUser(role, doctorId, patientId);
 
         // Act
-        AppointmentCancellationService.CancelAppointment(appointment, user, type, isFamily, CreateSpecialty(24), "Valid Reason");
+        var context = new AppointmentCancellationContext
+        {
+            Initiator = user,
+            AppointmentTypeDefinition = type,
+            IsAuthorizedFamilyMember = isFamily,
+            Specialty = CreateSpecialty(24),
+            Reason = "Valid Reason"
+        };
+        AppointmentCancellationService.CancelAppointment(appointment, context);
 
         // Assert
         appointment.Status.Should().Be(AppointmentStatus.Cancelled);
@@ -59,7 +68,16 @@ public class AppointmentCancellationServiceTests
         var user = CreateUser(role, doctorId, patientId);
 
         // Act
-        var act = () => AppointmentCancellationService.CancelAppointment(appointment, user, type, isFamily, CreateSpecialty(24), "Reason");
+        var context = new AppointmentCancellationContext
+        {
+            Initiator = user,
+            AppointmentTypeDefinition = type,
+            IsAuthorizedFamilyMember = isFamily,
+            Specialty = CreateSpecialty(24),
+            Reason = "Reason"
+        };
+
+        var act = () => AppointmentCancellationService.CancelAppointment(appointment, context);
 
         // Assert
         act.Should().Throw<AppointmentCancellationUnauthorizedException>().WithMessage(expectedMessage);
@@ -74,7 +92,16 @@ public class AppointmentCancellationServiceTests
         var type = CreateAppointmentType(AppointmentType.Checkup);
 
         // Act
-        var act = () => AppointmentCancellationService.CancelAppointment(appointment, receptionist, type, false, CreateSpecialty(24), "");
+        var context = new AppointmentCancellationContext
+        {
+            Initiator = receptionist,
+            AppointmentTypeDefinition = type,
+            IsAuthorizedFamilyMember = false,
+            Specialty = CreateSpecialty(24),
+            Reason = ""
+        };
+
+        var act = () => AppointmentCancellationService.CancelAppointment(appointment, context);
 
         // Assert
         act.Should().Throw<BusinessRuleValidationException>().WithMessage("Staff members must provide a reason for cancellation.");

@@ -4,6 +4,7 @@ using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.Services;
+using ClinicFlow.Domain.Services.Contexts;
 using MediatR;
 
 namespace ClinicFlow.Application.Appointments.Commands.CancelAppointment;
@@ -27,7 +28,16 @@ public class CancelAppointmentCommandHandler(IAppointmentRepository appointmentR
         var specialty = await medicalSpecialtyRepository.GetByIdAsync(doctor.MedicalSpecialtyId) ??
             throw new EntityNotFoundException(nameof(MedicalSpecialty), doctor.MedicalSpecialtyId);
 
-        AppointmentCancellationService.CancelAppointment(appointment, initiator, appointmentType, request.IsAuthorizedFamilyMember, specialty, request.Reason);
+        var context = new AppointmentCancellationContext
+        {
+            Initiator = initiator,
+            AppointmentTypeDefinition = appointmentType,
+            Specialty = specialty,
+            IsAuthorizedFamilyMember = request.IsAuthorizedFamilyMember,
+            Reason = request.Reason
+        };
+
+        AppointmentCancellationService.CancelAppointment(appointment, context);
 
         await appointmentRepository.UpdateAsync(appointment);
 

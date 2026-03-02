@@ -2,6 +2,7 @@ using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Appointments;
 using ClinicFlow.Domain.Exceptions.Base;
+using ClinicFlow.Domain.Services.Contexts;
 
 namespace ClinicFlow.Domain.Services;
 
@@ -18,13 +19,12 @@ public static class AppointmentCancellationService
     /// <param name="specialty">The medical specialty, used to evaluate the cancellation notice policy.</param>
     /// <exception cref="AppointmentCancellationUnauthorizedException">Thrown when the initiator is not authorized to cancel the appointment.</exception>
     /// <exception cref="BusinessRuleValidationException">Thrown when a staff member does not provide a cancellation reason.</exception>
-    public static void CancelAppointment(Appointment appointment, User initiator, AppointmentTypeDefinition appointmentTypeDefinition, bool isAuthorizedFamilyMember,
-        MedicalSpecialty specialty, string? reason)
+    public static void CancelAppointment(Appointment appointment, AppointmentCancellationContext context)
     {
-        ValidateCancellationPermission(appointment, initiator, appointmentTypeDefinition, isAuthorizedFamilyMember);
-        ValidateCancellationReason(initiator.Role, reason);
+        ValidateCancellationPermission(appointment, context.Initiator, context.AppointmentTypeDefinition, context.IsAuthorizedFamilyMember);
+        ValidateCancellationReason(context.Initiator.Role, context.Reason);
 
-        appointment.Cancel(initiator.Id, reason, specialty);
+        appointment.Cancel(context.Initiator.Id, context.Reason, context.Specialty);
     }
 
     // Helpers

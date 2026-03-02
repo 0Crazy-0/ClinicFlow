@@ -1,6 +1,7 @@
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Services.Policies;
+using ClinicFlow.Domain.Services.Contexts;
 
 namespace ClinicFlow.Domain.Services;
 

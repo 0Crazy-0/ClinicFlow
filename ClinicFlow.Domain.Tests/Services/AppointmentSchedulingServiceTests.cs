@@ -4,6 +4,7 @@ using ClinicFlow.Domain.Exceptions.Appointments;
 using ClinicFlow.Domain.Exceptions.Scheduling;
 using ClinicFlow.Domain.Exceptions.Patients;
 using ClinicFlow.Domain.Services;
+using ClinicFlow.Domain.Services.Contexts;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
 
@@ -21,8 +22,9 @@ public class AppointmentSchedulingServiceTests
         var scheduledDate = DateTime.UtcNow.AddDays(1);
         var penalties = new List<PatientPenalty> { PatientPenalty.CreateBlock(patient.Id, "Blocked", scheduledDate) };
 
-        // Act
-        var act = () => AppointmentSchedulingService.ScheduleAppointment(patient.Id, penalties, doctor.Id, scheduledDate, TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(10)), Guid.NewGuid(), null, false);
+        var context = new AppointmentSchedulingContext { Penalties = penalties, DoctorSchedule = null, HasConflict = false };
+
+        var act = () => AppointmentSchedulingService.ScheduleAppointment(patient.Id, doctor.Id, scheduledDate, TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(10)), Guid.NewGuid(), context);
 
         // Assert
         act.Should().Throw<PatientBlockedException>();
@@ -36,8 +38,10 @@ public class AppointmentSchedulingServiceTests
         var scheduledDate = DateTime.UtcNow.AddDays(1);
 
         // Act
-        var act = () => AppointmentSchedulingService.ScheduleAppointment(CreatePatient().Id, [], doctor.Id, scheduledDate, TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(10)),
-            Guid.NewGuid(), null, false);
+        var context = new AppointmentSchedulingContext { Penalties = [], DoctorSchedule = null, HasConflict = false };
+
+        var act = () => AppointmentSchedulingService.ScheduleAppointment(CreatePatient().Id, doctor.Id, scheduledDate, TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(10)),
+            Guid.NewGuid(), context);
 
         // Assert
         act.Should().Throw<DoctorNotAvailableException>();
@@ -53,8 +57,10 @@ public class AppointmentSchedulingServiceTests
         var schedule = CreateSchedule(doctor.Id, scheduledDate.DayOfWeek, TimeRange.Create(TimeSpan.FromHours(8), TimeSpan.FromHours(16)));
 
         // Act
-        var act = () => AppointmentSchedulingService.ScheduleAppointment(CreatePatient().Id, [], doctor.Id, scheduledDate,
-            TimeRange.Create(TimeSpan.FromHours(17), TimeSpan.FromHours(18)), Guid.NewGuid(), schedule, false); // Outside working hours
+        var context = new AppointmentSchedulingContext { Penalties = [], DoctorSchedule = schedule, HasConflict = false };
+
+        var act = () => AppointmentSchedulingService.ScheduleAppointment(CreatePatient().Id, doctor.Id, scheduledDate,
+            TimeRange.Create(TimeSpan.FromHours(17), TimeSpan.FromHours(18)), Guid.NewGuid(), context); // Outside working hours
 
         // Assert
         act.Should().Throw<DoctorNotAvailableException>();
@@ -73,7 +79,9 @@ public class AppointmentSchedulingServiceTests
         var schedule = CreateValidSchedule(doctor.Id, scheduledDate.DayOfWeek);
 
         // Act
-        var act = () => AppointmentSchedulingService.ScheduleAppointment(patient.Id, penalties, doctor.Id, scheduledDate, timeRange, Guid.NewGuid(), schedule, true);
+        var context = new AppointmentSchedulingContext { Penalties = penalties, DoctorSchedule = schedule, HasConflict = true };
+
+        var act = () => AppointmentSchedulingService.ScheduleAppointment(patient.Id, doctor.Id, scheduledDate, timeRange, Guid.NewGuid(), context);
 
         // Assert
         act.Should().Throw<AppointmentConflictException>();
@@ -93,7 +101,9 @@ public class AppointmentSchedulingServiceTests
         var schedule = CreateValidSchedule(doctor.Id, scheduledDate.DayOfWeek);
 
         // Act
-        var result = AppointmentSchedulingService.ScheduleAppointment(patient.Id, penalties, doctor.Id, scheduledDate, timeRange, appointmentTypeId, schedule, false);
+        var context = new AppointmentSchedulingContext { Penalties = penalties, DoctorSchedule = schedule, HasConflict = false };
+
+        var result = AppointmentSchedulingService.ScheduleAppointment(patient.Id, doctor.Id, scheduledDate, timeRange, appointmentTypeId, context);
 
         // Assert
         result.Should().NotBeNull();
@@ -112,7 +122,9 @@ public class AppointmentSchedulingServiceTests
         var newTimeRange = TimeRange.Create(TimeSpan.FromHours(10), TimeSpan.FromHours(11));
 
         // Act
-        var act = () => AppointmentSchedulingService.RescheduleAppointment(appointment, newDate, newTimeRange, null, []);
+        var context = new AppointmentSchedulingContext { DoctorSchedule = null, ExistingAppointmentsDay = [] };
+
+        var act = () => AppointmentSchedulingService.RescheduleAppointment(appointment, newDate, newTimeRange, context);
 
         // Assert
         act.Should().Throw<DoctorNotAvailableException>();
@@ -131,7 +143,9 @@ public class AppointmentSchedulingServiceTests
         var schedule = CreateValidSchedule(appointment.DoctorId, newDate.DayOfWeek);
 
         // Act
-        var act = () => AppointmentSchedulingService.RescheduleAppointment(appointment, newDate, TimeRange.Create(TimeSpan.FromHours(10), TimeSpan.FromHours(11)), schedule, [conflictingAppointment]);
+        var context = new AppointmentSchedulingContext { DoctorSchedule = schedule, ExistingAppointmentsDay = [conflictingAppointment] };
+
+        var act = () => AppointmentSchedulingService.RescheduleAppointment(appointment, newDate, TimeRange.Create(TimeSpan.FromHours(10), TimeSpan.FromHours(11)), context);
 
         // Assert
         act.Should().Throw<AppointmentConflictException>();
@@ -149,7 +163,9 @@ public class AppointmentSchedulingServiceTests
         var schedule = CreateValidSchedule(appointment.DoctorId, newDate.DayOfWeek);
 
         // Act
-        AppointmentSchedulingService.RescheduleAppointment(appointment, newDate, newTimeRange, schedule, []);
+        var context = new AppointmentSchedulingContext { DoctorSchedule = schedule, ExistingAppointmentsDay = [] };
+
+        AppointmentSchedulingService.RescheduleAppointment(appointment, newDate, newTimeRange, context);
 
         // Assert
         appointment.ScheduledDate.Should().Be(newDate);
@@ -171,7 +187,9 @@ public class AppointmentSchedulingServiceTests
         var schedule = CreateValidSchedule(appointment.DoctorId, newDate.DayOfWeek);
 
         // Act
-        var act = () => AppointmentSchedulingService.RescheduleAppointment(appointment, newDate, newTimeRange, schedule, []);
+        var context = new AppointmentSchedulingContext { DoctorSchedule = schedule, ExistingAppointmentsDay = [] };
+        
+        var act = () => AppointmentSchedulingService.RescheduleAppointment(appointment, newDate, newTimeRange, context);
 
         // Assert
         act.Should().Throw<AppointmentReschedulingNotAllowedException>().WithMessage("Cannot reschedule appointment: This appointment cannot be rescheduled");

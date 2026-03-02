@@ -3,6 +3,7 @@ using ClinicFlow.Domain.Exceptions.Appointments;
 using ClinicFlow.Domain.Exceptions.Scheduling;
 using ClinicFlow.Domain.ValueObjects;
 using ClinicFlow.Domain.Enums;
+using ClinicFlow.Domain.Services.Contexts;
 
 namespace ClinicFlow.Domain.Services;
 
@@ -20,14 +21,14 @@ public static class AppointmentSchedulingService
     /// <exception cref="Exceptions.Patients.PatientBlockedException">Thrown when the patient is blocked from booking.</exception>
     /// <exception cref="DoctorNotAvailableException">Thrown when the doctor has no schedule covering the requested time.</exception>
     /// <exception cref="AppointmentConflictException">Thrown when the time slot is already occupied.</exception>
-    public static Appointment ScheduleAppointment(Guid patientId, IEnumerable<PatientPenalty> penalties, Guid doctorId, DateTime scheduledDate,
-        TimeRange timeRange, Guid appointmentTypeId, Schedule? doctorSchedule, bool hasConflict)
+    public static Appointment ScheduleAppointment(Guid patientId, Guid doctorId, DateTime scheduledDate,
+        TimeRange timeRange, Guid appointmentTypeId, AppointmentSchedulingContext context)
     {
-        Patient.EnsureNotBlocked(penalties);
+        Patient.EnsureNotBlocked(context.Penalties);
 
-        EnsureDoctorIsAvailable(doctorSchedule, doctorId, scheduledDate, timeRange);
+        EnsureDoctorIsAvailable(context.DoctorSchedule, doctorId, scheduledDate, timeRange);
 
-        if (hasConflict) throw new AppointmentConflictException(doctorId, scheduledDate.Add(timeRange.Start));
+        if (context.HasConflict) throw new AppointmentConflictException(doctorId, scheduledDate.Add(timeRange.Start));
 
         return Appointment.Schedule(patientId, doctorId, appointmentTypeId, scheduledDate, timeRange);
     }
@@ -38,11 +39,11 @@ public static class AppointmentSchedulingService
     /// <param name="existingAppointmentsDay">All non-cancelled appointments for the doctor on the new date, used for conflict detection.</param>
     /// <exception cref="DoctorNotAvailableException">Thrown when the doctor has no schedule covering the requested time.</exception>
     /// <exception cref="AppointmentConflictException">Thrown when the new time slot conflicts with another appointment.</exception>
-    public static void RescheduleAppointment(Appointment appointment, DateTime newDate, TimeRange newTimeRange, Schedule? doctorSchedule, IEnumerable<Appointment> existingAppointmentsDay)
+    public static void RescheduleAppointment(Appointment appointment, DateTime newDate, TimeRange newTimeRange, AppointmentSchedulingContext context)
     {
-        EnsureDoctorIsAvailable(doctorSchedule, appointment.DoctorId, newDate, newTimeRange);
+        EnsureDoctorIsAvailable(context.DoctorSchedule, appointment.DoctorId, newDate, newTimeRange);
 
-        if (existingAppointmentsDay.Any(a => a.Id != appointment.Id && a.Status is not AppointmentStatus.Cancelled && a.TimeRange.OverlapsWith(newTimeRange)))
+        if (context.ExistingAppointmentsDay.Any(a => a.Id != appointment.Id && a.Status is not AppointmentStatus.Cancelled && a.TimeRange.OverlapsWith(newTimeRange)))
             throw new AppointmentConflictException(appointment.DoctorId, newDate.Add(newTimeRange.Start));
 
         appointment.Reschedule(newDate, newTimeRange);
