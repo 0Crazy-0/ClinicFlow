@@ -49,7 +49,7 @@ public class CancelAppointmentCommandHandlerTests
 
         var appointment = CreateAppointment(command.AppointmentId, doctorId, patientId, appointmentTypeId, DateTime.UtcNow.AddDays(2));
         var user = CreateUser(command.InitiatorUserId, UserRole.Patient, patientId: patientId);
-        var type = CreateAppointmentType(appointmentTypeId, AppointmentType.Checkup);
+        var type = CreateAppointmentType(appointmentTypeId, AppointmentCategory.Checkup);
         var doctor = CreateDoctor(doctorId, specialtyId);
         var specialty = CreateSpecialty(specialtyId, 24);
 
@@ -82,7 +82,7 @@ public class CancelAppointmentCommandHandlerTests
         // Appointment is scheduled 2 hours from now, which violates 24h minimum notice
         var appointment = CreateAppointment(command.AppointmentId, doctorId, patientId, appointmentTypeId, DateTime.UtcNow.AddHours(2));
         var user = CreateUser(command.InitiatorUserId, UserRole.Patient, patientId: patientId);
-        var type = CreateAppointmentType(appointmentTypeId, AppointmentType.Checkup);
+        var type = CreateAppointmentType(appointmentTypeId, AppointmentCategory.Checkup);
         var doctor = CreateDoctor(doctorId, specialtyId);
         var specialty = CreateSpecialty(specialtyId, 24);
 
@@ -159,7 +159,7 @@ public class CancelAppointmentCommandHandlerTests
         var command = new CancelAppointmentCommand(Guid.NewGuid(), Guid.NewGuid(), false, "Reason");
         var appointment = CreateAppointment(command.AppointmentId, Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow.AddDays(2));
         var user = CreateUser(command.InitiatorUserId, UserRole.Patient);
-        var type = CreateAppointmentType(appointment.AppointmentTypeId, AppointmentType.Checkup);
+        var type = CreateAppointmentType(appointment.AppointmentTypeId, AppointmentCategory.Checkup);
 
         _appointmentRepositoryMock.Setup(x => x.GetByIdAsync(command.AppointmentId)).ReturnsAsync(appointment);
         _userRepositoryMock.Setup(x => x.GetByIdAsync(command.InitiatorUserId)).ReturnsAsync(user);
@@ -181,7 +181,7 @@ public class CancelAppointmentCommandHandlerTests
         var specialtyId = Guid.NewGuid();
         var appointment = CreateAppointment(command.AppointmentId, Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow.AddDays(2));
         var user = CreateUser(command.InitiatorUserId, UserRole.Patient);
-        var type = CreateAppointmentType(appointment.AppointmentTypeId, AppointmentType.Checkup);
+        var type = CreateAppointmentType(appointment.AppointmentTypeId, AppointmentCategory.Checkup);
         var doctor = CreateDoctor(appointment.DoctorId, specialtyId);
 
         _appointmentRepositoryMock.Setup(x => x.GetByIdAsync(command.AppointmentId)).ReturnsAsync(appointment);
@@ -213,7 +213,7 @@ public class CancelAppointmentCommandHandlerTests
         return user;
     }
 
-    private static AppointmentTypeDefinition CreateAppointmentType(Guid id, AppointmentType typeEnum)
+    private static AppointmentTypeDefinition CreateAppointmentType(Guid id, AppointmentCategory typeEnum)
     {
         var type = AppointmentTypeDefinition.Create(typeEnum, typeEnum.ToString(), "Test description", TimeSpan.FromMinutes(30));
         SetPrivateProperty(type, nameof(AppointmentTypeDefinition.Id), id);

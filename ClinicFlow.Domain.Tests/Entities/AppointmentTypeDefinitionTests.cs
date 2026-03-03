@@ -13,7 +13,7 @@ public class AppointmentTypeDefinitionTests
     public void Create_ShouldCreateInstance_WhenValidParameters()
     {
         // Arrange
-        var type = AppointmentType.Checkup;
+        var type = AppointmentCategory.Checkup;
         var name = "General Checkup";
         var description = "Routine consultation";
         var duration = TimeSpan.FromMinutes(30);
@@ -23,7 +23,7 @@ public class AppointmentTypeDefinitionTests
 
         // Assert
         result.Should().NotBeNull();
-        result.Type.Should().Be(type);
+        result.Category.Should().Be(type);
         result.Name.Should().Be(name);
         result.Description.Should().Be(description);
         result.DurationMinutes.Should().Be(duration);
@@ -36,7 +36,7 @@ public class AppointmentTypeDefinitionTests
     public void Create_ShouldThrowException_WhenNameIsEmpty(string? name)
     {
         // Arrange & Act
-        var act = () => AppointmentTypeDefinition.Create(AppointmentType.Checkup, name!, "Description", TimeSpan.FromMinutes(30));
+        var act = () => AppointmentTypeDefinition.Create(AppointmentCategory.Checkup, name!, "Description", TimeSpan.FromMinutes(30));
 
         // Assert
         act.Should().Throw<DomainValidationException>().WithMessage("Appointment type name cannot be empty.");
@@ -47,7 +47,7 @@ public class AppointmentTypeDefinitionTests
     public void Create_ShouldThrowException_WhenDurationIsZeroOrNegative(TimeSpan duration)
     {
         // Arrange & Act
-        var act = () => AppointmentTypeDefinition.Create(AppointmentType.Checkup, "Checkup", "Description", duration);
+        var act = () => AppointmentTypeDefinition.Create(AppointmentCategory.Checkup, "Checkup", "Description", duration);
 
         // Assert
         act.Should().Throw<DomainValidationException>().WithMessage("Duration must be positive.");

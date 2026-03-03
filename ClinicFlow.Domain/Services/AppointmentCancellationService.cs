@@ -47,14 +47,14 @@ public static class AppointmentCancellationService
             {
                 var allowedFamilyTypes = new[]
                 {
-                    AppointmentType.Checkup,
-                    AppointmentType.FollowUp,
-                    AppointmentType.FirstConsultation
+                    AppointmentCategory.Checkup,
+                    AppointmentCategory.FollowUp,
+                    AppointmentCategory.FirstConsultation
                 };
 
-                if (allowedFamilyTypes.Contains(appointmentTypeDefinition.Type)) return;
+                if (allowedFamilyTypes.Contains(appointmentTypeDefinition.Category)) return;
 
-                throw new AppointmentCancellationUnauthorizedException($"Family members cannot cancel appointments of type: {appointmentTypeDefinition.Type}");
+                throw new AppointmentCancellationUnauthorizedException($"Family members cannot cancel appointments of type: {appointmentTypeDefinition.Category}");
             }
         }
         throw new AppointmentCancellationUnauthorizedException("User is not authorized to cancel this appointment.");

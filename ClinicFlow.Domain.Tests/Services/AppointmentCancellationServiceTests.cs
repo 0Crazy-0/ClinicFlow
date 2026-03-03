@@ -14,11 +14,11 @@ namespace ClinicFlow.Domain.Tests.Services;
 public class AppointmentCancellationServiceTests
 {
     [Theory]
-    [InlineData(UserRole.Admin, false, false, AppointmentType.Checkup)]
-    [InlineData(UserRole.Doctor, true, false, AppointmentType.Checkup)]
-    [InlineData(UserRole.Patient, true, false, AppointmentType.Checkup)]
-    [InlineData(UserRole.Patient, false, true, AppointmentType.Checkup)]
-    public void CancelAppointment_ShouldSucceed_WhenAuthorized(UserRole role, bool isOwn, bool isFamily, AppointmentType typeEnum)
+    [InlineData(UserRole.Admin, false, false, AppointmentCategory.Checkup)]
+    [InlineData(UserRole.Doctor, true, false, AppointmentCategory.Checkup)]
+    [InlineData(UserRole.Patient, true, false, AppointmentCategory.Checkup)]
+    [InlineData(UserRole.Patient, false, true, AppointmentCategory.Checkup)]
+    public void CancelAppointment_ShouldSucceed_WhenAuthorized(UserRole role, bool isOwn, bool isFamily, AppointmentCategory typeEnum)
     {
         // Arrange
         var appointment = CreateAppointment(DateTime.UtcNow.AddDays(2));
@@ -52,10 +52,10 @@ public class AppointmentCancellationServiceTests
     }
 
     [Theory]
-    [InlineData(UserRole.Doctor, false, false, AppointmentType.Checkup, "Doctors can only cancel their own appointments.")]
-    [InlineData(UserRole.Patient, false, true, AppointmentType.Procedure, "Family members cannot cancel appointments of type: Procedure")]
-    [InlineData(UserRole.Patient, false, false, AppointmentType.Checkup, "User is not authorized to cancel this appointment.")]
-    public void CancelAppointment_ShouldThrowUnauthorized_WhenNotAuthorized(UserRole role, bool isOwn, bool isFamily, AppointmentType typeEnum, string expectedMessage)
+    [InlineData(UserRole.Doctor, false, false, AppointmentCategory.Checkup, "Doctors can only cancel their own appointments.")]
+    [InlineData(UserRole.Patient, false, true, AppointmentCategory.Procedure, "Family members cannot cancel appointments of type: Procedure")]
+    [InlineData(UserRole.Patient, false, false, AppointmentCategory.Checkup, "User is not authorized to cancel this appointment.")]
+    public void CancelAppointment_ShouldThrowUnauthorized_WhenNotAuthorized(UserRole role, bool isOwn, bool isFamily, AppointmentCategory typeEnum, string expectedMessage)
     {
         // Arrange
         var appointment = CreateAppointment(DateTime.UtcNow.AddDays(2));
@@ -89,7 +89,7 @@ public class AppointmentCancellationServiceTests
         // Arrange
         var appointment = CreateAppointment(DateTime.UtcNow.AddDays(2));
         var receptionist = CreateUser(UserRole.Receptionist);
-        var type = CreateAppointmentType(AppointmentType.Checkup);
+        var type = CreateAppointmentType(AppointmentCategory.Checkup);
 
         // Act
         var context = new AppointmentCancellationContext
@@ -125,7 +125,7 @@ public class AppointmentCancellationServiceTests
     private static User CreateUser(UserRole role, Guid? doctorId = null, Guid? patientId = null) => User.Create(EmailAddress.Create("test@clinic.com"), "hashedpassword",
         PersonName.Create("Test User"), PhoneNumber.Create("555-0000"), role, doctorId, patientId);
 
-    private static AppointmentTypeDefinition CreateAppointmentType(AppointmentType typeEnum) => AppointmentTypeDefinition.Create(typeEnum, typeEnum.ToString(),
+    private static AppointmentTypeDefinition CreateAppointmentType(AppointmentCategory typeEnum) => AppointmentTypeDefinition.Create(typeEnum, typeEnum.ToString(),
         "Test description", TimeSpan.FromMinutes(30));
 
     private static void SetPrivateProperty(object obj, string propertyName, object value)

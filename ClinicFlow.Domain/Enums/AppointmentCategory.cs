@@ -3,7 +3,7 @@ namespace ClinicFlow.Domain.Enums;
 /// <summary>
 /// Categorizes the clinical purpose of an appointment.
 /// </summary>
-public enum AppointmentType
+public enum AppointmentCategory
 {
     /// <summary>
     /// Initial visit with a new patient.

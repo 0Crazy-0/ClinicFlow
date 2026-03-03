@@ -10,7 +10,7 @@ namespace ClinicFlow.Domain.Entities;
 public class AppointmentTypeDefinition : BaseEntity
 {
 
-    public AppointmentType Type { get; private set; }
+    public AppointmentCategory Category { get; private set; }
 
     public string Name { get; private set; } = string.Empty;
 
@@ -28,9 +28,9 @@ public class AppointmentTypeDefinition : BaseEntity
     // EF Core constructor
     private AppointmentTypeDefinition() { }
 
-    private AppointmentTypeDefinition(AppointmentType type, string name, string description, TimeSpan durationMinutes)
+    private AppointmentTypeDefinition(AppointmentCategory category, string name, string description, TimeSpan durationMinutes)
     {
-        Type = type;
+        Category = category;
         Name = name;
         Description = description;
         DurationMinutes = durationMinutes;
@@ -40,12 +40,12 @@ public class AppointmentTypeDefinition : BaseEntity
     /// Creates a new appointment type definition.
     /// </summary>
     /// <exception cref="DomainValidationException">Thrown when the name is empty or the duration is not positive.</exception>
-    internal static AppointmentTypeDefinition Create(AppointmentType type, string name, string description, TimeSpan durationMinutes)
+    internal static AppointmentTypeDefinition Create(AppointmentCategory category, string name, string description, TimeSpan durationMinutes)
     {
         if (string.IsNullOrWhiteSpace(name)) throw new DomainValidationException("Appointment type name cannot be empty.");
         if (durationMinutes <= TimeSpan.Zero) throw new DomainValidationException("Duration must be positive.");
 
-        return new AppointmentTypeDefinition(type, name, description, durationMinutes);
+        return new AppointmentTypeDefinition(category, name, description, durationMinutes);
     }
 
     /// <summary>
