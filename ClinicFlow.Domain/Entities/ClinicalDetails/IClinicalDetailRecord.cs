@@ -1,8 +1,12 @@
 namespace ClinicFlow.Domain.Entities.ClinicalDetails;
 
 /// <summary>
-/// Base class for all specialized clinical details added to a medical record.
+/// Base interface for dynamic clinical details added to a medical record.
 /// </summary>
 public interface IClinicalDetailRecord
 {
+    /// <summary>
+    /// The code of the template this record is fulfilling.
+    /// </summary>
+    public string TemplateCode { get; }
 }
