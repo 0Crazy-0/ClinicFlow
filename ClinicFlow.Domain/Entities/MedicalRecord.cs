@@ -69,16 +69,16 @@ public class MedicalRecord : BaseEntity
         if (detail is null) throw new DomainValidationException("Clinical detail cannot be null.");
 
         // It is a valid domain rule to prevent duplicate types of details per encounter (usually)
-        if (_clinicalDetails.Any(d => d.GetType() == detail.GetType()))
-            throw new DomainValidationException($"A clinical detail of type {detail.GetType().Name} already exists in this medical record.");
+        if (_clinicalDetails.Any(d => d.TemplateCode == detail.TemplateCode))
+            throw new DomainValidationException($"A clinical detail for template '{detail.TemplateCode}' already exists in this medical record.");
 
         _clinicalDetails.Add(detail);
     }
 
     /// <summary>
-    /// Retrieves a specific clinical detail by its type, or null if not present.
-    /// Useful for queries or view models that need to extract specialized data.
+    /// Retrieves a specific clinical detail by its template code, or null if not present.
+    /// Useful for queries or view models that need to extract specialized data (e.g., getting the 'VITALS' form).
     /// </summary>
-    public T? GetClinicalDetail<T>() where T : IClinicalDetailRecord => _clinicalDetails.OfType<T>().FirstOrDefault();
+    public IClinicalDetailRecord? GetClinicalDetail(string templateCode) => _clinicalDetails.FirstOrDefault(d => d.TemplateCode == templateCode);
 
 }
