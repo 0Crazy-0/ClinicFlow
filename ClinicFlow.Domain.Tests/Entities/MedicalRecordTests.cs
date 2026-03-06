@@ -128,9 +128,9 @@ public class MedicalRecordTests
     // Helpers
     private static MedicalRecord CreateValidMedicalRecord() => MedicalRecord.Create(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "General checkup");
 
-
     private class StubDynamicClinicalDetail(string templateCode) : IClinicalDetailRecord
     {
         public string TemplateCode => templateCode;
+        public string JsonDataPayload => string.Empty;
     }
 }

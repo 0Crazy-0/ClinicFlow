@@ -187,11 +187,13 @@ public class MedicalEncounterServiceTests
     private class TestClinicalDetail1 : IClinicalDetailRecord
     {
         public string TemplateCode => "Test1";
+        public string JsonDataPayload => string.Empty;
     }
 
     private class TestClinicalDetail2 : IClinicalDetailRecord
     {
         public string TemplateCode => "Test2";
+        public string JsonDataPayload => string.Empty;
     }
 
     // Helpers
