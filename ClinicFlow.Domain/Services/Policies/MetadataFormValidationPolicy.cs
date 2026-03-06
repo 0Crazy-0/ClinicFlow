@@ -26,11 +26,11 @@ public class MetadataFormValidationPolicy(IJsonSchemaValidator jsonSchemaValidat
             }
 
             var providedDetail = providedDetails.First(d => d.TemplateCode == requiredTemplate.Code);
-            ValidateJsonStructure(requiredTemplate, providedDetail as DynamicClinicalDetail);
+            ValidateJsonStructure(requiredTemplate, providedDetail);
         }
     }
 
-    private void ValidateJsonStructure(ClinicalFormTemplate template, DynamicClinicalDetail? detail)
+    private void ValidateJsonStructure(ClinicalFormTemplate template, IClinicalDetailRecord? detail)
     {
         if (detail is null || string.IsNullOrWhiteSpace(detail.JsonDataPayload))
             throw new BusinessRuleValidationException($"No data payload provided for template '{template.Code}'.");

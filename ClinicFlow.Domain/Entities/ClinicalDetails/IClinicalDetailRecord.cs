@@ -8,5 +8,10 @@ public interface IClinicalDetailRecord
     /// <summary>
     /// The code of the template this record is fulfilling.
     /// </summary>
-    public string TemplateCode { get; }
+    string TemplateCode { get; }
+
+    /// <summary>
+    /// The standardized JSON payload data representing the clinical record.
+    /// </summary>
+    string JsonDataPayload { get; }
 }

@@ -221,6 +221,7 @@ public class MetadataFormValidationPolicyTests
     private class StubClinicalDetailRecord(string templateCode) : IClinicalDetailRecord
     {
         public string TemplateCode => templateCode;
+        public string JsonDataPayload => string.Empty;
     }
 
     // Helpers
