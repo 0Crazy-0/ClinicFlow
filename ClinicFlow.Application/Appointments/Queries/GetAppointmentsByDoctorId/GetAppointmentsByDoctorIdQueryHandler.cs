@@ -8,7 +8,7 @@ public class GetAppointmentsByDoctorIdQueryHandler(IAppointmentRepository appoin
 {
     public async Task<IEnumerable<AppointmentDto>> Handle(GetAppointmentsByDoctorIdQuery request, CancellationToken cancellationToken)
     {
-        var appointments = await appointmentRepository.GetByDoctorIdAsync(request.DoctorId, request.Date);
+        var appointments = await appointmentRepository.GetByDoctorIdAsync(request.DoctorId, request.Date, cancellationToken);
 
         return appointments.Select(a => new AppointmentDto(a.Id, a.PatientId, a.DoctorId, a.AppointmentTypeId, a.ScheduledDate, 
             a.TimeRange.Start, a.TimeRange.End, a.Status, a.PatientNotes, a.ReceptionistNotes));

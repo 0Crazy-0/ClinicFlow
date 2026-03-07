@@ -10,7 +10,8 @@ public class GetAppointmentByIdQueryHandler(IAppointmentRepository appointmentRe
 {
     public async Task<AppointmentDto> Handle(GetAppointmentByIdQuery request, CancellationToken cancellationToken)
     {
-        var appointment = await appointmentRepository.GetByIdAsync(request.AppointmentId) ?? throw new EntityNotFoundException(nameof(Appointment), request.AppointmentId);
+        var appointment = await appointmentRepository.GetByIdAsync(request.AppointmentId, cancellationToken)
+            ?? throw new EntityNotFoundException(nameof(Appointment), request.AppointmentId);
 
         return new AppointmentDto(appointment.Id, appointment.PatientId, appointment.DoctorId, appointment.AppointmentTypeId, appointment.ScheduledDate,
             appointment.TimeRange.Start, appointment.TimeRange.End, appointment.Status, appointment.PatientNotes, appointment.ReceptionistNotes);

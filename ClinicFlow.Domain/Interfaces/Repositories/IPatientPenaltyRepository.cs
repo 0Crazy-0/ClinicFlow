@@ -7,7 +7,7 @@ namespace ClinicFlow.Domain.Interfaces.Repositories;
 /// </summary>
 public interface IPatientPenaltyRepository
 {
-    Task AddAsync(PatientPenalty penalty);
+    Task AddAsync(PatientPenalty penalty, CancellationToken cancellationToken = default);
 
-    Task<IEnumerable<PatientPenalty>> GetByPatientIdAsync(Guid patientId);
+    Task<IEnumerable<PatientPenalty>> GetByPatientIdAsync(Guid patientId, CancellationToken cancellationToken = default);
 }

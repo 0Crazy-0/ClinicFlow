@@ -7,5 +7,5 @@ namespace ClinicFlow.Domain.Interfaces.Repositories;
 /// </summary>
 public interface IMedicalSpecialtyRepository
 {
-    Task<MedicalSpecialty?> GetByIdAsync(Guid id);
+    Task<MedicalSpecialty?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 }

@@ -16,16 +16,16 @@ public class CancelAppointmentCommandHandler(IAppointmentRepository appointmentR
 {
     public async Task Handle(CancelAppointmentCommand request, CancellationToken cancellationToken)
     {
-        var appointment = await appointmentRepository.GetByIdAsync(request.AppointmentId) ?? throw new EntityNotFoundException(nameof(Appointment), request.AppointmentId);
+        var appointment = await appointmentRepository.GetByIdAsync(request.AppointmentId, cancellationToken) ?? throw new EntityNotFoundException(nameof(Appointment), request.AppointmentId);
 
-        var initiator = await userRepository.GetByIdAsync(request.InitiatorUserId) ?? throw new EntityNotFoundException(nameof(User), request.InitiatorUserId);
+        var initiator = await userRepository.GetByIdAsync(request.InitiatorUserId, cancellationToken) ?? throw new EntityNotFoundException(nameof(User), request.InitiatorUserId);
 
-        var appointmentType = await appointmentTypeDefinitionRepository.GetByIdAsync(appointment.AppointmentTypeId)
+        var appointmentType = await appointmentTypeDefinitionRepository.GetByIdAsync(appointment.AppointmentTypeId, cancellationToken)
             ?? throw new EntityNotFoundException(nameof(AppointmentTypeDefinition), appointment.AppointmentTypeId);
 
-        var doctor = await doctorRepository.GetByIdAsync(appointment.DoctorId) ?? throw new EntityNotFoundException(nameof(Doctor), appointment.DoctorId);
+        var doctor = await doctorRepository.GetByIdAsync(appointment.DoctorId, cancellationToken) ?? throw new EntityNotFoundException(nameof(Doctor), appointment.DoctorId);
 
-        var specialty = await medicalSpecialtyRepository.GetByIdAsync(doctor.MedicalSpecialtyId) ??
+        var specialty = await medicalSpecialtyRepository.GetByIdAsync(doctor.MedicalSpecialtyId, cancellationToken) ??
             throw new EntityNotFoundException(nameof(MedicalSpecialty), doctor.MedicalSpecialtyId);
 
         var context = new AppointmentCancellationContext
@@ -39,15 +39,15 @@ public class CancelAppointmentCommandHandler(IAppointmentRepository appointmentR
 
         AppointmentCancellationService.CancelAppointment(appointment, context);
 
-        await appointmentRepository.UpdateAsync(appointment);
+        await appointmentRepository.UpdateAsync(appointment, cancellationToken);
 
         if (appointment.Status is AppointmentStatus.LateCancellation)
         {
-            var existingPenalties = await patientPenaltyRepository.GetByPatientIdAsync(appointment.PatientId);
+            var existingPenalties = await patientPenaltyRepository.GetByPatientIdAsync(appointment.PatientId, cancellationToken);
             var newPenalties = PatientPenaltyService.ApplyPenalty(appointment.PatientId, existingPenalties, appointment.Id, "Late cancellation");
 
             foreach (var penalty in newPenalties)
-                await patientPenaltyRepository.AddAsync(penalty);
+                await patientPenaltyRepository.AddAsync(penalty, cancellationToken);
 
         }
 

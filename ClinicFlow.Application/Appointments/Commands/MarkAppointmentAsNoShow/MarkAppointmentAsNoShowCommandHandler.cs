@@ -12,18 +12,18 @@ public class MarkAppointmentAsNoShowCommandHandler(IAppointmentRepository appoin
 {
     public async Task Handle(MarkAppointmentAsNoShowCommand request, CancellationToken cancellationToken)
     {
-        var appointment = await appointmentRepository.GetByIdAsync(request.AppointmentId) ?? throw new EntityNotFoundException(nameof(Appointment), request.AppointmentId);
+        var appointment = await appointmentRepository.GetByIdAsync(request.AppointmentId, cancellationToken) ?? throw new EntityNotFoundException(nameof(Appointment), request.AppointmentId);
 
-        var initiator = await userRepository.GetByIdAsync(request.InitiatorUserId) ?? throw new EntityNotFoundException(nameof(User), request.InitiatorUserId);
+        var initiator = await userRepository.GetByIdAsync(request.InitiatorUserId, cancellationToken) ?? throw new EntityNotFoundException(nameof(User), request.InitiatorUserId);
 
-        var existingPenalties = await patientPenaltyRepository.GetByPatientIdAsync(appointment.PatientId);
+        var existingPenalties = await patientPenaltyRepository.GetByPatientIdAsync(appointment.PatientId, cancellationToken);
         
         var newPenalties = AppointmentNoShowService.MarkAsNoShow(appointment, initiator, existingPenalties);
 
         foreach (var penalty in newPenalties)
-            await patientPenaltyRepository.AddAsync(penalty);
+            await patientPenaltyRepository.AddAsync(penalty, cancellationToken);
 
-        await appointmentRepository.UpdateAsync(appointment);
+        await appointmentRepository.UpdateAsync(appointment, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }
