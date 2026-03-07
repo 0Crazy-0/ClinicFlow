@@ -36,7 +36,7 @@ public class CompleteMedicalEncounterCommandHandler(IDoctorRepository doctorRepo
 
         medicalEncounterService.ValidateAndCompleteRecord(medicalRecord, context);
 
-        await medicalRecordRepository.CreateAsync(medicalRecord);
+        await medicalRecordRepository.CreateAsync(medicalRecord, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return medicalRecord.Id;
