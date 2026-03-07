@@ -13,6 +13,8 @@ public interface IMedicalRecordRepository
 
     Task<IList<MedicalRecord>> GetByDoctorIdAsync(Guid doctorId, CancellationToken cancellationToken = default);
 
+    Task<MedicalRecord?> GetByAppointmentIdAsync(Guid appointmentId, CancellationToken cancellationToken = default);
+
     Task<MedicalRecord> CreateAsync(MedicalRecord medicalRecord, CancellationToken cancellationToken = default);
 
     Task UpdateAsync(MedicalRecord medicalRecord, CancellationToken cancellationToken = default);
