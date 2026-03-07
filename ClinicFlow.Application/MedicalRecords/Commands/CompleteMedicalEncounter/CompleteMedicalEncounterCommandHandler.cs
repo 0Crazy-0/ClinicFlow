@@ -15,11 +15,11 @@ public class CompleteMedicalEncounterCommandHandler(IDoctorRepository doctorRepo
 {
     public async Task<Guid> Handle(CompleteMedicalEncounterCommand request, CancellationToken cancellationToken)
     {
-        var doctor = await doctorRepository.GetByIdAsync(request.DoctorId) ?? throw new EntityNotFoundException(nameof(Doctor), request.DoctorId);
+        var doctor = await doctorRepository.GetByIdAsync(request.DoctorId, cancellationToken) ?? throw new EntityNotFoundException(nameof(Doctor), request.DoctorId);
 
-        var appointment = await appointmentRepository.GetByIdAsync(request.AppointmentId) ?? throw new EntityNotFoundException(nameof(Appointment), request.AppointmentId);
+        var appointment = await appointmentRepository.GetByIdAsync(request.AppointmentId, cancellationToken) ?? throw new EntityNotFoundException(nameof(Appointment), request.AppointmentId);
 
-        var appointmentType = await appointmentTypeRepository.GetByIdAsync(appointment.AppointmentTypeId) ??
+        var appointmentType = await appointmentTypeRepository.GetByIdAsync(appointment.AppointmentTypeId, cancellationToken) ??
             throw new EntityNotFoundException(nameof(AppointmentTypeDefinition), appointment.AppointmentTypeId);
 
         var details = request.Details.Select(dto => DynamicClinicalDetail.Create(dto.TemplateCode, dto.JsonDataPayload)).ToList();

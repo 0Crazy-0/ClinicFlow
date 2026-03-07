@@ -7,9 +7,9 @@ namespace ClinicFlow.Domain.Interfaces.Repositories;
 /// </summary>
 public interface IAppointmentTypeDefinitionRepository
 {
-    Task<AppointmentTypeDefinition?> GetByIdAsync(Guid id);
+    Task<AppointmentTypeDefinition?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
-    Task<IList<AppointmentTypeDefinition>> GetAllAsync();
+    Task<IList<AppointmentTypeDefinition>> GetAllAsync(CancellationToken cancellationToken = default);
 
-    Task<AppointmentTypeDefinition> CreateAsync(AppointmentTypeDefinition appointmentTypeDefinition);
+    Task<AppointmentTypeDefinition> CreateAsync(AppointmentTypeDefinition appointmentTypeDefinition, CancellationToken cancellationToken = default);
 }
