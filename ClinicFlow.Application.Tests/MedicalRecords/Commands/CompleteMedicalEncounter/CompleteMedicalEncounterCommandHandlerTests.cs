@@ -4,6 +4,7 @@ using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.Services;
+using ClinicFlow.Domain.Services.Policies;
 using FluentAssertions;
 using Moq;
 using System.Reflection;
@@ -29,7 +30,8 @@ public class CompleteMedicalEncounterCommandHandlerTests
         _unitOfWorkMock = new Mock<IUnitOfWork>();
 
         // Use a real MedicalEncounterService with empty policies since it's a domain service
-        _medicalEncounterService = new MedicalEncounterService([]);
+        var jsonValidatorMock = new Mock<IJsonSchemaValidator>();
+        _medicalEncounterService = new MedicalEncounterService([], jsonValidatorMock.Object);
 
         _sut = new CompleteMedicalEncounterCommandHandler(_doctorRepositoryMock.Object, _appointmentRepositoryMock.Object, _appointmentTypeRepositoryMock.Object,
              _medicalRecordRepositoryMock.Object, _medicalEncounterService, _unitOfWorkMock.Object);
