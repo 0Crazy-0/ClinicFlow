@@ -53,11 +53,10 @@ public class MedicalEncounterService(IEnumerable<IMedicalRecordValidationPolicy>
         if (string.IsNullOrWhiteSpace(newDetail.JsonDataPayload))
             throw new BusinessRuleValidationException($"No data payload provided for template '{template.Code}'.");
 
-        if (!string.IsNullOrWhiteSpace(template.JsonSchemaDefinition) && template.JsonSchemaDefinition is not "{}")
+        if (!string.IsNullOrWhiteSpace(template.JsonSchemaDefinition) && template.JsonSchemaDefinition is not "{}" && 
+            !jsonSchemaValidator.ValidateSchema(template.JsonSchemaDefinition, newDetail.JsonDataPayload, out string? errorMessage))
         {
-            if (!jsonSchemaValidator.ValidateSchema(template.JsonSchemaDefinition, newDetail.JsonDataPayload, out string? errorMessage))
-                throw new BusinessRuleValidationException($"Validation failed for template '{template.Name}': {errorMessage}");
-
+            throw new BusinessRuleValidationException($"Validation failed for template '{template.Name}': {errorMessage}");
         }
 
         record.AddClinicalDetail(newDetail);
