@@ -14,17 +14,19 @@ public class MedicalEncounterServiceTests
 {
     private readonly Mock<IMedicalRecordValidationPolicy> _mockPolicy1;
     private readonly Mock<IMedicalRecordValidationPolicy> _mockPolicy2;
+    private readonly Mock<IJsonSchemaValidator> _mockJsonValidator;
     private readonly MedicalEncounterService _sut;
 
     public MedicalEncounterServiceTests()
     {
         _mockPolicy1 = new Mock<IMedicalRecordValidationPolicy>();
         _mockPolicy2 = new Mock<IMedicalRecordValidationPolicy>();
+        _mockJsonValidator = new Mock<IJsonSchemaValidator>();
 
         var policies = new List<IMedicalRecordValidationPolicy> { _mockPolicy1.Object, _mockPolicy2.Object };
-        _sut = new MedicalEncounterService(policies);
+        _sut = new MedicalEncounterService(policies, _mockJsonValidator.Object);
     }
-
+    // ValidateAndCompleteRecord
     [Fact]
     public void ValidateAndCompleteRecord_ShouldThrowDomainValidationException_WhenRecordIsNull()
     {
@@ -184,6 +186,97 @@ public class MedicalEncounterServiceTests
         record.ClinicalDetails.Should().Contain(detailMock1).And.Contain(detailMock2);
     }
 
+    // AppendClinicalDetail
+    [Fact]
+    public void AppendClinicalDetail_ShouldThrowDomainValidationException_WhenRecordIsNull()
+    {
+        var act = () => _sut.AppendClinicalDetail(null!, new TestClinicalDetail1(), CreateFormTemplate());
+        act.Should().Throw<DomainValidationException>().WithMessage("The medical record is required and cannot be null.");
+    }
+
+    [Fact]
+    public void AppendClinicalDetail_ShouldThrowDomainValidationException_WhenDetailIsNull()
+    {
+        var record = CreateMedicalRecord(Guid.NewGuid(), Guid.NewGuid());
+        var act = () => _sut.AppendClinicalDetail(record, null!, CreateFormTemplate());
+        act.Should().Throw<DomainValidationException>().WithMessage("The clinical detail is required and cannot be null.");
+    }
+
+    [Fact]
+    public void AppendClinicalDetail_ShouldThrowDomainValidationException_WhenTemplateIsNull()
+    {
+        var record = CreateMedicalRecord(Guid.NewGuid(), Guid.NewGuid());
+        var act = () => _sut.AppendClinicalDetail(record, new TestClinicalDetail1(), null!);
+        act.Should().Throw<DomainValidationException>().WithMessage("The clinical form template is required and cannot be null.");
+    }
+
+    [Fact]
+    public void AppendClinicalDetail_ShouldThrowBusinessRuleValidationException_WhenTemplateCodeMismatch()
+    {
+        var record = CreateMedicalRecord(Guid.NewGuid(), Guid.NewGuid());
+        var detail = new TestClinicalDetail1(); // TemplateCode is "Test1"
+        var template = CreateFormTemplate("DifferentCode");
+
+        var act = () => _sut.AppendClinicalDetail(record, detail, template);
+
+        act.Should().Throw<BusinessRuleValidationException>().WithMessage("The detail template code 'Test1' does not match the provided template 'DifferentCode'.");
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void AppendClinicalDetail_ShouldThrowBusinessRuleValidationException_WhenPayloadIsNullOrWhiteSpace(string? payload)
+    {
+        var record = CreateMedicalRecord(Guid.NewGuid(), Guid.NewGuid());
+        var template = CreateFormTemplate("Test1");
+
+        var mockDetail = new Mock<IClinicalDetailRecord>();
+        mockDetail.Setup(d => d.TemplateCode).Returns("Test1");
+        mockDetail.Setup(d => d.JsonDataPayload).Returns(payload!);
+
+        var act = () => _sut.AppendClinicalDetail(record, mockDetail.Object, template);
+
+        act.Should().Throw<BusinessRuleValidationException>().WithMessage("No data payload provided for template 'Test1'.");
+    }
+
+    [Fact]
+    public void AppendClinicalDetail_ShouldThrowBusinessRuleValidationException_WhenPayloadIsInvalidSchema()
+    {
+        var record = CreateMedicalRecord(Guid.NewGuid(), Guid.NewGuid());
+
+        var mockDetail = new Mock<IClinicalDetailRecord>();
+        mockDetail.Setup(d => d.TemplateCode).Returns("Test1");
+        mockDetail.Setup(d => d.JsonDataPayload).Returns("{\"invalid\": \"data\"}");
+
+        var template = CreateFormTemplate("Test1", "{\"type\": \"object\"}");
+
+        string errorMessage = "Schema validation failed";
+        _mockJsonValidator.Setup(v => v.ValidateSchema("{\"type\": \"object\"}", "{\"invalid\": \"data\"}", out errorMessage!)).Returns(false);
+
+        var act = () => _sut.AppendClinicalDetail(record, mockDetail.Object, template);
+
+        act.Should().Throw<BusinessRuleValidationException>().WithMessage($"Validation failed for template '{template.Name}': {errorMessage}");
+    }
+
+    [Fact]
+    public void AppendClinicalDetail_ShouldAddDetail_WhenValidAndSchemaMatches()
+    {
+        var record = CreateMedicalRecord(Guid.NewGuid(), Guid.NewGuid());
+
+        var mockDetail = new Mock<IClinicalDetailRecord>();
+        mockDetail.Setup(d => d.TemplateCode).Returns("Test1");
+        mockDetail.Setup(d => d.JsonDataPayload).Returns("{\"valid\": \"data\"}");
+
+        var template = CreateFormTemplate("Test1", "{\"type\": \"object\"}");
+
+        string? errorMessage = null;
+        _mockJsonValidator.Setup(v => v.ValidateSchema("{\"type\": \"object\"}", "{\"valid\": \"data\"}", out errorMessage)).Returns(true);
+
+        _sut.AppendClinicalDetail(record, mockDetail.Object, template);
+
+        record.ClinicalDetails.Should().Contain(mockDetail.Object);
+    }
     private class TestClinicalDetail1 : IClinicalDetailRecord
     {
         public string TemplateCode => "Test1";
@@ -226,6 +319,16 @@ public class MedicalEncounterServiceTests
         var type = (AppointmentTypeDefinition)Activator.CreateInstance(typeof(AppointmentTypeDefinition), true)!;
         SetPrivateProperty(type, nameof(AppointmentTypeDefinition.Id), Guid.NewGuid());
         return type;
+    }
+
+    private static ClinicalFormTemplate CreateFormTemplate(string code = "Test1", string jsonSchema = "{}")
+    {
+        var template = (ClinicalFormTemplate)Activator.CreateInstance(typeof(ClinicalFormTemplate), true)!;
+        SetPrivateProperty(template, nameof(ClinicalFormTemplate.Id), Guid.NewGuid());
+        SetPrivateProperty(template, nameof(ClinicalFormTemplate.Code), code);
+        SetPrivateProperty(template, nameof(ClinicalFormTemplate.Name), "Test Form");
+        SetPrivateProperty(template, nameof(ClinicalFormTemplate.JsonSchemaDefinition), jsonSchema);
+        return template;
     }
 
     private static void SetPrivateProperty(object obj, string propertyName, object value)
