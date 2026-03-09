@@ -2,6 +2,7 @@ using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Events;
 using ClinicFlow.Domain.Exceptions.Appointments;
+using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
@@ -23,12 +24,8 @@ public class AppointmentNoShowServiceTests
 
         if (role is UserRole.Doctor) doctorId = isOwn ? appointment.DoctorId : Guid.NewGuid();
 
-
-        var user = CreateUser(role, doctorId);
-        var existingPenalties = Enumerable.Empty<PatientPenalty>();
-
         // Act
-        var result = AppointmentNoShowService.MarkAsNoShow(appointment, user, existingPenalties).ToList();
+        var result = AppointmentNoShowService.MarkAsNoShow(appointment, role, doctorId, []).ToList();
 
         // Assert
         appointment.Status.Should().Be(AppointmentStatus.NoShow);
@@ -39,66 +36,51 @@ public class AppointmentNoShowServiceTests
     }
 
     [Theory]
-    [InlineData(UserRole.Doctor, false, "Doctors can only mark their own appointments as No-Show.")]
-    [InlineData(UserRole.Patient, true, "User is not authorized to mark this appointment as No-Show.")]
-    [InlineData(UserRole.Patient, false, "User is not authorized to mark this appointment as No-Show.")]
-    public void MarkAsNoShow_ShouldThrowUnauthorized_WhenNotAuthorized(UserRole role, bool isOwn, string expectedMessage)
+    [InlineData(UserRole.Doctor, "Doctors can only mark their own appointments as No-Show.")]
+    [InlineData(UserRole.Patient, "User is not authorized to mark this appointment as No-Show.")]
+    public void MarkAsNoShow_ShouldThrowUnauthorized_WhenNotAuthorized(UserRole role, string expectedMessage)
     {
         // Arrange
         var appointment = CreateAppointment(DateTime.UtcNow.AddDays(2));
-
-        Guid? doctorId = role is UserRole.Doctor && !isOwn ? Guid.NewGuid() : null;
-        Guid? patientId = role is UserRole.Patient && isOwn ? appointment.PatientId : null;
-
-        var user = CreateUser(role, doctorId, patientId);
-        var existingPenalties = Enumerable.Empty<PatientPenalty>();
+        Guid? doctorId = role is UserRole.Doctor ? Guid.NewGuid() : null;
 
         // Act
-        var act = () => AppointmentNoShowService.MarkAsNoShow(appointment, user, existingPenalties);
+        var act = () => AppointmentNoShowService.MarkAsNoShow(appointment, role, doctorId, []);
 
         // Assert
         act.Should().Throw<AppointmentCancellationUnauthorizedException>().WithMessage(expectedMessage);
     }
+
 
     [Fact]
     public void MarkAsNoShow_ShouldThrowUnauthorized_WhenDoctorIdDoesNotMatchAppointmentDoctorId()
     {
         // Arrange
         var appointment = CreateAppointment(DateTime.UtcNow.AddDays(2));
-
-        // A doctor user with a completely different DoctorId (and also test if DoctorId is somehow null)
-        var user = CreateUser(UserRole.Doctor, doctorId: Guid.NewGuid());
-        var existingPenalties = Enumerable.Empty<PatientPenalty>();
+        var doctorId = Guid.NewGuid();
 
         // Act
-        var act = () => AppointmentNoShowService.MarkAsNoShow(appointment, user, existingPenalties);
+        var act = () => AppointmentNoShowService.MarkAsNoShow(appointment, UserRole.Doctor, doctorId, []);
 
         // Assert
         act.Should().Throw<AppointmentCancellationUnauthorizedException>().WithMessage("Doctors can only mark their own appointments as No-Show.");
     }
 
     [Fact]
-    public void MarkAsNoShow_ShouldThrowUnauthorized_WhenDoctorIdIsNull()
+    public void MarkAsNoShow_ShouldThrowDomainValidation_WhenDoctorIdIsNull()
     {
         // Arrange
         var appointment = CreateAppointment(DateTime.UtcNow.AddDays(2));
-
-        // A doctor user where DoctorId is unexpectedly null
-        var user = CreateUser(UserRole.Doctor, doctorId: null);
-        var existingPenalties = Enumerable.Empty<PatientPenalty>();
-
+        
         // Act
-        var act = () => AppointmentNoShowService.MarkAsNoShow(appointment, user, existingPenalties);
+        var act = () => AppointmentNoShowService.MarkAsNoShow(appointment, UserRole.Doctor, null, []);
 
         // Assert
-        act.Should().Throw<AppointmentCancellationUnauthorizedException>().WithMessage("Doctors can only mark their own appointments as No-Show.");
+        act.Should().Throw<DomainValidationException>().WithMessage("A user with the Doctor role must have an associated doctor profile.");
     }
 
     // Helpers
 
     private static Appointment CreateAppointment(DateTime scheduledDateTime) => Appointment.Schedule(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(),
         scheduledDateTime.Date, TimeRange.Create(scheduledDateTime.TimeOfDay, scheduledDateTime.TimeOfDay.Add(TimeSpan.FromHours(1))));
-
-    private static User CreateUser(UserRole role, Guid? doctorId = null, Guid? patientId = null) => User.Create(EmailAddress.Create("test@clinic.com"),
-        "hashedpassword", PersonName.Create("Test User"), PhoneNumber.Create("555-0000"), role, doctorId, patientId);
 }

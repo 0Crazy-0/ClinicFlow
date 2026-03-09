@@ -21,27 +21,36 @@ public static class AppointmentCancellationService
     /// <exception cref="BusinessRuleValidationException">Thrown when a staff member does not provide a cancellation reason.</exception>
     public static void CancelAppointment(Appointment appointment, AppointmentCancellationContext context)
     {
-        ValidateCancellationPermission(appointment, context.Initiator, context.AppointmentTypeDefinition, context.IsAuthorizedFamilyMember);
+        ValidateCancellationPermission(appointment, context.Initiator, context.InitiatorDoctorId, context.InitiatorPatientId, context.AppointmentTypeDefinition,
+            context.IsAuthorizedFamilyMember);
+
         ValidateCancellationReason(context.Initiator.Role, context.Reason);
 
         appointment.Cancel(context.Initiator.Id, context.Reason, context.Specialty);
     }
 
     // Helpers
-    private static void ValidateCancellationPermission(Appointment appointment, User initiator, AppointmentTypeDefinition appointmentTypeDefinition, bool isFamilyMember)
+    private static void ValidateCancellationPermission(Appointment appointment, User initiator, Guid? initiatorDoctorId, Guid? initiatorPatientId, 
+        AppointmentTypeDefinition appointmentTypeDefinition, bool isFamilyMember)
     {
         if (initiator.Role is UserRole.Admin or UserRole.Receptionist) return;
 
         if (initiator.Role is UserRole.Doctor)
         {
-            if (initiator.DoctorId == appointment.DoctorId) return;
+            if (!initiatorDoctorId.HasValue)
+                throw new DomainValidationException("A user with the Doctor role must have an associated doctor profile.");
+
+            if (initiatorDoctorId == appointment.DoctorId) return;
 
             throw new AppointmentCancellationUnauthorizedException("Doctors can only cancel their own appointments.");
         }
 
         if (initiator.Role is UserRole.Patient)
         {
-            if (initiator.PatientId == appointment.PatientId) return;
+            if (!initiatorPatientId.HasValue)
+                throw new DomainValidationException("A user with the Patient role must have an associated patient profile.");
+
+            if (initiatorPatientId == appointment.PatientId) return;
 
             if (isFamilyMember)
             {

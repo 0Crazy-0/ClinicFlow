@@ -8,6 +8,8 @@ namespace ClinicFlow.Domain.Services.Contexts;
 public class AppointmentCancellationContext
 {
     public User Initiator { get; init; } = null!;
+    public Guid? InitiatorDoctorId { get; init; }
+    public Guid? InitiatorPatientId { get; init; }
     public AppointmentTypeDefinition AppointmentTypeDefinition { get; init; } = null!;
     public MedicalSpecialty Specialty { get; init; } = null!;
     public bool IsAuthorizedFamilyMember { get; init; }

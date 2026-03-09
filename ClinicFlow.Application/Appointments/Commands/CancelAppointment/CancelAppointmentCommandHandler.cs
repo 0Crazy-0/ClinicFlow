@@ -10,13 +10,14 @@ using MediatR;
 namespace ClinicFlow.Application.Appointments.Commands.CancelAppointment;
 
 public class CancelAppointmentCommandHandler(IAppointmentRepository appointmentRepository, IUserRepository userRepository,
-    IAppointmentTypeDefinitionRepository appointmentTypeDefinitionRepository, IDoctorRepository doctorRepository,
+    IAppointmentTypeDefinitionRepository appointmentTypeDefinitionRepository, IDoctorRepository doctorRepository, IPatientRepository patientRepository,
     IMedicalSpecialtyRepository medicalSpecialtyRepository, IPatientPenaltyRepository patientPenaltyRepository, IUnitOfWork unitOfWork)
     : IRequestHandler<CancelAppointmentCommand>
 {
     public async Task Handle(CancelAppointmentCommand request, CancellationToken cancellationToken)
     {
-        var appointment = await appointmentRepository.GetByIdAsync(request.AppointmentId, cancellationToken) ?? throw new EntityNotFoundException(nameof(Appointment), request.AppointmentId);
+        var appointment = await appointmentRepository.GetByIdAsync(request.AppointmentId, cancellationToken) 
+            ?? throw new EntityNotFoundException(nameof(Appointment), request.AppointmentId);
 
         var initiator = await userRepository.GetByIdAsync(request.InitiatorUserId, cancellationToken) ?? throw new EntityNotFoundException(nameof(User), request.InitiatorUserId);
 
@@ -28,9 +29,14 @@ public class CancelAppointmentCommandHandler(IAppointmentRepository appointmentR
         var specialty = await medicalSpecialtyRepository.GetByIdAsync(doctor.MedicalSpecialtyId, cancellationToken) ??
             throw new EntityNotFoundException(nameof(MedicalSpecialty), doctor.MedicalSpecialtyId);
 
+        var initiatorDoctor = await doctorRepository.GetByUserIdAsync(initiator.Id, cancellationToken);
+        var initiatorPatient = await patientRepository.GetByUserIdAsync(initiator.Id, cancellationToken);
+
         var context = new AppointmentCancellationContext
         {
             Initiator = initiator,
+            InitiatorDoctorId = initiatorDoctor?.Id,
+            InitiatorPatientId = initiatorPatient?.Id,
             AppointmentTypeDefinition = appointmentType,
             Specialty = specialty,
             IsAuthorizedFamilyMember = request.IsAuthorizedFamilyMember,
