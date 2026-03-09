@@ -30,12 +30,14 @@ public class AppointmentCancellationServiceTests
         else if (role is UserRole.Patient) patientId = isOwn ? appointment.PatientId : Guid.NewGuid();
 
         var type = CreateAppointmentType(typeEnum);
-        var user = CreateUser(role, doctorId, patientId);
+        var user = CreateUser(role);
 
         // Act
         var context = new AppointmentCancellationContext
         {
             Initiator = user,
+            InitiatorDoctorId = doctorId,
+            InitiatorPatientId = patientId,
             AppointmentTypeDefinition = type,
             IsAuthorizedFamilyMember = isFamily,
             Specialty = CreateSpecialty(24),
@@ -65,12 +67,14 @@ public class AppointmentCancellationServiceTests
         Guid? patientId = role is UserRole.Patient && !isOwn ? Guid.NewGuid() : null;
 
         var type = CreateAppointmentType(typeEnum);
-        var user = CreateUser(role, doctorId, patientId);
+        var user = CreateUser(role);
 
         // Act
         var context = new AppointmentCancellationContext
         {
             Initiator = user,
+            InitiatorDoctorId = doctorId,
+            InitiatorPatientId = patientId,
             AppointmentTypeDefinition = type,
             IsAuthorizedFamilyMember = isFamily,
             Specialty = CreateSpecialty(24),
@@ -121,9 +125,8 @@ public class AppointmentCancellationServiceTests
     private static Appointment CreateAppointment(DateTime scheduledDateTime) => Appointment.Schedule(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), scheduledDateTime.Date,
         TimeRange.Create(scheduledDateTime.TimeOfDay, scheduledDateTime.TimeOfDay.Add(TimeSpan.FromHours(1))));
 
-
-    private static User CreateUser(UserRole role, Guid? doctorId = null, Guid? patientId = null) => User.Create(EmailAddress.Create("test@clinic.com"), "hashedpassword",
-        PersonName.Create("Test User"), PhoneNumber.Create("555-0000"), role, doctorId, patientId);
+    private static User CreateUser(UserRole role) => User.Create(EmailAddress.Create("test@clinic.com"), "hashedpassword",
+        PersonName.Create("Test User"), PhoneNumber.Create("555-0000"), role);
 
     private static AppointmentTypeDefinition CreateAppointmentType(AppointmentCategory typeEnum) => AppointmentTypeDefinition.Create(typeEnum, typeEnum.ToString(),
         "Test description", TimeSpan.FromMinutes(30));

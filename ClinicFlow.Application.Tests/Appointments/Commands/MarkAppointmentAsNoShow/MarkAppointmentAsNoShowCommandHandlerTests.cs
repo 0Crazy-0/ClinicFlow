@@ -16,6 +16,7 @@ public class MarkAppointmentAsNoShowCommandHandlerTests
 {
     private readonly Mock<IAppointmentRepository> _appointmentRepositoryMock;
     private readonly Mock<IUserRepository> _userRepositoryMock;
+    private readonly Mock<IDoctorRepository> _doctorRepositoryMock;
     private readonly Mock<IPatientPenaltyRepository> _penaltyRepositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly MarkAppointmentAsNoShowCommandHandler _sut;
@@ -24,10 +25,12 @@ public class MarkAppointmentAsNoShowCommandHandlerTests
     {
         _appointmentRepositoryMock = new Mock<IAppointmentRepository>();
         _userRepositoryMock = new Mock<IUserRepository>();
+        _doctorRepositoryMock = new Mock<IDoctorRepository>();
         _penaltyRepositoryMock = new Mock<IPatientPenaltyRepository>();
         _unitOfWorkMock = new Mock<IUnitOfWork>();
 
-        _sut = new MarkAppointmentAsNoShowCommandHandler(_appointmentRepositoryMock.Object, _userRepositoryMock.Object, _penaltyRepositoryMock.Object, _unitOfWorkMock.Object);
+        _sut = new MarkAppointmentAsNoShowCommandHandler(_appointmentRepositoryMock.Object, _userRepositoryMock.Object,
+            _doctorRepositoryMock.Object, _penaltyRepositoryMock.Object, _unitOfWorkMock.Object);
     }
 
     [Theory]
@@ -44,6 +47,7 @@ public class MarkAppointmentAsNoShowCommandHandlerTests
 
         _appointmentRepositoryMock.Setup(x => x.GetByIdAsync(command.AppointmentId)).ReturnsAsync(appointment);
         _userRepositoryMock.Setup(x => x.GetByIdAsync(command.InitiatorUserId)).ReturnsAsync(user);
+        _doctorRepositoryMock.Setup(x => x.GetByUserIdAsync(user.Id)).ReturnsAsync((Doctor?)null);
         _penaltyRepositoryMock.Setup(x => x.GetByPatientIdAsync(appointment.PatientId)).ReturnsAsync([]);
 
         // Act
@@ -64,10 +68,12 @@ public class MarkAppointmentAsNoShowCommandHandlerTests
         var doctorId = Guid.NewGuid();
         var patientId = Guid.NewGuid();
         var appointment = CreateAppointment(command.AppointmentId, doctorId, patientId, Guid.NewGuid(), DateTime.UtcNow.AddDays(-1));
-        var user = CreateUser(command.InitiatorUserId, UserRole.Doctor, doctorId: doctorId);
+        var user = CreateUser(command.InitiatorUserId, UserRole.Doctor);
+        var doctor = CreateDoctor(doctorId, user.Id);
 
         _appointmentRepositoryMock.Setup(x => x.GetByIdAsync(command.AppointmentId)).ReturnsAsync(appointment);
         _userRepositoryMock.Setup(x => x.GetByIdAsync(command.InitiatorUserId)).ReturnsAsync(user);
+        _doctorRepositoryMock.Setup(x => x.GetByUserIdAsync(user.Id)).ReturnsAsync(doctor);
         _penaltyRepositoryMock.Setup(x => x.GetByPatientIdAsync(appointment.PatientId)).ReturnsAsync([]);
 
         // Act
@@ -86,10 +92,12 @@ public class MarkAppointmentAsNoShowCommandHandlerTests
         var doctorId = Guid.NewGuid();
         var anotherDoctorId = Guid.NewGuid();
         var appointment = CreateAppointment(command.AppointmentId, doctorId, Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow.AddDays(-1));
-        var user = CreateUser(command.InitiatorUserId, UserRole.Doctor, doctorId: anotherDoctorId);
+        var user = CreateUser(command.InitiatorUserId, UserRole.Doctor);
+        var doctor = CreateDoctor(anotherDoctorId, user.Id);
 
         _appointmentRepositoryMock.Setup(x => x.GetByIdAsync(command.AppointmentId)).ReturnsAsync(appointment);
         _userRepositoryMock.Setup(x => x.GetByIdAsync(command.InitiatorUserId)).ReturnsAsync(user);
+        _doctorRepositoryMock.Setup(x => x.GetByUserIdAsync(user.Id)).ReturnsAsync(doctor);
 
         // Act
         var act = async () => await _sut.Handle(command, CancellationToken.None);
@@ -105,10 +113,11 @@ public class MarkAppointmentAsNoShowCommandHandlerTests
         var command = new MarkAppointmentAsNoShowCommand(Guid.NewGuid(), Guid.NewGuid());
         var patientId = Guid.NewGuid();
         var appointment = CreateAppointment(command.AppointmentId, Guid.NewGuid(), patientId, Guid.NewGuid(), DateTime.UtcNow.AddDays(-1));
-        var user = CreateUser(command.InitiatorUserId, UserRole.Patient, patientId: patientId);
+        var user = CreateUser(command.InitiatorUserId, UserRole.Patient);
 
         _appointmentRepositoryMock.Setup(x => x.GetByIdAsync(command.AppointmentId)).ReturnsAsync(appointment);
         _userRepositoryMock.Setup(x => x.GetByIdAsync(command.InitiatorUserId)).ReturnsAsync(user);
+        _doctorRepositoryMock.Setup(x => x.GetByUserIdAsync(user.Id)).ReturnsAsync((Doctor?)null);
 
         // Act
         var act = async () => await _sut.Handle(command, CancellationToken.None);
@@ -150,21 +159,22 @@ public class MarkAppointmentAsNoShowCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ShouldThrowUnauthorized_WhenUserIsDoctorButDoctorIdIsNull()
+    public async Task Handle_ShouldThrowDomainValidation_WhenUserIsDoctorButDoctorProfileIsNull()
     {
         // Arrange
         var command = new MarkAppointmentAsNoShowCommand(Guid.NewGuid(), Guid.NewGuid());
         var appointment = CreateAppointment(command.AppointmentId, Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow.AddDays(-1));
-        var user = CreateUser(command.InitiatorUserId, UserRole.Doctor, doctorId: null);
+        var user = CreateUser(command.InitiatorUserId, UserRole.Doctor);
 
         _appointmentRepositoryMock.Setup(x => x.GetByIdAsync(command.AppointmentId)).ReturnsAsync(appointment);
         _userRepositoryMock.Setup(x => x.GetByIdAsync(command.InitiatorUserId)).ReturnsAsync(user);
+        _doctorRepositoryMock.Setup(x => x.GetByUserIdAsync(user.Id)).ReturnsAsync((Doctor?)null);
 
         // Act
         var act = async () => await _sut.Handle(command, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<AppointmentCancellationUnauthorizedException>().WithMessage("Doctors can only mark their own appointments as No-Show.");
+        await act.Should().ThrowAsync<DomainValidationException>().WithMessage("A user with the Doctor role must have an associated doctor profile.");
     }
 
     // Helpers
@@ -176,11 +186,18 @@ public class MarkAppointmentAsNoShowCommandHandlerTests
         return appointment;
     }
 
-    private static User CreateUser(Guid id, UserRole role, Guid? doctorId = null, Guid? patientId = null)
+    private static User CreateUser(Guid id, UserRole role)
     {
-        var user = User.Create(EmailAddress.Create("test@clinic.com"), "hashedpassword", PersonName.Create("Test User"), PhoneNumber.Create("555-0000"), role, doctorId, patientId);
+        var user = User.Create(EmailAddress.Create("test@clinic.com"), "hashedpassword", PersonName.Create("Test User"), PhoneNumber.Create("555-0000"), role);
         SetPrivateProperty(user, nameof(User.Id), id);
         return user;
+    }
+
+    private static Doctor CreateDoctor(Guid id, Guid specialtyId)
+    {
+        var doctor = Doctor.Create(Guid.NewGuid(), MedicalLicenseNumber.Create("12345"), specialtyId, "Room 1", 10);
+        SetPrivateProperty(doctor, nameof(Doctor.Id), id);
+        return doctor;
     }
 
     private static void SetPrivateProperty(object obj, string propertyName, object value)

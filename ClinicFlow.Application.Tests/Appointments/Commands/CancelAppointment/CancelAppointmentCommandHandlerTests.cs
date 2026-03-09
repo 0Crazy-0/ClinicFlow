@@ -17,6 +17,7 @@ public class CancelAppointmentCommandHandlerTests
     private readonly Mock<IUserRepository> _userRepositoryMock;
     private readonly Mock<IAppointmentTypeDefinitionRepository> _appointmentTypeRepositoryMock;
     private readonly Mock<IDoctorRepository> _doctorRepositoryMock;
+    private readonly Mock<IPatientRepository> _patientRepositoryMock;
     private readonly Mock<IMedicalSpecialtyRepository> _specialtyRepositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<IPatientPenaltyRepository> _penaltyRepositoryMock;
@@ -28,12 +29,14 @@ public class CancelAppointmentCommandHandlerTests
         _userRepositoryMock = new Mock<IUserRepository>();
         _appointmentTypeRepositoryMock = new Mock<IAppointmentTypeDefinitionRepository>();
         _doctorRepositoryMock = new Mock<IDoctorRepository>();
+        _patientRepositoryMock = new Mock<IPatientRepository>();
         _specialtyRepositoryMock = new Mock<IMedicalSpecialtyRepository>();
         _unitOfWorkMock = new Mock<IUnitOfWork>();
         _penaltyRepositoryMock = new Mock<IPatientPenaltyRepository>();
 
         _sut = new CancelAppointmentCommandHandler(_appointmentRepositoryMock.Object, _userRepositoryMock.Object,
-        _appointmentTypeRepositoryMock.Object, _doctorRepositoryMock.Object, _specialtyRepositoryMock.Object, _penaltyRepositoryMock.Object, _unitOfWorkMock.Object);
+            _appointmentTypeRepositoryMock.Object, _doctorRepositoryMock.Object, _patientRepositoryMock.Object,
+            _specialtyRepositoryMock.Object, _penaltyRepositoryMock.Object, _unitOfWorkMock.Object);
     }
 
     [Fact]
@@ -48,15 +51,18 @@ public class CancelAppointmentCommandHandlerTests
         var appointmentTypeId = Guid.NewGuid();
 
         var appointment = CreateAppointment(command.AppointmentId, doctorId, patientId, appointmentTypeId, DateTime.UtcNow.AddDays(2));
-        var user = CreateUser(command.InitiatorUserId, UserRole.Patient, patientId: patientId);
+        var user = CreateUser(command.InitiatorUserId, UserRole.Patient);
         var type = CreateAppointmentType(appointmentTypeId, AppointmentCategory.Checkup);
         var doctor = CreateDoctor(doctorId, specialtyId);
         var specialty = CreateSpecialty(specialtyId, 24);
+        var initiatorPatient = CreatePatient(patientId, user.Id);
 
         _appointmentRepositoryMock.Setup(x => x.GetByIdAsync(command.AppointmentId)).ReturnsAsync(appointment);
         _userRepositoryMock.Setup(x => x.GetByIdAsync(command.InitiatorUserId)).ReturnsAsync(user);
         _appointmentTypeRepositoryMock.Setup(x => x.GetByIdAsync(appointment.AppointmentTypeId)).ReturnsAsync(type);
         _doctorRepositoryMock.Setup(x => x.GetByIdAsync(appointment.DoctorId)).ReturnsAsync(doctor);
+        _doctorRepositoryMock.Setup(x => x.GetByUserIdAsync(user.Id)).ReturnsAsync((Doctor?)null);
+        _patientRepositoryMock.Setup(x => x.GetByUserIdAsync(user.Id)).ReturnsAsync(initiatorPatient);
         _specialtyRepositoryMock.Setup(x => x.GetByIdAsync(doctor.MedicalSpecialtyId)).ReturnsAsync(specialty);
         _penaltyRepositoryMock.Setup(x => x.GetByPatientIdAsync(appointment.PatientId)).ReturnsAsync([]);
 
@@ -81,15 +87,18 @@ public class CancelAppointmentCommandHandlerTests
 
         // Appointment is scheduled 2 hours from now, which violates 24h minimum notice
         var appointment = CreateAppointment(command.AppointmentId, doctorId, patientId, appointmentTypeId, DateTime.UtcNow.AddHours(2));
-        var user = CreateUser(command.InitiatorUserId, UserRole.Patient, patientId: patientId);
+        var user = CreateUser(command.InitiatorUserId, UserRole.Patient);
         var type = CreateAppointmentType(appointmentTypeId, AppointmentCategory.Checkup);
         var doctor = CreateDoctor(doctorId, specialtyId);
         var specialty = CreateSpecialty(specialtyId, 24);
+        var initiatorPatient = CreatePatient(patientId, user.Id);
 
         _appointmentRepositoryMock.Setup(x => x.GetByIdAsync(command.AppointmentId)).ReturnsAsync(appointment);
         _userRepositoryMock.Setup(x => x.GetByIdAsync(command.InitiatorUserId)).ReturnsAsync(user);
         _appointmentTypeRepositoryMock.Setup(x => x.GetByIdAsync(appointment.AppointmentTypeId)).ReturnsAsync(type);
         _doctorRepositoryMock.Setup(x => x.GetByIdAsync(appointment.DoctorId)).ReturnsAsync(doctor);
+        _doctorRepositoryMock.Setup(x => x.GetByUserIdAsync(user.Id)).ReturnsAsync((Doctor?)null);
+        _patientRepositoryMock.Setup(x => x.GetByUserIdAsync(user.Id)).ReturnsAsync(initiatorPatient);
         _specialtyRepositoryMock.Setup(x => x.GetByIdAsync(doctor.MedicalSpecialtyId)).ReturnsAsync(specialty);
         _penaltyRepositoryMock.Setup(x => x.GetByPatientIdAsync(appointment.PatientId)).ReturnsAsync([]);
 
@@ -206,9 +215,9 @@ public class CancelAppointmentCommandHandlerTests
         return appointment;
     }
 
-    private static User CreateUser(Guid id, UserRole role, Guid? doctorId = null, Guid? patientId = null)
+    private static User CreateUser(Guid id, UserRole role)
     {
-        var user = User.Create(EmailAddress.Create("test@clinic.com"), "hashedpassword", PersonName.Create("Test User"), PhoneNumber.Create("555-0000"), role, doctorId, patientId);
+        var user = User.Create(EmailAddress.Create("test@clinic.com"), "hashedpassword", PersonName.Create("Test User"), PhoneNumber.Create("555-0000"), role);
         SetPrivateProperty(user, nameof(User.Id), id);
         return user;
     }
@@ -225,6 +234,14 @@ public class CancelAppointmentCommandHandlerTests
         var doctor = Doctor.Create(Guid.NewGuid(), MedicalLicenseNumber.Create("12345"), specialtyId, "Room 1", 10);
         SetPrivateProperty(doctor, nameof(Doctor.Id), id);
         return doctor;
+    }
+
+    private static Patient CreatePatient(Guid id, Guid userId)
+    {
+        var patient = Patient.Create(userId, DateTime.UtcNow.AddYears(-30), BloodType.Create("O+"), "None", "None",
+            EmergencyContact.Create("Emergency Contact", "555-9999"));
+        SetPrivateProperty(patient, nameof(Patient.Id), id);
+        return patient;
     }
 
     private static MedicalSpecialty CreateSpecialty(Guid id, int minCancellationHours)

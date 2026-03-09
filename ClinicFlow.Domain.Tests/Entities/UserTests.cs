@@ -33,21 +33,6 @@ public class UserTests
         user.LastLoginAt.Should().BeNull();
     }
 
-    [Fact]
-    public void Create_ShouldCreateUser_WithOptionalIds()
-    {
-        // Arrange
-        var doctorId = Guid.NewGuid();
-        var patientId = Guid.NewGuid();
-
-        // Act
-        var user = User.Create(EmailAddress.Create("doc@clinic.com"), "hash", PersonName.Create("Dr. García"), PhoneNumber.Create("555-0000"), UserRole.Doctor, doctorId, patientId);
-
-        // Assert
-        user.DoctorId.Should().Be(doctorId);
-        user.PatientId.Should().Be(patientId);
-    }
-
     [Theory]
     [InlineData("")]
     [InlineData(" ")]
@@ -59,26 +44,5 @@ public class UserTests
 
         // Assert
         act.Should().Throw<DomainValidationException>().WithMessage("Password hash cannot be empty.");
-    }
-
-    [Fact]
-    public void Create_ShouldThrowException_WhenDoctorIdIsEmpty()
-    {
-        // Arrange & Act
-        var act = () => User.Create(EmailAddress.Create("test@clinic.com"), "hash", PersonName.Create("John Doe"), PhoneNumber.Create("555-1234"), UserRole.Doctor, Guid.Empty);
-
-        // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage("Doctor ID cannot be empty.");
-    }
-
-    [Fact]
-    public void Create_ShouldThrowException_WhenPatientIdIsEmpty()
-    {
-        // Arrange & Act
-        var act = () => User.Create(EmailAddress.Create("test@clinic.com"), "hash", PersonName.Create("John Doe"), PhoneNumber.Create("555-1234"), UserRole.Patient,
-            patientId: Guid.Empty);
-
-        // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage("Patient ID cannot be empty.");
     }
 }
