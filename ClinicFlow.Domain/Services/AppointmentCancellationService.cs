@@ -21,8 +21,7 @@ public static class AppointmentCancellationService
     /// <exception cref="BusinessRuleValidationException">Thrown when a staff member does not provide a cancellation reason.</exception>
     public static void CancelAppointment(Appointment appointment, AppointmentCancellationContext context)
     {
-        ValidateCancellationPermission(appointment, context.Initiator, context.InitiatorDoctorId, context.InitiatorPatientId, context.AppointmentTypeDefinition,
-            context.IsAuthorizedFamilyMember);
+        ValidateCancellationPermission(appointment, context);
 
         ValidateCancellationReason(context.Initiator.Role, context.Reason);
 
@@ -30,43 +29,55 @@ public static class AppointmentCancellationService
     }
 
     // Helpers
-    private static void ValidateCancellationPermission(Appointment appointment, User initiator, Guid? initiatorDoctorId, Guid? initiatorPatientId, 
+    private static void ValidateCancellationPermission(Appointment appointment, AppointmentCancellationContext context)
+    {
+        switch (context.Initiator.Role)
+        {
+            case UserRole.Admin or UserRole.Receptionist:
+                return;
+            case UserRole.Doctor:
+                ValidateDoctorCancellationPermission(appointment, context.InitiatorDoctorId);
+                return;
+            case UserRole.Patient:
+                ValidatePatientCancellationPermission(appointment, context.InitiatorPatientId, context.AppointmentTypeDefinition, context.IsAuthorizedFamilyMember);
+                return;
+            default:
+                throw new AppointmentCancellationUnauthorizedException("User is not authorized to cancel this appointment.");
+        }
+    }
+
+    private static void ValidateDoctorCancellationPermission(Appointment appointment, Guid? initiatorDoctorId)
+    {
+        if (!initiatorDoctorId.HasValue)
+            throw new DomainValidationException("A user with the Doctor role must have an associated doctor profile.");
+
+        if (initiatorDoctorId != appointment.DoctorId)
+            throw new AppointmentCancellationUnauthorizedException("Doctors can only cancel their own appointments.");
+    }
+
+    private static void ValidatePatientCancellationPermission(Appointment appointment, Guid? initiatorPatientId, 
         AppointmentTypeDefinition appointmentTypeDefinition, bool isFamilyMember)
     {
-        if (initiator.Role is UserRole.Admin or UserRole.Receptionist) return;
+        if (!initiatorPatientId.HasValue) throw new DomainValidationException("A user with the Patient role must have an associated patient profile.");
 
-        if (initiator.Role is UserRole.Doctor)
+        if (initiatorPatientId == appointment.PatientId) return;
+
+        if (!isFamilyMember) throw new AppointmentCancellationUnauthorizedException("User is not authorized to cancel this appointment.");
+
+        ValidateFamilyMemberCancellationPermission(appointmentTypeDefinition);
+    }
+
+    private static void ValidateFamilyMemberCancellationPermission(AppointmentTypeDefinition appointmentTypeDefinition)
+    {
+        var allowedFamilyTypes = new[]
         {
-            if (!initiatorDoctorId.HasValue)
-                throw new DomainValidationException("A user with the Doctor role must have an associated doctor profile.");
+            AppointmentCategory.Checkup,
+            AppointmentCategory.FollowUp,
+            AppointmentCategory.FirstConsultation
+        };
 
-            if (initiatorDoctorId == appointment.DoctorId) return;
-
-            throw new AppointmentCancellationUnauthorizedException("Doctors can only cancel their own appointments.");
-        }
-
-        if (initiator.Role is UserRole.Patient)
-        {
-            if (!initiatorPatientId.HasValue)
-                throw new DomainValidationException("A user with the Patient role must have an associated patient profile.");
-
-            if (initiatorPatientId == appointment.PatientId) return;
-
-            if (isFamilyMember)
-            {
-                var allowedFamilyTypes = new[]
-                {
-                    AppointmentCategory.Checkup,
-                    AppointmentCategory.FollowUp,
-                    AppointmentCategory.FirstConsultation
-                };
-
-                if (allowedFamilyTypes.Contains(appointmentTypeDefinition.Category)) return;
-
-                throw new AppointmentCancellationUnauthorizedException($"Family members cannot cancel appointments of type: {appointmentTypeDefinition.Category}");
-            }
-        }
-        throw new AppointmentCancellationUnauthorizedException("User is not authorized to cancel this appointment.");
+        if (!allowedFamilyTypes.Contains(appointmentTypeDefinition.Category))
+            throw new AppointmentCancellationUnauthorizedException($"Family members cannot cancel appointments of type: {appointmentTypeDefinition.Category}");
     }
 
     private static void ValidateCancellationReason(UserRole role, string? reason)
