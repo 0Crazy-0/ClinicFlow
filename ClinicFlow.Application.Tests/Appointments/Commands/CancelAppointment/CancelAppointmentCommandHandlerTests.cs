@@ -20,7 +20,7 @@ public class CancelAppointmentCommandHandlerTests
     private readonly Mock<IPatientRepository> _patientRepositoryMock;
     private readonly Mock<IMedicalSpecialtyRepository> _specialtyRepositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
-    private readonly Mock<IPatientPenaltyRepository> _penaltyRepositoryMock;
+
     private readonly CancelAppointmentCommandHandler _sut;
 
     public CancelAppointmentCommandHandlerTests()
@@ -32,11 +32,8 @@ public class CancelAppointmentCommandHandlerTests
         _patientRepositoryMock = new Mock<IPatientRepository>();
         _specialtyRepositoryMock = new Mock<IMedicalSpecialtyRepository>();
         _unitOfWorkMock = new Mock<IUnitOfWork>();
-        _penaltyRepositoryMock = new Mock<IPatientPenaltyRepository>();
-
-        _sut = new CancelAppointmentCommandHandler(_appointmentRepositoryMock.Object, _userRepositoryMock.Object,
-            _appointmentTypeRepositoryMock.Object, _doctorRepositoryMock.Object, _patientRepositoryMock.Object,
-            _specialtyRepositoryMock.Object, _penaltyRepositoryMock.Object, _unitOfWorkMock.Object);
+        _sut = new CancelAppointmentCommandHandler(_appointmentRepositoryMock.Object, _userRepositoryMock.Object, _appointmentTypeRepositoryMock.Object,
+             _doctorRepositoryMock.Object, _patientRepositoryMock.Object, _specialtyRepositoryMock.Object, _unitOfWorkMock.Object);
     }
 
     [Fact]
@@ -64,7 +61,6 @@ public class CancelAppointmentCommandHandlerTests
         _doctorRepositoryMock.Setup(x => x.GetByUserIdAsync(user.Id)).ReturnsAsync((Doctor?)null);
         _patientRepositoryMock.Setup(x => x.GetByUserIdAsync(user.Id)).ReturnsAsync(initiatorPatient);
         _specialtyRepositoryMock.Setup(x => x.GetByIdAsync(doctor.MedicalSpecialtyId)).ReturnsAsync(specialty);
-        _penaltyRepositoryMock.Setup(x => x.GetByPatientIdAsync(appointment.PatientId)).ReturnsAsync([]);
 
         // Act
         await _sut.Handle(command, CancellationToken.None);
@@ -75,7 +71,7 @@ public class CancelAppointmentCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ShouldApplyPenalty_WhenCancellationIsLate()
+    public async Task Handle_ShouldSetStatusToLateCancellation_WhenCancellationIsLate()
     {
         // Arrange
         var command = new CancelAppointmentCommand(Guid.NewGuid(), Guid.NewGuid(), false, "Late cancel reason");
@@ -100,14 +96,12 @@ public class CancelAppointmentCommandHandlerTests
         _doctorRepositoryMock.Setup(x => x.GetByUserIdAsync(user.Id)).ReturnsAsync((Doctor?)null);
         _patientRepositoryMock.Setup(x => x.GetByUserIdAsync(user.Id)).ReturnsAsync(initiatorPatient);
         _specialtyRepositoryMock.Setup(x => x.GetByIdAsync(doctor.MedicalSpecialtyId)).ReturnsAsync(specialty);
-        _penaltyRepositoryMock.Setup(x => x.GetByPatientIdAsync(appointment.PatientId)).ReturnsAsync([]);
 
         // Act
         await _sut.Handle(command, CancellationToken.None);
 
         // Assert
         _appointmentRepositoryMock.Verify(x => x.UpdateAsync(It.Is<Appointment>(a => a.Status == AppointmentStatus.LateCancellation)), Times.Once);
-        _penaltyRepositoryMock.Verify(x => x.AddAsync(It.Is<PatientPenalty>(p => p.Type == PenaltyType.Warning)), Times.AtLeastOnce);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
