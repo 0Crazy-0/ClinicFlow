@@ -28,8 +28,16 @@ public class ScheduleAppointmentCommandHandler(IPatientPenaltyRepository penalty
             HasConflict = hasConflict
         };
 
-        var appointment = AppointmentSchedulingService.ScheduleAppointment(request.PatientId, request.DoctorId, request.ScheduledDate, timeRange,
-            request.AppointmentTypeId, context);
+        var appointmentDetails = new AppointmentSchedulingDetails
+        {
+            PatientId = request.PatientId,
+            DoctorId = request.DoctorId,
+            ScheduledDate = request.ScheduledDate,
+            TimeRange = timeRange,
+            AppointmentTypeId = request.AppointmentTypeId
+        };
+
+        var appointment = AppointmentSchedulingService.ScheduleAppointment(appointmentDetails, context);
 
         await appointmentRepository.CreateAsync(appointment, cancellationToken);
 

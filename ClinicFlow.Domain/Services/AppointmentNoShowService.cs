@@ -3,6 +3,8 @@ using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Appointments;
 using ClinicFlow.Domain.Exceptions.Base;
 
+using ClinicFlow.Domain.Services.Contexts;
+
 namespace ClinicFlow.Domain.Services;
 
 /// <summary>
@@ -16,14 +18,13 @@ public static class AppointmentNoShowService
     /// any new penalties that should be applied to the patient.
     /// </summary>
     /// <param name="appointment">The appointment to mark as a no-show.</param>
-    /// <param name="initiatorRole">The role of the user attempting to mark the appointment as a no-show.</param>
-    /// <param name="initiatorDoctorId">The doctor ID of the initiator, if applicable.</param>
+    /// <param name="context">The context containing the initiator's role and doctor ID.</param>
     /// <param name="existingPenalties">The existing penalties for the patient, used to determine if a block should be applied.</param>
     /// <returns>A collection of new penalties to be saved.</returns>
     /// <exception cref="AppointmentCancellationUnauthorizedException">Thrown when the initiator is not authorized to mark the appointment as a no-show.</exception>
-    public static IEnumerable<PatientPenalty> MarkAsNoShow(Appointment appointment, UserRole initiatorRole, Guid? initiatorDoctorId, IEnumerable<PatientPenalty> existingPenalties)
+    public static IEnumerable<PatientPenalty> MarkAsNoShow(Appointment appointment, AppointmentNoShowContext context, IEnumerable<PatientPenalty> existingPenalties)
     {
-        ValidateNoShowPermission(appointment.DoctorId, initiatorRole, initiatorDoctorId);
+        ValidateNoShowPermission(appointment.DoctorId, context.InitiatorRole, context.InitiatorDoctorId);
 
         appointment.MarkAsNoShow();
 
