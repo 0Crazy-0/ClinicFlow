@@ -21,16 +21,15 @@ public static class AppointmentSchedulingService
     /// <exception cref="Exceptions.Patients.PatientBlockedException">Thrown when the patient is blocked from booking.</exception>
     /// <exception cref="DoctorNotAvailableException">Thrown when the doctor has no schedule covering the requested time.</exception>
     /// <exception cref="AppointmentConflictException">Thrown when the time slot is already occupied.</exception>
-    public static Appointment ScheduleAppointment(Guid patientId, Guid doctorId, DateTime scheduledDate,
-        TimeRange timeRange, Guid appointmentTypeId, AppointmentSchedulingContext context)
+    public static Appointment ScheduleAppointment(AppointmentSchedulingDetails details, AppointmentSchedulingContext context)
     {
         Patient.EnsureNotBlocked(context.Penalties);
 
-        EnsureDoctorIsAvailable(context.DoctorSchedule, doctorId, scheduledDate, timeRange);
+        EnsureDoctorIsAvailable(context.DoctorSchedule, details.DoctorId, details.ScheduledDate, details.TimeRange);
 
-        if (context.HasConflict) throw new AppointmentConflictException(doctorId, scheduledDate.Add(timeRange.Start));
+        if (context.HasConflict) throw new AppointmentConflictException(details.DoctorId, details.ScheduledDate.Add(details.TimeRange.Start));
 
-        return Appointment.Schedule(patientId, doctorId, appointmentTypeId, scheduledDate, timeRange);
+        return Appointment.Schedule(details.PatientId, details.DoctorId, details.AppointmentTypeId, details.ScheduledDate, details.TimeRange);
     }
 
     /// <summary>

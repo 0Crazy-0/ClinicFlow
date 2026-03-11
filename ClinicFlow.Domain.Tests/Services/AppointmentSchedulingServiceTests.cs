@@ -23,8 +23,16 @@ public class AppointmentSchedulingServiceTests
         var penalties = new List<PatientPenalty> { PatientPenalty.CreateBlock(patient.Id, "Blocked", scheduledDate) };
 
         var context = new AppointmentSchedulingContext { Penalties = penalties, DoctorSchedule = null, HasConflict = false };
+        var details = new AppointmentSchedulingDetails
+        {
+            PatientId = patient.Id,
+            DoctorId = doctor.Id,
+            ScheduledDate = scheduledDate,
+            TimeRange = TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(10)),
+            AppointmentTypeId = Guid.NewGuid()
+        };
 
-        var act = () => AppointmentSchedulingService.ScheduleAppointment(patient.Id, doctor.Id, scheduledDate, TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(10)), Guid.NewGuid(), context);
+        var act = () => AppointmentSchedulingService.ScheduleAppointment(details, context);
 
         // Assert
         act.Should().Throw<PatientBlockedException>();
@@ -39,9 +47,16 @@ public class AppointmentSchedulingServiceTests
 
         // Act
         var context = new AppointmentSchedulingContext { Penalties = [], DoctorSchedule = null, HasConflict = false };
+        var details = new AppointmentSchedulingDetails
+        {
+            PatientId = CreatePatient().Id,
+            DoctorId = doctor.Id,
+            ScheduledDate = scheduledDate,
+            TimeRange = TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(10)),
+            AppointmentTypeId = Guid.NewGuid()
+        };
 
-        var act = () => AppointmentSchedulingService.ScheduleAppointment(CreatePatient().Id, doctor.Id, scheduledDate, TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(10)),
-            Guid.NewGuid(), context);
+        var act = () => AppointmentSchedulingService.ScheduleAppointment(details, context);
 
         // Assert
         act.Should().Throw<DoctorNotAvailableException>();
@@ -58,9 +73,16 @@ public class AppointmentSchedulingServiceTests
 
         // Act
         var context = new AppointmentSchedulingContext { Penalties = [], DoctorSchedule = schedule, HasConflict = false };
+        var details = new AppointmentSchedulingDetails
+        {
+            PatientId = CreatePatient().Id,
+            DoctorId = doctor.Id,
+            ScheduledDate = scheduledDate,
+            TimeRange = TimeRange.Create(TimeSpan.FromHours(17), TimeSpan.FromHours(18)),
+            AppointmentTypeId = Guid.NewGuid()
+        };
 
-        var act = () => AppointmentSchedulingService.ScheduleAppointment(CreatePatient().Id, doctor.Id, scheduledDate,
-            TimeRange.Create(TimeSpan.FromHours(17), TimeSpan.FromHours(18)), Guid.NewGuid(), context); // Outside working hours
+        var act = () => AppointmentSchedulingService.ScheduleAppointment(details, context); // Outside working hours
 
         // Assert
         act.Should().Throw<DoctorNotAvailableException>();
@@ -80,8 +102,16 @@ public class AppointmentSchedulingServiceTests
 
         // Act
         var context = new AppointmentSchedulingContext { Penalties = penalties, DoctorSchedule = schedule, HasConflict = true };
+        var details = new AppointmentSchedulingDetails
+        {
+            PatientId = patient.Id,
+            DoctorId = doctor.Id,
+            ScheduledDate = scheduledDate,
+            TimeRange = timeRange,
+            AppointmentTypeId = Guid.NewGuid()
+        };
 
-        var act = () => AppointmentSchedulingService.ScheduleAppointment(patient.Id, doctor.Id, scheduledDate, timeRange, Guid.NewGuid(), context);
+        var act = () => AppointmentSchedulingService.ScheduleAppointment(details, context);
 
         // Assert
         act.Should().Throw<AppointmentConflictException>();
@@ -102,8 +132,16 @@ public class AppointmentSchedulingServiceTests
 
         // Act
         var context = new AppointmentSchedulingContext { Penalties = penalties, DoctorSchedule = schedule, HasConflict = false };
+        var details = new AppointmentSchedulingDetails
+        {
+            PatientId = patient.Id,
+            DoctorId = doctor.Id,
+            ScheduledDate = scheduledDate,
+            TimeRange = timeRange,
+            AppointmentTypeId = appointmentTypeId
+        };
 
-        var result = AppointmentSchedulingService.ScheduleAppointment(patient.Id, doctor.Id, scheduledDate, timeRange, appointmentTypeId, context);
+        var result = AppointmentSchedulingService.ScheduleAppointment(details, context);
 
         // Assert
         result.Should().NotBeNull();

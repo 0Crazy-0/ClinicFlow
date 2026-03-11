@@ -3,6 +3,7 @@ using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.Services;
+using ClinicFlow.Domain.Services.Contexts;
 using MediatR;
 
 namespace ClinicFlow.Application.Appointments.Commands.MarkAppointmentAsNoShow;
@@ -21,7 +22,13 @@ public class MarkAppointmentAsNoShowCommandHandler(IAppointmentRepository appoin
 
         var existingPenalties = await patientPenaltyRepository.GetByPatientIdAsync(appointment.PatientId, cancellationToken);
 
-        var newPenalties = AppointmentNoShowService.MarkAsNoShow(appointment, initiator.Role, doctor?.Id, existingPenalties);
+        var noShowContext = new AppointmentNoShowContext
+        {
+            InitiatorRole = initiator.Role,
+            InitiatorDoctorId = doctor?.Id
+        };
+
+        var newPenalties = AppointmentNoShowService.MarkAsNoShow(appointment, noShowContext, existingPenalties);
 
         foreach (var penalty in newPenalties)
             await patientPenaltyRepository.AddAsync(penalty, cancellationToken);
