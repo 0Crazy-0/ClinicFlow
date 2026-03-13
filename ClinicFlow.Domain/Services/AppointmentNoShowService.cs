@@ -1,10 +1,7 @@
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Appointments;
-using ClinicFlow.Domain.Exceptions.Base;
-
 using ClinicFlow.Domain.Services.Contexts;
-
 namespace ClinicFlow.Domain.Services;
 
 /// <summary>
@@ -21,7 +18,7 @@ public static class AppointmentNoShowService
     /// <param name="context">The context containing the initiator's role and doctor ID.</param>
     /// <param name="existingPenalties">The existing penalties for the patient, used to determine if a block should be applied.</param>
     /// <returns>A collection of new penalties to be saved.</returns>
-    /// <exception cref="AppointmentCancellationUnauthorizedException">Thrown when the initiator is not authorized to mark the appointment as a no-show.</exception>
+    /// <exception cref="AppointmentNoShowUnauthorizedException">Thrown when the initiator is not authorized to mark the appointment as a no-show.</exception>
     public static IEnumerable<PatientPenalty> MarkAsNoShow(Appointment appointment, AppointmentNoShowContext context, IEnumerable<PatientPenalty> existingPenalties)
     {
         ValidateNoShowPermission(appointment.DoctorId, context.InitiatorRole, context.InitiatorDoctorId);
@@ -33,20 +30,10 @@ public static class AppointmentNoShowService
 
     private static void ValidateNoShowPermission(Guid appointmentDoctorId, UserRole initiatorRole, Guid? initiatorDoctorId)
     {
-        if (initiatorRole is not (UserRole.Admin or UserRole.Receptionist))
-        {
-            if (initiatorRole is UserRole.Doctor)
-            {
-                if (!initiatorDoctorId.HasValue)
-                    throw new DomainValidationException("A user with the Doctor role must have an associated doctor profile.");
+        if (initiatorRole is UserRole.Admin or UserRole.Receptionist) return;
 
-                if (initiatorDoctorId != appointmentDoctorId)
-                    throw new AppointmentCancellationUnauthorizedException("Doctors can only mark their own appointments as No-Show.");
-            }
-            else
-            {
-                throw new AppointmentCancellationUnauthorizedException("User is not authorized to mark this appointment as No-Show.");
-            }
-        }
+        if (initiatorRole is UserRole.Doctor && initiatorDoctorId == appointmentDoctorId) return;
+
+        throw new AppointmentNoShowUnauthorizedException("User is not authorized to mark this appointment as No-Show.");
     }
 }

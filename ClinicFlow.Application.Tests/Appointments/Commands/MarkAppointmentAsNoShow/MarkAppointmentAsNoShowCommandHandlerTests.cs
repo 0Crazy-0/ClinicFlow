@@ -103,7 +103,7 @@ public class MarkAppointmentAsNoShowCommandHandlerTests
         var act = async () => await _sut.Handle(command, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<AppointmentCancellationUnauthorizedException>().WithMessage("Doctors can only mark their own appointments as No-Show.");
+        await act.Should().ThrowAsync<AppointmentNoShowUnauthorizedException>().WithMessage("User is not authorized to mark this appointment as No-Show.");
     }
 
     [Fact]
@@ -123,7 +123,7 @@ public class MarkAppointmentAsNoShowCommandHandlerTests
         var act = async () => await _sut.Handle(command, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<AppointmentCancellationUnauthorizedException>().WithMessage("User is not authorized to mark this appointment as No-Show.");
+        await act.Should().ThrowAsync<AppointmentNoShowUnauthorizedException>().WithMessage("User is not authorized to mark this appointment as No-Show.");
     }
 
     [Fact]
@@ -159,7 +159,7 @@ public class MarkAppointmentAsNoShowCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ShouldThrowDomainValidation_WhenUserIsDoctorButDoctorProfileIsNull()
+    public async Task Handle_ShouldThrowUnauthorized_WhenUserIsDoctorButDoctorProfileIsNull()
     {
         // Arrange
         var command = new MarkAppointmentAsNoShowCommand(Guid.NewGuid(), Guid.NewGuid());
@@ -174,7 +174,7 @@ public class MarkAppointmentAsNoShowCommandHandlerTests
         var act = async () => await _sut.Handle(command, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<DomainValidationException>().WithMessage("A user with the Doctor role must have an associated doctor profile.");
+        await act.Should().ThrowAsync<AppointmentNoShowUnauthorizedException>().WithMessage("User is not authorized to mark this appointment as No-Show.");
     }
 
     // Helpers
