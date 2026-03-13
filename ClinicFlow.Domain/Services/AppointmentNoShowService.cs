@@ -32,7 +32,7 @@ public static class AppointmentNoShowService
     {
         if (initiatorRole is UserRole.Admin or UserRole.Receptionist) return;
 
-        if (initiatorRole is UserRole.Doctor && initiatorDoctorId == appointmentDoctorId) return;
+        if (initiatorRole is UserRole.Doctor && initiatorDoctorId.HasValue && initiatorDoctorId == appointmentDoctorId) return;
 
         throw new AppointmentNoShowUnauthorizedException("User is not authorized to mark this appointment as No-Show.");
     }
