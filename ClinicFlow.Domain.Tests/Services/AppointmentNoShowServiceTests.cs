@@ -2,7 +2,6 @@ using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Events;
 using ClinicFlow.Domain.Exceptions.Appointments;
-using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Contexts;
 using ClinicFlow.Domain.ValueObjects;
@@ -38,7 +37,7 @@ public class AppointmentNoShowServiceTests
     }
 
     [Theory]
-    [InlineData(UserRole.Doctor, "Doctors can only mark their own appointments as No-Show.")]
+    [InlineData(UserRole.Doctor, "User is not authorized to mark this appointment as No-Show.")]
     [InlineData(UserRole.Patient, "User is not authorized to mark this appointment as No-Show.")]
     public void MarkAsNoShow_ShouldThrowUnauthorized_WhenNotAuthorized(UserRole role, string expectedMessage)
     {
@@ -51,7 +50,7 @@ public class AppointmentNoShowServiceTests
         var act = () => AppointmentNoShowService.MarkAsNoShow(appointment, context, []);
 
         // Assert
-        act.Should().Throw<AppointmentCancellationUnauthorizedException>().WithMessage(expectedMessage);
+        act.Should().Throw<AppointmentNoShowUnauthorizedException>().WithMessage(expectedMessage);
     }
 
 
@@ -67,11 +66,11 @@ public class AppointmentNoShowServiceTests
         var act = () => AppointmentNoShowService.MarkAsNoShow(appointment, context, []);
 
         // Assert
-        act.Should().Throw<AppointmentCancellationUnauthorizedException>().WithMessage("Doctors can only mark their own appointments as No-Show.");
+        act.Should().Throw<AppointmentNoShowUnauthorizedException>().WithMessage("User is not authorized to mark this appointment as No-Show.");
     }
 
     [Fact]
-    public void MarkAsNoShow_ShouldThrowDomainValidation_WhenDoctorIdIsNull()
+    public void MarkAsNoShow_ShouldThrowUnauthorized_WhenDoctorIdIsNull()
     {
         // Arrange
         var appointment = CreateAppointment(DateTime.UtcNow.AddDays(2));
@@ -81,7 +80,7 @@ public class AppointmentNoShowServiceTests
         var act = () => AppointmentNoShowService.MarkAsNoShow(appointment, context, []);
 
         // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage("A user with the Doctor role must have an associated doctor profile.");
+        act.Should().Throw<AppointmentNoShowUnauthorizedException>().WithMessage("User is not authorized to mark this appointment as No-Show.");
     }
 
     // Helpers
