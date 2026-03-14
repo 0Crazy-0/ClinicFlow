@@ -78,7 +78,7 @@ public class CompleteMedicalEncounterCommandHandlerTests
 
         // Act & Assert
         var action = async () => await _sut.Handle(command, CancellationToken.None);
-        await action.Should().ThrowAsync<EntityNotFoundException>().WithMessage($"*Doctor*{command.DoctorId}*");
+        await action.Should().ThrowAsync<EntityNotFoundException>().Where(e => e.EntityName == nameof(Doctor));
     }
 
     [Fact]
@@ -94,7 +94,7 @@ public class CompleteMedicalEncounterCommandHandlerTests
 
         // Act & Assert
         var action = async () => await _sut.Handle(command, CancellationToken.None);
-        await action.Should().ThrowAsync<EntityNotFoundException>().WithMessage($"*Appointment*{command.AppointmentId}*");
+        await action.Should().ThrowAsync<EntityNotFoundException>().Where(e => e.EntityName == nameof(Appointment));
     }
 
     [Fact]
@@ -117,7 +117,7 @@ public class CompleteMedicalEncounterCommandHandlerTests
 
         // Act & Assert
         var action = async () => await _sut.Handle(command, CancellationToken.None);
-        await action.Should().ThrowAsync<EntityNotFoundException>().WithMessage($"*AppointmentTypeDefinition*{appointmentTypeId}*");
+        await action.Should().ThrowAsync<EntityNotFoundException>().Where(e => e.EntityName == nameof(AppointmentTypeDefinition));
     }
 
     // Helpers

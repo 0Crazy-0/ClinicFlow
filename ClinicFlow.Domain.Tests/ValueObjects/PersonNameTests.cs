@@ -1,3 +1,4 @@
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
@@ -17,7 +18,7 @@ public class PersonNameTests
         var act = () => PersonName.Create(value!);
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage("Name cannot be empty.");
+        act.Should().Throw<BusinessRuleValidationException>().WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Fact]
@@ -27,7 +28,7 @@ public class PersonNameTests
         var act = () => PersonName.Create("A");
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage("Name is too short.");
+        act.Should().Throw<BusinessRuleValidationException>().WithMessage(DomainErrors.Validation.ValueTooShort);
     }
 
     [Fact]

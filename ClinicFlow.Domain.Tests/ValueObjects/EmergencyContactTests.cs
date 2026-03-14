@@ -1,3 +1,4 @@
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
@@ -51,7 +52,7 @@ public class EmergencyContactTests
         var act = () => EmergencyContact.Create(null!, PhoneNumber.Create("+1234567890"));
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage("Emergency contact name cannot be null.");
+        act.Should().Throw<BusinessRuleValidationException>().WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 
     [Fact]
@@ -61,7 +62,7 @@ public class EmergencyContactTests
         var act = () => EmergencyContact.Create(PersonName.Create("Jane Doe"), null!);
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage("Emergency contact phone cannot be null.");
+        act.Should().Throw<BusinessRuleValidationException>().WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 
     // ToString

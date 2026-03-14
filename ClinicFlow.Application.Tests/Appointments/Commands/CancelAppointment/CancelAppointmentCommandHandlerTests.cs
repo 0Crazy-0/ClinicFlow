@@ -116,7 +116,7 @@ public class CancelAppointmentCommandHandlerTests
         var act = async () => await _sut.Handle(command, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<EntityNotFoundException>().WithMessage($"*Appointment*");
+        await act.Should().ThrowAsync<EntityNotFoundException>().Where(e => e.EntityName == nameof(Appointment));
     }
 
     [Fact]
@@ -133,7 +133,7 @@ public class CancelAppointmentCommandHandlerTests
         var act = async () => await _sut.Handle(command, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<EntityNotFoundException>().WithMessage($"*User*");
+        await act.Should().ThrowAsync<EntityNotFoundException>().Where(e => e.EntityName == nameof(User));
     }
 
     [Fact]
@@ -152,7 +152,7 @@ public class CancelAppointmentCommandHandlerTests
         var act = async () => await _sut.Handle(command, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<EntityNotFoundException>().WithMessage($"*AppointmentTypeDefinition*");
+        await act.Should().ThrowAsync<EntityNotFoundException>().Where(e => e.EntityName == nameof(AppointmentTypeDefinition));
     }
 
     [Fact]
@@ -173,7 +173,7 @@ public class CancelAppointmentCommandHandlerTests
         var act = async () => await _sut.Handle(command, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<EntityNotFoundException>().WithMessage($"*Doctor*");
+        await act.Should().ThrowAsync<EntityNotFoundException>().Where(e => e.EntityName == nameof(Doctor));
     }
 
     [Fact]
@@ -197,7 +197,7 @@ public class CancelAppointmentCommandHandlerTests
         var act = async () => await _sut.Handle(command, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<EntityNotFoundException>().WithMessage($"*MedicalSpecialty*");
+        await act.Should().ThrowAsync<EntityNotFoundException>().Where(e => e.EntityName == nameof(MedicalSpecialty));
     }
 
     // Helpers

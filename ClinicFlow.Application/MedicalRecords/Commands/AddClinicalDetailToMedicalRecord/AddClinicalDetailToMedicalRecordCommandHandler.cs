@@ -1,3 +1,4 @@
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Entities.ClinicalDetails;
 using ClinicFlow.Domain.Exceptions.Base;
@@ -14,10 +15,10 @@ public class AddClinicalDetailToMedicalRecordCommandHandler(IMedicalRecordReposi
     public async Task Handle(AddClinicalDetailToMedicalRecordCommand request, CancellationToken cancellationToken)
     {
         var record = await medicalRecordRepository.GetByIdAsync(request.MedicalRecordId, cancellationToken)
-            ?? throw new EntityNotFoundException(nameof(MedicalRecord), request.MedicalRecordId);
+            ?? throw new EntityNotFoundException(DomainErrors.General.NotFound, nameof(MedicalRecord), request.MedicalRecordId);
 
         var template = await templateRepository.GetByCodeAsync(request.Detail.TemplateCode, cancellationToken)
-            ?? throw new EntityNotFoundException(nameof(ClinicalFormTemplate), request.Detail.TemplateCode);
+            ?? throw new EntityNotFoundException(DomainErrors.General.NotFound, nameof(ClinicalFormTemplate), request.Detail.TemplateCode);
 
         var detail = DynamicClinicalDetail.Create(request.Detail.TemplateCode, request.Detail.JsonDataPayload);
 

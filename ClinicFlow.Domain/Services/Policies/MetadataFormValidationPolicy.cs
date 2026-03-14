@@ -1,6 +1,7 @@
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Entities.ClinicalDetails;
 using ClinicFlow.Domain.Exceptions.Base;
+using ClinicFlow.Domain.Common;
 
 namespace ClinicFlow.Domain.Services.Policies;
 
@@ -12,8 +13,8 @@ public class MetadataFormValidationPolicy(IJsonSchemaValidator jsonSchemaValidat
 {
     public void Validate(AppointmentTypeDefinition appointmentType, IEnumerable<IClinicalDetailRecord> providedDetails)
     {
-        if (appointmentType is null) throw new DomainValidationException("Appointment type definition cannot be null.");
-        if (providedDetails is null) throw new DomainValidationException("Provided details cannot be null.");
+        if (appointmentType is null) throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+        if (providedDetails is null) throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
 
         var providedTemplateCodes = providedDetails.Select(d => d.TemplateCode).ToHashSet();
 
@@ -21,8 +22,7 @@ public class MetadataFormValidationPolicy(IJsonSchemaValidator jsonSchemaValidat
         {
             if (!providedTemplateCodes.Contains(requiredTemplate.Code))
             {
-                throw new BusinessRuleValidationException(
-                    $"Missing required clinical information. Template '{requiredTemplate.Code}' is required for appointment type '{appointmentType.Name}'.");
+                throw new BusinessRuleValidationException(DomainErrors.MedicalEncounter.MissingRequiredTemplate);
             }
 
             var providedDetail = providedDetails.First(d => d.TemplateCode == requiredTemplate.Code);
@@ -33,12 +33,12 @@ public class MetadataFormValidationPolicy(IJsonSchemaValidator jsonSchemaValidat
     private void ValidateJsonStructure(ClinicalFormTemplate template, IClinicalDetailRecord? detail)
     {
         if (detail is null || string.IsNullOrWhiteSpace(detail.JsonDataPayload))
-            throw new BusinessRuleValidationException($"No data payload provided for template '{template.Code}'.");
+            throw new BusinessRuleValidationException(DomainErrors.MedicalEncounter.MissingPayload);
 
         if (string.IsNullOrWhiteSpace(template.JsonSchemaDefinition) || template.JsonSchemaDefinition is "{}") return; // No schema defined, nothing to validate
 
         if (!jsonSchemaValidator.ValidateSchema(template.JsonSchemaDefinition, detail.JsonDataPayload, out string? errorMessage))
-            throw new BusinessRuleValidationException($"Validation failed for template '{template.Name}': {errorMessage}");
+            throw new BusinessRuleValidationException($"{DomainErrors.MedicalEncounter.ValidationFailed}: {errorMessage}");
 
     }
 }

@@ -43,8 +43,8 @@ public class Patient : BaseEntity
     /// <exception cref="DomainValidationException">Thrown when the user ID is empty or the date of birth is in the future.</exception>
     internal static Patient Create(Guid userId, DateTime dateOfBirth, BloodType bloodType, string allergies, string chronicConditions, EmergencyContact emergencyContact)
     {
-        if (userId == Guid.Empty) throw new DomainValidationException("User ID cannot be empty.");
-        if (dateOfBirth > DateTime.UtcNow) throw new DomainValidationException("Date of birth cannot be in the future.");
+        if (userId == Guid.Empty) throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        if (dateOfBirth > DateTime.UtcNow) throw new DomainValidationException(DomainErrors.Validation.ValueCannotBeInFuture);
 
         return new Patient(userId, dateOfBirth, bloodType, allergies, chronicConditions, emergencyContact);
     }
@@ -78,6 +78,6 @@ public class Patient : BaseEntity
     /// <exception cref="PatientBlockedException">Thrown when the patient has an active temporary block.</exception>
     internal static void EnsureNotBlocked(IEnumerable<PatientPenalty> penalties)
     {
-        if (IsBlockedFromBooking(penalties, out var blockedUntil)) throw new PatientBlockedException(blockedUntil ?? DateTime.UtcNow);
+        if (IsBlockedFromBooking(penalties, out var blockedUntil)) throw new PatientBlockedException(DomainErrors.Patient.Blocked, blockedUntil ?? DateTime.UtcNow);
     }
 }

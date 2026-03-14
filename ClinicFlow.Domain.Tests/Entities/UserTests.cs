@@ -1,3 +1,4 @@
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.ValueObjects;
@@ -43,6 +44,6 @@ public class UserTests
         var act = () => User.Create(EmailAddress.Create("test@clinic.com"), invalidHash!, PersonName.Create("John Doe"), PhoneNumber.Create("555-1234"), UserRole.Doctor);
 
         // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage("Password hash cannot be empty.");
+        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.Validation.ValueRequired);
     }
 }

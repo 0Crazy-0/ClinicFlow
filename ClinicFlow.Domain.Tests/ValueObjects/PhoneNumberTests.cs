@@ -1,3 +1,4 @@
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
@@ -17,7 +18,7 @@ public class PhoneNumberTests
         var act = () => PhoneNumber.Create(value!);
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage("Phone number cannot be empty.");
+        act.Should().Throw<BusinessRuleValidationException>().WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Theory]
@@ -30,7 +31,7 @@ public class PhoneNumberTests
         var act = () => PhoneNumber.Create(value);
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage("Invalid phone number format.");
+        act.Should().Throw<BusinessRuleValidationException>().WithMessage(DomainErrors.Validation.InvalidPhoneFormat);
     }
 
     [Fact]

@@ -58,7 +58,7 @@ public class GetAppointmentByIdQueryHandlerTests
         var act = async () => await _sut.Handle(query, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<EntityNotFoundException>().WithMessage($"*Appointment*");
+        await act.Should().ThrowAsync<EntityNotFoundException>().Where(e => e.EntityName == nameof(Appointment));
     }
 
     // Helpers

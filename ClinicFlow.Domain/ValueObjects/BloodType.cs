@@ -1,3 +1,4 @@
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Exceptions.Base;
 
 namespace ClinicFlow.Domain.ValueObjects;
@@ -22,12 +23,12 @@ public record BloodType
     /// <exception cref="BusinessRuleValidationException">Thrown when the value is empty or not a recognized blood type.</exception>
     internal static BloodType Create(string bloodType)
     {
-        if (string.IsNullOrWhiteSpace(bloodType)) throw new BusinessRuleValidationException("Blood type cannot be empty.");
+        if (string.IsNullOrWhiteSpace(bloodType)) throw new BusinessRuleValidationException(DomainErrors.Validation.ValueRequired);
 
         var normalizedType = bloodType.Trim().ToUpperInvariant();
 
         if (!ValidBloodTypes.Contains(normalizedType))
-            throw new BusinessRuleValidationException($"Invalid blood type: {bloodType}. Valid types are: {string.Join(", ", ValidBloodTypes)}");
+            throw new BusinessRuleValidationException(DomainErrors.Validation.InvalidBloodType);
 
         return new BloodType(normalizedType);
     }

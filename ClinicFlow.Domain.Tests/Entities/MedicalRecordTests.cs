@@ -1,3 +1,4 @@
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Entities.ClinicalDetails;
 using ClinicFlow.Domain.Events;
@@ -32,12 +33,12 @@ public class MedicalRecordTests
     }
 
     [Theory]
-    [InlineData("00000000-0000-0000-0000-000000000000", "11111111-1111-1111-1111-111111111111", "22222222-2222-2222-2222-222222222222", "Complaint", "Patient ID cannot be empty.")]
-    [InlineData("11111111-1111-1111-1111-111111111111", "00000000-0000-0000-0000-000000000000", "22222222-2222-2222-2222-222222222222", "Complaint", "Doctor ID cannot be empty.")]
-    [InlineData("11111111-1111-1111-1111-111111111111", "22222222-2222-2222-2222-222222222222", "00000000-0000-0000-0000-000000000000", "Complaint", "Appointment ID cannot be empty.")]
-    [InlineData("11111111-1111-1111-1111-111111111111", "22222222-2222-2222-2222-222222222222", "33333333-3333-3333-3333-333333333333", "", "Chief complaint cannot be empty.")]
-    [InlineData("11111111-1111-1111-1111-111111111111", "22222222-2222-2222-2222-222222222222", "33333333-3333-3333-3333-333333333333", "   ", "Chief complaint cannot be empty.")]
-    [InlineData("11111111-1111-1111-1111-111111111111", "22222222-2222-2222-2222-222222222222", "33333333-3333-3333-3333-333333333333", null, "Chief complaint cannot be empty.")]
+    [InlineData("00000000-0000-0000-0000-000000000000", "11111111-1111-1111-1111-111111111111", "22222222-2222-2222-2222-222222222222", "Complaint", DomainErrors.Validation.ValueRequired)]
+    [InlineData("11111111-1111-1111-1111-111111111111", "00000000-0000-0000-0000-000000000000", "22222222-2222-2222-2222-222222222222", "Complaint", DomainErrors.Validation.ValueRequired)]
+    [InlineData("11111111-1111-1111-1111-111111111111", "22222222-2222-2222-2222-222222222222", "00000000-0000-0000-0000-000000000000", "Complaint", DomainErrors.Validation.ValueRequired)]
+    [InlineData("11111111-1111-1111-1111-111111111111", "22222222-2222-2222-2222-222222222222", "33333333-3333-3333-3333-333333333333", "", DomainErrors.Validation.ValueRequired)]
+    [InlineData("11111111-1111-1111-1111-111111111111", "22222222-2222-2222-2222-222222222222", "33333333-3333-3333-3333-333333333333", "   ", DomainErrors.Validation.ValueRequired)]
+    [InlineData("11111111-1111-1111-1111-111111111111", "22222222-2222-2222-2222-222222222222", "33333333-3333-3333-3333-333333333333", null, DomainErrors.Validation.ValueRequired)]
     public void Create_ShouldThrowException_WhenIdOrComplaintIsInvalid(string patientIdStr, string doctorIdStr, string appointmentIdStr, string? chiefComplaint, string expectedMessage)
     {
         // Arrange & Act
@@ -73,7 +74,7 @@ public class MedicalRecordTests
         var act = () => record.AddClinicalDetail(null!);
 
         // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage("Clinical detail cannot be null.");
+        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 
     [Fact]
@@ -90,7 +91,7 @@ public class MedicalRecordTests
         var act = () => record.AddClinicalDetail(detail2);
 
         // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage($"A clinical detail for template '{detail2.TemplateCode}' already exists in this medical record.");
+        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.MedicalEncounter.DetailAlreadyExists);
     }
 
     // GetClinicalDetail

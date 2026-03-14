@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Exceptions.Base;
 
 namespace ClinicFlow.Domain.ValueObjects;
@@ -26,11 +27,11 @@ public partial record PhoneNumber
     /// <exception cref="BusinessRuleValidationException">Thrown when the value is empty, has an invalid format, or is shorter than 7 digits.</exception>
     internal static PhoneNumber Create(string number)
     {
-        if (string.IsNullOrWhiteSpace(number)) throw new BusinessRuleValidationException("Phone number cannot be empty.");
+        if (string.IsNullOrWhiteSpace(number)) throw new BusinessRuleValidationException(DomainErrors.Validation.ValueRequired);
 
         var trimmed = number.Trim();
 
-        if (!PhoneRegex().IsMatch(trimmed) || trimmed.Length < 7) throw new BusinessRuleValidationException("Invalid phone number format.");
+        if (!PhoneRegex().IsMatch(trimmed) || trimmed.Length < 7) throw new BusinessRuleValidationException(DomainErrors.Validation.InvalidPhoneFormat);
 
         return new PhoneNumber(trimmed);
     }

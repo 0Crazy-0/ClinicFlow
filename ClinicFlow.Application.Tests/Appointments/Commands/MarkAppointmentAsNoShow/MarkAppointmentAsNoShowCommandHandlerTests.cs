@@ -7,6 +7,7 @@ using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.ValueObjects;
+using ClinicFlow.Domain.Common;
 using FluentAssertions;
 using Moq;
 
@@ -103,7 +104,7 @@ public class MarkAppointmentAsNoShowCommandHandlerTests
         var act = async () => await _sut.Handle(command, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<AppointmentNoShowUnauthorizedException>().WithMessage("User is not authorized to mark this appointment as No-Show.");
+        await act.Should().ThrowAsync<AppointmentNoShowUnauthorizedException>().WithMessage(DomainErrors.Appointment.CannotMarkNoShow);
     }
 
     [Fact]
@@ -123,7 +124,7 @@ public class MarkAppointmentAsNoShowCommandHandlerTests
         var act = async () => await _sut.Handle(command, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<AppointmentNoShowUnauthorizedException>().WithMessage("User is not authorized to mark this appointment as No-Show.");
+        await act.Should().ThrowAsync<AppointmentNoShowUnauthorizedException>().WithMessage(DomainErrors.Appointment.CannotMarkNoShow);
     }
 
     [Fact]
@@ -174,7 +175,7 @@ public class MarkAppointmentAsNoShowCommandHandlerTests
         var act = async () => await _sut.Handle(command, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<AppointmentNoShowUnauthorizedException>().WithMessage("User is not authorized to mark this appointment as No-Show.");
+        await act.Should().ThrowAsync<AppointmentNoShowUnauthorizedException>().WithMessage(DomainErrors.Appointment.CannotMarkNoShow);
     }
 
     // Helpers

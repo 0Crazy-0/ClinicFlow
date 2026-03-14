@@ -1,3 +1,4 @@
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
 using ClinicFlow.Domain.Exceptions.Scheduling;
@@ -14,7 +15,7 @@ public class TimeRangeTests
         var act = () => TimeRange.Create(TimeSpan.FromHours(10), TimeSpan.FromHours(9));
 
         // Assert
-        act.Should().Throw<InvalidTimeRangeException>().WithMessage("Start time must be before end time.");
+        act.Should().Throw<InvalidTimeRangeException>().WithMessage(DomainErrors.Schedule.InvalidTimeRange);
     }
 
     // Duration
@@ -53,7 +54,7 @@ public class TimeRangeTests
         var act = () => range.OverlapsWith(null!);
 
         // Assert
-        act.Should().Throw<InvalidTimeRangeException>().WithMessage("Time range cannot be null.");
+        act.Should().Throw<InvalidTimeRangeException>().WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 
     [Theory]
@@ -83,7 +84,7 @@ public class TimeRangeTests
         var act = () => range.Covers(null!);
 
         // Assert
-        act.Should().Throw<InvalidTimeRangeException>().WithMessage("Time range cannot be null.");
+        act.Should().Throw<InvalidTimeRangeException>().WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 
     [Theory]

@@ -39,9 +39,9 @@ public class MedicalSpecialty : BaseEntity
     /// <exception cref="DomainValidationException">Thrown when the name is empty, the duration is not positive, or cancellation hours are negative.</exception>
     internal static MedicalSpecialty Create(string name, string description, int typicalDurationMinutes, int minCancellationHours)
     {
-        if (string.IsNullOrWhiteSpace(name)) throw new DomainValidationException("Specialty name cannot be empty.");
-        if (typicalDurationMinutes <= 0) throw new DomainValidationException("Duration must be positive.");
-        if (minCancellationHours < 0) throw new DomainValidationException("Cancellation hours cannot be negative.");
+        if (string.IsNullOrWhiteSpace(name)) throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        if (typicalDurationMinutes <= 0) throw new DomainValidationException(DomainErrors.Validation.ValueMustBePositive);
+        if (minCancellationHours < 0) throw new DomainValidationException(DomainErrors.Validation.ValueCannotBeNegative);
 
         return new MedicalSpecialty(name, description, typicalDurationMinutes, minCancellationHours);
     }

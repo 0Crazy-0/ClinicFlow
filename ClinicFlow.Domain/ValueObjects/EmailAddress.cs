@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Exceptions.Base;
 
 namespace ClinicFlow.Domain.ValueObjects;
@@ -26,11 +27,11 @@ public partial record EmailAddress
     /// <exception cref="BusinessRuleValidationException">Thrown when the value is empty or has an invalid format.</exception>
     internal static EmailAddress Create(string email)
     {
-        if (string.IsNullOrWhiteSpace(email)) throw new BusinessRuleValidationException("Email address cannot be empty.");
+        if (string.IsNullOrWhiteSpace(email)) throw new BusinessRuleValidationException(DomainErrors.Validation.ValueRequired);
 
         email = email.Trim().ToLowerInvariant();
 
-        if (!EmailRegex().IsMatch(email)) throw new BusinessRuleValidationException("Invalid email address format.");
+        if (!EmailRegex().IsMatch(email)) throw new BusinessRuleValidationException(DomainErrors.Validation.InvalidEmailFormat);
 
         return new EmailAddress(email);
     }

@@ -1,3 +1,4 @@
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Exceptions.Appointments;
 using ClinicFlow.Domain.Exceptions.Scheduling;
@@ -27,7 +28,7 @@ public static class AppointmentSchedulingService
 
         EnsureDoctorIsAvailable(context.DoctorSchedule, details.DoctorId, details.ScheduledDate, details.TimeRange);
 
-        if (context.HasConflict) throw new AppointmentConflictException(details.DoctorId, details.ScheduledDate.Add(details.TimeRange.Start));
+        if (context.HasConflict) throw new AppointmentConflictException(DomainErrors.Appointment.Conflict, details.DoctorId, details.ScheduledDate.Add(details.TimeRange.Start));
 
         return Appointment.Schedule(details.PatientId, details.DoctorId, details.AppointmentTypeId, details.ScheduledDate, details.TimeRange);
     }
@@ -43,7 +44,7 @@ public static class AppointmentSchedulingService
         EnsureDoctorIsAvailable(context.DoctorSchedule, appointment.DoctorId, newDate, newTimeRange);
 
         if (context.ExistingAppointmentsDay.Any(a => a.Id != appointment.Id && a.Status is not AppointmentStatus.Cancelled && a.TimeRange.OverlapsWith(newTimeRange)))
-            throw new AppointmentConflictException(appointment.DoctorId, newDate.Add(newTimeRange.Start));
+            throw new AppointmentConflictException(DomainErrors.Appointment.Conflict, appointment.DoctorId, newDate.Add(newTimeRange.Start));
 
         appointment.Reschedule(newDate, newTimeRange);
     }
@@ -51,6 +52,7 @@ public static class AppointmentSchedulingService
     // Helper
     private static void EnsureDoctorIsAvailable(Schedule? schedule, Guid doctorId, DateTime scheduledDate, TimeRange timeRange)
     {
-        if (schedule is null || !schedule.CoversTimeRange(timeRange)) throw new DoctorNotAvailableException(doctorId, scheduledDate.DayOfWeek);
+        if (schedule is null || !schedule.CoversTimeRange(timeRange)) 
+            throw new DoctorNotAvailableException(DomainErrors.Schedule.DoctorNotAvailable, doctorId, scheduledDate.DayOfWeek);
     }
 }

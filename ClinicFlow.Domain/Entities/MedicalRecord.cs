@@ -46,10 +46,10 @@ public class MedicalRecord : BaseEntity
     /// <exception cref="DomainValidationException">Thrown when any required identifier is empty or the chief complaint is blank.</exception>
     internal static MedicalRecord Create(Guid patientId, Guid doctorId, Guid appointmentId, string chiefComplaint)
     {
-        if (patientId == Guid.Empty) throw new DomainValidationException("Patient ID cannot be empty.");
-        if (doctorId == Guid.Empty) throw new DomainValidationException("Doctor ID cannot be empty.");
-        if (appointmentId == Guid.Empty) throw new DomainValidationException("Appointment ID cannot be empty.");
-        if (string.IsNullOrWhiteSpace(chiefComplaint)) throw new DomainValidationException("Chief complaint cannot be empty.");
+        if (patientId == Guid.Empty) throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        if (doctorId == Guid.Empty) throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        if (appointmentId == Guid.Empty) throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        if (string.IsNullOrWhiteSpace(chiefComplaint)) throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
 
         var record = new MedicalRecord(patientId, doctorId, appointmentId, chiefComplaint);
 
@@ -66,11 +66,11 @@ public class MedicalRecord : BaseEntity
     /// <exception cref="DomainValidationException">Thrown if the provided detail is null or a detail of that type was already added.</exception>
     internal void AddClinicalDetail(IClinicalDetailRecord detail)
     {
-        if (detail is null) throw new DomainValidationException("Clinical detail cannot be null.");
+        if (detail is null) throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
 
         // It is a valid domain rule to prevent duplicate types of details per encounter (usually)
         if (_clinicalDetails.Any(d => d.TemplateCode == detail.TemplateCode))
-            throw new DomainValidationException($"A clinical detail for template '{detail.TemplateCode}' already exists in this medical record.");
+            throw new DomainValidationException(DomainErrors.MedicalEncounter.DetailAlreadyExists);
 
         _clinicalDetails.Add(detail);
     }

@@ -1,3 +1,4 @@
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Events;
@@ -37,9 +38,9 @@ public class AppointmentTests
     }
 
     [Theory]
-    [InlineData("00000000-0000-0000-0000-000000000000", "11111111-1111-1111-1111-111111111111", "22222222-2222-2222-2222-222222222222", "Patient ID cannot be empty.")]
-    [InlineData("11111111-1111-1111-1111-111111111111", "00000000-0000-0000-0000-000000000000", "22222222-2222-2222-2222-222222222222", "Doctor ID cannot be empty.")]
-    [InlineData("11111111-1111-1111-1111-111111111111", "22222222-2222-2222-2222-222222222222", "00000000-0000-0000-0000-000000000000", "Appointment type ID cannot be empty.")]
+    [InlineData("00000000-0000-0000-0000-000000000000", "11111111-1111-1111-1111-111111111111", "22222222-2222-2222-2222-222222222222", DomainErrors.Validation.ValueRequired)]
+    [InlineData("11111111-1111-1111-1111-111111111111", "00000000-0000-0000-0000-000000000000", "22222222-2222-2222-2222-222222222222", DomainErrors.Validation.ValueRequired)]
+    [InlineData("11111111-1111-1111-1111-111111111111", "22222222-2222-2222-2222-222222222222", "00000000-0000-0000-0000-000000000000", DomainErrors.Validation.ValueRequired)]
     public void Schedule_ShouldThrowException_WhenIdIsEmpty(string patientIdStr, string doctorIdStr, string appointmentTypeIdStr, string expectedMessage)
     {
         // Arrange & Act
@@ -56,7 +57,7 @@ public class AppointmentTests
         var act = () => Appointment.Schedule(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow.AddDays(1), null!);
 
         // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage("Time range cannot be null.");
+        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 
     // Cancel
@@ -221,7 +222,7 @@ public class AppointmentTests
         appointment.Cancel(Guid.NewGuid(), "Reason", specialty);
         
         // Act && Assert
-        appointment.Invoking(x => x.MarkAsNoShow()).Should().Throw<DomainValidationException>().WithMessage("Only scheduled or confirmed appointments can be marked as No-Show.");
+        appointment.Invoking(x => x.MarkAsNoShow()).Should().Throw<DomainValidationException>().WithMessage(DomainErrors.Appointment.CannotMarkNoShow);
     }
 
     // Helpers

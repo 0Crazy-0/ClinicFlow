@@ -1,3 +1,4 @@
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Exceptions.Base;
 
 namespace ClinicFlow.Domain.ValueObjects;
@@ -20,11 +21,11 @@ public record MedicalLicenseNumber
     /// <exception cref="BusinessRuleValidationException">Thrown when the value is empty or shorter than 4 characters.</exception>
     internal static MedicalLicenseNumber Create(string licenseNumber)
     {
-        if (string.IsNullOrWhiteSpace(licenseNumber)) throw new BusinessRuleValidationException("Medical license number cannot be empty.");
+        if (string.IsNullOrWhiteSpace(licenseNumber)) throw new BusinessRuleValidationException(DomainErrors.Validation.ValueRequired);
 
         var trimmed = licenseNumber.Trim();
 
-        if (trimmed.Length < 4) throw new BusinessRuleValidationException("Medical license number is too short.");
+        if (trimmed.Length < 4) throw new BusinessRuleValidationException(DomainErrors.Validation.ValueTooShort);
 
         return new MedicalLicenseNumber(trimmed);
     }

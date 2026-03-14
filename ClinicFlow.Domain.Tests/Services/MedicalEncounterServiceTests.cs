@@ -1,3 +1,4 @@
+using ClinicFlow.Domain.Common;
 using System.Reflection;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Entities.ClinicalDetails;
@@ -34,7 +35,7 @@ public class MedicalEncounterServiceTests
         var act = () => _sut.ValidateAndCompleteRecord(null!, new MedicalEncounterContext());
 
         // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage("The medical record is required and cannot be null.");
+        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 
     [Fact]
@@ -47,7 +48,7 @@ public class MedicalEncounterServiceTests
         var act = () => _sut.ValidateAndCompleteRecord(record, null!);
 
         // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage("The medical encounter context is required and cannot be null.");
+        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 
     [Fact]
@@ -66,7 +67,7 @@ public class MedicalEncounterServiceTests
         var act = () => _sut.ValidateAndCompleteRecord(record, context);
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage("Expected doctor context is missing.");
+        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 
     [Fact]
@@ -85,8 +86,7 @@ public class MedicalEncounterServiceTests
         var act = () => _sut.ValidateAndCompleteRecord(record, context);
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>()
-           .WithMessage("Appointment context is missing.");
+        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 
     [Fact]
@@ -105,7 +105,7 @@ public class MedicalEncounterServiceTests
         var act = () => _sut.ValidateAndCompleteRecord(record, context);
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage("Appointment type definition context is missing.");
+        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 
     [Fact]
@@ -128,7 +128,7 @@ public class MedicalEncounterServiceTests
         var act = () => _sut.ValidateAndCompleteRecord(record, context);
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage("The doctor provided does not match the doctor assigned to the medical record.");
+        act.Should().Throw<BusinessRuleValidationException>().WithMessage(DomainErrors.MedicalEncounter.DoctorMismatch);
     }
 
     [Fact]
@@ -151,7 +151,7 @@ public class MedicalEncounterServiceTests
         var act = () => _sut.ValidateAndCompleteRecord(record, context);
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage("The appointment provided does not match the appointment assigned to the medical record.");
+        act.Should().Throw<BusinessRuleValidationException>().WithMessage(DomainErrors.MedicalEncounter.AppointmentMismatch);
     }
 
     [Fact]
@@ -191,7 +191,7 @@ public class MedicalEncounterServiceTests
     public void AppendClinicalDetail_ShouldThrowDomainValidationException_WhenRecordIsNull()
     {
         var act = () => _sut.AppendClinicalDetail(null!, new TestClinicalDetail1(), CreateFormTemplate());
-        act.Should().Throw<DomainValidationException>().WithMessage("The medical record is required and cannot be null.");
+        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 
     [Fact]
@@ -199,7 +199,7 @@ public class MedicalEncounterServiceTests
     {
         var record = CreateMedicalRecord(Guid.NewGuid(), Guid.NewGuid());
         var act = () => _sut.AppendClinicalDetail(record, null!, CreateFormTemplate());
-        act.Should().Throw<DomainValidationException>().WithMessage("The clinical detail is required and cannot be null.");
+        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 
     [Fact]
@@ -207,7 +207,7 @@ public class MedicalEncounterServiceTests
     {
         var record = CreateMedicalRecord(Guid.NewGuid(), Guid.NewGuid());
         var act = () => _sut.AppendClinicalDetail(record, new TestClinicalDetail1(), null!);
-        act.Should().Throw<DomainValidationException>().WithMessage("The clinical form template is required and cannot be null.");
+        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 
     [Fact]
@@ -219,7 +219,7 @@ public class MedicalEncounterServiceTests
 
         var act = () => _sut.AppendClinicalDetail(record, detail, template);
 
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage("The detail template code 'Test1' does not match the provided template 'DifferentCode'.");
+        act.Should().Throw<BusinessRuleValidationException>().WithMessage(ClinicFlow.Domain.Common.DomainErrors.MedicalEncounter.CodeMismatch);
     }
 
     [Theory]
@@ -237,7 +237,7 @@ public class MedicalEncounterServiceTests
 
         var act = () => _sut.AppendClinicalDetail(record, mockDetail.Object, template);
 
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage("No data payload provided for template 'Test1'.");
+        act.Should().Throw<BusinessRuleValidationException>().WithMessage(DomainErrors.MedicalEncounter.MissingPayload);
     }
 
     [Fact]
@@ -256,7 +256,7 @@ public class MedicalEncounterServiceTests
 
         var act = () => _sut.AppendClinicalDetail(record, mockDetail.Object, template);
 
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage($"Validation failed for template '{template.Name}': {errorMessage}");
+        act.Should().Throw<BusinessRuleValidationException>().WithMessage($"{DomainErrors.MedicalEncounter.ValidationFailed}: {errorMessage}");
     }
 
     [Fact]

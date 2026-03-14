@@ -1,7 +1,6 @@
 using System.Reflection;
 using ClinicFlow.Application.Appointments.Commands.ScheduleAppointment;
 using ClinicFlow.Domain.Entities;
-using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.ValueObjects;

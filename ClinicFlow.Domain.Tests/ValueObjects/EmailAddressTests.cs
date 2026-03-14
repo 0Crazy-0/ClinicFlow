@@ -1,3 +1,4 @@
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
@@ -17,7 +18,7 @@ public class EmailAddressTests
         var act = () => EmailAddress.Create(value!);
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage("Email address cannot be empty.");
+        act.Should().Throw<BusinessRuleValidationException>().WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Theory]
@@ -32,7 +33,7 @@ public class EmailAddressTests
         var act = () => EmailAddress.Create(value);
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage("Invalid email address format.");
+        act.Should().Throw<BusinessRuleValidationException>().WithMessage(DomainErrors.Validation.InvalidEmailFormat);
     }
 
     // Create

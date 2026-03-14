@@ -1,3 +1,4 @@
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
@@ -17,7 +18,7 @@ public class BloodTypeTests
         var act = () => BloodType.Create(value!);
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage("Blood type cannot be empty.");
+        act.Should().Throw<BusinessRuleValidationException>().WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Theory]
@@ -31,7 +32,7 @@ public class BloodTypeTests
         var act = () => BloodType.Create(value);
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage("Invalid blood type:*");
+        act.Should().Throw<BusinessRuleValidationException>().WithMessage(DomainErrors.Validation.InvalidBloodType);
     }
 
     [Theory]

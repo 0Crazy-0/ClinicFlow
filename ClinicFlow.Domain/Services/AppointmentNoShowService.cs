@@ -2,6 +2,7 @@ using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Appointments;
 using ClinicFlow.Domain.Services.Contexts;
+using ClinicFlow.Domain.Common;
 namespace ClinicFlow.Domain.Services;
 
 /// <summary>
@@ -34,6 +35,6 @@ public static class AppointmentNoShowService
 
         if (initiatorRole is UserRole.Doctor && initiatorDoctorId.HasValue && initiatorDoctorId == appointmentDoctorId) return;
 
-        throw new AppointmentNoShowUnauthorizedException("User is not authorized to mark this appointment as No-Show.");
+        throw new AppointmentNoShowUnauthorizedException(DomainErrors.Appointment.CannotMarkNoShow);
     }
 }

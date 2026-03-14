@@ -1,3 +1,4 @@
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Base;
@@ -36,7 +37,7 @@ public class PatientPenaltyTests
         var act = () => PatientPenalty.CreateWarning(Guid.Empty, Guid.NewGuid(), "No show");
 
         // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage("Patient ID cannot be empty.");
+        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Theory]
@@ -49,7 +50,7 @@ public class PatientPenaltyTests
         var act = () => PatientPenalty.CreateWarning(Guid.NewGuid(), Guid.NewGuid(), reason!);
 
         // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage("Penalty reason cannot be empty.");
+        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
     // CreateBlock
@@ -80,7 +81,7 @@ public class PatientPenaltyTests
         var act = () => PatientPenalty.CreateBlock(Guid.Empty, "Block reason", DateTime.UtcNow.AddDays(30));
 
         // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage("Patient ID cannot be empty.");
+        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Theory]
@@ -93,7 +94,7 @@ public class PatientPenaltyTests
         var act = () => PatientPenalty.CreateBlock(Guid.NewGuid(), reason!, DateTime.UtcNow.AddDays(30));
 
         // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage("Penalty reason cannot be empty.");
+        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Fact]
@@ -103,6 +104,6 @@ public class PatientPenaltyTests
         var act = () => PatientPenalty.CreateBlock(Guid.NewGuid(), "Block reason", DateTime.UtcNow.AddDays(-1));
 
         // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage("Blocked until date must be in the future.");
+        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.Validation.ValueMustBeInFuture);
     }
 }
