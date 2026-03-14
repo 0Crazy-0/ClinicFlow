@@ -68,7 +68,6 @@ public class MedicalRecord : BaseEntity
     {
         if (detail is null) throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
 
-        // It is a valid domain rule to prevent duplicate types of details per encounter (usually)
         if (_clinicalDetails.Any(d => d.TemplateCode == detail.TemplateCode))
             throw new DomainValidationException(DomainErrors.MedicalEncounter.DetailAlreadyExists);
 

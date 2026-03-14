@@ -16,8 +16,8 @@ public static class AppointmentCancellationService
     /// <summary>
     /// Cancels an appointment after validating the initiator's permission and any required cancellation reason.
     /// </summary>
-    /// <param name="isAuthorizedFamilyMember">Indicates whether the initiator is an authorized family member of the patient.</param>
-    /// <param name="specialty">The medical specialty, used to evaluate the cancellation notice policy.</param>
+    /// <param name="appointment">The appointment to be canceled.</param>
+    /// <param name="context">The context containing necessary details for the cancellation, such as the initiator's role, specialty, and reason.</param>
     /// <exception cref="AppointmentCancellationUnauthorizedException">Thrown when the initiator is not authorized to cancel the appointment.</exception>
     /// <exception cref="BusinessRuleValidationException">Thrown when a staff member does not provide a cancellation reason.</exception>
     public static void CancelAppointment(Appointment appointment, AppointmentCancellationContext context)
