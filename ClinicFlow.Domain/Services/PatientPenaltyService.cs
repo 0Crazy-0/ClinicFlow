@@ -20,6 +20,11 @@ public static class PatientPenaltyService
     /// Applies a warning penalty to the patient and, if the warning threshold is reached,
     /// creates a temporary booking block.
     /// </summary>
+    /// <param name="patientId">The unique identifier of the patient receiving the penalty.</param>
+    /// <param name="existingPenalties">The history of penalties for the patient, used to determine if a block should be applied.</param>
+    /// <param name="appointmentId">The optional identifier of the appointment associated with the penalty.</param>
+    /// <param name="reason">The descriptive reason for issuing the warning.</param>
+    /// <returns>A collection of newly generated penalties (a warning and optionally a block) that need to be persisted.</returns>
     public static IEnumerable<PatientPenalty> ApplyPenalty(Guid patientId, IEnumerable<PatientPenalty> existingPenalties, Guid? appointmentId, string reason)
     {
         var penaltiesToApply = new List<PatientPenalty>();

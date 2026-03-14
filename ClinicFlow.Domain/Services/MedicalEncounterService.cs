@@ -15,7 +15,10 @@ public class MedicalEncounterService(IEnumerable<IMedicalRecordValidationPolicy>
     /// <summary>
     /// Validates business rules against the provided context and updates the medical record with the given details.
     /// </summary>
-    /// <exception cref="BusinessRuleValidationException">Thrown if any domain rule is violated.</exception>
+    /// <param name="record">The medical record to be validated and updated.</param>
+    /// <param name="context">The contextual information for the encounter, including expected references (Doctor, Appointment) and new clinical details.</param>
+    /// <exception cref="DomainValidationException">Thrown if any of the required parameters or their essential properties are null.</exception>
+    /// <exception cref="BusinessRuleValidationException">Thrown if there is a mismatch between the expected doctor/appointment and the record, or if any policy fails.</exception>
     public void ValidateAndCompleteRecord(MedicalRecord record, MedicalEncounterContext context)
     {
         if (record is null) throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
@@ -42,6 +45,11 @@ public class MedicalEncounterService(IEnumerable<IMedicalRecordValidationPolicy>
     /// Validates and appends a single clinical detail to an existing medical record.
     /// Enforces that the detail's JSON structure complies with the template schema if one exists.
     /// </summary>
+    /// <param name="record">The medical record where the detail will be appended.</param>
+    /// <param name="newDetail">The new clinical detail containing the data payload to validate and append.</param>
+    /// <param name="template">The clinical form template containing the schema requirements.</param>
+    /// <exception cref="DomainValidationException">Thrown if any of the provided parameters are null.</exception>
+    /// <exception cref="BusinessRuleValidationException">Thrown if the template code mismatches, the payload is missing, or the payload fails JSON schema validation.</exception>
     public void AppendClinicalDetail(MedicalRecord record, IClinicalDetailRecord newDetail, ClinicalFormTemplate template)
     {
         if (record is null) throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
