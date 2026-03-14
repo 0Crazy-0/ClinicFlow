@@ -1,6 +1,6 @@
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Exceptions.Base;
-using ClinicFlow.Domain.Exceptions.Scheduling;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
 
@@ -28,8 +28,8 @@ public class ScheduleTests
     }
 
     [Theory]
-    [InlineData("00000000-0000-0000-0000-000000000000", DayOfWeek.Monday, 9, 17, "Doctor ID cannot be empty.")]
-    [InlineData("11111111-1111-1111-1111-111111111111", (DayOfWeek)99, 9, 17, "Invalid day of the week.")]
+    [InlineData("00000000-0000-0000-0000-000000000000", DayOfWeek.Monday, 9, 17, DomainErrors.Validation.ValueRequired)]
+    [InlineData("11111111-1111-1111-1111-111111111111", (DayOfWeek)99, 9, 17, DomainErrors.Schedule.InvalidDayOfWeek)]
     public void Create_ShouldThrowException_WhenInvalidParameters(string doctorIdStr, DayOfWeek dayOfWeek, double startHour, double endHour, string expectedMessage)
     {
         // Arrange & Act
@@ -46,7 +46,7 @@ public class ScheduleTests
         var act = () => Schedule.Create(Guid.NewGuid(), DayOfWeek.Monday, null!);
 
         // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage("Time range cannot be null.");
+        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 
     [Theory]

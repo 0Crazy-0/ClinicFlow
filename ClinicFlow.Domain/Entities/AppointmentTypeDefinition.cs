@@ -42,8 +42,8 @@ public class AppointmentTypeDefinition : BaseEntity
     /// <exception cref="DomainValidationException">Thrown when the name is empty or the duration is not positive.</exception>
     internal static AppointmentTypeDefinition Create(AppointmentCategory category, string name, string description, TimeSpan durationMinutes)
     {
-        if (string.IsNullOrWhiteSpace(name)) throw new DomainValidationException("Appointment type name cannot be empty.");
-        if (durationMinutes <= TimeSpan.Zero) throw new DomainValidationException("Duration must be positive.");
+        if (string.IsNullOrWhiteSpace(name)) throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        if (durationMinutes <= TimeSpan.Zero) throw new DomainValidationException(DomainErrors.Validation.ValueMustBePositive);
 
         return new AppointmentTypeDefinition(category, name, description, durationMinutes);
     }
@@ -53,9 +53,9 @@ public class AppointmentTypeDefinition : BaseEntity
     /// </summary>
     public void AddRequiredTemplate(ClinicalFormTemplate template)
     {
-        if (template is null) throw new DomainValidationException("Template cannot be null.");
+        if (template is null) throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
         if (_requiredTemplates.Any(t => t.Id == template.Id || t.Code == template.Code))
-            throw new DomainValidationException($"Template '{template.Code}' is already required for this appointment type.");
+            throw new DomainValidationException(DomainErrors.AppointmentType.TemplateAlreadyRequired);
 
         _requiredTemplates.Add(template);
     }

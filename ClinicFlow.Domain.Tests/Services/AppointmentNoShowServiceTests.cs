@@ -6,6 +6,7 @@ using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Contexts;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
+using ClinicFlow.Domain.Common;
 
 namespace ClinicFlow.Domain.Tests.Services;
 
@@ -37,8 +38,8 @@ public class AppointmentNoShowServiceTests
     }
 
     [Theory]
-    [InlineData(UserRole.Doctor, "User is not authorized to mark this appointment as No-Show.")]
-    [InlineData(UserRole.Patient, "User is not authorized to mark this appointment as No-Show.")]
+    [InlineData(UserRole.Doctor, DomainErrors.Appointment.CannotMarkNoShow)]
+    [InlineData(UserRole.Patient, DomainErrors.Appointment.CannotMarkNoShow)]
     public void MarkAsNoShow_ShouldThrowUnauthorized_WhenNotAuthorized(UserRole role, string expectedMessage)
     {
         // Arrange
@@ -65,8 +66,8 @@ public class AppointmentNoShowServiceTests
         var context = new AppointmentNoShowContext { InitiatorRole = UserRole.Doctor, InitiatorDoctorId = doctorId };
         var act = () => AppointmentNoShowService.MarkAsNoShow(appointment, context, []);
 
-        // Assert
-        act.Should().Throw<AppointmentNoShowUnauthorizedException>().WithMessage("User is not authorized to mark this appointment as No-Show.");
+            // Assert
+            act.Should().Throw<AppointmentNoShowUnauthorizedException>().WithMessage(DomainErrors.Appointment.CannotMarkNoShow);
     }
 
     [Fact]
@@ -74,13 +75,13 @@ public class AppointmentNoShowServiceTests
     {
         // Arrange
         var appointment = CreateAppointment(DateTime.UtcNow.AddDays(2));
-        
+
         // Act
         var context = new AppointmentNoShowContext { InitiatorRole = UserRole.Doctor, InitiatorDoctorId = null };
         var act = () => AppointmentNoShowService.MarkAsNoShow(appointment, context, []);
 
         // Assert
-        act.Should().Throw<AppointmentNoShowUnauthorizedException>().WithMessage("User is not authorized to mark this appointment as No-Show.");
+        act.Should().Throw<AppointmentNoShowUnauthorizedException>().WithMessage(DomainErrors.Appointment.CannotMarkNoShow);
     }
 
     // Helpers

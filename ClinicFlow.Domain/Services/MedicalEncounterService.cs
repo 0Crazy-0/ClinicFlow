@@ -3,6 +3,7 @@ using ClinicFlow.Domain.Entities.ClinicalDetails;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Services.Policies;
 using ClinicFlow.Domain.Services.Contexts;
+using ClinicFlow.Domain.Common;
 
 namespace ClinicFlow.Domain.Services;
 
@@ -17,17 +18,17 @@ public class MedicalEncounterService(IEnumerable<IMedicalRecordValidationPolicy>
     /// <exception cref="BusinessRuleValidationException">Thrown if any domain rule is violated.</exception>
     public void ValidateAndCompleteRecord(MedicalRecord record, MedicalEncounterContext context)
     {
-        if (record is null) throw new DomainValidationException("The medical record is required and cannot be null.");
-        if (context is null) throw new DomainValidationException("The medical encounter context is required and cannot be null.");
-        if (context.ExpectedDoctor is null) throw new BusinessRuleValidationException("Expected doctor context is missing.");
-        if (context.Appointment is null) throw new BusinessRuleValidationException("Appointment context is missing.");
-        if (context.AppointmentTypeDefinition is null) throw new BusinessRuleValidationException("Appointment type definition context is missing.");
+        if (record is null) throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+        if (context is null) throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+        if (context.ExpectedDoctor is null) throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+        if (context.Appointment is null) throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+        if (context.AppointmentTypeDefinition is null) throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
 
         if (record.DoctorId != context.ExpectedDoctor.Id)
-            throw new BusinessRuleValidationException("The doctor provided does not match the doctor assigned to the medical record.");
+            throw new BusinessRuleValidationException(DomainErrors.MedicalEncounter.DoctorMismatch);
 
         if (record.AppointmentId != context.Appointment.Id)
-            throw new BusinessRuleValidationException("The appointment provided does not match the appointment assigned to the medical record.");
+            throw new BusinessRuleValidationException(DomainErrors.MedicalEncounter.AppointmentMismatch);
 
         foreach (var policy in policies)
             policy.Validate(context.AppointmentTypeDefinition, context.ProvidedDetails);
@@ -43,20 +44,20 @@ public class MedicalEncounterService(IEnumerable<IMedicalRecordValidationPolicy>
     /// </summary>
     public void AppendClinicalDetail(MedicalRecord record, IClinicalDetailRecord newDetail, ClinicalFormTemplate template)
     {
-        if (record is null) throw new DomainValidationException("The medical record is required and cannot be null.");
-        if (newDetail is null) throw new DomainValidationException("The clinical detail is required and cannot be null.");
-        if (template is null) throw new DomainValidationException("The clinical form template is required and cannot be null.");
+        if (record is null) throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+        if (newDetail is null) throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+        if (template is null) throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
 
         if (newDetail.TemplateCode != template.Code)
-            throw new BusinessRuleValidationException($"The detail template code '{newDetail.TemplateCode}' does not match the provided template '{template.Code}'.");
+            throw new BusinessRuleValidationException(DomainErrors.MedicalEncounter.CodeMismatch);
 
         if (string.IsNullOrWhiteSpace(newDetail.JsonDataPayload))
-            throw new BusinessRuleValidationException($"No data payload provided for template '{template.Code}'.");
+            throw new BusinessRuleValidationException(DomainErrors.MedicalEncounter.MissingPayload);
 
-        if (!string.IsNullOrWhiteSpace(template.JsonSchemaDefinition) && template.JsonSchemaDefinition is not "{}" && 
+        if (!string.IsNullOrWhiteSpace(template.JsonSchemaDefinition) && template.JsonSchemaDefinition is not "{}" &&
             !jsonSchemaValidator.ValidateSchema(template.JsonSchemaDefinition, newDetail.JsonDataPayload, out string? errorMessage))
         {
-            throw new BusinessRuleValidationException($"Validation failed for template '{template.Name}': {errorMessage}");
+            throw new BusinessRuleValidationException($"{DomainErrors.MedicalEncounter.ValidationFailed}: {errorMessage}");
         }
 
         record.AddClinicalDetail(newDetail);

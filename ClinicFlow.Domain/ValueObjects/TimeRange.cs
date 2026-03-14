@@ -1,3 +1,4 @@
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Exceptions.Scheduling;
 
 namespace ClinicFlow.Domain.ValueObjects;
@@ -25,7 +26,7 @@ public record TimeRange
     /// <exception cref="InvalidTimeRangeException">Thrown when the start time is greater than or equal to the end time.</exception>
     internal static TimeRange Create(TimeSpan start, TimeSpan end)
     {
-        if (start >= end) throw new InvalidTimeRangeException("Start time must be before end time.");
+        if (start >= end) throw new InvalidTimeRangeException(DomainErrors.Schedule.InvalidTimeRange);
 
         return new TimeRange(start, end);
     }
@@ -36,7 +37,7 @@ public record TimeRange
     /// <exception cref="InvalidTimeRangeException">Thrown when the other time range is null.</exception>
     public bool OverlapsWith(TimeRange other)
     {
-        if (other is null) throw new InvalidTimeRangeException("Time range cannot be null.");
+        if (other is null) throw new InvalidTimeRangeException(DomainErrors.General.RequiredFieldNull);
 
         return Start < other.End && other.Start < End;
     }
@@ -47,7 +48,7 @@ public record TimeRange
     /// <exception cref="InvalidTimeRangeException">Thrown when the other time range is null.</exception>
     public bool Covers(TimeRange other)
     {
-        if (other is null) throw new InvalidTimeRangeException("Time range cannot be null.");
+        if (other is null) throw new InvalidTimeRangeException(DomainErrors.General.RequiredFieldNull);
 
         return Start <= other.Start && End >= other.End;
     }

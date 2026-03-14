@@ -1,6 +1,6 @@
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
-using ClinicFlow.Domain.Exceptions.Appointments;
 using ClinicFlow.Domain.Exceptions.Base;
 using FluentAssertions;
 
@@ -39,7 +39,7 @@ public class AppointmentTypeDefinitionTests
         var act = () => AppointmentTypeDefinition.Create(AppointmentCategory.Checkup, name!, "Description", TimeSpan.FromMinutes(30));
 
         // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage("Appointment type name cannot be empty.");
+        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Theory]
@@ -50,7 +50,7 @@ public class AppointmentTypeDefinitionTests
         var act = () => AppointmentTypeDefinition.Create(AppointmentCategory.Checkup, "Checkup", "Description", duration);
 
         // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage("Duration must be positive.");
+        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.Validation.ValueMustBePositive);
     }
     
     // Helper

@@ -60,7 +60,7 @@ public class GetMedicalRecordByIdQueryHandlerTests
 
         // Act & Assert
         var action = async () => await _sut.Handle(request, CancellationToken.None);
-        await action.Should().ThrowAsync<EntityNotFoundException>().WithMessage($"*MedicalRecord*{request.Id}*");
+        await action.Should().ThrowAsync<EntityNotFoundException>().Where(e => e.EntityName == nameof(MedicalRecord));
     }
 
     // Helpers

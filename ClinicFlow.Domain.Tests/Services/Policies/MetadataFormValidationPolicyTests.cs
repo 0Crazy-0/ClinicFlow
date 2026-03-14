@@ -1,3 +1,4 @@
+using ClinicFlow.Domain.Common;
 using System.Reflection;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Entities.ClinicalDetails;
@@ -26,7 +27,7 @@ public class MetadataFormValidationPolicyTests
         var act = () => _sut.Validate(null!, []);
 
         // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage("Appointment type definition cannot be null.");
+        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 
     [Fact]
@@ -36,7 +37,7 @@ public class MetadataFormValidationPolicyTests
         var act = () => _sut.Validate(CreateAppointmentTypeWithTemplates(), null!);
 
         // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage("Provided details cannot be null.");
+        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 
     [Fact]
@@ -60,7 +61,7 @@ public class MetadataFormValidationPolicyTests
         var act = () => _sut.Validate(appointmentType, []);
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage("Missing required clinical information. Template 'VITALS' is required for appointment type *.");
+        act.Should().Throw<BusinessRuleValidationException>().WithMessage(DomainErrors.MedicalEncounter.MissingRequiredTemplate);
     }
 
     [Fact]
@@ -76,7 +77,7 @@ public class MetadataFormValidationPolicyTests
         var act = () => _sut.Validate(appointmentType, details);
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage("No data payload provided for template 'VITALS'.");
+        act.Should().Throw<BusinessRuleValidationException>().WithMessage(DomainErrors.MedicalEncounter.MissingPayload);
     }
 
     [Fact]
@@ -92,7 +93,7 @@ public class MetadataFormValidationPolicyTests
         var act = () => _sut.Validate(appointmentType, details);
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage("No data payload provided for template 'VITALS'.");
+        act.Should().Throw<BusinessRuleValidationException>().WithMessage(DomainErrors.MedicalEncounter.MissingPayload);
     }
 
     [Fact]
@@ -169,7 +170,7 @@ public class MetadataFormValidationPolicyTests
         var act = () => _sut.Validate(appointmentType, details);
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage("Validation failed for template 'Vitals': Required property 'bp' is missing.");
+        act.Should().Throw<BusinessRuleValidationException>().WithMessage($"{ClinicFlow.Domain.Common.DomainErrors.MedicalEncounter.ValidationFailed}: {errorMsg}");
     }
 
     [Fact]
@@ -215,7 +216,7 @@ public class MetadataFormValidationPolicyTests
         var act = () => _sut.Validate(appointmentType, details);
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage("Missing required clinical information. Template 'VITALS' is required for appointment type *.");
+        act.Should().Throw<BusinessRuleValidationException>().WithMessage(DomainErrors.MedicalEncounter.MissingRequiredTemplate);
     }
 
     private class StubClinicalDetailRecord(string templateCode) : IClinicalDetailRecord

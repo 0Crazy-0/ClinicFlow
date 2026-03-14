@@ -34,9 +34,9 @@ public class Schedule : BaseEntity
     /// <exception cref="DomainValidationException">Thrown when the doctor ID is empty, the day of week is invalid, or the time range is null.</exception>
     internal static Schedule Create(Guid doctorId, DayOfWeek dayOfWeek, TimeRange timeRange)
     {
-        if (doctorId == Guid.Empty) throw new DomainValidationException("Doctor ID cannot be empty.");
-        if (!Enum.IsDefined(dayOfWeek)) throw new DomainValidationException("Invalid day of the week.");
-        if (timeRange is null) throw new DomainValidationException("Time range cannot be null.");
+        if (doctorId == Guid.Empty) throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        if (!Enum.IsDefined(dayOfWeek)) throw new DomainValidationException(DomainErrors.Schedule.InvalidDayOfWeek);
+        if (timeRange is null) throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
 
         return new Schedule(doctorId, dayOfWeek, timeRange);
     }

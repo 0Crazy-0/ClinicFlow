@@ -1,3 +1,4 @@
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
@@ -14,9 +15,10 @@ public class MarkAppointmentAsNoShowCommandHandler(IAppointmentRepository appoin
     public async Task Handle(MarkAppointmentAsNoShowCommand request, CancellationToken cancellationToken)
     {
         var appointment = await appointmentRepository.GetByIdAsync(request.AppointmentId, cancellationToken)
-            ?? throw new EntityNotFoundException(nameof(Appointment), request.AppointmentId);
+            ?? throw new EntityNotFoundException(DomainErrors.General.NotFound, nameof(Appointment), request.AppointmentId);
 
-        var initiator = await userRepository.GetByIdAsync(request.InitiatorUserId, cancellationToken) ?? throw new EntityNotFoundException(nameof(User), request.InitiatorUserId);
+        var initiator = await userRepository.GetByIdAsync(request.InitiatorUserId, cancellationToken)
+            ?? throw new EntityNotFoundException(DomainErrors.General.NotFound, nameof(User), request.InitiatorUserId);
 
         var doctor = await doctorRepository.GetByUserIdAsync(initiator.Id, cancellationToken);
 

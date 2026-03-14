@@ -1,3 +1,4 @@
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
@@ -15,18 +16,20 @@ public class CancelAppointmentCommandHandler(IAppointmentRepository appointmentR
 {
     public async Task Handle(CancelAppointmentCommand request, CancellationToken cancellationToken)
     {
-        var appointment = await appointmentRepository.GetByIdAsync(request.AppointmentId, cancellationToken) 
-            ?? throw new EntityNotFoundException(nameof(Appointment), request.AppointmentId);
+        var appointment = await appointmentRepository.GetByIdAsync(request.AppointmentId, cancellationToken)
+            ?? throw new EntityNotFoundException(DomainErrors.General.NotFound, nameof(Appointment), request.AppointmentId);
 
-        var initiator = await userRepository.GetByIdAsync(request.InitiatorUserId, cancellationToken) ?? throw new EntityNotFoundException(nameof(User), request.InitiatorUserId);
+        var initiator = await userRepository.GetByIdAsync(request.InitiatorUserId, cancellationToken) ??
+            throw new EntityNotFoundException(DomainErrors.General.NotFound, nameof(User), request.InitiatorUserId);
 
         var appointmentType = await appointmentTypeDefinitionRepository.GetByIdAsync(appointment.AppointmentTypeId, cancellationToken)
-            ?? throw new EntityNotFoundException(nameof(AppointmentTypeDefinition), appointment.AppointmentTypeId);
+            ?? throw new EntityNotFoundException(DomainErrors.General.NotFound, nameof(AppointmentTypeDefinition), appointment.AppointmentTypeId);
 
-        var doctor = await doctorRepository.GetByIdAsync(appointment.DoctorId, cancellationToken) ?? throw new EntityNotFoundException(nameof(Doctor), appointment.DoctorId);
+        var doctor = await doctorRepository.GetByIdAsync(appointment.DoctorId, cancellationToken) ??
+             throw new EntityNotFoundException(DomainErrors.General.NotFound, nameof(Doctor), appointment.DoctorId);
 
         var specialty = await medicalSpecialtyRepository.GetByIdAsync(doctor.MedicalSpecialtyId, cancellationToken) ??
-            throw new EntityNotFoundException(nameof(MedicalSpecialty), doctor.MedicalSpecialtyId);
+            throw new EntityNotFoundException(DomainErrors.General.NotFound, nameof(MedicalSpecialty), doctor.MedicalSpecialtyId);
 
         var initiatorDoctor = await doctorRepository.GetByUserIdAsync(initiator.Id, cancellationToken);
         var initiatorPatient = await patientRepository.GetByUserIdAsync(initiator.Id, cancellationToken);

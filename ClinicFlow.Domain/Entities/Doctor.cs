@@ -37,9 +37,9 @@ public class Doctor : BaseEntity
     /// <exception cref="DomainValidationException">Thrown when the user ID or specialty ID is empty, or the room number is not positive.</exception>
     internal static Doctor Create(Guid userId, MedicalLicenseNumber licenseNumber, Guid medicalSpecialtyId, string biography, int consultationRoomNumber)
     {
-        if (userId == Guid.Empty) throw new DomainValidationException("User ID cannot be empty.");
-        if (medicalSpecialtyId == Guid.Empty) throw new DomainValidationException("Medical specialty ID cannot be empty.");
-        if (consultationRoomNumber <= 0) throw new DomainValidationException("Consultation room number must be positive.");
+        if (userId == Guid.Empty) throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        if (medicalSpecialtyId == Guid.Empty) throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        if (consultationRoomNumber <= 0) throw new DomainValidationException(DomainErrors.Validation.ValueMustBePositive);
 
         return new Doctor(userId, licenseNumber, medicalSpecialtyId, biography, consultationRoomNumber);
     }

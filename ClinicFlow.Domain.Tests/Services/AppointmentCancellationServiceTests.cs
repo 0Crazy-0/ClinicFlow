@@ -1,3 +1,4 @@
+using ClinicFlow.Domain.Common;
 using System.Reflection;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
@@ -54,10 +55,10 @@ public class AppointmentCancellationServiceTests
     }
 
     [Theory]
-    [InlineData(UserRole.Doctor, false, false, AppointmentCategory.Checkup, "Doctors can only cancel their own appointments.")]
-    [InlineData(UserRole.Patient, false, true, AppointmentCategory.Procedure, "Family members cannot cancel appointments of type: Procedure")]
-    [InlineData(UserRole.Patient, false, false, AppointmentCategory.Checkup, "User is not authorized to cancel this appointment.")]
-    public void CancelAppointment_ShouldThrowUnauthorized_WhenNotAuthorized(UserRole role, bool isOwn, bool isFamily, AppointmentCategory typeEnum, string expectedMessage)
+    [InlineData(UserRole.Doctor, false, false, AppointmentCategory.Checkup)]
+    [InlineData(UserRole.Patient, false, true, AppointmentCategory.Procedure)]
+    [InlineData(UserRole.Patient, false, false, AppointmentCategory.Checkup)]
+    public void CancelAppointment_ShouldThrowUnauthorized_WhenNotAuthorized(UserRole role, bool isOwn, bool isFamily, AppointmentCategory typeEnum)
     {
         // Arrange
         var appointment = CreateAppointment(DateTime.UtcNow.AddDays(2));
@@ -84,7 +85,7 @@ public class AppointmentCancellationServiceTests
         var act = () => AppointmentCancellationService.CancelAppointment(appointment, context);
 
         // Assert
-        act.Should().Throw<AppointmentCancellationUnauthorizedException>().WithMessage(expectedMessage);
+        act.Should().Throw<AppointmentCancellationUnauthorizedException>().WithMessage(DomainErrors.Appointment.UnauthorizedCancellation);
     }
 
     [Fact]
@@ -108,7 +109,7 @@ public class AppointmentCancellationServiceTests
         var act = () => AppointmentCancellationService.CancelAppointment(appointment, context);
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage("Staff members must provide a reason for cancellation.");
+        act.Should().Throw<BusinessRuleValidationException>().WithMessage(DomainErrors.Appointment.MissingCancellationReason);
     }
 
     // Helpers

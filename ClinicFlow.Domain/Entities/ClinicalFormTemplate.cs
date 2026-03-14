@@ -35,8 +35,8 @@ public class ClinicalFormTemplate : BaseEntity
     /// <exception cref="DomainValidationException">Thrown when code or name are empty.</exception>
     public static ClinicalFormTemplate Create(string code, string name, string description, string jsonSchemaDefinition)
     {
-        if (string.IsNullOrWhiteSpace(code)) throw new DomainValidationException("Template code cannot be empty.");
-        if (string.IsNullOrWhiteSpace(name)) throw new DomainValidationException("Template name cannot be empty.");
+        if (string.IsNullOrWhiteSpace(code)) throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        if (string.IsNullOrWhiteSpace(name)) throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
 
         string schemaToSave = string.IsNullOrWhiteSpace(jsonSchemaDefinition) ? "{}" : jsonSchemaDefinition;
 

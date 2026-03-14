@@ -1,3 +1,4 @@
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Entities.ClinicalDetails;
 using ClinicFlow.Domain.Exceptions.Base;
@@ -15,12 +16,14 @@ public class CompleteMedicalEncounterCommandHandler(IDoctorRepository doctorRepo
 {
     public async Task<Guid> Handle(CompleteMedicalEncounterCommand request, CancellationToken cancellationToken)
     {
-        var doctor = await doctorRepository.GetByIdAsync(request.DoctorId, cancellationToken) ?? throw new EntityNotFoundException(nameof(Doctor), request.DoctorId);
+        var doctor = await doctorRepository.GetByIdAsync(request.DoctorId, cancellationToken)
+            ?? throw new EntityNotFoundException(DomainErrors.General.NotFound, nameof(Doctor), request.DoctorId);
 
-        var appointment = await appointmentRepository.GetByIdAsync(request.AppointmentId, cancellationToken) ?? throw new EntityNotFoundException(nameof(Appointment), request.AppointmentId);
+        var appointment = await appointmentRepository.GetByIdAsync(request.AppointmentId, cancellationToken) 
+            ?? throw new EntityNotFoundException(DomainErrors.General.NotFound, nameof(Appointment), request.AppointmentId);
 
         var appointmentType = await appointmentTypeRepository.GetByIdAsync(appointment.AppointmentTypeId, cancellationToken) ??
-            throw new EntityNotFoundException(nameof(AppointmentTypeDefinition), appointment.AppointmentTypeId);
+            throw new EntityNotFoundException(DomainErrors.General.NotFound, nameof(AppointmentTypeDefinition), appointment.AppointmentTypeId);
 
         var details = request.Details.Select(dto => DynamicClinicalDetail.Create(dto.TemplateCode, dto.JsonDataPayload)).ToList();
 

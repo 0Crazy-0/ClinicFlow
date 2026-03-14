@@ -1,3 +1,4 @@
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Exceptions.Base;
 
 namespace ClinicFlow.Domain.ValueObjects;
@@ -34,8 +35,8 @@ public record EmergencyContact
     /// <exception cref="BusinessRuleValidationException">Thrown when either the name or phone number is null.</exception>
     internal static EmergencyContact Create(PersonName name, PhoneNumber phoneNumber)
     {
-        if (name is null) throw new BusinessRuleValidationException("Emergency contact name cannot be null.");
-        if (phoneNumber is null) throw new BusinessRuleValidationException("Emergency contact phone cannot be null.");
+        if (name is null) throw new BusinessRuleValidationException(DomainErrors.General.RequiredFieldNull);
+        if (phoneNumber is null) throw new BusinessRuleValidationException(DomainErrors.General.RequiredFieldNull);
 
         return new EmergencyContact(name, phoneNumber);
     }

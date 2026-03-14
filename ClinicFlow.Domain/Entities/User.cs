@@ -45,7 +45,7 @@ public class User : BaseEntity
     /// <exception cref="DomainValidationException">Thrown when the password hash is blank.</exception>
     internal static User Create(EmailAddress email, string passwordHash, PersonName fullName, PhoneNumber phoneNumber, UserRole role)
     {
-        if (string.IsNullOrWhiteSpace(passwordHash)) throw new DomainValidationException("Password hash cannot be empty.");
+        if (string.IsNullOrWhiteSpace(passwordHash)) throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
 
         return new User(email, passwordHash, fullName, phoneNumber, role);
     }

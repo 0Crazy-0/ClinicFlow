@@ -75,7 +75,7 @@ public class AddClinicalDetailToMedicalRecordCommandHandlerTests
         var act = async () => await _sut.Handle(request, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<EntityNotFoundException>().WithMessage($"*MedicalRecord*{medicalRecordId}*");
+        await act.Should().ThrowAsync<EntityNotFoundException>().Where(e => e.EntityName == nameof(MedicalRecord));
 
         _templateRepositoryMock.Verify(x => x.GetByCodeAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
         _medicalRecordRepositoryMock.Verify(x => x.UpdateAsync(It.IsAny<MedicalRecord>(), It.IsAny<CancellationToken>()), Times.Never);
@@ -98,7 +98,7 @@ public class AddClinicalDetailToMedicalRecordCommandHandlerTests
         var act = async () => await _sut.Handle(request, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<EntityNotFoundException>().WithMessage($"*ClinicalFormTemplate*invalid-code*");
+        await act.Should().ThrowAsync<EntityNotFoundException>().Where(e => e.EntityName == nameof(ClinicalFormTemplate));
 
         _medicalRecordRepositoryMock.Verify(x => x.UpdateAsync(It.IsAny<MedicalRecord>(), It.IsAny<CancellationToken>()), Times.Never);
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);

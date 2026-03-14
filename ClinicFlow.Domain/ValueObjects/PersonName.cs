@@ -1,3 +1,4 @@
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Exceptions.Base;
 
 namespace ClinicFlow.Domain.ValueObjects;
@@ -20,11 +21,11 @@ public record PersonName
     /// <exception cref="BusinessRuleValidationException">Thrown when the value is empty or shorter than 2 characters.</exception>
     internal static PersonName Create(string fullName)
     {
-        if (string.IsNullOrWhiteSpace(fullName)) throw new BusinessRuleValidationException("Name cannot be empty.");
+        if (string.IsNullOrWhiteSpace(fullName)) throw new BusinessRuleValidationException(DomainErrors.Validation.ValueRequired);
 
         var trimmed = fullName.Trim();
 
-        if (trimmed.Length < 2) throw new BusinessRuleValidationException("Name is too short.");
+        if (trimmed.Length < 2) throw new BusinessRuleValidationException(DomainErrors.Validation.ValueTooShort);
 
         return new PersonName(trimmed);
     }

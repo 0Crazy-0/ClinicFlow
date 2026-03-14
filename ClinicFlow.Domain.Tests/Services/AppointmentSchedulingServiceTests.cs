@@ -1,3 +1,4 @@
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Appointments;
@@ -230,7 +231,7 @@ public class AppointmentSchedulingServiceTests
         var act = () => AppointmentSchedulingService.RescheduleAppointment(appointment, newDate, newTimeRange, context);
 
         // Assert
-        act.Should().Throw<AppointmentReschedulingNotAllowedException>().WithMessage("Cannot reschedule appointment: This appointment cannot be rescheduled");
+        act.Should().Throw<AppointmentReschedulingNotAllowedException>().WithMessage(DomainErrors.Appointment.CannotReschedule);
     }
 
     // Helpers

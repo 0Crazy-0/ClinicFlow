@@ -58,7 +58,7 @@ public class GetMedicalRecordByAppointmentIdQueryHandlerTests
         var act = async () => await _sut.Handle(query, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<EntityNotFoundException>().WithMessage($"*MedicalRecord*{appointmentId}*");
+        await act.Should().ThrowAsync<EntityNotFoundException>().Where(e => e.EntityName == nameof(MedicalRecord));
         _medicalRecordRepositoryMock.Verify(x => x.GetByAppointmentIdAsync(appointmentId, CancellationToken.None), Times.Once);
     }
 

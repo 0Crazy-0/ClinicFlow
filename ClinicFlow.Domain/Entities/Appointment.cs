@@ -62,10 +62,10 @@ public class Appointment : BaseEntity
     /// <exception cref="DomainValidationException">Thrown when any required identifier is empty or the time range is null.</exception>
     internal static Appointment Schedule(Guid patientId, Guid doctorId, Guid appointmentTypeId, DateTime scheduledDate, TimeRange timeRange)
     {
-        if (patientId == Guid.Empty) throw new DomainValidationException("Patient ID cannot be empty.");
-        if (doctorId == Guid.Empty) throw new DomainValidationException("Doctor ID cannot be empty.");
-        if (appointmentTypeId == Guid.Empty) throw new DomainValidationException("Appointment type ID cannot be empty.");
-        if (timeRange is null) throw new DomainValidationException("Time range cannot be null.");
+        if (patientId == Guid.Empty) throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        if (doctorId == Guid.Empty) throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        if (appointmentTypeId == Guid.Empty) throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        if (timeRange is null) throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
 
         var appointment = new Appointment(patientId, doctorId, appointmentTypeId, scheduledDate, timeRange);
 
@@ -82,7 +82,8 @@ public class Appointment : BaseEntity
     /// <exception cref="AppointmentCancellationNotAllowedException">Thrown when the appointment is already cancelled.</exception>
     internal void Cancel(Guid cancelledByUserId, string? reason, MedicalSpecialty specialty)
     {
-        if (Status is AppointmentStatus.Cancelled or AppointmentStatus.LateCancellation) throw new AppointmentCancellationNotAllowedException(Status);
+        if (Status is AppointmentStatus.Cancelled or AppointmentStatus.LateCancellation) 
+            throw new AppointmentCancellationNotAllowedException(DomainErrors.Appointment.CannotCancel, Status);
 
         if (!CanBeCancelled(specialty)) Status = AppointmentStatus.LateCancellation;
         else Status = AppointmentStatus.Cancelled;
@@ -100,7 +101,8 @@ public class Appointment : BaseEntity
     /// <exception cref="AppointmentConfirmationNotAllowedException">Thrown when the appointment is not in <see cref="AppointmentStatus.Scheduled"/> status.</exception>
     public void Confirm()
     {
-        if (Status is not AppointmentStatus.Scheduled) throw new AppointmentConfirmationNotAllowedException("Only scheduled appointments can be confirmed");
+        if (Status is not AppointmentStatus.Scheduled)
+             throw new AppointmentConfirmationNotAllowedException(DomainErrors.Appointment.CannotConfirm);
 
         Status = AppointmentStatus.Confirmed;
         ConfirmedAt = DateTime.UtcNow;
@@ -114,7 +116,7 @@ public class Appointment : BaseEntity
     /// <exception cref="AppointmentReschedulingNotAllowedException">Thrown when the appointment has already been rescheduled or is not in a reschedulable status.</exception>
     internal void Reschedule(DateTime newDate, TimeRange newTimeRange)
     {
-        if (!CanBeRescheduled()) throw new AppointmentReschedulingNotAllowedException("This appointment cannot be rescheduled");
+        if (!CanBeRescheduled()) throw new AppointmentReschedulingNotAllowedException(DomainErrors.Appointment.CannotReschedule);
 
         var previousDate = ScheduledDate;
         var previousTimeRange = TimeRange;
@@ -132,8 +134,7 @@ public class Appointment : BaseEntity
     /// <exception cref="DomainValidationException">Thrown when the appointment is not in a status that can be marked as no-show.</exception>
     public void MarkAsNoShow()
     {
-        if (Status is not (AppointmentStatus.Scheduled or AppointmentStatus.Confirmed))
-            throw new DomainValidationException("Only scheduled or confirmed appointments can be marked as No-Show.");
+        if (Status is not (AppointmentStatus.Scheduled or AppointmentStatus.Confirmed)) throw new DomainValidationException(DomainErrors.Appointment.CannotMarkNoShow);
 
         Status = AppointmentStatus.NoShow;
 
