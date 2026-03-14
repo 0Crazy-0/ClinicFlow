@@ -26,7 +26,7 @@ public static class AppointmentNoShowService
 
         appointment.MarkAsNoShow();
 
-        return PatientPenaltyService.ApplyPenalty(appointment.PatientId, existingPenalties, appointment.Id, "No show");
+        return PatientPenaltyService.ApplyPenalty(appointment.PatientId, existingPenalties, appointment.Id, PenaltyReasons.NoShow);
     }
 
     private static void ValidateNoShowPermission(Guid appointmentDoctorId, UserRole initiatorRole, Guid? initiatorDoctorId)

@@ -34,7 +34,7 @@ public class AppointmentNoShowServiceTests
         appointment.DomainEvents.OfType<AppointmentMarkedAsNoShowEvent>().Should().ContainSingle();
 
         result.Should().NotBeNull();
-        result.Should().ContainSingle(p => p.Type == PenaltyType.Warning && p.Reason == "No show");
+        result.Should().ContainSingle(p => p.Type == PenaltyType.Warning && p.Reason == PenaltyReasons.NoShow);
     }
 
     [Theory]
