@@ -1,4 +1,5 @@
 using ClinicFlow.Application.Common.Models;
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Events;
 using ClinicFlow.Domain.Interfaces.Repositories;
@@ -16,7 +17,7 @@ public class AppointmentCancelledEventHandler(IPatientPenaltyRepository patientP
         if (appointment.Status is AppointmentStatus.LateCancellation)
         {
             var existingPenalties = await patientPenaltyRepository.GetByPatientIdAsync(appointment.PatientId, cancellationToken);
-            var newPenalties = PatientPenaltyService.ApplyPenalty(appointment.PatientId, existingPenalties, appointment.Id, "Late cancellation");
+            var newPenalties = PatientPenaltyService.ApplyPenalty(appointment.PatientId, existingPenalties, appointment.Id, PenaltyReasons.LateCancellation);
 
             foreach (var penalty in newPenalties)
                 await patientPenaltyRepository.AddAsync(penalty, cancellationToken);

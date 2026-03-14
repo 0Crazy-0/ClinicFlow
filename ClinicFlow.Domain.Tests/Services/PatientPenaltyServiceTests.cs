@@ -49,7 +49,7 @@ public class PatientPenaltyServiceTests
         // Assert
         result.Should().HaveCount(2);
         result.Should().ContainSingle(p => p.Type == PenaltyType.Warning);
-        result.Should().ContainSingle(p => p.Type == PenaltyType.TemporaryBlock && p.Reason == "Automatic block due to 3 strikes");
+        result.Should().ContainSingle(p => p.Type == PenaltyType.TemporaryBlock && p.Reason == PenaltyReasons.AutomaticBlock);
     }
 
     [Fact]

@@ -4,9 +4,11 @@ namespace ClinicFlow.Application.Exceptions;
 
 public class ValidationException : Exception
 {
+    public const string DefaultErrorMessage = "One or more validation failures have occurred.";
+
     public IDictionary<string, string[]> Errors { get; }
 
-    public ValidationException() : base("One or more validation failures have occurred.") { Errors = new Dictionary<string, string[]>(); }
+    public ValidationException() : base(DefaultErrorMessage) { Errors = new Dictionary<string, string[]>(); }
 
     public ValidationException(IEnumerable<ValidationFailure> failures) : this()
     {

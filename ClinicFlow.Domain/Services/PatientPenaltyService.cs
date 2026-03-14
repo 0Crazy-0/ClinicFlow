@@ -1,5 +1,6 @@
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
+using ClinicFlow.Domain.Common;
 
 namespace ClinicFlow.Domain.Services;
 
@@ -41,7 +42,7 @@ public static class PatientPenaltyService
 
             if (!isBlocked)
             {
-                var block = PatientPenalty.CreateBlock(patientId, "Automatic block due to 3 strikes", DateTime.UtcNow.AddDays(BlockDurationDays));
+                var block = PatientPenalty.CreateBlock(patientId, PenaltyReasons.AutomaticBlock, DateTime.UtcNow.AddDays(BlockDurationDays));
                 penaltiesToApply.Add(block);
             }
         }
