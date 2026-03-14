@@ -132,7 +132,7 @@ public class Appointment : BaseEntity
     /// Marks the appointment as a no-show, indicating the patient did not attend.
     /// </summary>
     /// <exception cref="DomainValidationException">Thrown when the appointment is not in a status that can be marked as no-show.</exception>
-    public void MarkAsNoShow()
+    internal void MarkAsNoShow()
     {
         if (Status is not (AppointmentStatus.Scheduled or AppointmentStatus.Confirmed)) throw new DomainValidationException(DomainErrors.Appointment.CannotMarkNoShow);
 
