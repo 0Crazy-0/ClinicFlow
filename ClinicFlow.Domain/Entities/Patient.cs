@@ -14,6 +14,10 @@ public class Patient : BaseEntity
 {
     public Guid UserId { get; init; }
 
+    public PersonName FullName { get; private set; } = null!;
+
+    public PatientRelationship RelationshipToUser { get; private set; }
+
     public DateTime DateOfBirth { get; private set; }
 
     public BloodType BloodType { get; private set; } = null!;
@@ -27,9 +31,12 @@ public class Patient : BaseEntity
     // EF Core constructor
     private Patient() { }
 
-    private Patient(Guid userId, DateTime dateOfBirth, BloodType bloodType, string allergies, string chronicConditions, EmergencyContact emergencyContact) : this()
+    private Patient(Guid userId, PersonName fullName, PatientRelationship relationshipToUser, DateTime dateOfBirth, BloodType bloodType, 
+        string allergies, string chronicConditions, EmergencyContact emergencyContact) : this()
     {
         UserId = userId;
+        FullName = fullName;
+        RelationshipToUser = relationshipToUser;
         DateOfBirth = dateOfBirth;
         BloodType = bloodType;
         ChronicConditions = chronicConditions;
@@ -38,15 +45,30 @@ public class Patient : BaseEntity
     }
 
     /// <summary>
-    /// Creates a new patient entity.
+    /// Creates a new patient entity for the primary user of an account.
     /// </summary>
     /// <exception cref="DomainValidationException">Thrown when the user ID is empty or the date of birth is in the future.</exception>
-    internal static Patient Create(Guid userId, DateTime dateOfBirth, BloodType bloodType, string allergies, string chronicConditions, EmergencyContact emergencyContact)
+    internal static Patient CreateSelf(Guid userId, PersonName fullName, DateTime dateOfBirth, BloodType bloodType,
+         string allergies, string chronicConditions, EmergencyContact emergencyContact)
     {
         if (userId == Guid.Empty) throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
         if (dateOfBirth > DateTime.UtcNow) throw new DomainValidationException(DomainErrors.Validation.ValueCannotBeInFuture);
 
-        return new Patient(userId, dateOfBirth, bloodType, allergies, chronicConditions, emergencyContact);
+        return new Patient(userId, fullName, PatientRelationship.Self, dateOfBirth, bloodType, allergies, chronicConditions, emergencyContact);
+    }
+
+    /// <summary>
+    /// Creates a new patient entity representing a family member dependent of a primary user.
+    /// </summary>
+    /// <exception cref="DomainValidationException">Thrown when the relationship is Self, user ID is empty, or the date of birth is in the future.</exception>
+    public static Patient CreateFamilyMember(Guid userId, PersonName fullName, PatientRelationship relationshipToUser, DateTime dateOfBirth, BloodType bloodType,
+         string allergies, string chronicConditions, EmergencyContact emergencyContact)
+    {
+        if (relationshipToUser is PatientRelationship.Self) throw new DomainValidationException(DomainErrors.Patient.CannotBeSelf);
+        if (userId == Guid.Empty) throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        if (dateOfBirth > DateTime.UtcNow) throw new DomainValidationException(DomainErrors.Validation.ValueCannotBeInFuture);
+
+        return new Patient(userId, fullName, relationshipToUser, dateOfBirth, bloodType, allergies, chronicConditions, emergencyContact);
     }
 
     /// <summary>

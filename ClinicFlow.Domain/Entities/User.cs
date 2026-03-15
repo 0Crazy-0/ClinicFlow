@@ -18,7 +18,6 @@ public class User : BaseEntity
 
     public string PasswordHash { get; private set; } = string.Empty;
 
-    public PersonName FullName { get; private set; } = null!;
 
     public PhoneNumber PhoneNumber { get; private set; } = null!;
 
@@ -30,11 +29,10 @@ public class User : BaseEntity
         IsActive = true;
     }
 
-    private User(EmailAddress email, string passwordHash, PersonName fullName, PhoneNumber phoneNumber, UserRole role) : this()
+    private User(EmailAddress email, string passwordHash, PhoneNumber phoneNumber, UserRole role) : this()
     {
         Email = email;
         PasswordHash = passwordHash;
-        FullName = fullName;
         PhoneNumber = phoneNumber;
         Role = role;
     }
@@ -43,10 +41,10 @@ public class User : BaseEntity
     /// Creates a new user entity.
     /// </summary>
     /// <exception cref="DomainValidationException">Thrown when the password hash is blank.</exception>
-    internal static User Create(EmailAddress email, string passwordHash, PersonName fullName, PhoneNumber phoneNumber, UserRole role)
+    internal static User Create(EmailAddress email, string passwordHash, PhoneNumber phoneNumber, UserRole role)
     {
         if (string.IsNullOrWhiteSpace(passwordHash)) throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
 
-        return new User(email, passwordHash, fullName, phoneNumber, role);
+        return new User(email, passwordHash, phoneNumber, role);
     }
 }

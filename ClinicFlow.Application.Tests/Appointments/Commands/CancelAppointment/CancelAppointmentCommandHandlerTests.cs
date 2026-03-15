@@ -211,7 +211,7 @@ public class CancelAppointmentCommandHandlerTests
 
     private static User CreateUser(Guid id, UserRole role)
     {
-        var user = User.Create(EmailAddress.Create("test@clinic.com"), "hashedpassword", PersonName.Create("Test User"), PhoneNumber.Create("555-0000"), role);
+        var user = User.Create(EmailAddress.Create("test@clinic.com"), "hashedpassword", PhoneNumber.Create("555-0000"), role);
         SetPrivateProperty(user, nameof(User.Id), id);
         return user;
     }
@@ -232,7 +232,7 @@ public class CancelAppointmentCommandHandlerTests
 
     private static Patient CreatePatient(Guid id, Guid userId)
     {
-        var patient = Patient.Create(userId, DateTime.UtcNow.AddYears(-30), BloodType.Create("O+"), "None", "None",
+        var patient = Patient.CreateSelf(userId, PersonName.Create("Test Patient"), DateTime.UtcNow.AddYears(-30), BloodType.Create("O+"), "None", "None",
             EmergencyContact.Create("Emergency Contact", "555-9999"));
         SetPrivateProperty(patient, nameof(Patient.Id), id);
         return patient;

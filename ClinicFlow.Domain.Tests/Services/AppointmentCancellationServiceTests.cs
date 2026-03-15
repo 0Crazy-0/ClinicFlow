@@ -127,7 +127,7 @@ public class AppointmentCancellationServiceTests
         TimeRange.Create(scheduledDateTime.TimeOfDay, scheduledDateTime.TimeOfDay.Add(TimeSpan.FromHours(1))));
 
     private static User CreateUser(UserRole role) => User.Create(EmailAddress.Create("test@clinic.com"), "hashedpassword",
-        PersonName.Create("Test User"), PhoneNumber.Create("555-0000"), role);
+        PhoneNumber.Create("555-0000"), role);
 
     private static AppointmentTypeDefinition CreateAppointmentType(AppointmentCategory typeEnum) => AppointmentTypeDefinition.Create(typeEnum, typeEnum.ToString(),
         "Test description", TimeSpan.FromMinutes(30));
