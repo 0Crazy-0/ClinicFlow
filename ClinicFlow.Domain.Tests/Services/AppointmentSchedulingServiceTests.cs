@@ -238,7 +238,7 @@ public class AppointmentSchedulingServiceTests
     private static Appointment CreateAppointment(DateTime scheduledDateTime) => Appointment.Schedule(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), scheduledDateTime.Date,
         TimeRange.Create(scheduledDateTime.TimeOfDay, scheduledDateTime.TimeOfDay.Add(TimeSpan.FromHours(1))));
 
-    private static Patient CreatePatient() => Patient.Create(Guid.NewGuid(), DateTime.UtcNow.AddYears(-30), BloodType.Create("O+"), "None", "None",
+    private static Patient CreatePatient() => Patient.CreateSelf(Guid.NewGuid(), PersonName.Create("Test Patient"), DateTime.UtcNow.AddYears(-30), BloodType.Create("O+"), "None", "None",
         EmergencyContact.Create("Mom", "555-5555"));
 
     private static Schedule CreateSchedule(Guid doctorId, DayOfWeek dayOfWeek, TimeRange timeRange) => Schedule.Create(doctorId, dayOfWeek, timeRange);

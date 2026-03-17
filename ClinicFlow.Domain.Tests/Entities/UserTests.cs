@@ -16,18 +16,16 @@ public class UserTests
         // Arrange
         var email = EmailAddress.Create("test@clinic.com");
         var passwordHash = "hashedpassword123";
-        var fullName = PersonName.Create("John Doe");
         var phone = PhoneNumber.Create("555-1234");
         var role = UserRole.Doctor;
 
         // Act
-        var user = User.Create(email, passwordHash, fullName, phone, role);
+        var user = User.Create(email, passwordHash, phone, role);
 
         // Assert
         user.Should().NotBeNull();
         user.Email.Should().Be(email);
         user.PasswordHash.Should().Be(passwordHash);
-        user.FullName.Should().Be(fullName);
         user.PhoneNumber.Should().Be(phone);
         user.Role.Should().Be(role);
         user.IsActive.Should().BeTrue();
@@ -41,7 +39,7 @@ public class UserTests
     public void Create_ShouldThrowException_WhenPasswordHashIsEmpty(string? invalidHash)
     {
         // Arrange & Act
-        var act = () => User.Create(EmailAddress.Create("test@clinic.com"), invalidHash!, PersonName.Create("John Doe"), PhoneNumber.Create("555-1234"), UserRole.Doctor);
+        var act = () => User.Create(EmailAddress.Create("test@clinic.com"), invalidHash!, PhoneNumber.Create("555-1234"), UserRole.Doctor);
 
         // Assert
         act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.Validation.ValueRequired);

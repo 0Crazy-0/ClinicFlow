@@ -189,7 +189,7 @@ public class MarkAppointmentAsNoShowCommandHandlerTests
 
     private static User CreateUser(Guid id, UserRole role)
     {
-        var user = User.Create(EmailAddress.Create("test@clinic.com"), "hashedpassword", PersonName.Create("Test User"), PhoneNumber.Create("555-0000"), role);
+        var user = User.Create(EmailAddress.Create("test@clinic.com"), "hashedpassword", PhoneNumber.Create("555-0000"), role);
         SetPrivateProperty(user, nameof(User.Id), id);
         return user;
     }

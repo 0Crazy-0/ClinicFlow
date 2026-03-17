@@ -24,7 +24,7 @@ public class PatientTests
         var emergencyContact = EmergencyContact.Create("Mom", "555-5555");
 
         // Act
-        var patient = Patient.Create(userId, dateOfBirth, bloodType, allergies, chronicConditions, emergencyContact);
+        var patient = Patient.CreateSelf(userId, PersonName.Create("John Doe"), dateOfBirth, bloodType, allergies, chronicConditions, emergencyContact);
 
         // Assert
         patient.Should().NotBeNull();
@@ -40,7 +40,8 @@ public class PatientTests
     public void Create_ShouldThrowException_WhenDateOfBirthIsInTheFuture()
     {
         // Arrange & Act
-        var act = () => Patient.Create(Guid.NewGuid(), DateTime.UtcNow.AddDays(1), BloodType.Create("O+"), "None", "None", EmergencyContact.Create("Mom", "555-5555"));
+        var act = () => Patient.CreateSelf(Guid.NewGuid(), PersonName.Create("John Doe"), DateTime.UtcNow.AddDays(1), BloodType.Create("O+"), "None", "None", 
+            EmergencyContact.Create("Mom", "555-5555"));
 
         // Assert
         act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.Validation.ValueCannotBeInFuture);
@@ -50,7 +51,8 @@ public class PatientTests
     public void Create_ShouldThrowException_WhenUserIdIsEmpty()
     {
         // Arrange & Act
-        var act = () => Patient.Create(Guid.Empty, DateTime.UtcNow.AddYears(-30), BloodType.Create("O+"), "None", "None", EmergencyContact.Create("Mom", "555-5555"));
+        var act = () => Patient.CreateSelf(Guid.Empty, PersonName.Create("John Doe"), DateTime.UtcNow.AddYears(-30), BloodType.Create("O+"), "None", "None",
+             EmergencyContact.Create("Mom", "555-5555"));
 
         // Assert
         act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.Validation.ValueRequired);
@@ -62,7 +64,8 @@ public class PatientTests
     {
         // Arrange
         var yearsAgo = 25;
-        var patient = Patient.Create(Guid.NewGuid(), DateTime.Today.AddYears(-yearsAgo), BloodType.Create("A+"), "None", "None", EmergencyContact.Create("Dad", "555-1111"));
+        var patient = Patient.CreateSelf(Guid.NewGuid(), PersonName.Create("John Doe"), DateTime.Today.AddYears(-yearsAgo), BloodType.Create("A+"), "None", "None", 
+            EmergencyContact.Create("Dad", "555-1111"));
 
         // Act & Assert
         patient.GetAge().Should().Be(yearsAgo);
@@ -131,7 +134,7 @@ public class PatientTests
     }
 
     // Helpers
-    private static Patient CreatePatient() => Patient.Create(Guid.NewGuid(), DateTime.UtcNow.AddYears(-30), BloodType.Create("O+"), "None", "None",
+    private static Patient CreatePatient() => Patient.CreateSelf(Guid.NewGuid(), PersonName.Create("John Doe"), DateTime.UtcNow.AddYears(-30), BloodType.Create("O+"), "None", "None",
         EmergencyContact.Create("Mom", "555-5555"));
 
     private static PatientPenalty CreateExpiredBlock(Guid patientId, string reason, DateTime blockedUntil)
