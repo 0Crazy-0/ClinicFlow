@@ -24,8 +24,9 @@ public class GetPatientByIdQueryHandlerTests
     public async Task Handle_ShouldReturnPatient_WhenPatientExists()
     {
         // Arrange
-        var patient = Patient.CreateSelf(Guid.NewGuid(), PersonName.Create("John Doe"), DateTime.UtcNow.AddYears(-30), BloodType.Create("A+"), "None", "None",
-            EmergencyContact.Create("Jane", "555-1234"));
+        var patient = Patient.CreateSelf(Guid.NewGuid(), PersonName.Create("John Doe"), DateTime.UtcNow.AddYears(-30));
+        patient.UpdateMedicalProfile(BloodType.Create("A+"), "None", "None");
+        patient.UpdateEmergencyContact(EmergencyContact.Create("Jane", "555-1234"));
         var patientId = patient.Id;
 
         _patientRepositoryMock.Setup(x => x.GetByIdAsync(patientId, It.IsAny<CancellationToken>())).ReturnsAsync(patient);
@@ -39,6 +40,34 @@ public class GetPatientByIdQueryHandlerTests
         result.Should().NotBeNull();
         result.Id.Should().Be(patientId);
         result.FullName.Should().Be("John Doe");
+        result.BloodType.Should().Be("A+");
+        result.EmergencyContactName.Should().Be("Jane");
+        result.EmergencyContactPhone.Should().Be("555-1234");
+    }
+
+    [Fact]
+    public async Task Handle_ShouldReturnPatient_WhenProfileIsIncomplete()
+    {
+        // Arrange
+        var patient = Patient.CreateSelf(Guid.NewGuid(), PersonName.Create("John Doe"), DateTime.UtcNow.AddYears(-30));
+        var patientId = patient.Id;
+
+        _patientRepositoryMock.Setup(x => x.GetByIdAsync(patientId, It.IsAny<CancellationToken>())).ReturnsAsync(patient);
+
+        var query = new GetPatientByIdQuery(patientId);
+
+        // Act
+        var result = await _sut.Handle(query, CancellationToken.None);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Id.Should().Be(patientId);
+        result.FullName.Should().Be("John Doe");
+        result.BloodType.Should().BeNull();
+        result.Allergies.Should().Be(string.Empty);
+        result.ChronicConditions.Should().Be(string.Empty);
+        result.EmergencyContactName.Should().BeNull();
+        result.EmergencyContactPhone.Should().BeNull();
     }
 
     [Fact]

@@ -2,16 +2,22 @@ using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Contexts;
+using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.ValueObjects;
+using ClinicFlow.Domain.Common;
+using ClinicFlow.Domain.Entities;
 using MediatR;
 
 namespace ClinicFlow.Application.Appointments.Commands.ScheduleAppointment;
 
 public class ScheduleAppointmentCommandHandler(IPatientPenaltyRepository penaltyRepository,
-    IScheduleRepository scheduleRepository, IAppointmentRepository appointmentRepository, IUnitOfWork unitOfWork) : IRequestHandler<ScheduleAppointmentCommand, Guid>
+    IPatientRepository patientRepository, IScheduleRepository scheduleRepository, IAppointmentRepository appointmentRepository, 
+    IUnitOfWork unitOfWork) : IRequestHandler<ScheduleAppointmentCommand, Guid>
 {
     public async Task<Guid> Handle(ScheduleAppointmentCommand request, CancellationToken cancellationToken)
     {
+        var patient = await patientRepository.GetByIdAsync(request.PatientId, cancellationToken)
+            ?? throw new EntityNotFoundException(DomainErrors.General.NotFound, nameof(Patient), request.PatientId);
 
         var penalties = await penaltyRepository.GetByPatientIdAsync(request.PatientId, cancellationToken);
 
@@ -37,7 +43,7 @@ public class ScheduleAppointmentCommandHandler(IPatientPenaltyRepository penalty
             AppointmentTypeId = request.AppointmentTypeId
         };
 
-        var appointment = AppointmentSchedulingService.ScheduleAppointment(appointmentDetails, context);
+        var appointment = AppointmentSchedulingService.ScheduleAppointment(patient, appointmentDetails, context);
 
         await appointmentRepository.CreateAsync(appointment, cancellationToken);
 

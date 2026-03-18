@@ -232,8 +232,9 @@ public class CancelAppointmentCommandHandlerTests
 
     private static Patient CreatePatient(Guid id, Guid userId)
     {
-        var patient = Patient.CreateSelf(userId, PersonName.Create("Test Patient"), DateTime.UtcNow.AddYears(-30), BloodType.Create("O+"), "None", "None",
-            EmergencyContact.Create("Emergency Contact", "555-9999"));
+        var patient = Patient.CreateSelf(userId, PersonName.Create("Test Patient"), DateTime.UtcNow.AddYears(-30));
+        patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
+        patient.UpdateEmergencyContact(EmergencyContact.Create("Emergency Contact", "555-9999"));
         SetPrivateProperty(patient, nameof(Patient.Id), id);
         return patient;
     }

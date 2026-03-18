@@ -14,7 +14,7 @@ public class GetPatientByIdQueryHandler(IPatientRepository patientRepository) : 
         var patient = await patientRepository.GetByIdAsync(request.PatientId, cancellationToken)
             ?? throw new EntityNotFoundException(DomainErrors.General.NotFound, nameof(Patient), request.PatientId);
 
-        return new PatientDto(patient.Id, patient.UserId, patient.FullName.FullName, patient.RelationshipToUser, patient.DateOfBirth,
-             patient.BloodType.Value, patient.Allergies, patient.ChronicConditions);
+        return new PatientDto(patient.Id, patient.UserId, patient.FullName.FullName, patient.RelationshipToUser, patient.DateOfBirth, patient.BloodType?.Value,
+            patient.Allergies, patient.ChronicConditions, patient.EmergencyContact?.Name.ToString(), patient.EmergencyContact?.PhoneNumber.ToString());
     }
 }

@@ -11,9 +11,6 @@ public class AddFamilyMemberCommandValidator : AbstractValidator<AddFamilyMember
         RuleFor(x => x.FirstName).NotEmpty().MinimumLength(2);
         RuleFor(x => x.LastName).NotEmpty().MinimumLength(2);
         RuleFor(x => x.DateOfBirth).LessThanOrEqualTo(DateTime.UtcNow.Date).WithMessage(DomainErrors.Validation.ValueCannotBeInFuture);
-        RuleFor(x => x.BloodType).NotEmpty();
-        RuleFor(x => x.EmergencyContactName).NotEmpty();
-        RuleFor(x => x.EmergencyContactPhone).NotEmpty();
         RuleFor(x => x.Relationship).IsInEnum();
     }
 }

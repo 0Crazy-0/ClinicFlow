@@ -51,6 +51,7 @@ public static class DomainErrors
     {
         public const string Blocked = "PATIENT_BLOCKED";
         public const string CannotBeSelf = "INVALID_FAMILY_RELATIONSHIP";
+        public const string ProfileIncomplete = "PATIENT_PROFILE_INCOMPLETE";
     }
 
     public static class MedicalEncounter

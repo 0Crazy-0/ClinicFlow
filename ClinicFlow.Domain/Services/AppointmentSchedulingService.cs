@@ -24,8 +24,9 @@ public static class AppointmentSchedulingService
     /// <exception cref="PatientBlockedException">Thrown when the patient is blocked from booking.</exception>
     /// <exception cref="DoctorNotAvailableException">Thrown when the doctor has no schedule covering the requested time.</exception>
     /// <exception cref="AppointmentConflictException">Thrown when the time slot is already occupied.</exception>
-    public static Appointment ScheduleAppointment(AppointmentSchedulingDetails details, AppointmentSchedulingContext context)
+    public static Appointment ScheduleAppointment(Patient patient, AppointmentSchedulingDetails details, AppointmentSchedulingContext context)
     {
+        patient.EnsureCompleteProfile();
         Patient.EnsureNotBlocked(context.Penalties);
 
         EnsureDoctorIsAvailable(context.DoctorSchedule, details.DoctorId, details.ScheduledDate, details.TimeRange);
