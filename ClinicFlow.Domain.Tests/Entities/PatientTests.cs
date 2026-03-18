@@ -24,7 +24,9 @@ public class PatientTests
         var emergencyContact = EmergencyContact.Create("Mom", "555-5555");
 
         // Act
-        var patient = Patient.CreateSelf(userId, PersonName.Create("John Doe"), dateOfBirth, bloodType, allergies, chronicConditions, emergencyContact);
+        var patient = Patient.CreateSelf(userId, PersonName.Create("John Doe"), dateOfBirth);
+        patient.UpdateMedicalProfile(bloodType, allergies, chronicConditions);
+        patient.UpdateEmergencyContact(emergencyContact);
 
         // Assert
         patient.Should().NotBeNull();
@@ -40,8 +42,7 @@ public class PatientTests
     public void Create_ShouldThrowException_WhenDateOfBirthIsInTheFuture()
     {
         // Arrange & Act
-        var act = () => Patient.CreateSelf(Guid.NewGuid(), PersonName.Create("John Doe"), DateTime.UtcNow.AddDays(1), BloodType.Create("O+"), "None", "None", 
-            EmergencyContact.Create("Mom", "555-5555"));
+        var act = () => Patient.CreateSelf(Guid.NewGuid(), PersonName.Create("John Doe"), DateTime.UtcNow.AddDays(1));
 
         // Assert
         act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.Validation.ValueCannotBeInFuture);
@@ -51,11 +52,97 @@ public class PatientTests
     public void Create_ShouldThrowException_WhenUserIdIsEmpty()
     {
         // Arrange & Act
-        var act = () => Patient.CreateSelf(Guid.Empty, PersonName.Create("John Doe"), DateTime.UtcNow.AddYears(-30), BloodType.Create("O+"), "None", "None",
-             EmergencyContact.Create("Mom", "555-5555"));
+        var act = () => Patient.CreateSelf(Guid.Empty, PersonName.Create("John Doe"), DateTime.UtcNow.AddYears(-30));
 
         // Assert
         act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    // CreateFamilyMember
+    [Fact]
+    public void CreateFamilyMember_ShouldCreatePatient_WhenValidParameters()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var dateOfBirth = DateTime.UtcNow.AddYears(-10);
+
+        // Act
+        var patient = Patient.CreateFamilyMember(userId, PersonName.Create("Family Member"), PatientRelationship.Child, dateOfBirth);
+
+        // Assert
+        patient.Should().NotBeNull();
+        patient.UserId.Should().Be(userId);
+        patient.RelationshipToUser.Should().Be(PatientRelationship.Child);
+        patient.DateOfBirth.Should().Be(dateOfBirth);
+    }
+
+    [Fact]
+    public void CreateFamilyMember_ShouldThrowException_WhenRelationshipIsSelf()
+    {
+        // Arrange & Act
+        var act = () => Patient.CreateFamilyMember(Guid.NewGuid(), PersonName.Create("Family Member"), PatientRelationship.Self, DateTime.UtcNow.AddYears(-10));
+
+        // Assert
+        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.Patient.CannotBeSelf);
+    }
+
+    [Fact]
+    public void CreateFamilyMember_ShouldThrowException_WhenUserIdIsEmpty()
+    {
+        // Arrange & Act
+        var act = () => Patient.CreateFamilyMember(Guid.Empty, PersonName.Create("Family Member"), PatientRelationship.Child, DateTime.UtcNow.AddYears(-10));
+
+        // Assert
+        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void CreateFamilyMember_ShouldThrowException_WhenDateOfBirthIsInTheFuture()
+    {
+        // Arrange & Act
+        var act = () => Patient.CreateFamilyMember(Guid.NewGuid(), PersonName.Create("Family Member"), PatientRelationship.Child, DateTime.UtcNow.AddDays(1));
+
+        // Assert
+        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.Validation.ValueCannotBeInFuture);
+    }
+
+    // HasCompleteMedicalProfile
+    [Fact]
+    public void HasCompleteMedicalProfile_ShouldReturnFalse_WhenJustCreated()
+    {
+        // Arrange
+        var patient = Patient.CreateSelf(Guid.NewGuid(), PersonName.Create("John Doe"), DateTime.UtcNow.AddYears(-30));
+
+        // Act & Assert
+        patient.HasCompleteMedicalProfile().Should().BeFalse();
+    }
+
+    [Fact]
+    public void HasCompleteMedicalProfile_ShouldReturnTrue_WhenProfileIsCompleted()
+    {
+        // Arrange
+        var patient = Patient.CreateSelf(Guid.NewGuid(), PersonName.Create("John Doe"), DateTime.UtcNow.AddYears(-30));
+        patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
+        patient.UpdateEmergencyContact(EmergencyContact.Create("Mom", "555-5555"));
+
+        // Act & Assert
+        patient.HasCompleteMedicalProfile().Should().BeTrue();
+    }
+
+    [Fact]
+    public void UpdateMedicalProfile_ShouldSetEmptyString_WhenNullStringsAreProvided()
+    {
+        // Arrange
+        var patient = Patient.CreateSelf(Guid.NewGuid(), PersonName.Create("John Doe"), DateTime.UtcNow.AddYears(-30));
+        var bloodType = BloodType.Create("A-");
+
+        // Act
+        patient.UpdateMedicalProfile(bloodType, null!, null!);
+
+        // Assert
+        patient.BloodType.Should().Be(bloodType);
+        patient.Allergies.Should().Be(string.Empty);
+        patient.ChronicConditions.Should().Be(string.Empty);
     }
 
     // GetAge
@@ -64,8 +151,7 @@ public class PatientTests
     {
         // Arrange
         var yearsAgo = 25;
-        var patient = Patient.CreateSelf(Guid.NewGuid(), PersonName.Create("John Doe"), DateTime.Today.AddYears(-yearsAgo), BloodType.Create("A+"), "None", "None", 
-            EmergencyContact.Create("Dad", "555-1111"));
+        var patient = Patient.CreateSelf(Guid.NewGuid(), PersonName.Create("John Doe"), DateTime.Today.AddYears(-yearsAgo));
 
         // Act & Assert
         patient.GetAge().Should().Be(yearsAgo);
@@ -134,8 +220,13 @@ public class PatientTests
     }
 
     // Helpers
-    private static Patient CreatePatient() => Patient.CreateSelf(Guid.NewGuid(), PersonName.Create("John Doe"), DateTime.UtcNow.AddYears(-30), BloodType.Create("O+"), "None", "None",
-        EmergencyContact.Create("Mom", "555-5555"));
+    private static Patient CreatePatient()
+    {
+        var patient = Patient.CreateSelf(Guid.NewGuid(), PersonName.Create("John Doe"), DateTime.UtcNow.AddYears(-30));
+        patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
+        patient.UpdateEmergencyContact(EmergencyContact.Create("Mom", "555-5555"));
+        return patient;
+    }
 
     private static PatientPenalty CreateExpiredBlock(Guid patientId, string reason, DateTime blockedUntil)
     {

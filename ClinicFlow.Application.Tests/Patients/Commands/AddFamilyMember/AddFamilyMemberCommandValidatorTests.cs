@@ -17,7 +17,7 @@ public class AddFamilyMemberCommandValidatorTests
     public void Validate_ShouldBeValid_WhenAllPropertiesAreProvidedAndValid()
     {
         // Arrange
-        var command = new AddFamilyMemberCommand(Guid.NewGuid(), "John", "Doe", DateTime.UtcNow.AddYears(-10), "O+", "None", "None", "Mom", "555-5555", PatientRelationship.Child);
+        var command = new AddFamilyMemberCommand(Guid.NewGuid(), "John", "Doe", DateTime.UtcNow.AddYears(-10), PatientRelationship.Child);
 
         // Act
         var result = _sut.TestValidate(command);
@@ -30,7 +30,7 @@ public class AddFamilyMemberCommandValidatorTests
     public void Validate_ShouldHaveError_WhenUserIdIsEmpty()
     {
         // Arrange
-        var command = new AddFamilyMemberCommand(Guid.Empty, "John", "Doe", DateTime.UtcNow.AddYears(-10), "O+", "None", "None", "Mom", "555-5555", PatientRelationship.Child);
+        var command = new AddFamilyMemberCommand(Guid.Empty, "John", "Doe", DateTime.UtcNow.AddYears(-10), PatientRelationship.Child);
 
         // Act
         var result = _sut.TestValidate(command);
@@ -43,7 +43,7 @@ public class AddFamilyMemberCommandValidatorTests
     public void Validate_ShouldHaveError_WhenFirstNameIsEmptyOrTooShort()
     {
         // Arrange
-        var command = new AddFamilyMemberCommand(Guid.NewGuid(), "J", "Doe", DateTime.UtcNow.AddYears(-10), "O+", "None", "None", "Mom", "555-5555", PatientRelationship.Child);
+        var command = new AddFamilyMemberCommand(Guid.NewGuid(), "J", "Doe", DateTime.UtcNow.AddYears(-10), PatientRelationship.Child);
 
         // Act
         var result = _sut.TestValidate(command);
@@ -56,7 +56,7 @@ public class AddFamilyMemberCommandValidatorTests
     public void Validate_ShouldHaveError_WhenLastNameIsEmptyOrTooShort()
     {
         // Arrange
-        var command = new AddFamilyMemberCommand(Guid.NewGuid(), "John", "", DateTime.UtcNow.AddYears(-10), "O+", "None", "None", "Mom", "555-5555", PatientRelationship.Child);
+        var command = new AddFamilyMemberCommand(Guid.NewGuid(), "John", "", DateTime.UtcNow.AddYears(-10), PatientRelationship.Child);
 
         // Act
         var result = _sut.TestValidate(command);
@@ -69,7 +69,7 @@ public class AddFamilyMemberCommandValidatorTests
     public void Validate_ShouldHaveError_WhenDateOfBirthIsInTheFuture()
     {
         // Arrange
-        var command = new AddFamilyMemberCommand(Guid.NewGuid(), "John", "Doe", DateTime.UtcNow.AddDays(1), "O+", "None", "None", "Mom", "555-5555", PatientRelationship.Child);
+        var command = new AddFamilyMemberCommand(Guid.NewGuid(), "John", "Doe", DateTime.UtcNow.AddDays(1), PatientRelationship.Child);
 
         // Act
         var result = _sut.TestValidate(command);
@@ -79,49 +79,10 @@ public class AddFamilyMemberCommandValidatorTests
     }
 
     [Fact]
-    public void Validate_ShouldHaveError_WhenBloodTypeIsEmpty()
-    {
-        // Arrange
-        var command = new AddFamilyMemberCommand(Guid.NewGuid(), "John", "Doe", DateTime.UtcNow.AddYears(-10), "", "None", "None", "Mom", "555-5555", PatientRelationship.Child);
-
-        // Act
-        var result = _sut.TestValidate(command);
-
-        // Assert
-        result.ShouldHaveValidationErrorFor(x => x.BloodType);
-    }
-
-    [Fact]
-    public void Validate_ShouldHaveError_WhenEmergencyContactNameIsEmpty()
-    {
-        // Arrange
-        var command = new AddFamilyMemberCommand(Guid.NewGuid(), "John", "Doe", DateTime.UtcNow.AddYears(-10), "O+", "None", "None", "", "555-5555", PatientRelationship.Child);
-
-        // Act
-        var result = _sut.TestValidate(command);
-
-        // Assert
-        result.ShouldHaveValidationErrorFor(x => x.EmergencyContactName);
-    }
-
-    [Fact]
-    public void Validate_ShouldHaveError_WhenEmergencyContactPhoneIsEmpty()
-    {
-        // Arrange
-        var command = new AddFamilyMemberCommand(Guid.NewGuid(), "John", "Doe", DateTime.UtcNow.AddYears(-10), "O+", "None", "None", "Mom", "", PatientRelationship.Child);
-
-        // Act
-        var result = _sut.TestValidate(command);
-
-        // Assert
-        result.ShouldHaveValidationErrorFor(x => x.EmergencyContactPhone);
-    }
-
-    [Fact]
     public void Validate_ShouldHaveError_WhenRelationshipIsInvalidEnum()
     {
         // Arrange
-        var command = new AddFamilyMemberCommand(Guid.NewGuid(), "John", "Doe", DateTime.UtcNow.AddYears(-10), "O+", "None", "None", "Mom", "555-5555", (PatientRelationship)999);
+        var command = new AddFamilyMemberCommand(Guid.NewGuid(), "John", "Doe", DateTime.UtcNow.AddYears(-10), (PatientRelationship)999);
 
         // Act
         var result = _sut.TestValidate(command);

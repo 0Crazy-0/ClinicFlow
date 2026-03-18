@@ -33,10 +33,33 @@ public class AppointmentSchedulingServiceTests
             AppointmentTypeId = Guid.NewGuid()
         };
 
-        var act = () => AppointmentSchedulingService.ScheduleAppointment(details, context);
+        var act = () => AppointmentSchedulingService.ScheduleAppointment(patient, details, context);
 
         // Assert
         act.Should().Throw<PatientBlockedException>();
+    }
+
+    [Fact]
+    public void ScheduleAppointmentAsync_ShouldThrowException_WhenPatientHasIncompleteProfile()
+    {
+        // Arrange
+        var patient = Patient.CreateSelf(Guid.NewGuid(), PersonName.Create("Test Patient"), DateTime.UtcNow.AddYears(-30));
+        var doctor = Doctor.Create(Guid.NewGuid(), MedicalLicenseNumber.Create("12345"), Guid.NewGuid(), "Dr. House", 101);
+
+        var context = new AppointmentSchedulingContext { Penalties = [], DoctorSchedule = null, HasConflict = false };
+        var details = new AppointmentSchedulingDetails
+        {
+            PatientId = patient.Id,
+            DoctorId = doctor.Id,
+            ScheduledDate = DateTime.UtcNow.AddDays(1),
+            TimeRange = TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(10)),
+            AppointmentTypeId = Guid.NewGuid()
+        };
+
+        var act = () => AppointmentSchedulingService.ScheduleAppointment(patient, details, context);
+
+        // Assert
+        act.Should().Throw<IncompleteProfileException>().WithMessage(DomainErrors.Patient.ProfileIncomplete);
     }
 
     [Fact]
@@ -57,7 +80,7 @@ public class AppointmentSchedulingServiceTests
             AppointmentTypeId = Guid.NewGuid()
         };
 
-        var act = () => AppointmentSchedulingService.ScheduleAppointment(details, context);
+        var act = () => AppointmentSchedulingService.ScheduleAppointment(CreatePatient(), details, context);
 
         // Assert
         act.Should().Throw<DoctorNotAvailableException>();
@@ -83,7 +106,7 @@ public class AppointmentSchedulingServiceTests
             AppointmentTypeId = Guid.NewGuid()
         };
 
-        var act = () => AppointmentSchedulingService.ScheduleAppointment(details, context); // Outside working hours
+        var act = () => AppointmentSchedulingService.ScheduleAppointment(CreatePatient(), details, context); // Outside working hours
 
         // Assert
         act.Should().Throw<DoctorNotAvailableException>();
@@ -112,7 +135,7 @@ public class AppointmentSchedulingServiceTests
             AppointmentTypeId = Guid.NewGuid()
         };
 
-        var act = () => AppointmentSchedulingService.ScheduleAppointment(details, context);
+        var act = () => AppointmentSchedulingService.ScheduleAppointment(patient, details, context);
 
         // Assert
         act.Should().Throw<AppointmentConflictException>();
@@ -142,7 +165,7 @@ public class AppointmentSchedulingServiceTests
             AppointmentTypeId = appointmentTypeId
         };
 
-        var result = AppointmentSchedulingService.ScheduleAppointment(details, context);
+        var result = AppointmentSchedulingService.ScheduleAppointment(patient, details, context);
 
         // Assert
         result.Should().NotBeNull();
@@ -238,8 +261,13 @@ public class AppointmentSchedulingServiceTests
     private static Appointment CreateAppointment(DateTime scheduledDateTime) => Appointment.Schedule(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), scheduledDateTime.Date,
         TimeRange.Create(scheduledDateTime.TimeOfDay, scheduledDateTime.TimeOfDay.Add(TimeSpan.FromHours(1))));
 
-    private static Patient CreatePatient() => Patient.CreateSelf(Guid.NewGuid(), PersonName.Create("Test Patient"), DateTime.UtcNow.AddYears(-30), BloodType.Create("O+"), "None", "None",
-        EmergencyContact.Create("Mom", "555-5555"));
+    private static Patient CreatePatient()
+    {
+        var patient = Patient.CreateSelf(Guid.NewGuid(), PersonName.Create("Test Patient"), DateTime.UtcNow.AddYears(-30));
+        patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
+        patient.UpdateEmergencyContact(EmergencyContact.Create("Mom", "555-5555"));
+        return patient;
+    }
 
     private static Schedule CreateSchedule(Guid doctorId, DayOfWeek dayOfWeek, TimeRange timeRange) => Schedule.Create(doctorId, dayOfWeek, timeRange);
 

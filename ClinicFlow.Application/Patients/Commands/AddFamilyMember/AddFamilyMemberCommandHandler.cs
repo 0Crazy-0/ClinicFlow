@@ -11,11 +11,8 @@ public class AddFamilyMemberCommandHandler(IPatientRepository patientRepository,
     public async Task<Guid> Handle(AddFamilyMemberCommand request, CancellationToken cancellationToken)
     {
         var fullName = PersonName.Create($"{request.FirstName} {request.LastName}");
-        var bloodType = BloodType.Create(request.BloodType);
-        var emergencyContact = EmergencyContact.Create(request.EmergencyContactName, request.EmergencyContactPhone);
 
-        var familyMember = Patient.CreateFamilyMember(request.UserId, fullName, request.Relationship, request.DateOfBirth, bloodType,
-            request.Allergies, request.ChronicConditions, emergencyContact);
+        var familyMember = Patient.CreateFamilyMember(request.UserId, fullName, request.Relationship, request.DateOfBirth);
 
         await patientRepository.CreateAsync(familyMember, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);

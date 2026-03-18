@@ -10,7 +10,7 @@ public class GetPatientsByUserIdQueryHandler(IPatientRepository patientRepositor
     {
         var patients = await patientRepository.GetAllByUserIdAsync(request.UserId, cancellationToken);
 
-        return patients.Select(patient => new PatientDto(patient.Id, patient.UserId, patient.FullName.FullName, patient.RelationshipToUser,
-            patient.DateOfBirth, patient.BloodType.Value, patient.Allergies, patient.ChronicConditions));
+        return patients.Select(patient => new PatientDto(patient.Id, patient.UserId, patient.FullName.FullName, patient.RelationshipToUser, patient.DateOfBirth, 
+            patient.BloodType?.Value, patient.Allergies, patient.ChronicConditions, patient.EmergencyContact?.Name.ToString(), patient.EmergencyContact?.PhoneNumber.ToString()));
     }
 }
