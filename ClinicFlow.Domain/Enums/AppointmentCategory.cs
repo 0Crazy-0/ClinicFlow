@@ -28,6 +28,5 @@ public enum AppointmentCategory
     /// <summary>
     /// Medical or surgical procedure.
     /// </summary>
-    Procedure = 5
-
+    Procedure = 5,
 }

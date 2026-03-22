@@ -2,8 +2,8 @@ using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Appointments;
-using ClinicFlow.Domain.Exceptions.Scheduling;
 using ClinicFlow.Domain.Exceptions.Patients;
+using ClinicFlow.Domain.Exceptions.Scheduling;
 using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Args.Scheduling;
 using ClinicFlow.Domain.Services.Contexts;
@@ -20,18 +20,32 @@ public class AppointmentSchedulingServiceTests
     {
         // Arrange
         var patient = CreatePatient();
-        var doctor = Doctor.Create(Guid.NewGuid(), MedicalLicenseNumber.Create("12345"), Guid.NewGuid(), "Dr. House", 101);
+        var doctor = Doctor.Create(
+            Guid.NewGuid(),
+            MedicalLicenseNumber.Create("12345"),
+            Guid.NewGuid(),
+            "Dr. House",
+            101
+        );
         var scheduledDate = DateTime.UtcNow.AddDays(1);
-        var penalties = new List<PatientPenalty> { PatientPenalty.CreateBlock(patient.Id, "Blocked", scheduledDate) };
+        var penalties = new List<PatientPenalty>
+        {
+            PatientPenalty.CreateBlock(patient.Id, "Blocked", scheduledDate),
+        };
 
-        var context = new AppointmentSchedulingContext { Penalties = penalties, DoctorSchedule = null, HasConflict = false };
+        var context = new AppointmentSchedulingContext
+        {
+            Penalties = penalties,
+            DoctorSchedule = null,
+            HasConflict = false,
+        };
         var details = new AppointmentSchedulingArgs
         {
             PatientId = patient.Id,
             DoctorId = doctor.Id,
             ScheduledDate = scheduledDate,
             TimeRange = TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(10)),
-            AppointmentTypeId = Guid.NewGuid()
+            AppointmentTypeId = Guid.NewGuid(),
         };
 
         var act = () => AppointmentSchedulingService.ScheduleAppointment(patient, details, context);
@@ -44,44 +58,73 @@ public class AppointmentSchedulingServiceTests
     public void ScheduleAppointmentAsync_ShouldThrowException_WhenPatientHasIncompleteProfile()
     {
         // Arrange
-        var patient = Patient.CreateSelf(Guid.NewGuid(), PersonName.Create("Test Patient"), DateTime.UtcNow.AddYears(-30));
-        var doctor = Doctor.Create(Guid.NewGuid(), MedicalLicenseNumber.Create("12345"), Guid.NewGuid(), "Dr. House", 101);
+        var patient = Patient.CreateSelf(
+            Guid.NewGuid(),
+            PersonName.Create("Test Patient"),
+            DateTime.UtcNow.AddYears(-30)
+        );
+        var doctor = Doctor.Create(
+            Guid.NewGuid(),
+            MedicalLicenseNumber.Create("12345"),
+            Guid.NewGuid(),
+            "Dr. House",
+            101
+        );
 
-        var context = new AppointmentSchedulingContext { Penalties = [], DoctorSchedule = null, HasConflict = false };
+        var context = new AppointmentSchedulingContext
+        {
+            Penalties = [],
+            DoctorSchedule = null,
+            HasConflict = false,
+        };
         var details = new AppointmentSchedulingArgs
         {
             PatientId = patient.Id,
             DoctorId = doctor.Id,
             ScheduledDate = DateTime.UtcNow.AddDays(1),
             TimeRange = TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(10)),
-            AppointmentTypeId = Guid.NewGuid()
+            AppointmentTypeId = Guid.NewGuid(),
         };
 
         var act = () => AppointmentSchedulingService.ScheduleAppointment(patient, details, context);
 
         // Assert
-        act.Should().Throw<IncompleteProfileException>().WithMessage(DomainErrors.Patient.ProfileIncomplete);
+        act.Should()
+            .Throw<IncompleteProfileException>()
+            .WithMessage(DomainErrors.Patient.ProfileIncomplete);
     }
 
     [Fact]
     public async Task ScheduleAppointmentAsync_ShouldThrowException_WhenDoctorHasNoSchedule()
     {
         // Arrange
-        var doctor = Doctor.Create(Guid.NewGuid(), MedicalLicenseNumber.Create("12345"), Guid.NewGuid(), "Dr. House", 101);
+        var doctor = Doctor.Create(
+            Guid.NewGuid(),
+            MedicalLicenseNumber.Create("12345"),
+            Guid.NewGuid(),
+            "Dr. House",
+            101
+        );
         var scheduledDate = DateTime.UtcNow.AddDays(1);
 
         // Act
-        var context = new AppointmentSchedulingContext { Penalties = [], DoctorSchedule = null, HasConflict = false };
+        var context = new AppointmentSchedulingContext
+        {
+            Penalties = [],
+            DoctorSchedule = null,
+            HasConflict = false,
+        };
         var details = new AppointmentSchedulingArgs
         {
             PatientId = CreatePatient().Id,
             DoctorId = doctor.Id,
             ScheduledDate = scheduledDate,
             TimeRange = TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(10)),
-            AppointmentTypeId = Guid.NewGuid()
+            AppointmentTypeId = Guid.NewGuid(),
         };
 
-        var act = () => AppointmentSchedulingService.ScheduleAppointment(CreatePatient(), details, context);
+        var act = () =>
+            AppointmentSchedulingService.ScheduleAppointment(CreatePatient(), details, context);
 
         // Assert
         act.Should().Throw<DoctorNotAvailableException>();
@@ -91,23 +134,39 @@ public class AppointmentSchedulingServiceTests
     public async Task ScheduleAppointmentAsync_ShouldThrowException_WhenOutsideDoctorSchedule()
     {
         // Arrange
-        var doctor = Doctor.Create(Guid.NewGuid(), MedicalLicenseNumber.Create("12345"), Guid.NewGuid(), "Dr. House", 101);
+        var doctor = Doctor.Create(
+            Guid.NewGuid(),
+            MedicalLicenseNumber.Create("12345"),
+            Guid.NewGuid(),
+            "Dr. House",
+            101
+        );
         var scheduledDate = DateTime.UtcNow.AddDays(1);
 
-        var schedule = CreateSchedule(doctor.Id, scheduledDate.DayOfWeek, TimeRange.Create(TimeSpan.FromHours(8), TimeSpan.FromHours(16)));
+        var schedule = CreateSchedule(
+            doctor.Id,
+            scheduledDate.DayOfWeek,
+            TimeRange.Create(TimeSpan.FromHours(8), TimeSpan.FromHours(16))
+        );
 
         // Act
-        var context = new AppointmentSchedulingContext { Penalties = [], DoctorSchedule = schedule, HasConflict = false };
+        var context = new AppointmentSchedulingContext
+        {
+            Penalties = [],
+            DoctorSchedule = schedule,
+            HasConflict = false,
+        };
         var details = new AppointmentSchedulingArgs
         {
             PatientId = CreatePatient().Id,
             DoctorId = doctor.Id,
             ScheduledDate = scheduledDate,
             TimeRange = TimeRange.Create(TimeSpan.FromHours(17), TimeSpan.FromHours(18)),
-            AppointmentTypeId = Guid.NewGuid()
+            AppointmentTypeId = Guid.NewGuid(),
         };
 
-        var act = () => AppointmentSchedulingService.ScheduleAppointment(CreatePatient(), details, context); // Outside working hours
+        var act = () =>
+            AppointmentSchedulingService.ScheduleAppointment(CreatePatient(), details, context); // Outside working hours
 
         // Assert
         act.Should().Throw<DoctorNotAvailableException>();
@@ -118,7 +177,13 @@ public class AppointmentSchedulingServiceTests
     {
         // Arrange
         var patient = CreatePatient();
-        var doctor = Doctor.Create(Guid.NewGuid(), MedicalLicenseNumber.Create("12345"), Guid.NewGuid(), "Dr. House", 101);
+        var doctor = Doctor.Create(
+            Guid.NewGuid(),
+            MedicalLicenseNumber.Create("12345"),
+            Guid.NewGuid(),
+            "Dr. House",
+            101
+        );
         var penalties = new List<PatientPenalty>();
         var scheduledDate = DateTime.UtcNow.AddDays(1);
         var timeRange = TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(10));
@@ -126,14 +191,19 @@ public class AppointmentSchedulingServiceTests
         var schedule = CreateValidSchedule(doctor.Id, scheduledDate.DayOfWeek);
 
         // Act
-        var context = new AppointmentSchedulingContext { Penalties = penalties, DoctorSchedule = schedule, HasConflict = true };
+        var context = new AppointmentSchedulingContext
+        {
+            Penalties = penalties,
+            DoctorSchedule = schedule,
+            HasConflict = true,
+        };
         var details = new AppointmentSchedulingArgs
         {
             PatientId = patient.Id,
             DoctorId = doctor.Id,
             ScheduledDate = scheduledDate,
             TimeRange = timeRange,
-            AppointmentTypeId = Guid.NewGuid()
+            AppointmentTypeId = Guid.NewGuid(),
         };
 
         var act = () => AppointmentSchedulingService.ScheduleAppointment(patient, details, context);
@@ -147,7 +217,13 @@ public class AppointmentSchedulingServiceTests
     {
         // Arrange
         var patient = CreatePatient();
-        var doctor = Doctor.Create(Guid.NewGuid(), MedicalLicenseNumber.Create("12345"), Guid.NewGuid(), "Dr. House", 101);
+        var doctor = Doctor.Create(
+            Guid.NewGuid(),
+            MedicalLicenseNumber.Create("12345"),
+            Guid.NewGuid(),
+            "Dr. House",
+            101
+        );
         var penalties = new List<PatientPenalty>();
         var scheduledDate = DateTime.UtcNow.AddDays(1);
         var timeRange = TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(10));
@@ -156,14 +232,19 @@ public class AppointmentSchedulingServiceTests
         var schedule = CreateValidSchedule(doctor.Id, scheduledDate.DayOfWeek);
 
         // Act
-        var context = new AppointmentSchedulingContext { Penalties = penalties, DoctorSchedule = schedule, HasConflict = false };
+        var context = new AppointmentSchedulingContext
+        {
+            Penalties = penalties,
+            DoctorSchedule = schedule,
+            HasConflict = false,
+        };
         var details = new AppointmentSchedulingArgs
         {
             PatientId = patient.Id,
             DoctorId = doctor.Id,
             ScheduledDate = scheduledDate,
             TimeRange = timeRange,
-            AppointmentTypeId = appointmentTypeId
+            AppointmentTypeId = appointmentTypeId,
         };
 
         var result = AppointmentSchedulingService.ScheduleAppointment(patient, details, context);
@@ -185,9 +266,19 @@ public class AppointmentSchedulingServiceTests
         var newTimeRange = TimeRange.Create(TimeSpan.FromHours(10), TimeSpan.FromHours(11));
 
         // Act
-        var context = new AppointmentSchedulingContext { DoctorSchedule = null, ExistingAppointmentsDay = [] };
+        var context = new AppointmentSchedulingContext
+        {
+            DoctorSchedule = null,
+            ExistingAppointmentsDay = [],
+        };
 
-        var act = () => AppointmentSchedulingService.RescheduleAppointment(appointment, newDate, newTimeRange, context);
+        var act = () =>
+            AppointmentSchedulingService.RescheduleAppointment(
+                appointment,
+                newDate,
+                newTimeRange,
+                context
+            );
 
         // Assert
         act.Should().Throw<DoctorNotAvailableException>();
@@ -206,9 +297,19 @@ public class AppointmentSchedulingServiceTests
         var schedule = CreateValidSchedule(appointment.DoctorId, newDate.DayOfWeek);
 
         // Act
-        var context = new AppointmentSchedulingContext { DoctorSchedule = schedule, ExistingAppointmentsDay = [conflictingAppointment] };
+        var context = new AppointmentSchedulingContext
+        {
+            DoctorSchedule = schedule,
+            ExistingAppointmentsDay = [conflictingAppointment],
+        };
 
-        var act = () => AppointmentSchedulingService.RescheduleAppointment(appointment, newDate, TimeRange.Create(TimeSpan.FromHours(10), TimeSpan.FromHours(11)), context);
+        var act = () =>
+            AppointmentSchedulingService.RescheduleAppointment(
+                appointment,
+                newDate,
+                TimeRange.Create(TimeSpan.FromHours(10), TimeSpan.FromHours(11)),
+                context
+            );
 
         // Assert
         act.Should().Throw<AppointmentConflictException>();
@@ -226,9 +327,18 @@ public class AppointmentSchedulingServiceTests
         var schedule = CreateValidSchedule(appointment.DoctorId, newDate.DayOfWeek);
 
         // Act
-        var context = new AppointmentSchedulingContext { DoctorSchedule = schedule, ExistingAppointmentsDay = [] };
+        var context = new AppointmentSchedulingContext
+        {
+            DoctorSchedule = schedule,
+            ExistingAppointmentsDay = [],
+        };
 
-        AppointmentSchedulingService.RescheduleAppointment(appointment, newDate, newTimeRange, context);
+        AppointmentSchedulingService.RescheduleAppointment(
+            appointment,
+            newDate,
+            newTimeRange,
+            context
+        );
 
         // Assert
         appointment.ScheduledDate.Should().Be(newDate);
@@ -250,29 +360,61 @@ public class AppointmentSchedulingServiceTests
         var schedule = CreateValidSchedule(appointment.DoctorId, newDate.DayOfWeek);
 
         // Act
-        var context = new AppointmentSchedulingContext { DoctorSchedule = schedule, ExistingAppointmentsDay = [] };
-        
-        var act = () => AppointmentSchedulingService.RescheduleAppointment(appointment, newDate, newTimeRange, context);
+        var context = new AppointmentSchedulingContext
+        {
+            DoctorSchedule = schedule,
+            ExistingAppointmentsDay = [],
+        };
+
+        var act = () =>
+            AppointmentSchedulingService.RescheduleAppointment(
+                appointment,
+                newDate,
+                newTimeRange,
+                context
+            );
 
         // Assert
-        act.Should().Throw<AppointmentReschedulingNotAllowedException>().WithMessage(DomainErrors.Appointment.CannotReschedule);
+        act.Should()
+            .Throw<AppointmentReschedulingNotAllowedException>()
+            .WithMessage(DomainErrors.Appointment.CannotReschedule);
     }
 
     // Helpers
-    private static Appointment CreateAppointment(DateTime scheduledDateTime) => Appointment.Schedule(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), scheduledDateTime.Date,
-        TimeRange.Create(scheduledDateTime.TimeOfDay, scheduledDateTime.TimeOfDay.Add(TimeSpan.FromHours(1))));
+    private static Appointment CreateAppointment(DateTime scheduledDateTime) =>
+        Appointment.Schedule(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            scheduledDateTime.Date,
+            TimeRange.Create(
+                scheduledDateTime.TimeOfDay,
+                scheduledDateTime.TimeOfDay.Add(TimeSpan.FromHours(1))
+            )
+        );
 
     private static Patient CreatePatient()
     {
-        var patient = Patient.CreateSelf(Guid.NewGuid(), PersonName.Create("Test Patient"), DateTime.UtcNow.AddYears(-30));
+        var patient = Patient.CreateSelf(
+            Guid.NewGuid(),
+            PersonName.Create("Test Patient"),
+            DateTime.UtcNow.AddYears(-30)
+        );
         patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
         patient.UpdateEmergencyContact(EmergencyContact.Create("Mom", "555-5555"));
         return patient;
     }
 
-    private static Schedule CreateSchedule(Guid doctorId, DayOfWeek dayOfWeek, TimeRange timeRange) => Schedule.Create(doctorId, dayOfWeek, timeRange);
+    private static Schedule CreateSchedule(
+        Guid doctorId,
+        DayOfWeek dayOfWeek,
+        TimeRange timeRange
+    ) => Schedule.Create(doctorId, dayOfWeek, timeRange);
 
-    private static Schedule CreateValidSchedule(Guid doctorId, DayOfWeek dayOfWeek) => CreateSchedule(doctorId, dayOfWeek, TimeRange.Create(TimeSpan.FromHours(8), TimeSpan.FromHours(18)));
-
+    private static Schedule CreateValidSchedule(Guid doctorId, DayOfWeek dayOfWeek) =>
+        CreateSchedule(
+            doctorId,
+            dayOfWeek,
+            TimeRange.Create(TimeSpan.FromHours(8), TimeSpan.FromHours(18))
+        );
 }
-

@@ -16,7 +16,12 @@ public class CreatePatientProfileCommandValidatorTests
     public void Validate_ShouldBeValid_WhenAllPropertiesAreProvidedAndValid()
     {
         // Arrange
-        var command = new CreatePatientProfileCommand(Guid.NewGuid(), "John", "Doe", DateTime.UtcNow.AddYears(-30));
+        var command = new CreatePatientProfileCommand(
+            Guid.NewGuid(),
+            "John",
+            "Doe",
+            DateTime.UtcNow.AddYears(-30)
+        );
 
         // Act
         var result = _sut.TestValidate(command);
@@ -29,7 +34,12 @@ public class CreatePatientProfileCommandValidatorTests
     public void Validate_ShouldHaveError_WhenUserIdIsEmpty()
     {
         // Arrange
-        var command = new CreatePatientProfileCommand(Guid.Empty, "John", "Doe", DateTime.UtcNow.AddYears(-30));
+        var command = new CreatePatientProfileCommand(
+            Guid.Empty,
+            "John",
+            "Doe",
+            DateTime.UtcNow.AddYears(-30)
+        );
 
         // Act
         var result = _sut.TestValidate(command);
@@ -42,7 +52,12 @@ public class CreatePatientProfileCommandValidatorTests
     public void Validate_ShouldHaveError_WhenFirstNameIsEmptyOrTooShort()
     {
         // Arrange
-        var command = new CreatePatientProfileCommand(Guid.NewGuid(), "J", "Doe", DateTime.UtcNow.AddYears(-30));
+        var command = new CreatePatientProfileCommand(
+            Guid.NewGuid(),
+            "J",
+            "Doe",
+            DateTime.UtcNow.AddYears(-30)
+        );
 
         // Act
         var result = _sut.TestValidate(command);
@@ -55,7 +70,12 @@ public class CreatePatientProfileCommandValidatorTests
     public void Validate_ShouldHaveError_WhenLastNameIsEmptyOrTooShort()
     {
         // Arrange
-        var command = new CreatePatientProfileCommand(Guid.NewGuid(), "John", "", DateTime.UtcNow.AddYears(-30));
+        var command = new CreatePatientProfileCommand(
+            Guid.NewGuid(),
+            "John",
+            "",
+            DateTime.UtcNow.AddYears(-30)
+        );
 
         // Act
         var result = _sut.TestValidate(command);
@@ -68,7 +88,12 @@ public class CreatePatientProfileCommandValidatorTests
     public void Validate_ShouldHaveError_WhenDateOfBirthIsInTheFuture()
     {
         // Arrange
-        var command = new CreatePatientProfileCommand(Guid.NewGuid(), "John", "Doe", DateTime.UtcNow.AddDays(1));
+        var command = new CreatePatientProfileCommand(
+            Guid.NewGuid(),
+            "John",
+            "Doe",
+            DateTime.UtcNow.AddDays(1)
+        );
 
         // Act
         var result = _sut.TestValidate(command);

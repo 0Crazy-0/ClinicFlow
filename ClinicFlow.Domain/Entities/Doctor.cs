@@ -22,7 +22,13 @@ public class Doctor : BaseEntity
     // EF Core constructor
     private Doctor() { }
 
-    private Doctor(Guid userId, MedicalLicenseNumber licenseNumber, Guid medicalSpecialtyId, string biography, int consultationRoomNumber)
+    private Doctor(
+        Guid userId,
+        MedicalLicenseNumber licenseNumber,
+        Guid medicalSpecialtyId,
+        string biography,
+        int consultationRoomNumber
+    )
     {
         UserId = userId;
         LicenseNumber = licenseNumber;
@@ -35,12 +41,27 @@ public class Doctor : BaseEntity
     /// Creates a new doctor entity.
     /// </summary>
     /// <exception cref="DomainValidationException">Thrown when the user ID or specialty ID is empty, or the room number is not positive.</exception>
-    internal static Doctor Create(Guid userId, MedicalLicenseNumber licenseNumber, Guid medicalSpecialtyId, string biography, int consultationRoomNumber)
+    internal static Doctor Create(
+        Guid userId,
+        MedicalLicenseNumber licenseNumber,
+        Guid medicalSpecialtyId,
+        string biography,
+        int consultationRoomNumber
+    )
     {
-        if (userId == Guid.Empty) throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-        if (medicalSpecialtyId == Guid.Empty) throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-        if (consultationRoomNumber <= 0) throw new DomainValidationException(DomainErrors.Validation.ValueMustBePositive);
+        if (userId == Guid.Empty)
+            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        if (medicalSpecialtyId == Guid.Empty)
+            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        if (consultationRoomNumber <= 0)
+            throw new DomainValidationException(DomainErrors.Validation.ValueMustBePositive);
 
-        return new Doctor(userId, licenseNumber, medicalSpecialtyId, biography, consultationRoomNumber);
+        return new Doctor(
+            userId,
+            licenseNumber,
+            medicalSpecialtyId,
+            biography,
+            consultationRoomNumber
+        );
     }
 }

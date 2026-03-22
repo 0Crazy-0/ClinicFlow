@@ -45,7 +45,13 @@ public class Appointment : BaseEntity
         TimeRange = null!;
     }
 
-    private Appointment(Guid patientId, Guid doctorId, Guid appointmentTypeId, DateTime scheduledDate, TimeRange timeRange)
+    private Appointment(
+        Guid patientId,
+        Guid doctorId,
+        Guid appointmentTypeId,
+        DateTime scheduledDate,
+        TimeRange timeRange
+    )
     {
         PatientId = patientId;
         DoctorId = doctorId;
@@ -60,14 +66,30 @@ public class Appointment : BaseEntity
     /// Creates a new appointment in <see cref="AppointmentStatus.Scheduled"/> status and raises an <see cref="AppointmentScheduledEvent"/>.
     /// </summary>
     /// <exception cref="DomainValidationException">Thrown when any required identifier is empty or the time range is null.</exception>
-    internal static Appointment Schedule(Guid patientId, Guid doctorId, Guid appointmentTypeId, DateTime scheduledDate, TimeRange timeRange)
+    internal static Appointment Schedule(
+        Guid patientId,
+        Guid doctorId,
+        Guid appointmentTypeId,
+        DateTime scheduledDate,
+        TimeRange timeRange
+    )
     {
-        if (patientId == Guid.Empty) throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-        if (doctorId == Guid.Empty) throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-        if (appointmentTypeId == Guid.Empty) throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-        if (timeRange is null) throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+        if (patientId == Guid.Empty)
+            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        if (doctorId == Guid.Empty)
+            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        if (appointmentTypeId == Guid.Empty)
+            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        if (timeRange is null)
+            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
 
-        var appointment = new Appointment(patientId, doctorId, appointmentTypeId, scheduledDate, timeRange);
+        var appointment = new Appointment(
+            patientId,
+            doctorId,
+            appointmentTypeId,
+            scheduledDate,
+            timeRange
+        );
 
         appointment.AddDomainEvent(new AppointmentScheduledEvent(appointment));
 
@@ -80,13 +102,23 @@ public class Appointment : BaseEntity
     /// </summary>
     /// <param name="specialty">The medical specialty, used to evaluate the cancellation notice policy.</param>
     /// <exception cref="AppointmentCancellationNotAllowedException">Thrown when the appointment is already cancelled.</exception>
-    internal void Cancel(Guid cancelledByUserId, string? reason, MedicalSpecialty specialty, bool isAdministrative = false)
+    internal void Cancel(
+        Guid cancelledByUserId,
+        string? reason,
+        MedicalSpecialty specialty,
+        bool isAdministrative = false
+    )
     {
-        if (Status is AppointmentStatus.Cancelled or AppointmentStatus.LateCancellation) 
-            throw new AppointmentCancellationNotAllowedException(DomainErrors.Appointment.CannotCancel, Status);
+        if (Status is AppointmentStatus.Cancelled or AppointmentStatus.LateCancellation)
+            throw new AppointmentCancellationNotAllowedException(
+                DomainErrors.Appointment.CannotCancel,
+                Status
+            );
 
-        if (!isAdministrative && !CanBeCancelled(specialty)) Status = AppointmentStatus.LateCancellation;
-        else Status = AppointmentStatus.Cancelled;
+        if (!isAdministrative && !CanBeCancelled(specialty))
+            Status = AppointmentStatus.LateCancellation;
+        else
+            Status = AppointmentStatus.Cancelled;
 
         CancelledAt = DateTime.UtcNow;
         CancelledByUserId = cancelledByUserId;
@@ -102,7 +134,9 @@ public class Appointment : BaseEntity
     public void Confirm()
     {
         if (Status is not AppointmentStatus.Scheduled)
-             throw new AppointmentConfirmationNotAllowedException(DomainErrors.Appointment.CannotConfirm);
+            throw new AppointmentConfirmationNotAllowedException(
+                DomainErrors.Appointment.CannotConfirm
+            );
 
         Status = AppointmentStatus.Confirmed;
         ConfirmedAt = DateTime.UtcNow;
@@ -116,7 +150,10 @@ public class Appointment : BaseEntity
     /// <exception cref="AppointmentReschedulingNotAllowedException">Thrown when the appointment has already been rescheduled or is not in a reschedulable status.</exception>
     internal void Reschedule(DateTime newDate, TimeRange newTimeRange)
     {
-        if (!CanBeRescheduled()) throw new AppointmentReschedulingNotAllowedException(DomainErrors.Appointment.CannotReschedule);
+        if (!CanBeRescheduled())
+            throw new AppointmentReschedulingNotAllowedException(
+                DomainErrors.Appointment.CannotReschedule
+            );
 
         var previousDate = ScheduledDate;
         var previousTimeRange = TimeRange;
@@ -134,7 +171,8 @@ public class Appointment : BaseEntity
     /// <exception cref="DomainValidationException">Thrown when the appointment is not in a status that can be marked as no-show.</exception>
     internal void MarkAsNoShow()
     {
-        if (Status is not (AppointmentStatus.Scheduled or AppointmentStatus.Confirmed)) throw new DomainValidationException(DomainErrors.Appointment.CannotMarkNoShow);
+        if (Status is not (AppointmentStatus.Scheduled or AppointmentStatus.Confirmed))
+            throw new DomainValidationException(DomainErrors.Appointment.CannotMarkNoShow);
 
         Status = AppointmentStatus.NoShow;
 
@@ -142,7 +180,8 @@ public class Appointment : BaseEntity
     }
 
     // Business Rules (Private)
-    private bool CanBeCancelled(MedicalSpecialty specialty) => specialty.IsCancellationAllowed(ScheduledDate.Add(TimeRange.Start));
+    private bool CanBeCancelled(MedicalSpecialty specialty) =>
+        specialty.IsCancellationAllowed(ScheduledDate.Add(TimeRange.Start));
 
     private bool CanBeRescheduled() => RescheduleCount < 1 && Status is AppointmentStatus.Scheduled;
 }

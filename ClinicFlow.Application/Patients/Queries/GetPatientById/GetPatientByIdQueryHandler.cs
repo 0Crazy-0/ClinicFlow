@@ -7,14 +7,33 @@ using MediatR;
 
 namespace ClinicFlow.Application.Patients.Queries.GetPatientById;
 
-public class GetPatientByIdQueryHandler(IPatientRepository patientRepository) : IRequestHandler<GetPatientByIdQuery, PatientDto>
+public class GetPatientByIdQueryHandler(IPatientRepository patientRepository)
+    : IRequestHandler<GetPatientByIdQuery, PatientDto>
 {
-    public async Task<PatientDto> Handle(GetPatientByIdQuery request, CancellationToken cancellationToken)
+    public async Task<PatientDto> Handle(
+        GetPatientByIdQuery request,
+        CancellationToken cancellationToken
+    )
     {
-        var patient = await patientRepository.GetByIdAsync(request.PatientId, cancellationToken)
-            ?? throw new EntityNotFoundException(DomainErrors.General.NotFound, nameof(Patient), request.PatientId);
+        var patient =
+            await patientRepository.GetByIdAsync(request.PatientId, cancellationToken)
+            ?? throw new EntityNotFoundException(
+                DomainErrors.General.NotFound,
+                nameof(Patient),
+                request.PatientId
+            );
 
-        return new PatientDto(patient.Id, patient.UserId, patient.FullName.FullName, patient.RelationshipToUser, patient.DateOfBirth, patient.BloodType?.Value,
-            patient.Allergies, patient.ChronicConditions, patient.EmergencyContact?.Name.ToString(), patient.EmergencyContact?.PhoneNumber.ToString());
+        return new PatientDto(
+            patient.Id,
+            patient.UserId,
+            patient.FullName.FullName,
+            patient.RelationshipToUser,
+            patient.DateOfBirth,
+            patient.BloodType?.Value,
+            patient.Allergies,
+            patient.ChronicConditions,
+            patient.EmergencyContact?.Name.ToString(),
+            patient.EmergencyContact?.PhoneNumber.ToString()
+        );
     }
 }

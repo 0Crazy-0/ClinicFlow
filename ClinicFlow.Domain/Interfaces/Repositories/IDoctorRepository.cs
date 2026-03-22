@@ -11,7 +11,10 @@ public interface IDoctorRepository
 
     Task<Doctor?> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
 
-    Task<List<Doctor>> GetBySpecialtyIdAsync(Guid specialtyId, CancellationToken cancellationToken = default);
+    Task<List<Doctor>> GetBySpecialtyIdAsync(
+        Guid specialtyId,
+        CancellationToken cancellationToken = default
+    );
 
     Task<List<Doctor>> GetAllAsync(CancellationToken cancellationToken = default);
 
@@ -19,5 +22,8 @@ public interface IDoctorRepository
 
     Task UpdateAsync(Doctor doctor, CancellationToken cancellationToken = default);
 
-    Task<bool> ExistsByLicenseNumberAsync(string licenseNumber, CancellationToken cancellationToken = default);
+    Task<bool> ExistsByLicenseNumberAsync(
+        string licenseNumber,
+        CancellationToken cancellationToken = default
+    );
 }

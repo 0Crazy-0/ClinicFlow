@@ -6,13 +6,24 @@ using MediatR;
 
 namespace ClinicFlow.Application.Patients.Commands.AddFamilyMember;
 
-public class AddFamilyMemberCommandHandler(IPatientRepository patientRepository, IUnitOfWork unitOfWork) : IRequestHandler<AddFamilyMemberCommand, Guid>
+public class AddFamilyMemberCommandHandler(
+    IPatientRepository patientRepository,
+    IUnitOfWork unitOfWork
+) : IRequestHandler<AddFamilyMemberCommand, Guid>
 {
-    public async Task<Guid> Handle(AddFamilyMemberCommand request, CancellationToken cancellationToken)
+    public async Task<Guid> Handle(
+        AddFamilyMemberCommand request,
+        CancellationToken cancellationToken
+    )
     {
         var fullName = PersonName.Create($"{request.FirstName} {request.LastName}");
 
-        var familyMember = Patient.CreateFamilyMember(request.UserId, fullName, request.Relationship, request.DateOfBirth);
+        var familyMember = Patient.CreateFamilyMember(
+            request.UserId,
+            fullName,
+            request.Relationship,
+            request.DateOfBirth
+        );
 
         await patientRepository.CreateAsync(familyMember, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);

@@ -1,8 +1,9 @@
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Appointments;
 using ClinicFlow.Domain.Services.Args.NoShow;
-using ClinicFlow.Domain.Common;
+
 namespace ClinicFlow.Domain.Services;
 
 /// <summary>
@@ -20,20 +21,39 @@ public static class AppointmentNoShowService
     /// <param name="existingPenalties">The existing penalties for the patient, used to determine if a block should be applied.</param>
     /// <returns>A collection of new penalties to be saved.</returns>
     /// <exception cref="AppointmentNoShowUnauthorizedException">Thrown when the initiator is not authorized to mark the appointment as a no-show.</exception>
-    public static IEnumerable<PatientPenalty> MarkAsNoShow(Appointment appointment, AppointmentNoShowArgs args, IEnumerable<PatientPenalty> existingPenalties)
+    public static IEnumerable<PatientPenalty> MarkAsNoShow(
+        Appointment appointment,
+        AppointmentNoShowArgs args,
+        IEnumerable<PatientPenalty> existingPenalties
+    )
     {
         ValidateNoShowPermission(appointment.DoctorId, args.InitiatorRole, args.InitiatorDoctorId);
 
         appointment.MarkAsNoShow();
 
-        return PatientPenaltyService.ApplyPenalty(appointment.PatientId, existingPenalties, appointment.Id, PenaltyReasons.NoShow);
+        return PatientPenaltyService.ApplyPenalty(
+            appointment.PatientId,
+            existingPenalties,
+            appointment.Id,
+            PenaltyReasons.NoShow
+        );
     }
 
-    private static void ValidateNoShowPermission(Guid appointmentDoctorId, UserRole initiatorRole, Guid? initiatorDoctorId)
+    private static void ValidateNoShowPermission(
+        Guid appointmentDoctorId,
+        UserRole initiatorRole,
+        Guid? initiatorDoctorId
+    )
     {
-        if (initiatorRole is UserRole.Admin or UserRole.Receptionist) return;
+        if (initiatorRole is UserRole.Admin or UserRole.Receptionist)
+            return;
 
-        if (initiatorRole is UserRole.Doctor && initiatorDoctorId.HasValue && initiatorDoctorId == appointmentDoctorId) return;
+        if (
+            initiatorRole is UserRole.Doctor
+            && initiatorDoctorId.HasValue
+            && initiatorDoctorId == appointmentDoctorId
+        )
+            return;
 
         throw new AppointmentNoShowUnauthorizedException(DomainErrors.Appointment.CannotMarkNoShow);
     }

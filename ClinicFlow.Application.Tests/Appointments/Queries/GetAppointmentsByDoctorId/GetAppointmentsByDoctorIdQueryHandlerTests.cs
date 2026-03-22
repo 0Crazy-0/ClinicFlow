@@ -1,11 +1,11 @@
 using System.Reflection;
+using ClinicFlow.Application.Appointments.Queries.DTOs;
 using ClinicFlow.Application.Appointments.Queries.GetAppointmentsByDoctorId;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
 using Moq;
-using ClinicFlow.Application.Appointments.Queries.DTOs;
 
 namespace ClinicFlow.Application.Tests.Appointments.Queries.GetAppointmentsByDoctorId;
 
@@ -26,14 +26,19 @@ public class GetAppointmentsByDoctorIdQueryHandlerTests
         // Arrange
         var query = new GetAppointmentsByDoctorIdQuery(Guid.NewGuid(), DateTime.UtcNow.Date);
 
-        _appointmentRepositoryMock.Setup(x => x.GetByDoctorIdAsync(query.DoctorId, query.Date)).ReturnsAsync([]);
+        _appointmentRepositoryMock
+            .Setup(x => x.GetByDoctorIdAsync(query.DoctorId, query.Date))
+            .ReturnsAsync([]);
 
         // Act
         var result = await _sut.Handle(query, CancellationToken.None);
 
         // Assert
         result.Should().BeEmpty();
-        _appointmentRepositoryMock.Verify(x => x.GetByDoctorIdAsync(query.DoctorId, query.Date), Times.Once);
+        _appointmentRepositoryMock.Verify(
+            x => x.GetByDoctorIdAsync(query.DoctorId, query.Date),
+            Times.Once
+        );
     }
 
     [Fact]
@@ -47,10 +52,12 @@ public class GetAppointmentsByDoctorIdQueryHandlerTests
         var appointments = new List<Appointment>
         {
             CreateAppointment(Guid.NewGuid(), Guid.NewGuid(), doctorId, date),
-            CreateAppointment(Guid.NewGuid(), Guid.NewGuid(), doctorId, date)
+            CreateAppointment(Guid.NewGuid(), Guid.NewGuid(), doctorId, date),
         };
 
-        _appointmentRepositoryMock.Setup(x => x.GetByDoctorIdAsync(doctorId, date)).ReturnsAsync(appointments);
+        _appointmentRepositoryMock
+            .Setup(x => x.GetByDoctorIdAsync(doctorId, date))
+            .ReturnsAsync(appointments);
 
         // Act
         var result = await _sut.Handle(query, CancellationToken.None);
@@ -59,12 +66,17 @@ public class GetAppointmentsByDoctorIdQueryHandlerTests
         result.Should().HaveCount(2);
         result.Should().AllBeOfType<AppointmentDto>();
         result.Select(x => x.DoctorId).Should().AllBeEquivalentTo(doctorId);
-        
+
         _appointmentRepositoryMock.Verify(x => x.GetByDoctorIdAsync(doctorId, date), Times.Once);
     }
 
     // Helpers
-    private static Appointment CreateAppointment(Guid id, Guid patientId, Guid doctorId, DateTime scheduledDate)
+    private static Appointment CreateAppointment(
+        Guid id,
+        Guid patientId,
+        Guid doctorId,
+        DateTime scheduledDate
+    )
     {
         var timeRange = TimeRange.Create(new TimeSpan(9, 0, 0), new TimeSpan(10, 0, 0));
         var appointment = (Appointment)Activator.CreateInstance(typeof(Appointment), true)!;
@@ -82,7 +94,13 @@ public class GetAppointmentsByDoctorIdQueryHandlerTests
         var type = obj.GetType();
         while (type != null)
         {
-            var prop = type.GetProperty(propertyName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+            var prop = type.GetProperty(
+                propertyName,
+                BindingFlags.Public
+                    | BindingFlags.NonPublic
+                    | BindingFlags.Instance
+                    | BindingFlags.DeclaredOnly
+            );
             if (prop != null)
             {
                 prop.SetValue(obj, value);

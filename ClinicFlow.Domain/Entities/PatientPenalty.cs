@@ -26,7 +26,13 @@ public class PatientPenalty : BaseEntity
     // EF Core constructor
     private PatientPenalty() { }
 
-    private PatientPenalty(Guid patientId, Guid? appointmentId, PenaltyType type, string reason, DateTime? blockedUntil)
+    private PatientPenalty(
+        Guid patientId,
+        Guid? appointmentId,
+        PenaltyType type,
+        string reason,
+        DateTime? blockedUntil
+    )
     {
         PatientId = patientId;
         AppointmentId = appointmentId;
@@ -41,8 +47,10 @@ public class PatientPenalty : BaseEntity
     /// <exception cref="DomainValidationException">Thrown when the patient ID is empty or the reason is blank.</exception>
     internal static PatientPenalty CreateWarning(Guid patientId, Guid? appointmentId, string reason)
     {
-        if (patientId == Guid.Empty) throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-        if (string.IsNullOrWhiteSpace(reason)) throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        if (patientId == Guid.Empty)
+            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        if (string.IsNullOrWhiteSpace(reason))
+            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
 
         return new PatientPenalty(patientId, appointmentId, PenaltyType.Warning, reason, null);
     }
@@ -54,11 +62,19 @@ public class PatientPenalty : BaseEntity
     /// <exception cref="DomainValidationException">Thrown when the patient ID is empty, the reason is blank, or the block date is not in the future.</exception>
     internal static PatientPenalty CreateBlock(Guid patientId, string reason, DateTime blockedUntil)
     {
-        if (patientId == Guid.Empty) throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-        if (string.IsNullOrWhiteSpace(reason)) throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-        if (blockedUntil <= DateTime.UtcNow) throw new DomainValidationException(DomainErrors.Validation.ValueMustBeInFuture);
+        if (patientId == Guid.Empty)
+            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        if (string.IsNullOrWhiteSpace(reason))
+            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        if (blockedUntil <= DateTime.UtcNow)
+            throw new DomainValidationException(DomainErrors.Validation.ValueMustBeInFuture);
 
-        return new PatientPenalty(patientId, null, PenaltyType.TemporaryBlock, reason, blockedUntil);
+        return new PatientPenalty(
+            patientId,
+            null,
+            PenaltyType.TemporaryBlock,
+            reason,
+            blockedUntil
+        );
     }
-
 }

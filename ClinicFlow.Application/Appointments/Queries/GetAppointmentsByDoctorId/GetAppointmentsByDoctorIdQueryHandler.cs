@@ -4,13 +4,31 @@ using MediatR;
 
 namespace ClinicFlow.Application.Appointments.Queries.GetAppointmentsByDoctorId;
 
-public class GetAppointmentsByDoctorIdQueryHandler(IAppointmentRepository appointmentRepository) : IRequestHandler<GetAppointmentsByDoctorIdQuery, IEnumerable<AppointmentDto>>
+public class GetAppointmentsByDoctorIdQueryHandler(IAppointmentRepository appointmentRepository)
+    : IRequestHandler<GetAppointmentsByDoctorIdQuery, IEnumerable<AppointmentDto>>
 {
-    public async Task<IEnumerable<AppointmentDto>> Handle(GetAppointmentsByDoctorIdQuery request, CancellationToken cancellationToken)
+    public async Task<IEnumerable<AppointmentDto>> Handle(
+        GetAppointmentsByDoctorIdQuery request,
+        CancellationToken cancellationToken
+    )
     {
-        var appointments = await appointmentRepository.GetByDoctorIdAsync(request.DoctorId, request.Date, cancellationToken);
+        var appointments = await appointmentRepository.GetByDoctorIdAsync(
+            request.DoctorId,
+            request.Date,
+            cancellationToken
+        );
 
-        return appointments.Select(a => new AppointmentDto(a.Id, a.PatientId, a.DoctorId, a.AppointmentTypeId, a.ScheduledDate, 
-            a.TimeRange.Start, a.TimeRange.End, a.Status, a.PatientNotes, a.ReceptionistNotes));
+        return appointments.Select(a => new AppointmentDto(
+            a.Id,
+            a.PatientId,
+            a.DoctorId,
+            a.AppointmentTypeId,
+            a.ScheduledDate,
+            a.TimeRange.Start,
+            a.TimeRange.End,
+            a.Status,
+            a.PatientNotes,
+            a.ReceptionistNotes
+        ));
     }
 }

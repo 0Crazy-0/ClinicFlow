@@ -1,3 +1,4 @@
+using System.Reflection;
 using ClinicFlow.Application.MedicalRecords.Commands.AddClinicalDetailToMedicalRecord;
 using ClinicFlow.Application.MedicalRecords.Commands.CompleteMedicalEncounter;
 using ClinicFlow.Domain.Entities;
@@ -8,7 +9,6 @@ using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Policies;
 using FluentAssertions;
 using Moq;
-using System.Reflection;
 
 namespace ClinicFlow.Application.Tests.MedicalRecords.Commands.AddClinicalDetailToMedicalRecord;
 
@@ -31,8 +31,12 @@ public class AddClinicalDetailToMedicalRecordCommandHandlerTests
         var policies = new List<IMedicalRecordValidationPolicy>();
         _medicalEncounterService = new MedicalEncounterService(policies, _jsonValidatorMock.Object);
 
-        _sut = new AddClinicalDetailToMedicalRecordCommandHandler(_medicalRecordRepositoryMock.Object, _templateRepositoryMock.Object, _medicalEncounterService,
-            _unitOfWorkMock.Object);
+        _sut = new AddClinicalDetailToMedicalRecordCommandHandler(
+            _medicalRecordRepositoryMock.Object,
+            _templateRepositoryMock.Object,
+            _medicalEncounterService,
+            _unitOfWorkMock.Object
+        );
     }
 
     [Fact]
@@ -40,25 +44,47 @@ public class AddClinicalDetailToMedicalRecordCommandHandlerTests
     {
         // Arrange
         var medicalRecordId = Guid.NewGuid();
-        var request = new AddClinicalDetailToMedicalRecordCommand(medicalRecordId, new DynamicClinicalDetailDto("lab-results", "{\"glucose\": 90}"));
+        var request = new AddClinicalDetailToMedicalRecordCommand(
+            medicalRecordId,
+            new DynamicClinicalDetailDto("lab-results", "{\"glucose\": 90}")
+        );
 
-        var record = CreateMedicalRecord(medicalRecordId, Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "Checkup");
+        var record = CreateMedicalRecord(
+            medicalRecordId,
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            "Checkup"
+        );
         var template = CreateFormTemplate("lab-results");
 
-        _medicalRecordRepositoryMock.Setup(x => x.GetByIdAsync(medicalRecordId, CancellationToken.None)).ReturnsAsync(record);
+        _medicalRecordRepositoryMock
+            .Setup(x => x.GetByIdAsync(medicalRecordId, CancellationToken.None))
+            .ReturnsAsync(record);
 
-        _templateRepositoryMock.Setup(x => x.GetByCodeAsync("lab-results", CancellationToken.None)).ReturnsAsync(template);
+        _templateRepositoryMock
+            .Setup(x => x.GetByCodeAsync("lab-results", CancellationToken.None))
+            .ReturnsAsync(template);
 
         string? errorMessage = null;
-        _jsonValidatorMock.Setup(x => x.ValidateSchema(It.IsAny<string>(), It.IsAny<string>(), out errorMessage)).Returns(true);
+        _jsonValidatorMock
+            .Setup(x => x.ValidateSchema(It.IsAny<string>(), It.IsAny<string>(), out errorMessage))
+            .Returns(true);
 
         // Act
         await _sut.Handle(request, CancellationToken.None);
 
         // Assert
-        record.ClinicalDetails.Should().ContainSingle(d => d.TemplateCode == "lab-results" && d.JsonDataPayload == "{\"glucose\": 90}");
+        record
+            .ClinicalDetails.Should()
+            .ContainSingle(d =>
+                d.TemplateCode == "lab-results" && d.JsonDataPayload == "{\"glucose\": 90}"
+            );
 
-        _medicalRecordRepositoryMock.Verify(x => x.UpdateAsync(record, CancellationToken.None), Times.Once);
+        _medicalRecordRepositoryMock.Verify(
+            x => x.UpdateAsync(record, CancellationToken.None),
+            Times.Once
+        );
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(CancellationToken.None), Times.Once);
     }
 
@@ -67,18 +93,31 @@ public class AddClinicalDetailToMedicalRecordCommandHandlerTests
     {
         // Arrange
         var medicalRecordId = Guid.NewGuid();
-        var request = new AddClinicalDetailToMedicalRecordCommand(medicalRecordId, new DynamicClinicalDetailDto("lab-results", "{}"));
+        var request = new AddClinicalDetailToMedicalRecordCommand(
+            medicalRecordId,
+            new DynamicClinicalDetailDto("lab-results", "{}")
+        );
 
-        _medicalRecordRepositoryMock.Setup(x => x.GetByIdAsync(medicalRecordId, CancellationToken.None)).ReturnsAsync((MedicalRecord?)null);
+        _medicalRecordRepositoryMock
+            .Setup(x => x.GetByIdAsync(medicalRecordId, CancellationToken.None))
+            .ReturnsAsync((MedicalRecord?)null);
 
         // Act
         var act = async () => await _sut.Handle(request, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<EntityNotFoundException>().Where(e => e.EntityName == nameof(MedicalRecord));
+        await act.Should()
+            .ThrowAsync<EntityNotFoundException>()
+            .Where(e => e.EntityName == nameof(MedicalRecord));
 
-        _templateRepositoryMock.Verify(x => x.GetByCodeAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
-        _medicalRecordRepositoryMock.Verify(x => x.UpdateAsync(It.IsAny<MedicalRecord>(), It.IsAny<CancellationToken>()), Times.Never);
+        _templateRepositoryMock.Verify(
+            x => x.GetByCodeAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()),
+            Times.Never
+        );
+        _medicalRecordRepositoryMock.Verify(
+            x => x.UpdateAsync(It.IsAny<MedicalRecord>(), It.IsAny<CancellationToken>()),
+            Times.Never
+        );
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
@@ -87,25 +126,49 @@ public class AddClinicalDetailToMedicalRecordCommandHandlerTests
     {
         // Arrange
         var medicalRecordId = Guid.NewGuid();
-        var request = new AddClinicalDetailToMedicalRecordCommand(medicalRecordId, new DynamicClinicalDetailDto("invalid-code", "{}"));
-        var record = CreateMedicalRecord(medicalRecordId, Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "Checkup");
+        var request = new AddClinicalDetailToMedicalRecordCommand(
+            medicalRecordId,
+            new DynamicClinicalDetailDto("invalid-code", "{}")
+        );
+        var record = CreateMedicalRecord(
+            medicalRecordId,
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            "Checkup"
+        );
 
-        _medicalRecordRepositoryMock.Setup(x => x.GetByIdAsync(medicalRecordId, CancellationToken.None)).ReturnsAsync(record);
+        _medicalRecordRepositoryMock
+            .Setup(x => x.GetByIdAsync(medicalRecordId, CancellationToken.None))
+            .ReturnsAsync(record);
 
-        _templateRepositoryMock.Setup(x => x.GetByCodeAsync("invalid-code", CancellationToken.None)).ReturnsAsync((ClinicalFormTemplate?)null);
+        _templateRepositoryMock
+            .Setup(x => x.GetByCodeAsync("invalid-code", CancellationToken.None))
+            .ReturnsAsync((ClinicalFormTemplate?)null);
 
         // Act
         var act = async () => await _sut.Handle(request, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<EntityNotFoundException>().Where(e => e.EntityName == nameof(ClinicalFormTemplate));
+        await act.Should()
+            .ThrowAsync<EntityNotFoundException>()
+            .Where(e => e.EntityName == nameof(ClinicalFormTemplate));
 
-        _medicalRecordRepositoryMock.Verify(x => x.UpdateAsync(It.IsAny<MedicalRecord>(), It.IsAny<CancellationToken>()), Times.Never);
+        _medicalRecordRepositoryMock.Verify(
+            x => x.UpdateAsync(It.IsAny<MedicalRecord>(), It.IsAny<CancellationToken>()),
+            Times.Never
+        );
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
     // Helpers
-    private static MedicalRecord CreateMedicalRecord(Guid id, Guid patientId, Guid doctorId, Guid appointmentId, string chiefComplaint)
+    private static MedicalRecord CreateMedicalRecord(
+        Guid id,
+        Guid patientId,
+        Guid doctorId,
+        Guid appointmentId,
+        string chiefComplaint
+    )
     {
         var record = (MedicalRecord)Activator.CreateInstance(typeof(MedicalRecord), true)!;
         SetPrivateProperty(record, nameof(MedicalRecord.Id), id);
@@ -116,9 +179,13 @@ public class AddClinicalDetailToMedicalRecordCommandHandlerTests
         return record;
     }
 
-    private static ClinicalFormTemplate CreateFormTemplate(string code = "Test1", string jsonSchema = "{}")
+    private static ClinicalFormTemplate CreateFormTemplate(
+        string code = "Test1",
+        string jsonSchema = "{}"
+    )
     {
-        var template = (ClinicalFormTemplate)Activator.CreateInstance(typeof(ClinicalFormTemplate), true)!;
+        var template = (ClinicalFormTemplate)
+            Activator.CreateInstance(typeof(ClinicalFormTemplate), true)!;
         SetPrivateProperty(template, nameof(ClinicalFormTemplate.Id), Guid.NewGuid());
         SetPrivateProperty(template, nameof(ClinicalFormTemplate.Code), code);
         SetPrivateProperty(template, nameof(ClinicalFormTemplate.Name), "Test Form");
@@ -131,7 +198,13 @@ public class AddClinicalDetailToMedicalRecordCommandHandlerTests
         var type = obj.GetType();
         while (type != null)
         {
-            var prop = type.GetProperty(propertyName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+            var prop = type.GetProperty(
+                propertyName,
+                BindingFlags.Public
+                    | BindingFlags.NonPublic
+                    | BindingFlags.Instance
+                    | BindingFlags.DeclaredOnly
+            );
             if (prop != null)
             {
                 prop.SetValue(obj, value);

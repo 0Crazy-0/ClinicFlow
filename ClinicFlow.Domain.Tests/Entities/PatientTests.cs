@@ -3,9 +3,8 @@ using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Exceptions.Patients;
-using FluentAssertions;
-
 using ClinicFlow.Domain.ValueObjects;
+using FluentAssertions;
 
 namespace ClinicFlow.Domain.Tests.Entities;
 
@@ -42,20 +41,34 @@ public class PatientTests
     public void Create_ShouldThrowException_WhenDateOfBirthIsInTheFuture()
     {
         // Arrange & Act
-        var act = () => Patient.CreateSelf(Guid.NewGuid(), PersonName.Create("John Doe"), DateTime.UtcNow.AddDays(1));
+        var act = () =>
+            Patient.CreateSelf(
+                Guid.NewGuid(),
+                PersonName.Create("John Doe"),
+                DateTime.UtcNow.AddDays(1)
+            );
 
         // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.Validation.ValueCannotBeInFuture);
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueCannotBeInFuture);
     }
 
     [Fact]
     public void Create_ShouldThrowException_WhenUserIdIsEmpty()
     {
         // Arrange & Act
-        var act = () => Patient.CreateSelf(Guid.Empty, PersonName.Create("John Doe"), DateTime.UtcNow.AddYears(-30));
+        var act = () =>
+            Patient.CreateSelf(
+                Guid.Empty,
+                PersonName.Create("John Doe"),
+                DateTime.UtcNow.AddYears(-30)
+            );
 
         // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.Validation.ValueRequired);
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
     // CreateFamilyMember
@@ -67,7 +80,12 @@ public class PatientTests
         var dateOfBirth = DateTime.UtcNow.AddYears(-10);
 
         // Act
-        var patient = Patient.CreateFamilyMember(userId, PersonName.Create("Family Member"), PatientRelationship.Child, dateOfBirth);
+        var patient = Patient.CreateFamilyMember(
+            userId,
+            PersonName.Create("Family Member"),
+            PatientRelationship.Child,
+            dateOfBirth
+        );
 
         // Assert
         patient.Should().NotBeNull();
@@ -80,30 +98,54 @@ public class PatientTests
     public void CreateFamilyMember_ShouldThrowException_WhenRelationshipIsSelf()
     {
         // Arrange & Act
-        var act = () => Patient.CreateFamilyMember(Guid.NewGuid(), PersonName.Create("Family Member"), PatientRelationship.Self, DateTime.UtcNow.AddYears(-10));
+        var act = () =>
+            Patient.CreateFamilyMember(
+                Guid.NewGuid(),
+                PersonName.Create("Family Member"),
+                PatientRelationship.Self,
+                DateTime.UtcNow.AddYears(-10)
+            );
 
         // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.Patient.CannotBeSelf);
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Patient.CannotBeSelf);
     }
 
     [Fact]
     public void CreateFamilyMember_ShouldThrowException_WhenUserIdIsEmpty()
     {
         // Arrange & Act
-        var act = () => Patient.CreateFamilyMember(Guid.Empty, PersonName.Create("Family Member"), PatientRelationship.Child, DateTime.UtcNow.AddYears(-10));
+        var act = () =>
+            Patient.CreateFamilyMember(
+                Guid.Empty,
+                PersonName.Create("Family Member"),
+                PatientRelationship.Child,
+                DateTime.UtcNow.AddYears(-10)
+            );
 
         // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.Validation.ValueRequired);
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Fact]
     public void CreateFamilyMember_ShouldThrowException_WhenDateOfBirthIsInTheFuture()
     {
         // Arrange & Act
-        var act = () => Patient.CreateFamilyMember(Guid.NewGuid(), PersonName.Create("Family Member"), PatientRelationship.Child, DateTime.UtcNow.AddDays(1));
+        var act = () =>
+            Patient.CreateFamilyMember(
+                Guid.NewGuid(),
+                PersonName.Create("Family Member"),
+                PatientRelationship.Child,
+                DateTime.UtcNow.AddDays(1)
+            );
 
         // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.Validation.ValueCannotBeInFuture);
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueCannotBeInFuture);
     }
 
     // HasCompleteMedicalProfile
@@ -111,7 +153,11 @@ public class PatientTests
     public void HasCompleteMedicalProfile_ShouldReturnFalse_WhenJustCreated()
     {
         // Arrange
-        var patient = Patient.CreateSelf(Guid.NewGuid(), PersonName.Create("John Doe"), DateTime.UtcNow.AddYears(-30));
+        var patient = Patient.CreateSelf(
+            Guid.NewGuid(),
+            PersonName.Create("John Doe"),
+            DateTime.UtcNow.AddYears(-30)
+        );
 
         // Act & Assert
         patient.HasCompleteMedicalProfile().Should().BeFalse();
@@ -121,7 +167,11 @@ public class PatientTests
     public void HasCompleteMedicalProfile_ShouldReturnTrue_WhenProfileIsCompleted()
     {
         // Arrange
-        var patient = Patient.CreateSelf(Guid.NewGuid(), PersonName.Create("John Doe"), DateTime.UtcNow.AddYears(-30));
+        var patient = Patient.CreateSelf(
+            Guid.NewGuid(),
+            PersonName.Create("John Doe"),
+            DateTime.UtcNow.AddYears(-30)
+        );
         patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
         patient.UpdateEmergencyContact(EmergencyContact.Create("Mom", "555-5555"));
 
@@ -133,7 +183,11 @@ public class PatientTests
     public void UpdateMedicalProfile_ShouldSetEmptyString_WhenNullStringsAreProvided()
     {
         // Arrange
-        var patient = Patient.CreateSelf(Guid.NewGuid(), PersonName.Create("John Doe"), DateTime.UtcNow.AddYears(-30));
+        var patient = Patient.CreateSelf(
+            Guid.NewGuid(),
+            PersonName.Create("John Doe"),
+            DateTime.UtcNow.AddYears(-30)
+        );
         var bloodType = BloodType.Create("A-");
 
         // Act
@@ -151,11 +205,14 @@ public class PatientTests
     {
         // Arrange
         var yearsAgo = 25;
-        var patient = Patient.CreateSelf(Guid.NewGuid(), PersonName.Create("John Doe"), DateTime.Today.AddYears(-yearsAgo));
+        var patient = Patient.CreateSelf(
+            Guid.NewGuid(),
+            PersonName.Create("John Doe"),
+            DateTime.Today.AddYears(-yearsAgo)
+        );
 
         // Act & Assert
         patient.GetAge().Should().Be(yearsAgo);
-
     }
 
     // EnsureNotBlocked
@@ -180,7 +237,7 @@ public class PatientTests
         var penalties = new List<PatientPenalty>
         {
             PatientPenalty.CreateWarning(patient.Id, Guid.NewGuid(), "Warning 1"),
-            PatientPenalty.CreateWarning(patient.Id, Guid.NewGuid(), "Warning 2")
+            PatientPenalty.CreateWarning(patient.Id, Guid.NewGuid(), "Warning 2"),
         };
 
         // Act
@@ -195,7 +252,10 @@ public class PatientTests
     {
         // Arrange
         var patient = CreatePatient();
-        var penalties = new List<PatientPenalty> { CreateExpiredBlock(patient.Id, "Old Block", DateTime.UtcNow.AddDays(-1)) };
+        var penalties = new List<PatientPenalty>
+        {
+            CreateExpiredBlock(patient.Id, "Old Block", DateTime.UtcNow.AddDays(-1)),
+        };
 
         // Act
         var act = () => Patient.EnsureNotBlocked(penalties);
@@ -210,32 +270,54 @@ public class PatientTests
         // Arrange
         var patient = CreatePatient();
         var blockedUntil = DateTime.UtcNow.AddDays(10);
-        var penalties = new List<PatientPenalty> { PatientPenalty.CreateBlock(patient.Id, "Active Block", blockedUntil) };
+        var penalties = new List<PatientPenalty>
+        {
+            PatientPenalty.CreateBlock(patient.Id, "Active Block", blockedUntil),
+        };
 
         // Act
         var act = () => Patient.EnsureNotBlocked(penalties);
 
         // Assert
-        act.Should().Throw<PatientBlockedException>().WithMessage(DomainErrors.Patient.Blocked).Where(e => e.BlockedUntil == blockedUntil);
+        act.Should()
+            .Throw<PatientBlockedException>()
+            .WithMessage(DomainErrors.Patient.Blocked)
+            .Where(e => e.BlockedUntil == blockedUntil);
     }
 
     // Helpers
     private static Patient CreatePatient()
     {
-        var patient = Patient.CreateSelf(Guid.NewGuid(), PersonName.Create("John Doe"), DateTime.UtcNow.AddYears(-30));
+        var patient = Patient.CreateSelf(
+            Guid.NewGuid(),
+            PersonName.Create("John Doe"),
+            DateTime.UtcNow.AddYears(-30)
+        );
         patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
         patient.UpdateEmergencyContact(EmergencyContact.Create("Mom", "555-5555"));
         return patient;
     }
 
-    private static PatientPenalty CreateExpiredBlock(Guid patientId, string reason, DateTime blockedUntil)
+    private static PatientPenalty CreateExpiredBlock(
+        Guid patientId,
+        string reason,
+        DateTime blockedUntil
+    )
     {
         var penalty = (PatientPenalty)Activator.CreateInstance(typeof(PatientPenalty), true)!;
 
-        typeof(PatientPenalty).GetProperty(nameof(PatientPenalty.PatientId))!.SetValue(penalty, patientId);
-        typeof(PatientPenalty).GetProperty(nameof(PatientPenalty.Type))!.SetValue(penalty, PenaltyType.TemporaryBlock);
-        typeof(PatientPenalty).GetProperty(nameof(PatientPenalty.Reason))!.SetValue(penalty, reason);
-        typeof(PatientPenalty).GetProperty(nameof(PatientPenalty.BlockedUntil))!.SetValue(penalty, blockedUntil);
+        typeof(PatientPenalty)
+            .GetProperty(nameof(PatientPenalty.PatientId))!
+            .SetValue(penalty, patientId);
+        typeof(PatientPenalty)
+            .GetProperty(nameof(PatientPenalty.Type))!
+            .SetValue(penalty, PenaltyType.TemporaryBlock);
+        typeof(PatientPenalty)
+            .GetProperty(nameof(PatientPenalty.Reason))!
+            .SetValue(penalty, reason);
+        typeof(PatientPenalty)
+            .GetProperty(nameof(PatientPenalty.BlockedUntil))!
+            .SetValue(penalty, blockedUntil);
 
         return penalty;
     }

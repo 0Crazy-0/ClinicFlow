@@ -1,8 +1,8 @@
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
-using ClinicFlow.Domain.ValueObjects;
 using ClinicFlow.Domain.Exceptions.Base;
+using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
 
 namespace ClinicFlow.Domain.Tests.Entities;
@@ -39,9 +39,17 @@ public class UserTests
     public void Create_ShouldThrowException_WhenPasswordHashIsEmpty(string? invalidHash)
     {
         // Arrange & Act
-        var act = () => User.Create(EmailAddress.Create("test@clinic.com"), invalidHash!, PhoneNumber.Create("555-1234"), UserRole.Doctor);
+        var act = () =>
+            User.Create(
+                EmailAddress.Create("test@clinic.com"),
+                invalidHash!,
+                PhoneNumber.Create("555-1234"),
+                UserRole.Doctor
+            );
 
         // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.Validation.ValueRequired);
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 }

@@ -31,7 +31,13 @@ public class Patient : BaseEntity
     // EF Core constructor
     private Patient() { }
 
-    private Patient(Guid userId, PersonName fullName, PatientRelationship relationshipToUser, DateTime dateOfBirth) : this()
+    private Patient(
+        Guid userId,
+        PersonName fullName,
+        PatientRelationship relationshipToUser,
+        DateTime dateOfBirth
+    )
+        : this()
     {
         UserId = userId;
         FullName = fullName;
@@ -45,8 +51,10 @@ public class Patient : BaseEntity
     /// <exception cref="DomainValidationException">Thrown when the user ID is empty or the date of birth is in the future.</exception>
     internal static Patient CreateSelf(Guid userId, PersonName fullName, DateTime dateOfBirth)
     {
-        if (userId == Guid.Empty) throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-        if (dateOfBirth > DateTime.UtcNow) throw new DomainValidationException(DomainErrors.Validation.ValueCannotBeInFuture);
+        if (userId == Guid.Empty)
+            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        if (dateOfBirth > DateTime.UtcNow)
+            throw new DomainValidationException(DomainErrors.Validation.ValueCannotBeInFuture);
 
         return new Patient(userId, fullName, PatientRelationship.Self, dateOfBirth);
     }
@@ -55,29 +63,42 @@ public class Patient : BaseEntity
     /// Creates a new patient entity representing a family member dependent of a primary user.
     /// </summary>
     /// <exception cref="DomainValidationException">Thrown when the relationship is Self, user ID is empty, or the date of birth is in the future.</exception>
-    public static Patient CreateFamilyMember(Guid userId, PersonName fullName, PatientRelationship relationshipToUser, DateTime dateOfBirth)
+    public static Patient CreateFamilyMember(
+        Guid userId,
+        PersonName fullName,
+        PatientRelationship relationshipToUser,
+        DateTime dateOfBirth
+    )
     {
-        if (relationshipToUser is PatientRelationship.Self) throw new DomainValidationException(DomainErrors.Patient.CannotBeSelf);
-        if (userId == Guid.Empty) throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-        if (dateOfBirth > DateTime.UtcNow) throw new DomainValidationException(DomainErrors.Validation.ValueCannotBeInFuture);
+        if (relationshipToUser is PatientRelationship.Self)
+            throw new DomainValidationException(DomainErrors.Patient.CannotBeSelf);
+        if (userId == Guid.Empty)
+            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        if (dateOfBirth > DateTime.UtcNow)
+            throw new DomainValidationException(DomainErrors.Validation.ValueCannotBeInFuture);
 
         return new Patient(userId, fullName, relationshipToUser, dateOfBirth);
     }
 
-    public void UpdateMedicalProfile(BloodType bloodType, string allergies, string chronicConditions)
+    public void UpdateMedicalProfile(
+        BloodType bloodType,
+        string allergies,
+        string chronicConditions
+    )
     {
         BloodType = bloodType;
         Allergies = allergies ?? string.Empty;
         ChronicConditions = chronicConditions ?? string.Empty;
     }
 
-    public void UpdateEmergencyContact(EmergencyContact emergencyContact) => EmergencyContact = emergencyContact;
+    public void UpdateEmergencyContact(EmergencyContact emergencyContact) =>
+        EmergencyContact = emergencyContact;
 
     /// <summary>
     /// Checks if the patient has all required medical and emergency contact information.
     /// </summary>
-    public bool HasCompleteMedicalProfile() => BloodType is not null && EmergencyContact is not null;
-
+    public bool HasCompleteMedicalProfile() =>
+        BloodType is not null && EmergencyContact is not null;
 
     /// <summary>
     /// Ensures the patient's medical profile is complete before allowing certain actions.
@@ -89,7 +110,6 @@ public class Patient : BaseEntity
             throw new IncompleteProfileException(DomainErrors.Patient.ProfileIncomplete);
     }
 
-
     /// <summary>
     /// Calculates the patient's current age in full years.
     /// </summary>
@@ -98,14 +118,24 @@ public class Patient : BaseEntity
         var today = DateTime.Today;
         var age = today.Year - DateOfBirth.Year;
 
-        if (DateOfBirth.AddYears(age) > today) age--;
+        if (DateOfBirth.AddYears(age) > today)
+            age--;
 
         return age;
     }
 
-    private static bool IsBlockedFromBooking(IEnumerable<PatientPenalty> penalties, out DateTime? blockedUntil)
+    private static bool IsBlockedFromBooking(
+        IEnumerable<PatientPenalty> penalties,
+        out DateTime? blockedUntil
+    )
     {
-        var activePenalties = penalties.Where(p => p.Type is PenaltyType.TemporaryBlock && p.BlockedUntil.HasValue && p.BlockedUntil > DateTime.UtcNow).ToList();
+        var activePenalties = penalties
+            .Where(p =>
+                p.Type is PenaltyType.TemporaryBlock
+                && p.BlockedUntil.HasValue
+                && p.BlockedUntil > DateTime.UtcNow
+            )
+            .ToList();
 
         blockedUntil = activePenalties.Count > 0 ? activePenalties.Max(p => p.BlockedUntil) : null;
 
@@ -119,6 +149,10 @@ public class Patient : BaseEntity
     /// <exception cref="PatientBlockedException">Thrown when the patient has an active temporary block.</exception>
     internal static void EnsureNotBlocked(IEnumerable<PatientPenalty> penalties)
     {
-        if (IsBlockedFromBooking(penalties, out var blockedUntil)) throw new PatientBlockedException(DomainErrors.Patient.Blocked, blockedUntil ?? DateTime.UtcNow);
+        if (IsBlockedFromBooking(penalties, out var blockedUntil))
+            throw new PatientBlockedException(
+                DomainErrors.Patient.Blocked,
+                blockedUntil ?? DateTime.UtcNow
+            );
     }
 }

@@ -1,7 +1,7 @@
 using ClinicFlow.Domain.Common;
+using ClinicFlow.Domain.Exceptions.Scheduling;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
-using ClinicFlow.Domain.Exceptions.Scheduling;
 
 namespace ClinicFlow.Domain.Tests.ValueObjects;
 
@@ -15,7 +15,9 @@ public class TimeRangeTests
         var act = () => TimeRange.Create(TimeSpan.FromHours(10), TimeSpan.FromHours(9));
 
         // Assert
-        act.Should().Throw<InvalidTimeRangeException>().WithMessage(DomainErrors.Schedule.InvalidTimeRange);
+        act.Should()
+            .Throw<InvalidTimeRangeException>()
+            .WithMessage(DomainErrors.Schedule.InvalidTimeRange);
     }
 
     // Duration
@@ -39,7 +41,9 @@ public class TimeRangeTests
         var tr3 = TimeRange.Create(TimeSpan.FromHours(10), TimeSpan.FromHours(11));
 
         // Act & Assert
-        (tr1 == tr2).Should().BeTrue();
+        (tr1 == tr2)
+            .Should()
+            .BeTrue();
         (tr1 != tr3).Should().BeTrue();
     }
 
@@ -54,7 +58,9 @@ public class TimeRangeTests
         var act = () => range.OverlapsWith(null!);
 
         // Assert
-        act.Should().Throw<InvalidTimeRangeException>().WithMessage(DomainErrors.General.RequiredFieldNull);
+        act.Should()
+            .Throw<InvalidTimeRangeException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 
     [Theory]
@@ -64,13 +70,24 @@ public class TimeRangeTests
     [InlineData(9, 10, 10, 11, false)] // After, no overlap (touching)
     [InlineData(9, 10, 9.2, 9.8, true)] // Inside
     [InlineData(9, 10, 8, 11, true)] // Enveloping (other covers range)
-    public void OverlapsWith_ShouldReturnCorrectResult(double start, double end, double otherStart, double otherEnd, bool expected)
+    public void OverlapsWith_ShouldReturnCorrectResult(
+        double start,
+        double end,
+        double otherStart,
+        double otherEnd,
+        bool expected
+    )
     {
         // Arrange
         var range = TimeRange.Create(TimeSpan.FromHours(start), TimeSpan.FromHours(end));
 
         // Act & Assert
-        range.OverlapsWith(TimeRange.Create(TimeSpan.FromHours(otherStart), TimeSpan.FromHours(otherEnd))).Should().Be(expected);
+        range
+            .OverlapsWith(
+                TimeRange.Create(TimeSpan.FromHours(otherStart), TimeSpan.FromHours(otherEnd))
+            )
+            .Should()
+            .Be(expected);
     }
 
     // Covers
@@ -84,7 +101,9 @@ public class TimeRangeTests
         var act = () => range.Covers(null!);
 
         // Assert
-        act.Should().Throw<InvalidTimeRangeException>().WithMessage(DomainErrors.General.RequiredFieldNull);
+        act.Should()
+            .Throw<InvalidTimeRangeException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 
     [Theory]
@@ -95,12 +114,21 @@ public class TimeRangeTests
     [InlineData(9, 10, 10, 11, false)] // Outside after
     [InlineData(9, 10, 9, 10.1, false)] // Slightly extending end
     [InlineData(9, 10, 8.9, 10, false)] // Slightly extending start
-    public void Covers_ShouldReturnCorrectResult(double start, double end, double otherStart, double otherEnd, bool expected)
+    public void Covers_ShouldReturnCorrectResult(
+        double start,
+        double end,
+        double otherStart,
+        double otherEnd,
+        bool expected
+    )
     {
         // Arrange
         var range = TimeRange.Create(TimeSpan.FromHours(start), TimeSpan.FromHours(end));
 
         // Act & Assert
-        range.Covers(TimeRange.Create(TimeSpan.FromHours(otherStart), TimeSpan.FromHours(otherEnd))).Should().Be(expected);
+        range
+            .Covers(TimeRange.Create(TimeSpan.FromHours(otherStart), TimeSpan.FromHours(otherEnd)))
+            .Should()
+            .Be(expected);
     }
 }

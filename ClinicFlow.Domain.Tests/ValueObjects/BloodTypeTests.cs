@@ -18,7 +18,9 @@ public class BloodTypeTests
         var act = () => BloodType.Create(value!);
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage(DomainErrors.Validation.ValueRequired);
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Theory]
@@ -32,7 +34,9 @@ public class BloodTypeTests
         var act = () => BloodType.Create(value);
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage(DomainErrors.Validation.InvalidBloodType);
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.Validation.InvalidBloodType);
     }
 
     [Theory]
@@ -94,7 +98,9 @@ public class BloodTypeTests
         var bt3 = BloodType.Create("B-");
 
         // Act & Assert
-        (bt1 == bt2).Should().BeTrue();
+        (bt1 == bt2)
+            .Should()
+            .BeTrue();
         (bt1 != bt3).Should().BeTrue();
     }
 }

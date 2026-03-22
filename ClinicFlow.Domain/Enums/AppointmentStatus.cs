@@ -38,5 +38,5 @@ public enum AppointmentStatus
     /// <summary>
     /// The appointment was cancelled after the allowed cancellation window, incurring a penalty.
     /// </summary>
-    LateCancellation = 7
+    LateCancellation = 7,
 }

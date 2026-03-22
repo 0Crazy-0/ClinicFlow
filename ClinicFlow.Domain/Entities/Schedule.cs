@@ -18,7 +18,10 @@ public class Schedule : BaseEntity
     public bool IsActive { get; private set; }
 
     // EF Core constructor
-    private Schedule() { TimeRange = null!; }
+    private Schedule()
+    {
+        TimeRange = null!;
+    }
 
     private Schedule(Guid doctorId, DayOfWeek dayOfWeek, TimeRange timeRange)
     {
@@ -34,9 +37,12 @@ public class Schedule : BaseEntity
     /// <exception cref="DomainValidationException">Thrown when the doctor ID is empty, the day of week is invalid, or the time range is null.</exception>
     internal static Schedule Create(Guid doctorId, DayOfWeek dayOfWeek, TimeRange timeRange)
     {
-        if (doctorId == Guid.Empty) throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-        if (!Enum.IsDefined(dayOfWeek)) throw new DomainValidationException(DomainErrors.Schedule.InvalidDayOfWeek);
-        if (timeRange is null) throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+        if (doctorId == Guid.Empty)
+            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        if (!Enum.IsDefined(dayOfWeek))
+            throw new DomainValidationException(DomainErrors.Schedule.InvalidDayOfWeek);
+        if (timeRange is null)
+            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
 
         return new Schedule(doctorId, dayOfWeek, timeRange);
     }
@@ -44,5 +50,6 @@ public class Schedule : BaseEntity
     /// <summary>
     /// Checks whether this schedule slot fully covers the requested time range and is active.
     /// </summary>
-    internal bool CoversTimeRange(TimeRange requestedRange) => IsActive && TimeRange.Covers(requestedRange);
+    internal bool CoversTimeRange(TimeRange requestedRange) =>
+        IsActive && TimeRange.Covers(requestedRange);
 }

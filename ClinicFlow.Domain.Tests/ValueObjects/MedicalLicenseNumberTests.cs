@@ -18,7 +18,9 @@ public class MedicalLicenseNumberTests
         var act = () => MedicalLicenseNumber.Create(value!);
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage(DomainErrors.Validation.ValueRequired);
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Theory]
@@ -31,7 +33,9 @@ public class MedicalLicenseNumberTests
         var act = () => MedicalLicenseNumber.Create(value);
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage(DomainErrors.Validation.ValueTooShort);
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueTooShort);
     }
 
     [Fact]
@@ -79,7 +83,9 @@ public class MedicalLicenseNumberTests
         var l3 = MedicalLicenseNumber.Create("MED-99999");
 
         // Act & Assert
-        (l1 == l2).Should().BeTrue();
+        (l1 == l2)
+            .Should()
+            .BeTrue();
         (l1 != l3).Should().BeTrue();
     }
 }

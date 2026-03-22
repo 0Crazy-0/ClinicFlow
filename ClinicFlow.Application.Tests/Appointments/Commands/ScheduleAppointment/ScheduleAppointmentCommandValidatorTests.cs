@@ -16,7 +16,14 @@ public class ScheduleAppointmentCommandValidatorTests
     public void Validate_ShouldBeValid_WhenAllPropertiesAreProvidedAndValid()
     {
         // Arrange
-        var command = new ScheduleAppointmentCommand(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow.Date.AddDays(1), new TimeSpan(10, 0, 0), new TimeSpan(11, 0, 0));
+        var command = new ScheduleAppointmentCommand(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            DateTime.UtcNow.Date.AddDays(1),
+            new TimeSpan(10, 0, 0),
+            new TimeSpan(11, 0, 0)
+        );
 
         // Act
         var result = _sut.TestValidate(command);
@@ -29,7 +36,14 @@ public class ScheduleAppointmentCommandValidatorTests
     public void Validate_ShouldHaveError_WhenPatientIdIsEmpty()
     {
         // Arrange
-        var command = new ScheduleAppointmentCommand(Guid.Empty, Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow.Date.AddDays(1), new TimeSpan(10, 0, 0), new TimeSpan(11, 0, 0));
+        var command = new ScheduleAppointmentCommand(
+            Guid.Empty,
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            DateTime.UtcNow.Date.AddDays(1),
+            new TimeSpan(10, 0, 0),
+            new TimeSpan(11, 0, 0)
+        );
 
         // Act
         var result = _sut.TestValidate(command);
@@ -42,7 +56,14 @@ public class ScheduleAppointmentCommandValidatorTests
     public void Validate_ShouldHaveError_WhenDoctorIdIsEmpty()
     {
         // Arrange
-        var command = new ScheduleAppointmentCommand(Guid.NewGuid(), Guid.Empty, Guid.NewGuid(), DateTime.UtcNow.Date.AddDays(1), new TimeSpan(10, 0, 0), new TimeSpan(11, 0, 0));
+        var command = new ScheduleAppointmentCommand(
+            Guid.NewGuid(),
+            Guid.Empty,
+            Guid.NewGuid(),
+            DateTime.UtcNow.Date.AddDays(1),
+            new TimeSpan(10, 0, 0),
+            new TimeSpan(11, 0, 0)
+        );
 
         // Act
         var result = _sut.TestValidate(command);
@@ -55,7 +76,14 @@ public class ScheduleAppointmentCommandValidatorTests
     public void Validate_ShouldHaveError_WhenAppointmentTypeIdIsEmpty()
     {
         // Arrange
-        var command = new ScheduleAppointmentCommand(Guid.NewGuid(), Guid.NewGuid(), Guid.Empty, DateTime.UtcNow.Date.AddDays(1), new TimeSpan(10, 0, 0), new TimeSpan(11, 0, 0));
+        var command = new ScheduleAppointmentCommand(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.Empty,
+            DateTime.UtcNow.Date.AddDays(1),
+            new TimeSpan(10, 0, 0),
+            new TimeSpan(11, 0, 0)
+        );
 
         // Act
         var result = _sut.TestValidate(command);
@@ -68,7 +96,14 @@ public class ScheduleAppointmentCommandValidatorTests
     public void Validate_ShouldHaveError_WhenScheduledDateIsInThePast()
     {
         // Arrange
-        var command = new ScheduleAppointmentCommand(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow.Date.AddDays(-1), new TimeSpan(10, 0, 0), new TimeSpan(11, 0, 0));
+        var command = new ScheduleAppointmentCommand(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            DateTime.UtcNow.Date.AddDays(-1),
+            new TimeSpan(10, 0, 0),
+            new TimeSpan(11, 0, 0)
+        );
 
         // Act
         var result = _sut.TestValidate(command);
@@ -81,7 +116,14 @@ public class ScheduleAppointmentCommandValidatorTests
     public void Validate_ShouldHaveError_WhenStartTimeIsAfterEndTime()
     {
         // Arrange
-        var command = new ScheduleAppointmentCommand(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow.Date.AddDays(1), new TimeSpan(11, 0, 0), new TimeSpan(10, 0, 0));
+        var command = new ScheduleAppointmentCommand(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            DateTime.UtcNow.Date.AddDays(1),
+            new TimeSpan(11, 0, 0),
+            new TimeSpan(10, 0, 0)
+        );
 
         // Act
         var result = _sut.TestValidate(command);

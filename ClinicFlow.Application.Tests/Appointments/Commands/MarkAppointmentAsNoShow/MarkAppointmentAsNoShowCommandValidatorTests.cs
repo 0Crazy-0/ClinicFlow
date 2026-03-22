@@ -22,7 +22,9 @@ public class MarkAppointmentAsNoShowCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.AppointmentId).WithErrorMessage("Appointment ID is required.");
+        result
+            .ShouldHaveValidationErrorFor(x => x.AppointmentId)
+            .WithErrorMessage("Appointment ID is required.");
     }
 
     [Fact]
@@ -35,7 +37,9 @@ public class MarkAppointmentAsNoShowCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.InitiatorUserId).WithErrorMessage("Initiator User ID is required.");
+        result
+            .ShouldHaveValidationErrorFor(x => x.InitiatorUserId)
+            .WithErrorMessage("Initiator User ID is required.");
     }
 
     [Fact]

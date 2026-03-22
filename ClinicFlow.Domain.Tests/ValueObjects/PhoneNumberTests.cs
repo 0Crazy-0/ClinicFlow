@@ -18,7 +18,9 @@ public class PhoneNumberTests
         var act = () => PhoneNumber.Create(value!);
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage(DomainErrors.Validation.ValueRequired);
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Theory]
@@ -31,7 +33,9 @@ public class PhoneNumberTests
         var act = () => PhoneNumber.Create(value);
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage(DomainErrors.Validation.InvalidPhoneFormat);
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.Validation.InvalidPhoneFormat);
     }
 
     [Fact]
@@ -80,7 +84,9 @@ public class PhoneNumberTests
         var p3 = PhoneNumber.Create("+0987654321");
 
         // Act & Assert
-        (p1 == p2).Should().BeTrue();
+        (p1 == p2)
+            .Should()
+            .BeTrue();
         (p1 != p3).Should().BeTrue();
     }
 }

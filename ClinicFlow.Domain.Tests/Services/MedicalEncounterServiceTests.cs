@@ -1,5 +1,5 @@
-using ClinicFlow.Domain.Common;
 using System.Reflection;
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Entities.ClinicalDetails;
 using ClinicFlow.Domain.Exceptions.Base;
@@ -24,9 +24,14 @@ public class MedicalEncounterServiceTests
         _mockPolicy2 = new Mock<IMedicalRecordValidationPolicy>();
         _mockJsonValidator = new Mock<IJsonSchemaValidator>();
 
-        var policies = new List<IMedicalRecordValidationPolicy> { _mockPolicy1.Object, _mockPolicy2.Object };
+        var policies = new List<IMedicalRecordValidationPolicy>
+        {
+            _mockPolicy1.Object,
+            _mockPolicy2.Object,
+        };
         _sut = new MedicalEncounterService(policies, _mockJsonValidator.Object);
     }
+
     // ValidateAndCompleteRecord
     [Fact]
     public void ValidateAndCompleteRecord_ShouldThrowDomainValidationException_WhenRecordIsNull()
@@ -35,7 +40,9 @@ public class MedicalEncounterServiceTests
         var act = () => _sut.ValidateAndCompleteRecord(null!, new MedicalEncounterContext());
 
         // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.General.RequiredFieldNull);
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 
     [Fact]
@@ -48,7 +55,9 @@ public class MedicalEncounterServiceTests
         var act = () => _sut.ValidateAndCompleteRecord(record, null!);
 
         // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.General.RequiredFieldNull);
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 
     [Fact]
@@ -60,14 +69,16 @@ public class MedicalEncounterServiceTests
         {
             ExpectedDoctor = null!,
             Appointment = CreateAppointment(Guid.NewGuid()),
-            AppointmentTypeDefinition = CreateAppointmentType()
+            AppointmentTypeDefinition = CreateAppointmentType(),
         };
 
         // Act
         var act = () => _sut.ValidateAndCompleteRecord(record, context);
 
         // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.General.RequiredFieldNull);
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 
     [Fact]
@@ -79,14 +90,16 @@ public class MedicalEncounterServiceTests
         {
             ExpectedDoctor = CreateDoctor(Guid.NewGuid()),
             Appointment = null!,
-            AppointmentTypeDefinition = CreateAppointmentType()
+            AppointmentTypeDefinition = CreateAppointmentType(),
         };
 
         // Act
         var act = () => _sut.ValidateAndCompleteRecord(record, context);
 
         // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.General.RequiredFieldNull);
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 
     [Fact]
@@ -98,14 +111,16 @@ public class MedicalEncounterServiceTests
         {
             ExpectedDoctor = CreateDoctor(Guid.NewGuid()),
             Appointment = CreateAppointment(Guid.NewGuid()),
-            AppointmentTypeDefinition = null!
+            AppointmentTypeDefinition = null!,
         };
 
         // Act
         var act = () => _sut.ValidateAndCompleteRecord(record, context);
 
         // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.General.RequiredFieldNull);
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 
     [Fact]
@@ -121,14 +136,16 @@ public class MedicalEncounterServiceTests
         {
             ExpectedDoctor = CreateDoctor(expectedDoctorId),
             Appointment = CreateAppointment(appointmentId),
-            AppointmentTypeDefinition = CreateAppointmentType()
+            AppointmentTypeDefinition = CreateAppointmentType(),
         };
 
         // Act
         var act = () => _sut.ValidateAndCompleteRecord(record, context);
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage(DomainErrors.MedicalEncounter.DoctorMismatch);
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.MedicalEncounter.DoctorMismatch);
     }
 
     [Fact]
@@ -144,14 +161,16 @@ public class MedicalEncounterServiceTests
         {
             ExpectedDoctor = CreateDoctor(doctorId),
             Appointment = CreateAppointment(expectedAppointmentId),
-            AppointmentTypeDefinition = CreateAppointmentType()
+            AppointmentTypeDefinition = CreateAppointmentType(),
         };
 
         // Act
         var act = () => _sut.ValidateAndCompleteRecord(record, context);
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage(DomainErrors.MedicalEncounter.AppointmentMismatch);
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.MedicalEncounter.AppointmentMismatch);
     }
 
     [Fact]
@@ -172,7 +191,7 @@ public class MedicalEncounterServiceTests
             ExpectedDoctor = CreateDoctor(doctorId),
             Appointment = CreateAppointment(appointmentId),
             AppointmentTypeDefinition = appointmentType,
-            ProvidedDetails = providedDetails
+            ProvidedDetails = providedDetails,
         };
 
         // Act
@@ -190,8 +209,11 @@ public class MedicalEncounterServiceTests
     [Fact]
     public void AppendClinicalDetail_ShouldThrowDomainValidationException_WhenRecordIsNull()
     {
-        var act = () => _sut.AppendClinicalDetail(null!, new TestClinicalDetail1(), CreateFormTemplate());
-        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.General.RequiredFieldNull);
+        var act = () =>
+            _sut.AppendClinicalDetail(null!, new TestClinicalDetail1(), CreateFormTemplate());
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 
     [Fact]
@@ -199,7 +221,9 @@ public class MedicalEncounterServiceTests
     {
         var record = CreateMedicalRecord(Guid.NewGuid(), Guid.NewGuid());
         var act = () => _sut.AppendClinicalDetail(record, null!, CreateFormTemplate());
-        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.General.RequiredFieldNull);
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 
     [Fact]
@@ -207,7 +231,9 @@ public class MedicalEncounterServiceTests
     {
         var record = CreateMedicalRecord(Guid.NewGuid(), Guid.NewGuid());
         var act = () => _sut.AppendClinicalDetail(record, new TestClinicalDetail1(), null!);
-        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.General.RequiredFieldNull);
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 
     [Fact]
@@ -219,14 +245,18 @@ public class MedicalEncounterServiceTests
 
         var act = () => _sut.AppendClinicalDetail(record, detail, template);
 
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage(ClinicFlow.Domain.Common.DomainErrors.MedicalEncounter.CodeMismatch);
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(ClinicFlow.Domain.Common.DomainErrors.MedicalEncounter.CodeMismatch);
     }
 
     [Theory]
     [InlineData(null)]
     [InlineData("")]
     [InlineData("   ")]
-    public void AppendClinicalDetail_ShouldThrowBusinessRuleValidationException_WhenPayloadIsNullOrWhiteSpace(string? payload)
+    public void AppendClinicalDetail_ShouldThrowBusinessRuleValidationException_WhenPayloadIsNullOrWhiteSpace(
+        string? payload
+    )
     {
         var record = CreateMedicalRecord(Guid.NewGuid(), Guid.NewGuid());
         var template = CreateFormTemplate("Test1");
@@ -237,7 +267,9 @@ public class MedicalEncounterServiceTests
 
         var act = () => _sut.AppendClinicalDetail(record, mockDetail.Object, template);
 
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage(DomainErrors.MedicalEncounter.MissingPayload);
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.MedicalEncounter.MissingPayload);
     }
 
     [Fact]
@@ -252,11 +284,21 @@ public class MedicalEncounterServiceTests
         var template = CreateFormTemplate("Test1", "{\"type\": \"object\"}");
 
         string errorMessage = "Schema validation failed";
-        _mockJsonValidator.Setup(v => v.ValidateSchema("{\"type\": \"object\"}", "{\"invalid\": \"data\"}", out errorMessage!)).Returns(false);
+        _mockJsonValidator
+            .Setup(v =>
+                v.ValidateSchema(
+                    "{\"type\": \"object\"}",
+                    "{\"invalid\": \"data\"}",
+                    out errorMessage!
+                )
+            )
+            .Returns(false);
 
         var act = () => _sut.AppendClinicalDetail(record, mockDetail.Object, template);
 
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage($"{DomainErrors.MedicalEncounter.ValidationFailed}: {errorMessage}");
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage($"{DomainErrors.MedicalEncounter.ValidationFailed}: {errorMessage}");
     }
 
     [Fact]
@@ -271,12 +313,21 @@ public class MedicalEncounterServiceTests
         var template = CreateFormTemplate("Test1", "{\"type\": \"object\"}");
 
         string? errorMessage = null;
-        _mockJsonValidator.Setup(v => v.ValidateSchema("{\"type\": \"object\"}", "{\"valid\": \"data\"}", out errorMessage)).Returns(true);
+        _mockJsonValidator
+            .Setup(v =>
+                v.ValidateSchema(
+                    "{\"type\": \"object\"}",
+                    "{\"valid\": \"data\"}",
+                    out errorMessage
+                )
+            )
+            .Returns(true);
 
         _sut.AppendClinicalDetail(record, mockDetail.Object, template);
 
         record.ClinicalDetails.Should().Contain(mockDetail.Object);
     }
+
     private class TestClinicalDetail1 : IClinicalDetailRecord
     {
         public string TemplateCode => "Test1";
@@ -316,14 +367,19 @@ public class MedicalEncounterServiceTests
 
     private static AppointmentTypeDefinition CreateAppointmentType()
     {
-        var type = (AppointmentTypeDefinition)Activator.CreateInstance(typeof(AppointmentTypeDefinition), true)!;
+        var type = (AppointmentTypeDefinition)
+            Activator.CreateInstance(typeof(AppointmentTypeDefinition), true)!;
         SetPrivateProperty(type, nameof(AppointmentTypeDefinition.Id), Guid.NewGuid());
         return type;
     }
 
-    private static ClinicalFormTemplate CreateFormTemplate(string code = "Test1", string jsonSchema = "{}")
+    private static ClinicalFormTemplate CreateFormTemplate(
+        string code = "Test1",
+        string jsonSchema = "{}"
+    )
     {
-        var template = (ClinicalFormTemplate)Activator.CreateInstance(typeof(ClinicalFormTemplate), true)!;
+        var template = (ClinicalFormTemplate)
+            Activator.CreateInstance(typeof(ClinicalFormTemplate), true)!;
         SetPrivateProperty(template, nameof(ClinicalFormTemplate.Id), Guid.NewGuid());
         SetPrivateProperty(template, nameof(ClinicalFormTemplate.Code), code);
         SetPrivateProperty(template, nameof(ClinicalFormTemplate.Name), "Test Form");
@@ -337,7 +393,13 @@ public class MedicalEncounterServiceTests
 
         while (type != null)
         {
-            var prop = type.GetProperty(propertyName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+            var prop = type.GetProperty(
+                propertyName,
+                BindingFlags.Public
+                    | BindingFlags.NonPublic
+                    | BindingFlags.Instance
+                    | BindingFlags.DeclaredOnly
+            );
 
             if (prop != null)
             {

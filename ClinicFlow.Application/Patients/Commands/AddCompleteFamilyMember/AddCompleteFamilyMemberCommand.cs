@@ -3,5 +3,15 @@ using MediatR;
 
 namespace ClinicFlow.Application.Patients.Commands.AddCompleteFamilyMember;
 
-public record AddCompleteFamilyMemberCommand(Guid UserId, string FirstName, string LastName, DateTime DateOfBirth, string BloodType, string Allergies,
-    string ChronicConditions, string EmergencyContactName, string EmergencyContactPhone, PatientRelationship Relationship) : IRequest<Guid>;
+public record AddCompleteFamilyMemberCommand(
+    Guid UserId,
+    string FirstName,
+    string LastName,
+    DateTime DateOfBirth,
+    string BloodType,
+    string Allergies,
+    string ChronicConditions,
+    string EmergencyContactName,
+    string EmergencyContactPhone,
+    PatientRelationship Relationship
+) : IRequest<Guid>;

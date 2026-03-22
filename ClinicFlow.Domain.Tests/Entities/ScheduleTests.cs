@@ -28,12 +28,35 @@ public class ScheduleTests
     }
 
     [Theory]
-    [InlineData("00000000-0000-0000-0000-000000000000", DayOfWeek.Monday, 9, 17, DomainErrors.Validation.ValueRequired)]
-    [InlineData("11111111-1111-1111-1111-111111111111", (DayOfWeek)99, 9, 17, DomainErrors.Schedule.InvalidDayOfWeek)]
-    public void Create_ShouldThrowException_WhenInvalidParameters(string doctorIdStr, DayOfWeek dayOfWeek, double startHour, double endHour, string expectedMessage)
+    [InlineData(
+        "00000000-0000-0000-0000-000000000000",
+        DayOfWeek.Monday,
+        9,
+        17,
+        DomainErrors.Validation.ValueRequired
+    )]
+    [InlineData(
+        "11111111-1111-1111-1111-111111111111",
+        (DayOfWeek)99,
+        9,
+        17,
+        DomainErrors.Schedule.InvalidDayOfWeek
+    )]
+    public void Create_ShouldThrowException_WhenInvalidParameters(
+        string doctorIdStr,
+        DayOfWeek dayOfWeek,
+        double startHour,
+        double endHour,
+        string expectedMessage
+    )
     {
         // Arrange & Act
-        var act = () => Schedule.Create(Guid.Parse(doctorIdStr), dayOfWeek, TimeRange.Create(TimeSpan.FromHours(startHour), TimeSpan.FromHours(endHour)));
+        var act = () =>
+            Schedule.Create(
+                Guid.Parse(doctorIdStr),
+                dayOfWeek,
+                TimeRange.Create(TimeSpan.FromHours(startHour), TimeSpan.FromHours(endHour))
+            );
 
         // Assert
         act.Should().Throw<DomainValidationException>().WithMessage(expectedMessage);
@@ -46,7 +69,9 @@ public class ScheduleTests
         var act = () => Schedule.Create(Guid.NewGuid(), DayOfWeek.Monday, null!);
 
         // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.General.RequiredFieldNull);
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 
     [Theory]
@@ -57,13 +82,30 @@ public class ScheduleTests
     [InlineData(9, 17, 7, 8, false)] // Requested range is before schedule
     [InlineData(9, 17, 8, 10, false)] // Requested range starts before schedule
     [InlineData(9, 17, 16, 18, false)] // Requested range ends after schedule
-    public void CoversTimeRange_ShouldReturnExpectedResult(double scheduleStart, double scheduleEnd, double requestedStart, double requestedEnd, bool expected)
+    public void CoversTimeRange_ShouldReturnExpectedResult(
+        double scheduleStart,
+        double scheduleEnd,
+        double requestedStart,
+        double requestedEnd,
+        bool expected
+    )
     {
         // Arrange
-        var schedule = Schedule.Create(Guid.NewGuid(), DayOfWeek.Monday, TimeRange.Create(TimeSpan.FromHours(scheduleStart), TimeSpan.FromHours(scheduleEnd)));
+        var schedule = Schedule.Create(
+            Guid.NewGuid(),
+            DayOfWeek.Monday,
+            TimeRange.Create(TimeSpan.FromHours(scheduleStart), TimeSpan.FromHours(scheduleEnd))
+        );
 
         // Act & Assert
-        schedule.CoversTimeRange(TimeRange.Create(TimeSpan.FromHours(requestedStart), TimeSpan.FromHours(requestedEnd))).Should().Be(expected);
-
+        schedule
+            .CoversTimeRange(
+                TimeRange.Create(
+                    TimeSpan.FromHours(requestedStart),
+                    TimeSpan.FromHours(requestedEnd)
+                )
+            )
+            .Should()
+            .Be(expected);
     }
 }

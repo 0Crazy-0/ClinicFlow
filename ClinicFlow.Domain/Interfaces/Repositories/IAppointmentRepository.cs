@@ -11,13 +11,27 @@ public interface IAppointmentRepository
 {
     Task<Appointment?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
-    Task<IList<Appointment>> GetByDoctorIdAsync(Guid doctorId, DateTime date, CancellationToken cancellationToken = default);
+    Task<IList<Appointment>> GetByDoctorIdAsync(
+        Guid doctorId,
+        DateTime date,
+        CancellationToken cancellationToken = default
+    );
 
-    Task<IList<Appointment>> GetByDateRangeAsync(DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default);
+    Task<IList<Appointment>> GetByDateRangeAsync(
+        DateTime startDate,
+        DateTime endDate,
+        CancellationToken cancellationToken = default
+    );
 
-    Task<IList<Appointment>> GetByPatientIdAsync(Guid patientId, CancellationToken cancellationToken = default);
+    Task<IList<Appointment>> GetByPatientIdAsync(
+        Guid patientId,
+        CancellationToken cancellationToken = default
+    );
 
-    Task<Appointment> CreateAsync(Appointment appointment, CancellationToken cancellationToken = default);
+    Task<Appointment> CreateAsync(
+        Appointment appointment,
+        CancellationToken cancellationToken = default
+    );
 
     Task UpdateAsync(Appointment appointment, CancellationToken cancellationToken = default);
 
@@ -26,9 +40,20 @@ public interface IAppointmentRepository
     /// <summary>
     /// Checks whether a scheduling conflict exists for the specified doctor, date, and time range.
     /// </summary>
-    Task<bool> HasConflictAsync(Guid doctorId, DateTime scheduledDate, TimeRange timeRange, CancellationToken cancellationToken = default);
+    Task<bool> HasConflictAsync(
+        Guid doctorId,
+        DateTime scheduledDate,
+        TimeRange timeRange,
+        CancellationToken cancellationToken = default
+    );
 
-    Task<IList<Appointment>> GetUpcomingByPatientAsync(Guid patientId, CancellationToken cancellationToken = default);
+    Task<IList<Appointment>> GetUpcomingByPatientAsync(
+        Guid patientId,
+        CancellationToken cancellationToken = default
+    );
 
-    Task<IList<Appointment>> GetByStatusAsync(AppointmentStatus status, CancellationToken cancellationToken = default);
+    Task<IList<Appointment>> GetByStatusAsync(
+        AppointmentStatus status,
+        CancellationToken cancellationToken = default
+    );
 }
