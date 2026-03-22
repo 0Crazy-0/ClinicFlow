@@ -6,6 +6,7 @@
 - [ ] New feature
 - [ ] Refactor
 - [ ] Documentation
+- [ ] Style / Tooling
 
 ## How to test
 <!-- Steps to verify this works as expected -->
