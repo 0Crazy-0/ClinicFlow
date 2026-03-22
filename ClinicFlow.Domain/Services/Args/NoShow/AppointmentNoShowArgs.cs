@@ -1,11 +1,11 @@
 using ClinicFlow.Domain.Enums;
 
-namespace ClinicFlow.Domain.Services.Contexts;
+namespace ClinicFlow.Domain.Services.Args.NoShow;
 
 /// <summary>
-/// Encapsulates the context required to mark an appointment as a no-show.
+/// Encapsulates the arguments required to mark an appointment as a no-show.
 /// </summary>
-public class AppointmentNoShowContext
+public record AppointmentNoShowArgs
 {
     public UserRole InitiatorRole { get; init; }
     public Guid? InitiatorDoctorId { get; init; }
