@@ -80,12 +80,12 @@ public class Appointment : BaseEntity
     /// </summary>
     /// <param name="specialty">The medical specialty, used to evaluate the cancellation notice policy.</param>
     /// <exception cref="AppointmentCancellationNotAllowedException">Thrown when the appointment is already cancelled.</exception>
-    internal void Cancel(Guid cancelledByUserId, string? reason, MedicalSpecialty specialty)
+    internal void Cancel(Guid cancelledByUserId, string? reason, MedicalSpecialty specialty, bool isAdministrative = false)
     {
         if (Status is AppointmentStatus.Cancelled or AppointmentStatus.LateCancellation) 
             throw new AppointmentCancellationNotAllowedException(DomainErrors.Appointment.CannotCancel, Status);
 
-        if (!CanBeCancelled(specialty)) Status = AppointmentStatus.LateCancellation;
+        if (!isAdministrative && !CanBeCancelled(specialty)) Status = AppointmentStatus.LateCancellation;
         else Status = AppointmentStatus.Cancelled;
 
         CancelledAt = DateTime.UtcNow;
