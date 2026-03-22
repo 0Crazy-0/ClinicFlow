@@ -1,11 +1,11 @@
+using System.Reflection;
 using ClinicFlow.Application.MedicalRecords.Queries.GetMedicalRecordById;
 using ClinicFlow.Domain.Entities;
+using ClinicFlow.Domain.Entities.ClinicalDetails;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using FluentAssertions;
 using Moq;
-using System.Reflection;
-using ClinicFlow.Domain.Entities.ClinicalDetails;
 
 namespace ClinicFlow.Application.Tests.MedicalRecords.Queries.GetMedicalRecordById;
 
@@ -29,12 +29,14 @@ public class GetMedicalRecordByIdQueryHandlerTests
         var doctorId = Guid.NewGuid();
         var appointmentId = Guid.NewGuid();
         var request = new GetMedicalRecordByIdQuery(id);
-        
+
         var record = CreateMedicalRecord(id, patientId, doctorId, appointmentId, "Headache");
         var clinicalDetail = DynamicClinicalDetail.Create("vital-signs", "{}");
         record.AddClinicalDetail(clinicalDetail);
 
-        _medicalRecordRepositoryMock.Setup(x => x.GetByIdAsync(id, CancellationToken.None)).ReturnsAsync(record);
+        _medicalRecordRepositoryMock
+            .Setup(x => x.GetByIdAsync(id, CancellationToken.None))
+            .ReturnsAsync(record);
 
         // Act
         var result = await _sut.Handle(request, CancellationToken.None);
@@ -56,15 +58,26 @@ public class GetMedicalRecordByIdQueryHandlerTests
         // Arrange
         var request = new GetMedicalRecordByIdQuery(Guid.NewGuid());
 
-        _medicalRecordRepositoryMock.Setup(x => x.GetByIdAsync(request.Id, CancellationToken.None)).ReturnsAsync((MedicalRecord?)null);
+        _medicalRecordRepositoryMock
+            .Setup(x => x.GetByIdAsync(request.Id, CancellationToken.None))
+            .ReturnsAsync((MedicalRecord?)null);
 
         // Act & Assert
         var action = async () => await _sut.Handle(request, CancellationToken.None);
-        await action.Should().ThrowAsync<EntityNotFoundException>().Where(e => e.EntityName == nameof(MedicalRecord));
+        await action
+            .Should()
+            .ThrowAsync<EntityNotFoundException>()
+            .Where(e => e.EntityName == nameof(MedicalRecord));
     }
 
     // Helpers
-    private static MedicalRecord CreateMedicalRecord(Guid id, Guid patientId, Guid doctorId, Guid appointmentId, string chiefComplaint)
+    private static MedicalRecord CreateMedicalRecord(
+        Guid id,
+        Guid patientId,
+        Guid doctorId,
+        Guid appointmentId,
+        string chiefComplaint
+    )
     {
         var record = (MedicalRecord)Activator.CreateInstance(typeof(MedicalRecord), true)!;
         SetPrivateProperty(record, nameof(MedicalRecord.Id), id);
@@ -80,7 +93,13 @@ public class GetMedicalRecordByIdQueryHandlerTests
         var type = obj.GetType();
         while (type != null)
         {
-            var prop = type.GetProperty(propertyName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+            var prop = type.GetProperty(
+                propertyName,
+                BindingFlags.Public
+                    | BindingFlags.NonPublic
+                    | BindingFlags.Instance
+                    | BindingFlags.DeclaredOnly
+            );
             if (prop != null)
             {
                 prop.SetValue(obj, value);

@@ -10,5 +10,5 @@ public enum PatientRelationship
     Spouse = 2,
     Parent = 3,
     Sibling = 4,
-    Other = 5
+    Other = 5,
 }

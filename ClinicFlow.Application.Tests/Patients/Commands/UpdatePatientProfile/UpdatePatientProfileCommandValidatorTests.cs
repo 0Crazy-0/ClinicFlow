@@ -16,7 +16,14 @@ public class UpdatePatientProfileCommandValidatorTests
     public void Validate_ShouldBeValid_WhenAllPropertiesAreProvidedAndValid()
     {
         // Arrange
-        var command = new UpdatePatientProfileCommand(Guid.NewGuid(), "O+", "None", "None", "Mom", "555-5555");
+        var command = new UpdatePatientProfileCommand(
+            Guid.NewGuid(),
+            "O+",
+            "None",
+            "None",
+            "Mom",
+            "555-5555"
+        );
 
         // Act
         var result = _sut.TestValidate(command);
@@ -29,7 +36,14 @@ public class UpdatePatientProfileCommandValidatorTests
     public void Validate_ShouldHaveError_WhenPatientIdIsEmpty()
     {
         // Arrange
-        var command = new UpdatePatientProfileCommand(Guid.Empty, "O+", "None", "None", "Mom", "555-5555");
+        var command = new UpdatePatientProfileCommand(
+            Guid.Empty,
+            "O+",
+            "None",
+            "None",
+            "Mom",
+            "555-5555"
+        );
 
         // Act
         var result = _sut.TestValidate(command);
@@ -42,7 +56,14 @@ public class UpdatePatientProfileCommandValidatorTests
     public void Validate_ShouldHaveError_WhenBloodTypeIsEmpty()
     {
         // Arrange
-        var command = new UpdatePatientProfileCommand(Guid.NewGuid(), "", "None", "None", "Mom", "555-5555");
+        var command = new UpdatePatientProfileCommand(
+            Guid.NewGuid(),
+            "",
+            "None",
+            "None",
+            "Mom",
+            "555-5555"
+        );
 
         // Act
         var result = _sut.TestValidate(command);
@@ -55,7 +76,14 @@ public class UpdatePatientProfileCommandValidatorTests
     public void Validate_ShouldHaveError_WhenEmergencyContactNameIsEmpty()
     {
         // Arrange
-        var command = new UpdatePatientProfileCommand(Guid.NewGuid(), "O+", "None", "None", "", "555-5555");
+        var command = new UpdatePatientProfileCommand(
+            Guid.NewGuid(),
+            "O+",
+            "None",
+            "None",
+            "",
+            "555-5555"
+        );
 
         // Act
         var result = _sut.TestValidate(command);
@@ -68,7 +96,14 @@ public class UpdatePatientProfileCommandValidatorTests
     public void Validate_ShouldHaveError_WhenEmergencyContactPhoneIsEmpty()
     {
         // Arrange
-        var command = new UpdatePatientProfileCommand(Guid.NewGuid(), "O+", "None", "None", "Mom", "");
+        var command = new UpdatePatientProfileCommand(
+            Guid.NewGuid(),
+            "O+",
+            "None",
+            "None",
+            "Mom",
+            ""
+        );
 
         // Act
         var result = _sut.TestValidate(command);

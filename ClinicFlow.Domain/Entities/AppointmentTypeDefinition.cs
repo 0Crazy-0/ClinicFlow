@@ -9,7 +9,6 @@ namespace ClinicFlow.Domain.Entities;
 /// </summary>
 public class AppointmentTypeDefinition : BaseEntity
 {
-
     public AppointmentCategory Category { get; private set; }
 
     public string Name { get; private set; } = string.Empty;
@@ -23,12 +22,18 @@ public class AppointmentTypeDefinition : BaseEntity
     /// <summary>
     /// The collection of dynamic clinical form templates that must be completed for this appointment type.
     /// </summary>
-    public IReadOnlyCollection<ClinicalFormTemplate> RequiredTemplates => _requiredTemplates.AsReadOnly();
+    public IReadOnlyCollection<ClinicalFormTemplate> RequiredTemplates =>
+        _requiredTemplates.AsReadOnly();
 
     // EF Core constructor
     private AppointmentTypeDefinition() { }
 
-    private AppointmentTypeDefinition(AppointmentCategory category, string name, string description, TimeSpan durationMinutes)
+    private AppointmentTypeDefinition(
+        AppointmentCategory category,
+        string name,
+        string description,
+        TimeSpan durationMinutes
+    )
     {
         Category = category;
         Name = name;
@@ -40,10 +45,17 @@ public class AppointmentTypeDefinition : BaseEntity
     /// Creates a new appointment type definition.
     /// </summary>
     /// <exception cref="DomainValidationException">Thrown when the name is empty or the duration is not positive.</exception>
-    internal static AppointmentTypeDefinition Create(AppointmentCategory category, string name, string description, TimeSpan durationMinutes)
+    internal static AppointmentTypeDefinition Create(
+        AppointmentCategory category,
+        string name,
+        string description,
+        TimeSpan durationMinutes
+    )
     {
-        if (string.IsNullOrWhiteSpace(name)) throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-        if (durationMinutes <= TimeSpan.Zero) throw new DomainValidationException(DomainErrors.Validation.ValueMustBePositive);
+        if (string.IsNullOrWhiteSpace(name))
+            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        if (durationMinutes <= TimeSpan.Zero)
+            throw new DomainValidationException(DomainErrors.Validation.ValueMustBePositive);
 
         return new AppointmentTypeDefinition(category, name, description, durationMinutes);
     }
@@ -53,9 +65,12 @@ public class AppointmentTypeDefinition : BaseEntity
     /// </summary>
     public void AddRequiredTemplate(ClinicalFormTemplate template)
     {
-        if (template is null) throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+        if (template is null)
+            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
         if (_requiredTemplates.Any(t => t.Id == template.Id || t.Code == template.Code))
-            throw new DomainValidationException(DomainErrors.AppointmentType.TemplateAlreadyRequired);
+            throw new DomainValidationException(
+                DomainErrors.AppointmentType.TemplateAlreadyRequired
+            );
 
         _requiredTemplates.Add(template);
     }
@@ -65,7 +80,8 @@ public class AppointmentTypeDefinition : BaseEntity
     /// </summary>
     public void RemoveRequiredTemplate(ClinicalFormTemplate template)
     {
-        if (template is null) return;
+        if (template is null)
+            return;
         _requiredTemplates.RemoveAll(t => t.Id == template.Id || t.Code == template.Code);
     }
 }

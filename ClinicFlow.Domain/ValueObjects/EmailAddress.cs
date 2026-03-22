@@ -20,23 +20,24 @@ public partial record EmailAddress
     {
         Value = value;
     }
-    
+
     /// <summary>
     /// Creates an <see cref="EmailAddress"/> after validating format and normalizing to lowercase.
     /// </summary>
     /// <exception cref="BusinessRuleValidationException">Thrown when the value is empty or has an invalid format.</exception>
     internal static EmailAddress Create(string email)
     {
-        if (string.IsNullOrWhiteSpace(email)) throw new BusinessRuleValidationException(DomainErrors.Validation.ValueRequired);
+        if (string.IsNullOrWhiteSpace(email))
+            throw new BusinessRuleValidationException(DomainErrors.Validation.ValueRequired);
 
         email = email.Trim().ToLowerInvariant();
 
-        if (!EmailRegex().IsMatch(email)) throw new BusinessRuleValidationException(DomainErrors.Validation.InvalidEmailFormat);
+        if (!EmailRegex().IsMatch(email))
+            throw new BusinessRuleValidationException(DomainErrors.Validation.InvalidEmailFormat);
 
         return new EmailAddress(email);
     }
 
     /// <inheritdoc/>
     public override string ToString() => Value;
-
 }

@@ -19,5 +19,6 @@ public class DynamicClinicalDetail : BaseEntity, IClinicalDetailRecord
         JsonDataPayload = jsonDataPayload;
     }
 
-    public static DynamicClinicalDetail Create(string templateCode, string jsonDataPayload) => new(templateCode, jsonDataPayload);
+    public static DynamicClinicalDetail Create(string templateCode, string jsonDataPayload) =>
+        new(templateCode, jsonDataPayload);
 }

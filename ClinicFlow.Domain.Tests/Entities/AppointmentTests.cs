@@ -2,10 +2,10 @@ using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Events;
-using ClinicFlow.Domain.ValueObjects;
-using FluentAssertions;
 using ClinicFlow.Domain.Exceptions.Appointments;
 using ClinicFlow.Domain.Exceptions.Base;
+using ClinicFlow.Domain.ValueObjects;
+using FluentAssertions;
 
 namespace ClinicFlow.Domain.Tests.Entities;
 
@@ -23,7 +23,13 @@ public class AppointmentTests
         var timeRange = TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(10));
 
         // Act
-        var appointment = Appointment.Schedule(patientId, doctorId, appointmentTypeId, scheduledDate, timeRange);
+        var appointment = Appointment.Schedule(
+            patientId,
+            doctorId,
+            appointmentTypeId,
+            scheduledDate,
+            timeRange
+        );
 
         // Assert
         appointment.Should().NotBeNull();
@@ -38,13 +44,40 @@ public class AppointmentTests
     }
 
     [Theory]
-    [InlineData("00000000-0000-0000-0000-000000000000", "11111111-1111-1111-1111-111111111111", "22222222-2222-2222-2222-222222222222", DomainErrors.Validation.ValueRequired)]
-    [InlineData("11111111-1111-1111-1111-111111111111", "00000000-0000-0000-0000-000000000000", "22222222-2222-2222-2222-222222222222", DomainErrors.Validation.ValueRequired)]
-    [InlineData("11111111-1111-1111-1111-111111111111", "22222222-2222-2222-2222-222222222222", "00000000-0000-0000-0000-000000000000", DomainErrors.Validation.ValueRequired)]
-    public void Schedule_ShouldThrowException_WhenIdIsEmpty(string patientIdStr, string doctorIdStr, string appointmentTypeIdStr, string expectedMessage)
+    [InlineData(
+        "00000000-0000-0000-0000-000000000000",
+        "11111111-1111-1111-1111-111111111111",
+        "22222222-2222-2222-2222-222222222222",
+        DomainErrors.Validation.ValueRequired
+    )]
+    [InlineData(
+        "11111111-1111-1111-1111-111111111111",
+        "00000000-0000-0000-0000-000000000000",
+        "22222222-2222-2222-2222-222222222222",
+        DomainErrors.Validation.ValueRequired
+    )]
+    [InlineData(
+        "11111111-1111-1111-1111-111111111111",
+        "22222222-2222-2222-2222-222222222222",
+        "00000000-0000-0000-0000-000000000000",
+        DomainErrors.Validation.ValueRequired
+    )]
+    public void Schedule_ShouldThrowException_WhenIdIsEmpty(
+        string patientIdStr,
+        string doctorIdStr,
+        string appointmentTypeIdStr,
+        string expectedMessage
+    )
     {
         // Arrange & Act
-        var act = () => Appointment.Schedule(Guid.Parse(patientIdStr), Guid.Parse(doctorIdStr), Guid.Parse(appointmentTypeIdStr), DateTime.UtcNow.AddDays(1), TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(10)));
+        var act = () =>
+            Appointment.Schedule(
+                Guid.Parse(patientIdStr),
+                Guid.Parse(doctorIdStr),
+                Guid.Parse(appointmentTypeIdStr),
+                DateTime.UtcNow.AddDays(1),
+                TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(10))
+            );
 
         // Assert
         act.Should().Throw<DomainValidationException>().WithMessage(expectedMessage);
@@ -54,10 +87,19 @@ public class AppointmentTests
     public void Schedule_ShouldThrowException_WhenTimeRangeIsNull()
     {
         // Arrange & Act
-        var act = () => Appointment.Schedule(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), DateTime.UtcNow.AddDays(1), null!);
+        var act = () =>
+            Appointment.Schedule(
+                Guid.NewGuid(),
+                Guid.NewGuid(),
+                Guid.NewGuid(),
+                DateTime.UtcNow.AddDays(1),
+                null!
+            );
 
         // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.General.RequiredFieldNull);
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 
     // Cancel
@@ -109,7 +151,9 @@ public class AppointmentTests
         var act = () => appointment.Cancel(userId, "Second", specialty);
 
         // Assert
-        act.Should().Throw<AppointmentCancellationNotAllowedException>().Where(e => e.CurrentStatus == AppointmentStatus.Cancelled);
+        act.Should()
+            .Throw<AppointmentCancellationNotAllowedException>()
+            .Where(e => e.CurrentStatus == AppointmentStatus.Cancelled);
     }
 
     // Cancellation Policy Logic Verification
@@ -121,7 +165,11 @@ public class AppointmentTests
     [InlineData(12, 11, AppointmentStatus.LateCancellation)]
     [InlineData(2, 3, AppointmentStatus.Cancelled)]
     [InlineData(2, 1, AppointmentStatus.LateCancellation)]
-    public void Cancel_ShouldEnforceMinimumHoursPolicy(int minHours, int hoursUntilAppointment, AppointmentStatus expectedStatus)
+    public void Cancel_ShouldEnforceMinimumHoursPolicy(
+        int minHours,
+        int hoursUntilAppointment,
+        AppointmentStatus expectedStatus
+    )
     {
         // Arrange
         var appointment = CreateAppointment(DateTime.UtcNow.AddHours(hoursUntilAppointment));
@@ -133,9 +181,7 @@ public class AppointmentTests
 
         // Assert
         appointment.Status.Should().Be(expectedStatus);
-
     }
-
 
     // Confirm
     [Fact]
@@ -158,11 +204,14 @@ public class AppointmentTests
         var appointment = CreateAppointment(DateTime.UtcNow.AddDays(1));
         var specialty = CreateSpecialty(24);
 
-        //Act 
+        //Act
         appointment.Cancel(Guid.NewGuid(), "Cancelled", specialty);
 
         //Assert
-        appointment.Invoking(x => x.Confirm()).Should().Throw<AppointmentConfirmationNotAllowedException>();
+        appointment
+            .Invoking(x => x.Confirm())
+            .Should()
+            .Throw<AppointmentConfirmationNotAllowedException>();
     }
 
     // Reschedule
@@ -220,15 +269,28 @@ public class AppointmentTests
         var appointment = CreateAppointment(DateTime.UtcNow.AddDays(2));
         var specialty = CreateSpecialty(24);
         appointment.Cancel(Guid.NewGuid(), "Reason", specialty);
-        
+
         // Act && Assert
-        appointment.Invoking(x => x.MarkAsNoShow()).Should().Throw<DomainValidationException>().WithMessage(DomainErrors.Appointment.CannotMarkNoShow);
+        appointment
+            .Invoking(x => x.MarkAsNoShow())
+            .Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Appointment.CannotMarkNoShow);
     }
 
     // Helpers
-    private static Appointment CreateAppointment(DateTime scheduledDateTime) => Appointment.Schedule(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), scheduledDateTime.Date,
-        TimeRange.Create(scheduledDateTime.TimeOfDay, scheduledDateTime.TimeOfDay.Add(TimeSpan.FromHours(1))));
+    private static Appointment CreateAppointment(DateTime scheduledDateTime) =>
+        Appointment.Schedule(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            scheduledDateTime.Date,
+            TimeRange.Create(
+                scheduledDateTime.TimeOfDay,
+                scheduledDateTime.TimeOfDay.Add(TimeSpan.FromHours(1))
+            )
+        );
 
-    private static MedicalSpecialty CreateSpecialty(int minCancellationHours) => MedicalSpecialty.Create("Test Specialty", "Description", 30, minCancellationHours);
-
+    private static MedicalSpecialty CreateSpecialty(int minCancellationHours) =>
+        MedicalSpecialty.Create("Test Specialty", "Description", 30, minCancellationHours);
 }

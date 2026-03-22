@@ -24,17 +24,28 @@ public class GetPatientsByUserIdQueryHandlerTests
     {
         // Arrange
         var userId = Guid.NewGuid();
-        var patient1 = Patient.CreateSelf(userId, PersonName.Create("John Doe"), DateTime.UtcNow.AddYears(-30));
+        var patient1 = Patient.CreateSelf(
+            userId,
+            PersonName.Create("John Doe"),
+            DateTime.UtcNow.AddYears(-30)
+        );
         patient1.UpdateMedicalProfile(BloodType.Create("A+"), "None", "None");
         patient1.UpdateEmergencyContact(EmergencyContact.Create("Jane", "555-1234"));
 
-        var patient2 = Patient.CreateFamilyMember(userId, PersonName.Create("Child Doe"), PatientRelationship.Child, DateTime.UtcNow.AddYears(-5));
+        var patient2 = Patient.CreateFamilyMember(
+            userId,
+            PersonName.Create("Child Doe"),
+            PatientRelationship.Child,
+            DateTime.UtcNow.AddYears(-5)
+        );
         patient2.UpdateMedicalProfile(BloodType.Create("A+"), "None", "None");
         patient2.UpdateEmergencyContact(EmergencyContact.Create("Jane", "555-1234"));
 
         var patients = new List<Patient> { patient1, patient2 };
 
-        _patientRepositoryMock.Setup(x => x.GetAllByUserIdAsync(userId, It.IsAny<CancellationToken>())).ReturnsAsync(patients);
+        _patientRepositoryMock
+            .Setup(x => x.GetAllByUserIdAsync(userId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(patients);
 
         var query = new GetPatientsByUserIdQuery(userId);
 
@@ -57,8 +68,6 @@ public class GetPatientsByUserIdQueryHandlerTests
         resultList[1].BloodType.Should().Be("A+");
         resultList[1].EmergencyContactName.Should().Be("Jane");
         resultList[1].EmergencyContactPhone.Should().Be("555-1234");
-
-
     }
 
     [Fact]
@@ -66,12 +75,23 @@ public class GetPatientsByUserIdQueryHandlerTests
     {
         // Arrange
         var userId = Guid.NewGuid();
-        var patient1 = Patient.CreateSelf(userId, PersonName.Create("John Doe"), DateTime.UtcNow.AddYears(-30));
-        var patient2 = Patient.CreateFamilyMember(userId, PersonName.Create("Child Doe"), PatientRelationship.Child, DateTime.UtcNow.AddYears(-5));
+        var patient1 = Patient.CreateSelf(
+            userId,
+            PersonName.Create("John Doe"),
+            DateTime.UtcNow.AddYears(-30)
+        );
+        var patient2 = Patient.CreateFamilyMember(
+            userId,
+            PersonName.Create("Child Doe"),
+            PatientRelationship.Child,
+            DateTime.UtcNow.AddYears(-5)
+        );
 
         var patients = new List<Patient> { patient1, patient2 };
 
-        _patientRepositoryMock.Setup(x => x.GetAllByUserIdAsync(userId, It.IsAny<CancellationToken>())).ReturnsAsync(patients);
+        _patientRepositoryMock
+            .Setup(x => x.GetAllByUserIdAsync(userId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(patients);
 
         var query = new GetPatientsByUserIdQuery(userId);
 

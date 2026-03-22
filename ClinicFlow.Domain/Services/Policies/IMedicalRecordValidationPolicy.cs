@@ -12,5 +12,8 @@ public interface IMedicalRecordValidationPolicy
     /// Validates the provided clinical details against the requirements of the appointment type.
     /// Throws BusinessRuleValidationException if validation fails.
     /// </summary>
-    void Validate(AppointmentTypeDefinition appointmentType, IEnumerable<IClinicalDetailRecord> providedDetails);
+    void Validate(
+        AppointmentTypeDefinition appointmentType,
+        IEnumerable<IClinicalDetailRecord> providedDetails
+    );
 }

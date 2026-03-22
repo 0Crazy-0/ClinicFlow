@@ -3,4 +3,7 @@ using MediatR;
 
 namespace ClinicFlow.Application.MedicalRecords.Commands.AddClinicalDetailToMedicalRecord;
 
-public record AddClinicalDetailToMedicalRecordCommand(Guid MedicalRecordId, DynamicClinicalDetailDto Detail) : IRequest;
+public record AddClinicalDetailToMedicalRecordCommand(
+    Guid MedicalRecordId,
+    DynamicClinicalDetailDto Detail
+) : IRequest;

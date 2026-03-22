@@ -18,7 +18,9 @@ public class EmailAddressTests
         var act = () => EmailAddress.Create(value!);
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage(DomainErrors.Validation.ValueRequired);
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Theory]
@@ -33,7 +35,9 @@ public class EmailAddressTests
         var act = () => EmailAddress.Create(value);
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage(DomainErrors.Validation.InvalidEmailFormat);
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.Validation.InvalidEmailFormat);
     }
 
     // Create
@@ -91,7 +95,9 @@ public class EmailAddressTests
         var e3 = EmailAddress.Create("other@example.com");
 
         // Act & Assert
-        (e1 == e2).Should().BeTrue();
+        (e1 == e2)
+            .Should()
+            .BeTrue();
         (e1 != e3).Should().BeTrue();
     }
 }

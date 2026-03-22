@@ -33,16 +33,64 @@ public class MedicalRecordTests
     }
 
     [Theory]
-    [InlineData("00000000-0000-0000-0000-000000000000", "11111111-1111-1111-1111-111111111111", "22222222-2222-2222-2222-222222222222", "Complaint", DomainErrors.Validation.ValueRequired)]
-    [InlineData("11111111-1111-1111-1111-111111111111", "00000000-0000-0000-0000-000000000000", "22222222-2222-2222-2222-222222222222", "Complaint", DomainErrors.Validation.ValueRequired)]
-    [InlineData("11111111-1111-1111-1111-111111111111", "22222222-2222-2222-2222-222222222222", "00000000-0000-0000-0000-000000000000", "Complaint", DomainErrors.Validation.ValueRequired)]
-    [InlineData("11111111-1111-1111-1111-111111111111", "22222222-2222-2222-2222-222222222222", "33333333-3333-3333-3333-333333333333", "", DomainErrors.Validation.ValueRequired)]
-    [InlineData("11111111-1111-1111-1111-111111111111", "22222222-2222-2222-2222-222222222222", "33333333-3333-3333-3333-333333333333", "   ", DomainErrors.Validation.ValueRequired)]
-    [InlineData("11111111-1111-1111-1111-111111111111", "22222222-2222-2222-2222-222222222222", "33333333-3333-3333-3333-333333333333", null, DomainErrors.Validation.ValueRequired)]
-    public void Create_ShouldThrowException_WhenIdOrComplaintIsInvalid(string patientIdStr, string doctorIdStr, string appointmentIdStr, string? chiefComplaint, string expectedMessage)
+    [InlineData(
+        "00000000-0000-0000-0000-000000000000",
+        "11111111-1111-1111-1111-111111111111",
+        "22222222-2222-2222-2222-222222222222",
+        "Complaint",
+        DomainErrors.Validation.ValueRequired
+    )]
+    [InlineData(
+        "11111111-1111-1111-1111-111111111111",
+        "00000000-0000-0000-0000-000000000000",
+        "22222222-2222-2222-2222-222222222222",
+        "Complaint",
+        DomainErrors.Validation.ValueRequired
+    )]
+    [InlineData(
+        "11111111-1111-1111-1111-111111111111",
+        "22222222-2222-2222-2222-222222222222",
+        "00000000-0000-0000-0000-000000000000",
+        "Complaint",
+        DomainErrors.Validation.ValueRequired
+    )]
+    [InlineData(
+        "11111111-1111-1111-1111-111111111111",
+        "22222222-2222-2222-2222-222222222222",
+        "33333333-3333-3333-3333-333333333333",
+        "",
+        DomainErrors.Validation.ValueRequired
+    )]
+    [InlineData(
+        "11111111-1111-1111-1111-111111111111",
+        "22222222-2222-2222-2222-222222222222",
+        "33333333-3333-3333-3333-333333333333",
+        "   ",
+        DomainErrors.Validation.ValueRequired
+    )]
+    [InlineData(
+        "11111111-1111-1111-1111-111111111111",
+        "22222222-2222-2222-2222-222222222222",
+        "33333333-3333-3333-3333-333333333333",
+        null,
+        DomainErrors.Validation.ValueRequired
+    )]
+    public void Create_ShouldThrowException_WhenIdOrComplaintIsInvalid(
+        string patientIdStr,
+        string doctorIdStr,
+        string appointmentIdStr,
+        string? chiefComplaint,
+        string expectedMessage
+    )
     {
         // Arrange & Act
-        var act = () => MedicalRecord.Create(Guid.Parse(patientIdStr), Guid.Parse(doctorIdStr), Guid.Parse(appointmentIdStr), chiefComplaint!);
+        var act = () =>
+            MedicalRecord.Create(
+                Guid.Parse(patientIdStr),
+                Guid.Parse(doctorIdStr),
+                Guid.Parse(appointmentIdStr),
+                chiefComplaint!
+            );
 
         // Assert
         act.Should().Throw<DomainValidationException>().WithMessage(expectedMessage);
@@ -74,7 +122,9 @@ public class MedicalRecordTests
         var act = () => record.AddClinicalDetail(null!);
 
         // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.General.RequiredFieldNull);
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 
     [Fact]
@@ -83,7 +133,7 @@ public class MedicalRecordTests
         // Arrange
         var record = CreateValidMedicalRecord();
         var detail1 = new StubDynamicClinicalDetail("VITALS");
-        var detail2 = new StubDynamicClinicalDetail("VITALS"); 
+        var detail2 = new StubDynamicClinicalDetail("VITALS");
 
         record.AddClinicalDetail(detail1);
 
@@ -91,7 +141,9 @@ public class MedicalRecordTests
         var act = () => record.AddClinicalDetail(detail2);
 
         // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.MedicalEncounter.DetailAlreadyExists);
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.MedicalEncounter.DetailAlreadyExists);
     }
 
     // GetClinicalDetail
@@ -127,7 +179,8 @@ public class MedicalRecordTests
     }
 
     // Helpers
-    private static MedicalRecord CreateValidMedicalRecord() => MedicalRecord.Create(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "General checkup");
+    private static MedicalRecord CreateValidMedicalRecord() =>
+        MedicalRecord.Create(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "General checkup");
 
     private class StubDynamicClinicalDetail(string templateCode) : IClinicalDetailRecord
     {

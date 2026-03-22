@@ -23,5 +23,5 @@ public enum UserRole
     /// <summary>
     /// System administrator with full access to all operations.
     /// </summary>
-    Admin = 4
+    Admin = 4,
 }

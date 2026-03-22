@@ -18,18 +18,33 @@ public class CreateCompletePatientProfileCommandHandlerTests
     {
         _patientRepositoryMock = new Mock<IPatientRepository>();
         _unitOfWorkMock = new Mock<IUnitOfWork>();
-        _sut = new CreateCompletePatientProfileCommandHandler(_patientRepositoryMock.Object, _unitOfWorkMock.Object);
+        _sut = new CreateCompletePatientProfileCommandHandler(
+            _patientRepositoryMock.Object,
+            _unitOfWorkMock.Object
+        );
     }
 
     [Fact]
     public async Task Handle_ShouldCreateCompletePatientProfile_WhenValidCommand()
     {
         // Arrange
-        var command = new CreateCompletePatientProfileCommand(Guid.NewGuid(), "John", "Doe", DateTime.UtcNow.AddYears(-30), "O+", "None", "None", "Mom", "555-5555");
+        var command = new CreateCompletePatientProfileCommand(
+            Guid.NewGuid(),
+            "John",
+            "Doe",
+            DateTime.UtcNow.AddYears(-30),
+            "O+",
+            "None",
+            "None",
+            "Mom",
+            "555-5555"
+        );
 
         Patient? capturedPatient = null;
-        _patientRepositoryMock.Setup(x => x.CreateAsync(It.IsAny<Patient>(), It.IsAny<CancellationToken>()))
-            .Callback<Patient, CancellationToken>((p, _) => capturedPatient = p).ReturnsAsync((Patient p, CancellationToken _) => p);
+        _patientRepositoryMock
+            .Setup(x => x.CreateAsync(It.IsAny<Patient>(), It.IsAny<CancellationToken>()))
+            .Callback<Patient, CancellationToken>((p, _) => capturedPatient = p)
+            .ReturnsAsync((Patient p, CancellationToken _) => p);
 
         // Act
         var result = await _sut.Handle(command, CancellationToken.None);
@@ -45,7 +60,10 @@ public class CreateCompletePatientProfileCommandHandlerTests
         capturedPatient.Allergies.Should().Be(command.Allergies);
         capturedPatient.ChronicConditions.Should().Be(command.ChronicConditions);
         capturedPatient.EmergencyContact.Name.ToString().Should().Be(command.EmergencyContactName);
-        capturedPatient.EmergencyContact.PhoneNumber.ToString().Should().Be(command.EmergencyContactPhone);
+        capturedPatient
+            .EmergencyContact.PhoneNumber.ToString()
+            .Should()
+            .Be(command.EmergencyContactPhone);
 
         capturedPatient.HasCompleteMedicalProfile().Should().BeTrue();
     }

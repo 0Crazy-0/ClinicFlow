@@ -1,3 +1,4 @@
+using System.Reflection;
 using ClinicFlow.Application.MedicalRecords.Commands.CompleteMedicalEncounter;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Exceptions.Base;
@@ -7,7 +8,6 @@ using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Policies;
 using FluentAssertions;
 using Moq;
-using System.Reflection;
 
 namespace ClinicFlow.Application.Tests.MedicalRecords.Commands.CompleteMedicalEncounter;
 
@@ -33,8 +33,14 @@ public class CompleteMedicalEncounterCommandHandlerTests
         var jsonValidatorMock = new Mock<IJsonSchemaValidator>();
         _medicalEncounterService = new MedicalEncounterService([], jsonValidatorMock.Object);
 
-        _sut = new CompleteMedicalEncounterCommandHandler(_doctorRepositoryMock.Object, _appointmentRepositoryMock.Object, _appointmentTypeRepositoryMock.Object,
-             _medicalRecordRepositoryMock.Object, _medicalEncounterService, _unitOfWorkMock.Object);
+        _sut = new CompleteMedicalEncounterCommandHandler(
+            _doctorRepositoryMock.Object,
+            _appointmentRepositoryMock.Object,
+            _appointmentTypeRepositoryMock.Object,
+            _medicalRecordRepositoryMock.Object,
+            _medicalEncounterService,
+            _unitOfWorkMock.Object
+        );
     }
 
     [Fact]
@@ -46,15 +52,25 @@ public class CompleteMedicalEncounterCommandHandlerTests
         var appointmentId = Guid.NewGuid();
         var appointmentTypeId = Guid.NewGuid();
 
-        var command = new CompleteMedicalEncounterCommand(patientId, doctorId, appointmentId, "Headache", [new DynamicClinicalDetailDto("vital-signs", "{}")]);
+        var command = new CompleteMedicalEncounterCommand(
+            patientId,
+            doctorId,
+            appointmentId,
+            "Headache",
+            [new DynamicClinicalDetailDto("vital-signs", "{}")]
+        );
 
         var doctor = CreateDoctor(doctorId);
         var appointment = CreateAppointment(appointmentId, appointmentTypeId, patientId, doctorId);
         var appointmentType = CreateAppointmentTypeDefinition(appointmentTypeId);
 
         _doctorRepositoryMock.Setup(x => x.GetByIdAsync(doctorId)).ReturnsAsync(doctor);
-        _appointmentRepositoryMock.Setup(x => x.GetByIdAsync(appointmentId)).ReturnsAsync(appointment);
-        _appointmentTypeRepositoryMock.Setup(x => x.GetByIdAsync(appointmentTypeId)).ReturnsAsync(appointmentType);
+        _appointmentRepositoryMock
+            .Setup(x => x.GetByIdAsync(appointmentId))
+            .ReturnsAsync(appointment);
+        _appointmentTypeRepositoryMock
+            .Setup(x => x.GetByIdAsync(appointmentTypeId))
+            .ReturnsAsync(appointmentType);
 
         // Act
         var result = await _sut.Handle(command, CancellationToken.None);
@@ -62,8 +78,19 @@ public class CompleteMedicalEncounterCommandHandlerTests
         // Assert
         result.Should().NotBeEmpty();
 
-        _medicalRecordRepositoryMock.Verify(x => x.CreateAsync(It.Is<MedicalRecord>(m => m.PatientId == command.PatientId && m.DoctorId == command.DoctorId
-            && m.AppointmentId == command.AppointmentId && m.ChiefComplaint == command.ChiefComplaint && m.Id == result)), Times.Once);
+        _medicalRecordRepositoryMock.Verify(
+            x =>
+                x.CreateAsync(
+                    It.Is<MedicalRecord>(m =>
+                        m.PatientId == command.PatientId
+                        && m.DoctorId == command.DoctorId
+                        && m.AppointmentId == command.AppointmentId
+                        && m.ChiefComplaint == command.ChiefComplaint
+                        && m.Id == result
+                    )
+                ),
+            Times.Once
+        );
 
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -72,13 +99,24 @@ public class CompleteMedicalEncounterCommandHandlerTests
     public async Task Handle_ShouldThrowEntityNotFoundException_WhenDoctorDoesNotExist()
     {
         // Arrange
-        var command = new CompleteMedicalEncounterCommand(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "Headache", []);
+        var command = new CompleteMedicalEncounterCommand(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            "Headache",
+            []
+        );
 
-        _doctorRepositoryMock.Setup(x => x.GetByIdAsync(command.DoctorId)).ReturnsAsync((Doctor?)null);
+        _doctorRepositoryMock
+            .Setup(x => x.GetByIdAsync(command.DoctorId))
+            .ReturnsAsync((Doctor?)null);
 
         // Act & Assert
         var action = async () => await _sut.Handle(command, CancellationToken.None);
-        await action.Should().ThrowAsync<EntityNotFoundException>().Where(e => e.EntityName == nameof(Doctor));
+        await action
+            .Should()
+            .ThrowAsync<EntityNotFoundException>()
+            .Where(e => e.EntityName == nameof(Doctor));
     }
 
     [Fact]
@@ -86,15 +124,26 @@ public class CompleteMedicalEncounterCommandHandlerTests
     {
         // Arrange
         var doctorId = Guid.NewGuid();
-        var command = new CompleteMedicalEncounterCommand(Guid.NewGuid(), doctorId, Guid.NewGuid(), "Headache", []);
+        var command = new CompleteMedicalEncounterCommand(
+            Guid.NewGuid(),
+            doctorId,
+            Guid.NewGuid(),
+            "Headache",
+            []
+        );
 
         var doctor = CreateDoctor(doctorId);
         _doctorRepositoryMock.Setup(x => x.GetByIdAsync(doctorId)).ReturnsAsync(doctor);
-        _appointmentRepositoryMock.Setup(x => x.GetByIdAsync(command.AppointmentId)).ReturnsAsync((Appointment?)null);
+        _appointmentRepositoryMock
+            .Setup(x => x.GetByIdAsync(command.AppointmentId))
+            .ReturnsAsync((Appointment?)null);
 
         // Act & Assert
         var action = async () => await _sut.Handle(command, CancellationToken.None);
-        await action.Should().ThrowAsync<EntityNotFoundException>().Where(e => e.EntityName == nameof(Appointment));
+        await action
+            .Should()
+            .ThrowAsync<EntityNotFoundException>()
+            .Where(e => e.EntityName == nameof(Appointment));
     }
 
     [Fact]
@@ -106,18 +155,31 @@ public class CompleteMedicalEncounterCommandHandlerTests
         var appointmentId = Guid.NewGuid();
         var appointmentTypeId = Guid.NewGuid();
 
-        var command = new CompleteMedicalEncounterCommand(patientId, doctorId, appointmentId, "Headache", []);
+        var command = new CompleteMedicalEncounterCommand(
+            patientId,
+            doctorId,
+            appointmentId,
+            "Headache",
+            []
+        );
 
         var doctor = CreateDoctor(doctorId);
         var appointment = CreateAppointment(appointmentId, appointmentTypeId, patientId, doctorId);
 
         _doctorRepositoryMock.Setup(x => x.GetByIdAsync(doctorId)).ReturnsAsync(doctor);
-        _appointmentRepositoryMock.Setup(x => x.GetByIdAsync(appointmentId)).ReturnsAsync(appointment);
-        _appointmentTypeRepositoryMock.Setup(x => x.GetByIdAsync(appointmentTypeId)).ReturnsAsync((AppointmentTypeDefinition?)null);
+        _appointmentRepositoryMock
+            .Setup(x => x.GetByIdAsync(appointmentId))
+            .ReturnsAsync(appointment);
+        _appointmentTypeRepositoryMock
+            .Setup(x => x.GetByIdAsync(appointmentTypeId))
+            .ReturnsAsync((AppointmentTypeDefinition?)null);
 
         // Act & Assert
         var action = async () => await _sut.Handle(command, CancellationToken.None);
-        await action.Should().ThrowAsync<EntityNotFoundException>().Where(e => e.EntityName == nameof(AppointmentTypeDefinition));
+        await action
+            .Should()
+            .ThrowAsync<EntityNotFoundException>()
+            .Where(e => e.EntityName == nameof(AppointmentTypeDefinition));
     }
 
     // Helpers
@@ -128,7 +190,12 @@ public class CompleteMedicalEncounterCommandHandlerTests
         return doctor;
     }
 
-    private static Appointment CreateAppointment(Guid id, Guid appointmentTypeId, Guid patientId, Guid doctorId)
+    private static Appointment CreateAppointment(
+        Guid id,
+        Guid appointmentTypeId,
+        Guid patientId,
+        Guid doctorId
+    )
     {
         var appointment = (Appointment)Activator.CreateInstance(typeof(Appointment), true)!;
         SetPrivateProperty(appointment, nameof(Appointment.Id), id);
@@ -140,7 +207,8 @@ public class CompleteMedicalEncounterCommandHandlerTests
 
     private static AppointmentTypeDefinition CreateAppointmentTypeDefinition(Guid id)
     {
-        var appointmentType = (AppointmentTypeDefinition)Activator.CreateInstance(typeof(AppointmentTypeDefinition), true)!;
+        var appointmentType = (AppointmentTypeDefinition)
+            Activator.CreateInstance(typeof(AppointmentTypeDefinition), true)!;
         SetPrivateProperty(appointmentType, nameof(AppointmentTypeDefinition.Id), id);
         return appointmentType;
     }
@@ -150,7 +218,13 @@ public class CompleteMedicalEncounterCommandHandlerTests
         var type = obj.GetType();
         while (type != null)
         {
-            var prop = type.GetProperty(propertyName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+            var prop = type.GetProperty(
+                propertyName,
+                BindingFlags.Public
+                    | BindingFlags.NonPublic
+                    | BindingFlags.Instance
+                    | BindingFlags.DeclaredOnly
+            );
             if (prop != null)
             {
                 prop.SetValue(obj, value);

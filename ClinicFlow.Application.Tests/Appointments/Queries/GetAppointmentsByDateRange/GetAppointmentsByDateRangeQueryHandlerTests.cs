@@ -1,11 +1,12 @@
 using System.Reflection;
+using ClinicFlow.Application.Appointments.Queries.DTOs;
 using ClinicFlow.Application.Appointments.Queries.GetAppointmentsByDateRange;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
 using Moq;
-using ClinicFlow.Application.Appointments.Queries.DTOs;
+
 namespace ClinicFlow.Application.Tests.Appointments.Queries.GetAppointmentsByDateRange;
 
 public class GetAppointmentsByDateRangeQueryHandlerTests
@@ -27,14 +28,19 @@ public class GetAppointmentsByDateRangeQueryHandlerTests
         var endDate = startDate.AddDays(7);
         var query = new GetAppointmentsByDateRangeQuery(startDate, endDate);
 
-        _appointmentRepositoryMock.Setup(x => x.GetByDateRangeAsync(query.StartDate, query.EndDate)).ReturnsAsync([]);
+        _appointmentRepositoryMock
+            .Setup(x => x.GetByDateRangeAsync(query.StartDate, query.EndDate))
+            .ReturnsAsync([]);
 
         // Act
         var result = await _sut.Handle(query, CancellationToken.None);
 
         // Assert
         result.Should().BeEmpty();
-        _appointmentRepositoryMock.Verify(x => x.GetByDateRangeAsync(query.StartDate, query.EndDate), Times.Once);
+        _appointmentRepositoryMock.Verify(
+            x => x.GetByDateRangeAsync(query.StartDate, query.EndDate),
+            Times.Once
+        );
     }
 
     [Fact]
@@ -48,10 +54,12 @@ public class GetAppointmentsByDateRangeQueryHandlerTests
         var appointments = new List<Appointment>
         {
             CreateAppointment(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), startDate.AddDays(1)),
-            CreateAppointment(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), startDate.AddDays(3))
+            CreateAppointment(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), startDate.AddDays(3)),
         };
 
-        _appointmentRepositoryMock.Setup(x => x.GetByDateRangeAsync(startDate, endDate)).ReturnsAsync(appointments);
+        _appointmentRepositoryMock
+            .Setup(x => x.GetByDateRangeAsync(startDate, endDate))
+            .ReturnsAsync(appointments);
 
         // Act
         var result = await _sut.Handle(query, CancellationToken.None);
@@ -59,13 +67,24 @@ public class GetAppointmentsByDateRangeQueryHandlerTests
         // Assert
         result.Should().HaveCount(2);
         result.Should().AllBeOfType<AppointmentDto>();
-        result.Select(x => x.ScheduledDate).Should().OnlyContain(d => d >= startDate && d <= endDate);
-        
-        _appointmentRepositoryMock.Verify(x => x.GetByDateRangeAsync(startDate, endDate), Times.Once);
+        result
+            .Select(x => x.ScheduledDate)
+            .Should()
+            .OnlyContain(d => d >= startDate && d <= endDate);
+
+        _appointmentRepositoryMock.Verify(
+            x => x.GetByDateRangeAsync(startDate, endDate),
+            Times.Once
+        );
     }
 
     // Helpers
-    private static Appointment CreateAppointment(Guid id, Guid patientId, Guid doctorId, DateTime scheduledDate)
+    private static Appointment CreateAppointment(
+        Guid id,
+        Guid patientId,
+        Guid doctorId,
+        DateTime scheduledDate
+    )
     {
         var timeRange = TimeRange.Create(new TimeSpan(9, 0, 0), new TimeSpan(10, 0, 0));
         var appointment = (Appointment)Activator.CreateInstance(typeof(Appointment), true)!;
@@ -83,7 +102,13 @@ public class GetAppointmentsByDateRangeQueryHandlerTests
         var type = obj.GetType();
         while (type != null)
         {
-            var prop = type.GetProperty(propertyName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+            var prop = type.GetProperty(
+                propertyName,
+                BindingFlags.Public
+                    | BindingFlags.NonPublic
+                    | BindingFlags.Instance
+                    | BindingFlags.DeclaredOnly
+            );
             if (prop != null)
             {
                 prop.SetValue(obj, value);

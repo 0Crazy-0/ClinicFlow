@@ -4,5 +4,8 @@ namespace ClinicFlow.Domain.Interfaces.Repositories;
 
 public interface IClinicalFormTemplateRepository
 {
-    Task<ClinicalFormTemplate?> GetByCodeAsync(string templateCode, CancellationToken cancellationToken = default);
+    Task<ClinicalFormTemplate?> GetByCodeAsync(
+        string templateCode,
+        CancellationToken cancellationToken = default
+    );
 }

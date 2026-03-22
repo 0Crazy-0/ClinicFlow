@@ -17,7 +17,11 @@ public class CancelAppointmentByPatientCommandValidatorTests
     public void Validate_ShouldBeValid_WhenAllPropertiesAreProvidedAndValid()
     {
         // Arrange
-        var command = new CancelAppointmentByPatientCommand(Guid.NewGuid(), Guid.NewGuid(), "Reason");
+        var command = new CancelAppointmentByPatientCommand(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            "Reason"
+        );
 
         // Act
         var result = _sut.TestValidate(command);
@@ -57,7 +61,11 @@ public class CancelAppointmentByPatientCommandValidatorTests
     {
         // Arrange
         var longReason = new string('a', 501);
-        var command = new CancelAppointmentByPatientCommand(Guid.NewGuid(), Guid.NewGuid(), longReason);
+        var command = new CancelAppointmentByPatientCommand(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            longReason
+        );
 
         // Act
         var result = _sut.TestValidate(command);

@@ -35,32 +35,61 @@ public class DoctorTests
     [InlineData(0)]
     [InlineData(-1)]
     [InlineData(-100)]
-    public void Create_ShouldThrowException_WhenConsultationRoomNumberIsZeroOrNegative(int roomNumber)
+    public void Create_ShouldThrowException_WhenConsultationRoomNumberIsZeroOrNegative(
+        int roomNumber
+    )
     {
         // Arrange & Act
-        var act = () => Doctor.Create(Guid.NewGuid(), MedicalLicenseNumber.Create("12345"), Guid.NewGuid(), "Biography", roomNumber);
+        var act = () =>
+            Doctor.Create(
+                Guid.NewGuid(),
+                MedicalLicenseNumber.Create("12345"),
+                Guid.NewGuid(),
+                "Biography",
+                roomNumber
+            );
 
         // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.Validation.ValueMustBePositive);
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueMustBePositive);
     }
 
     [Fact]
     public void Create_ShouldThrowException_WhenUserIdIsEmpty()
     {
         // Arrange & Act
-        var act = () => Doctor.Create(Guid.Empty, MedicalLicenseNumber.Create("12345"), Guid.NewGuid(), "Biography", 101);
+        var act = () =>
+            Doctor.Create(
+                Guid.Empty,
+                MedicalLicenseNumber.Create("12345"),
+                Guid.NewGuid(),
+                "Biography",
+                101
+            );
 
         // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.Validation.ValueRequired);
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Fact]
     public void Create_ShouldThrowException_WhenMedicalSpecialtyIdIsEmpty()
     {
         // Arrange & Act
-        var act = () => Doctor.Create(Guid.NewGuid(), MedicalLicenseNumber.Create("12345"), Guid.Empty, "Biography", 101);
+        var act = () =>
+            Doctor.Create(
+                Guid.NewGuid(),
+                MedicalLicenseNumber.Create("12345"),
+                Guid.Empty,
+                "Biography",
+                101
+            );
 
         // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.Validation.ValueRequired);
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 }

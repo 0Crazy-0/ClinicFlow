@@ -5,6 +5,5 @@ namespace ClinicFlow.Domain.Exceptions.Appointments;
 /// <summary>
 /// Thrown when an appointment cannot be rescheduled due to policy or status constraints.
 /// </summary>
-public class AppointmentReschedulingNotAllowedException(string errorCode) : DomainException(errorCode)
-{
-}
+public class AppointmentReschedulingNotAllowedException(string errorCode)
+    : DomainException(errorCode) { }

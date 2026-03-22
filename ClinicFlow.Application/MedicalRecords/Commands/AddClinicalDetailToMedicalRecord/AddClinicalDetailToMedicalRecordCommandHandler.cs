@@ -9,18 +9,38 @@ using MediatR;
 
 namespace ClinicFlow.Application.MedicalRecords.Commands.AddClinicalDetailToMedicalRecord;
 
-public class AddClinicalDetailToMedicalRecordCommandHandler(IMedicalRecordRepository medicalRecordRepository, IClinicalFormTemplateRepository templateRepository,
-    MedicalEncounterService medicalEncounterService, IUnitOfWork unitOfWork) : IRequestHandler<AddClinicalDetailToMedicalRecordCommand>
+public class AddClinicalDetailToMedicalRecordCommandHandler(
+    IMedicalRecordRepository medicalRecordRepository,
+    IClinicalFormTemplateRepository templateRepository,
+    MedicalEncounterService medicalEncounterService,
+    IUnitOfWork unitOfWork
+) : IRequestHandler<AddClinicalDetailToMedicalRecordCommand>
 {
-    public async Task Handle(AddClinicalDetailToMedicalRecordCommand request, CancellationToken cancellationToken)
+    public async Task Handle(
+        AddClinicalDetailToMedicalRecordCommand request,
+        CancellationToken cancellationToken
+    )
     {
-        var record = await medicalRecordRepository.GetByIdAsync(request.MedicalRecordId, cancellationToken)
-            ?? throw new EntityNotFoundException(DomainErrors.General.NotFound, nameof(MedicalRecord), request.MedicalRecordId);
+        var record =
+            await medicalRecordRepository.GetByIdAsync(request.MedicalRecordId, cancellationToken)
+            ?? throw new EntityNotFoundException(
+                DomainErrors.General.NotFound,
+                nameof(MedicalRecord),
+                request.MedicalRecordId
+            );
 
-        var template = await templateRepository.GetByCodeAsync(request.Detail.TemplateCode, cancellationToken)
-            ?? throw new EntityNotFoundException(DomainErrors.General.NotFound, nameof(ClinicalFormTemplate), request.Detail.TemplateCode);
+        var template =
+            await templateRepository.GetByCodeAsync(request.Detail.TemplateCode, cancellationToken)
+            ?? throw new EntityNotFoundException(
+                DomainErrors.General.NotFound,
+                nameof(ClinicalFormTemplate),
+                request.Detail.TemplateCode
+            );
 
-        var detail = DynamicClinicalDetail.Create(request.Detail.TemplateCode, request.Detail.JsonDataPayload);
+        var detail = DynamicClinicalDetail.Create(
+            request.Detail.TemplateCode,
+            request.Detail.JsonDataPayload
+        );
 
         medicalEncounterService.AppendClinicalDetail(record, detail, template);
 

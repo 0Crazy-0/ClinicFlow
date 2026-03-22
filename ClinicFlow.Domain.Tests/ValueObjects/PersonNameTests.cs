@@ -18,7 +18,9 @@ public class PersonNameTests
         var act = () => PersonName.Create(value!);
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage(DomainErrors.Validation.ValueRequired);
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Fact]
@@ -28,7 +30,9 @@ public class PersonNameTests
         var act = () => PersonName.Create("A");
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage(DomainErrors.Validation.ValueTooShort);
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueTooShort);
     }
 
     [Fact]
@@ -75,7 +79,9 @@ public class PersonNameTests
         var n3 = PersonName.Create("Jane Doe");
 
         // Act & Assert
-        (n1 == n2).Should().BeTrue();
+        (n1 == n2)
+            .Should()
+            .BeTrue();
         (n1 != n3).Should().BeTrue();
     }
 }

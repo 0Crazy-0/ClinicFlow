@@ -6,17 +6,25 @@ using MediatR;
 
 namespace ClinicFlow.Application.Patients.Commands.CreateCompletePatientProfile;
 
-public class CreateCompletePatientProfileCommandHandler(IPatientRepository patientRepository, IUnitOfWork unitOfWork) 
-    : IRequestHandler<CreateCompletePatientProfileCommand, Guid>
+public class CreateCompletePatientProfileCommandHandler(
+    IPatientRepository patientRepository,
+    IUnitOfWork unitOfWork
+) : IRequestHandler<CreateCompletePatientProfileCommand, Guid>
 {
-    public async Task<Guid> Handle(CreateCompletePatientProfileCommand request, CancellationToken cancellationToken)
+    public async Task<Guid> Handle(
+        CreateCompletePatientProfileCommand request,
+        CancellationToken cancellationToken
+    )
     {
         var fullName = PersonName.Create($"{request.FirstName} {request.LastName}");
 
         var patient = Patient.CreateSelf(request.UserId, fullName, request.DateOfBirth);
 
         var bloodType = BloodType.Create(request.BloodType);
-        var emergencyContact = EmergencyContact.Create(request.EmergencyContactName, request.EmergencyContactPhone);
+        var emergencyContact = EmergencyContact.Create(
+            request.EmergencyContactName,
+            request.EmergencyContactPhone
+        );
 
         patient.UpdateMedicalProfile(bloodType, request.Allergies, request.ChronicConditions);
         patient.UpdateEmergencyContact(emergencyContact);

@@ -26,7 +26,8 @@ public record TimeRange
     /// <exception cref="InvalidTimeRangeException">Thrown when the start time is greater than or equal to the end time.</exception>
     internal static TimeRange Create(TimeSpan start, TimeSpan end)
     {
-        if (start >= end) throw new InvalidTimeRangeException(DomainErrors.Schedule.InvalidTimeRange);
+        if (start >= end)
+            throw new InvalidTimeRangeException(DomainErrors.Schedule.InvalidTimeRange);
 
         return new TimeRange(start, end);
     }
@@ -37,7 +38,8 @@ public record TimeRange
     /// <exception cref="InvalidTimeRangeException">Thrown when the other time range is null.</exception>
     public bool OverlapsWith(TimeRange other)
     {
-        if (other is null) throw new InvalidTimeRangeException(DomainErrors.General.RequiredFieldNull);
+        if (other is null)
+            throw new InvalidTimeRangeException(DomainErrors.General.RequiredFieldNull);
 
         return Start < other.End && other.Start < End;
     }
@@ -48,7 +50,8 @@ public record TimeRange
     /// <exception cref="InvalidTimeRangeException">Thrown when the other time range is null.</exception>
     public bool Covers(TimeRange other)
     {
-        if (other is null) throw new InvalidTimeRangeException(DomainErrors.General.RequiredFieldNull);
+        if (other is null)
+            throw new InvalidTimeRangeException(DomainErrors.General.RequiredFieldNull);
 
         return Start <= other.Start && End >= other.End;
     }

@@ -7,15 +7,36 @@ using MediatR;
 
 namespace ClinicFlow.Application.MedicalRecords.Queries.GetMedicalRecordByAppointmentId;
 
-public class GetMedicalRecordByAppointmentIdQueryHandler(IMedicalRecordRepository medicalRecordRepository) :
-    IRequestHandler<GetMedicalRecordByAppointmentIdQuery, MedicalRecordDto>
+public class GetMedicalRecordByAppointmentIdQueryHandler(
+    IMedicalRecordRepository medicalRecordRepository
+) : IRequestHandler<GetMedicalRecordByAppointmentIdQuery, MedicalRecordDto>
 {
-    public async Task<MedicalRecordDto> Handle(GetMedicalRecordByAppointmentIdQuery request, CancellationToken cancellationToken)
+    public async Task<MedicalRecordDto> Handle(
+        GetMedicalRecordByAppointmentIdQuery request,
+        CancellationToken cancellationToken
+    )
     {
-        var record = await medicalRecordRepository.GetByAppointmentIdAsync(request.AppointmentId, cancellationToken)
-            ?? throw new EntityNotFoundException(DomainErrors.General.NotFound, nameof(MedicalRecord), request.AppointmentId);
+        var record =
+            await medicalRecordRepository.GetByAppointmentIdAsync(
+                request.AppointmentId,
+                cancellationToken
+            )
+            ?? throw new EntityNotFoundException(
+                DomainErrors.General.NotFound,
+                nameof(MedicalRecord),
+                request.AppointmentId
+            );
 
-        return new MedicalRecordDto(record.Id, record.PatientId, record.DoctorId, record.AppointmentId, record.ChiefComplaint,
-            record.ClinicalDetails.Select(d => new ClinicalDetailDto(d.TemplateCode, d.JsonDataPayload)));
+        return new MedicalRecordDto(
+            record.Id,
+            record.PatientId,
+            record.DoctorId,
+            record.AppointmentId,
+            record.ChiefComplaint,
+            record.ClinicalDetails.Select(d => new ClinicalDetailDto(
+                d.TemplateCode,
+                d.JsonDataPayload
+            ))
+        );
     }
 }

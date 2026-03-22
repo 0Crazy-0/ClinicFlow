@@ -36,10 +36,18 @@ public class AppointmentTypeDefinitionTests
     public void Create_ShouldThrowException_WhenNameIsEmpty(string? name)
     {
         // Arrange & Act
-        var act = () => AppointmentTypeDefinition.Create(AppointmentCategory.Checkup, name!, "Description", TimeSpan.FromMinutes(30));
+        var act = () =>
+            AppointmentTypeDefinition.Create(
+                AppointmentCategory.Checkup,
+                name!,
+                "Description",
+                TimeSpan.FromMinutes(30)
+            );
 
         // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.Validation.ValueRequired);
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Theory]
@@ -47,12 +55,21 @@ public class AppointmentTypeDefinitionTests
     public void Create_ShouldThrowException_WhenDurationIsZeroOrNegative(TimeSpan duration)
     {
         // Arrange & Act
-        var act = () => AppointmentTypeDefinition.Create(AppointmentCategory.Checkup, "Checkup", "Description", duration);
+        var act = () =>
+            AppointmentTypeDefinition.Create(
+                AppointmentCategory.Checkup,
+                "Checkup",
+                "Description",
+                duration
+            );
 
         // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.Validation.ValueMustBePositive);
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueMustBePositive);
     }
-    
+
     // Helper
-    public static TheoryData<TimeSpan> InvalidDurations => [TimeSpan.Zero, TimeSpan.FromMinutes(-10)];
+    public static TheoryData<TimeSpan> InvalidDurations =>
+        [TimeSpan.Zero, TimeSpan.FromMinutes(-10)];
 }

@@ -25,7 +25,12 @@ public class MedicalSpecialty : BaseEntity
     // EF Core
     private MedicalSpecialty() { }
 
-    private MedicalSpecialty(string name, string description, int typicalDurationMinutes, int minCancellationHours)
+    private MedicalSpecialty(
+        string name,
+        string description,
+        int typicalDurationMinutes,
+        int minCancellationHours
+    )
     {
         Name = name;
         Description = description;
@@ -37,13 +42,26 @@ public class MedicalSpecialty : BaseEntity
     /// Creates a new medical specialty.
     /// </summary>
     /// <exception cref="DomainValidationException">Thrown when the name is empty, the duration is not positive, or cancellation hours are negative.</exception>
-    internal static MedicalSpecialty Create(string name, string description, int typicalDurationMinutes, int minCancellationHours)
+    internal static MedicalSpecialty Create(
+        string name,
+        string description,
+        int typicalDurationMinutes,
+        int minCancellationHours
+    )
     {
-        if (string.IsNullOrWhiteSpace(name)) throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-        if (typicalDurationMinutes <= 0) throw new DomainValidationException(DomainErrors.Validation.ValueMustBePositive);
-        if (minCancellationHours < 0) throw new DomainValidationException(DomainErrors.Validation.ValueCannotBeNegative);
+        if (string.IsNullOrWhiteSpace(name))
+            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        if (typicalDurationMinutes <= 0)
+            throw new DomainValidationException(DomainErrors.Validation.ValueMustBePositive);
+        if (minCancellationHours < 0)
+            throw new DomainValidationException(DomainErrors.Validation.ValueCannotBeNegative);
 
-        return new MedicalSpecialty(name, description, typicalDurationMinutes, minCancellationHours);
+        return new MedicalSpecialty(
+            name,
+            description,
+            typicalDurationMinutes,
+            minCancellationHours
+        );
     }
 
     /// <summary>

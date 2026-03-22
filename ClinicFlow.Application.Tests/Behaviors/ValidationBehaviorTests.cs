@@ -39,7 +39,14 @@ public class ValidationBehaviorTests
     {
         // Arrange
         var validatorMock = new Mock<IValidator<DummyRequest>>();
-        validatorMock.Setup(v => v.ValidateAsync(It.IsAny<ValidationContext<DummyRequest>>(), It.IsAny<CancellationToken>())).ReturnsAsync(new ValidationResult()); // No errors
+        validatorMock
+            .Setup(v =>
+                v.ValidateAsync(
+                    It.IsAny<ValidationContext<DummyRequest>>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(new ValidationResult()); // No errors
 
         var validators = new List<IValidator<DummyRequest>> { validatorMock.Object };
         var _sut = new ValidationBehavior<DummyRequest, Unit>(validators);
@@ -62,7 +69,13 @@ public class ValidationBehaviorTests
         // Arrange
         var validatorMock = new Mock<IValidator<DummyRequest>>();
         var validationFailure = new ValidationFailure("Value", "Value is invalid");
-        validatorMock.Setup(v => v.ValidateAsync(It.IsAny<ValidationContext<DummyRequest>>(), It.IsAny<CancellationToken>()))
+        validatorMock
+            .Setup(v =>
+                v.ValidateAsync(
+                    It.IsAny<ValidationContext<DummyRequest>>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
             .ReturnsAsync(new ValidationResult([validationFailure]));
 
         var validators = new List<IValidator<DummyRequest>> { validatorMock.Object };
@@ -71,7 +84,8 @@ public class ValidationBehaviorTests
         var nextDelegateMock = new Mock<RequestHandlerDelegate<Unit>>();
 
         // Act
-        var act = async () => await _sut.Handle(request, nextDelegateMock.Object, CancellationToken.None);
+        var act = async () =>
+            await _sut.Handle(request, nextDelegateMock.Object, CancellationToken.None);
 
         // Assert
         var exception = await act.Should().ThrowAsync<ValidationException>();

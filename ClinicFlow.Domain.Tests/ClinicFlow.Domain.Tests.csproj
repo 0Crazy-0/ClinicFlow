@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -26,5 +25,4 @@
   <ItemGroup>
     <ProjectReference Include="..\ClinicFlow.Domain\ClinicFlow.Domain.csproj" />
   </ItemGroup>
-
 </Project>

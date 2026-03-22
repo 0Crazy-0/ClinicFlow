@@ -14,23 +14,24 @@ public record PersonName
     {
         FullName = fullName;
     }
-    
+
     /// <summary>
     /// Creates a <see cref="PersonName"/> after validating length constraints.
     /// </summary>
     /// <exception cref="BusinessRuleValidationException">Thrown when the value is empty or shorter than 2 characters.</exception>
     internal static PersonName Create(string fullName)
     {
-        if (string.IsNullOrWhiteSpace(fullName)) throw new BusinessRuleValidationException(DomainErrors.Validation.ValueRequired);
+        if (string.IsNullOrWhiteSpace(fullName))
+            throw new BusinessRuleValidationException(DomainErrors.Validation.ValueRequired);
 
         var trimmed = fullName.Trim();
 
-        if (trimmed.Length < 2) throw new BusinessRuleValidationException(DomainErrors.Validation.ValueTooShort);
+        if (trimmed.Length < 2)
+            throw new BusinessRuleValidationException(DomainErrors.Validation.ValueTooShort);
 
         return new PersonName(trimmed);
     }
 
     /// <inheritdoc/>
     public override string ToString() => FullName;
-
 }

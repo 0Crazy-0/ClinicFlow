@@ -18,18 +18,28 @@ public class CreatePatientProfileCommandHandlerTests
     {
         _patientRepositoryMock = new Mock<IPatientRepository>();
         _unitOfWorkMock = new Mock<IUnitOfWork>();
-        _sut = new CreatePatientProfileCommandHandler(_patientRepositoryMock.Object, _unitOfWorkMock.Object);
+        _sut = new CreatePatientProfileCommandHandler(
+            _patientRepositoryMock.Object,
+            _unitOfWorkMock.Object
+        );
     }
 
     [Fact]
     public async Task Handle_ShouldCreatePatientProfile_WhenValidCommand()
     {
         // Arrange
-        var command = new CreatePatientProfileCommand(Guid.NewGuid(), "John", "Doe", DateTime.UtcNow.AddYears(-30));
+        var command = new CreatePatientProfileCommand(
+            Guid.NewGuid(),
+            "John",
+            "Doe",
+            DateTime.UtcNow.AddYears(-30)
+        );
 
         Patient? capturedPatient = null;
-        _patientRepositoryMock.Setup(x => x.CreateAsync(It.IsAny<Patient>(), It.IsAny<CancellationToken>()))
-            .Callback<Patient, CancellationToken>((p, _) => capturedPatient = p).ReturnsAsync((Patient p, CancellationToken _) => p);
+        _patientRepositoryMock
+            .Setup(x => x.CreateAsync(It.IsAny<Patient>(), It.IsAny<CancellationToken>()))
+            .Callback<Patient, CancellationToken>((p, _) => capturedPatient = p)
+            .ReturnsAsync((Patient p, CancellationToken _) => p);
 
         // Act
         var result = await _sut.Handle(command, CancellationToken.None);

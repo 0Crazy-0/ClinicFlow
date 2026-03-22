@@ -1,3 +1,4 @@
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Events;
@@ -6,7 +7,6 @@ using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Args.NoShow;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
-using ClinicFlow.Domain.Common;
 
 namespace ClinicFlow.Domain.Tests.Services;
 
@@ -23,7 +23,8 @@ public class AppointmentNoShowServiceTests
 
         Guid? doctorId = null;
 
-        if (role is UserRole.Doctor) doctorId = isOwn ? appointment.DoctorId : Guid.NewGuid();
+        if (role is UserRole.Doctor)
+            doctorId = isOwn ? appointment.DoctorId : Guid.NewGuid();
 
         // Act
         var args = new AppointmentNoShowArgs { InitiatorRole = role, InitiatorDoctorId = doctorId };
@@ -34,13 +35,18 @@ public class AppointmentNoShowServiceTests
         appointment.DomainEvents.OfType<AppointmentMarkedAsNoShowEvent>().Should().ContainSingle();
 
         result.Should().NotBeNull();
-        result.Should().ContainSingle(p => p.Type == PenaltyType.Warning && p.Reason == PenaltyReasons.NoShow);
+        result
+            .Should()
+            .ContainSingle(p => p.Type == PenaltyType.Warning && p.Reason == PenaltyReasons.NoShow);
     }
 
     [Theory]
     [InlineData(UserRole.Doctor, DomainErrors.Appointment.CannotMarkNoShow)]
     [InlineData(UserRole.Patient, DomainErrors.Appointment.CannotMarkNoShow)]
-    public void MarkAsNoShow_ShouldThrowUnauthorized_WhenNotAuthorized(UserRole role, string expectedMessage)
+    public void MarkAsNoShow_ShouldThrowUnauthorized_WhenNotAuthorized(
+        UserRole role,
+        string expectedMessage
+    )
     {
         // Arrange
         var appointment = CreateAppointment(DateTime.UtcNow.AddDays(2));
@@ -54,7 +60,6 @@ public class AppointmentNoShowServiceTests
         act.Should().Throw<AppointmentNoShowUnauthorizedException>().WithMessage(expectedMessage);
     }
 
-
     [Fact]
     public void MarkAsNoShow_ShouldThrowUnauthorized_WhenDoctorIdDoesNotMatchAppointmentDoctorId()
     {
@@ -63,11 +68,17 @@ public class AppointmentNoShowServiceTests
         var doctorId = Guid.NewGuid();
 
         // Act
-        var args = new AppointmentNoShowArgs { InitiatorRole = UserRole.Doctor, InitiatorDoctorId = doctorId };
+        var args = new AppointmentNoShowArgs
+        {
+            InitiatorRole = UserRole.Doctor,
+            InitiatorDoctorId = doctorId,
+        };
         var act = () => AppointmentNoShowService.MarkAsNoShow(appointment, args, []);
 
-            // Assert
-            act.Should().Throw<AppointmentNoShowUnauthorizedException>().WithMessage(DomainErrors.Appointment.CannotMarkNoShow);
+        // Assert
+        act.Should()
+            .Throw<AppointmentNoShowUnauthorizedException>()
+            .WithMessage(DomainErrors.Appointment.CannotMarkNoShow);
     }
 
     [Fact]
@@ -77,15 +88,30 @@ public class AppointmentNoShowServiceTests
         var appointment = CreateAppointment(DateTime.UtcNow.AddDays(2));
 
         // Act
-        var args = new AppointmentNoShowArgs { InitiatorRole = UserRole.Doctor, InitiatorDoctorId = null };
+        var args = new AppointmentNoShowArgs
+        {
+            InitiatorRole = UserRole.Doctor,
+            InitiatorDoctorId = null,
+        };
         var act = () => AppointmentNoShowService.MarkAsNoShow(appointment, args, []);
 
         // Assert
-        act.Should().Throw<AppointmentNoShowUnauthorizedException>().WithMessage(DomainErrors.Appointment.CannotMarkNoShow);
+        act.Should()
+            .Throw<AppointmentNoShowUnauthorizedException>()
+            .WithMessage(DomainErrors.Appointment.CannotMarkNoShow);
     }
 
     // Helpers
 
-    private static Appointment CreateAppointment(DateTime scheduledDateTime) => Appointment.Schedule(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(),
-        scheduledDateTime.Date, TimeRange.Create(scheduledDateTime.TimeOfDay, scheduledDateTime.TimeOfDay.Add(TimeSpan.FromHours(1))));
+    private static Appointment CreateAppointment(DateTime scheduledDateTime) =>
+        Appointment.Schedule(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            scheduledDateTime.Date,
+            TimeRange.Create(
+                scheduledDateTime.TimeOfDay,
+                scheduledDateTime.TimeOfDay.Add(TimeSpan.FromHours(1))
+            )
+        );
 }

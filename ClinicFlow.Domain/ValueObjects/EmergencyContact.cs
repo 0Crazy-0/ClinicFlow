@@ -17,7 +17,7 @@ public record EmergencyContact
         Name = name;
         PhoneNumber = phoneNumber;
     }
-    
+
     /// <summary>
     /// Creates an <see cref="EmergencyContact"/> from raw string values, delegating validation to <see cref="PersonName"/> and <see cref="PhoneNumber"/>.
     /// </summary>
@@ -35,8 +35,10 @@ public record EmergencyContact
     /// <exception cref="BusinessRuleValidationException">Thrown when either the name or phone number is null.</exception>
     internal static EmergencyContact Create(PersonName name, PhoneNumber phoneNumber)
     {
-        if (name is null) throw new BusinessRuleValidationException(DomainErrors.General.RequiredFieldNull);
-        if (phoneNumber is null) throw new BusinessRuleValidationException(DomainErrors.General.RequiredFieldNull);
+        if (name is null)
+            throw new BusinessRuleValidationException(DomainErrors.General.RequiredFieldNull);
+        if (phoneNumber is null)
+            throw new BusinessRuleValidationException(DomainErrors.General.RequiredFieldNull);
 
         return new EmergencyContact(name, phoneNumber);
     }

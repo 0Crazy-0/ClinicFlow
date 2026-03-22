@@ -31,7 +31,9 @@ public class GetAppointmentByIdQueryHandlerTests
 
         var appointment = CreateAppointment(appointmentId, patientId, doctorId);
 
-        _appointmentRepositoryMock.Setup(x => x.GetByIdAsync(appointmentId)).ReturnsAsync(appointment);
+        _appointmentRepositoryMock
+            .Setup(x => x.GetByIdAsync(appointmentId))
+            .ReturnsAsync(appointment);
 
         // Act
         var result = await _sut.Handle(query, CancellationToken.None);
@@ -42,7 +44,7 @@ public class GetAppointmentByIdQueryHandlerTests
         result.PatientId.Should().Be(patientId);
         result.DoctorId.Should().Be(doctorId);
         result.AppointmentTypeId.Should().Be(appointment.AppointmentTypeId);
-        
+
         _appointmentRepositoryMock.Verify(x => x.GetByIdAsync(appointmentId), Times.Once);
     }
 
@@ -52,13 +54,17 @@ public class GetAppointmentByIdQueryHandlerTests
         // Arrange
         var query = new GetAppointmentByIdQuery(Guid.NewGuid());
 
-        _appointmentRepositoryMock.Setup(x => x.GetByIdAsync(query.AppointmentId)).ReturnsAsync((Appointment?)null);
+        _appointmentRepositoryMock
+            .Setup(x => x.GetByIdAsync(query.AppointmentId))
+            .ReturnsAsync((Appointment?)null);
 
         // Act
         var act = async () => await _sut.Handle(query, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<EntityNotFoundException>().Where(e => e.EntityName == nameof(Appointment));
+        await act.Should()
+            .ThrowAsync<EntityNotFoundException>()
+            .Where(e => e.EntityName == nameof(Appointment));
     }
 
     // Helpers
@@ -70,7 +76,11 @@ public class GetAppointmentByIdQueryHandlerTests
         SetPrivateProperty(appointment, nameof(Appointment.PatientId), patientId);
         SetPrivateProperty(appointment, nameof(Appointment.DoctorId), doctorId);
         SetPrivateProperty(appointment, nameof(Appointment.AppointmentTypeId), Guid.NewGuid());
-        SetPrivateProperty(appointment, nameof(Appointment.ScheduledDate), DateTime.UtcNow.Date.AddDays(1));
+        SetPrivateProperty(
+            appointment,
+            nameof(Appointment.ScheduledDate),
+            DateTime.UtcNow.Date.AddDays(1)
+        );
         SetPrivateProperty(appointment, nameof(Appointment.TimeRange), timeRange);
         return appointment;
     }
@@ -80,7 +90,13 @@ public class GetAppointmentByIdQueryHandlerTests
         var type = obj.GetType();
         while (type != null)
         {
-            var prop = type.GetProperty(propertyName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+            var prop = type.GetProperty(
+                propertyName,
+                BindingFlags.Public
+                    | BindingFlags.NonPublic
+                    | BindingFlags.Instance
+                    | BindingFlags.DeclaredOnly
+            );
             if (prop != null)
             {
                 prop.SetValue(obj, value);

@@ -14,23 +14,24 @@ public record MedicalLicenseNumber
     {
         Value = value;
     }
-    
+
     /// <summary>
     /// Creates a <see cref="MedicalLicenseNumber"/> after validating length constraints.
     /// </summary>
     /// <exception cref="BusinessRuleValidationException">Thrown when the value is empty or shorter than 4 characters.</exception>
     internal static MedicalLicenseNumber Create(string licenseNumber)
     {
-        if (string.IsNullOrWhiteSpace(licenseNumber)) throw new BusinessRuleValidationException(DomainErrors.Validation.ValueRequired);
+        if (string.IsNullOrWhiteSpace(licenseNumber))
+            throw new BusinessRuleValidationException(DomainErrors.Validation.ValueRequired);
 
         var trimmed = licenseNumber.Trim();
 
-        if (trimmed.Length < 4) throw new BusinessRuleValidationException(DomainErrors.Validation.ValueTooShort);
+        if (trimmed.Length < 4)
+            throw new BusinessRuleValidationException(DomainErrors.Validation.ValueTooShort);
 
         return new MedicalLicenseNumber(trimmed);
     }
 
     /// <inheritdoc/>
     public override string ToString() => Value;
-
 }

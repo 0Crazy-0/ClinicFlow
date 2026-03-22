@@ -18,7 +18,12 @@ public class MedicalSpecialtyTests
         var minCancellationHours = 24;
 
         // Act
-        var specialty = MedicalSpecialty.Create(name, description, typicalDuration, minCancellationHours);
+        var specialty = MedicalSpecialty.Create(
+            name,
+            description,
+            typicalDuration,
+            minCancellationHours
+        );
 
         // Assert
         specialty.Should().NotBeNull();
@@ -38,7 +43,9 @@ public class MedicalSpecialtyTests
         var act = () => MedicalSpecialty.Create(name!, "Description", 30, 24);
 
         // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.Validation.ValueRequired);
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Theory]
@@ -50,7 +57,9 @@ public class MedicalSpecialtyTests
         var act = () => MedicalSpecialty.Create("Cardiology", "Description", duration, 24);
 
         // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.Validation.ValueMustBePositive);
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueMustBePositive);
     }
 
     [Fact]
@@ -60,16 +69,25 @@ public class MedicalSpecialtyTests
         var act = () => MedicalSpecialty.Create("Cardiology", "Description", 30, -1);
 
         // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.Validation.ValueCannotBeNegative);
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueCannotBeNegative);
     }
 
     // IsCancellationAllowed
     [Fact]
-    public void IsCancellationAllowed_ShouldReturnTrue_WhenSufficientNotice() => MedicalSpecialty.Create("Cardiology", "Description", 30, 24)
-        .IsCancellationAllowed(DateTime.UtcNow.AddHours(48)).Should().BeTrue(); // Arrange & Act & Assert
+    public void IsCancellationAllowed_ShouldReturnTrue_WhenSufficientNotice() =>
+        MedicalSpecialty
+            .Create("Cardiology", "Description", 30, 24)
+            .IsCancellationAllowed(DateTime.UtcNow.AddHours(48))
+            .Should()
+            .BeTrue(); // Arrange & Act & Assert
 
     [Fact]
-    public void IsCancellationAllowed_ShouldReturnFalse_WhenInsufficientNotice() => MedicalSpecialty.Create("Cardiology", "Description", 30, 24)
-        .IsCancellationAllowed(DateTime.UtcNow.AddHours(2)).Should().BeFalse(); // Arrange & Act & Assert
-
-}  
+    public void IsCancellationAllowed_ShouldReturnFalse_WhenInsufficientNotice() =>
+        MedicalSpecialty
+            .Create("Cardiology", "Description", 30, 24)
+            .IsCancellationAllowed(DateTime.UtcNow.AddHours(2))
+            .Should()
+            .BeFalse(); // Arrange & Act & Assert
+}

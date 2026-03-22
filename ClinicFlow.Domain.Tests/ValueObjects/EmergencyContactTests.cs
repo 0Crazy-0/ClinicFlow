@@ -52,7 +52,9 @@ public class EmergencyContactTests
         var act = () => EmergencyContact.Create(null!, PhoneNumber.Create("+1234567890"));
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage(DomainErrors.General.RequiredFieldNull);
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 
     [Fact]
@@ -62,12 +64,19 @@ public class EmergencyContactTests
         var act = () => EmergencyContact.Create(PersonName.Create("Jane Doe"), null!);
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage(DomainErrors.General.RequiredFieldNull);
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 
     // ToString
     [Fact]
-    public void ToString_ShouldReturnFormattedString() => EmergencyContact.Create("Jane Doe", "+1234567890").ToString().Should().Be("Jane Doe (+1234567890)"); // Arrange & Act & Assert
+    public void ToString_ShouldReturnFormattedString() =>
+        EmergencyContact
+            .Create("Jane Doe", "+1234567890")
+            .ToString()
+            .Should()
+            .Be("Jane Doe (+1234567890)"); // Arrange & Act & Assert
 
     // Equality
     [Fact]
@@ -79,7 +88,9 @@ public class EmergencyContactTests
         var c3 = EmergencyContact.Create("John Doe", "+0987654321");
 
         // Act & Assert
-        (c1 == c2).Should().BeTrue();
+        (c1 == c2)
+            .Should()
+            .BeTrue();
         (c1 != c3).Should().BeTrue();
     }
 }

@@ -27,7 +27,8 @@ public class MedicalRecord : BaseEntity
     /// <summary>
     /// A structured collection of clinical details (e.g., Cardiology flags, Dental odontograms, etc.) collected during the encounter.
     /// </summary>
-    public IReadOnlyCollection<IClinicalDetailRecord> ClinicalDetails => _clinicalDetails.AsReadOnly();
+    public IReadOnlyCollection<IClinicalDetailRecord> ClinicalDetails =>
+        _clinicalDetails.AsReadOnly();
 
     // EF Core constructor
     private MedicalRecord() { }
@@ -44,12 +45,21 @@ public class MedicalRecord : BaseEntity
     /// Creates a new medical record and raises a <see cref="MedicalRecordCreatedEvent"/>.
     /// </summary>
     /// <exception cref="DomainValidationException">Thrown when any required identifier is empty or the chief complaint is blank.</exception>
-    internal static MedicalRecord Create(Guid patientId, Guid doctorId, Guid appointmentId, string chiefComplaint)
+    internal static MedicalRecord Create(
+        Guid patientId,
+        Guid doctorId,
+        Guid appointmentId,
+        string chiefComplaint
+    )
     {
-        if (patientId == Guid.Empty) throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-        if (doctorId == Guid.Empty) throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-        if (appointmentId == Guid.Empty) throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-        if (string.IsNullOrWhiteSpace(chiefComplaint)) throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        if (patientId == Guid.Empty)
+            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        if (doctorId == Guid.Empty)
+            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        if (appointmentId == Guid.Empty)
+            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        if (string.IsNullOrWhiteSpace(chiefComplaint))
+            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
 
         var record = new MedicalRecord(patientId, doctorId, appointmentId, chiefComplaint);
 
@@ -66,7 +76,8 @@ public class MedicalRecord : BaseEntity
     /// <exception cref="DomainValidationException">Thrown if the provided detail is null or a detail of that type was already added.</exception>
     internal void AddClinicalDetail(IClinicalDetailRecord detail)
     {
-        if (detail is null) throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+        if (detail is null)
+            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
 
         if (_clinicalDetails.Any(d => d.TemplateCode == detail.TemplateCode))
             throw new DomainValidationException(DomainErrors.MedicalEncounter.DetailAlreadyExists);
@@ -78,6 +89,6 @@ public class MedicalRecord : BaseEntity
     /// Retrieves a specific clinical detail by its template code, or null if not present.
     /// Useful for queries or view models that need to extract specialized data (e.g., getting the 'VITALS' form).
     /// </summary>
-    public IClinicalDetailRecord? GetClinicalDetail(string templateCode) => _clinicalDetails.FirstOrDefault(d => d.TemplateCode == templateCode);
-
+    public IClinicalDetailRecord? GetClinicalDetail(string templateCode) =>
+        _clinicalDetails.FirstOrDefault(d => d.TemplateCode == templateCode);
 }

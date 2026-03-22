@@ -1,5 +1,5 @@
-using ClinicFlow.Domain.Common;
 using System.Reflection;
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Entities.ClinicalDetails;
 using ClinicFlow.Domain.Exceptions.Base;
@@ -27,7 +27,9 @@ public class MetadataFormValidationPolicyTests
         var act = () => _sut.Validate(null!, []);
 
         // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.General.RequiredFieldNull);
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 
     [Fact]
@@ -37,7 +39,9 @@ public class MetadataFormValidationPolicyTests
         var act = () => _sut.Validate(CreateAppointmentTypeWithTemplates(), null!);
 
         // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.General.RequiredFieldNull);
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 
     [Fact]
@@ -61,7 +65,9 @@ public class MetadataFormValidationPolicyTests
         var act = () => _sut.Validate(appointmentType, []);
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage(DomainErrors.MedicalEncounter.MissingRequiredTemplate);
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.MedicalEncounter.MissingRequiredTemplate);
     }
 
     [Fact]
@@ -77,7 +83,9 @@ public class MetadataFormValidationPolicyTests
         var act = () => _sut.Validate(appointmentType, details);
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage(DomainErrors.MedicalEncounter.MissingPayload);
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.MedicalEncounter.MissingPayload);
     }
 
     [Fact]
@@ -93,7 +101,9 @@ public class MetadataFormValidationPolicyTests
         var act = () => _sut.Validate(appointmentType, details);
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage(DomainErrors.MedicalEncounter.MissingPayload);
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.MedicalEncounter.MissingPayload);
     }
 
     [Fact]
@@ -110,7 +120,11 @@ public class MetadataFormValidationPolicyTests
 
         // Assert
         act.Should().NotThrow();
-        _mockSchemaValidator.Verify(v => v.ValidateSchema(It.IsAny<string>(), It.IsAny<string>(), out It.Ref<string?>.IsAny), Times.Never);
+        _mockSchemaValidator.Verify(
+            v =>
+                v.ValidateSchema(It.IsAny<string>(), It.IsAny<string>(), out It.Ref<string?>.IsAny),
+            Times.Never
+        );
     }
 
     [Fact]
@@ -127,29 +141,44 @@ public class MetadataFormValidationPolicyTests
 
         // Assert
         act.Should().NotThrow();
-        _mockSchemaValidator.Verify(v => v.ValidateSchema(It.IsAny<string>(), It.IsAny<string>(), out It.Ref<string?>.IsAny), Times.Never);
+        _mockSchemaValidator.Verify(
+            v =>
+                v.ValidateSchema(It.IsAny<string>(), It.IsAny<string>(), out It.Ref<string?>.IsAny),
+            Times.Never
+        );
     }
 
     [Fact]
     public void Validate_ShouldSucceed_WhenSchemaValidationPasses()
     {
         // Arrange
-        var schemaDefinition = "{\"type\":\"object\",\"properties\":{\"bp\":{\"type\":\"string\"}}}";
-        var template = ClinicalFormTemplate.Create("VITALS", "Vitals", "Vital signs", schemaDefinition);
+        var schemaDefinition =
+            "{\"type\":\"object\",\"properties\":{\"bp\":{\"type\":\"string\"}}}";
+        var template = ClinicalFormTemplate.Create(
+            "VITALS",
+            "Vitals",
+            "Vital signs",
+            schemaDefinition
+        );
         var appointmentType = CreateAppointmentTypeWithTemplates(template);
         var payload = "{\"bp\":\"120/80\"}";
         var detail = DynamicClinicalDetail.Create("VITALS", payload);
         var details = new List<IClinicalDetailRecord> { detail };
 
         string? errorMsg = null;
-        _mockSchemaValidator.Setup(v => v.ValidateSchema(schemaDefinition, payload, out errorMsg)).Returns(true);
+        _mockSchemaValidator
+            .Setup(v => v.ValidateSchema(schemaDefinition, payload, out errorMsg))
+            .Returns(true);
 
         // Act
         var act = () => _sut.Validate(appointmentType, details);
 
         // Assert
         act.Should().NotThrow();
-        _mockSchemaValidator.Verify(v => v.ValidateSchema(schemaDefinition, payload, out It.Ref<string?>.IsAny), Times.Once);
+        _mockSchemaValidator.Verify(
+            v => v.ValidateSchema(schemaDefinition, payload, out It.Ref<string?>.IsAny),
+            Times.Once
+        );
     }
 
     [Fact]
@@ -157,20 +186,31 @@ public class MetadataFormValidationPolicyTests
     {
         // Arrange
         var schemaDefinition = "{\"type\":\"object\",\"required\":[\"bp\"]}";
-        var template = ClinicalFormTemplate.Create("VITALS", "Vitals", "Vital signs", schemaDefinition);
+        var template = ClinicalFormTemplate.Create(
+            "VITALS",
+            "Vitals",
+            "Vital signs",
+            schemaDefinition
+        );
         var appointmentType = CreateAppointmentTypeWithTemplates(template);
         var payload = "{\"temperature\":\"37\"}";
         var detail = DynamicClinicalDetail.Create("VITALS", payload);
         var details = new List<IClinicalDetailRecord> { detail };
 
         string? errorMsg = "Required property 'bp' is missing.";
-        _mockSchemaValidator.Setup(v => v.ValidateSchema(schemaDefinition, payload, out errorMsg)).Returns(false);
+        _mockSchemaValidator
+            .Setup(v => v.ValidateSchema(schemaDefinition, payload, out errorMsg))
+            .Returns(false);
 
         // Act
         var act = () => _sut.Validate(appointmentType, details);
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage($"{ClinicFlow.Domain.Common.DomainErrors.MedicalEncounter.ValidationFailed}: {errorMsg}");
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(
+                $"{ClinicFlow.Domain.Common.DomainErrors.MedicalEncounter.ValidationFailed}: {errorMsg}"
+            );
     }
 
     [Fact]
@@ -180,7 +220,12 @@ public class MetadataFormValidationPolicyTests
         var schema1 = "{\"type\":\"object\"}";
         var schema2 = "{\"type\":\"object\"}";
         var template1 = ClinicalFormTemplate.Create("VITALS", "Vitals", "Vital signs", schema1);
-        var template2 = ClinicalFormTemplate.Create("ALLERGIES", "Allergies", "Known allergies", schema2);
+        var template2 = ClinicalFormTemplate.Create(
+            "ALLERGIES",
+            "Allergies",
+            "Known allergies",
+            schema2
+        );
         var appointmentType = CreateAppointmentTypeWithTemplates(template1, template2);
 
         var payload1 = "{\"bp\":\"120/80\"}";
@@ -190,15 +235,23 @@ public class MetadataFormValidationPolicyTests
         var details = new List<IClinicalDetailRecord> { detail1, detail2 };
 
         string? errorMsg = null;
-        _mockSchemaValidator.Setup(v => v.ValidateSchema(It.IsAny<string>(), It.IsAny<string>(), out errorMsg)).Returns(true);
+        _mockSchemaValidator
+            .Setup(v => v.ValidateSchema(It.IsAny<string>(), It.IsAny<string>(), out errorMsg))
+            .Returns(true);
 
         // Act
         var act = () => _sut.Validate(appointmentType, details);
 
         // Assert
         act.Should().NotThrow();
-        _mockSchemaValidator.Verify(v => v.ValidateSchema(schema1, payload1, out It.Ref<string?>.IsAny), Times.Once);
-        _mockSchemaValidator.Verify(v => v.ValidateSchema(schema2, payload2, out It.Ref<string?>.IsAny), Times.Once);
+        _mockSchemaValidator.Verify(
+            v => v.ValidateSchema(schema1, payload1, out It.Ref<string?>.IsAny),
+            Times.Once
+        );
+        _mockSchemaValidator.Verify(
+            v => v.ValidateSchema(schema2, payload2, out It.Ref<string?>.IsAny),
+            Times.Once
+        );
     }
 
     [Fact]
@@ -206,7 +259,12 @@ public class MetadataFormValidationPolicyTests
     {
         // Arrange
         var template1 = ClinicalFormTemplate.Create("VITALS", "Vitals", "Vital signs", "{}");
-        var template2 = ClinicalFormTemplate.Create("ALLERGIES", "Allergies", "Known allergies", "{}");
+        var template2 = ClinicalFormTemplate.Create(
+            "ALLERGIES",
+            "Allergies",
+            "Known allergies",
+            "{}"
+        );
         var appointmentType = CreateAppointmentTypeWithTemplates(template1, template2);
 
         var detail = DynamicClinicalDetail.Create("ALLERGIES", "{\"allergy\":\"none\"}");
@@ -216,7 +274,9 @@ public class MetadataFormValidationPolicyTests
         var act = () => _sut.Validate(appointmentType, details);
 
         // Assert
-        act.Should().Throw<BusinessRuleValidationException>().WithMessage(DomainErrors.MedicalEncounter.MissingRequiredTemplate);
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.MedicalEncounter.MissingRequiredTemplate);
     }
 
     private class StubClinicalDetailRecord(string templateCode) : IClinicalDetailRecord
@@ -226,10 +286,16 @@ public class MetadataFormValidationPolicyTests
     }
 
     // Helpers
-    private static AppointmentTypeDefinition CreateAppointmentTypeWithTemplates(params ClinicalFormTemplate[] templates)
+    private static AppointmentTypeDefinition CreateAppointmentTypeWithTemplates(
+        params ClinicalFormTemplate[] templates
+    )
     {
         var appointmentType = AppointmentTypeDefinition.Create(
-            Enums.AppointmentCategory.Checkup, "General Checkup", "Standard checkup", TimeSpan.FromMinutes(30));
+            Enums.AppointmentCategory.Checkup,
+            "General Checkup",
+            "Standard checkup",
+            TimeSpan.FromMinutes(30)
+        );
 
         foreach (var template in templates)
             appointmentType.AddRequiredTemplate(template);
@@ -237,12 +303,21 @@ public class MetadataFormValidationPolicyTests
         return appointmentType;
     }
 
-    private static ClinicalFormTemplate CreateTemplateWithSchema(string code, string name, string schemaDefinition)
+    private static ClinicalFormTemplate CreateTemplateWithSchema(
+        string code,
+        string name,
+        string schemaDefinition
+    )
     {
-        var template = (ClinicalFormTemplate)Activator.CreateInstance(typeof(ClinicalFormTemplate), true)!;
+        var template = (ClinicalFormTemplate)
+            Activator.CreateInstance(typeof(ClinicalFormTemplate), true)!;
         SetPrivateProperty(template, nameof(ClinicalFormTemplate.Code), code);
         SetPrivateProperty(template, nameof(ClinicalFormTemplate.Name), name);
-        SetPrivateProperty(template, nameof(ClinicalFormTemplate.JsonSchemaDefinition), schemaDefinition);
+        SetPrivateProperty(
+            template,
+            nameof(ClinicalFormTemplate.JsonSchemaDefinition),
+            schemaDefinition
+        );
         return template;
     }
 
@@ -252,7 +327,13 @@ public class MetadataFormValidationPolicyTests
 
         while (type != null)
         {
-            var prop = type.GetProperty(propertyName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+            var prop = type.GetProperty(
+                propertyName,
+                BindingFlags.Public
+                    | BindingFlags.NonPublic
+                    | BindingFlags.Instance
+                    | BindingFlags.DeclaredOnly
+            );
 
             if (prop != null)
             {

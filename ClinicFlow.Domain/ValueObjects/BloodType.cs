@@ -10,7 +10,17 @@ public record BloodType
 {
     public string Value { get; }
 
-    private static readonly HashSet<string> ValidBloodTypes = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
+    private static readonly HashSet<string> ValidBloodTypes =
+    [
+        "A+",
+        "A-",
+        "B+",
+        "B-",
+        "AB+",
+        "AB-",
+        "O+",
+        "O-",
+    ];
 
     private BloodType(string value)
     {
@@ -23,7 +33,8 @@ public record BloodType
     /// <exception cref="BusinessRuleValidationException">Thrown when the value is empty or not a recognized blood type.</exception>
     internal static BloodType Create(string bloodType)
     {
-        if (string.IsNullOrWhiteSpace(bloodType)) throw new BusinessRuleValidationException(DomainErrors.Validation.ValueRequired);
+        if (string.IsNullOrWhiteSpace(bloodType))
+            throw new BusinessRuleValidationException(DomainErrors.Validation.ValueRequired);
 
         var normalizedType = bloodType.Trim().ToUpperInvariant();
 
@@ -35,5 +46,4 @@ public record BloodType
 
     /// <inheritdoc/>
     public override string ToString() => Value;
-
 }

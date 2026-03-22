@@ -1,10 +1,10 @@
+using System.Reflection;
 using ClinicFlow.Application.MedicalRecords.Queries.GetMedicalRecordsByPatientId;
 using ClinicFlow.Domain.Entities;
+using ClinicFlow.Domain.Entities.ClinicalDetails;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using FluentAssertions;
 using Moq;
-using System.Reflection;
-using ClinicFlow.Domain.Entities.ClinicalDetails;
 
 namespace ClinicFlow.Application.Tests.MedicalRecords.Queries.GetMedicalRecordsByPatientId;
 
@@ -28,12 +28,26 @@ public class GetMedicalRecordsByPatientIdQueryHandlerTests
         var doctorId2 = Guid.NewGuid();
         var request = new GetMedicalRecordsByPatientIdQuery(patientId);
 
-        var record1 = CreateMedicalRecord(Guid.NewGuid(), patientId, doctorId1, Guid.NewGuid(), "Checkup");
+        var record1 = CreateMedicalRecord(
+            Guid.NewGuid(),
+            patientId,
+            doctorId1,
+            Guid.NewGuid(),
+            "Checkup"
+        );
         record1.AddClinicalDetail(DynamicClinicalDetail.Create("vital-signs", "{}"));
 
-        var record2 = CreateMedicalRecord(Guid.NewGuid(), patientId, doctorId2, Guid.NewGuid(), "Follow-up");
+        var record2 = CreateMedicalRecord(
+            Guid.NewGuid(),
+            patientId,
+            doctorId2,
+            Guid.NewGuid(),
+            "Follow-up"
+        );
 
-        _medicalRecordRepositoryMock.Setup(x => x.GetByPatientIdAsync(patientId, CancellationToken.None)).ReturnsAsync([record1, record2]);
+        _medicalRecordRepositoryMock
+            .Setup(x => x.GetByPatientIdAsync(patientId, CancellationToken.None))
+            .ReturnsAsync([record1, record2]);
 
         // Act
         var result = await _sut.Handle(request, CancellationToken.None);
@@ -61,7 +75,9 @@ public class GetMedicalRecordsByPatientIdQueryHandlerTests
         // Arrange
         var request = new GetMedicalRecordsByPatientIdQuery(Guid.NewGuid());
 
-        _medicalRecordRepositoryMock.Setup(x => x.GetByPatientIdAsync(request.PatientId, CancellationToken.None)).ReturnsAsync([]);
+        _medicalRecordRepositoryMock
+            .Setup(x => x.GetByPatientIdAsync(request.PatientId, CancellationToken.None))
+            .ReturnsAsync([]);
 
         // Act
         var result = await _sut.Handle(request, CancellationToken.None);
@@ -72,7 +88,13 @@ public class GetMedicalRecordsByPatientIdQueryHandlerTests
     }
 
     // Helpers
-    private static MedicalRecord CreateMedicalRecord(Guid id, Guid patientId, Guid doctorId, Guid appointmentId, string chiefComplaint)
+    private static MedicalRecord CreateMedicalRecord(
+        Guid id,
+        Guid patientId,
+        Guid doctorId,
+        Guid appointmentId,
+        string chiefComplaint
+    )
     {
         var record = (MedicalRecord)Activator.CreateInstance(typeof(MedicalRecord), true)!;
         SetPrivateProperty(record, nameof(MedicalRecord.Id), id);
@@ -88,7 +110,13 @@ public class GetMedicalRecordsByPatientIdQueryHandlerTests
         var type = obj.GetType();
         while (type != null)
         {
-            var prop = type.GetProperty(propertyName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+            var prop = type.GetProperty(
+                propertyName,
+                BindingFlags.Public
+                    | BindingFlags.NonPublic
+                    | BindingFlags.Instance
+                    | BindingFlags.DeclaredOnly
+            );
             if (prop != null)
             {
                 prop.SetValue(obj, value);

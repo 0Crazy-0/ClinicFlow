@@ -1,6 +1,6 @@
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
-using ClinicFlow.Domain.Common;
 
 namespace ClinicFlow.Domain.Services;
 
@@ -26,10 +26,15 @@ public static class PatientPenaltyService
     /// <param name="appointmentId">The optional identifier of the appointment associated with the penalty.</param>
     /// <param name="reason">The descriptive reason for issuing the warning.</param>
     /// <returns>A collection of newly generated penalties (a warning and optionally a block) that need to be persisted.</returns>
-    public static IEnumerable<PatientPenalty> ApplyPenalty(Guid patientId, IEnumerable<PatientPenalty> existingPenalties, Guid? appointmentId, string reason)
+    public static IEnumerable<PatientPenalty> ApplyPenalty(
+        Guid patientId,
+        IEnumerable<PatientPenalty> existingPenalties,
+        Guid? appointmentId,
+        string reason
+    )
     {
         var penaltiesToApply = new List<PatientPenalty>();
-        
+
         var newWarning = PatientPenalty.CreateWarning(patientId, appointmentId, reason);
 
         penaltiesToApply.Add(newWarning);
@@ -38,11 +43,19 @@ public static class PatientPenaltyService
 
         if (totalWarnings >= StrikesThreshold)
         {
-            var isBlocked = existingPenalties.Any(p => p.Type is PenaltyType.TemporaryBlock && p.BlockedUntil.HasValue && p.BlockedUntil.Value > DateTime.UtcNow);
+            var isBlocked = existingPenalties.Any(p =>
+                p.Type is PenaltyType.TemporaryBlock
+                && p.BlockedUntil.HasValue
+                && p.BlockedUntil.Value > DateTime.UtcNow
+            );
 
             if (!isBlocked)
             {
-                var block = PatientPenalty.CreateBlock(patientId, PenaltyReasons.AutomaticBlock, DateTime.UtcNow.AddDays(BlockDurationDays));
+                var block = PatientPenalty.CreateBlock(
+                    patientId,
+                    PenaltyReasons.AutomaticBlock,
+                    DateTime.UtcNow.AddDays(BlockDurationDays)
+                );
                 penaltiesToApply.Add(block);
             }
         }

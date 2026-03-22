@@ -18,7 +18,12 @@ public class CancelAppointmentByStaffCommandValidatorTests
     public void Validate_ShouldBeValid_WhenAllPropertiesAreProvidedAndValid()
     {
         // Arrange
-        var command = new CancelAppointmentByStaffCommand(Guid.NewGuid(), Guid.NewGuid(), UserRole.Admin, "Reason");
+        var command = new CancelAppointmentByStaffCommand(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            UserRole.Admin,
+            "Reason"
+        );
 
         // Act
         var result = _sut.TestValidate(command);
@@ -31,7 +36,12 @@ public class CancelAppointmentByStaffCommandValidatorTests
     public void Validate_ShouldHaveError_WhenAppointmentIdIsEmpty()
     {
         // Arrange
-        var command = new CancelAppointmentByStaffCommand(Guid.Empty, Guid.NewGuid(), UserRole.Admin, "Reason");
+        var command = new CancelAppointmentByStaffCommand(
+            Guid.Empty,
+            Guid.NewGuid(),
+            UserRole.Admin,
+            "Reason"
+        );
 
         // Act
         var result = _sut.TestValidate(command);
@@ -44,7 +54,12 @@ public class CancelAppointmentByStaffCommandValidatorTests
     public void Validate_ShouldHaveError_WhenInitiatorUserIdIsEmpty()
     {
         // Arrange
-        var command = new CancelAppointmentByStaffCommand(Guid.NewGuid(), Guid.Empty, UserRole.Admin, "Reason");
+        var command = new CancelAppointmentByStaffCommand(
+            Guid.NewGuid(),
+            Guid.Empty,
+            UserRole.Admin,
+            "Reason"
+        );
 
         // Act
         var result = _sut.TestValidate(command);
@@ -57,7 +72,12 @@ public class CancelAppointmentByStaffCommandValidatorTests
     public void Validate_ShouldHaveError_WhenReasonIsEmpty()
     {
         // Arrange
-        var command = new CancelAppointmentByStaffCommand(Guid.NewGuid(), Guid.NewGuid(), UserRole.Admin, string.Empty);
+        var command = new CancelAppointmentByStaffCommand(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            UserRole.Admin,
+            string.Empty
+        );
 
         // Act
         var result = _sut.TestValidate(command);
@@ -71,7 +91,12 @@ public class CancelAppointmentByStaffCommandValidatorTests
     {
         // Arrange
         var longReason = new string('a', 501);
-        var command = new CancelAppointmentByStaffCommand(Guid.NewGuid(), Guid.NewGuid(), UserRole.Admin, longReason);
+        var command = new CancelAppointmentByStaffCommand(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            UserRole.Admin,
+            longReason
+        );
 
         // Act
         var result = _sut.TestValidate(command);

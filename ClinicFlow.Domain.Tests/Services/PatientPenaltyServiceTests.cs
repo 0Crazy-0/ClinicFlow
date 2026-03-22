@@ -18,7 +18,9 @@ public class PatientPenaltyServiceTests
         var existingPenalties = new List<PatientPenalty>();
 
         // Act
-        var result = PatientPenaltyService.ApplyPenalty(patientId, existingPenalties, appointmentId, reason).ToList();
+        var result = PatientPenaltyService
+            .ApplyPenalty(patientId, existingPenalties, appointmentId, reason)
+            .ToList();
 
         // Assert
         result.Should().ContainSingle();
@@ -39,17 +41,23 @@ public class PatientPenaltyServiceTests
         var existingPenalties = new List<PatientPenalty>
         {
             PatientPenalty.CreateWarning(patientId, Guid.NewGuid(), "Warning 1"),
-            PatientPenalty.CreateWarning(patientId, Guid.NewGuid(), "Warning 2")
+            PatientPenalty.CreateWarning(patientId, Guid.NewGuid(), "Warning 2"),
         };
 
         // Act
         // This call will add the 3rd warning, triggering the block logic
-        var result = PatientPenaltyService.ApplyPenalty(patientId, existingPenalties, appointmentId, "Warning 3").ToList();
+        var result = PatientPenaltyService
+            .ApplyPenalty(patientId, existingPenalties, appointmentId, "Warning 3")
+            .ToList();
 
         // Assert
         result.Should().HaveCount(2);
         result.Should().ContainSingle(p => p.Type == PenaltyType.Warning);
-        result.Should().ContainSingle(p => p.Type == PenaltyType.TemporaryBlock && p.Reason == PenaltyReasons.AutomaticBlock);
+        result
+            .Should()
+            .ContainSingle(p =>
+                p.Type == PenaltyType.TemporaryBlock && p.Reason == PenaltyReasons.AutomaticBlock
+            );
     }
 
     [Fact]
@@ -57,16 +65,18 @@ public class PatientPenaltyServiceTests
     {
         // Arrange
         var patientId = Guid.NewGuid();
-        
+
         var existingPenalties = new List<PatientPenalty>
         {
             PatientPenalty.CreateWarning(patientId, Guid.NewGuid(), "Warning 1"),
             PatientPenalty.CreateWarning(patientId, Guid.NewGuid(), "Warning 2"),
-            PatientPenalty.CreateBlock(patientId, "Existing Block", DateTime.UtcNow.AddDays(10))
+            PatientPenalty.CreateBlock(patientId, "Existing Block", DateTime.UtcNow.AddDays(10)),
         };
 
         // Act
-        var result = PatientPenaltyService.ApplyPenalty(patientId, existingPenalties, Guid.NewGuid(), "Warning 3").ToList();
+        var result = PatientPenaltyService
+            .ApplyPenalty(patientId, existingPenalties, Guid.NewGuid(), "Warning 3")
+            .ToList();
 
         // Assert
         result.Should().ContainSingle();

@@ -11,7 +11,10 @@ public interface IPatientRepository
 
     Task<Patient?> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
 
-    Task<IEnumerable<Patient>> GetAllByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Patient>> GetAllByUserIdAsync(
+        Guid userId,
+        CancellationToken cancellationToken = default
+    );
 
     Task<Patient> CreateAsync(Patient patient, CancellationToken cancellationToken = default);
 

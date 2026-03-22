@@ -29,7 +29,6 @@ public class PatientPenaltyTests
         penalty.BlockedUntil.Should().BeNull();
     }
 
-
     [Fact]
     public void CreateWarning_ShouldThrowException_WhenPatientIdIsEmpty()
     {
@@ -37,7 +36,9 @@ public class PatientPenaltyTests
         var act = () => PatientPenalty.CreateWarning(Guid.Empty, Guid.NewGuid(), "No show");
 
         // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.Validation.ValueRequired);
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Theory]
@@ -50,7 +51,9 @@ public class PatientPenaltyTests
         var act = () => PatientPenalty.CreateWarning(Guid.NewGuid(), Guid.NewGuid(), reason!);
 
         // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.Validation.ValueRequired);
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
     // CreateBlock
@@ -78,10 +81,13 @@ public class PatientPenaltyTests
     public void CreateBlock_ShouldThrowException_WhenPatientIdIsEmpty()
     {
         // Arrange & Act
-        var act = () => PatientPenalty.CreateBlock(Guid.Empty, "Block reason", DateTime.UtcNow.AddDays(30));
+        var act = () =>
+            PatientPenalty.CreateBlock(Guid.Empty, "Block reason", DateTime.UtcNow.AddDays(30));
 
         // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.Validation.ValueRequired);
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Theory]
@@ -91,19 +97,25 @@ public class PatientPenaltyTests
     public void CreateBlock_ShouldThrowException_WhenReasonIsEmpty(string? reason)
     {
         // Arrange & Act
-        var act = () => PatientPenalty.CreateBlock(Guid.NewGuid(), reason!, DateTime.UtcNow.AddDays(30));
+        var act = () =>
+            PatientPenalty.CreateBlock(Guid.NewGuid(), reason!, DateTime.UtcNow.AddDays(30));
 
         // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.Validation.ValueRequired);
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Fact]
     public void CreateBlock_ShouldThrowException_WhenBlockedUntilIsInThePast()
     {
         // Arrange & Act
-        var act = () => PatientPenalty.CreateBlock(Guid.NewGuid(), "Block reason", DateTime.UtcNow.AddDays(-1));
+        var act = () =>
+            PatientPenalty.CreateBlock(Guid.NewGuid(), "Block reason", DateTime.UtcNow.AddDays(-1));
 
         // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.Validation.ValueMustBeInFuture);
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueMustBeInFuture);
     }
 }

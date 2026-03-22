@@ -24,12 +24,18 @@ public class GetPatientByIdQueryHandlerTests
     public async Task Handle_ShouldReturnPatient_WhenPatientExists()
     {
         // Arrange
-        var patient = Patient.CreateSelf(Guid.NewGuid(), PersonName.Create("John Doe"), DateTime.UtcNow.AddYears(-30));
+        var patient = Patient.CreateSelf(
+            Guid.NewGuid(),
+            PersonName.Create("John Doe"),
+            DateTime.UtcNow.AddYears(-30)
+        );
         patient.UpdateMedicalProfile(BloodType.Create("A+"), "None", "None");
         patient.UpdateEmergencyContact(EmergencyContact.Create("Jane", "555-1234"));
         var patientId = patient.Id;
 
-        _patientRepositoryMock.Setup(x => x.GetByIdAsync(patientId, It.IsAny<CancellationToken>())).ReturnsAsync(patient);
+        _patientRepositoryMock
+            .Setup(x => x.GetByIdAsync(patientId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(patient);
 
         var query = new GetPatientByIdQuery(patientId);
 
@@ -49,10 +55,16 @@ public class GetPatientByIdQueryHandlerTests
     public async Task Handle_ShouldReturnPatient_WhenProfileIsIncomplete()
     {
         // Arrange
-        var patient = Patient.CreateSelf(Guid.NewGuid(), PersonName.Create("John Doe"), DateTime.UtcNow.AddYears(-30));
+        var patient = Patient.CreateSelf(
+            Guid.NewGuid(),
+            PersonName.Create("John Doe"),
+            DateTime.UtcNow.AddYears(-30)
+        );
         var patientId = patient.Id;
 
-        _patientRepositoryMock.Setup(x => x.GetByIdAsync(patientId, It.IsAny<CancellationToken>())).ReturnsAsync(patient);
+        _patientRepositoryMock
+            .Setup(x => x.GetByIdAsync(patientId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(patient);
 
         var query = new GetPatientByIdQuery(patientId);
 
@@ -75,7 +87,9 @@ public class GetPatientByIdQueryHandlerTests
     {
         // Arrange
         var patientId = Guid.NewGuid();
-        _patientRepositoryMock.Setup(x => x.GetByIdAsync(patientId, It.IsAny<CancellationToken>())).ReturnsAsync((Patient?)null);
+        _patientRepositoryMock
+            .Setup(x => x.GetByIdAsync(patientId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Patient?)null);
 
         var query = new GetPatientByIdQuery(patientId);
 
@@ -83,6 +97,8 @@ public class GetPatientByIdQueryHandlerTests
         var act = async () => await _sut.Handle(query, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<EntityNotFoundException>().WithMessage(DomainErrors.General.NotFound);
+        await act.Should()
+            .ThrowAsync<EntityNotFoundException>()
+            .WithMessage(DomainErrors.General.NotFound);
     }
 }
