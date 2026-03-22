@@ -3,7 +3,7 @@ using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Events;
 using ClinicFlow.Domain.Exceptions.Appointments;
 using ClinicFlow.Domain.Services;
-using ClinicFlow.Domain.Services.Contexts;
+using ClinicFlow.Domain.Services.Args.NoShow;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
 using ClinicFlow.Domain.Common;
@@ -26,8 +26,8 @@ public class AppointmentNoShowServiceTests
         if (role is UserRole.Doctor) doctorId = isOwn ? appointment.DoctorId : Guid.NewGuid();
 
         // Act
-        var context = new AppointmentNoShowContext { InitiatorRole = role, InitiatorDoctorId = doctorId };
-        var result = AppointmentNoShowService.MarkAsNoShow(appointment, context, []).ToList();
+        var args = new AppointmentNoShowArgs { InitiatorRole = role, InitiatorDoctorId = doctorId };
+        var result = AppointmentNoShowService.MarkAsNoShow(appointment, args, []).ToList();
 
         // Assert
         appointment.Status.Should().Be(AppointmentStatus.NoShow);
@@ -47,8 +47,8 @@ public class AppointmentNoShowServiceTests
         Guid? doctorId = role is UserRole.Doctor ? Guid.NewGuid() : null;
 
         // Act
-        var context = new AppointmentNoShowContext { InitiatorRole = role, InitiatorDoctorId = doctorId };
-        var act = () => AppointmentNoShowService.MarkAsNoShow(appointment, context, []);
+        var args = new AppointmentNoShowArgs { InitiatorRole = role, InitiatorDoctorId = doctorId };
+        var act = () => AppointmentNoShowService.MarkAsNoShow(appointment, args, []);
 
         // Assert
         act.Should().Throw<AppointmentNoShowUnauthorizedException>().WithMessage(expectedMessage);
@@ -63,8 +63,8 @@ public class AppointmentNoShowServiceTests
         var doctorId = Guid.NewGuid();
 
         // Act
-        var context = new AppointmentNoShowContext { InitiatorRole = UserRole.Doctor, InitiatorDoctorId = doctorId };
-        var act = () => AppointmentNoShowService.MarkAsNoShow(appointment, context, []);
+        var args = new AppointmentNoShowArgs { InitiatorRole = UserRole.Doctor, InitiatorDoctorId = doctorId };
+        var act = () => AppointmentNoShowService.MarkAsNoShow(appointment, args, []);
 
             // Assert
             act.Should().Throw<AppointmentNoShowUnauthorizedException>().WithMessage(DomainErrors.Appointment.CannotMarkNoShow);
@@ -77,8 +77,8 @@ public class AppointmentNoShowServiceTests
         var appointment = CreateAppointment(DateTime.UtcNow.AddDays(2));
 
         // Act
-        var context = new AppointmentNoShowContext { InitiatorRole = UserRole.Doctor, InitiatorDoctorId = null };
-        var act = () => AppointmentNoShowService.MarkAsNoShow(appointment, context, []);
+        var args = new AppointmentNoShowArgs { InitiatorRole = UserRole.Doctor, InitiatorDoctorId = null };
+        var act = () => AppointmentNoShowService.MarkAsNoShow(appointment, args, []);
 
         // Assert
         act.Should().Throw<AppointmentNoShowUnauthorizedException>().WithMessage(DomainErrors.Appointment.CannotMarkNoShow);

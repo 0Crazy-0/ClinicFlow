@@ -1,6 +1,7 @@
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.Services;
+using ClinicFlow.Domain.Services.Args.Scheduling;
 using ClinicFlow.Domain.Services.Contexts;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.ValueObjects;
@@ -34,7 +35,7 @@ public class ScheduleAppointmentCommandHandler(IPatientPenaltyRepository penalty
             HasConflict = hasConflict
         };
 
-        var appointmentDetails = new AppointmentSchedulingDetails
+        var appointmentDetails = new AppointmentSchedulingArgs
         {
             PatientId = request.PatientId,
             DoctorId = request.DoctorId,

@@ -5,6 +5,7 @@ using ClinicFlow.Domain.Exceptions.Appointments;
 using ClinicFlow.Domain.Exceptions.Scheduling;
 using ClinicFlow.Domain.Exceptions.Patients;
 using ClinicFlow.Domain.Services;
+using ClinicFlow.Domain.Services.Args.Scheduling;
 using ClinicFlow.Domain.Services.Contexts;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
@@ -24,7 +25,7 @@ public class AppointmentSchedulingServiceTests
         var penalties = new List<PatientPenalty> { PatientPenalty.CreateBlock(patient.Id, "Blocked", scheduledDate) };
 
         var context = new AppointmentSchedulingContext { Penalties = penalties, DoctorSchedule = null, HasConflict = false };
-        var details = new AppointmentSchedulingDetails
+        var details = new AppointmentSchedulingArgs
         {
             PatientId = patient.Id,
             DoctorId = doctor.Id,
@@ -47,7 +48,7 @@ public class AppointmentSchedulingServiceTests
         var doctor = Doctor.Create(Guid.NewGuid(), MedicalLicenseNumber.Create("12345"), Guid.NewGuid(), "Dr. House", 101);
 
         var context = new AppointmentSchedulingContext { Penalties = [], DoctorSchedule = null, HasConflict = false };
-        var details = new AppointmentSchedulingDetails
+        var details = new AppointmentSchedulingArgs
         {
             PatientId = patient.Id,
             DoctorId = doctor.Id,
@@ -71,7 +72,7 @@ public class AppointmentSchedulingServiceTests
 
         // Act
         var context = new AppointmentSchedulingContext { Penalties = [], DoctorSchedule = null, HasConflict = false };
-        var details = new AppointmentSchedulingDetails
+        var details = new AppointmentSchedulingArgs
         {
             PatientId = CreatePatient().Id,
             DoctorId = doctor.Id,
@@ -97,7 +98,7 @@ public class AppointmentSchedulingServiceTests
 
         // Act
         var context = new AppointmentSchedulingContext { Penalties = [], DoctorSchedule = schedule, HasConflict = false };
-        var details = new AppointmentSchedulingDetails
+        var details = new AppointmentSchedulingArgs
         {
             PatientId = CreatePatient().Id,
             DoctorId = doctor.Id,
@@ -126,7 +127,7 @@ public class AppointmentSchedulingServiceTests
 
         // Act
         var context = new AppointmentSchedulingContext { Penalties = penalties, DoctorSchedule = schedule, HasConflict = true };
-        var details = new AppointmentSchedulingDetails
+        var details = new AppointmentSchedulingArgs
         {
             PatientId = patient.Id,
             DoctorId = doctor.Id,
@@ -156,7 +157,7 @@ public class AppointmentSchedulingServiceTests
 
         // Act
         var context = new AppointmentSchedulingContext { Penalties = penalties, DoctorSchedule = schedule, HasConflict = false };
-        var details = new AppointmentSchedulingDetails
+        var details = new AppointmentSchedulingArgs
         {
             PatientId = patient.Id,
             DoctorId = doctor.Id,
