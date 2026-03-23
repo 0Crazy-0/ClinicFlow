@@ -31,8 +31,7 @@ public class AppointmentCancelledEventHandler(IPatientPenaltyRepository patientP
                 PenaltyReasons.LateCancellation
             );
 
-            foreach (var penalty in newPenalties)
-                await patientPenaltyRepository.AddAsync(penalty, cancellationToken);
+            await patientPenaltyRepository.AddRangeAsync(newPenalties, cancellationToken);
         }
     }
 }

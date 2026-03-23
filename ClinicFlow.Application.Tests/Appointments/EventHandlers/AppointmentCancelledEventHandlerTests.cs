@@ -49,8 +49,10 @@ public class AppointmentCancelledEventHandlerTests
         // Assert
         _penaltyRepositoryMock.Verify(
             x =>
-                x.AddAsync(
-                    It.Is<PatientPenalty>(p => p.Type == PenaltyType.Warning),
+                x.AddRangeAsync(
+                    It.Is<IEnumerable<PatientPenalty>>(penalties =>
+                        penalties.Any(p => p.Type == PenaltyType.Warning)
+                    ),
                     It.IsAny<CancellationToken>()
                 ),
             Times.Once
@@ -84,7 +86,11 @@ public class AppointmentCancelledEventHandlerTests
             Times.Never
         );
         _penaltyRepositoryMock.Verify(
-            x => x.AddAsync(It.IsAny<PatientPenalty>(), It.IsAny<CancellationToken>()),
+            x =>
+                x.AddRangeAsync(
+                    It.IsAny<IEnumerable<PatientPenalty>>(),
+                    It.IsAny<CancellationToken>()
+                ),
             Times.Never
         );
     }

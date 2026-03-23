@@ -77,10 +77,11 @@ public class MarkAppointmentAsNoShowCommandHandlerTests
         );
         _penaltyRepositoryMock.Verify(
             x =>
-                x.AddAsync(
-                    It.Is<PatientPenalty>(p =>
-                        p.Type == PenaltyType.Warning && p.Reason == "No show"
-                    )
+                x.AddRangeAsync(
+                    It.Is<IEnumerable<PatientPenalty>>(penalties =>
+                        penalties.Any(p => p.Type == PenaltyType.Warning && p.Reason == "No show")
+                    ),
+                    It.IsAny<CancellationToken>()
                 ),
             Times.AtLeastOnce
         );
@@ -119,7 +120,11 @@ public class MarkAppointmentAsNoShowCommandHandlerTests
         // Assert
         appointment.Status.Should().Be(AppointmentStatus.NoShow);
         _penaltyRepositoryMock.Verify(
-            x => x.AddAsync(It.IsAny<PatientPenalty>()),
+            x =>
+                x.AddRangeAsync(
+                    It.IsAny<IEnumerable<PatientPenalty>>(),
+                    It.IsAny<CancellationToken>()
+                ),
             Times.AtLeastOnce
         );
     }
