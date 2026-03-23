@@ -57,9 +57,7 @@ public class MarkAppointmentAsNoShowCommandHandler(
             existingPenalties
         );
 
-        foreach (var penalty in newPenalties)
-            await patientPenaltyRepository.AddAsync(penalty, cancellationToken);
-
+        await patientPenaltyRepository.AddRangeAsync(newPenalties, cancellationToken);
         await appointmentRepository.UpdateAsync(appointment, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
