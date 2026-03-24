@@ -47,12 +47,7 @@ public sealed class CancelAppointmentByStaffCommandHandler(
 
         AppointmentCancellationService.CancelByStaff(
             appointment,
-            new StaffCancellationArgs(
-                request.InitiatorUserId,
-                request.InitiatorRole,
-                specialty,
-                request.Reason
-            )
+            new StaffCancellationArgs(request.InitiatorUserId, specialty, request.Reason)
         );
 
         await appointmentRepository.UpdateAsync(appointment, cancellationToken);

@@ -22,12 +22,7 @@ public class AppointmentCancellationServiceTests
             .WithScheduledDateTime(DateTime.UtcNow.AddDays(2))
             .Build();
         var initiatorUserId = Guid.NewGuid();
-        var args = new StaffCancellationArgs(
-            initiatorUserId,
-            UserRole.Admin,
-            CreateSpecialty(24),
-            "Admin Reason"
-        );
+        var args = new StaffCancellationArgs(initiatorUserId, CreateSpecialty(24), "Admin Reason");
 
         // Act
         AppointmentCancellationService.CancelByStaff(appointment, args);
@@ -47,7 +42,6 @@ public class AppointmentCancellationServiceTests
         var initiatorUserId = Guid.NewGuid();
         var args = new StaffCancellationArgs(
             initiatorUserId,
-            UserRole.Receptionist,
             CreateSpecialty(24),
             "Receptionist Reason"
         );
@@ -71,12 +65,7 @@ public class AppointmentCancellationServiceTests
         var appointment = new AppointmentBuilder()
             .WithScheduledDateTime(DateTime.UtcNow.AddDays(2))
             .Build();
-        var args = new StaffCancellationArgs(
-            Guid.NewGuid(),
-            UserRole.Admin,
-            CreateSpecialty(24),
-            reason!
-        );
+        var args = new StaffCancellationArgs(Guid.NewGuid(), CreateSpecialty(24), reason!);
 
         // Act
         var act = () => AppointmentCancellationService.CancelByStaff(appointment, args);
@@ -85,29 +74,6 @@ public class AppointmentCancellationServiceTests
         act.Should()
             .Throw<BusinessRuleValidationException>()
             .WithMessage(DomainErrors.Appointment.MissingCancellationReason);
-    }
-
-    [Fact]
-    public void CancelByStaff_ShouldThrowUnauthorized_WhenRoleIsInvalid()
-    {
-        // Arrange
-        var appointment = new AppointmentBuilder()
-            .WithScheduledDateTime(DateTime.UtcNow.AddDays(2))
-            .Build();
-        var args = new StaffCancellationArgs(
-            Guid.NewGuid(),
-            UserRole.Patient,
-            CreateSpecialty(24),
-            "Patient Reason"
-        );
-
-        // Act
-        var act = () => AppointmentCancellationService.CancelByStaff(appointment, args);
-
-        // Assert
-        act.Should()
-            .Throw<AppointmentCancellationUnauthorizedException>()
-            .WithMessage(DomainErrors.Appointment.CannotCancel);
     }
 
     [Fact]
