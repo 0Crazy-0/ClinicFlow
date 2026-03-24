@@ -8,7 +8,6 @@ namespace ClinicFlow.Domain.Tests.Entities;
 
 public class PatientPenaltyTests
 {
-    // CreateWarning
     [Fact]
     public void CreateWarning_ShouldCreateWarningPenalty()
     {
@@ -56,7 +55,6 @@ public class PatientPenaltyTests
             .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
-    // CreateBlock
     [Fact]
     public void CreateBlock_ShouldCreateBlockPenalty()
     {

@@ -9,7 +9,6 @@ namespace ClinicFlow.Domain.Tests.Entities;
 
 public class UserTests
 {
-    // Create
     [Fact]
     public void Create_ShouldCreateUser_WhenValidParameters()
     {

@@ -80,7 +80,6 @@ public class GetMedicalRecordByAppointmentIdQueryHandlerTests
         );
     }
 
-    // Helpers
     private static MedicalRecord CreateMedicalRecord(
         Guid id,
         Guid patientId,

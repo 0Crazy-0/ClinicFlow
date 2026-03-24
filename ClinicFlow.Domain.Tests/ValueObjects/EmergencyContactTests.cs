@@ -7,7 +7,6 @@ namespace ClinicFlow.Domain.Tests.ValueObjects;
 
 public class EmergencyContactTests
 {
-    // Create
     [Fact]
     public void Create_WithStrings_ShouldSucceed()
     {
@@ -69,7 +68,6 @@ public class EmergencyContactTests
             .WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 
-    // ToString
     [Fact]
     public void ToString_ShouldReturnFormattedString() =>
         EmergencyContact
@@ -78,7 +76,6 @@ public class EmergencyContactTests
             .Should()
             .Be("Jane Doe (+1234567890)"); // Arrange & Act & Assert
 
-    // Equality
     [Fact]
     public void Equality_ShouldWorkCorrectly()
     {

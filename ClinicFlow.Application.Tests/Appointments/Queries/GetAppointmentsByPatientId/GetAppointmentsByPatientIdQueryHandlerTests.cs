@@ -66,7 +66,6 @@ public class GetAppointmentsByPatientIdQueryHandlerTests
         _appointmentRepositoryMock.Verify(x => x.GetByPatientIdAsync(patientId), Times.Once);
     }
 
-    // Helpers
     private static Appointment CreateAppointment(Guid id, Guid patientId, Guid doctorId)
     {
         var timeRange = TimeRange.Create(new TimeSpan(9, 0, 0), new TimeSpan(10, 0, 0));

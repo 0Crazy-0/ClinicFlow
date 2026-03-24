@@ -182,7 +182,6 @@ public class CompleteMedicalEncounterCommandHandlerTests
             .Where(e => e.EntityName == nameof(AppointmentTypeDefinition));
     }
 
-    // Helpers
     private static Doctor CreateDoctor(Guid id)
     {
         var doctor = (Doctor)Activator.CreateInstance(typeof(Doctor), true)!;

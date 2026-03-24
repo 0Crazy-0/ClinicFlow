@@ -208,9 +208,7 @@ public class MetadataFormValidationPolicyTests
         // Assert
         act.Should()
             .Throw<BusinessRuleValidationException>()
-            .WithMessage(
-                $"{ClinicFlow.Domain.Common.DomainErrors.MedicalEncounter.ValidationFailed}: {errorMsg}"
-            );
+            .WithMessage($"{DomainErrors.MedicalEncounter.ValidationFailed}: {errorMsg}");
     }
 
     [Fact]
@@ -285,7 +283,6 @@ public class MetadataFormValidationPolicyTests
         public string JsonDataPayload => string.Empty;
     }
 
-    // Helpers
     private static AppointmentTypeDefinition CreateAppointmentTypeWithTemplates(
         params ClinicalFormTemplate[] templates
     )

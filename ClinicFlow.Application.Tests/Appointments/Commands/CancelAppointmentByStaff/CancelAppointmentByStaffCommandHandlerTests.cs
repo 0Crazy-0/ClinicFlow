@@ -8,7 +8,6 @@ using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
 using Moq;
-using Xunit;
 
 namespace ClinicFlow.Application.Tests.Appointments.Commands.CancelAppointmentByStaff;
 

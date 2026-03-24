@@ -7,7 +7,6 @@ namespace ClinicFlow.Domain.Tests.ValueObjects;
 
 public class MedicalLicenseNumberTests
 {
-    // Create
     [Theory]
     [InlineData(null)]
     [InlineData("")]
@@ -48,7 +47,6 @@ public class MedicalLicenseNumberTests
         license.Value.Should().Be("MED-12345");
     }
 
-    // Create - Success
     [Theory]
     [InlineData("ABCD")]
     [InlineData("MED-12345")]
@@ -62,7 +60,6 @@ public class MedicalLicenseNumberTests
         license.Value.Should().Be(value.Trim());
     }
 
-    // ToString
     [Fact]
     public void ToString_ShouldReturnValue()
     {
@@ -73,7 +70,6 @@ public class MedicalLicenseNumberTests
         license.ToString().Should().Be(license.Value);
     }
 
-    // Equality
     [Fact]
     public void Equality_ShouldWorkCorrectly()
     {

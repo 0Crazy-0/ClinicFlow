@@ -7,7 +7,6 @@ namespace ClinicFlow.Domain.Tests.Entities;
 
 public class MedicalSpecialtyTests
 {
-    // Create
     [Fact]
     public void Create_ShouldCreateSpecialty_WhenValidParameters()
     {
@@ -74,7 +73,6 @@ public class MedicalSpecialtyTests
             .WithMessage(DomainErrors.Validation.ValueCannotBeNegative);
     }
 
-    // IsCancellationAllowed
     [Fact]
     public void IsCancellationAllowed_ShouldReturnTrue_WhenSufficientNotice() =>
         MedicalSpecialty

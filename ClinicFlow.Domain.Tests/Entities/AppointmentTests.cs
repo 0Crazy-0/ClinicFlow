@@ -11,7 +11,6 @@ namespace ClinicFlow.Domain.Tests.Entities;
 
 public class AppointmentTests
 {
-    // Schedule
     [Fact]
     public void Schedule_ShouldCreateAppointment_WhenValidDataProvided()
     {
@@ -102,11 +101,9 @@ public class AppointmentTests
             .WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 
-    // Cancel
     [Fact]
     public void Cancel_ShouldSetStatusToCancelled_WhenCalledWithValidParams()
     {
-        // Arrange - Specialty requires 24h
         var appointment = CreateAppointment(DateTime.UtcNow.AddDays(2));
         var userId = Guid.NewGuid();
         var specialty = CreateSpecialty(24);
@@ -125,7 +122,6 @@ public class AppointmentTests
     [Fact]
     public void Cancel_ShouldSetStatusToLateCancellation_WhenNoticePeriodIsInsufficient()
     {
-        // Arrange - Specialty requires 24h
         var appointment = CreateAppointment(DateTime.UtcNow.AddHours(2));
         var userId = Guid.NewGuid();
         var specialty = CreateSpecialty(24);
@@ -156,8 +152,6 @@ public class AppointmentTests
             .Where(e => e.CurrentStatus == AppointmentStatus.Cancelled);
     }
 
-    // Cancellation Policy Logic Verification
-
     [Theory]
     [InlineData(24, 25, AppointmentStatus.Cancelled)]
     [InlineData(24, 23, AppointmentStatus.LateCancellation)]
@@ -183,7 +177,6 @@ public class AppointmentTests
         appointment.Status.Should().Be(expectedStatus);
     }
 
-    // Confirm
     [Fact]
     public void Confirm_ShouldSetStatusToConfirmed_WhenStatusIsScheduled()
     {
@@ -214,7 +207,6 @@ public class AppointmentTests
             .Throw<AppointmentConfirmationNotAllowedException>();
     }
 
-    // Reschedule
     [Fact]
     public void Reschedule_ShouldUpdateDateAndTime_WhenValid()
     {
@@ -231,7 +223,6 @@ public class AppointmentTests
         appointment.TimeRange.Should().Be(newTimeRange);
     }
 
-    // Helpers
     private static Appointment CreateAppointment(DateTime scheduledDateTime) =>
         Appointment.Schedule(
             Guid.NewGuid(),

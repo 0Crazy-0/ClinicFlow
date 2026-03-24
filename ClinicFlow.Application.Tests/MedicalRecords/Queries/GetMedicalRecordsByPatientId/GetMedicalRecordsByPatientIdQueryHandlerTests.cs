@@ -87,7 +87,6 @@ public class GetMedicalRecordsByPatientIdQueryHandlerTests
         result.Should().BeEmpty();
     }
 
-    // Helpers
     private static MedicalRecord CreateMedicalRecord(
         Guid id,
         Guid patientId,

@@ -8,7 +8,6 @@ namespace ClinicFlow.Domain.Tests.Entities;
 
 public class DoctorTests
 {
-    // Create
     [Fact]
     public void Create_ShouldCreateDoctor_WhenValidParameters()
     {

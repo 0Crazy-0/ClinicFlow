@@ -7,7 +7,6 @@ namespace ClinicFlow.Domain.Tests.ValueObjects;
 
 public class PhoneNumberTests
 {
-    // Create - Validation
     [Theory]
     [InlineData(null)]
     [InlineData("")]
@@ -48,7 +47,6 @@ public class PhoneNumberTests
         phone.Value.Should().Be("+1234567890");
     }
 
-    // Create
     [Theory]
     [InlineData("+1234567890")]
     [InlineData("1234567890")]
@@ -63,7 +61,6 @@ public class PhoneNumberTests
         phone.Value.Should().Be(value.Trim());
     }
 
-    // ToString
     [Fact]
     public void ToString_ShouldReturnValue()
     {
@@ -74,7 +71,6 @@ public class PhoneNumberTests
         phone.ToString().Should().Be(phone.Value);
     }
 
-    // Equality
     [Fact]
     public void Equality_ShouldWorkCorrectly()
     {

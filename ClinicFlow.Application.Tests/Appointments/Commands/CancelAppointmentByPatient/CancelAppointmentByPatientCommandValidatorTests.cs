@@ -1,6 +1,5 @@
 using ClinicFlow.Application.Appointments.Commands.CancelAppointmentByPatient;
 using FluentValidation.TestHelper;
-using Xunit;
 
 namespace ClinicFlow.Application.Tests.Appointments.Commands.CancelAppointmentByPatient;
 

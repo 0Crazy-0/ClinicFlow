@@ -7,7 +7,6 @@ namespace ClinicFlow.Domain.Tests.ValueObjects;
 
 public class TimeRangeTests
 {
-    // Constructor
     [Fact]
     public void Constructor_ShouldThrowException_WhenStartIsAfterEnd()
     {
@@ -20,7 +19,6 @@ public class TimeRangeTests
             .WithMessage(DomainErrors.Schedule.InvalidTimeRange);
     }
 
-    // Duration
     [Fact]
     public void Duration_ShouldReturnCorrectDifference()
     {
@@ -31,7 +29,6 @@ public class TimeRangeTests
         timeRange.Duration.Should().Be(TimeSpan.FromMinutes(90));
     }
 
-    // Equality
     [Fact]
     public void Equality_ShouldWorkCorrectly()
     {
@@ -47,7 +44,6 @@ public class TimeRangeTests
         (tr1 != tr3).Should().BeTrue();
     }
 
-    // OverlapsWith
     [Fact]
     public void OverlapsWith_ShouldThrowException_WhenOtherIsNull()
     {
@@ -90,7 +86,6 @@ public class TimeRangeTests
             .Be(expected);
     }
 
-    // Covers
     [Fact]
     public void Covers_ShouldThrowException_WhenOtherIsNull()
     {

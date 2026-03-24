@@ -7,7 +7,6 @@ namespace ClinicFlow.Domain.Tests.ValueObjects;
 
 public class PersonNameTests
 {
-    // Create
     [Theory]
     [InlineData(null)]
     [InlineData("")]
@@ -58,7 +57,6 @@ public class PersonNameTests
         name.FullName.Should().Be(value.Trim());
     }
 
-    // ToString
     [Fact]
     public void ToString_ShouldReturnFullName()
     {
@@ -69,7 +67,6 @@ public class PersonNameTests
         name.ToString().Should().Be(name.FullName);
     }
 
-    // Equality
     [Fact]
     public void Equality_ShouldWorkCorrectly()
     {

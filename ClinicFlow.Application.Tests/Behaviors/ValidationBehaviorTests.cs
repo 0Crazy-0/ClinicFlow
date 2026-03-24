@@ -46,7 +46,7 @@ public class ValidationBehaviorTests
                     It.IsAny<CancellationToken>()
                 )
             )
-            .ReturnsAsync(new ValidationResult()); // No errors
+            .ReturnsAsync(new ValidationResult());
 
         var validators = new List<IValidator<DummyRequest>> { validatorMock.Object };
         var _sut = new ValidationBehavior<DummyRequest, Unit>(validators);
