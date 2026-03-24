@@ -128,7 +128,6 @@ public class MarkAppointmentAsNoShowByDoctorCommandHandlerTests
             .WithMessage(DomainErrors.General.NotFound);
     }
 
-    // Helpers
     private static Appointment CreateAppointment(Guid id, Guid doctorId)
     {
         var scheduledDateTime = DateTime.UtcNow.AddDays(-1);

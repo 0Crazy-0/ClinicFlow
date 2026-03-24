@@ -1,7 +1,6 @@
 using ClinicFlow.Application.Appointments.Commands.CancelAppointmentByStaff;
 using ClinicFlow.Domain.Enums;
 using FluentValidation.TestHelper;
-using Xunit;
 
 namespace ClinicFlow.Application.Tests.Appointments.Commands.CancelAppointmentByStaff;
 

@@ -71,7 +71,6 @@ public class MarkAppointmentAsNoShowByStaffCommandHandlerTests
             .WithMessage(DomainErrors.General.NotFound);
     }
 
-    // Helpers
     private static Appointment CreateAppointment(Guid id)
     {
         var scheduledDateTime = DateTime.UtcNow.AddDays(-1);

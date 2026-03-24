@@ -78,7 +78,6 @@ public class GetAppointmentsByDateRangeQueryHandlerTests
         );
     }
 
-    // Helpers
     private static Appointment CreateAppointment(
         Guid id,
         Guid patientId,

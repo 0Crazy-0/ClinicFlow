@@ -7,7 +7,6 @@ namespace ClinicFlow.Domain.Tests.ValueObjects;
 
 public class BloodTypeTests
 {
-    // Create
     [Theory]
     [InlineData(null)]
     [InlineData("")]
@@ -77,7 +76,6 @@ public class BloodTypeTests
         bloodType.Value.Should().Be("B+");
     }
 
-    // ToString
     [Fact]
     public void ToString_ShouldReturnValue()
     {
@@ -88,7 +86,6 @@ public class BloodTypeTests
         bloodType.ToString().Should().Be(bloodType.Value);
     }
 
-    // Equality
     [Fact]
     public void Equality_ShouldWorkCorrectly()
     {

@@ -70,7 +70,6 @@ public class GetMedicalRecordByIdQueryHandlerTests
             .Where(e => e.EntityName == nameof(MedicalRecord));
     }
 
-    // Helpers
     private static MedicalRecord CreateMedicalRecord(
         Guid id,
         Guid patientId,

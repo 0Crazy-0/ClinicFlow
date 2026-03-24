@@ -8,7 +8,6 @@ namespace ClinicFlow.Domain.Tests.Entities;
 
 public class AppointmentTypeDefinitionTests
 {
-    // Create
     [Fact]
     public void Create_ShouldCreateInstance_WhenValidParameters()
     {
@@ -69,7 +68,6 @@ public class AppointmentTypeDefinitionTests
             .WithMessage(DomainErrors.Validation.ValueMustBePositive);
     }
 
-    // Helper
     public static TheoryData<TimeSpan> InvalidDurations =>
         [TimeSpan.Zero, TimeSpan.FromMinutes(-10)];
 }

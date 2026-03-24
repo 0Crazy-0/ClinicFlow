@@ -9,7 +9,6 @@ namespace ClinicFlow.Domain.Tests.Entities;
 
 public class MedicalRecordTests
 {
-    // Create
     [Fact]
     public void Create_ShouldCreateMedicalRecord_WhenValidDataProvided()
     {
@@ -96,7 +95,6 @@ public class MedicalRecordTests
         act.Should().Throw<DomainValidationException>().WithMessage(expectedMessage);
     }
 
-    // AddClinicalDetail
     [Fact]
     public void AddClinicalDetail_ShouldAddDetail_WhenValid()
     {
@@ -146,7 +144,6 @@ public class MedicalRecordTests
             .WithMessage(DomainErrors.MedicalEncounter.DetailAlreadyExists);
     }
 
-    // GetClinicalDetail
     [Fact]
     public void GetClinicalDetail_ShouldReturnDetail_WhenExists()
     {
@@ -178,7 +175,6 @@ public class MedicalRecordTests
         result.Should().BeNull();
     }
 
-    // Helpers
     private static MedicalRecord CreateValidMedicalRecord() =>
         MedicalRecord.Create(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "General checkup");
 

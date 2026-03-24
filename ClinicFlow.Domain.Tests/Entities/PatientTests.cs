@@ -10,7 +10,6 @@ namespace ClinicFlow.Domain.Tests.Entities;
 
 public class PatientTests
 {
-    // Create
     [Fact]
     public void Create_ShouldCreatePatient_WhenValidParameters()
     {
@@ -71,7 +70,6 @@ public class PatientTests
             .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
-    // CreateFamilyMember
     [Fact]
     public void CreateFamilyMember_ShouldCreatePatient_WhenValidParameters()
     {
@@ -148,7 +146,6 @@ public class PatientTests
             .WithMessage(DomainErrors.Validation.ValueCannotBeInFuture);
     }
 
-    // HasCompleteMedicalProfile
     [Fact]
     public void HasCompleteMedicalProfile_ShouldReturnFalse_WhenJustCreated()
     {
@@ -199,7 +196,6 @@ public class PatientTests
         patient.ChronicConditions.Should().Be(string.Empty);
     }
 
-    // GetAge
     [Fact]
     public void GetAge_ShouldReturnCorrectAge()
     {
@@ -215,7 +211,6 @@ public class PatientTests
         patient.GetAge().Should().Be(yearsAgo);
     }
 
-    // EnsureNotBlocked
     [Fact]
     public void EnsureNotBlocked_ShouldNotThrow_WhenNoPenalties()
     {
@@ -285,7 +280,6 @@ public class PatientTests
             .Where(e => e.BlockedUntil == blockedUntil);
     }
 
-    // Helpers
     private static Patient CreatePatient()
     {
         var patient = Patient.CreateSelf(

@@ -95,7 +95,6 @@ public class AppointmentCancelledEventHandlerTests
         );
     }
 
-    // Helpers
     private static Appointment CreateAppointment(
         Guid id,
         Guid doctorId,

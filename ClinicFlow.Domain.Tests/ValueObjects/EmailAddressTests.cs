@@ -7,7 +7,6 @@ namespace ClinicFlow.Domain.Tests.ValueObjects;
 
 public class EmailAddressTests
 {
-    // Create
     [Theory]
     [InlineData(null)]
     [InlineData("")]
@@ -40,7 +39,6 @@ public class EmailAddressTests
             .WithMessage(DomainErrors.Validation.InvalidEmailFormat);
     }
 
-    // Create
     [Fact]
     public void Create_ShouldNormalize_ToLowerInvariant()
     {
@@ -74,7 +72,6 @@ public class EmailAddressTests
         email.Value.Should().Be(value.Trim().ToLowerInvariant());
     }
 
-    // ToString
     [Fact]
     public void ToString_ShouldReturnValue()
     {

@@ -53,7 +53,6 @@ public class AppointmentMarkedAsNoShowEventHandlerTests
         );
     }
 
-    // Helpers
     private static Appointment CreateAppointment(Guid id)
     {
         var scheduledDateTime = DateTime.UtcNow.AddDays(1);

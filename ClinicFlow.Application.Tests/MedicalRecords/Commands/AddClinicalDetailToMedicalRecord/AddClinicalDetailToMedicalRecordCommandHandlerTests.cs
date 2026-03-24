@@ -161,7 +161,6 @@ public class AddClinicalDetailToMedicalRecordCommandHandlerTests
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
-    // Helpers
     private static MedicalRecord CreateMedicalRecord(
         Guid id,
         Guid patientId,

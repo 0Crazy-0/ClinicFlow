@@ -156,7 +156,6 @@ public class ScheduleAppointmentCommandHandlerTests
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
-    // Helpers
     private static Schedule CreateSchedule(
         Guid doctorId,
         DayOfWeek dayOfWeek,

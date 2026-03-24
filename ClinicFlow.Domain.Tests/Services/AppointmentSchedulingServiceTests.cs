@@ -14,7 +14,6 @@ namespace ClinicFlow.Domain.Tests.Services;
 
 public class AppointmentSchedulingServiceTests
 {
-    // ScheduleAppointmentAsync
     [Fact]
     public async Task ScheduleAppointmentAsync_ShouldThrowException_WhenPatientIsBlocked()
     {
@@ -166,7 +165,7 @@ public class AppointmentSchedulingServiceTests
         };
 
         var act = () =>
-            AppointmentSchedulingService.ScheduleAppointment(CreatePatient(), details, context); // Outside working hours
+            AppointmentSchedulingService.ScheduleAppointment(CreatePatient(), details, context);
 
         // Assert
         act.Should().Throw<DoctorNotAvailableException>();
@@ -256,7 +255,6 @@ public class AppointmentSchedulingServiceTests
         result.Status.Should().Be(AppointmentStatus.Scheduled);
     }
 
-    // RescheduleAppointmentAsync
     [Fact]
     public async Task RescheduleAppointmentAsync_ShouldThrowException_WhenDoctorNotAvailable()
     {
@@ -290,8 +288,6 @@ public class AppointmentSchedulingServiceTests
         // Arrange
         var appointment = CreateAppointment(DateTime.UtcNow.AddDays(1).Date.AddHours(9));
         var newDate = DateTime.UtcNow.AddDays(2);
-
-        // Create a conflicting appointment
         var conflictingAppointment = CreateAppointment(newDate.Date.AddHours(10));
 
         var schedule = CreateValidSchedule(appointment.DoctorId, newDate.DayOfWeek);
@@ -354,7 +350,6 @@ public class AppointmentSchedulingServiceTests
         var newDate = DateTime.UtcNow.AddDays(2);
         var newTimeRange = TimeRange.Create(TimeSpan.FromHours(10), TimeSpan.FromHours(11));
 
-        // Simulate that the appointment has already been rescheduled once
         appointment.Reschedule(DateTime.UtcNow.AddDays(1).Date.AddHours(10), newTimeRange);
 
         var schedule = CreateValidSchedule(appointment.DoctorId, newDate.DayOfWeek);
@@ -380,7 +375,6 @@ public class AppointmentSchedulingServiceTests
             .WithMessage(DomainErrors.Appointment.CannotReschedule);
     }
 
-    // Helpers
     private static Appointment CreateAppointment(DateTime scheduledDateTime) =>
         Appointment.Schedule(
             Guid.NewGuid(),

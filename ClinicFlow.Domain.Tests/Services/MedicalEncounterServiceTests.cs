@@ -32,7 +32,6 @@ public class MedicalEncounterServiceTests
         _sut = new MedicalEncounterService(policies, _mockJsonValidator.Object);
     }
 
-    // ValidateAndCompleteRecord
     [Fact]
     public void ValidateAndCompleteRecord_ShouldThrowDomainValidationException_WhenRecordIsNull()
     {
@@ -205,7 +204,6 @@ public class MedicalEncounterServiceTests
         record.ClinicalDetails.Should().Contain(detailMock1).And.Contain(detailMock2);
     }
 
-    // AppendClinicalDetail
     [Fact]
     public void AppendClinicalDetail_ShouldThrowDomainValidationException_WhenRecordIsNull()
     {
@@ -240,14 +238,14 @@ public class MedicalEncounterServiceTests
     public void AppendClinicalDetail_ShouldThrowBusinessRuleValidationException_WhenTemplateCodeMismatch()
     {
         var record = CreateMedicalRecord(Guid.NewGuid(), Guid.NewGuid());
-        var detail = new TestClinicalDetail1(); // TemplateCode is "Test1"
+        var detail = new TestClinicalDetail1();
         var template = CreateFormTemplate("DifferentCode");
 
         var act = () => _sut.AppendClinicalDetail(record, detail, template);
 
         act.Should()
             .Throw<BusinessRuleValidationException>()
-            .WithMessage(ClinicFlow.Domain.Common.DomainErrors.MedicalEncounter.CodeMismatch);
+            .WithMessage(DomainErrors.MedicalEncounter.CodeMismatch);
     }
 
     [Theory]
@@ -339,8 +337,6 @@ public class MedicalEncounterServiceTests
         public string TemplateCode => "Test2";
         public string JsonDataPayload => string.Empty;
     }
-
-    // Helpers
 
     private static MedicalRecord CreateMedicalRecord(Guid doctorId, Guid appointmentId)
     {

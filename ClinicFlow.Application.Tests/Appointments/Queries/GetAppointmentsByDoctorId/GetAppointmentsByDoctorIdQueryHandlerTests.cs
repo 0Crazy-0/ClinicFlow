@@ -70,7 +70,6 @@ public class GetAppointmentsByDoctorIdQueryHandlerTests
         _appointmentRepositoryMock.Verify(x => x.GetByDoctorIdAsync(doctorId, date), Times.Once);
     }
 
-    // Helpers
     private static Appointment CreateAppointment(
         Guid id,
         Guid patientId,

@@ -15,11 +15,10 @@ public class PatientPenaltyServiceTests
         var patientId = Guid.NewGuid();
         var appointmentId = Guid.NewGuid();
         var reason = "No show";
-        var existingPenalties = new List<PatientPenalty>();
 
         // Act
         var result = PatientPenaltyService
-            .ApplyPenalty(patientId, existingPenalties, appointmentId, reason)
+            .ApplyPenalty(patientId, [], appointmentId, reason)
             .ToList();
 
         // Assert
@@ -36,8 +35,6 @@ public class PatientPenaltyServiceTests
         // Arrange
         var patientId = Guid.NewGuid();
         var appointmentId = Guid.NewGuid();
-
-        // Simulating 2 existing warnings
         var existingPenalties = new List<PatientPenalty>
         {
             PatientPenalty.CreateWarning(patientId, Guid.NewGuid(), "Warning 1"),
@@ -45,7 +42,6 @@ public class PatientPenaltyServiceTests
         };
 
         // Act
-        // This call will add the 3rd warning, triggering the block logic
         var result = PatientPenaltyService
             .ApplyPenalty(patientId, existingPenalties, appointmentId, "Warning 3")
             .ToList();

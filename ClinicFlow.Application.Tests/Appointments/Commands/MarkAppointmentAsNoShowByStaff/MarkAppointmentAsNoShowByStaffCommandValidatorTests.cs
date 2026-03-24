@@ -1,6 +1,5 @@
 using ClinicFlow.Application.Appointments.Commands.MarkAppointmentAsNoShowByStaff;
 using FluentValidation.TestHelper;
-using Xunit;
 
 namespace ClinicFlow.Application.Tests.Appointments.Commands.MarkAppointmentAsNoShowByStaff;
 
