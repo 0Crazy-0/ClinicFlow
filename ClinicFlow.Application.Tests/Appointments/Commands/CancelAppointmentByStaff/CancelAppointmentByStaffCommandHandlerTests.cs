@@ -36,7 +36,6 @@ public class CancelAppointmentByStaffCommandHandlerTests
         var command = new CancelAppointmentByStaffCommand(
             Guid.NewGuid(),
             Guid.NewGuid(),
-            UserRole.Admin,
             "Staff reason"
         );
 
@@ -78,7 +77,6 @@ public class CancelAppointmentByStaffCommandHandlerTests
         var command = new CancelAppointmentByStaffCommand(
             Guid.NewGuid(),
             Guid.NewGuid(),
-            UserRole.Admin,
             "Staff reason"
         );
 
@@ -101,7 +99,6 @@ public class CancelAppointmentByStaffCommandHandlerTests
         var command = new CancelAppointmentByStaffCommand(
             Guid.NewGuid(),
             Guid.NewGuid(),
-            UserRole.Admin,
             "Staff reason"
         );
 
@@ -133,7 +130,6 @@ public class CancelAppointmentByStaffCommandHandlerTests
         var command = new CancelAppointmentByStaffCommand(
             Guid.NewGuid(),
             Guid.NewGuid(),
-            UserRole.Admin,
             "Staff reason"
         );
 

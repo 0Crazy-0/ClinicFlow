@@ -17,12 +17,7 @@ public class CancelAppointmentByStaffCommandValidatorTests
     public void Validate_ShouldBeValid_WhenAllPropertiesAreProvidedAndValid()
     {
         // Arrange
-        var command = new CancelAppointmentByStaffCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            UserRole.Admin,
-            "Reason"
-        );
+        var command = new CancelAppointmentByStaffCommand(Guid.NewGuid(), Guid.NewGuid(), "Reason");
 
         // Act
         var result = _sut.TestValidate(command);
@@ -35,12 +30,7 @@ public class CancelAppointmentByStaffCommandValidatorTests
     public void Validate_ShouldHaveError_WhenAppointmentIdIsEmpty()
     {
         // Arrange
-        var command = new CancelAppointmentByStaffCommand(
-            Guid.Empty,
-            Guid.NewGuid(),
-            UserRole.Admin,
-            "Reason"
-        );
+        var command = new CancelAppointmentByStaffCommand(Guid.Empty, Guid.NewGuid(), "Reason");
 
         // Act
         var result = _sut.TestValidate(command);
@@ -53,12 +43,7 @@ public class CancelAppointmentByStaffCommandValidatorTests
     public void Validate_ShouldHaveError_WhenInitiatorUserIdIsEmpty()
     {
         // Arrange
-        var command = new CancelAppointmentByStaffCommand(
-            Guid.NewGuid(),
-            Guid.Empty,
-            UserRole.Admin,
-            "Reason"
-        );
+        var command = new CancelAppointmentByStaffCommand(Guid.NewGuid(), Guid.Empty, "Reason");
 
         // Act
         var result = _sut.TestValidate(command);
@@ -74,7 +59,6 @@ public class CancelAppointmentByStaffCommandValidatorTests
         var command = new CancelAppointmentByStaffCommand(
             Guid.NewGuid(),
             Guid.NewGuid(),
-            UserRole.Admin,
             string.Empty
         );
 
@@ -93,7 +77,6 @@ public class CancelAppointmentByStaffCommandValidatorTests
         var command = new CancelAppointmentByStaffCommand(
             Guid.NewGuid(),
             Guid.NewGuid(),
-            UserRole.Admin,
             longReason
         );
 
