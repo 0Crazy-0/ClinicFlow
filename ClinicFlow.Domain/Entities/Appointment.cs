@@ -166,10 +166,30 @@ public class Appointment : BaseEntity
     }
 
     /// <summary>
-    /// Marks the appointment as a no-show, indicating the patient did not attend.
+    /// Marks the appointment as a no-show, indicating that the patient did not attend.
+    /// This method is intended to be called by administrative staff.
     /// </summary>
-    /// <exception cref="DomainValidationException">Thrown when the appointment is not in a status that can be marked as no-show.</exception>
-    internal void MarkAsNoShow()
+    /// <exception cref="DomainValidationException">Thrown when the appointment is not in a valid status to be marked as no-show.</exception>
+    public void MarkAsNoShowByStaff() => MarkAsNoShow();
+
+    /// <summary>
+    /// Marks the appointment as a no-show, indicating that the patient did not attend.
+    /// This method enforces that the doctor attempting to perform the action is the doctor assigned to the appointment.
+    /// </summary>
+    /// <param name="initiatorDoctorId">The unique identifier of the doctor initiating the action.</param>
+    /// <exception cref="AppointmentNoShowUnauthorizedException">Thrown when the initiating doctor is not the assigned doctor.</exception>
+    /// <exception cref="DomainValidationException">Thrown when the appointment is not in a valid status to be marked as no-show.</exception>
+    public void MarkAsNoShowByDoctor(Guid initiatorDoctorId)
+    {
+        if (initiatorDoctorId != DoctorId)
+            throw new AppointmentNoShowUnauthorizedException(
+                DomainErrors.Appointment.UnauthorizedNoShow
+            );
+
+        MarkAsNoShow();
+    }
+
+    private void MarkAsNoShow()
     {
         if (Status is not (AppointmentStatus.Scheduled or AppointmentStatus.Confirmed))
             throw new DomainValidationException(DomainErrors.Appointment.CannotMarkNoShow);

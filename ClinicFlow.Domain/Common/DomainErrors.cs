@@ -32,6 +32,7 @@ public static class DomainErrors
         public const string CannotConfirm = "CONFIRMATION_NOT_ALLOWED";
         public const string CannotReschedule = "RESCHEDULING_NOT_ALLOWED";
         public const string CannotMarkNoShow = "NO_SHOW_NOT_ALLOWED";
+        public const string UnauthorizedNoShow = "NO_SHOW_UNAUTHORIZED";
         public const string Conflict = "APPOINTMENT_CONFLICT";
         public const string DataMismatch = "APPOINTMENT_DATA_MISMATCH";
     }
