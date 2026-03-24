@@ -56,11 +56,6 @@ public static class AppointmentCancellationService
                 DomainErrors.Appointment.MissingCancellationReason
             );
 
-        if (args.Role != UserRole.Admin && args.Role != UserRole.Receptionist)
-            throw new AppointmentCancellationUnauthorizedException(
-                DomainErrors.Appointment.CannotCancel
-            );
-
         appointment.Cancel(args.InitiatorUserId, args.Reason, args.Specialty, true);
     }
 
