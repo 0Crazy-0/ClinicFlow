@@ -59,7 +59,7 @@ public static class AppointmentCancellationService
         appointment.Cancel(args.InitiatorUserId, args.Reason, args.Specialty, true);
     }
 
-    public static void ValidateEmergencyCancellation(Patient patient)
+    private static void ValidateEmergencyCancellation(Patient patient)
     {
         if (patient.RelationshipToUser is PatientRelationship.Self)
             return;
