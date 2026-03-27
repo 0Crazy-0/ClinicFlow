@@ -1,13 +1,14 @@
 using FluentValidation;
 
-namespace ClinicFlow.Application.Appointments.Commands.ScheduleAppointment;
+namespace ClinicFlow.Application.Appointments.Commands.Shared.Schedule;
 
-public class ScheduleAppointmentCommandValidator : AbstractValidator<ScheduleAppointmentCommand>
+public abstract class ScheduleCommandValidatorBase<TCommand> : AbstractValidator<TCommand>
+    where TCommand : IScheduleCommand
 {
-    public ScheduleAppointmentCommandValidator()
+    protected ScheduleCommandValidatorBase()
     {
-        RuleFor(x => x.PatientId).NotEmpty();
-        RuleFor(x => x.DoctorId).NotEmpty();
+        RuleFor(x => x.InitiatorUserId).NotEmpty();
+        RuleFor(x => x.TargetPatientId).NotEmpty();
         RuleFor(x => x.AppointmentTypeId).NotEmpty();
         RuleFor(x => x.ScheduledDate)
             .GreaterThanOrEqualTo(DateTime.UtcNow.Date)
