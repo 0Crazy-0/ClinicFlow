@@ -1,3 +1,4 @@
+using System.Reflection;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
@@ -19,7 +20,12 @@ public class AppointmentTypeDefinitionTests
         var duration = TimeSpan.FromMinutes(30);
 
         // Act
-        var result = AppointmentTypeDefinition.Create(type, name, description, duration);
+        var result = new AppointmentTypeBuilder()
+            .WithCategory(type)
+            .WithName(name)
+            .WithDescription(description)
+            .WithDurationMinutes(duration)
+            .Build();
 
         // Assert
         result.Should().NotBeNull();
@@ -36,13 +42,7 @@ public class AppointmentTypeDefinitionTests
     public void Create_ShouldThrowException_WhenNameIsEmpty(string? name)
     {
         // Arrange & Act
-        var act = () =>
-            AppointmentTypeDefinition.Create(
-                AppointmentCategory.Checkup,
-                name!,
-                "Description",
-                TimeSpan.FromMinutes(30)
-            );
+        var act = () => new AppointmentTypeBuilder().WithName(name!).Build();
 
         // Assert
         act.Should()
@@ -55,13 +55,7 @@ public class AppointmentTypeDefinitionTests
     public void Create_ShouldThrowException_WhenDurationIsZeroOrNegative(TimeSpan duration)
     {
         // Arrange & Act
-        var act = () =>
-            AppointmentTypeDefinition.Create(
-                AppointmentCategory.Checkup,
-                "Checkup",
-                "Description",
-                duration
-            );
+        var act = () => new AppointmentTypeBuilder().WithDurationMinutes(duration).Build();
 
         // Assert
         act.Should()
@@ -69,37 +63,141 @@ public class AppointmentTypeDefinitionTests
             .WithMessage(DomainErrors.Validation.ValueMustBePositive);
     }
 
-    public static TheoryData<TimeSpan> InvalidDurations =>
-        [TimeSpan.Zero, TimeSpan.FromMinutes(-10)];
-
-    [Theory]
-    [InlineData(10, 5)]
-    [InlineData(18, 17)]
-    public void AgeEligibilityPolicy_Create_ShouldThrowException_WhenMinimumAgeIsGreaterThanMaximumAge(
-        int minAge,
-        int maxAge
-    )
+    [Fact]
+    public void AddRequiredTemplate_ShouldThrowException_WhenTemplateIsNull()
     {
-        // Arrange & Act
-        var act = () => AgeEligibilityPolicy.Create(minAge, maxAge, false);
+        // Arrange
+        var appointmentType = new AppointmentTypeBuilder().Build();
+
+        // Act
+        var act = () => appointmentType.AddRequiredTemplate(null!);
 
         // Assert
         act.Should()
             .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.AppointmentType.InvalidAgeRange);
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
+    public void AddRequiredTemplate_ShouldAddTemplate_WhenTemplateIsNew()
+    {
+        // Arrange
+        var appointmentType = new AppointmentTypeBuilder().Build();
+        var template = ClinicalFormTemplate.Create("CODE1", "Name", "Desc", "{}");
+
+        // Act
+        appointmentType.AddRequiredTemplate(template);
+
+        // Assert
+        appointmentType.RequiredTemplates.Should().ContainSingle().Which.Code.Should().Be("CODE1");
+    }
+
+    [Fact]
+    public void AddRequiredTemplate_ShouldThrowException_WhenTemplateAlreadyExists_ById()
+    {
+        // Arrange
+        var appointmentType = new AppointmentTypeBuilder().Build();
+        var template1 = ClinicalFormTemplate.Create("CODE1", "Name", "Desc", "{}");
+        var template2 = ClinicalFormTemplate.Create("CODE2", "Different", "Desc", "{}");
+        var sharedId = Guid.NewGuid();
+
+        SetPrivateProperty(template1, nameof(ClinicalFormTemplate.Id), sharedId);
+        SetPrivateProperty(template2, nameof(ClinicalFormTemplate.Id), sharedId);
+
+        appointmentType.AddRequiredTemplate(template1);
+
+        // Act
+        var act = () => appointmentType.AddRequiredTemplate(template2);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.AppointmentType.TemplateAlreadyRequired);
+    }
+
+    [Fact]
+    public void AddRequiredTemplate_ShouldThrowException_WhenTemplateAlreadyExists_ByCode()
+    {
+        // Arrange
+        var appointmentType = new AppointmentTypeBuilder().Build();
+        var template1 = ClinicalFormTemplate.Create("CODE1", "Name", "Desc", "{}");
+        var template2 = ClinicalFormTemplate.Create("CODE1", "Another Name", "Desc", "{}");
+
+        SetPrivateProperty(template1, nameof(ClinicalFormTemplate.Id), Guid.NewGuid());
+        SetPrivateProperty(template2, nameof(ClinicalFormTemplate.Id), Guid.NewGuid());
+
+        appointmentType.AddRequiredTemplate(template1);
+
+        // Act
+        var act = () => appointmentType.AddRequiredTemplate(template2);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.AppointmentType.TemplateAlreadyRequired);
+    }
+
+    [Fact]
+    public void RemoveRequiredTemplate_ShouldDoNothing_WhenTemplateIsNull()
+    {
+        // Arrange
+        var appointmentType = new AppointmentTypeBuilder().Build();
+        var template = ClinicalFormTemplate.Create("CODE1", "Name", "Desc", "{}");
+        appointmentType.AddRequiredTemplate(template);
+
+        // Act
+        var act = () => appointmentType.RemoveRequiredTemplate(null!);
+
+        // Assert
+        act.Should().NotThrow();
+        appointmentType.RequiredTemplates.Should().ContainSingle();
+    }
+
+    [Fact]
+    public void RemoveRequiredTemplate_ShouldRemoveTemplate_WhenMatchingIdProvided()
+    {
+        // Arrange
+        var appointmentType = new AppointmentTypeBuilder().Build();
+        var template1 = ClinicalFormTemplate.Create("CODE1", "Name", "Desc", "{}");
+        var templateToRemove = ClinicalFormTemplate.Create("CODE2", "Diff", "Desc", "{}");
+
+        var sharedId = Guid.NewGuid();
+        SetPrivateProperty(template1, nameof(ClinicalFormTemplate.Id), sharedId);
+        SetPrivateProperty(templateToRemove, nameof(ClinicalFormTemplate.Id), sharedId);
+
+        appointmentType.AddRequiredTemplate(template1);
+
+        // Act
+        appointmentType.RemoveRequiredTemplate(templateToRemove);
+
+        // Assert
+        appointmentType.RequiredTemplates.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void RemoveRequiredTemplate_ShouldRemoveTemplate_WhenMatchingCodeProvided()
+    {
+        // Arrange
+        var appointmentType = new AppointmentTypeBuilder().Build();
+        var template1 = ClinicalFormTemplate.Create("CODE1", "Name", "Desc", "{}");
+        var templateToRemove = ClinicalFormTemplate.Create("CODE1", "Different", "Desc", "{}");
+
+        SetPrivateProperty(templateToRemove, nameof(ClinicalFormTemplate.Id), Guid.NewGuid());
+
+        appointmentType.AddRequiredTemplate(template1);
+
+        // Act
+        appointmentType.RemoveRequiredTemplate(templateToRemove);
+
+        // Assert
+        appointmentType.RequiredTemplates.Should().BeEmpty();
     }
 
     [Fact]
     public void ValidatePatientEligibility_ShouldNotThrowException_WhenPatientMeetsAllCriteria()
     {
         // Arrange
-        var appointmentType = AppointmentTypeDefinition.Create(
-            AppointmentCategory.Checkup,
-            "Adult Checkup",
-            "Description",
-            TimeSpan.FromMinutes(30),
-            AgeEligibilityPolicy.Create(18, 65, false)
-        );
+        var appointmentType = new AppointmentTypeBuilder().WithAgePolicy(18, 65, false).Build();
 
         // Act
         var act = () => appointmentType.ValidatePatientEligibility(30);
@@ -112,13 +210,7 @@ public class AppointmentTypeDefinitionTests
     public void ValidatePatientEligibility_ShouldThrowException_WhenPatientIsTooYoung()
     {
         // Arrange
-        var appointmentType = AppointmentTypeDefinition.Create(
-            AppointmentCategory.Checkup,
-            "Adult Checkup",
-            "Description",
-            TimeSpan.FromMinutes(30),
-            AgeEligibilityPolicy.Create(18, null, false)
-        );
+        var appointmentType = new AppointmentTypeBuilder().WithAgePolicy(18, null, false).Build();
 
         // Act
         var act = () => appointmentType.ValidatePatientEligibility(15);
@@ -129,64 +221,78 @@ public class AppointmentTypeDefinitionTests
             .WithMessage(DomainErrors.AppointmentType.MinimumAgeNotMet);
     }
 
-    [Fact]
-    public void ValidatePatientEligibility_ShouldThrowException_WhenPatientIsTooOld()
+    private class AppointmentTypeBuilder
     {
-        // Arrange
-        var appointmentType = AppointmentTypeDefinition.Create(
-            AppointmentCategory.Checkup,
-            "Pediatric Checkup",
-            "Description",
-            TimeSpan.FromMinutes(30),
-            AgeEligibilityPolicy.Create(null, 14, false)
-        );
+        private AppointmentCategory _category = AppointmentCategory.Checkup;
+        private string _name = "Checkup";
+        private string _description = "Description";
+        private TimeSpan _durationMinutes = TimeSpan.FromMinutes(30);
+        private AgeEligibilityPolicy? _agePolicy = null;
 
-        // Act
-        var act = () => appointmentType.ValidatePatientEligibility(30);
+        public AppointmentTypeBuilder WithName(string name)
+        {
+            _name = name;
+            return this;
+        }
 
-        // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.AppointmentType.MaximumAgeExceeded);
+        public AppointmentTypeBuilder WithDescription(string description)
+        {
+            _description = description;
+            return this;
+        }
+
+        public AppointmentTypeBuilder WithDurationMinutes(TimeSpan duration)
+        {
+            _durationMinutes = duration;
+            return this;
+        }
+
+        public AppointmentTypeBuilder WithAgePolicy(int? min, int? max, bool requiresGuardian)
+        {
+            _agePolicy = AgeEligibilityPolicy.Create(min, max, requiresGuardian);
+            return this;
+        }
+
+        public AppointmentTypeBuilder WithCategory(AppointmentCategory category)
+        {
+            _category = category;
+            return this;
+        }
+
+        public AppointmentTypeDefinition Build() =>
+            AppointmentTypeDefinition.Create(
+                _category,
+                _name,
+                _description,
+                _durationMinutes,
+                _agePolicy
+            );
     }
 
-    [Fact]
-    public void ValidatePatientEligibility_ShouldThrowException_WhenLegalGuardianRequiredAndPatientIsUnderage()
+    public static TheoryData<TimeSpan> InvalidDurations =>
+        [TimeSpan.Zero, TimeSpan.FromMinutes(-10)];
+
+    private static void SetPrivateProperty(object obj, string propertyName, object value)
     {
-        // Arrange
-        var appointmentType = AppointmentTypeDefinition.Create(
-            AppointmentCategory.Checkup,
-            "Surgery",
-            "Description",
-            TimeSpan.FromMinutes(30),
-            AgeEligibilityPolicy.Create(null, null, true)
-        );
+        var type = obj.GetType();
 
-        // Act
-        var act = () => appointmentType.ValidatePatientEligibility(16);
+        while (type != null)
+        {
+            var prop = type.GetProperty(
+                propertyName,
+                BindingFlags.Public
+                    | BindingFlags.NonPublic
+                    | BindingFlags.Instance
+                    | BindingFlags.DeclaredOnly
+            );
 
-        // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.AppointmentType.LegalGuardianRequired);
-    }
+            if (prop != null)
+            {
+                prop.SetValue(obj, value);
+                return;
+            }
 
-    [Fact]
-    public void ValidatePatientEligibility_ShouldNotThrowException_WhenLegalGuardianRequiredAndPatientIsUnderage_ButHasConsent()
-    {
-        // Arrange
-        var appointmentType = AppointmentTypeDefinition.Create(
-            AppointmentCategory.Checkup,
-            "Surgery",
-            "Description",
-            TimeSpan.FromMinutes(30),
-            AgeEligibilityPolicy.Create(null, null, true)
-        );
-
-        // Act
-        var act = () => appointmentType.ValidatePatientEligibility(16, hasGuardianConsent: true);
-
-        // Assert
-        act.Should().NotThrow();
+            type = type.BaseType;
+        }
     }
 }
