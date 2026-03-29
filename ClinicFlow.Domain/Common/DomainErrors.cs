@@ -35,11 +35,16 @@ public static class DomainErrors
         public const string UnauthorizedNoShow = "NO_SHOW_UNAUTHORIZED";
         public const string Conflict = "APPOINTMENT_CONFLICT";
         public const string DataMismatch = "APPOINTMENT_DATA_MISMATCH";
+        public const string UnauthorizedScheduling = "SCHEDULING_UNAUTHORIZED";
     }
 
     public static class AppointmentType
     {
         public const string TemplateAlreadyRequired = "TEMPLATE_ALREADY_REQUIRED";
+        public const string InvalidAgeRange = "INVALID_AGE_RANGE";
+        public const string MinimumAgeNotMet = "MINIMUM_AGE_NOT_MET";
+        public const string MaximumAgeExceeded = "MAXIMUM_AGE_EXCEEDED";
+        public const string LegalGuardianRequired = "LEGAL_GUARDIAN_REQUIRED";
     }
 
     public static class Schedule

@@ -10,5 +10,4 @@ public class AppointmentSchedulingContext
     public IEnumerable<PatientPenalty> Penalties { get; init; } = [];
     public Schedule? DoctorSchedule { get; init; }
     public bool HasConflict { get; init; }
-    public IEnumerable<Appointment> ExistingAppointmentsDay { get; init; } = [];
 }

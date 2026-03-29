@@ -1,6 +1,7 @@
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Base;
+using ClinicFlow.Domain.ValueObjects;
 
 namespace ClinicFlow.Domain.Entities;
 
@@ -17,6 +18,8 @@ public class AppointmentTypeDefinition : BaseEntity
 
     public TimeSpan DurationMinutes { get; private set; }
 
+    public AgeEligibilityPolicy AgePolicy { get; private set; }
+
     private readonly List<ClinicalFormTemplate> _requiredTemplates = [];
 
     /// <summary>
@@ -26,30 +29,36 @@ public class AppointmentTypeDefinition : BaseEntity
         _requiredTemplates.AsReadOnly();
 
     // EF Core constructor
-    private AppointmentTypeDefinition() { }
+    private AppointmentTypeDefinition()
+    {
+        AgePolicy = null!;
+    }
 
     private AppointmentTypeDefinition(
         AppointmentCategory category,
         string name,
         string description,
-        TimeSpan durationMinutes
+        TimeSpan durationMinutes,
+        AgeEligibilityPolicy agePolicy
     )
     {
         Category = category;
         Name = name;
         Description = description;
         DurationMinutes = durationMinutes;
+        AgePolicy = agePolicy;
     }
 
     /// <summary>
     /// Creates a new appointment type definition.
     /// </summary>
-    /// <exception cref="DomainValidationException">Thrown when the name is empty or the duration is not positive.</exception>
+    /// <exception cref="DomainValidationException">Thrown when the name is empty, duration is not positive, or the age rules are invalid.</exception>
     internal static AppointmentTypeDefinition Create(
         AppointmentCategory category,
         string name,
         string description,
-        TimeSpan durationMinutes
+        TimeSpan durationMinutes,
+        AgeEligibilityPolicy? agePolicy = null
     )
     {
         if (string.IsNullOrWhiteSpace(name))
@@ -57,7 +66,13 @@ public class AppointmentTypeDefinition : BaseEntity
         if (durationMinutes <= TimeSpan.Zero)
             throw new DomainValidationException(DomainErrors.Validation.ValueMustBePositive);
 
-        return new AppointmentTypeDefinition(category, name, description, durationMinutes);
+        return new AppointmentTypeDefinition(
+            category,
+            name,
+            description,
+            durationMinutes,
+            agePolicy ?? AgeEligibilityPolicy.NoRestriction
+        );
     }
 
     /// <summary>
@@ -84,4 +99,15 @@ public class AppointmentTypeDefinition : BaseEntity
             return;
         _requiredTemplates.RemoveAll(t => t.Id == template.Id || t.Code == template.Code);
     }
+
+    /// <summary>
+    /// Verifies if the patient meets the age requirements and legal guardian requirements for this appointment type.
+    /// </summary>
+    /// <param name="patientAgeInYears">The patient's age in full years.</param>
+    /// <param name="hasGuardianConsent">Indicates if the appointment is being booked with the consent of an adult legal guardian.</param>
+    /// <exception cref="DomainValidationException">Thrown if the patient does not meet the criteria.</exception>
+    public void ValidatePatientEligibility(
+        int patientAgeInYears,
+        bool hasGuardianConsent = false
+    ) => AgePolicy.ValidatePatientEligibility(patientAgeInYears, hasGuardianConsent);
 }
