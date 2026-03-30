@@ -1,6 +1,7 @@
 using System.Reflection;
 using ClinicFlow.Application.MedicalRecords.Commands.AddClinicalDetailToMedicalRecord;
 using ClinicFlow.Application.MedicalRecords.Commands.CompleteMedicalEncounter;
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
@@ -106,10 +107,10 @@ public class AddClinicalDetailToMedicalRecordCommandHandlerTests
         var act = async () => await _sut.Handle(request, CancellationToken.None);
 
         // Assert
-        await act.Should()
+        var exceptionAssertion = await act.Should()
             .ThrowAsync<EntityNotFoundException>()
-            .Where(e => e.EntityName == nameof(MedicalRecord));
-
+            .WithMessage(DomainErrors.General.NotFound);
+        exceptionAssertion.Which.EntityName.Should().Be(nameof(MedicalRecord));
         _templateRepositoryMock.Verify(
             x => x.GetByCodeAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()),
             Times.Never
@@ -150,9 +151,10 @@ public class AddClinicalDetailToMedicalRecordCommandHandlerTests
         var act = async () => await _sut.Handle(request, CancellationToken.None);
 
         // Assert
-        await act.Should()
+        var exceptionAssertion = await act.Should()
             .ThrowAsync<EntityNotFoundException>()
-            .Where(e => e.EntityName == nameof(ClinicalFormTemplate));
+            .WithMessage(DomainErrors.General.NotFound);
+        exceptionAssertion.Which.EntityName.Should().Be(nameof(ClinicalFormTemplate));
 
         _medicalRecordRepositoryMock.Verify(
             x => x.UpdateAsync(It.IsAny<MedicalRecord>(), It.IsAny<CancellationToken>()),

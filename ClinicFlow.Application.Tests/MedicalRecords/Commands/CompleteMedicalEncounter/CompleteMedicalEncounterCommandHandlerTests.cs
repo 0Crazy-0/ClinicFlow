@@ -1,5 +1,6 @@
 using System.Reflection;
 using ClinicFlow.Application.MedicalRecords.Commands.CompleteMedicalEncounter;
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
@@ -111,12 +112,14 @@ public class CompleteMedicalEncounterCommandHandlerTests
             .Setup(x => x.GetByIdAsync(command.DoctorId))
             .ReturnsAsync((Doctor?)null);
 
-        // Act & Assert
-        var action = async () => await _sut.Handle(command, CancellationToken.None);
-        await action
-            .Should()
+        // Act
+        var act = async () => await _sut.Handle(command, CancellationToken.None);
+
+        // Assert
+        var exceptionAssertion = await act.Should()
             .ThrowAsync<EntityNotFoundException>()
-            .Where(e => e.EntityName == nameof(Doctor));
+            .WithMessage(DomainErrors.General.NotFound);
+        exceptionAssertion.Which.EntityName.Should().Be(nameof(Doctor));
     }
 
     [Fact]
@@ -138,12 +141,14 @@ public class CompleteMedicalEncounterCommandHandlerTests
             .Setup(x => x.GetByIdAsync(command.AppointmentId))
             .ReturnsAsync((Appointment?)null);
 
-        // Act & Assert
-        var action = async () => await _sut.Handle(command, CancellationToken.None);
-        await action
-            .Should()
+        // Act
+        var act = async () => await _sut.Handle(command, CancellationToken.None);
+
+        // Assert
+        var exceptionAssertion = await act.Should()
             .ThrowAsync<EntityNotFoundException>()
-            .Where(e => e.EntityName == nameof(Appointment));
+            .WithMessage(DomainErrors.General.NotFound);
+        exceptionAssertion.Which.EntityName.Should().Be(nameof(Appointment));
     }
 
     [Fact]
@@ -174,12 +179,14 @@ public class CompleteMedicalEncounterCommandHandlerTests
             .Setup(x => x.GetByIdAsync(appointmentTypeId))
             .ReturnsAsync((AppointmentTypeDefinition?)null);
 
-        // Act & Assert
-        var action = async () => await _sut.Handle(command, CancellationToken.None);
-        await action
-            .Should()
+        // Act
+        var act = async () => await _sut.Handle(command, CancellationToken.None);
+
+        // Assert
+        var exceptionAssertion = await act.Should()
             .ThrowAsync<EntityNotFoundException>()
-            .Where(e => e.EntityName == nameof(AppointmentTypeDefinition));
+            .WithMessage(DomainErrors.General.NotFound);
+        exceptionAssertion.Which.EntityName.Should().Be(nameof(AppointmentTypeDefinition));
     }
 
     private static Doctor CreateDoctor(Guid id)

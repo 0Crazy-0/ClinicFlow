@@ -1,5 +1,6 @@
 using System.Reflection;
 using ClinicFlow.Application.Appointments.Commands.CancelAppointmentByPatient;
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Base;
@@ -118,7 +119,9 @@ public class CancelAppointmentByPatientCommandHandlerTests
         var act = async () => await _sut.Handle(command, CancellationToken.None);
 
         // Assert
-        var exceptionAssertion = await act.Should().ThrowAsync<EntityNotFoundException>();
+        var exceptionAssertion = await act.Should()
+            .ThrowAsync<EntityNotFoundException>()
+            .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(Appointment));
     }
 

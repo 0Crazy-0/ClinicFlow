@@ -1,5 +1,6 @@
 using System.Reflection;
 using ClinicFlow.Application.Appointments.Queries.GetAppointmentById;
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces.Repositories;
@@ -62,9 +63,10 @@ public class GetAppointmentByIdQueryHandlerTests
         var act = async () => await _sut.Handle(query, CancellationToken.None);
 
         // Assert
-        await act.Should()
+        var exceptionAssertion = await act.Should()
             .ThrowAsync<EntityNotFoundException>()
-            .Where(e => e.EntityName == nameof(Appointment));
+            .WithMessage(DomainErrors.General.NotFound);
+        exceptionAssertion.Which.EntityName.Should().Be(nameof(Appointment));
     }
 
     private static Appointment CreateAppointment(Guid id, Guid patientId, Guid doctorId)

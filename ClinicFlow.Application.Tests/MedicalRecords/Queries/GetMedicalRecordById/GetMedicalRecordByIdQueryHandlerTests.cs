@@ -1,5 +1,6 @@
 using System.Reflection;
 using ClinicFlow.Application.MedicalRecords.Queries.GetMedicalRecordById;
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Entities.ClinicalDetails;
 using ClinicFlow.Domain.Exceptions.Base;
@@ -62,12 +63,14 @@ public class GetMedicalRecordByIdQueryHandlerTests
             .Setup(x => x.GetByIdAsync(request.Id, CancellationToken.None))
             .ReturnsAsync((MedicalRecord?)null);
 
-        // Act & Assert
-        var action = async () => await _sut.Handle(request, CancellationToken.None);
-        await action
-            .Should()
+        // Act
+        var act = async () => await _sut.Handle(request, CancellationToken.None);
+
+        // Assert
+        var exceptionAssertion = await act.Should()
             .ThrowAsync<EntityNotFoundException>()
-            .Where(e => e.EntityName == nameof(MedicalRecord));
+            .WithMessage(DomainErrors.General.NotFound);
+        exceptionAssertion.Which.EntityName.Should().Be(nameof(MedicalRecord));
     }
 
     private static MedicalRecord CreateMedicalRecord(
