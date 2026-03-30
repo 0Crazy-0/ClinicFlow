@@ -102,8 +102,9 @@ public class GetPatientByIdQueryHandlerTests
         var act = async () => await _sut.Handle(query, CancellationToken.None);
 
         // Assert
-        await act.Should()
+        var exceptionAssertion = await act.Should()
             .ThrowAsync<EntityNotFoundException>()
             .WithMessage(DomainErrors.General.NotFound);
+        exceptionAssertion.Which.EntityName.Should().Be(nameof(Patient));
     }
 }
