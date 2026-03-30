@@ -233,11 +233,8 @@ public class PatientTests
     [Fact]
     public void EnsureNotBlocked_ShouldNotThrow_WhenNoPenalties()
     {
-        // Arrange
-        var penalties = new List<PatientPenalty>();
-
-        // Act
-        var act = () => Patient.EnsureNotBlocked(penalties, _fakeTime.GetUtcNow().UtcDateTime);
+        // Arrange & Act
+        var act = () => Patient.EnsureNotBlocked([], _fakeTime.GetUtcNow().UtcDateTime);
 
         // Assert
         act.Should().NotThrow();
