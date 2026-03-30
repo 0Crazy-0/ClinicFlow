@@ -7,6 +7,7 @@ using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
+using Microsoft.Extensions.Time.Testing;
 using Moq;
 
 namespace ClinicFlow.Application.Tests.Appointments.Commands.ScheduleByStaff;
@@ -19,6 +20,7 @@ public class ScheduleByStaffCommandHandlerTests
     private readonly Mock<IScheduleRepository> _scheduleRepositoryMock = new();
     private readonly Mock<IAppointmentRepository> _appointmentRepositoryMock = new();
     private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
+    private readonly FakeTimeProvider _fakeTime = new();
     private readonly ScheduleByStaffCommandHandler _sut;
 
     public ScheduleByStaffCommandHandlerTests()
@@ -35,7 +37,8 @@ public class ScheduleByStaffCommandHandlerTests
     [Fact]
     public async Task Handle_ShouldSucceed_WhenValidRequest()
     {
-        var scheduledDate = DateTime.UtcNow.AddDays(1).Date;
+        // Arrange
+        var scheduledDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date;
         var startTime = new TimeSpan(10, 0, 0);
         var endTime = new TimeSpan(11, 0, 0);
 
@@ -51,7 +54,11 @@ public class ScheduleByStaffCommandHandlerTests
             false
         );
 
-        var targetPatient = CreateTargetPatient(command.TargetPatientId, Guid.NewGuid());
+        var targetPatient = CreateTargetPatient(
+            command.TargetPatientId,
+            Guid.NewGuid(),
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
         var appointmentType = CreateAppointmentType(command.AppointmentTypeId);
         var schedule = CreateSchedule(
             Guid.NewGuid(),
@@ -87,8 +94,10 @@ public class ScheduleByStaffCommandHandlerTests
             )
             .ReturnsAsync(false);
 
+        // Act
         var result = await _sut.Handle(command, CancellationToken.None);
 
+        // Assert
         _appointmentRepositoryMock.Verify(
             r => r.CreateAsync(It.IsAny<Appointment>(), It.IsAny<CancellationToken>()),
             Times.Once
@@ -100,12 +109,13 @@ public class ScheduleByStaffCommandHandlerTests
     [Fact]
     public async Task Handle_ShouldThrowEntityNotFoundException_WhenPatientNotFound()
     {
+        // Arrange
         var command = new ScheduleByStaffCommand(
             Guid.NewGuid(),
             Guid.NewGuid(),
             Guid.NewGuid(),
             Guid.NewGuid(),
-            DateTime.UtcNow.AddDays(1).Date,
+            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
             new TimeSpan(10, 0, 0),
             new TimeSpan(11, 0, 0),
             false,
@@ -115,8 +125,10 @@ public class ScheduleByStaffCommandHandlerTests
             .Setup(r => r.GetByIdAsync(command.TargetPatientId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((Patient?)null);
 
+        // Act
         var act = async () => await _sut.Handle(command, CancellationToken.None);
 
+        // Assert
         var exceptionAssertion = await act.Should()
             .ThrowAsync<EntityNotFoundException>()
             .WithMessage(DomainErrors.General.NotFound);
@@ -126,19 +138,24 @@ public class ScheduleByStaffCommandHandlerTests
     [Fact]
     public async Task Handle_ShouldThrowEntityNotFoundException_WhenAppointmentTypeNotFound()
     {
+        // Arrange
         var command = new ScheduleByStaffCommand(
             Guid.NewGuid(),
             Guid.NewGuid(),
             Guid.NewGuid(),
             Guid.NewGuid(),
-            DateTime.UtcNow.AddDays(1).Date,
+            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
             new TimeSpan(10, 0, 0),
             new TimeSpan(11, 0, 0),
             false,
             false
         );
 
-        var targetPatient = CreateTargetPatient(command.TargetPatientId, Guid.NewGuid());
+        var targetPatient = CreateTargetPatient(
+            command.TargetPatientId,
+            Guid.NewGuid(),
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
 
         _patientRepositoryMock
             .Setup(r => r.GetByIdAsync(command.TargetPatientId, It.IsAny<CancellationToken>()))
@@ -148,20 +165,23 @@ public class ScheduleByStaffCommandHandlerTests
             .Setup(r => r.GetByIdAsync(command.AppointmentTypeId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((AppointmentTypeDefinition?)null);
 
+        // Act
         var act = async () => await _sut.Handle(command, CancellationToken.None);
 
+        // Assert
         var exceptionAssertion = await act.Should()
             .ThrowAsync<EntityNotFoundException>()
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(AppointmentTypeDefinition));
     }
 
-    private static Patient CreateTargetPatient(Guid id, Guid userId)
+    private static Patient CreateTargetPatient(Guid id, Guid userId, DateTime referenceTime)
     {
         var patient = Patient.CreateSelf(
             userId,
             PersonName.Create("Test Patient"),
-            DateTime.UtcNow.AddYears(-30)
+            referenceTime.AddYears(-30).Date,
+            referenceTime
         );
 
         patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");

@@ -47,9 +47,14 @@ public static class AppointmentCancellationService
             );
 
         if (args.Category is AppointmentCategory.Emergency)
-            ValidateEmergencyCancellation(args.AppointmentPatient);
+            ValidateEmergencyCancellation(args.AppointmentPatient, args.CancelledAt);
 
-        appointment.Cancel(args.InitiatorPatient.UserId, args.Reason, args.Specialty);
+        appointment.Cancel(
+            args.InitiatorPatient.UserId,
+            args.Reason,
+            args.Specialty,
+            args.CancelledAt
+        );
     }
 
     /// <summary>
@@ -70,7 +75,13 @@ public static class AppointmentCancellationService
                 DomainErrors.Appointment.UnauthorizedCancellation
             );
 
-        appointment.Cancel(args.InitiatorDoctor.UserId, args.Reason, args.Specialty, true);
+        appointment.Cancel(
+            args.InitiatorDoctor.UserId,
+            args.Reason,
+            args.Specialty,
+            args.CancelledAt,
+            true
+        );
     }
 
     /// <summary>
@@ -87,7 +98,13 @@ public static class AppointmentCancellationService
                 DomainErrors.Appointment.MissingCancellationReason
             );
 
-        appointment.Cancel(args.InitiatorUserId, args.Reason, args.Specialty, true);
+        appointment.Cancel(
+            args.InitiatorUserId,
+            args.Reason,
+            args.Specialty,
+            args.CancelledAt,
+            true
+        );
     }
 
     /// <summary>
@@ -96,12 +113,15 @@ public static class AppointmentCancellationService
     /// </summary>
     /// <param name="patient">The patient associated with the emergency appointment.</param>
     /// <exception cref="AppointmentCancellationUnauthorizedException">Thrown if the relationship conditions are not met.</exception>
-    private static void ValidateEmergencyCancellation(Patient patient)
+    private static void ValidateEmergencyCancellation(Patient patient, DateTime referenceTime)
     {
         if (patient.RelationshipToUser is PatientRelationship.Self)
             return;
 
-        if (patient.RelationshipToUser is PatientRelationship.Child && patient.GetAge() < 18)
+        if (
+            patient.RelationshipToUser is PatientRelationship.Child
+            && patient.GetAge(referenceTime) < 18
+        )
             return;
 
         throw new AppointmentCancellationUnauthorizedException(

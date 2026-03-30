@@ -40,14 +40,14 @@ public static class AppointmentSchedulingService
         }
 
         args.TargetPatient.EnsureCompleteProfile();
-        Patient.EnsureNotBlocked(context.Penalties);
+        Patient.EnsureNotBlocked(context.Penalties, args.ScheduledDate);
 
         bool isGuardianScheduling =
             args.InitiatorPatient.RelationshipToUser is PatientRelationship.Self
             && args.TargetPatient.RelationshipToUser is not PatientRelationship.Self;
 
         appointmentType.ValidatePatientEligibility(
-            args.TargetPatient.GetAge(),
+            args.TargetPatient.GetAge(args.ScheduledDate),
             isGuardianScheduling
         );
 
@@ -132,7 +132,7 @@ public static class AppointmentSchedulingService
         args.TargetPatient.EnsureCompleteProfile();
 
         appointmentType.ValidatePatientEligibility(
-            args.TargetPatient.GetAge(),
+            args.TargetPatient.GetAge(args.ScheduledDate),
             args.HasGuardianConsentVerified
         );
 

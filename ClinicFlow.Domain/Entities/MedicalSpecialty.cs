@@ -70,9 +70,9 @@ public class MedicalSpecialty : BaseEntity
     /// </summary>
     /// <param name="appointmentDateTime">The UTC date and time of the appointment.</param>
     /// <returns><see langword="true"/> if enough notice remains; otherwise, <see langword="false"/>.</returns>
-    public bool IsCancellationAllowed(DateTime appointmentDateTime)
+    public bool IsCancellationAllowed(DateTime appointmentDateTime, DateTime referenceTime)
     {
-        var hoursUntilAppointment = (appointmentDateTime - DateTime.UtcNow).TotalHours;
+        var hoursUntilAppointment = (appointmentDateTime - referenceTime).TotalHours;
         return hoursUntilAppointment >= MinCancellationHours;
     }
 }

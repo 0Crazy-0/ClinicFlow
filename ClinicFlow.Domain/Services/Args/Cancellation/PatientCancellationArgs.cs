@@ -8,5 +8,6 @@ public record PatientCancellationArgs(
     Patient? InitiatorPatient,
     AppointmentCategory Category,
     MedicalSpecialty Specialty,
-    string? Reason
+    string? Reason,
+    DateTime CancelledAt
 );

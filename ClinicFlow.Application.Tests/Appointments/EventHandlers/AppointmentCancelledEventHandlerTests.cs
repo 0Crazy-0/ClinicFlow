@@ -6,6 +6,7 @@ using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Events;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.ValueObjects;
+using Microsoft.Extensions.Time.Testing;
 using Moq;
 
 namespace ClinicFlow.Application.Tests.Appointments.EventHandlers;
@@ -13,12 +14,14 @@ namespace ClinicFlow.Application.Tests.Appointments.EventHandlers;
 public class AppointmentCancelledEventHandlerTests
 {
     private readonly Mock<IPatientPenaltyRepository> _penaltyRepositoryMock;
+    private readonly FakeTimeProvider _fakeTime;
     private readonly AppointmentCancelledEventHandler _sut;
 
     public AppointmentCancelledEventHandlerTests()
     {
+        _fakeTime = new FakeTimeProvider();
         _penaltyRepositoryMock = new Mock<IPatientPenaltyRepository>();
-        _sut = new AppointmentCancelledEventHandler(_penaltyRepositoryMock.Object);
+        _sut = new AppointmentCancelledEventHandler(_fakeTime, _penaltyRepositoryMock.Object);
     }
 
     [Fact]
@@ -32,7 +35,7 @@ public class AppointmentCancelledEventHandlerTests
             Guid.NewGuid(),
             patientId,
             Guid.NewGuid(),
-            DateTime.UtcNow.AddHours(2),
+            _fakeTime.GetUtcNow().UtcDateTime.AddHours(2),
             true
         );
 
@@ -70,7 +73,7 @@ public class AppointmentCancelledEventHandlerTests
             Guid.NewGuid(),
             patientId,
             Guid.NewGuid(),
-            DateTime.UtcNow.AddDays(2),
+            _fakeTime.GetUtcNow().UtcDateTime.AddDays(2),
             false
         );
 

@@ -2,11 +2,14 @@ using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Exceptions.Base;
 using FluentAssertions;
+using Microsoft.Extensions.Time.Testing;
 
 namespace ClinicFlow.Domain.Tests.Entities;
 
 public class MedicalSpecialtyTests
 {
+    private readonly FakeTimeProvider _fakeTime = new();
+
     [Fact]
     public void Create_ShouldCreateSpecialty_WhenValidParameters()
     {
@@ -77,7 +80,10 @@ public class MedicalSpecialtyTests
     public void IsCancellationAllowed_ShouldReturnTrue_WhenSufficientNotice() =>
         MedicalSpecialty
             .Create("Cardiology", "Description", 30, 24)
-            .IsCancellationAllowed(DateTime.UtcNow.AddHours(48))
+            .IsCancellationAllowed(
+                _fakeTime.GetUtcNow().UtcDateTime.AddHours(48).Date,
+                _fakeTime.GetUtcNow().UtcDateTime
+            )
             .Should()
             .BeTrue(); // Arrange & Act & Assert
 
@@ -85,7 +91,10 @@ public class MedicalSpecialtyTests
     public void IsCancellationAllowed_ShouldReturnFalse_WhenInsufficientNotice() =>
         MedicalSpecialty
             .Create("Cardiology", "Description", 30, 24)
-            .IsCancellationAllowed(DateTime.UtcNow.AddHours(2))
+            .IsCancellationAllowed(
+                _fakeTime.GetUtcNow().UtcDateTime.AddHours(2).Date,
+                _fakeTime.GetUtcNow().UtcDateTime
+            )
             .Should()
             .BeFalse(); // Arrange & Act & Assert
 }

@@ -26,32 +26,21 @@ public abstract class BaseEntity
     protected BaseEntity()
     {
         Id = Guid.NewGuid();
-        CreatedAt = DateTime.UtcNow;
         IsDeleted = false;
     }
 
     /// <summary>
     /// Registers a domain event to be dispatched after persistence.
     /// </summary>
-    public void AddDomainEvent(IDomainEvent domainEvent)
-    {
-        _domainEvents.Add(domainEvent);
-    }
+    public void AddDomainEvent(IDomainEvent domainEvent) => _domainEvents.Add(domainEvent);
 
     /// <summary>
     /// Removes all pending domain events.
     /// </summary>
-    public void ClearDomainEvents()
-    {
-        _domainEvents.Clear();
-    }
+    public void ClearDomainEvents() => _domainEvents.Clear();
 
     /// <summary>
     /// Marks the entity as soft-deleted and updates the modification timestamp.
     /// </summary>
-    public void MarkAsDeleted()
-    {
-        IsDeleted = true;
-        UpdatedAt = DateTime.UtcNow;
-    }
+    public void MarkAsDeleted() => IsDeleted = true;
 }

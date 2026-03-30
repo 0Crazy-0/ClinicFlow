@@ -10,6 +10,7 @@ using MediatR;
 namespace ClinicFlow.Application.Appointments.Commands.CancelAppointmentByPatient;
 
 public sealed class CancelAppointmentByPatientCommandHandler(
+    TimeProvider timeProvider,
     IAppointmentRepository appointmentRepository,
     IPatientRepository patientRepository,
     IAppointmentTypeDefinitionRepository appointmentTypeRepository,
@@ -78,7 +79,8 @@ public sealed class CancelAppointmentByPatientCommandHandler(
                 initiatorPatient,
                 appointmentType.Category,
                 specialty,
-                request.Reason
+                request.Reason,
+                timeProvider.GetUtcNow().UtcDateTime
             )
         );
 

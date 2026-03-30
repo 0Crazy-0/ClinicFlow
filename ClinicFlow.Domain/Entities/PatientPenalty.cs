@@ -60,13 +60,18 @@ public class PatientPenalty : BaseEntity
     /// </summary>
     /// <param name="blockedUntil">UTC date and time until which the block is in effect. Must be in the future.</param>
     /// <exception cref="DomainValidationException">Thrown when the patient ID is empty, the reason is blank, or the block date is not in the future.</exception>
-    internal static PatientPenalty CreateBlock(Guid patientId, string reason, DateTime blockedUntil)
+    internal static PatientPenalty CreateBlock(
+        Guid patientId,
+        string reason,
+        DateTime blockedUntil,
+        DateTime referenceTime
+    )
     {
         if (patientId == Guid.Empty)
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
         if (string.IsNullOrWhiteSpace(reason))
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-        if (blockedUntil <= DateTime.UtcNow)
+        if (blockedUntil <= referenceTime)
             throw new DomainValidationException(DomainErrors.Validation.ValueMustBeInFuture);
 
         return new PatientPenalty(

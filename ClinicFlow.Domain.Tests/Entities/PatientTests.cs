@@ -5,24 +5,32 @@ using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Exceptions.Patients;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
+using Microsoft.Extensions.Time.Testing;
 
 namespace ClinicFlow.Domain.Tests.Entities;
 
 public class PatientTests
 {
+    private readonly FakeTimeProvider _fakeTime = new();
+
     [Fact]
     public void Create_ShouldCreatePatient_WhenValidParameters()
     {
         // Arrange
         var userId = Guid.NewGuid();
-        var dateOfBirth = DateTime.UtcNow.AddYears(-30);
+        var dateOfBirth = _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30).Date;
         var bloodType = BloodType.Create("O+");
         var allergies = "Penicillin";
         var chronicConditions = "None";
         var emergencyContact = EmergencyContact.Create("Mom", "555-5555");
 
         // Act
-        var patient = Patient.CreateSelf(userId, PersonName.Create("John Doe"), dateOfBirth);
+        var patient = Patient.CreateSelf(
+            userId,
+            PersonName.Create("John Doe"),
+            dateOfBirth,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
         patient.UpdateMedicalProfile(bloodType, allergies, chronicConditions);
         patient.UpdateEmergencyContact(emergencyContact);
 
@@ -44,7 +52,8 @@ public class PatientTests
             Patient.CreateSelf(
                 Guid.NewGuid(),
                 PersonName.Create("John Doe"),
-                DateTime.UtcNow.AddDays(1)
+                _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
+                _fakeTime.GetUtcNow().UtcDateTime
             );
 
         // Assert
@@ -61,7 +70,8 @@ public class PatientTests
             Patient.CreateSelf(
                 Guid.Empty,
                 PersonName.Create("John Doe"),
-                DateTime.UtcNow.AddYears(-30)
+                _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30).Date,
+                _fakeTime.GetUtcNow().UtcDateTime
             );
 
         // Assert
@@ -75,14 +85,15 @@ public class PatientTests
     {
         // Arrange
         var userId = Guid.NewGuid();
-        var dateOfBirth = DateTime.UtcNow.AddYears(-10);
+        var dateOfBirth = _fakeTime.GetUtcNow().UtcDateTime.AddYears(-10).Date;
 
         // Act
         var patient = Patient.CreateFamilyMember(
             userId,
             PersonName.Create("Family Member"),
             PatientRelationship.Child,
-            dateOfBirth
+            dateOfBirth,
+            _fakeTime.GetUtcNow().UtcDateTime
         );
 
         // Assert
@@ -101,7 +112,8 @@ public class PatientTests
                 Guid.NewGuid(),
                 PersonName.Create("Family Member"),
                 PatientRelationship.Self,
-                DateTime.UtcNow.AddYears(-10)
+                _fakeTime.GetUtcNow().UtcDateTime.AddYears(-10).Date,
+                _fakeTime.GetUtcNow().UtcDateTime
             );
 
         // Assert
@@ -119,7 +131,8 @@ public class PatientTests
                 Guid.Empty,
                 PersonName.Create("Family Member"),
                 PatientRelationship.Child,
-                DateTime.UtcNow.AddYears(-10)
+                _fakeTime.GetUtcNow().UtcDateTime.AddYears(-10).Date,
+                _fakeTime.GetUtcNow().UtcDateTime
             );
 
         // Assert
@@ -137,7 +150,8 @@ public class PatientTests
                 Guid.NewGuid(),
                 PersonName.Create("Family Member"),
                 PatientRelationship.Child,
-                DateTime.UtcNow.AddDays(1)
+                _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
+                _fakeTime.GetUtcNow().UtcDateTime
             );
 
         // Assert
@@ -153,7 +167,8 @@ public class PatientTests
         var patient = Patient.CreateSelf(
             Guid.NewGuid(),
             PersonName.Create("John Doe"),
-            DateTime.UtcNow.AddYears(-30)
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30).Date,
+            _fakeTime.GetUtcNow().UtcDateTime
         );
 
         // Act & Assert
@@ -167,7 +182,8 @@ public class PatientTests
         var patient = Patient.CreateSelf(
             Guid.NewGuid(),
             PersonName.Create("John Doe"),
-            DateTime.UtcNow.AddYears(-30)
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30).Date,
+            _fakeTime.GetUtcNow().UtcDateTime
         );
         patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
         patient.UpdateEmergencyContact(EmergencyContact.Create("Mom", "555-5555"));
@@ -183,7 +199,8 @@ public class PatientTests
         var patient = Patient.CreateSelf(
             Guid.NewGuid(),
             PersonName.Create("John Doe"),
-            DateTime.UtcNow.AddYears(-30)
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30).Date,
+            _fakeTime.GetUtcNow().UtcDateTime
         );
         var bloodType = BloodType.Create("A-");
 
@@ -200,15 +217,17 @@ public class PatientTests
     public void GetAge_ShouldReturnCorrectAge()
     {
         // Arrange
+        var referenceTime = _fakeTime.GetUtcNow().UtcDateTime;
         var yearsAgo = 25;
         var patient = Patient.CreateSelf(
             Guid.NewGuid(),
             PersonName.Create("John Doe"),
-            DateTime.Today.AddYears(-yearsAgo)
+            referenceTime.AddYears(-yearsAgo).Date,
+            referenceTime
         );
 
         // Act & Assert
-        patient.GetAge().Should().Be(yearsAgo);
+        patient.GetAge(referenceTime).Should().Be(yearsAgo);
     }
 
     [Fact]
@@ -218,7 +237,7 @@ public class PatientTests
         var penalties = new List<PatientPenalty>();
 
         // Act
-        var act = () => Patient.EnsureNotBlocked(penalties);
+        var act = () => Patient.EnsureNotBlocked(penalties, _fakeTime.GetUtcNow().UtcDateTime);
 
         // Assert
         act.Should().NotThrow();
@@ -236,7 +255,7 @@ public class PatientTests
         };
 
         // Act
-        var act = () => Patient.EnsureNotBlocked(penalties);
+        var act = () => Patient.EnsureNotBlocked(penalties, _fakeTime.GetUtcNow().UtcDateTime);
 
         // Assert
         act.Should().NotThrow();
@@ -249,11 +268,15 @@ public class PatientTests
         var patient = CreatePatient();
         var penalties = new List<PatientPenalty>
         {
-            CreateExpiredBlock(patient.Id, "Old Block", DateTime.UtcNow.AddDays(-1)),
+            CreateExpiredBlock(
+                patient.Id,
+                "Old Block",
+                _fakeTime.GetUtcNow().UtcDateTime.AddDays(-1).Date
+            ),
         };
 
         // Act
-        var act = () => Patient.EnsureNotBlocked(penalties);
+        var act = () => Patient.EnsureNotBlocked(penalties, _fakeTime.GetUtcNow().UtcDateTime);
 
         // Assert
         act.Should().NotThrow();
@@ -264,14 +287,19 @@ public class PatientTests
     {
         // Arrange
         var patient = CreatePatient();
-        var blockedUntil = DateTime.UtcNow.AddDays(10);
+        var blockedUntil = _fakeTime.GetUtcNow().UtcDateTime.AddDays(10).Date;
         var penalties = new List<PatientPenalty>
         {
-            PatientPenalty.CreateBlock(patient.Id, "Active Block", blockedUntil),
+            PatientPenalty.CreateBlock(
+                patient.Id,
+                "Active Block",
+                blockedUntil,
+                _fakeTime.GetUtcNow().UtcDateTime
+            ),
         };
 
         // Act
-        var act = () => Patient.EnsureNotBlocked(penalties);
+        var act = () => Patient.EnsureNotBlocked(penalties, _fakeTime.GetUtcNow().UtcDateTime);
 
         // Assert
         act.Should()
@@ -280,12 +308,13 @@ public class PatientTests
             .Where(e => e.BlockedUntil == blockedUntil);
     }
 
-    private static Patient CreatePatient()
+    private Patient CreatePatient()
     {
         var patient = Patient.CreateSelf(
             Guid.NewGuid(),
             PersonName.Create("John Doe"),
-            DateTime.UtcNow.AddYears(-30)
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30).Date,
+            _fakeTime.GetUtcNow().UtcDateTime
         );
         patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
         patient.UpdateEmergencyContact(EmergencyContact.Create("Mom", "555-5555"));

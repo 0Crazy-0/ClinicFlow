@@ -7,6 +7,7 @@ using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
+using Microsoft.Extensions.Time.Testing;
 using Moq;
 
 namespace ClinicFlow.Application.Tests.Appointments.Commands.CancelAppointmentByStaff;
@@ -17,11 +18,13 @@ public class CancelAppointmentByStaffCommandHandlerTests
     private readonly Mock<IDoctorRepository> _doctorRepositoryMock = new();
     private readonly Mock<IMedicalSpecialtyRepository> _specialtyRepositoryMock = new();
     private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
+    private readonly FakeTimeProvider _fakeTime = new();
     private readonly CancelAppointmentByStaffCommandHandler _sut;
 
     public CancelAppointmentByStaffCommandHandlerTests()
     {
         _sut = new CancelAppointmentByStaffCommandHandler(
+            _fakeTime,
             _appointmentRepositoryMock.Object,
             _doctorRepositoryMock.Object,
             _specialtyRepositoryMock.Object,
@@ -44,7 +47,13 @@ public class CancelAppointmentByStaffCommandHandlerTests
         var typeId = Guid.NewGuid();
         var patientId = Guid.NewGuid();
 
-        var appointment = CreateAppointment(command.AppointmentId, patientId, doctorId, typeId);
+        var appointment = CreateAppointment(
+            command.AppointmentId,
+            patientId,
+            doctorId,
+            typeId,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
         var doctor = CreateDoctor(doctorId, specialtyId);
         var specialty = CreateSpecialty(specialtyId);
 
@@ -106,7 +115,13 @@ public class CancelAppointmentByStaffCommandHandlerTests
         var typeId = Guid.NewGuid();
         var patientId = Guid.NewGuid();
 
-        var appointment = CreateAppointment(command.AppointmentId, patientId, doctorId, typeId);
+        var appointment = CreateAppointment(
+            command.AppointmentId,
+            patientId,
+            doctorId,
+            typeId,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
 
         _appointmentRepositoryMock
             .Setup(r => r.GetByIdAsync(command.AppointmentId, It.IsAny<CancellationToken>()))
@@ -138,7 +153,13 @@ public class CancelAppointmentByStaffCommandHandlerTests
         var typeId = Guid.NewGuid();
         var patientId = Guid.NewGuid();
 
-        var appointment = CreateAppointment(command.AppointmentId, patientId, doctorId, typeId);
+        var appointment = CreateAppointment(
+            command.AppointmentId,
+            patientId,
+            doctorId,
+            typeId,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
         var doctor = CreateDoctor(doctorId, specialtyId);
 
         _appointmentRepositoryMock
@@ -163,10 +184,11 @@ public class CancelAppointmentByStaffCommandHandlerTests
         Guid id,
         Guid patientId,
         Guid doctorId,
-        Guid typeId
+        Guid typeId,
+        DateTime referenceTime
     )
     {
-        var scheduledDate = DateTime.UtcNow.AddDays(2).Date;
+        var scheduledDate = referenceTime.AddDays(2).Date;
         var timeRange = TimeRange.Create(new TimeSpan(10, 0, 0), new TimeSpan(11, 0, 0));
         var appointment = Appointment.Schedule(
             patientId,

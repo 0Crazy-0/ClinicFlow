@@ -8,8 +8,10 @@ using MediatR;
 
 namespace ClinicFlow.Application.Appointments.EventHandlers;
 
-public class AppointmentCancelledEventHandler(IPatientPenaltyRepository patientPenaltyRepository)
-    : INotificationHandler<DomainEventNotification<AppointmentCancelledEvent>>
+public class AppointmentCancelledEventHandler(
+    TimeProvider timeProvider,
+    IPatientPenaltyRepository patientPenaltyRepository
+) : INotificationHandler<DomainEventNotification<AppointmentCancelledEvent>>
 {
     public async Task Handle(
         DomainEventNotification<AppointmentCancelledEvent> notification,
@@ -28,7 +30,8 @@ public class AppointmentCancelledEventHandler(IPatientPenaltyRepository patientP
                 appointment.PatientId,
                 existingPenalties,
                 appointment.Id,
-                PenaltyReasons.LateCancellation
+                PenaltyReasons.LateCancellation,
+                timeProvider.GetUtcNow().UtcDateTime
             );
 
             await patientPenaltyRepository.AddRangeAsync(newPenalties, cancellationToken);

@@ -9,20 +9,28 @@ using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Args.Cancellation;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
+using Microsoft.Extensions.Time.Testing;
 
 namespace ClinicFlow.Domain.Tests.Services;
 
 public class AppointmentCancellationServiceTests
 {
+    private readonly FakeTimeProvider _fakeTime = new();
+
     [Fact]
     public void CancelByStaff_ShouldSucceed_WhenAdmin()
     {
         // Arrange
         var appointment = new AppointmentBuilder()
-            .WithScheduledDateTime(DateTime.UtcNow.AddDays(2))
+            .WithScheduledDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2))
             .Build();
         var initiatorUserId = Guid.NewGuid();
-        var args = new StaffCancellationArgs(initiatorUserId, CreateSpecialty(24), "Admin Reason");
+        var args = new StaffCancellationArgs(
+            initiatorUserId,
+            CreateSpecialty(24),
+            "Admin Reason",
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
 
         // Act
         AppointmentCancellationService.CancelByStaff(appointment, args);
@@ -37,13 +45,14 @@ public class AppointmentCancellationServiceTests
     {
         // Arrange
         var appointment = new AppointmentBuilder()
-            .WithScheduledDateTime(DateTime.UtcNow.AddDays(2))
+            .WithScheduledDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2))
             .Build();
         var initiatorUserId = Guid.NewGuid();
         var args = new StaffCancellationArgs(
             initiatorUserId,
             CreateSpecialty(24),
-            "Receptionist Reason"
+            "Receptionist Reason",
+            _fakeTime.GetUtcNow().UtcDateTime
         );
 
         // Act
@@ -63,9 +72,14 @@ public class AppointmentCancellationServiceTests
     {
         // Arrange
         var appointment = new AppointmentBuilder()
-            .WithScheduledDateTime(DateTime.UtcNow.AddDays(2))
+            .WithScheduledDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2))
             .Build();
-        var args = new StaffCancellationArgs(Guid.NewGuid(), CreateSpecialty(24), reason!);
+        var args = new StaffCancellationArgs(
+            Guid.NewGuid(),
+            CreateSpecialty(24),
+            reason!,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
 
         // Act
         var act = () => AppointmentCancellationService.CancelByStaff(appointment, args);
@@ -81,10 +95,15 @@ public class AppointmentCancellationServiceTests
     {
         // Arrange
         var appointment = new AppointmentBuilder()
-            .WithScheduledDateTime(DateTime.UtcNow.AddDays(2))
+            .WithScheduledDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2))
             .Build();
         var doctor = CreateDoctor(appointment.DoctorId, Guid.NewGuid());
-        var args = new DoctorCancellationArgs(doctor, CreateSpecialty(24), "Doctor Reason");
+        var args = new DoctorCancellationArgs(
+            doctor,
+            CreateSpecialty(24),
+            "Doctor Reason",
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
 
         // Act
         AppointmentCancellationService.CancelByDoctor(appointment, args);
@@ -98,10 +117,15 @@ public class AppointmentCancellationServiceTests
     {
         // Arrange
         var appointment = new AppointmentBuilder()
-            .WithScheduledDateTime(DateTime.UtcNow.AddDays(2))
+            .WithScheduledDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2))
             .Build();
         var doctor = CreateDoctor(Guid.NewGuid(), Guid.NewGuid());
-        var args = new DoctorCancellationArgs(doctor, CreateSpecialty(24), "Doctor reason");
+        var args = new DoctorCancellationArgs(
+            doctor,
+            CreateSpecialty(24),
+            "Doctor reason",
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
 
         // Act
         var act = () => AppointmentCancellationService.CancelByDoctor(appointment, args);
@@ -117,9 +141,14 @@ public class AppointmentCancellationServiceTests
     {
         // Arrange
         var appointment = new AppointmentBuilder()
-            .WithScheduledDateTime(DateTime.UtcNow.AddDays(2))
+            .WithScheduledDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2))
             .Build();
-        var args = new DoctorCancellationArgs(null, CreateSpecialty(24), "Doctor reason");
+        var args = new DoctorCancellationArgs(
+            null,
+            CreateSpecialty(24),
+            "Doctor reason",
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
 
         // Act
         var act = () => AppointmentCancellationService.CancelByDoctor(appointment, args);
@@ -141,9 +170,14 @@ public class AppointmentCancellationServiceTests
         // Arrange
         var initiatorUserId = Guid.NewGuid();
         var patientId = Guid.NewGuid();
-        var patient = CreateSelfPatient(patientId, initiatorUserId, age);
+        var patient = CreateSelfPatient(
+            patientId,
+            initiatorUserId,
+            age,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
         var appointment = new AppointmentBuilder()
-            .WithScheduledDateTime(DateTime.UtcNow.AddDays(2))
+            .WithScheduledDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2))
             .WithPatientId(patientId)
             .Build();
         var args = new PatientCancellationArgs(
@@ -151,7 +185,8 @@ public class AppointmentCancellationServiceTests
             patient,
             category,
             CreateSpecialty(24),
-            "Patient reason"
+            "Patient reason",
+            _fakeTime.GetUtcNow().UtcDateTime
         );
 
         // Act
@@ -177,10 +212,21 @@ public class AppointmentCancellationServiceTests
         // Arrange
         var initiatorUserId = Guid.NewGuid();
         var patientId = Guid.NewGuid();
-        var patient = CreateFamilyMemberPatient(patientId, initiatorUserId, relationship, age);
-        var initiatorPatient = CreateSelfPatient(Guid.NewGuid(), initiatorUserId, 30);
+        var patient = CreateFamilyMemberPatient(
+            patientId,
+            initiatorUserId,
+            relationship,
+            age,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+        var initiatorPatient = CreateSelfPatient(
+            Guid.NewGuid(),
+            initiatorUserId,
+            30,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
         var appointment = new AppointmentBuilder()
-            .WithScheduledDateTime(DateTime.UtcNow.AddDays(2))
+            .WithScheduledDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2))
             .WithPatientId(patientId)
             .Build();
         var args = new PatientCancellationArgs(
@@ -188,7 +234,8 @@ public class AppointmentCancellationServiceTests
             initiatorPatient,
             category,
             CreateSpecialty(24),
-            "Patient reason"
+            "Patient reason",
+            _fakeTime.GetUtcNow().UtcDateTime
         );
 
         // Act
@@ -205,9 +252,14 @@ public class AppointmentCancellationServiceTests
         // Arrange
         var initiatorUserId = Guid.NewGuid();
         var patientId = Guid.NewGuid();
-        var patient = CreateSelfPatient(patientId, initiatorUserId, 30);
+        var patient = CreateSelfPatient(
+            patientId,
+            initiatorUserId,
+            30,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
         var appointment = new AppointmentBuilder()
-            .WithScheduledDateTime(DateTime.UtcNow.AddDays(2))
+            .WithScheduledDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2))
             .WithPatientId(patientId)
             .Build();
         var args = new PatientCancellationArgs(
@@ -215,7 +267,8 @@ public class AppointmentCancellationServiceTests
             patient,
             AppointmentCategory.Procedure,
             CreateSpecialty(24),
-            "Patient reason"
+            "Patient reason",
+            _fakeTime.GetUtcNow().UtcDateTime
         );
 
         // Act
@@ -242,10 +295,21 @@ public class AppointmentCancellationServiceTests
         // Arrange
         var initiatorUserId = Guid.NewGuid();
         var patientId = Guid.NewGuid();
-        var patient = CreateFamilyMemberPatient(patientId, initiatorUserId, relationship, age);
-        var initiatorPatient = CreateSelfPatient(Guid.NewGuid(), initiatorUserId, 30);
+        var patient = CreateFamilyMemberPatient(
+            patientId,
+            initiatorUserId,
+            relationship,
+            age,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+        var initiatorPatient = CreateSelfPatient(
+            Guid.NewGuid(),
+            initiatorUserId,
+            30,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
         var appointment = new AppointmentBuilder()
-            .WithScheduledDateTime(DateTime.UtcNow.AddDays(2))
+            .WithScheduledDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2))
             .WithPatientId(patientId)
             .Build();
         var args = new PatientCancellationArgs(
@@ -253,7 +317,8 @@ public class AppointmentCancellationServiceTests
             initiatorPatient,
             category,
             CreateSpecialty(24),
-            "Patient reason"
+            "Patient reason",
+            _fakeTime.GetUtcNow().UtcDateTime
         );
 
         // Act
@@ -272,10 +337,20 @@ public class AppointmentCancellationServiceTests
         var initiatorUserId = Guid.NewGuid();
         var anotherUserId = Guid.NewGuid();
         var patientId = Guid.NewGuid();
-        var patient = CreateSelfPatient(patientId, anotherUserId, 30);
-        var initiatorPatient = CreateSelfPatient(Guid.NewGuid(), initiatorUserId, 30);
+        var patient = CreateSelfPatient(
+            patientId,
+            anotherUserId,
+            30,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+        var initiatorPatient = CreateSelfPatient(
+            Guid.NewGuid(),
+            initiatorUserId,
+            30,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
         var appointment = new AppointmentBuilder()
-            .WithScheduledDateTime(DateTime.UtcNow.AddDays(2))
+            .WithScheduledDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2))
             .WithPatientId(patientId)
             .Build();
         var args = new PatientCancellationArgs(
@@ -283,7 +358,8 @@ public class AppointmentCancellationServiceTests
             initiatorPatient,
             AppointmentCategory.Checkup,
             CreateSpecialty(24),
-            "Patient reason"
+            "Patient reason",
+            _fakeTime.GetUtcNow().UtcDateTime
         );
 
         // Act
@@ -301,16 +377,22 @@ public class AppointmentCancellationServiceTests
         // Arrange
         var initiatorUserId = Guid.NewGuid();
         var patientId = Guid.NewGuid();
-        var patient = CreateSelfPatient(patientId, initiatorUserId, 30);
+        var patient = CreateSelfPatient(
+            patientId,
+            initiatorUserId,
+            30,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
         var appointment = new AppointmentBuilder()
-            .WithScheduledDateTime(DateTime.UtcNow.AddDays(2))
+            .WithScheduledDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2))
             .Build();
         var args = new PatientCancellationArgs(
             patient,
             patient,
             AppointmentCategory.Checkup,
             CreateSpecialty(24),
-            "Patient reason"
+            "Patient reason",
+            _fakeTime.GetUtcNow().UtcDateTime
         );
 
         // Act
@@ -328,9 +410,14 @@ public class AppointmentCancellationServiceTests
         // Arrange
         var initiatorUserId = Guid.NewGuid();
         var patientId = Guid.NewGuid();
-        var patient = CreateSelfPatient(patientId, initiatorUserId, 30);
+        var patient = CreateSelfPatient(
+            patientId,
+            initiatorUserId,
+            30,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
         var appointment = new AppointmentBuilder()
-            .WithScheduledDateTime(DateTime.UtcNow.AddDays(2))
+            .WithScheduledDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2))
             .WithPatientId(patientId)
             .Build();
         var args = new PatientCancellationArgs(
@@ -338,7 +425,8 @@ public class AppointmentCancellationServiceTests
             null,
             AppointmentCategory.Checkup,
             CreateSpecialty(24),
-            "Patient reason"
+            "Patient reason",
+            _fakeTime.GetUtcNow().UtcDateTime
         );
 
         // Act
@@ -366,7 +454,7 @@ public class AppointmentCancellationServiceTests
         private Guid _patientId = Guid.NewGuid();
         private Guid _doctorId = Guid.NewGuid();
         private Guid _typeId = Guid.NewGuid();
-        private DateTime _scheduledDateTime = DateTime.UtcNow.AddDays(2);
+        private DateTime _scheduledDateTime;
 
         public AppointmentBuilder WithPatientId(Guid patientId)
         {
@@ -405,10 +493,15 @@ public class AppointmentCancellationServiceTests
             );
     }
 
-    private static Patient CreateSelfPatient(Guid id, Guid userId, int age)
+    private static Patient CreateSelfPatient(Guid id, Guid userId, int age, DateTime referenceTime)
     {
-        var dateOfBirth = DateTime.UtcNow.AddYears(-age);
-        var patient = Patient.CreateSelf(userId, PersonName.Create("Test"), dateOfBirth);
+        var dateOfBirth = referenceTime.AddYears(-age);
+        var patient = Patient.CreateSelf(
+            userId,
+            PersonName.Create("Test"),
+            dateOfBirth,
+            referenceTime
+        );
         SetPrivateProperty(patient, nameof(Patient.Id), id);
         return patient;
     }
@@ -417,15 +510,17 @@ public class AppointmentCancellationServiceTests
         Guid id,
         Guid userId,
         PatientRelationship relationship,
-        int age
+        int age,
+        DateTime referenceTime
     )
     {
-        var dateOfBirth = DateTime.UtcNow.AddYears(-age);
+        var dateOfBirth = referenceTime.AddYears(-age);
         var patient = Patient.CreateFamilyMember(
             userId,
             PersonName.Create("Test"),
             relationship,
-            dateOfBirth
+            dateOfBirth,
+            referenceTime
         );
         SetPrivateProperty(patient, nameof(Patient.Id), id);
         return patient;

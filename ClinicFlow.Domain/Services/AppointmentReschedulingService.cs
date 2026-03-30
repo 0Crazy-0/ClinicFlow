@@ -43,7 +43,7 @@ public static class AppointmentReschedulingService
             );
         }
 
-        Patient.EnsureNotBlocked(context.Penalties);
+        Patient.EnsureNotBlocked(context.Penalties, args.NewDate);
 
         EnsureDoctorIsAvailable(
             context.DoctorSchedule,

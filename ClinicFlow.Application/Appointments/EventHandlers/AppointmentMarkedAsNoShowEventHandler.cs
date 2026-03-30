@@ -8,6 +8,7 @@ using MediatR;
 namespace ClinicFlow.Application.Appointments.EventHandlers;
 
 public class AppointmentMarkedAsNoShowEventHandler(
+    TimeProvider timeProvider,
     IPatientPenaltyRepository patientPenaltyRepository
 ) : INotificationHandler<DomainEventNotification<AppointmentMarkedAsNoShowEvent>>
 {
@@ -27,7 +28,8 @@ public class AppointmentMarkedAsNoShowEventHandler(
             appointment.PatientId,
             existingPenalties,
             appointment.Id,
-            PenaltyReasons.NoShow
+            PenaltyReasons.NoShow,
+            timeProvider.GetUtcNow().UtcDateTime
         );
 
         await patientPenaltyRepository.AddRangeAsync(newPenalties, cancellationToken);
