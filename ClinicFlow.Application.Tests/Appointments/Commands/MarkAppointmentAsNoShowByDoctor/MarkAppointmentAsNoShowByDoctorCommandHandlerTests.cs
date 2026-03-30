@@ -100,9 +100,10 @@ public class MarkAppointmentAsNoShowByDoctorCommandHandlerTests
         var act = async () => await _sut.Handle(command, CancellationToken.None);
 
         // Assert
-        await act.Should()
+        var exceptionAssertion = await act.Should()
             .ThrowAsync<EntityNotFoundException>()
             .WithMessage(DomainErrors.General.NotFound);
+        exceptionAssertion.Which.EntityName.Should().Be(nameof(Appointment));
     }
 
     [Fact]
@@ -123,9 +124,10 @@ public class MarkAppointmentAsNoShowByDoctorCommandHandlerTests
         var act = async () => await _sut.Handle(command, CancellationToken.None);
 
         // Assert
-        await act.Should()
+        var exceptionAssertion = await act.Should()
             .ThrowAsync<EntityNotFoundException>()
             .WithMessage(DomainErrors.General.NotFound);
+        exceptionAssertion.Which.EntityName.Should().Be(nameof(Doctor));
     }
 
     private static Appointment CreateAppointment(Guid id, Guid doctorId)
