@@ -1,5 +1,6 @@
 using System.Reflection;
 using ClinicFlow.Application.MedicalRecords.Queries.GetMedicalRecordByAppointmentId;
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces.Repositories;
@@ -71,9 +72,11 @@ public class GetMedicalRecordByAppointmentIdQueryHandlerTests
         var act = async () => await _sut.Handle(query, CancellationToken.None);
 
         // Assert
-        await act.Should()
+        var exceptionAssertion = await act.Should()
             .ThrowAsync<EntityNotFoundException>()
-            .Where(e => e.EntityName == nameof(MedicalRecord));
+            .WithMessage(DomainErrors.General.NotFound);
+        exceptionAssertion.Which.EntityName.Should().Be(nameof(MedicalRecord));
+
         _medicalRecordRepositoryMock.Verify(
             x => x.GetByAppointmentIdAsync(appointmentId, CancellationToken.None),
             Times.Once
