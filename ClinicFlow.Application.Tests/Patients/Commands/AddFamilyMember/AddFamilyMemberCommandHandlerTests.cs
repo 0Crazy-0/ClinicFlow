@@ -6,6 +6,7 @@ using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using FluentAssertions;
+using Microsoft.Extensions.Time.Testing;
 using Moq;
 
 namespace ClinicFlow.Application.Tests.Patients.Commands.AddFamilyMember;
@@ -14,13 +15,16 @@ public class AddFamilyMemberCommandHandlerTests
 {
     private readonly Mock<IPatientRepository> _patientRepositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+    private readonly FakeTimeProvider _fakeTime;
     private readonly AddFamilyMemberCommandHandler _sut;
 
     public AddFamilyMemberCommandHandlerTests()
     {
         _patientRepositoryMock = new Mock<IPatientRepository>();
         _unitOfWorkMock = new Mock<IUnitOfWork>();
+        _fakeTime = new FakeTimeProvider();
         _sut = new AddFamilyMemberCommandHandler(
+            _fakeTime,
             _patientRepositoryMock.Object,
             _unitOfWorkMock.Object
         );
@@ -34,7 +38,7 @@ public class AddFamilyMemberCommandHandlerTests
             Guid.NewGuid(),
             "Child",
             "Doe",
-            DateTime.UtcNow.AddYears(-5),
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-5).Date,
             PatientRelationship.Child
         );
 
@@ -71,7 +75,7 @@ public class AddFamilyMemberCommandHandlerTests
             Guid.NewGuid(),
             "Self",
             "Doe",
-            DateTime.UtcNow.AddYears(-30),
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30).Date,
             PatientRelationship.Self
         );
 

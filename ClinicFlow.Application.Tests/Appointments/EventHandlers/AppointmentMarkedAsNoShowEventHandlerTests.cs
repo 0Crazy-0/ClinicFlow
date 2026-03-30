@@ -7,6 +7,7 @@ using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Events;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.ValueObjects;
+using Microsoft.Extensions.Time.Testing;
 using Moq;
 
 namespace ClinicFlow.Application.Tests.Appointments.EventHandlers;
@@ -14,19 +15,24 @@ namespace ClinicFlow.Application.Tests.Appointments.EventHandlers;
 public class AppointmentMarkedAsNoShowEventHandlerTests
 {
     private readonly Mock<IPatientPenaltyRepository> _patientPenaltyRepositoryMock;
+    private readonly FakeTimeProvider _fakeTime;
     private readonly AppointmentMarkedAsNoShowEventHandler _sut;
 
     public AppointmentMarkedAsNoShowEventHandlerTests()
     {
         _patientPenaltyRepositoryMock = new Mock<IPatientPenaltyRepository>();
-        _sut = new AppointmentMarkedAsNoShowEventHandler(_patientPenaltyRepositoryMock.Object);
+        _fakeTime = new FakeTimeProvider();
+        _sut = new AppointmentMarkedAsNoShowEventHandler(
+            _fakeTime,
+            _patientPenaltyRepositoryMock.Object
+        );
     }
 
     [Fact]
     public async Task Handle_ShouldApplyNoShowPenalty()
     {
         // Arrange
-        var appointment = CreateAppointment(Guid.NewGuid());
+        var appointment = CreateAppointment(Guid.NewGuid(), _fakeTime.GetUtcNow().UtcDateTime);
 
         var domainEvent = new AppointmentMarkedAsNoShowEvent(appointment);
         var notification = new DomainEventNotification<AppointmentMarkedAsNoShowEvent>(domainEvent);
@@ -53,9 +59,9 @@ public class AppointmentMarkedAsNoShowEventHandlerTests
         );
     }
 
-    private static Appointment CreateAppointment(Guid id)
+    private static Appointment CreateAppointment(Guid id, DateTime referenceTime)
     {
-        var scheduledDateTime = DateTime.UtcNow.AddDays(1);
+        var scheduledDateTime = referenceTime.AddDays(1);
         var appointment = Appointment.Schedule(
             Guid.NewGuid(),
             Guid.NewGuid(),

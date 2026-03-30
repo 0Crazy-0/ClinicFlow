@@ -6,6 +6,7 @@ using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
+using Microsoft.Extensions.Time.Testing;
 using Moq;
 
 namespace ClinicFlow.Application.Tests.Patients.Commands.UpdatePatientProfile;
@@ -14,12 +15,14 @@ public class UpdatePatientProfileCommandHandlerTests
 {
     private readonly Mock<IPatientRepository> _patientRepositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+    private readonly FakeTimeProvider _fakeTime;
     private readonly UpdatePatientProfileCommandHandler _sut;
 
     public UpdatePatientProfileCommandHandlerTests()
     {
         _patientRepositoryMock = new Mock<IPatientRepository>();
         _unitOfWorkMock = new Mock<IUnitOfWork>();
+        _fakeTime = new FakeTimeProvider();
         _sut = new UpdatePatientProfileCommandHandler(
             _patientRepositoryMock.Object,
             _unitOfWorkMock.Object
@@ -41,7 +44,8 @@ public class UpdatePatientProfileCommandHandlerTests
         var patient = Patient.CreateSelf(
             command.PatientId,
             PersonName.Create("John Doe"),
-            DateTime.UtcNow.AddYears(-30)
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30).Date,
+            _fakeTime.GetUtcNow().UtcDateTime
         );
 
         _patientRepositoryMock

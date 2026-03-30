@@ -7,6 +7,7 @@ using MediatR;
 namespace ClinicFlow.Application.Patients.Commands.AddCompleteFamilyMember;
 
 public class AddCompleteFamilyMemberCommandHandler(
+    TimeProvider timeProvider,
     IPatientRepository patientRepository,
     IUnitOfWork unitOfWork
 ) : IRequestHandler<AddCompleteFamilyMemberCommand, Guid>
@@ -22,7 +23,8 @@ public class AddCompleteFamilyMemberCommandHandler(
             request.UserId,
             fullName,
             request.Relationship,
-            request.DateOfBirth
+            request.DateOfBirth,
+            timeProvider.GetUtcNow().UtcDateTime
         );
 
         var bloodType = BloodType.Create(request.BloodType);

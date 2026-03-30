@@ -3,11 +3,14 @@ using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Services;
 using FluentAssertions;
+using Microsoft.Extensions.Time.Testing;
 
 namespace ClinicFlow.Domain.Tests.Services;
 
 public class PatientPenaltyServiceTests
 {
+    private readonly FakeTimeProvider _fakeTime = new();
+
     [Fact]
     public void ApplyPenalty_ShouldReturnWarning_WhenCalled()
     {
@@ -18,7 +21,7 @@ public class PatientPenaltyServiceTests
 
         // Act
         var result = PatientPenaltyService
-            .ApplyPenalty(patientId, [], appointmentId, reason)
+            .ApplyPenalty(patientId, [], appointmentId, reason, _fakeTime.GetUtcNow().UtcDateTime)
             .ToList();
 
         // Assert
@@ -43,7 +46,13 @@ public class PatientPenaltyServiceTests
 
         // Act
         var result = PatientPenaltyService
-            .ApplyPenalty(patientId, existingPenalties, appointmentId, "Warning 3")
+            .ApplyPenalty(
+                patientId,
+                existingPenalties,
+                appointmentId,
+                "Warning 3",
+                _fakeTime.GetUtcNow().UtcDateTime
+            )
             .ToList();
 
         // Assert
@@ -66,12 +75,23 @@ public class PatientPenaltyServiceTests
         {
             PatientPenalty.CreateWarning(patientId, Guid.NewGuid(), "Warning 1"),
             PatientPenalty.CreateWarning(patientId, Guid.NewGuid(), "Warning 2"),
-            PatientPenalty.CreateBlock(patientId, "Existing Block", DateTime.UtcNow.AddDays(10)),
+            PatientPenalty.CreateBlock(
+                patientId,
+                "Existing Block",
+                _fakeTime.GetUtcNow().UtcDateTime.AddDays(10).Date,
+                _fakeTime.GetUtcNow().UtcDateTime
+            ),
         };
 
         // Act
         var result = PatientPenaltyService
-            .ApplyPenalty(patientId, existingPenalties, Guid.NewGuid(), "Warning 3")
+            .ApplyPenalty(
+                patientId,
+                existingPenalties,
+                Guid.NewGuid(),
+                "Warning 3",
+                _fakeTime.GetUtcNow().UtcDateTime
+            )
             .ToList();
 
         // Assert

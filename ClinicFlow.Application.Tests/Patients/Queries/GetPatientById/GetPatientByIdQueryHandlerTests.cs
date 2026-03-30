@@ -5,6 +5,7 @@ using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
+using Microsoft.Extensions.Time.Testing;
 using Moq;
 
 namespace ClinicFlow.Application.Tests.Patients.Queries.GetPatientById;
@@ -12,11 +13,13 @@ namespace ClinicFlow.Application.Tests.Patients.Queries.GetPatientById;
 public class GetPatientByIdQueryHandlerTests
 {
     private readonly Mock<IPatientRepository> _patientRepositoryMock;
+    private readonly FakeTimeProvider _fakeTime;
     private readonly GetPatientByIdQueryHandler _sut;
 
     public GetPatientByIdQueryHandlerTests()
     {
         _patientRepositoryMock = new Mock<IPatientRepository>();
+        _fakeTime = new FakeTimeProvider();
         _sut = new GetPatientByIdQueryHandler(_patientRepositoryMock.Object);
     }
 
@@ -27,7 +30,8 @@ public class GetPatientByIdQueryHandlerTests
         var patient = Patient.CreateSelf(
             Guid.NewGuid(),
             PersonName.Create("John Doe"),
-            DateTime.UtcNow.AddYears(-30)
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30).Date,
+            _fakeTime.GetUtcNow().UtcDateTime
         );
         patient.UpdateMedicalProfile(BloodType.Create("A+"), "None", "None");
         patient.UpdateEmergencyContact(EmergencyContact.Create("Jane", "555-1234"));
@@ -58,7 +62,8 @@ public class GetPatientByIdQueryHandlerTests
         var patient = Patient.CreateSelf(
             Guid.NewGuid(),
             PersonName.Create("John Doe"),
-            DateTime.UtcNow.AddYears(-30)
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30).Date,
+            _fakeTime.GetUtcNow().UtcDateTime
         );
         var patientId = patient.Id;
 

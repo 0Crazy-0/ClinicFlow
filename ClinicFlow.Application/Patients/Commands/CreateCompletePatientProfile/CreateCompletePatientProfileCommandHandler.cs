@@ -7,6 +7,7 @@ using MediatR;
 namespace ClinicFlow.Application.Patients.Commands.CreateCompletePatientProfile;
 
 public class CreateCompletePatientProfileCommandHandler(
+    TimeProvider timeProvider,
     IPatientRepository patientRepository,
     IUnitOfWork unitOfWork
 ) : IRequestHandler<CreateCompletePatientProfileCommand, Guid>
@@ -18,7 +19,12 @@ public class CreateCompletePatientProfileCommandHandler(
     {
         var fullName = PersonName.Create($"{request.FirstName} {request.LastName}");
 
-        var patient = Patient.CreateSelf(request.UserId, fullName, request.DateOfBirth);
+        var patient = Patient.CreateSelf(
+            request.UserId,
+            fullName,
+            request.DateOfBirth,
+            timeProvider.GetUtcNow().UtcDateTime
+        );
 
         var bloodType = BloodType.Create(request.BloodType);
         var emergencyContact = EmergencyContact.Create(

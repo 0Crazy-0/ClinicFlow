@@ -7,6 +7,7 @@ using MediatR;
 namespace ClinicFlow.Application.Patients.Commands.CreatePatientProfile;
 
 public class CreatePatientProfileCommandHandler(
+    TimeProvider timeProvider,
     IPatientRepository patientRepository,
     IUnitOfWork unitOfWork
 ) : IRequestHandler<CreatePatientProfileCommand, Guid>
@@ -18,7 +19,12 @@ public class CreatePatientProfileCommandHandler(
     {
         var fullName = PersonName.Create($"{request.FirstName} {request.LastName}");
 
-        var patient = Patient.CreateSelf(request.UserId, fullName, request.DateOfBirth);
+        var patient = Patient.CreateSelf(
+            request.UserId,
+            fullName,
+            request.DateOfBirth,
+            timeProvider.GetUtcNow().UtcDateTime
+        );
 
         await patientRepository.CreateAsync(patient, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);

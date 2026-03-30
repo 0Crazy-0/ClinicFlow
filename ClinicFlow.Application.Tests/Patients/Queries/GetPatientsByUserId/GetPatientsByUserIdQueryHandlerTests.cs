@@ -4,6 +4,7 @@ using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
+using Microsoft.Extensions.Time.Testing;
 using Moq;
 
 namespace ClinicFlow.Application.Tests.Patients.Queries.GetPatientsByUserId;
@@ -11,11 +12,13 @@ namespace ClinicFlow.Application.Tests.Patients.Queries.GetPatientsByUserId;
 public class GetPatientsByUserIdQueryHandlerTests
 {
     private readonly Mock<IPatientRepository> _patientRepositoryMock;
+    private readonly FakeTimeProvider _fakeTime;
     private readonly GetPatientsByUserIdQueryHandler _sut;
 
     public GetPatientsByUserIdQueryHandlerTests()
     {
         _patientRepositoryMock = new Mock<IPatientRepository>();
+        _fakeTime = new FakeTimeProvider();
         _sut = new GetPatientsByUserIdQueryHandler(_patientRepositoryMock.Object);
     }
 
@@ -27,7 +30,8 @@ public class GetPatientsByUserIdQueryHandlerTests
         var patient1 = Patient.CreateSelf(
             userId,
             PersonName.Create("John Doe"),
-            DateTime.UtcNow.AddYears(-30)
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30).Date,
+            _fakeTime.GetUtcNow().UtcDateTime
         );
         patient1.UpdateMedicalProfile(BloodType.Create("A+"), "None", "None");
         patient1.UpdateEmergencyContact(EmergencyContact.Create("Jane", "555-1234"));
@@ -36,7 +40,8 @@ public class GetPatientsByUserIdQueryHandlerTests
             userId,
             PersonName.Create("Child Doe"),
             PatientRelationship.Child,
-            DateTime.UtcNow.AddYears(-5)
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-5).Date,
+            _fakeTime.GetUtcNow().UtcDateTime
         );
         patient2.UpdateMedicalProfile(BloodType.Create("A+"), "None", "None");
         patient2.UpdateEmergencyContact(EmergencyContact.Create("Jane", "555-1234"));
@@ -78,13 +83,15 @@ public class GetPatientsByUserIdQueryHandlerTests
         var patient1 = Patient.CreateSelf(
             userId,
             PersonName.Create("John Doe"),
-            DateTime.UtcNow.AddYears(-30)
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30).Date,
+            _fakeTime.GetUtcNow().UtcDateTime
         );
         var patient2 = Patient.CreateFamilyMember(
             userId,
             PersonName.Create("Child Doe"),
             PatientRelationship.Child,
-            DateTime.UtcNow.AddYears(-5)
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-5).Date,
+            _fakeTime.GetUtcNow().UtcDateTime
         );
 
         var patients = new List<Patient> { patient1, patient2 };

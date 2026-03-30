@@ -6,16 +6,19 @@ using ClinicFlow.Domain.Exceptions.Appointments;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
+using Microsoft.Extensions.Time.Testing;
 
 namespace ClinicFlow.Domain.Tests.Entities;
 
 public class AppointmentNoShowTests
 {
+    private readonly FakeTimeProvider _fakeTime = new();
+
     [Fact]
     public void MarkAsNoShowByStaff_ShouldSucceed()
     {
         // Arrange
-        var appointment = CreateAppointment(DateTime.UtcNow.AddDays(2));
+        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2));
 
         // Act
         appointment.MarkAsNoShowByStaff();
@@ -29,7 +32,7 @@ public class AppointmentNoShowTests
     public void MarkAsNoShowByDoctor_ShouldSucceed_WhenDoctorIdMatches()
     {
         // Arrange
-        var appointment = CreateAppointment(DateTime.UtcNow.AddDays(2));
+        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2));
 
         // Act
         appointment.MarkAsNoShowByDoctor(appointment.DoctorId);
@@ -43,7 +46,7 @@ public class AppointmentNoShowTests
     public void MarkAsNoShowByDoctor_ShouldThrowUnauthorized_WhenDoctorIdDoesNotMatch()
     {
         // Arrange
-        var appointment = CreateAppointment(DateTime.UtcNow.AddDays(2));
+        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2));
 
         // Act
         var act = () => appointment.MarkAsNoShowByDoctor(Guid.NewGuid());
@@ -58,8 +61,8 @@ public class AppointmentNoShowTests
     public void MarkAsNoShowByStaff_ShouldSetStatusToNoShow_WhenStatusIsConfirmed()
     {
         // Arrange
-        var appointment = CreateAppointment(DateTime.UtcNow.AddDays(1));
-        appointment.Confirm();
+        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        appointment.Confirm(_fakeTime.GetUtcNow().UtcDateTime);
         appointment.ClearDomainEvents();
 
         // Act
@@ -74,9 +77,9 @@ public class AppointmentNoShowTests
     public void MarkAsNoShowByStaff_ShouldThrowException_WhenStatusIsCancelled()
     {
         // Arrange
-        var appointment = CreateAppointment(DateTime.UtcNow.AddDays(2));
+        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2));
         var specialty = CreateSpecialty(24);
-        appointment.Cancel(Guid.NewGuid(), "Reason", specialty);
+        appointment.Cancel(Guid.NewGuid(), "Reason", specialty, _fakeTime.GetUtcNow().UtcDateTime);
 
         // Act && Assert
         appointment

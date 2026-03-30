@@ -106,6 +106,7 @@ public class Appointment : BaseEntity
         Guid cancelledByUserId,
         string? reason,
         MedicalSpecialty specialty,
+        DateTime cancelledAt,
         bool isAdministrative = false
     )
     {
@@ -115,12 +116,12 @@ public class Appointment : BaseEntity
                 Status
             );
 
-        if (!isAdministrative && !CanBeCancelled(specialty))
+        if (!isAdministrative && !CanBeCancelled(specialty, cancelledAt))
             Status = AppointmentStatus.LateCancellation;
         else
             Status = AppointmentStatus.Cancelled;
 
-        CancelledAt = DateTime.UtcNow;
+        CancelledAt = cancelledAt;
         CancelledByUserId = cancelledByUserId;
         CancellationReason = reason;
 
@@ -131,7 +132,7 @@ public class Appointment : BaseEntity
     /// Confirms a scheduled appointment and raises an <see cref="AppointmentConfirmedEvent"/>.
     /// </summary>
     /// <exception cref="AppointmentConfirmationNotAllowedException">Thrown when the appointment is not in <see cref="AppointmentStatus.Scheduled"/> status.</exception>
-    public void Confirm()
+    public void Confirm(DateTime confirmedAt)
     {
         if (Status is not AppointmentStatus.Scheduled)
             throw new AppointmentConfirmationNotAllowedException(
@@ -139,7 +140,7 @@ public class Appointment : BaseEntity
             );
 
         Status = AppointmentStatus.Confirmed;
-        ConfirmedAt = DateTime.UtcNow;
+        ConfirmedAt = confirmedAt;
 
         AddDomainEvent(new AppointmentConfirmedEvent(this));
     }
@@ -200,8 +201,8 @@ public class Appointment : BaseEntity
     }
 
     // Business Rules (Private)
-    private bool CanBeCancelled(MedicalSpecialty specialty) =>
-        specialty.IsCancellationAllowed(ScheduledDate.Add(TimeRange.Start));
+    private bool CanBeCancelled(MedicalSpecialty specialty, DateTime referenceTime) =>
+        specialty.IsCancellationAllowed(ScheduledDate.Add(TimeRange.Start), referenceTime);
 
     private bool CanBeRescheduled() => RescheduleCount < 1 && Status is AppointmentStatus.Scheduled;
 }

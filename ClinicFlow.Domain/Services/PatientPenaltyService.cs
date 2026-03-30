@@ -30,7 +30,8 @@ public static class PatientPenaltyService
         Guid patientId,
         IEnumerable<PatientPenalty> existingPenalties,
         Guid? appointmentId,
-        string reason
+        string reason,
+        DateTime referenceTime
     )
     {
         var penaltiesToApply = new List<PatientPenalty>();
@@ -46,7 +47,7 @@ public static class PatientPenaltyService
             var isBlocked = existingPenalties.Any(p =>
                 p.Type is PenaltyType.TemporaryBlock
                 && p.BlockedUntil.HasValue
-                && p.BlockedUntil.Value > DateTime.UtcNow
+                && p.BlockedUntil.Value > referenceTime
             );
 
             if (!isBlocked)
@@ -54,7 +55,8 @@ public static class PatientPenaltyService
                 var block = PatientPenalty.CreateBlock(
                     patientId,
                     PenaltyReasons.AutomaticBlock,
-                    DateTime.UtcNow.AddDays(BlockDurationDays)
+                    referenceTime.AddDays(BlockDurationDays),
+                    referenceTime
                 );
                 penaltiesToApply.Add(block);
             }

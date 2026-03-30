@@ -49,11 +49,16 @@ public class Patient : BaseEntity
     /// Creates a new patient entity for the primary user of an account.
     /// </summary>
     /// <exception cref="DomainValidationException">Thrown when the user ID is empty or the date of birth is in the future.</exception>
-    internal static Patient CreateSelf(Guid userId, PersonName fullName, DateTime dateOfBirth)
+    internal static Patient CreateSelf(
+        Guid userId,
+        PersonName fullName,
+        DateTime dateOfBirth,
+        DateTime referenceTime
+    )
     {
         if (userId == Guid.Empty)
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-        if (dateOfBirth > DateTime.UtcNow)
+        if (dateOfBirth > referenceTime)
             throw new DomainValidationException(DomainErrors.Validation.ValueCannotBeInFuture);
 
         return new Patient(userId, fullName, PatientRelationship.Self, dateOfBirth);
@@ -67,14 +72,15 @@ public class Patient : BaseEntity
         Guid userId,
         PersonName fullName,
         PatientRelationship relationshipToUser,
-        DateTime dateOfBirth
+        DateTime dateOfBirth,
+        DateTime referenceTime
     )
     {
         if (relationshipToUser is PatientRelationship.Self)
             throw new DomainValidationException(DomainErrors.Patient.CannotBeSelf);
         if (userId == Guid.Empty)
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-        if (dateOfBirth > DateTime.UtcNow)
+        if (dateOfBirth > referenceTime)
             throw new DomainValidationException(DomainErrors.Validation.ValueCannotBeInFuture);
 
         return new Patient(userId, fullName, relationshipToUser, dateOfBirth);
@@ -113,9 +119,9 @@ public class Patient : BaseEntity
     /// <summary>
     /// Calculates the patient's current age in full years.
     /// </summary>
-    public int GetAge()
+    public int GetAge(DateTime referenceTime)
     {
-        var today = DateTime.Today;
+        var today = referenceTime.Date;
         var age = today.Year - DateOfBirth.Year;
 
         if (DateOfBirth.AddYears(age) > today)
@@ -126,6 +132,7 @@ public class Patient : BaseEntity
 
     private static bool IsBlockedFromBooking(
         IEnumerable<PatientPenalty> penalties,
+        DateTime referenceTime,
         out DateTime? blockedUntil
     )
     {
@@ -133,7 +140,7 @@ public class Patient : BaseEntity
             .Where(p =>
                 p.Type is PenaltyType.TemporaryBlock
                 && p.BlockedUntil.HasValue
-                && p.BlockedUntil > DateTime.UtcNow
+                && p.BlockedUntil > referenceTime
             )
             .ToList();
 
@@ -147,12 +154,15 @@ public class Patient : BaseEntity
     /// </summary>
     /// <param name="penalties">The patient's existing penalty records.</param>
     /// <exception cref="PatientBlockedException">Thrown when the patient has an active temporary block.</exception>
-    internal static void EnsureNotBlocked(IEnumerable<PatientPenalty> penalties)
+    internal static void EnsureNotBlocked(
+        IEnumerable<PatientPenalty> penalties,
+        DateTime referenceTime
+    )
     {
-        if (IsBlockedFromBooking(penalties, out var blockedUntil))
+        if (IsBlockedFromBooking(penalties, referenceTime, out var blockedUntil))
             throw new PatientBlockedException(
                 DomainErrors.Patient.Blocked,
-                blockedUntil ?? DateTime.UtcNow
+                blockedUntil ?? referenceTime
             );
     }
 }

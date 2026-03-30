@@ -6,11 +6,14 @@ using ClinicFlow.Domain.Exceptions.Appointments;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
+using Microsoft.Extensions.Time.Testing;
 
 namespace ClinicFlow.Domain.Tests.Entities;
 
 public class AppointmentTests
 {
+    private readonly FakeTimeProvider _fakeTime = new();
+
     [Fact]
     public void Schedule_ShouldCreateAppointment_WhenValidDataProvided()
     {
@@ -18,7 +21,7 @@ public class AppointmentTests
         var patientId = Guid.NewGuid();
         var doctorId = Guid.NewGuid();
         var appointmentTypeId = Guid.NewGuid();
-        var scheduledDate = DateTime.UtcNow.Date.AddDays(1);
+        var scheduledDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(1);
         var timeRange = TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(10));
 
         // Act
@@ -74,7 +77,7 @@ public class AppointmentTests
                 Guid.Parse(patientIdStr),
                 Guid.Parse(doctorIdStr),
                 Guid.Parse(appointmentTypeIdStr),
-                DateTime.UtcNow.AddDays(1),
+                _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
                 TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(10))
             );
 
@@ -91,7 +94,7 @@ public class AppointmentTests
                 Guid.NewGuid(),
                 Guid.NewGuid(),
                 Guid.NewGuid(),
-                DateTime.UtcNow.AddDays(1),
+                _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
                 null!
             );
 
@@ -104,12 +107,12 @@ public class AppointmentTests
     [Fact]
     public void Cancel_ShouldSetStatusToCancelled_WhenCalledWithValidParams()
     {
-        var appointment = CreateAppointment(DateTime.UtcNow.AddDays(2));
+        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2));
         var userId = Guid.NewGuid();
         var specialty = CreateSpecialty(24);
 
         // Act
-        appointment.Cancel(userId, "Reason", specialty);
+        appointment.Cancel(userId, "Reason", specialty, _fakeTime.GetUtcNow().UtcDateTime);
 
         // Assert
         appointment.Status.Should().Be(AppointmentStatus.Cancelled);
@@ -122,12 +125,12 @@ public class AppointmentTests
     [Fact]
     public void Cancel_ShouldSetStatusToLateCancellation_WhenNoticePeriodIsInsufficient()
     {
-        var appointment = CreateAppointment(DateTime.UtcNow.AddHours(2));
+        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddHours(2));
         var userId = Guid.NewGuid();
         var specialty = CreateSpecialty(24);
 
         // Act
-        appointment.Cancel(userId, "Urgent", specialty);
+        appointment.Cancel(userId, "Urgent", specialty, _fakeTime.GetUtcNow().UtcDateTime);
 
         // Assert
         appointment.Status.Should().Be(AppointmentStatus.LateCancellation);
@@ -137,14 +140,15 @@ public class AppointmentTests
     public void Cancel_ShouldThrowException_WhenAlreadyCancelled()
     {
         // Arrange
-        var appointment = CreateAppointment(DateTime.UtcNow.AddDays(2));
+        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2));
         var userId = Guid.NewGuid();
         var specialty = CreateSpecialty(24);
 
-        appointment.Cancel(userId, "First", specialty);
+        appointment.Cancel(userId, "First", specialty, _fakeTime.GetUtcNow().UtcDateTime);
 
         // Act
-        var act = () => appointment.Cancel(userId, "Second", specialty);
+        var act = () =>
+            appointment.Cancel(userId, "Second", specialty, _fakeTime.GetUtcNow().UtcDateTime);
 
         // Assert
         act.Should()
@@ -166,12 +170,14 @@ public class AppointmentTests
     )
     {
         // Arrange
-        var appointment = CreateAppointment(DateTime.UtcNow.AddHours(hoursUntilAppointment));
+        var appointment = CreateAppointment(
+            _fakeTime.GetUtcNow().UtcDateTime.AddHours(hoursUntilAppointment)
+        );
         var userId = Guid.NewGuid();
         var specialty = CreateSpecialty(minHours);
 
         // Act
-        appointment.Cancel(userId, "Test Policy", specialty);
+        appointment.Cancel(userId, "Test Policy", specialty, _fakeTime.GetUtcNow().UtcDateTime);
 
         // Assert
         appointment.Status.Should().Be(expectedStatus);
@@ -181,10 +187,10 @@ public class AppointmentTests
     public void Confirm_ShouldSetStatusToConfirmed_WhenStatusIsScheduled()
     {
         // Arrange
-        var appointment = CreateAppointment(DateTime.UtcNow.AddDays(1));
+        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
 
         // Act
-        appointment.Confirm();
+        appointment.Confirm(_fakeTime.GetUtcNow().UtcDateTime);
 
         // Assert
         appointment.Status.Should().Be(AppointmentStatus.Confirmed);
@@ -194,15 +200,20 @@ public class AppointmentTests
     public void Confirm_ShouldThrowException_WhenStatusIsNotScheduled()
     {
         // Arrange
-        var appointment = CreateAppointment(DateTime.UtcNow.AddDays(1));
+        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
         var specialty = CreateSpecialty(24);
 
         //Act
-        appointment.Cancel(Guid.NewGuid(), "Cancelled", specialty);
+        appointment.Cancel(
+            Guid.NewGuid(),
+            "Cancelled",
+            specialty,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
 
         //Assert
         appointment
-            .Invoking(x => x.Confirm())
+            .Invoking(x => x.Confirm(_fakeTime.GetUtcNow().UtcDateTime))
             .Should()
             .Throw<AppointmentConfirmationNotAllowedException>();
     }
@@ -211,8 +222,8 @@ public class AppointmentTests
     public void Reschedule_ShouldUpdateDateAndTime_WhenValid()
     {
         // Arrange
-        var appointment = CreateAppointment(DateTime.UtcNow.AddDays(1));
-        var newDate = DateTime.UtcNow.Date.AddDays(2);
+        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var newDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(2).Date;
         var newTimeRange = TimeRange.Create(TimeSpan.FromHours(14), TimeSpan.FromHours(15));
 
         // Act

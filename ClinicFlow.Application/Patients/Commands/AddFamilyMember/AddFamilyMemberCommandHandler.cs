@@ -7,6 +7,7 @@ using MediatR;
 namespace ClinicFlow.Application.Patients.Commands.AddFamilyMember;
 
 public class AddFamilyMemberCommandHandler(
+    TimeProvider timeProvider,
     IPatientRepository patientRepository,
     IUnitOfWork unitOfWork
 ) : IRequestHandler<AddFamilyMemberCommand, Guid>
@@ -22,7 +23,8 @@ public class AddFamilyMemberCommandHandler(
             request.UserId,
             fullName,
             request.Relationship,
-            request.DateOfBirth
+            request.DateOfBirth,
+            timeProvider.GetUtcNow().UtcDateTime
         );
 
         await patientRepository.CreateAsync(familyMember, cancellationToken);

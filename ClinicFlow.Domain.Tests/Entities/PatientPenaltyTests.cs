@@ -3,11 +3,14 @@ using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Base;
 using FluentAssertions;
+using Microsoft.Extensions.Time.Testing;
 
 namespace ClinicFlow.Domain.Tests.Entities;
 
 public class PatientPenaltyTests
 {
+    private readonly FakeTimeProvider _fakeTime = new();
+
     [Fact]
     public void CreateWarning_ShouldCreateWarningPenalty()
     {
@@ -61,10 +64,15 @@ public class PatientPenaltyTests
         // Arrange
         var patientId = Guid.NewGuid();
         var reason = "Automatic block due to 3 strikes";
-        var blockedUntil = DateTime.UtcNow.AddDays(30);
+        var blockedUntil = _fakeTime.GetUtcNow().UtcDateTime.AddDays(30).Date;
 
         // Act
-        var penalty = PatientPenalty.CreateBlock(patientId, reason, blockedUntil);
+        var penalty = PatientPenalty.CreateBlock(
+            patientId,
+            reason,
+            blockedUntil,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
 
         // Assert
         penalty.Should().NotBeNull();
@@ -80,7 +88,12 @@ public class PatientPenaltyTests
     {
         // Arrange & Act
         var act = () =>
-            PatientPenalty.CreateBlock(Guid.Empty, "Block reason", DateTime.UtcNow.AddDays(30));
+            PatientPenalty.CreateBlock(
+                Guid.Empty,
+                "Block reason",
+                _fakeTime.GetUtcNow().UtcDateTime.AddDays(30).Date,
+                _fakeTime.GetUtcNow().UtcDateTime
+            );
 
         // Assert
         act.Should()
@@ -96,7 +109,12 @@ public class PatientPenaltyTests
     {
         // Arrange & Act
         var act = () =>
-            PatientPenalty.CreateBlock(Guid.NewGuid(), reason!, DateTime.UtcNow.AddDays(30));
+            PatientPenalty.CreateBlock(
+                Guid.NewGuid(),
+                reason!,
+                _fakeTime.GetUtcNow().UtcDateTime.AddDays(30).Date,
+                _fakeTime.GetUtcNow().UtcDateTime
+            );
 
         // Assert
         act.Should()
@@ -109,7 +127,12 @@ public class PatientPenaltyTests
     {
         // Arrange & Act
         var act = () =>
-            PatientPenalty.CreateBlock(Guid.NewGuid(), "Block reason", DateTime.UtcNow.AddDays(-1));
+            PatientPenalty.CreateBlock(
+                Guid.NewGuid(),
+                "Block reason",
+                _fakeTime.GetUtcNow().UtcDateTime.AddDays(-1).Date,
+                _fakeTime.GetUtcNow().UtcDateTime
+            );
 
         // Assert
         act.Should()
