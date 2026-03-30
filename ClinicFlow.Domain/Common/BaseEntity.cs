@@ -7,10 +7,6 @@ public abstract class BaseEntity
 {
     public Guid Id { get; private set; }
 
-    public DateTime CreatedAt { get; private set; }
-
-    public DateTime UpdatedAt { get; private set; }
-
     /// <summary>
     /// Indicates whether the entity has been soft-deleted.
     /// </summary>
