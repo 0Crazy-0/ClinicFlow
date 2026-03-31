@@ -9,7 +9,7 @@ using MediatR;
 
 namespace ClinicFlow.Application.MedicalRecords.Commands.AddClinicalDetailToMedicalRecord;
 
-public class AddClinicalDetailToMedicalRecordCommandHandler(
+public sealed class AddClinicalDetailToMedicalRecordCommandHandler(
     IMedicalRecordRepository medicalRecordRepository,
     IClinicalFormTemplateRepository templateRepository,
     MedicalEncounterService medicalEncounterService,

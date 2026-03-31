@@ -10,7 +10,7 @@ using MediatR;
 
 namespace ClinicFlow.Application.MedicalRecords.Commands.CompleteMedicalEncounter;
 
-public class CompleteMedicalEncounterCommandHandler(
+public sealed class CompleteMedicalEncounterCommandHandler(
     IDoctorRepository doctorRepository,
     IAppointmentRepository appointmentRepository,
     IAppointmentTypeDefinitionRepository appointmentTypeRepository,

@@ -4,7 +4,7 @@ namespace ClinicFlow.Application.MedicalRecords.Commands.CompleteMedicalEncounte
 
 public record DynamicClinicalDetailDto(string TemplateCode, string JsonDataPayload);
 
-public record CompleteMedicalEncounterCommand(
+public sealed record CompleteMedicalEncounterCommand(
     Guid PatientId,
     Guid DoctorId,
     Guid AppointmentId,

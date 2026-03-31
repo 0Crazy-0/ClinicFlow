@@ -1,6 +1,6 @@
 namespace ClinicFlow.Application.MedicalRecords.Queries.DTOs;
 
-public record MedicalRecordDto(
+public sealed record MedicalRecordDto(
     Guid Id,
     Guid PatientId,
     Guid DoctorId,
