@@ -3,7 +3,7 @@ using MediatR;
 
 namespace ClinicFlow.Application.Appointments.Commands.ScheduleByStaff;
 
-public record ScheduleByStaffCommand(
+public sealed record ScheduleByStaffCommand(
     Guid InitiatorUserId,
     Guid TargetPatientId,
     Guid DoctorId,

@@ -4,8 +4,9 @@ using MediatR;
 
 namespace ClinicFlow.Application.Appointments.Queries.GetAppointmentsByDateRange;
 
-public class GetAppointmentsByDateRangeQueryHandler(IAppointmentRepository appointmentRepository)
-    : IRequestHandler<GetAppointmentsByDateRangeQuery, IEnumerable<AppointmentDto>>
+public sealed class GetAppointmentsByDateRangeQueryHandler(
+    IAppointmentRepository appointmentRepository
+) : IRequestHandler<GetAppointmentsByDateRangeQuery, IEnumerable<AppointmentDto>>
 {
     public async Task<IEnumerable<AppointmentDto>> Handle(
         GetAppointmentsByDateRangeQuery request,

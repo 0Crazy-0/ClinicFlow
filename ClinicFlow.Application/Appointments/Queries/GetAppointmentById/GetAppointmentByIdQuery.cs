@@ -3,4 +3,4 @@ using MediatR;
 
 namespace ClinicFlow.Application.Appointments.Queries.GetAppointmentById;
 
-public record GetAppointmentByIdQuery(Guid AppointmentId) : IRequest<AppointmentDto>;
+public sealed record GetAppointmentByIdQuery(Guid AppointmentId) : IRequest<AppointmentDto>;

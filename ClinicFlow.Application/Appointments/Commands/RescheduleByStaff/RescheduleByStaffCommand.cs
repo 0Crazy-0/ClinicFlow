@@ -3,7 +3,7 @@ using MediatR;
 
 namespace ClinicFlow.Application.Appointments.Commands.RescheduleByStaff;
 
-public record RescheduleByStaffCommand(
+public sealed record RescheduleByStaffCommand(
     Guid InitiatorUserId,
     Guid AppointmentId,
     DateTime NewDate,

@@ -8,7 +8,7 @@ using MediatR;
 
 namespace ClinicFlow.Application.Appointments.EventHandlers;
 
-public class AppointmentCancelledEventHandler(
+public sealed class AppointmentCancelledEventHandler(
     TimeProvider timeProvider,
     IPatientPenaltyRepository patientPenaltyRepository
 ) : INotificationHandler<DomainEventNotification<AppointmentCancelledEvent>>

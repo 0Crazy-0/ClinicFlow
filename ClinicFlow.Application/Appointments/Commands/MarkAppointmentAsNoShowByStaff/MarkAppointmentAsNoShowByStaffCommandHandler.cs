@@ -7,7 +7,7 @@ using MediatR;
 
 namespace ClinicFlow.Application.Appointments.Commands.MarkAppointmentAsNoShowByStaff;
 
-public class MarkAppointmentAsNoShowByStaffCommandHandler(
+public sealed class MarkAppointmentAsNoShowByStaffCommandHandler(
     IAppointmentRepository appointmentRepository,
     IUnitOfWork unitOfWork
 ) : IRequestHandler<MarkAppointmentAsNoShowByStaffCommand>
