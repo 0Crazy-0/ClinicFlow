@@ -10,19 +10,19 @@ public interface IAppointmentRepository
 {
     Task<Appointment?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
-    Task<IList<Appointment>> GetByDoctorIdAsync(
+    Task<IReadOnlyList<Appointment>> GetByDoctorIdAsync(
         Guid doctorId,
         DateTime date,
         CancellationToken cancellationToken = default
     );
 
-    Task<IList<Appointment>> GetByDateRangeAsync(
+    Task<IReadOnlyList<Appointment>> GetByDateRangeAsync(
         DateTime startDate,
         DateTime endDate,
         CancellationToken cancellationToken = default
     );
 
-    Task<IList<Appointment>> GetByPatientIdAsync(
+    Task<IReadOnlyList<Appointment>> GetByPatientIdAsync(
         Guid patientId,
         CancellationToken cancellationToken = default
     );
