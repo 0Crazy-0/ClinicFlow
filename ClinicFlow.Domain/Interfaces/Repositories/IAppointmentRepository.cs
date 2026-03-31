@@ -1,5 +1,4 @@
 using ClinicFlow.Domain.Entities;
-using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.ValueObjects;
 
 namespace ClinicFlow.Domain.Interfaces.Repositories;
@@ -35,8 +34,6 @@ public interface IAppointmentRepository
 
     Task UpdateAsync(Appointment appointment, CancellationToken cancellationToken = default);
 
-    Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
-
     /// <summary>
     /// Checks whether a scheduling conflict exists for the specified doctor, date, and time range.
     /// </summary>
@@ -44,16 +41,6 @@ public interface IAppointmentRepository
         Guid doctorId,
         DateTime scheduledDate,
         TimeRange timeRange,
-        CancellationToken cancellationToken = default
-    );
-
-    Task<IList<Appointment>> GetUpcomingByPatientAsync(
-        Guid patientId,
-        CancellationToken cancellationToken = default
-    );
-
-    Task<IList<Appointment>> GetByStatusAsync(
-        AppointmentStatus status,
         CancellationToken cancellationToken = default
     );
 }
