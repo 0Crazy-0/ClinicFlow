@@ -9,12 +9,12 @@ public interface IMedicalRecordRepository
 {
     Task<MedicalRecord?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
-    Task<IList<MedicalRecord>> GetByPatientIdAsync(
+    Task<IReadOnlyList<MedicalRecord>> GetByPatientIdAsync(
         Guid patientId,
         CancellationToken cancellationToken = default
     );
 
-    Task<IList<MedicalRecord>> GetByDoctorIdAsync(
+    Task<IReadOnlyList<MedicalRecord>> GetByDoctorIdAsync(
         Guid doctorId,
         CancellationToken cancellationToken = default
     );

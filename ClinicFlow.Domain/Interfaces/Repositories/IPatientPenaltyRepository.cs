@@ -12,7 +12,7 @@ public interface IPatientPenaltyRepository
         CancellationToken cancellationToken = default
     );
 
-    Task<IEnumerable<PatientPenalty>> GetByPatientIdAsync(
+    Task<IReadOnlyList<PatientPenalty>> GetByPatientIdAsync(
         Guid patientId,
         CancellationToken cancellationToken = default
     );
