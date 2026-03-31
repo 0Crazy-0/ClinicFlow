@@ -3,7 +3,7 @@ using MediatR;
 
 namespace ClinicFlow.Application.Patients.Commands.AddCompleteFamilyMember;
 
-public record AddCompleteFamilyMemberCommand(
+public sealed record AddCompleteFamilyMemberCommand(
     Guid UserId,
     string FirstName,
     string LastName,

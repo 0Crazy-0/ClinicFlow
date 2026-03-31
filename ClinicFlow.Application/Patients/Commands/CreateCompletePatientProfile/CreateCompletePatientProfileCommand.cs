@@ -2,7 +2,7 @@ using MediatR;
 
 namespace ClinicFlow.Application.Patients.Commands.CreateCompletePatientProfile;
 
-public record CreateCompletePatientProfileCommand(
+public sealed record CreateCompletePatientProfileCommand(
     Guid UserId,
     string FirstName,
     string LastName,

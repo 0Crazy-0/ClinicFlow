@@ -2,7 +2,7 @@ using ClinicFlow.Domain.Enums;
 
 namespace ClinicFlow.Application.Patients.Queries.DTOs;
 
-public record PatientDto(
+public sealed record PatientDto(
     Guid Id,
     Guid UserId,
     string FullName,

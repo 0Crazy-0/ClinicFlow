@@ -6,7 +6,7 @@ using MediatR;
 
 namespace ClinicFlow.Application.Patients.Commands.AddCompleteFamilyMember;
 
-public class AddCompleteFamilyMemberCommandHandler(
+public sealed class AddCompleteFamilyMemberCommandHandler(
     TimeProvider timeProvider,
     IPatientRepository patientRepository,
     IUnitOfWork unitOfWork

@@ -7,7 +7,7 @@ using MediatR;
 
 namespace ClinicFlow.Application.Patients.Queries.GetPatientById;
 
-public class GetPatientByIdQueryHandler(IPatientRepository patientRepository)
+public sealed class GetPatientByIdQueryHandler(IPatientRepository patientRepository)
     : IRequestHandler<GetPatientByIdQuery, PatientDto>
 {
     public async Task<PatientDto> Handle(

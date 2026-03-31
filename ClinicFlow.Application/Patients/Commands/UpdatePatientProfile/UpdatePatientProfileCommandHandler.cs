@@ -8,7 +8,7 @@ using MediatR;
 
 namespace ClinicFlow.Application.Patients.Commands.UpdatePatientProfile;
 
-public class UpdatePatientProfileCommandHandler(
+public sealed class UpdatePatientProfileCommandHandler(
     IPatientRepository patientRepository,
     IUnitOfWork unitOfWork
 ) : IRequestHandler<UpdatePatientProfileCommand>
