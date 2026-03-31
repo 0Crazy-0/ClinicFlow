@@ -11,5 +11,5 @@ public sealed class MedicalEncounterContext
     public Doctor ExpectedDoctor { get; init; } = null!;
     public Appointment Appointment { get; init; } = null!;
     public AppointmentTypeDefinition AppointmentTypeDefinition { get; init; } = null!;
-    public IEnumerable<IClinicalDetailRecord> ProvidedDetails { get; init; } = [];
+    public IReadOnlyList<IClinicalDetailRecord> ProvidedDetails { get; init; } = [];
 }
