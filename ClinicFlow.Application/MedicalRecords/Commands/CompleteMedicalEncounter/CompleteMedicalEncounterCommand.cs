@@ -9,5 +9,5 @@ public record CompleteMedicalEncounterCommand(
     Guid DoctorId,
     Guid AppointmentId,
     string ChiefComplaint,
-    IEnumerable<DynamicClinicalDetailDto> Details
+    IReadOnlyList<DynamicClinicalDetailDto> Details
 ) : IRequest<Guid>;
