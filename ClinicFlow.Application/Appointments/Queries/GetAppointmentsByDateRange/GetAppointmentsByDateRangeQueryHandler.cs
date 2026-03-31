@@ -6,9 +6,9 @@ namespace ClinicFlow.Application.Appointments.Queries.GetAppointmentsByDateRange
 
 public sealed class GetAppointmentsByDateRangeQueryHandler(
     IAppointmentRepository appointmentRepository
-) : IRequestHandler<GetAppointmentsByDateRangeQuery, IEnumerable<AppointmentDto>>
+) : IRequestHandler<GetAppointmentsByDateRangeQuery, IReadOnlyList<AppointmentDto>>
 {
-    public async Task<IEnumerable<AppointmentDto>> Handle(
+    public async Task<IReadOnlyList<AppointmentDto>> Handle(
         GetAppointmentsByDateRangeQuery request,
         CancellationToken cancellationToken
     )
@@ -19,17 +19,20 @@ public sealed class GetAppointmentsByDateRangeQueryHandler(
             cancellationToken
         );
 
-        return appointments.Select(a => new AppointmentDto(
-            a.Id,
-            a.PatientId,
-            a.DoctorId,
-            a.AppointmentTypeId,
-            a.ScheduledDate,
-            a.TimeRange.Start,
-            a.TimeRange.End,
-            a.Status,
-            a.PatientNotes,
-            a.ReceptionistNotes
-        ));
+        return
+        [
+            .. appointments.Select(a => new AppointmentDto(
+                a.Id,
+                a.PatientId,
+                a.DoctorId,
+                a.AppointmentTypeId,
+                a.ScheduledDate,
+                a.TimeRange.Start,
+                a.TimeRange.End,
+                a.Status,
+                a.PatientNotes,
+                a.ReceptionistNotes
+            )),
+        ];
     }
 }

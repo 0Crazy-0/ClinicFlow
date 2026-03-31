@@ -33,10 +33,12 @@ public sealed class GetMedicalRecordByAppointmentIdQueryHandler(
             record.DoctorId,
             record.AppointmentId,
             record.ChiefComplaint,
-            record.ClinicalDetails.Select(d => new ClinicalDetailDto(
-                d.TemplateCode,
-                d.JsonDataPayload
-            ))
+            [
+                .. record.ClinicalDetails.Select(d => new ClinicalDetailDto(
+                    d.TemplateCode,
+                    d.JsonDataPayload
+                )),
+            ]
         );
     }
 }
