@@ -30,6 +30,4 @@ public interface IMedicalRecordRepository
     );
 
     Task UpdateAsync(MedicalRecord medicalRecord, CancellationToken cancellationToken = default);
-
-    Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
 }
