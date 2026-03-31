@@ -3,5 +3,5 @@ using MediatR;
 
 namespace ClinicFlow.Application.Appointments.Queries.GetAppointmentsByDateRange;
 
-public record GetAppointmentsByDateRangeQuery(DateTime StartDate, DateTime EndDate)
+public sealed record GetAppointmentsByDateRangeQuery(DateTime StartDate, DateTime EndDate)
     : IRequest<IEnumerable<AppointmentDto>>;

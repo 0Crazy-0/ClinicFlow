@@ -4,8 +4,9 @@ using MediatR;
 
 namespace ClinicFlow.Application.Appointments.Queries.GetAppointmentsByPatientId;
 
-public class GetAppointmentsByPatientIdQueryHandler(IAppointmentRepository appointmentRepository)
-    : IRequestHandler<GetAppointmentsByPatientIdQuery, IEnumerable<AppointmentDto>>
+public sealed class GetAppointmentsByPatientIdQueryHandler(
+    IAppointmentRepository appointmentRepository
+) : IRequestHandler<GetAppointmentsByPatientIdQuery, IEnumerable<AppointmentDto>>
 {
     public async Task<IEnumerable<AppointmentDto>> Handle(
         GetAppointmentsByPatientIdQuery request,

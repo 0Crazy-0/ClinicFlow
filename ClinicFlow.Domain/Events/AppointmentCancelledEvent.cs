@@ -6,7 +6,7 @@ namespace ClinicFlow.Domain.Events;
 /// <summary>
 /// Raised when an appointment is cancelled, carrying cancellation details.
 /// </summary>
-public record AppointmentCancelledEvent(
+public sealed record AppointmentCancelledEvent(
     Appointment Appointment,
     Guid CancelledByUserId,
     string? Reason

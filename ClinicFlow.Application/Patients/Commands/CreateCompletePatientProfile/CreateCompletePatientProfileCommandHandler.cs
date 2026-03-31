@@ -6,7 +6,7 @@ using MediatR;
 
 namespace ClinicFlow.Application.Patients.Commands.CreateCompletePatientProfile;
 
-public class CreateCompletePatientProfileCommandHandler(
+public sealed class CreateCompletePatientProfileCommandHandler(
     TimeProvider timeProvider,
     IPatientRepository patientRepository,
     IUnitOfWork unitOfWork

@@ -11,7 +11,7 @@ using MediatR;
 
 namespace ClinicFlow.Application.Appointments.Commands.RescheduleByPatient;
 
-public class RescheduleByPatientCommandHandler(
+public sealed class RescheduleByPatientCommandHandler(
     IAppointmentRepository appointmentRepository,
     IPatientRepository patientRepository,
     IScheduleRepository scheduleRepository,

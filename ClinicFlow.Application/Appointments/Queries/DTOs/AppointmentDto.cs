@@ -2,7 +2,7 @@ using ClinicFlow.Domain.Enums;
 
 namespace ClinicFlow.Application.Appointments.Queries.DTOs;
 
-public record AppointmentDto(
+public sealed record AppointmentDto(
     Guid Id,
     Guid PatientId,
     Guid DoctorId,

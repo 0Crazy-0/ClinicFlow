@@ -2,7 +2,7 @@ using MediatR;
 
 namespace ClinicFlow.Application.Patients.Commands.UpdatePatientProfile;
 
-public record UpdatePatientProfileCommand(
+public sealed record UpdatePatientProfileCommand(
     Guid PatientId,
     string BloodType,
     string Allergies,

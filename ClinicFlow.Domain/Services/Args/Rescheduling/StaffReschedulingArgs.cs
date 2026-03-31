@@ -2,7 +2,7 @@ using ClinicFlow.Domain.ValueObjects;
 
 namespace ClinicFlow.Domain.Services.Args.Rescheduling;
 
-public record StaffReschedulingArgs
+public sealed record StaffReschedulingArgs
 {
     public Guid InitiatorUserId { get; init; }
     public DateTime NewDate { get; init; }

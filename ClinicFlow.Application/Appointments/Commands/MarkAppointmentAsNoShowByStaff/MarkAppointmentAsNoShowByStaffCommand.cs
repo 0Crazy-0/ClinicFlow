@@ -2,5 +2,5 @@ using MediatR;
 
 namespace ClinicFlow.Application.Appointments.Commands.MarkAppointmentAsNoShowByStaff;
 
-public record MarkAppointmentAsNoShowByStaffCommand(Guid AppointmentId, Guid InitiatorUserId)
+public sealed record MarkAppointmentAsNoShowByStaffCommand(Guid AppointmentId, Guid InitiatorUserId)
     : IRequest;

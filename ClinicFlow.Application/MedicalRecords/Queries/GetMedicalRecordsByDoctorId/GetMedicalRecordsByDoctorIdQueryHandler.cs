@@ -4,7 +4,7 @@ using MediatR;
 
 namespace ClinicFlow.Application.MedicalRecords.Queries.GetMedicalRecordsByDoctorId;
 
-public class GetMedicalRecordsByDoctorIdQueryHandler(
+public sealed class GetMedicalRecordsByDoctorIdQueryHandler(
     IMedicalRecordRepository medicalRecordRepository
 ) : IRequestHandler<GetMedicalRecordsByDoctorIdQuery, IEnumerable<MedicalRecordDto>>
 {

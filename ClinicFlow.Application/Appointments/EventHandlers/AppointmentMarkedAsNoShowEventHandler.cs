@@ -7,7 +7,7 @@ using MediatR;
 
 namespace ClinicFlow.Application.Appointments.EventHandlers;
 
-public class AppointmentMarkedAsNoShowEventHandler(
+public sealed class AppointmentMarkedAsNoShowEventHandler(
     TimeProvider timeProvider,
     IPatientPenaltyRepository patientPenaltyRepository
 ) : INotificationHandler<DomainEventNotification<AppointmentMarkedAsNoShowEvent>>
