@@ -30,17 +30,14 @@ public class AddClinicalDetailToMedicalRecordCommandHandler(
             );
 
         var template =
-            await templateRepository.GetByCodeAsync(request.Detail.TemplateCode, cancellationToken)
+            await templateRepository.GetByCodeAsync(request.TemplateCode, cancellationToken)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(ClinicalFormTemplate),
-                request.Detail.TemplateCode
+                request.TemplateCode
             );
 
-        var detail = DynamicClinicalDetail.Create(
-            request.Detail.TemplateCode,
-            request.Detail.JsonDataPayload
-        );
+        var detail = DynamicClinicalDetail.Create(request.TemplateCode, request.JsonDataPayload);
 
         medicalEncounterService.AppendClinicalDetail(record, detail, template);
 

@@ -1,6 +1,5 @@
 using System.Reflection;
 using ClinicFlow.Application.MedicalRecords.Commands.AddClinicalDetailToMedicalRecord;
-using ClinicFlow.Application.MedicalRecords.Commands.CompleteMedicalEncounter;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Exceptions.Base;
@@ -47,7 +46,8 @@ public class AddClinicalDetailToMedicalRecordCommandHandlerTests
         var medicalRecordId = Guid.NewGuid();
         var request = new AddClinicalDetailToMedicalRecordCommand(
             medicalRecordId,
-            new DynamicClinicalDetailDto("lab-results", "{\"glucose\": 90}")
+            "lab-results",
+            "{\"glucose\": 90}"
         );
 
         var record = CreateMedicalRecord(
@@ -96,7 +96,8 @@ public class AddClinicalDetailToMedicalRecordCommandHandlerTests
         var medicalRecordId = Guid.NewGuid();
         var request = new AddClinicalDetailToMedicalRecordCommand(
             medicalRecordId,
-            new DynamicClinicalDetailDto("lab-results", "{}")
+            "lab-results",
+            "{}"
         );
 
         _medicalRecordRepositoryMock
@@ -129,7 +130,8 @@ public class AddClinicalDetailToMedicalRecordCommandHandlerTests
         var medicalRecordId = Guid.NewGuid();
         var request = new AddClinicalDetailToMedicalRecordCommand(
             medicalRecordId,
-            new DynamicClinicalDetailDto("invalid-code", "{}")
+            "invalid-code",
+            "{}"
         );
         var record = CreateMedicalRecord(
             medicalRecordId,

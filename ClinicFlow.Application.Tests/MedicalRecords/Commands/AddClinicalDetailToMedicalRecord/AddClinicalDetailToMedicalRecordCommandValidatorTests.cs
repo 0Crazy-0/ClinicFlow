@@ -1,5 +1,4 @@
 using ClinicFlow.Application.MedicalRecords.Commands.AddClinicalDetailToMedicalRecord;
-using ClinicFlow.Application.MedicalRecords.Commands.CompleteMedicalEncounter;
 using FluentValidation.TestHelper;
 
 namespace ClinicFlow.Application.Tests.MedicalRecords.Commands.AddClinicalDetailToMedicalRecord;
@@ -19,7 +18,8 @@ public class AddClinicalDetailToMedicalRecordCommandValidatorTests
         // Arrange
         var command = new AddClinicalDetailToMedicalRecordCommand(
             Guid.NewGuid(),
-            new DynamicClinicalDetailDto("vital-signs", "{}")
+            "vital-signs",
+            "{}"
         );
 
         // Act
@@ -35,7 +35,8 @@ public class AddClinicalDetailToMedicalRecordCommandValidatorTests
         // Arrange
         var command = new AddClinicalDetailToMedicalRecordCommand(
             Guid.Empty,
-            new DynamicClinicalDetailDto("vital-signs", "{}")
+            "vital-signs",
+            "{}"
         );
 
         // Act
@@ -47,21 +48,6 @@ public class AddClinicalDetailToMedicalRecordCommandValidatorTests
             .WithErrorMessage("Medical Record ID is required.");
     }
 
-    [Fact]
-    public void Validate_GivenNullDetail_HasError()
-    {
-        // Arrange
-        var command = new AddClinicalDetailToMedicalRecordCommand(Guid.NewGuid(), null!);
-
-        // Act
-        var result = _sut.TestValidate(command);
-
-        // Assert
-        result
-            .ShouldHaveValidationErrorFor(c => c.Detail)
-            .WithErrorMessage("Clinical detail must be provided.");
-    }
-
     [Theory]
     [InlineData("", "somedata")]
     [InlineData("   ", "somedata")]
@@ -71,7 +57,8 @@ public class AddClinicalDetailToMedicalRecordCommandValidatorTests
         // Arrange
         var command = new AddClinicalDetailToMedicalRecordCommand(
             Guid.NewGuid(),
-            new DynamicClinicalDetailDto(templateCode!, payload!)
+            templateCode!,
+            payload!
         );
 
         // Act
@@ -79,7 +66,7 @@ public class AddClinicalDetailToMedicalRecordCommandValidatorTests
 
         // Assert
         result
-            .ShouldHaveValidationErrorFor(c => c.Detail.TemplateCode)
+            .ShouldHaveValidationErrorFor(c => c.TemplateCode)
             .WithErrorMessage("Template code is required for the clinical detail.");
     }
 
@@ -92,7 +79,8 @@ public class AddClinicalDetailToMedicalRecordCommandValidatorTests
         // Arrange
         var command = new AddClinicalDetailToMedicalRecordCommand(
             Guid.NewGuid(),
-            new DynamicClinicalDetailDto(templateCode!, payload!)
+            templateCode!,
+            payload!
         );
 
         // Act
@@ -100,7 +88,7 @@ public class AddClinicalDetailToMedicalRecordCommandValidatorTests
 
         // Assert
         result
-            .ShouldHaveValidationErrorFor(c => c.Detail.JsonDataPayload)
+            .ShouldHaveValidationErrorFor(c => c.JsonDataPayload)
             .WithErrorMessage("JSON data payload is required for the clinical detail.");
     }
 }
