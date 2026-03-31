@@ -3,7 +3,7 @@ using ClinicFlow.Domain.ValueObjects;
 
 namespace ClinicFlow.Domain.Services.Args.Rescheduling;
 
-public record DoctorReschedulingArgs
+public sealed record DoctorReschedulingArgs
 {
     public required Doctor InitiatorDoctor { get; init; }
     public DateTime NewDate { get; init; }

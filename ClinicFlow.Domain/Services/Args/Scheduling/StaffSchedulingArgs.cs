@@ -3,7 +3,7 @@ using ClinicFlow.Domain.ValueObjects;
 
 namespace ClinicFlow.Domain.Services.Args.Scheduling;
 
-public record StaffSchedulingArgs
+public sealed record StaffSchedulingArgs
 {
     public Guid InitiatorUserId { get; init; }
     public required Patient TargetPatient { get; init; }

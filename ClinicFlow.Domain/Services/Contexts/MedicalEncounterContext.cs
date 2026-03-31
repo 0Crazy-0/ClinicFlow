@@ -6,7 +6,7 @@ namespace ClinicFlow.Domain.Services.Contexts;
 /// <summary>
 /// Encapsulates the context required to validate and complete a medical encounter.
 /// </summary>
-public class MedicalEncounterContext
+public sealed class MedicalEncounterContext
 {
     public Doctor ExpectedDoctor { get; init; } = null!;
     public Appointment Appointment { get; init; } = null!;

@@ -7,7 +7,7 @@ namespace ClinicFlow.Domain.Events;
 /// <summary>
 /// Raised when an appointment is rescheduled, carrying the previous date and time range.
 /// </summary>
-public record AppointmentRescheduledEvent(
+public sealed record AppointmentRescheduledEvent(
     Appointment Appointment,
     DateTime PreviousDate,
     TimeRange PreviousTimeRange
