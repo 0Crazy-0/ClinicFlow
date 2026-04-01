@@ -50,7 +50,7 @@ public class GetMedicalRecordByIdQueryHandlerTests
         result.AppointmentId.Should().Be(appointmentId);
         result.ChiefComplaint.Should().Be("Headache");
         result.ClinicalDetails.Should().ContainSingle();
-        result.ClinicalDetails.First().TemplateCode.Should().Be("vital-signs");
+        result.ClinicalDetails[0].TemplateCode.Should().Be("vital-signs");
     }
 
     [Fact]
