@@ -30,13 +30,12 @@ public class AppointmentCancelledEventHandlerTests
         // Arrange
         var appointmentId = Guid.NewGuid();
         var patientId = Guid.NewGuid();
-        var appointment = CreateAppointment(
+        var appointment = CreateLateCancelledAppointment(
             appointmentId,
             Guid.NewGuid(),
             patientId,
             Guid.NewGuid(),
-            _fakeTime.GetUtcNow().UtcDateTime.AddHours(2),
-            true
+            _fakeTime.GetUtcNow().UtcDateTime.AddHours(2)
         );
 
         var domainEvent = new AppointmentCancelledEvent(appointment, Guid.NewGuid(), "Too late");
@@ -68,13 +67,12 @@ public class AppointmentCancelledEventHandlerTests
         // Arrange
         var appointmentId = Guid.NewGuid();
         var patientId = Guid.NewGuid();
-        var appointment = CreateAppointment(
+        var appointment = CreateCancelledAppointment(
             appointmentId,
             Guid.NewGuid(),
             patientId,
             Guid.NewGuid(),
-            _fakeTime.GetUtcNow().UtcDateTime.AddDays(2),
-            false
+            _fakeTime.GetUtcNow().UtcDateTime.AddDays(2)
         );
 
         var domainEvent = new AppointmentCancelledEvent(appointment, Guid.NewGuid(), "In time");
@@ -98,13 +96,12 @@ public class AppointmentCancelledEventHandlerTests
         );
     }
 
-    private static Appointment CreateAppointment(
+    private static Appointment CreateLateCancelledAppointment(
         Guid id,
         Guid doctorId,
         Guid patientId,
         Guid typeId,
-        DateTime scheduledDateTime,
-        bool isLateCancellation
+        DateTime scheduledDateTime
     )
     {
         var appointment = Appointment.Schedule(
@@ -118,23 +115,39 @@ public class AppointmentCancelledEventHandlerTests
             )
         );
         SetPrivateProperty(appointment, nameof(Appointment.Id), id);
+        SetPrivateProperty(
+            appointment,
+            nameof(Appointment.Status),
+            AppointmentStatus.LateCancellation
+        );
 
-        if (isLateCancellation)
-        {
-            SetPrivateProperty(
-                appointment,
-                nameof(Appointment.Status),
-                AppointmentStatus.LateCancellation
-            );
-        }
-        else
-        {
-            SetPrivateProperty(
-                appointment,
-                nameof(Appointment.Status),
-                AppointmentStatus.Cancelled
-            );
-        }
+        return appointment;
+    }
+
+    private static Appointment CreateCancelledAppointment(
+        Guid id,
+        Guid doctorId,
+        Guid patientId,
+        Guid typeId,
+        DateTime scheduledDateTime
+    )
+    {
+        var appointment = Appointment.Schedule(
+            patientId,
+            doctorId,
+            typeId,
+            scheduledDateTime.Date,
+            TimeRange.Create(
+                scheduledDateTime.TimeOfDay,
+                scheduledDateTime.TimeOfDay.Add(TimeSpan.FromHours(1))
+            )
+        );
+        SetPrivateProperty(appointment, nameof(Appointment.Id), id);
+        SetPrivateProperty(
+            appointment,
+            nameof(Appointment.Status),
+            AppointmentStatus.Cancelled
+        );
 
         return appointment;
     }
