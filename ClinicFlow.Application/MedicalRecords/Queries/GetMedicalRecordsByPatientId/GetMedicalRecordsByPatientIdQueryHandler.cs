@@ -18,16 +18,21 @@ public sealed class GetMedicalRecordsByPatientIdQueryHandler(
             cancellationToken
         );
 
-        return records.Select(record => new MedicalRecordDto(
-            record.Id,
-            record.PatientId,
-            record.DoctorId,
-            record.AppointmentId,
-            record.ChiefComplaint,
-            record.ClinicalDetails.Select(d => new ClinicalDetailDto(
-                d.TemplateCode,
-                d.JsonDataPayload
-            ))
-        ));
+        return
+        [
+            .. records.Select(record => new MedicalRecordDto(
+                record.Id,
+                record.PatientId,
+                record.DoctorId,
+                record.AppointmentId,
+                record.ChiefComplaint,
+                [
+                    .. record.ClinicalDetails.Select(d => new ClinicalDetailDto(
+                        d.TemplateCode,
+                        d.JsonDataPayload
+                    )),
+                ]
+            )),
+        ];
     }
 }

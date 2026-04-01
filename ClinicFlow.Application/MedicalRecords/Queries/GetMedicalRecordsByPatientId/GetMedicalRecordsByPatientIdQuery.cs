@@ -4,4 +4,4 @@ using MediatR;
 namespace ClinicFlow.Application.MedicalRecords.Queries.GetMedicalRecordsByPatientId;
 
 public sealed record GetMedicalRecordsByPatientIdQuery(Guid PatientId)
-    : IRequest<IEnumerable<MedicalRecordDto>>;
+    : IRequest<IReadOnlyList<MedicalRecordDto>>;

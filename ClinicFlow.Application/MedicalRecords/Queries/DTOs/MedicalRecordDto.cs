@@ -6,5 +6,5 @@ public sealed record MedicalRecordDto(
     Guid DoctorId,
     Guid AppointmentId,
     string ChiefComplaint,
-    IEnumerable<ClinicalDetailDto> ClinicalDetails
+    IReadOnlyList<ClinicalDetailDto> ClinicalDetails
 );

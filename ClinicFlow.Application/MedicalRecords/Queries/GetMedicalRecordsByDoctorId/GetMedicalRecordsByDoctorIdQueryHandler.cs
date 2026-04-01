@@ -6,9 +6,9 @@ namespace ClinicFlow.Application.MedicalRecords.Queries.GetMedicalRecordsByDocto
 
 public sealed class GetMedicalRecordsByDoctorIdQueryHandler(
     IMedicalRecordRepository medicalRecordRepository
-) : IRequestHandler<GetMedicalRecordsByDoctorIdQuery, IEnumerable<MedicalRecordDto>>
+) : IRequestHandler<GetMedicalRecordsByDoctorIdQuery, IReadOnlyList<MedicalRecordDto>>
 {
-    public async Task<IEnumerable<MedicalRecordDto>> Handle(
+    public async Task<IReadOnlyList<MedicalRecordDto>> Handle(
         GetMedicalRecordsByDoctorIdQuery request,
         CancellationToken cancellationToken
     )
@@ -18,16 +18,21 @@ public sealed class GetMedicalRecordsByDoctorIdQueryHandler(
             cancellationToken
         );
 
-        return records.Select(record => new MedicalRecordDto(
-            record.Id,
-            record.PatientId,
-            record.DoctorId,
-            record.AppointmentId,
-            record.ChiefComplaint,
-            record.ClinicalDetails.Select(d => new ClinicalDetailDto(
-                d.TemplateCode,
-                d.JsonDataPayload
-            ))
-        ));
+        return
+        [
+            .. records.Select(record => new MedicalRecordDto(
+                record.Id,
+                record.PatientId,
+                record.DoctorId,
+                record.AppointmentId,
+                record.ChiefComplaint,
+                [
+                    .. record.ClinicalDetails.Select(d => new ClinicalDetailDto(
+                        d.TemplateCode,
+                        d.JsonDataPayload
+                    )),
+                ]
+            )),
+        ];
     }
 }
