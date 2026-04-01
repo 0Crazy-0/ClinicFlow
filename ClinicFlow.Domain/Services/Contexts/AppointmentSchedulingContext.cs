@@ -7,7 +7,7 @@ namespace ClinicFlow.Domain.Services.Contexts;
 /// </summary>
 public sealed class AppointmentSchedulingContext
 {
-    public IEnumerable<PatientPenalty> Penalties { get; init; } = [];
+    public IReadOnlyList<PatientPenalty> Penalties { get; init; } = [];
     public Schedule? DoctorSchedule { get; init; }
     public bool HasConflict { get; init; }
 }

@@ -5,9 +5,9 @@ using MediatR;
 namespace ClinicFlow.Application.Patients.Queries.GetPatientsByUserId;
 
 public sealed class GetPatientsByUserIdQueryHandler(IPatientRepository patientRepository)
-    : IRequestHandler<GetPatientsByUserIdQuery, IEnumerable<PatientDto>>
+    : IRequestHandler<GetPatientsByUserIdQuery, IReadOnlyList<PatientDto>>
 {
-    public async Task<IEnumerable<PatientDto>> Handle(
+    public async Task<IReadOnlyList<PatientDto>> Handle(
         GetPatientsByUserIdQuery request,
         CancellationToken cancellationToken
     )
@@ -17,17 +17,20 @@ public sealed class GetPatientsByUserIdQueryHandler(IPatientRepository patientRe
             cancellationToken
         );
 
-        return patients.Select(patient => new PatientDto(
-            patient.Id,
-            patient.UserId,
-            patient.FullName.FullName,
-            patient.RelationshipToUser,
-            patient.DateOfBirth,
-            patient.BloodType?.Value,
-            patient.Allergies,
-            patient.ChronicConditions,
-            patient.EmergencyContact?.Name.ToString(),
-            patient.EmergencyContact?.PhoneNumber.ToString()
-        ));
+        return
+        [
+            .. patients.Select(patient => new PatientDto(
+                patient.Id,
+                patient.UserId,
+                patient.FullName.FullName,
+                patient.RelationshipToUser,
+                patient.DateOfBirth,
+                patient.BloodType?.Value,
+                patient.Allergies,
+                patient.ChronicConditions,
+                patient.EmergencyContact?.Name.ToString(),
+                patient.EmergencyContact?.PhoneNumber.ToString()
+            )),
+        ];
     }
 }

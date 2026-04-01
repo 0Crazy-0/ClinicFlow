@@ -4,4 +4,4 @@ using MediatR;
 namespace ClinicFlow.Application.Appointments.Queries.GetAppointmentsByDoctorId;
 
 public sealed record GetAppointmentsByDoctorIdQuery(Guid DoctorId, DateTime Date)
-    : IRequest<IEnumerable<AppointmentDto>>;
+    : IRequest<IReadOnlyList<AppointmentDto>>;
