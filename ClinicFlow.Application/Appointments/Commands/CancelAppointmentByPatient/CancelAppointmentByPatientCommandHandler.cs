@@ -32,7 +32,7 @@ public sealed class CancelAppointmentByPatientCommandHandler(
                 request.AppointmentId
             );
 
-        var appointmentPatient =
+        var targetPatient =
             await patientRepository.GetByIdAsync(appointment.PatientId, cancellationToken)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
@@ -75,7 +75,7 @@ public sealed class CancelAppointmentByPatientCommandHandler(
         AppointmentCancellationService.CancelByPatient(
             appointment,
             new PatientCancellationArgs(
-                appointmentPatient,
+                targetPatient,
                 initiatorPatient,
                 appointmentType.Category,
                 specialty,
