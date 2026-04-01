@@ -77,7 +77,7 @@ public sealed class RescheduleByPatientCommandHandler(
                 NewDate = request.NewDate,
                 NewTimeRange = newTimeRange,
             },
-            new AppointmentSchedulingContext
+            new AppointmentReschedulingContext
             {
                 Penalties = penalties,
                 DoctorSchedule = doctorSchedule,

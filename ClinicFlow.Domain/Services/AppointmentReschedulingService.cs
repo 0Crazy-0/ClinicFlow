@@ -22,7 +22,7 @@ public static class AppointmentReschedulingService
     public static void RescheduleByPatient(
         Appointment appointment,
         PatientReschedulingArgs args,
-        AppointmentSchedulingContext context
+        AppointmentReschedulingContext context
     )
     {
         if (args.TargetPatient.Id != appointment.PatientId)
@@ -68,7 +68,7 @@ public static class AppointmentReschedulingService
     public static void RescheduleByDoctor(
         Appointment appointment,
         DoctorReschedulingArgs args,
-        AppointmentSchedulingContext context
+        AppointmentReschedulingContext context
     )
     {
         if (args.InitiatorDoctor.Id != appointment.DoctorId)
@@ -102,7 +102,7 @@ public static class AppointmentReschedulingService
     public static void RescheduleByStaff(
         Appointment appointment,
         StaffReschedulingArgs args,
-        AppointmentSchedulingContext context
+        AppointmentReschedulingContext context
     )
     {
         if (!args.IsOverbook)

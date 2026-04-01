@@ -60,7 +60,7 @@ public sealed class RescheduleByDoctorCommandHandler(
                 NewTimeRange = newTimeRange,
                 IsOverbook = request.IsOverbook,
             },
-            new AppointmentSchedulingContext
+            new AppointmentReschedulingContext
             {
                 Penalties = [],
                 DoctorSchedule = doctorSchedule,
