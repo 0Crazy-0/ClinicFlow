@@ -36,7 +36,16 @@ public class MedicalEncounterServiceTests
     public void ValidateAndCompleteRecord_ShouldThrowDomainValidationException_WhenRecordIsNull()
     {
         // Act
-        var act = () => _sut.ValidateAndCompleteRecord(null!, new MedicalEncounterContext());
+        var act = () =>
+            _sut.ValidateAndCompleteRecord(
+                null!,
+                new MedicalEncounterContext
+                {
+                    ExpectedDoctor = null!,
+                    Appointment = null!,
+                    AppointmentTypeDefinition = null!,
+                }
+            );
 
         // Assert
         act.Should()

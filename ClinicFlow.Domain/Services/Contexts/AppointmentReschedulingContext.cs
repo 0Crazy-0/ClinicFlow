@@ -5,7 +5,7 @@ namespace ClinicFlow.Domain.Services.Contexts;
 /// <summary>
 /// Encapsulates the context required to reschedule an appointment.
 /// </summary>
-public sealed class AppointmentReschedulingContext
+public sealed record class AppointmentReschedulingContext
 {
     public IReadOnlyList<PatientPenalty> Penalties { get; init; } = [];
     public Schedule? DoctorSchedule { get; init; }
