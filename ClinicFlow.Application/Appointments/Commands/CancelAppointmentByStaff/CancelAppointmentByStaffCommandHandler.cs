@@ -48,12 +48,13 @@ public sealed class CancelAppointmentByStaffCommandHandler(
 
         AppointmentCancellationService.CancelByStaff(
             appointment,
-            new StaffCancellationArgs(
-                request.InitiatorUserId,
-                specialty,
-                request.Reason,
-                timeProvider.GetUtcNow().UtcDateTime
-            )
+            new StaffCancellationArgs
+            {
+                InitiatorUserId = request.InitiatorUserId,
+                Specialty = specialty,
+                Reason = request.Reason,
+                CancelledAt = timeProvider.GetUtcNow().UtcDateTime,
+            }
         );
 
         await appointmentRepository.UpdateAsync(appointment, cancellationToken);

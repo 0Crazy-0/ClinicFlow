@@ -53,12 +53,13 @@ public sealed class CancelAppointmentByDoctorCommandHandler(
 
         AppointmentCancellationService.CancelByDoctor(
             appointment,
-            new DoctorCancellationArgs(
-                initiatorDoctor,
-                specialty,
-                request.Reason,
-                timeProvider.GetUtcNow().UtcDateTime
-            )
+            new DoctorCancellationArgs
+            {
+                InitiatorDoctor = initiatorDoctor,
+                Specialty = specialty,
+                Reason = request.Reason,
+                CancelledAt = timeProvider.GetUtcNow().UtcDateTime,
+            }
         );
 
         await appointmentRepository.UpdateAsync(appointment, cancellationToken);

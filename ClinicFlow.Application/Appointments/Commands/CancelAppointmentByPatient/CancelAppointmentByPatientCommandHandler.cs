@@ -74,14 +74,15 @@ public sealed class CancelAppointmentByPatientCommandHandler(
 
         AppointmentCancellationService.CancelByPatient(
             appointment,
-            new PatientCancellationArgs(
-                targetPatient,
-                initiatorPatient,
-                appointmentType.Category,
-                specialty,
-                request.Reason,
-                timeProvider.GetUtcNow().UtcDateTime
-            )
+            new PatientCancellationArgs
+            {
+                TargetPatient = targetPatient,
+                InitiatorPatient = initiatorPatient,
+                Category = appointmentType.Category,
+                Specialty = specialty,
+                Reason = request.Reason,
+                CancelledAt = timeProvider.GetUtcNow().UtcDateTime,
+            }
         );
 
         await appointmentRepository.UpdateAsync(appointment, cancellationToken);
