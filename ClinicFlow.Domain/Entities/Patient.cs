@@ -49,7 +49,7 @@ public class Patient : BaseEntity
     /// Creates a new patient entity for the primary user of an account.
     /// </summary>
     /// <exception cref="DomainValidationException">Thrown when the user ID is empty or the date of birth is in the future.</exception>
-    internal static Patient CreateSelf(
+    public static Patient CreateSelf(
         Guid userId,
         PersonName fullName,
         DateTime dateOfBirth,

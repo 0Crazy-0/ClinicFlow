@@ -42,7 +42,7 @@ public class MedicalSpecialty : BaseEntity
     /// Creates a new medical specialty.
     /// </summary>
     /// <exception cref="DomainValidationException">Thrown when the name is empty, the duration is not positive, or cancellation hours are negative.</exception>
-    internal static MedicalSpecialty Create(
+    public static MedicalSpecialty Create(
         string name,
         string description,
         int typicalDurationMinutes,

@@ -45,7 +45,7 @@ public class MedicalRecord : BaseEntity
     /// Creates a new medical record and raises a <see cref="MedicalRecordCreatedEvent"/>.
     /// </summary>
     /// <exception cref="DomainValidationException">Thrown when any required identifier is empty or the chief complaint is blank.</exception>
-    internal static MedicalRecord Create(
+    public static MedicalRecord Create(
         Guid patientId,
         Guid doctorId,
         Guid appointmentId,
