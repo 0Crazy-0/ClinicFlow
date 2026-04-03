@@ -53,7 +53,7 @@ public class AppointmentTypeDefinition : BaseEntity
     /// Creates a new appointment type definition.
     /// </summary>
     /// <exception cref="DomainValidationException">Thrown when the name is empty, duration is not positive, or the age rules are invalid.</exception>
-    internal static AppointmentTypeDefinition Create(
+    public static AppointmentTypeDefinition Create(
         AppointmentCategory category,
         string name,
         string description,

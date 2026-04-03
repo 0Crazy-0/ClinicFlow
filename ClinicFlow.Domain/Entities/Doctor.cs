@@ -41,7 +41,7 @@ public class Doctor : BaseEntity
     /// Creates a new doctor entity.
     /// </summary>
     /// <exception cref="DomainValidationException">Thrown when the user ID or specialty ID is empty, or the room number is not positive.</exception>
-    internal static Doctor Create(
+    public static Doctor Create(
         Guid userId,
         MedicalLicenseNumber licenseNumber,
         Guid medicalSpecialtyId,
