@@ -1,4 +1,3 @@
-using System.Reflection;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Entities.ClinicalDetails;
@@ -6,6 +5,8 @@ using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Contexts;
 using ClinicFlow.Domain.Services.Policies;
+using ClinicFlow.Domain.Tests.Shared;
+using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
 using Moq;
 
@@ -349,32 +350,46 @@ public class MedicalEncounterServiceTests
 
     private static MedicalRecord CreateMedicalRecord(Guid doctorId, Guid appointmentId)
     {
-        var record = (MedicalRecord)Activator.CreateInstance(typeof(MedicalRecord), true)!;
-        SetPrivateProperty(record, nameof(MedicalRecord.Id), Guid.NewGuid());
-        SetPrivateProperty(record, nameof(MedicalRecord.DoctorId), doctorId);
-        SetPrivateProperty(record, nameof(MedicalRecord.AppointmentId), appointmentId);
+        var record = MedicalRecord.Create(Guid.NewGuid(), doctorId, appointmentId, "Headache");
+        record.SetId(Guid.NewGuid());
         return record;
     }
 
     private static Doctor CreateDoctor(Guid id)
     {
-        var doctor = (Doctor)Activator.CreateInstance(typeof(Doctor), true)!;
-        SetPrivateProperty(doctor, nameof(Doctor.Id), id);
+        var doctor = Doctor.Create(
+            Guid.NewGuid(),
+            MedicalLicenseNumber.Create("12345"),
+            Guid.NewGuid(),
+            "555-0000",
+            101
+        );
+        doctor.SetId(id);
         return doctor;
     }
 
     private static Appointment CreateAppointment(Guid id)
     {
-        var appointment = (Appointment)Activator.CreateInstance(typeof(Appointment), true)!;
-        SetPrivateProperty(appointment, nameof(Appointment.Id), id);
+        var appointment = Appointment.Schedule(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            DateTime.UtcNow.Date.AddDays(1),
+            TimeRange.Create(new TimeSpan(10, 0, 0), new TimeSpan(11, 0, 0))
+        );
+        appointment.SetId(id);
         return appointment;
     }
 
     private static AppointmentTypeDefinition CreateAppointmentType()
     {
-        var type = (AppointmentTypeDefinition)
-            Activator.CreateInstance(typeof(AppointmentTypeDefinition), true)!;
-        SetPrivateProperty(type, nameof(AppointmentTypeDefinition.Id), Guid.NewGuid());
+        var type = AppointmentTypeDefinition.Create(
+            Enums.AppointmentCategory.Checkup,
+            "Checkup",
+            "Desc",
+            TimeSpan.FromMinutes(30)
+        );
+        type.SetId(Guid.NewGuid());
         return type;
     }
 
@@ -383,36 +398,8 @@ public class MedicalEncounterServiceTests
         string jsonSchema = "{}"
     )
     {
-        var template = (ClinicalFormTemplate)
-            Activator.CreateInstance(typeof(ClinicalFormTemplate), true)!;
-        SetPrivateProperty(template, nameof(ClinicalFormTemplate.Id), Guid.NewGuid());
-        SetPrivateProperty(template, nameof(ClinicalFormTemplate.Code), code);
-        SetPrivateProperty(template, nameof(ClinicalFormTemplate.Name), "Test Form");
-        SetPrivateProperty(template, nameof(ClinicalFormTemplate.JsonSchemaDefinition), jsonSchema);
+        var template = ClinicalFormTemplate.Create(code, "Test Form", "Desc", jsonSchema);
+        template.SetId(Guid.NewGuid());
         return template;
-    }
-
-    private static void SetPrivateProperty(object obj, string propertyName, object value)
-    {
-        var type = obj.GetType();
-
-        while (type != null)
-        {
-            var prop = type.GetProperty(
-                propertyName,
-                BindingFlags.Public
-                    | BindingFlags.NonPublic
-                    | BindingFlags.Instance
-                    | BindingFlags.DeclaredOnly
-            );
-
-            if (prop != null)
-            {
-                prop.SetValue(obj, value);
-                return;
-            }
-
-            type = type.BaseType;
-        }
     }
 }

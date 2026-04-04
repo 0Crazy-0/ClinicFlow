@@ -1,4 +1,3 @@
-using System.Reflection;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Entities.ClinicalDetails;
@@ -304,41 +303,5 @@ public class MetadataFormValidationPolicyTests
         string code,
         string name,
         string schemaDefinition
-    )
-    {
-        var template = (ClinicalFormTemplate)
-            Activator.CreateInstance(typeof(ClinicalFormTemplate), true)!;
-        SetPrivateProperty(template, nameof(ClinicalFormTemplate.Code), code);
-        SetPrivateProperty(template, nameof(ClinicalFormTemplate.Name), name);
-        SetPrivateProperty(
-            template,
-            nameof(ClinicalFormTemplate.JsonSchemaDefinition),
-            schemaDefinition
-        );
-        return template;
-    }
-
-    private static void SetPrivateProperty(object obj, string propertyName, object value)
-    {
-        var type = obj.GetType();
-
-        while (type != null)
-        {
-            var prop = type.GetProperty(
-                propertyName,
-                BindingFlags.Public
-                    | BindingFlags.NonPublic
-                    | BindingFlags.Instance
-                    | BindingFlags.DeclaredOnly
-            );
-
-            if (prop != null)
-            {
-                prop.SetValue(obj, value);
-                return;
-            }
-
-            type = type.BaseType;
-        }
-    }
+    ) => ClinicalFormTemplate.Create(code, name, "Description", schemaDefinition);
 }

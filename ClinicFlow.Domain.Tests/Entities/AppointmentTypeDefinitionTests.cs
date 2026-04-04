@@ -1,8 +1,8 @@
-using System.Reflection;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Base;
+using ClinicFlow.Domain.Tests.Shared;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
 
@@ -101,8 +101,8 @@ public class AppointmentTypeDefinitionTests
         var template2 = ClinicalFormTemplate.Create("CODE2", "Different", "Desc", "{}");
         var sharedId = Guid.NewGuid();
 
-        SetPrivateProperty(template1, nameof(ClinicalFormTemplate.Id), sharedId);
-        SetPrivateProperty(template2, nameof(ClinicalFormTemplate.Id), sharedId);
+        template1.SetId(sharedId);
+        template2.SetId(sharedId);
 
         appointmentType.AddRequiredTemplate(template1);
 
@@ -123,8 +123,8 @@ public class AppointmentTypeDefinitionTests
         var template1 = ClinicalFormTemplate.Create("CODE1", "Name", "Desc", "{}");
         var template2 = ClinicalFormTemplate.Create("CODE1", "Another Name", "Desc", "{}");
 
-        SetPrivateProperty(template1, nameof(ClinicalFormTemplate.Id), Guid.NewGuid());
-        SetPrivateProperty(template2, nameof(ClinicalFormTemplate.Id), Guid.NewGuid());
+        template1.SetId(Guid.NewGuid());
+        template2.SetId(Guid.NewGuid());
 
         appointmentType.AddRequiredTemplate(template1);
 
@@ -162,8 +162,8 @@ public class AppointmentTypeDefinitionTests
         var templateToRemove = ClinicalFormTemplate.Create("CODE2", "Diff", "Desc", "{}");
 
         var sharedId = Guid.NewGuid();
-        SetPrivateProperty(template1, nameof(ClinicalFormTemplate.Id), sharedId);
-        SetPrivateProperty(templateToRemove, nameof(ClinicalFormTemplate.Id), sharedId);
+        template1.SetId(sharedId);
+        templateToRemove.SetId(sharedId);
 
         appointmentType.AddRequiredTemplate(template1);
 
@@ -182,7 +182,7 @@ public class AppointmentTypeDefinitionTests
         var template1 = ClinicalFormTemplate.Create("CODE1", "Name", "Desc", "{}");
         var templateToRemove = ClinicalFormTemplate.Create("CODE1", "Different", "Desc", "{}");
 
-        SetPrivateProperty(templateToRemove, nameof(ClinicalFormTemplate.Id), Guid.NewGuid());
+        templateToRemove.SetId(Guid.NewGuid());
 
         appointmentType.AddRequiredTemplate(template1);
 
@@ -271,28 +271,4 @@ public class AppointmentTypeDefinitionTests
 
     public static TheoryData<TimeSpan> InvalidDurations =>
         [TimeSpan.Zero, TimeSpan.FromMinutes(-10)];
-
-    private static void SetPrivateProperty(object obj, string propertyName, object value)
-    {
-        var type = obj.GetType();
-
-        while (type != null)
-        {
-            var prop = type.GetProperty(
-                propertyName,
-                BindingFlags.Public
-                    | BindingFlags.NonPublic
-                    | BindingFlags.Instance
-                    | BindingFlags.DeclaredOnly
-            );
-
-            if (prop != null)
-            {
-                prop.SetValue(obj, value);
-                return;
-            }
-
-            type = type.BaseType;
-        }
-    }
 }

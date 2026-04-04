@@ -1,4 +1,3 @@
-using System.Reflection;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
@@ -7,6 +6,7 @@ using ClinicFlow.Domain.Exceptions.Appointments;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Args.Cancellation;
+using ClinicFlow.Domain.Tests.Shared;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
 using Microsoft.Extensions.Time.Testing;
@@ -453,13 +453,12 @@ public class AppointmentCancellationServiceTests
 
     private static MedicalSpecialty CreateSpecialty(int minCancellationHours)
     {
-        var specialty = (MedicalSpecialty)Activator.CreateInstance(typeof(MedicalSpecialty), true)!;
-        SetPrivateProperty(
-            specialty,
-            nameof(MedicalSpecialty.MinCancellationHours),
+        return MedicalSpecialty.Create(
+            "Test Specialty",
+            "Test Description",
+            30,
             minCancellationHours
         );
-        return specialty;
     }
 
     private class AppointmentBuilder
@@ -515,7 +514,7 @@ public class AppointmentCancellationServiceTests
             dateOfBirth,
             referenceTime
         );
-        SetPrivateProperty(patient, nameof(Patient.Id), id);
+        patient.SetId(id);
         return patient;
     }
 
@@ -535,7 +534,7 @@ public class AppointmentCancellationServiceTests
             dateOfBirth,
             referenceTime
         );
-        SetPrivateProperty(patient, nameof(Patient.Id), id);
+        patient.SetId(id);
         return patient;
     }
 
@@ -548,31 +547,7 @@ public class AppointmentCancellationServiceTests
             "555-0000",
             101
         );
-        SetPrivateProperty(doctor, nameof(Doctor.Id), id);
+        doctor.SetId(id);
         return doctor;
-    }
-
-    private static void SetPrivateProperty(object obj, string propertyName, object value)
-    {
-        var type = obj.GetType();
-
-        while (type != null)
-        {
-            var prop = type.GetProperty(
-                propertyName,
-                BindingFlags.Public
-                    | BindingFlags.NonPublic
-                    | BindingFlags.Instance
-                    | BindingFlags.DeclaredOnly
-            );
-
-            if (prop != null)
-            {
-                prop.SetValue(obj, value);
-                return;
-            }
-
-            type = type.BaseType;
-        }
     }
 }
