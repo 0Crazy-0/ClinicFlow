@@ -1,7 +1,8 @@
-using System.Reflection;
 using ClinicFlow.Application.Appointments.Commands.ScheduleByPatient;
+using ClinicFlow.Application.Tests.Shared;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
+using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
@@ -55,13 +56,11 @@ public class ScheduleByPatientCommandHandlerTests
         );
 
         var targetPatient = CreateTargetPatient(
-            command.TargetPatientId,
             command.InitiatorUserId,
             _fakeTime.GetUtcNow().UtcDateTime
         );
-        var appointmentType = CreateAppointmentType(command.AppointmentTypeId);
+        var appointmentType = CreateAppointmentType();
         var schedule = CreateSchedule(
-            Guid.NewGuid(),
             command.DoctorId,
             scheduledDate.DayOfWeek,
             startTime,
@@ -157,7 +156,6 @@ public class ScheduleByPatientCommandHandlerTests
 
         var targetPatient = CreateTargetPatient(
             command.TargetPatientId,
-            Guid.NewGuid(),
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -195,11 +193,9 @@ public class ScheduleByPatientCommandHandlerTests
 
         var targetPatient = CreateTargetPatient(
             command.TargetPatientId,
-            Guid.NewGuid(),
             _fakeTime.GetUtcNow().UtcDateTime
         );
         var initiatorPatient = CreateTargetPatient(
-            Guid.NewGuid(),
             command.InitiatorUserId,
             _fakeTime.GetUtcNow().UtcDateTime
         );
@@ -226,7 +222,7 @@ public class ScheduleByPatientCommandHandlerTests
         exceptionAssertion.Which.EntityName.Should().Be(nameof(AppointmentTypeDefinition));
     }
 
-    private static Patient CreateTargetPatient(Guid id, Guid userId, DateTime referenceTime)
+    private static Patient CreateTargetPatient(Guid userId, DateTime referenceTime)
     {
         var patient = Patient.CreateSelf(
             userId,
@@ -239,56 +235,22 @@ public class ScheduleByPatientCommandHandlerTests
 
         patient.UpdateEmergencyContact(EmergencyContact.Create("Emergency Name", "555-1234567"));
 
-        SetPrivateProperty(patient, nameof(Patient.Id), id);
-
         return patient;
     }
 
-    private static AppointmentTypeDefinition CreateAppointmentType(Guid id)
-    {
-        var type = (AppointmentTypeDefinition)
-            Activator.CreateInstance(typeof(AppointmentTypeDefinition), true)!;
-        SetPrivateProperty(type, nameof(AppointmentTypeDefinition.Id), id);
-        var policy = AgeEligibilityPolicy.Create(0, 100, false); // Allow any age
-        SetPrivateProperty(type, nameof(AppointmentTypeDefinition.AgePolicy), policy);
-        return type;
-    }
+    private static AppointmentTypeDefinition CreateAppointmentType() =>
+        AppointmentTypeDefinition.Create(
+            AppointmentCategory.Checkup,
+            "Checkup",
+            "Desc",
+            TimeSpan.FromMinutes(30),
+            AgeEligibilityPolicy.Create(0, 100, false)
+        );
 
     private static Schedule CreateSchedule(
-        Guid id,
         Guid doctorId,
         DayOfWeek dayOfWeek,
         TimeSpan start,
         TimeSpan end
-    )
-    {
-        var schedule = (Schedule)Activator.CreateInstance(typeof(Schedule), true)!;
-        SetPrivateProperty(schedule, nameof(Schedule.Id), id);
-        SetPrivateProperty(schedule, nameof(Schedule.DoctorId), doctorId);
-        SetPrivateProperty(schedule, nameof(Schedule.DayOfWeek), dayOfWeek);
-        SetPrivateProperty(schedule, nameof(Schedule.TimeRange), TimeRange.Create(start, end));
-        SetPrivateProperty(schedule, nameof(Schedule.IsActive), true);
-        return schedule;
-    }
-
-    private static void SetPrivateProperty(object obj, string propertyName, object value)
-    {
-        var type = obj.GetType();
-        while (type != null)
-        {
-            var prop = type.GetProperty(
-                propertyName,
-                BindingFlags.Public
-                    | BindingFlags.NonPublic
-                    | BindingFlags.Instance
-                    | BindingFlags.DeclaredOnly
-            );
-            if (prop != null)
-            {
-                prop.SetValue(obj, value);
-                return;
-            }
-            type = type.BaseType;
-        }
-    }
+    ) => Schedule.Create(doctorId, dayOfWeek, TimeRange.Create(start, end));
 }

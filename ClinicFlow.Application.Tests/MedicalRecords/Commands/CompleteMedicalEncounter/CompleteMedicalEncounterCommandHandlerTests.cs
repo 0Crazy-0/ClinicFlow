@@ -1,12 +1,14 @@
-using System.Reflection;
 using ClinicFlow.Application.MedicalRecords.Commands.CompleteMedicalEncounter;
+using ClinicFlow.Application.Tests.Shared;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
+using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Policies;
+using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
 using Moq;
 
@@ -63,7 +65,7 @@ public class CompleteMedicalEncounterCommandHandlerTests
 
         var doctor = CreateDoctor(doctorId);
         var appointment = CreateAppointment(appointmentId, appointmentTypeId, patientId, doctorId);
-        var appointmentType = CreateAppointmentTypeDefinition(appointmentTypeId);
+        var appointmentType = CreateAppointmentTypeDefinition();
 
         _doctorRepositoryMock.Setup(x => x.GetByIdAsync(doctorId)).ReturnsAsync(doctor);
         _appointmentRepositoryMock
@@ -191,8 +193,14 @@ public class CompleteMedicalEncounterCommandHandlerTests
 
     private static Doctor CreateDoctor(Guid id)
     {
-        var doctor = (Doctor)Activator.CreateInstance(typeof(Doctor), true)!;
-        SetPrivateProperty(doctor, nameof(Doctor.Id), id);
+        var doctor = Doctor.Create(
+            Guid.NewGuid(),
+            MedicalLicenseNumber.Create("RM-12345"),
+            Guid.NewGuid(),
+            "Bio",
+            101
+        );
+        doctor.SetId(id);
         return doctor;
     }
 
@@ -203,40 +211,23 @@ public class CompleteMedicalEncounterCommandHandlerTests
         Guid doctorId
     )
     {
-        var appointment = (Appointment)Activator.CreateInstance(typeof(Appointment), true)!;
-        SetPrivateProperty(appointment, nameof(Appointment.Id), id);
-        SetPrivateProperty(appointment, nameof(Appointment.AppointmentTypeId), appointmentTypeId);
-        SetPrivateProperty(appointment, nameof(Appointment.PatientId), patientId);
-        SetPrivateProperty(appointment, nameof(Appointment.DoctorId), doctorId);
+        var appointment = Appointment.Schedule(
+            patientId,
+            doctorId,
+            appointmentTypeId,
+            DateTime.UtcNow.AddDays(1),
+            TimeRange.Create(new TimeSpan(9, 0, 0), new TimeSpan(10, 0, 0))
+        );
+        appointment.SetId(id);
         return appointment;
     }
 
-    private static AppointmentTypeDefinition CreateAppointmentTypeDefinition(Guid id)
-    {
-        var appointmentType = (AppointmentTypeDefinition)
-            Activator.CreateInstance(typeof(AppointmentTypeDefinition), true)!;
-        SetPrivateProperty(appointmentType, nameof(AppointmentTypeDefinition.Id), id);
-        return appointmentType;
-    }
-
-    private static void SetPrivateProperty(object obj, string propertyName, object value)
-    {
-        var type = obj.GetType();
-        while (type != null)
-        {
-            var prop = type.GetProperty(
-                propertyName,
-                BindingFlags.Public
-                    | BindingFlags.NonPublic
-                    | BindingFlags.Instance
-                    | BindingFlags.DeclaredOnly
-            );
-            if (prop != null)
-            {
-                prop.SetValue(obj, value);
-                return;
-            }
-            type = type.BaseType;
-        }
-    }
+    private static AppointmentTypeDefinition CreateAppointmentTypeDefinition() =>
+        AppointmentTypeDefinition.Create(
+            AppointmentCategory.Checkup,
+            "Checkup",
+            "Desc",
+            TimeSpan.FromMinutes(30),
+            AgeEligibilityPolicy.Create(0, 100, false)
+        );
 }

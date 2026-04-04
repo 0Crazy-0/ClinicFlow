@@ -1,5 +1,5 @@
-using System.Reflection;
 using ClinicFlow.Application.MedicalRecords.Queries.GetMedicalRecordByAppointmentId;
+using ClinicFlow.Application.Tests.Shared;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Exceptions.Base;
@@ -26,7 +26,6 @@ public class GetMedicalRecordByAppointmentIdQueryHandlerTests
         // Arrange
         var appointmentId = Guid.NewGuid();
         var expectedRecord = CreateMedicalRecord(
-            Guid.NewGuid(),
             Guid.NewGuid(),
             Guid.NewGuid(),
             appointmentId,
@@ -84,40 +83,9 @@ public class GetMedicalRecordByAppointmentIdQueryHandlerTests
     }
 
     private static MedicalRecord CreateMedicalRecord(
-        Guid id,
         Guid patientId,
         Guid doctorId,
         Guid appointmentId,
         string chiefComplaint
-    )
-    {
-        var record = (MedicalRecord)Activator.CreateInstance(typeof(MedicalRecord), true)!;
-        SetPrivateProperty(record, nameof(MedicalRecord.Id), id);
-        SetPrivateProperty(record, nameof(MedicalRecord.PatientId), patientId);
-        SetPrivateProperty(record, nameof(MedicalRecord.DoctorId), doctorId);
-        SetPrivateProperty(record, nameof(MedicalRecord.AppointmentId), appointmentId);
-        SetPrivateProperty(record, nameof(MedicalRecord.ChiefComplaint), chiefComplaint);
-        return record;
-    }
-
-    private static void SetPrivateProperty(object obj, string propertyName, object value)
-    {
-        var type = obj.GetType();
-        while (type != null)
-        {
-            var prop = type.GetProperty(
-                propertyName,
-                BindingFlags.Public
-                    | BindingFlags.NonPublic
-                    | BindingFlags.Instance
-                    | BindingFlags.DeclaredOnly
-            );
-            if (prop != null)
-            {
-                prop.SetValue(obj, value);
-                return;
-            }
-            type = type.BaseType;
-        }
-    }
+    ) => MedicalRecord.Create(patientId, doctorId, appointmentId, chiefComplaint);
 }

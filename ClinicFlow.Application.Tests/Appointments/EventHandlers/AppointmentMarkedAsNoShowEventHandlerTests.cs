@@ -1,4 +1,3 @@
-using System.Reflection;
 using ClinicFlow.Application.Appointments.EventHandlers;
 using ClinicFlow.Application.Common.Models;
 using ClinicFlow.Domain.Common;
@@ -32,7 +31,7 @@ public class AppointmentMarkedAsNoShowEventHandlerTests
     public async Task Handle_ShouldApplyNoShowPenalty()
     {
         // Arrange
-        var appointment = CreateAppointment(Guid.NewGuid(), _fakeTime.GetUtcNow().UtcDateTime);
+        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime);
 
         var domainEvent = new AppointmentMarkedAsNoShowEvent(appointment);
         var notification = new DomainEventNotification<AppointmentMarkedAsNoShowEvent>(domainEvent);
@@ -59,10 +58,10 @@ public class AppointmentMarkedAsNoShowEventHandlerTests
         );
     }
 
-    private static Appointment CreateAppointment(Guid id, DateTime referenceTime)
+    private static Appointment CreateAppointment(DateTime referenceTime)
     {
         var scheduledDateTime = referenceTime.AddDays(1);
-        var appointment = Appointment.Schedule(
+        return Appointment.Schedule(
             Guid.NewGuid(),
             Guid.NewGuid(),
             Guid.NewGuid(),
@@ -72,28 +71,5 @@ public class AppointmentMarkedAsNoShowEventHandlerTests
                 scheduledDateTime.TimeOfDay.Add(TimeSpan.FromHours(1))
             )
         );
-        SetPrivateProperty(appointment, nameof(Appointment.Id), id);
-        return appointment;
-    }
-
-    private static void SetPrivateProperty(object obj, string propertyName, object value)
-    {
-        var type = obj.GetType();
-        while (type != null)
-        {
-            var prop = type.GetProperty(
-                propertyName,
-                BindingFlags.Public
-                    | BindingFlags.NonPublic
-                    | BindingFlags.Instance
-                    | BindingFlags.DeclaredOnly
-            );
-            if (prop != null)
-            {
-                prop.SetValue(obj, value);
-                return;
-            }
-            type = type.BaseType;
-        }
     }
 }

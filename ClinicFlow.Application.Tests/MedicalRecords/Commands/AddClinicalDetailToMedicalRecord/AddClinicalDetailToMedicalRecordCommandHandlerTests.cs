@@ -1,5 +1,5 @@
-using System.Reflection;
 using ClinicFlow.Application.MedicalRecords.Commands.AddClinicalDetailToMedicalRecord;
+using ClinicFlow.Application.Tests.Shared;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Exceptions.Base;
@@ -50,13 +50,7 @@ public class AddClinicalDetailToMedicalRecordCommandHandlerTests
             "{\"glucose\": 90}"
         );
 
-        var record = CreateMedicalRecord(
-            medicalRecordId,
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            "Checkup"
-        );
+        var record = CreateMedicalRecord(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "Checkup");
         var template = CreateFormTemplate("lab-results");
 
         _medicalRecordRepositoryMock
@@ -133,13 +127,7 @@ public class AddClinicalDetailToMedicalRecordCommandHandlerTests
             "invalid-code",
             "{}"
         );
-        var record = CreateMedicalRecord(
-            medicalRecordId,
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            "Checkup"
-        );
+        var record = CreateMedicalRecord(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "Checkup");
 
         _medicalRecordRepositoryMock
             .Setup(x => x.GetByIdAsync(medicalRecordId, CancellationToken.None))
@@ -166,54 +154,14 @@ public class AddClinicalDetailToMedicalRecordCommandHandlerTests
     }
 
     private static MedicalRecord CreateMedicalRecord(
-        Guid id,
         Guid patientId,
         Guid doctorId,
         Guid appointmentId,
         string chiefComplaint
-    )
-    {
-        var record = (MedicalRecord)Activator.CreateInstance(typeof(MedicalRecord), true)!;
-        SetPrivateProperty(record, nameof(MedicalRecord.Id), id);
-        SetPrivateProperty(record, nameof(MedicalRecord.PatientId), patientId);
-        SetPrivateProperty(record, nameof(MedicalRecord.DoctorId), doctorId);
-        SetPrivateProperty(record, nameof(MedicalRecord.AppointmentId), appointmentId);
-        SetPrivateProperty(record, nameof(MedicalRecord.ChiefComplaint), chiefComplaint);
-        return record;
-    }
+    ) => MedicalRecord.Create(patientId, doctorId, appointmentId, chiefComplaint);
 
     private static ClinicalFormTemplate CreateFormTemplate(
         string code = "Test1",
         string jsonSchema = "{}"
-    )
-    {
-        var template = (ClinicalFormTemplate)
-            Activator.CreateInstance(typeof(ClinicalFormTemplate), true)!;
-        SetPrivateProperty(template, nameof(ClinicalFormTemplate.Id), Guid.NewGuid());
-        SetPrivateProperty(template, nameof(ClinicalFormTemplate.Code), code);
-        SetPrivateProperty(template, nameof(ClinicalFormTemplate.Name), "Test Form");
-        SetPrivateProperty(template, nameof(ClinicalFormTemplate.JsonSchemaDefinition), jsonSchema);
-        return template;
-    }
-
-    private static void SetPrivateProperty(object obj, string propertyName, object value)
-    {
-        var type = obj.GetType();
-        while (type != null)
-        {
-            var prop = type.GetProperty(
-                propertyName,
-                BindingFlags.Public
-                    | BindingFlags.NonPublic
-                    | BindingFlags.Instance
-                    | BindingFlags.DeclaredOnly
-            );
-            if (prop != null)
-            {
-                prop.SetValue(obj, value);
-                return;
-            }
-            type = type.BaseType;
-        }
-    }
+    ) => ClinicalFormTemplate.Create(code, "Test Form", "Description", jsonSchema);
 }

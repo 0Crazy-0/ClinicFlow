@@ -1,4 +1,3 @@
-using System.Reflection;
 using ClinicFlow.Application.MedicalRecords.Queries.GetMedicalRecordById;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
@@ -31,7 +30,7 @@ public class GetMedicalRecordByIdQueryHandlerTests
         var appointmentId = Guid.NewGuid();
         var request = new GetMedicalRecordByIdQuery(id);
 
-        var record = CreateMedicalRecord(id, patientId, doctorId, appointmentId, "Headache");
+        var record = CreateMedicalRecord(patientId, doctorId, appointmentId, "Headache");
         var clinicalDetail = DynamicClinicalDetail.Create("vital-signs", "{}");
         record.AddClinicalDetail(clinicalDetail);
 
@@ -44,7 +43,7 @@ public class GetMedicalRecordByIdQueryHandlerTests
 
         // Assert
         result.Should().NotBeNull();
-        result.Id.Should().Be(id);
+        result.Id.Should().Be(record.Id);
         result.PatientId.Should().Be(patientId);
         result.DoctorId.Should().Be(doctorId);
         result.AppointmentId.Should().Be(appointmentId);
@@ -74,40 +73,9 @@ public class GetMedicalRecordByIdQueryHandlerTests
     }
 
     private static MedicalRecord CreateMedicalRecord(
-        Guid id,
         Guid patientId,
         Guid doctorId,
         Guid appointmentId,
         string chiefComplaint
-    )
-    {
-        var record = (MedicalRecord)Activator.CreateInstance(typeof(MedicalRecord), true)!;
-        SetPrivateProperty(record, nameof(MedicalRecord.Id), id);
-        SetPrivateProperty(record, nameof(MedicalRecord.PatientId), patientId);
-        SetPrivateProperty(record, nameof(MedicalRecord.DoctorId), doctorId);
-        SetPrivateProperty(record, nameof(MedicalRecord.AppointmentId), appointmentId);
-        SetPrivateProperty(record, nameof(MedicalRecord.ChiefComplaint), chiefComplaint);
-        return record;
-    }
-
-    private static void SetPrivateProperty(object obj, string propertyName, object value)
-    {
-        var type = obj.GetType();
-        while (type != null)
-        {
-            var prop = type.GetProperty(
-                propertyName,
-                BindingFlags.Public
-                    | BindingFlags.NonPublic
-                    | BindingFlags.Instance
-                    | BindingFlags.DeclaredOnly
-            );
-            if (prop != null)
-            {
-                prop.SetValue(obj, value);
-                return;
-            }
-            type = type.BaseType;
-        }
-    }
+    ) => MedicalRecord.Create(patientId, doctorId, appointmentId, chiefComplaint);
 }
