@@ -1,4 +1,3 @@
-using System.Reflection;
 using ClinicFlow.Application.Appointments.Commands.MarkAppointmentAsNoShowByStaff;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
@@ -34,7 +33,7 @@ public class MarkAppointmentAsNoShowByStaffCommandHandlerTests
     {
         // Arrange
         var command = new MarkAppointmentAsNoShowByStaffCommand(Guid.NewGuid(), Guid.NewGuid());
-        var appointment = CreateAppointment(command.AppointmentId);
+        var appointment = CreateAppointment();
 
         _appointmentRepositoryMock
             .Setup(x => x.GetByIdAsync(command.AppointmentId, It.IsAny<CancellationToken>()))
@@ -72,7 +71,7 @@ public class MarkAppointmentAsNoShowByStaffCommandHandlerTests
         exceptionAssertion.Which.EntityName.Should().Be(nameof(Appointment));
     }
 
-    private static Appointment CreateAppointment(Guid id)
+    private static Appointment CreateAppointment()
     {
         var scheduledDateTime = DateTime.UtcNow.AddDays(-1);
         var appointment = Appointment.Schedule(
@@ -85,28 +84,6 @@ public class MarkAppointmentAsNoShowByStaffCommandHandlerTests
                 scheduledDateTime.TimeOfDay.Add(TimeSpan.FromHours(1))
             )
         );
-        SetPrivateProperty(appointment, nameof(Appointment.Id), id);
         return appointment;
-    }
-
-    private static void SetPrivateProperty(object obj, string propertyName, object value)
-    {
-        var type = obj.GetType();
-        while (type != null)
-        {
-            var prop = type.GetProperty(
-                propertyName,
-                BindingFlags.Public
-                    | BindingFlags.NonPublic
-                    | BindingFlags.Instance
-                    | BindingFlags.DeclaredOnly
-            );
-            if (prop != null)
-            {
-                prop.SetValue(obj, value);
-                return;
-            }
-            type = type.BaseType;
-        }
     }
 }

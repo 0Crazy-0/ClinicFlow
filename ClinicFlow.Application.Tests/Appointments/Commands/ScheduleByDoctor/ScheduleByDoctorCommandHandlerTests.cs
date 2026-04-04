@@ -1,4 +1,3 @@
-using System.Reflection;
 using ClinicFlow.Application.Appointments.Commands.ScheduleByDoctor;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
@@ -52,16 +51,10 @@ public class ScheduleByDoctorCommandHandlerTests
             false
         );
 
-        var doctor = CreateDoctor(Guid.NewGuid(), command.InitiatorUserId, Guid.NewGuid());
-        var targetPatient = CreateTargetPatient(command.TargetPatientId, Guid.NewGuid());
-        var appointmentType = CreateAppointmentType(command.AppointmentTypeId);
-        var schedule = CreateSchedule(
-            Guid.NewGuid(),
-            doctor.Id,
-            scheduledDate.DayOfWeek,
-            startTime,
-            endTime
-        );
+        var doctor = CreateDoctor(command.InitiatorUserId, Guid.NewGuid());
+        var targetPatient = CreateTargetPatient(command.TargetPatientId);
+        var appointmentType = CreateAppointmentType();
+        var schedule = CreateSchedule(doctor.Id, scheduledDate.DayOfWeek, startTime, endTime);
 
         _doctorRepositoryMock
             .Setup(r => r.GetByUserIdAsync(command.InitiatorUserId, It.IsAny<CancellationToken>()))
@@ -139,7 +132,7 @@ public class ScheduleByDoctorCommandHandlerTests
             false
         );
 
-        var doctor = CreateDoctor(Guid.NewGuid(), command.InitiatorUserId, Guid.NewGuid());
+        var doctor = CreateDoctor(command.InitiatorUserId, Guid.NewGuid());
 
         _doctorRepositoryMock
             .Setup(r => r.GetByUserIdAsync(command.InitiatorUserId, It.IsAny<CancellationToken>()))
@@ -170,8 +163,8 @@ public class ScheduleByDoctorCommandHandlerTests
             false
         );
 
-        var doctor = CreateDoctor(Guid.NewGuid(), command.InitiatorUserId, Guid.NewGuid());
-        var targetPatient = CreateTargetPatient(command.TargetPatientId, Guid.NewGuid());
+        var doctor = CreateDoctor(command.InitiatorUserId, Guid.NewGuid());
+        var targetPatient = CreateTargetPatient(command.TargetPatientId);
 
         _doctorRepositoryMock
             .Setup(r => r.GetByUserIdAsync(command.InitiatorUserId, It.IsAny<CancellationToken>()))
@@ -193,74 +186,30 @@ public class ScheduleByDoctorCommandHandlerTests
         exceptionAssertion.Which.EntityName.Should().Be(nameof(AppointmentTypeDefinition));
     }
 
-    private static Doctor CreateDoctor(Guid id, Guid userId, Guid specialtyId)
-    {
-        var doctor = (Doctor)Activator.CreateInstance(typeof(Doctor), true)!;
-        SetPrivateProperty(doctor, nameof(Doctor.Id), id);
-        SetPrivateProperty(doctor, nameof(Doctor.UserId), userId);
-        SetPrivateProperty(doctor, nameof(Doctor.MedicalSpecialtyId), specialtyId);
-        return doctor;
-    }
+    private static Doctor CreateDoctor(Guid userId, Guid specialtyId) =>
+        Doctor.Create(userId, MedicalLicenseNumber.Create("1234567"), specialtyId, "555-1234", 101);
 
-    private static Patient CreateTargetPatient(Guid id, Guid userId)
-    {
-        var patient = (Patient)Activator.CreateInstance(typeof(Patient), true)!;
-        SetPrivateProperty(patient, nameof(Patient.Id), id);
-        SetPrivateProperty(patient, nameof(Patient.UserId), userId);
-        SetPrivateProperty(patient, nameof(Patient.DateOfBirth), DateTime.UtcNow.AddYears(-30));
-        return patient;
-    }
-
-    private static AppointmentTypeDefinition CreateAppointmentType(Guid id)
-    {
-        var type = (AppointmentTypeDefinition)
-            Activator.CreateInstance(typeof(AppointmentTypeDefinition), true)!;
-        SetPrivateProperty(type, nameof(AppointmentTypeDefinition.Id), id);
-        SetPrivateProperty(
-            type,
-            nameof(AppointmentTypeDefinition.Category),
-            AppointmentCategory.FollowUp
+    private static Patient CreateTargetPatient(Guid userId) =>
+        Patient.CreateSelf(
+            userId,
+            PersonName.Create("Test"),
+            DateTime.UtcNow.AddYears(-30),
+            DateTime.UtcNow
         );
-        var policy = AgeEligibilityPolicy.Create(0, 100, false); // Allow any age
-        SetPrivateProperty(type, nameof(AppointmentTypeDefinition.AgePolicy), policy);
-        return type;
-    }
+
+    private static AppointmentTypeDefinition CreateAppointmentType() =>
+        AppointmentTypeDefinition.Create(
+            AppointmentCategory.FollowUp,
+            "FollowUp",
+            "Follow up visit",
+            TimeSpan.FromMinutes(30),
+            AgeEligibilityPolicy.Create(0, 100, false)
+        );
 
     private static Schedule CreateSchedule(
-        Guid id,
         Guid doctorId,
         DayOfWeek dayOfWeek,
         TimeSpan start,
         TimeSpan end
-    )
-    {
-        var schedule = (Schedule)Activator.CreateInstance(typeof(Schedule), true)!;
-        SetPrivateProperty(schedule, nameof(Schedule.Id), id);
-        SetPrivateProperty(schedule, nameof(Schedule.DoctorId), doctorId);
-        SetPrivateProperty(schedule, nameof(Schedule.DayOfWeek), dayOfWeek);
-        SetPrivateProperty(schedule, nameof(Schedule.TimeRange), TimeRange.Create(start, end));
-        SetPrivateProperty(schedule, nameof(Schedule.IsActive), true);
-        return schedule;
-    }
-
-    private static void SetPrivateProperty(object obj, string propertyName, object value)
-    {
-        var type = obj.GetType();
-        while (type != null)
-        {
-            var prop = type.GetProperty(
-                propertyName,
-                BindingFlags.Public
-                    | BindingFlags.NonPublic
-                    | BindingFlags.Instance
-                    | BindingFlags.DeclaredOnly
-            );
-            if (prop != null)
-            {
-                prop.SetValue(obj, value);
-                return;
-            }
-            type = type.BaseType;
-        }
-    }
+    ) => Schedule.Create(doctorId, dayOfWeek, TimeRange.Create(start, end));
 }

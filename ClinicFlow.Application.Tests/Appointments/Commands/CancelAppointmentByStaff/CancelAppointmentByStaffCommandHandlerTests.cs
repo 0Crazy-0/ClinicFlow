@@ -1,5 +1,5 @@
-using System.Reflection;
 using ClinicFlow.Application.Appointments.Commands.CancelAppointmentByStaff;
+using ClinicFlow.Application.Tests.Shared;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Base;
@@ -197,7 +197,7 @@ public class CancelAppointmentByStaffCommandHandlerTests
             scheduledDate,
             timeRange
         );
-        SetPrivateProperty(appointment, nameof(Appointment.Id), id);
+        appointment.SetId(id);
         return appointment;
     }
 
@@ -210,40 +210,19 @@ public class CancelAppointmentByStaffCommandHandlerTests
             "555-1234",
             101
         );
-        SetPrivateProperty(doctor, nameof(Doctor.Id), id);
+        doctor.SetId(id);
         return doctor;
     }
 
     private static MedicalSpecialty CreateSpecialty(Guid id, int minCancellationHours = 24)
     {
-        var specialty = (MedicalSpecialty)Activator.CreateInstance(typeof(MedicalSpecialty), true)!;
-        SetPrivateProperty(specialty, nameof(MedicalSpecialty.Id), id);
-        SetPrivateProperty(
-            specialty,
-            nameof(MedicalSpecialty.MinCancellationHours),
+        var specialty = MedicalSpecialty.Create(
+            "Test Specialty",
+            "Test Description",
+            30,
             minCancellationHours
         );
+        specialty.SetId(id);
         return specialty;
-    }
-
-    private static void SetPrivateProperty(object obj, string propertyName, object value)
-    {
-        var type = obj.GetType();
-        while (type != null)
-        {
-            var prop = type.GetProperty(
-                propertyName,
-                BindingFlags.Public
-                    | BindingFlags.NonPublic
-                    | BindingFlags.Instance
-                    | BindingFlags.DeclaredOnly
-            );
-            if (prop != null)
-            {
-                prop.SetValue(obj, value);
-                return;
-            }
-            type = type.BaseType;
-        }
     }
 }

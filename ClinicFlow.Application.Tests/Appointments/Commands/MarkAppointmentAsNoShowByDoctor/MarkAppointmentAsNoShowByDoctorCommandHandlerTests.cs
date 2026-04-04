@@ -1,5 +1,5 @@
-using System.Reflection;
 using ClinicFlow.Application.Appointments.Commands.MarkAppointmentAsNoShowByDoctor;
+using ClinicFlow.Application.Tests.Shared;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
@@ -143,7 +143,7 @@ public class MarkAppointmentAsNoShowByDoctorCommandHandlerTests
                 scheduledDateTime.TimeOfDay.Add(TimeSpan.FromHours(1))
             )
         );
-        SetPrivateProperty(appointment, nameof(Appointment.Id), id);
+        appointment.SetId(id);
         return appointment;
     }
 
@@ -156,28 +156,7 @@ public class MarkAppointmentAsNoShowByDoctorCommandHandlerTests
             "Room 1",
             10
         );
-        SetPrivateProperty(doctor, nameof(Doctor.Id), id);
+        doctor.SetId(id);
         return doctor;
-    }
-
-    private static void SetPrivateProperty(object obj, string propertyName, object value)
-    {
-        var type = obj.GetType();
-        while (type != null)
-        {
-            var prop = type.GetProperty(
-                propertyName,
-                BindingFlags.Public
-                    | BindingFlags.NonPublic
-                    | BindingFlags.Instance
-                    | BindingFlags.DeclaredOnly
-            );
-            if (prop != null)
-            {
-                prop.SetValue(obj, value);
-                return;
-            }
-            type = type.BaseType;
-        }
     }
 }

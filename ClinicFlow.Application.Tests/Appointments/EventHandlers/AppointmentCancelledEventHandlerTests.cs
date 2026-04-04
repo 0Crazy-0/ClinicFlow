@@ -1,4 +1,3 @@
-using System.Reflection;
 using ClinicFlow.Application.Appointments.EventHandlers;
 using ClinicFlow.Application.Common.Models;
 using ClinicFlow.Domain.Entities;
@@ -28,10 +27,8 @@ public class AppointmentCancelledEventHandlerTests
     public async Task Handle_ShouldApplyPenalty_WhenStatusIsLateCancellation()
     {
         // Arrange
-        var appointmentId = Guid.NewGuid();
         var patientId = Guid.NewGuid();
         var appointment = CreateLateCancelledAppointment(
-            appointmentId,
             Guid.NewGuid(),
             patientId,
             Guid.NewGuid(),
@@ -65,10 +62,8 @@ public class AppointmentCancelledEventHandlerTests
     public async Task Handle_ShouldNotApplyPenalty_WhenStatusIsNotLateCancellation()
     {
         // Arrange
-        var appointmentId = Guid.NewGuid();
         var patientId = Guid.NewGuid();
         var appointment = CreateCancelledAppointment(
-            appointmentId,
             Guid.NewGuid(),
             patientId,
             Guid.NewGuid(),
@@ -97,7 +92,6 @@ public class AppointmentCancelledEventHandlerTests
     }
 
     private static Appointment CreateLateCancelledAppointment(
-        Guid id,
         Guid doctorId,
         Guid patientId,
         Guid typeId,
@@ -114,18 +108,19 @@ public class AppointmentCancelledEventHandlerTests
                 scheduledDateTime.TimeOfDay.Add(TimeSpan.FromHours(1))
             )
         );
-        SetPrivateProperty(appointment, nameof(Appointment.Id), id);
-        SetPrivateProperty(
-            appointment,
-            nameof(Appointment.Status),
-            AppointmentStatus.LateCancellation
+
+        appointment.Cancel(
+            Guid.NewGuid(),
+            "Late",
+            MedicalSpecialty.Create("Cardiology", "Heart", 60, 24),
+            scheduledDateTime.AddHours(-2),
+            false
         );
 
         return appointment;
     }
 
     private static Appointment CreateCancelledAppointment(
-        Guid id,
         Guid doctorId,
         Guid patientId,
         Guid typeId,
@@ -142,34 +137,15 @@ public class AppointmentCancelledEventHandlerTests
                 scheduledDateTime.TimeOfDay.Add(TimeSpan.FromHours(1))
             )
         );
-        SetPrivateProperty(appointment, nameof(Appointment.Id), id);
-        SetPrivateProperty(
-            appointment,
-            nameof(Appointment.Status),
-            AppointmentStatus.Cancelled
+
+        appointment.Cancel(
+            Guid.NewGuid(),
+            "Admin",
+            MedicalSpecialty.Create("Cardiology", "Heart", 60, 24),
+            scheduledDateTime.AddDays(-2),
+            true
         );
 
         return appointment;
-    }
-
-    private static void SetPrivateProperty(object obj, string propertyName, object value)
-    {
-        var type = obj.GetType();
-        while (type != null)
-        {
-            var prop = type.GetProperty(
-                propertyName,
-                BindingFlags.Public
-                    | BindingFlags.NonPublic
-                    | BindingFlags.Instance
-                    | BindingFlags.DeclaredOnly
-            );
-            if (prop != null)
-            {
-                prop.SetValue(obj, value);
-                return;
-            }
-            type = type.BaseType;
-        }
     }
 }

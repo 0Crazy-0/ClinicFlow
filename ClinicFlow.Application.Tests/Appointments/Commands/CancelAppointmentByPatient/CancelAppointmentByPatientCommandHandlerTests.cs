@@ -1,5 +1,5 @@
-using System.Reflection;
 using ClinicFlow.Application.Appointments.Commands.CancelAppointmentByPatient;
+using ClinicFlow.Application.Tests.Shared;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
@@ -330,7 +330,7 @@ public class CancelAppointmentByPatientCommandHandlerTests
             scheduledDate,
             timeRange
         );
-        SetPrivateProperty(appointment, nameof(Appointment.Id), id);
+        appointment.SetId(id);
         return appointment;
     }
 
@@ -342,7 +342,7 @@ public class CancelAppointmentByPatientCommandHandlerTests
             referenceTime.AddYears(-30),
             referenceTime
         );
-        SetPrivateProperty(patient, nameof(Patient.Id), id);
+        patient.SetId(id);
         return patient;
     }
 
@@ -354,7 +354,7 @@ public class CancelAppointmentByPatientCommandHandlerTests
             "Desc",
             TimeSpan.FromMinutes(30)
         );
-        SetPrivateProperty(typeDef, nameof(AppointmentTypeDefinition.Id), id);
+        typeDef.SetId(id);
         return typeDef;
     }
 
@@ -367,40 +367,19 @@ public class CancelAppointmentByPatientCommandHandlerTests
             "555-1234",
             101
         );
-        SetPrivateProperty(doctor, nameof(Doctor.Id), id);
+        doctor.SetId(id);
         return doctor;
     }
 
     private static MedicalSpecialty CreateSpecialty(Guid id, int minCancellationHours = 24)
     {
-        var specialty = (MedicalSpecialty)Activator.CreateInstance(typeof(MedicalSpecialty), true)!;
-        SetPrivateProperty(specialty, nameof(MedicalSpecialty.Id), id);
-        SetPrivateProperty(
-            specialty,
-            nameof(MedicalSpecialty.MinCancellationHours),
+        var specialty = MedicalSpecialty.Create(
+            "Test Specialty",
+            "Test Description",
+            30,
             minCancellationHours
         );
+        specialty.SetId(id);
         return specialty;
-    }
-
-    private static void SetPrivateProperty(object obj, string propertyName, object value)
-    {
-        var type = obj.GetType();
-        while (type != null)
-        {
-            var prop = type.GetProperty(
-                propertyName,
-                BindingFlags.Public
-                    | BindingFlags.NonPublic
-                    | BindingFlags.Instance
-                    | BindingFlags.DeclaredOnly
-            );
-            if (prop != null)
-            {
-                prop.SetValue(obj, value);
-                return;
-            }
-            type = type.BaseType;
-        }
     }
 }
