@@ -1,4 +1,3 @@
-using System.Reflection;
 using ClinicFlow.Application.Appointments.Queries.DTOs;
 using ClinicFlow.Application.Appointments.Queries.GetAppointmentsByDateRange;
 using ClinicFlow.Domain.Entities;
@@ -53,8 +52,8 @@ public class GetAppointmentsByDateRangeQueryHandlerTests
 
         var appointments = new List<Appointment>
         {
-            CreateAppointment(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), startDate.AddDays(1)),
-            CreateAppointment(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), startDate.AddDays(3)),
+            CreateAppointment(Guid.NewGuid(), Guid.NewGuid(), startDate.AddDays(1)),
+            CreateAppointment(Guid.NewGuid(), Guid.NewGuid(), startDate.AddDays(3)),
         };
 
         _appointmentRepositoryMock
@@ -79,41 +78,15 @@ public class GetAppointmentsByDateRangeQueryHandlerTests
     }
 
     private static Appointment CreateAppointment(
-        Guid id,
         Guid patientId,
         Guid doctorId,
         DateTime scheduledDate
-    )
-    {
-        var timeRange = TimeRange.Create(new TimeSpan(9, 0, 0), new TimeSpan(10, 0, 0));
-        var appointment = (Appointment)Activator.CreateInstance(typeof(Appointment), true)!;
-        SetPrivateProperty(appointment, nameof(Appointment.Id), id);
-        SetPrivateProperty(appointment, nameof(Appointment.PatientId), patientId);
-        SetPrivateProperty(appointment, nameof(Appointment.DoctorId), doctorId);
-        SetPrivateProperty(appointment, nameof(Appointment.AppointmentTypeId), Guid.NewGuid());
-        SetPrivateProperty(appointment, nameof(Appointment.ScheduledDate), scheduledDate);
-        SetPrivateProperty(appointment, nameof(Appointment.TimeRange), timeRange);
-        return appointment;
-    }
-
-    private static void SetPrivateProperty(object obj, string propertyName, object value)
-    {
-        var type = obj.GetType();
-        while (type != null)
-        {
-            var prop = type.GetProperty(
-                propertyName,
-                BindingFlags.Public
-                    | BindingFlags.NonPublic
-                    | BindingFlags.Instance
-                    | BindingFlags.DeclaredOnly
-            );
-            if (prop != null)
-            {
-                prop.SetValue(obj, value);
-                return;
-            }
-            type = type.BaseType;
-        }
-    }
+    ) =>
+        Appointment.Schedule(
+            patientId,
+            doctorId,
+            Guid.NewGuid(),
+            scheduledDate,
+            TimeRange.Create(new TimeSpan(9, 0, 0), new TimeSpan(10, 0, 0))
+        );
 }
