@@ -35,7 +35,7 @@ public class Schedule : BaseEntity
     /// Creates a new schedule slot for a doctor.
     /// </summary>
     /// <exception cref="DomainValidationException">Thrown when the doctor ID is empty, the day of week is invalid, or the time range is null.</exception>
-    internal static Schedule Create(Guid doctorId, DayOfWeek dayOfWeek, TimeRange timeRange)
+    public static Schedule Create(Guid doctorId, DayOfWeek dayOfWeek, TimeRange timeRange)
     {
         if (doctorId == Guid.Empty)
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
