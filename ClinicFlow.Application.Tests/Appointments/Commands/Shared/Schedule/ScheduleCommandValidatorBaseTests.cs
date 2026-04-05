@@ -26,6 +26,7 @@ public class ScheduleCommandValidatorBaseTests
     [Fact]
     public void Validate_ShouldBeValid_WhenAllPropertiesAreProvidedAndValid()
     {
+        // Arrange
         var command = new DummyScheduleCommand(
             Guid.NewGuid(),
             Guid.NewGuid(),
@@ -35,13 +36,17 @@ public class ScheduleCommandValidatorBaseTests
             new TimeSpan(11, 0, 0)
         );
 
+        // Act
         var result = _sut.TestValidate(command);
+
+        // Assert
         result.ShouldNotHaveAnyValidationErrors();
     }
 
     [Fact]
     public void Validate_ShouldHaveError_WhenInitiatorUserIdIsEmpty()
     {
+        // Arrange
         var command = new DummyScheduleCommand(
             Guid.Empty,
             Guid.NewGuid(),
@@ -51,13 +56,17 @@ public class ScheduleCommandValidatorBaseTests
             new TimeSpan(11, 0, 0)
         );
 
+        // Act
         var result = _sut.TestValidate(command);
+
+        // Assert
         result.ShouldHaveValidationErrorFor(x => x.InitiatorUserId);
     }
 
     [Fact]
     public void Validate_ShouldHaveError_WhenTargetPatientIdIsEmpty()
     {
+        // Arrange
         var command = new DummyScheduleCommand(
             Guid.NewGuid(),
             Guid.Empty,
@@ -67,13 +76,17 @@ public class ScheduleCommandValidatorBaseTests
             new TimeSpan(11, 0, 0)
         );
 
+        // Act
         var result = _sut.TestValidate(command);
+
+        // Assert
         result.ShouldHaveValidationErrorFor(x => x.TargetPatientId);
     }
 
     [Fact]
     public void Validate_ShouldHaveError_WhenAppointmentTypeIdIsEmpty()
     {
+        // Arrange
         var command = new DummyScheduleCommand(
             Guid.NewGuid(),
             Guid.NewGuid(),
@@ -83,13 +96,17 @@ public class ScheduleCommandValidatorBaseTests
             new TimeSpan(11, 0, 0)
         );
 
+        // Act
         var result = _sut.TestValidate(command);
+
+        // Assert
         result.ShouldHaveValidationErrorFor(x => x.AppointmentTypeId);
     }
 
     [Fact]
     public void Validate_ShouldHaveError_WhenScheduledDateIsInThePast()
     {
+        // Arrange
         var command = new DummyScheduleCommand(
             Guid.NewGuid(),
             Guid.NewGuid(),
@@ -99,13 +116,17 @@ public class ScheduleCommandValidatorBaseTests
             new TimeSpan(11, 0, 0)
         );
 
+        // Act
         var result = _sut.TestValidate(command);
+
+        // Assert
         result.ShouldHaveValidationErrorFor(x => x.ScheduledDate);
     }
 
     [Fact]
     public void Validate_ShouldHaveError_WhenStartTimeIsAfterEndTime()
     {
+        // Arrange
         var command = new DummyScheduleCommand(
             Guid.NewGuid(),
             Guid.NewGuid(),
@@ -115,7 +136,10 @@ public class ScheduleCommandValidatorBaseTests
             new TimeSpan(11, 0, 0)
         );
 
+        // Act
         var result = _sut.TestValidate(command);
+
+        // Assert
         result.ShouldHaveValidationErrorFor(x => x.StartTime);
         result.ShouldHaveValidationErrorFor(x => x.EndTime);
     }
