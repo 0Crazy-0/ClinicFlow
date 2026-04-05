@@ -54,7 +54,6 @@ public class CancelAppointmentByPatientCommandHandlerTests
         var typeId = Guid.NewGuid();
 
         var appointment = CreateAppointment(
-            command.AppointmentId,
             patientId,
             doctorId,
             typeId,
@@ -66,9 +65,9 @@ public class CancelAppointmentByPatientCommandHandlerTests
             command.InitiatorUserId,
             _fakeTime.GetUtcNow().UtcDateTime
         );
-        var typeDef = CreateAppointmentType(typeId);
-        var doctor = CreateDoctor(doctorId, command.InitiatorUserId, specialtyId);
-        var specialty = CreateSpecialty(specialtyId);
+        var typeDef = CreateAppointmentType();
+        var doctor = CreateDoctor(command.InitiatorUserId, specialtyId);
+        var specialty = MedicalSpecialty.Create("Test Specialty", "Test Description", 30, 24);
 
         _appointmentRepositoryMock
             .Setup(r => r.GetByIdAsync(command.AppointmentId, It.IsAny<CancellationToken>()))
@@ -140,7 +139,6 @@ public class CancelAppointmentByPatientCommandHandlerTests
         var typeId = Guid.NewGuid();
 
         var appointment = CreateAppointment(
-            command.AppointmentId,
             patientId,
             doctorId,
             typeId,
@@ -177,7 +175,6 @@ public class CancelAppointmentByPatientCommandHandlerTests
         var typeId = Guid.NewGuid();
 
         var appointment = CreateAppointment(
-            command.AppointmentId,
             patientId,
             doctorId,
             typeId,
@@ -223,7 +220,6 @@ public class CancelAppointmentByPatientCommandHandlerTests
         var typeId = Guid.NewGuid();
 
         var appointment = CreateAppointment(
-            command.AppointmentId,
             patientId,
             doctorId,
             typeId,
@@ -235,7 +231,7 @@ public class CancelAppointmentByPatientCommandHandlerTests
             command.InitiatorUserId,
             _fakeTime.GetUtcNow().UtcDateTime
         );
-        var typeDef = CreateAppointmentType(typeId);
+        var typeDef = CreateAppointmentType();
 
         _appointmentRepositoryMock
             .Setup(r => r.GetByIdAsync(command.AppointmentId, It.IsAny<CancellationToken>()))
@@ -274,7 +270,6 @@ public class CancelAppointmentByPatientCommandHandlerTests
         var typeId = Guid.NewGuid();
 
         var appointment = CreateAppointment(
-            command.AppointmentId,
             patientId,
             doctorId,
             typeId,
@@ -286,8 +281,8 @@ public class CancelAppointmentByPatientCommandHandlerTests
             command.InitiatorUserId,
             _fakeTime.GetUtcNow().UtcDateTime
         );
-        var typeDef = CreateAppointmentType(typeId);
-        var doctor = CreateDoctor(doctorId, command.InitiatorUserId, specialtyId);
+        var typeDef = CreateAppointmentType();
+        var doctor = CreateDoctor(command.InitiatorUserId, specialtyId);
 
         _appointmentRepositoryMock
             .Setup(r => r.GetByIdAsync(command.AppointmentId, It.IsAny<CancellationToken>()))
@@ -314,25 +309,18 @@ public class CancelAppointmentByPatientCommandHandlerTests
     }
 
     private static Appointment CreateAppointment(
-        Guid id,
         Guid patientId,
         Guid doctorId,
         Guid typeId,
         DateTime referenceTime
-    )
-    {
-        var scheduledDate = referenceTime.AddDays(2).Date;
-        var timeRange = TimeRange.Create(new TimeSpan(10, 0, 0), new TimeSpan(11, 0, 0));
-        var appointment = Appointment.Schedule(
+    ) =>
+        Appointment.Schedule(
             patientId,
             doctorId,
             typeId,
-            scheduledDate,
-            timeRange
+            referenceTime.AddDays(2).Date,
+            TimeRange.Create(new TimeSpan(10, 0, 0), new TimeSpan(11, 0, 0))
         );
-        appointment.SetId(id);
-        return appointment;
-    }
 
     private static Patient CreatePatient(Guid id, Guid userId, DateTime referenceTime)
     {
@@ -346,35 +334,14 @@ public class CancelAppointmentByPatientCommandHandlerTests
         return patient;
     }
 
-    private static AppointmentTypeDefinition CreateAppointmentType(Guid id)
-    {
-        var typeDef = AppointmentTypeDefinition.Create(
+    private static AppointmentTypeDefinition CreateAppointmentType() =>
+        AppointmentTypeDefinition.Create(
             AppointmentCategory.Checkup,
             "Checkup",
             "Desc",
             TimeSpan.FromMinutes(30)
         );
-        typeDef.SetId(id);
-        return typeDef;
-    }
 
-    private static Doctor CreateDoctor(Guid id, Guid userId, Guid specialtyId)
-    {
-        var doctor = Doctor.Create(
-            userId,
-            MedicalLicenseNumber.Create("1234567"),
-            specialtyId,
-            "555-1234",
-            101
-        );
-        doctor.SetId(id);
-        return doctor;
-    }
-
-    private static MedicalSpecialty CreateSpecialty(Guid id)
-    {
-        var specialty = MedicalSpecialty.Create("Test Specialty", "Test Description", 30, 24);
-        specialty.SetId(id);
-        return specialty;
-    }
+    private static Doctor CreateDoctor(Guid userId, Guid specialtyId) =>
+        Doctor.Create(userId, MedicalLicenseNumber.Create("1234567"), specialtyId, "555-1234", 101);
 }
