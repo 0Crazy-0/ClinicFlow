@@ -15,6 +15,7 @@ public class ScheduleByPatientCommandValidatorTests
     [Fact]
     public void Validate_ShouldBeValid_WhenAllPropertiesAreProvidedAndValid()
     {
+        // Arrange
         var command = new ScheduleByPatientCommand(
             Guid.NewGuid(),
             Guid.NewGuid(),
@@ -25,7 +26,10 @@ public class ScheduleByPatientCommandValidatorTests
             new TimeSpan(11, 0, 0)
         );
 
+        // Act
         var result = _sut.TestValidate(command);
+
+        // Assert
         result.ShouldNotHaveAnyValidationErrors();
     }
 }

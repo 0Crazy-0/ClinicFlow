@@ -37,6 +37,7 @@ public class ScheduleByDoctorCommandHandlerTests
     [Fact]
     public async Task Handle_ShouldSucceed_WhenValidRequest()
     {
+        // Arrange
         var scheduledDate = DateTime.UtcNow.AddDays(1).Date;
         var startTime = new TimeSpan(10, 0, 0);
         var endTime = new TimeSpan(11, 0, 0);
@@ -85,8 +86,10 @@ public class ScheduleByDoctorCommandHandlerTests
             )
             .ReturnsAsync(false);
 
+        // Act
         var result = await _sut.Handle(command, CancellationToken.None);
 
+        // Assert
         _appointmentRepositoryMock.Verify(
             r => r.CreateAsync(It.IsAny<Appointment>(), It.IsAny<CancellationToken>()),
             Times.Once
@@ -98,6 +101,7 @@ public class ScheduleByDoctorCommandHandlerTests
     [Fact]
     public async Task Handle_ShouldThrowEntityNotFoundException_WhenDoctorNotFound()
     {
+        // Arrange
         var command = new ScheduleByDoctorCommand(
             Guid.NewGuid(),
             Guid.NewGuid(),
@@ -111,8 +115,10 @@ public class ScheduleByDoctorCommandHandlerTests
             .Setup(r => r.GetByUserIdAsync(command.InitiatorUserId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((Doctor?)null);
 
+        // Act
         var act = async () => await _sut.Handle(command, CancellationToken.None);
 
+        // Assert
         var exceptionAssertion = await act.Should()
             .ThrowAsync<EntityNotFoundException>()
             .WithMessage(DomainErrors.General.NotFound);
@@ -122,6 +128,7 @@ public class ScheduleByDoctorCommandHandlerTests
     [Fact]
     public async Task Handle_ShouldThrowEntityNotFoundException_WhenPatientNotFound()
     {
+        // Arrange
         var command = new ScheduleByDoctorCommand(
             Guid.NewGuid(),
             Guid.NewGuid(),
@@ -142,8 +149,10 @@ public class ScheduleByDoctorCommandHandlerTests
             .Setup(r => r.GetByIdAsync(command.TargetPatientId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((Patient?)null);
 
+        // Act
         var act = async () => await _sut.Handle(command, CancellationToken.None);
 
+        // Assert
         var exceptionAssertion = await act.Should()
             .ThrowAsync<EntityNotFoundException>()
             .WithMessage(DomainErrors.General.NotFound);
@@ -153,6 +162,7 @@ public class ScheduleByDoctorCommandHandlerTests
     [Fact]
     public async Task Handle_ShouldThrowEntityNotFoundException_WhenAppointmentTypeNotFound()
     {
+        // Arrange
         var command = new ScheduleByDoctorCommand(
             Guid.NewGuid(),
             Guid.NewGuid(),
@@ -178,8 +188,10 @@ public class ScheduleByDoctorCommandHandlerTests
             .Setup(r => r.GetByIdAsync(command.AppointmentTypeId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((AppointmentTypeDefinition?)null);
 
+        // Act
         var act = async () => await _sut.Handle(command, CancellationToken.None);
 
+        // Assert
         var exceptionAssertion = await act.Should()
             .ThrowAsync<EntityNotFoundException>()
             .WithMessage(DomainErrors.General.NotFound);
