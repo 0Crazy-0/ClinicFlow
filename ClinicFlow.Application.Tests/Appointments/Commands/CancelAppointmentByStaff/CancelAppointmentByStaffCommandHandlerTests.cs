@@ -214,14 +214,9 @@ public class CancelAppointmentByStaffCommandHandlerTests
         return doctor;
     }
 
-    private static MedicalSpecialty CreateSpecialty(Guid id, int minCancellationHours = 24)
+    private static MedicalSpecialty CreateSpecialty(Guid id)
     {
-        var specialty = MedicalSpecialty.Create(
-            "Test Specialty",
-            "Test Description",
-            30,
-            minCancellationHours
-        );
+        var specialty = MedicalSpecialty.Create("Test Specialty", "Test Description", 30, 24);
         specialty.SetId(id);
         return specialty;
     }
