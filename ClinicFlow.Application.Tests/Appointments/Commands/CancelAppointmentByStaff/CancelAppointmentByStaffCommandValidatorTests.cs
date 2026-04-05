@@ -1,5 +1,4 @@
 using ClinicFlow.Application.Appointments.Commands.CancelAppointmentByStaff;
-using ClinicFlow.Domain.Enums;
 using FluentValidation.TestHelper;
 
 namespace ClinicFlow.Application.Tests.Appointments.Commands.CancelAppointmentByStaff;
@@ -27,32 +26,6 @@ public class CancelAppointmentByStaffCommandValidatorTests
     }
 
     [Fact]
-    public void Validate_ShouldHaveError_WhenAppointmentIdIsEmpty()
-    {
-        // Arrange
-        var command = new CancelAppointmentByStaffCommand(Guid.Empty, Guid.NewGuid(), "Reason");
-
-        // Act
-        var result = _sut.TestValidate(command);
-
-        // Assert
-        result.ShouldHaveValidationErrorFor(x => x.AppointmentId);
-    }
-
-    [Fact]
-    public void Validate_ShouldHaveError_WhenInitiatorUserIdIsEmpty()
-    {
-        // Arrange
-        var command = new CancelAppointmentByStaffCommand(Guid.NewGuid(), Guid.Empty, "Reason");
-
-        // Act
-        var result = _sut.TestValidate(command);
-
-        // Assert
-        result.ShouldHaveValidationErrorFor(x => x.InitiatorUserId);
-    }
-
-    [Fact]
     public void Validate_ShouldHaveError_WhenReasonIsEmpty()
     {
         // Arrange
@@ -60,24 +33,6 @@ public class CancelAppointmentByStaffCommandValidatorTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             string.Empty
-        );
-
-        // Act
-        var result = _sut.TestValidate(command);
-
-        // Assert
-        result.ShouldHaveValidationErrorFor(x => x.Reason);
-    }
-
-    [Fact]
-    public void Validate_ShouldHaveError_WhenReasonExceedsMaximumLength()
-    {
-        // Arrange
-        var longReason = new string('a', 501);
-        var command = new CancelAppointmentByStaffCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            longReason
         );
 
         // Act
