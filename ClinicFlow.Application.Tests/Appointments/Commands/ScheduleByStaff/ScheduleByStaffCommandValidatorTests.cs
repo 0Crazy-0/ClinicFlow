@@ -34,4 +34,27 @@ public class ScheduleByStaffCommandValidatorTests
         // Assert
         result.ShouldNotHaveAnyValidationErrors();
     }
+
+    [Fact]
+    public void Validate_ShouldHaveValidationError_WhenDoctorIdIsEmpty()
+    {
+        // Arrange
+        var command = new ScheduleByStaffCommand(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.Empty,
+            Guid.NewGuid(),
+            DateTime.UtcNow.AddDays(1).Date,
+            new TimeSpan(10, 0, 0),
+            new TimeSpan(11, 0, 0),
+            false,
+            false
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result.ShouldHaveValidationErrorFor(x => x.DoctorId);
+    }
 }
