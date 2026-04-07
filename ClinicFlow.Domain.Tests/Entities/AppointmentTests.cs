@@ -184,41 +184,6 @@ public class AppointmentTests
     }
 
     [Fact]
-    public void Confirm_ShouldSetStatusToConfirmed_WhenStatusIsScheduled()
-    {
-        // Arrange
-        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
-
-        // Act
-        appointment.Confirm(_fakeTime.GetUtcNow().UtcDateTime);
-
-        // Assert
-        appointment.Status.Should().Be(AppointmentStatus.Confirmed);
-    }
-
-    [Fact]
-    public void Confirm_ShouldThrowException_WhenStatusIsNotScheduled()
-    {
-        // Arrange
-        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
-        var specialty = CreateSpecialty(24);
-
-        //Act
-        appointment.Cancel(
-            Guid.NewGuid(),
-            "Cancelled",
-            specialty,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
-
-        //Assert
-        appointment
-            .Invoking(x => x.Confirm(_fakeTime.GetUtcNow().UtcDateTime))
-            .Should()
-            .Throw<AppointmentConfirmationNotAllowedException>();
-    }
-
-    [Fact]
     public void Reschedule_ShouldUpdateDateAndTime_WhenValid()
     {
         // Arrange

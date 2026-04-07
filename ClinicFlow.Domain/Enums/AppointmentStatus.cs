@@ -6,14 +6,9 @@ namespace ClinicFlow.Domain.Enums;
 public enum AppointmentStatus
 {
     /// <summary>
-    /// The appointment has been created and is awaiting confirmation.
+    /// The appointment has been created and is scheduled.
     /// </summary>
     Scheduled = 1,
-
-    /// <summary>
-    /// The appointment has been confirmed by the patient or staff.
-    /// </summary>
-    Confirmed = 2,
 
     /// <summary>
     /// The appointment is currently taking place.

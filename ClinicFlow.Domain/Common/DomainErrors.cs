@@ -29,7 +29,6 @@ public static class DomainErrors
         public const string CannotCancel = "CANCELLATION_NOT_ALLOWED";
         public const string UnauthorizedCancellation = "CANCELLATION_UNAUTHORIZED";
         public const string MissingCancellationReason = "MISSING_CANCELLATION_REASON";
-        public const string CannotConfirm = "CONFIRMATION_NOT_ALLOWED";
         public const string CannotReschedule = "RESCHEDULING_NOT_ALLOWED";
         public const string CannotMarkNoShow = "NO_SHOW_NOT_ALLOWED";
         public const string UnauthorizedNoShow = "NO_SHOW_UNAUTHORIZED";

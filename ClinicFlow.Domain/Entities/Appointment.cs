@@ -9,7 +9,7 @@ namespace ClinicFlow.Domain.Entities;
 
 /// <summary>
 /// Represents a medical appointment between a patient and a doctor.
-/// Enforces lifecycle transitions (scheduling, confirmation, rescheduling, and cancellation).
+/// Enforces the full appointment lifecycle transitions: scheduling, rescheduling, check-in, in-progress, completion, no-show, and cancellation.
 /// </summary>
 public class Appointment : BaseEntity
 {
@@ -30,8 +30,6 @@ public class Appointment : BaseEntity
     public string ReceptionistNotes { get; private set; } = string.Empty;
 
     public DateTime? CheckedInAt { get; private set; }
-
-    public DateTime? ConfirmedAt { get; private set; }
 
     public DateTime? CancelledAt { get; private set; }
 
@@ -131,29 +129,12 @@ public class Appointment : BaseEntity
     }
 
     /// <summary>
-    /// Confirms a scheduled appointment and raises an <see cref="AppointmentConfirmedEvent"/>.
-    /// </summary>
-    /// <exception cref="AppointmentConfirmationNotAllowedException">Thrown when the appointment is not in <see cref="AppointmentStatus.Scheduled"/> status.</exception>
-    public void Confirm(DateTime confirmedAt)
-    {
-        if (Status is not AppointmentStatus.Scheduled)
-            throw new AppointmentConfirmationNotAllowedException(
-                DomainErrors.Appointment.CannotConfirm
-            );
-
-        Status = AppointmentStatus.Confirmed;
-        ConfirmedAt = confirmedAt;
-
-        AddDomainEvent(new AppointmentConfirmedEvent(this));
-    }
-
-    /// <summary>
     /// Marks the appointment as checked in by staff, meaning the patient has arrived at the clinic.
     /// </summary>
     /// <exception cref="DomainValidationException"> Thrown when the appointment status is not <see cref="AppointmentStatus.Scheduled"/>. </exception>
     public void CheckIn(DateTime checkedInAt)
     {
-        if (Status is not (AppointmentStatus.Scheduled or AppointmentStatus.Confirmed))
+        if (Status is not AppointmentStatus.Scheduled)
             throw new DomainValidationException(DomainErrors.Appointment.CannotCheckIn);
 
         Status = AppointmentStatus.CheckedIn;
@@ -240,7 +221,7 @@ public class Appointment : BaseEntity
 
     private void MarkAsNoShow()
     {
-        if (Status is not (AppointmentStatus.Scheduled or AppointmentStatus.Confirmed))
+        if (Status is not AppointmentStatus.Scheduled)
             throw new DomainValidationException(DomainErrors.Appointment.CannotMarkNoShow);
 
         Status = AppointmentStatus.NoShow;

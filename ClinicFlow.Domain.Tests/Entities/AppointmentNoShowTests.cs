@@ -58,16 +58,13 @@ public class AppointmentNoShowTests
     }
 
     [Fact]
-    public void MarkAsNoShowByStaff_ShouldSetStatusToNoShow_WhenStatusIsConfirmed()
+    public void MarkAsNoShowByStaff_ShouldSetStatusToNoShow_WhenStatusIsScheduled()
     {
         // Arrange
         var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
-        appointment.Confirm(_fakeTime.GetUtcNow().UtcDateTime);
         appointment.ClearDomainEvents();
-
         // Act
         appointment.MarkAsNoShowByStaff();
-
         // Assert
         appointment.Status.Should().Be(AppointmentStatus.NoShow);
         appointment.DomainEvents.Should().ContainSingle(e => e is AppointmentMarkedAsNoShowEvent);
