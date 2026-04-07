@@ -8,12 +8,14 @@ using ClinicFlow.Domain.Services.Policies;
 using ClinicFlow.Domain.Tests.Shared;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
+using Microsoft.Extensions.Time.Testing;
 using Moq;
 
 namespace ClinicFlow.Domain.Tests.Services;
 
 public class MedicalEncounterServiceTests
 {
+    private readonly FakeTimeProvider _fakeTime = new();
     private readonly Mock<IMedicalRecordValidationPolicy> _mockPolicy1;
     private readonly Mock<IMedicalRecordValidationPolicy> _mockPolicy2;
     private readonly Mock<IJsonSchemaValidator> _mockJsonValidator;
@@ -45,6 +47,7 @@ public class MedicalEncounterServiceTests
                     ExpectedDoctor = null!,
                     Appointment = null!,
                     AppointmentTypeDefinition = null!,
+                    CompletedAt = _fakeTime.GetUtcNow().UtcDateTime,
                 }
             );
 
@@ -77,8 +80,9 @@ public class MedicalEncounterServiceTests
         var context = new MedicalEncounterContext
         {
             ExpectedDoctor = null!,
-            Appointment = CreateAppointment(Guid.NewGuid()),
+            Appointment = CreateAppointment(Guid.NewGuid(), _fakeTime.GetUtcNow().UtcDateTime),
             AppointmentTypeDefinition = CreateAppointmentType(),
+            CompletedAt = _fakeTime.GetUtcNow().UtcDateTime,
         };
 
         // Act
@@ -100,6 +104,7 @@ public class MedicalEncounterServiceTests
             ExpectedDoctor = CreateDoctor(Guid.NewGuid()),
             Appointment = null!,
             AppointmentTypeDefinition = CreateAppointmentType(),
+            CompletedAt = _fakeTime.GetUtcNow().UtcDateTime,
         };
 
         // Act
@@ -119,8 +124,9 @@ public class MedicalEncounterServiceTests
         var context = new MedicalEncounterContext
         {
             ExpectedDoctor = CreateDoctor(Guid.NewGuid()),
-            Appointment = CreateAppointment(Guid.NewGuid()),
+            Appointment = CreateAppointment(Guid.NewGuid(), _fakeTime.GetUtcNow().UtcDateTime),
             AppointmentTypeDefinition = null!,
+            CompletedAt = _fakeTime.GetUtcNow().UtcDateTime,
         };
 
         // Act
@@ -144,8 +150,9 @@ public class MedicalEncounterServiceTests
         var context = new MedicalEncounterContext
         {
             ExpectedDoctor = CreateDoctor(expectedDoctorId),
-            Appointment = CreateAppointment(appointmentId),
+            Appointment = CreateAppointment(appointmentId, _fakeTime.GetUtcNow().UtcDateTime),
             AppointmentTypeDefinition = CreateAppointmentType(),
+            CompletedAt = _fakeTime.GetUtcNow().UtcDateTime,
         };
 
         // Act
@@ -169,8 +176,12 @@ public class MedicalEncounterServiceTests
         var context = new MedicalEncounterContext
         {
             ExpectedDoctor = CreateDoctor(doctorId),
-            Appointment = CreateAppointment(expectedAppointmentId),
+            Appointment = CreateAppointment(
+                expectedAppointmentId,
+                _fakeTime.GetUtcNow().UtcDateTime
+            ),
             AppointmentTypeDefinition = CreateAppointmentType(),
+            CompletedAt = _fakeTime.GetUtcNow().UtcDateTime,
         };
 
         // Act
@@ -198,8 +209,9 @@ public class MedicalEncounterServiceTests
         var context = new MedicalEncounterContext
         {
             ExpectedDoctor = CreateDoctor(doctorId),
-            Appointment = CreateAppointment(appointmentId),
+            Appointment = CreateAppointment(appointmentId, _fakeTime.GetUtcNow().UtcDateTime),
             AppointmentTypeDefinition = appointmentType,
+            CompletedAt = _fakeTime.GetUtcNow().UtcDateTime,
             ProvidedDetails = providedDetails,
         };
 
@@ -368,16 +380,20 @@ public class MedicalEncounterServiceTests
         return doctor;
     }
 
-    private static Appointment CreateAppointment(Guid id)
+    private static Appointment CreateAppointment(Guid id, DateTime dt)
     {
         var appointment = Appointment.Schedule(
             Guid.NewGuid(),
             Guid.NewGuid(),
             Guid.NewGuid(),
-            DateTime.UtcNow.Date.AddDays(1),
+            dt.AddDays(1).Date,
             TimeRange.Create(new TimeSpan(10, 0, 0), new TimeSpan(11, 0, 0))
         );
         appointment.SetId(id);
+
+        appointment.CheckIn(dt);
+        appointment.Start(appointment.DoctorId, dt);
+
         return appointment;
     }
 

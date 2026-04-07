@@ -12,4 +12,5 @@ public sealed record class MedicalEncounterContext
     public required Appointment Appointment { get; init; }
     public required AppointmentTypeDefinition AppointmentTypeDefinition { get; init; }
     public IReadOnlyList<IClinicalDetailRecord> ProvidedDetails { get; init; } = [];
+    public required DateTime CompletedAt { get; init; }
 }
