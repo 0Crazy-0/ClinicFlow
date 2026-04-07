@@ -16,7 +16,8 @@ public sealed class CompleteMedicalEncounterCommandHandler(
     IAppointmentTypeDefinitionRepository appointmentTypeRepository,
     IMedicalRecordRepository medicalRecordRepository,
     MedicalEncounterService medicalEncounterService,
-    IUnitOfWork unitOfWork
+    IUnitOfWork unitOfWork,
+    TimeProvider timeProvider
 ) : IRequestHandler<CompleteMedicalEncounterCommand, Guid>
 {
     public async Task<Guid> Handle(
@@ -63,6 +64,7 @@ public sealed class CompleteMedicalEncounterCommandHandler(
             Appointment = appointment,
             AppointmentTypeDefinition = appointmentType,
             ProvidedDetails = details,
+            CompletedAt = timeProvider.GetUtcNow().UtcDateTime,
         };
 
         var medicalRecord = MedicalRecord.Create(

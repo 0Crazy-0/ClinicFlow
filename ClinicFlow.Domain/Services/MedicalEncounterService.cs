@@ -48,6 +48,8 @@ public class MedicalEncounterService(
 
         foreach (var detail in context.ProvidedDetails)
             record.AddClinicalDetail(detail);
+
+        context.Appointment.Complete(context.CompletedAt);
     }
 
     /// <summary>

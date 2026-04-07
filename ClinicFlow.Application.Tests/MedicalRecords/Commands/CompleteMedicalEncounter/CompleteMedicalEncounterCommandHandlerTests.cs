@@ -10,6 +10,7 @@ using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Policies;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
+using Microsoft.Extensions.Time.Testing;
 using Moq;
 
 namespace ClinicFlow.Application.Tests.MedicalRecords.Commands.CompleteMedicalEncounter;
@@ -21,6 +22,7 @@ public class CompleteMedicalEncounterCommandHandlerTests
     private readonly Mock<IAppointmentTypeDefinitionRepository> _appointmentTypeRepositoryMock;
     private readonly Mock<IMedicalRecordRepository> _medicalRecordRepositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+    private readonly FakeTimeProvider _fakeTime = new();
     private readonly MedicalEncounterService _medicalEncounterService;
     private readonly CompleteMedicalEncounterCommandHandler _sut;
 
@@ -42,7 +44,8 @@ public class CompleteMedicalEncounterCommandHandlerTests
             _appointmentTypeRepositoryMock.Object,
             _medicalRecordRepositoryMock.Object,
             _medicalEncounterService,
-            _unitOfWorkMock.Object
+            _unitOfWorkMock.Object,
+            _fakeTime
         );
     }
 
@@ -64,7 +67,13 @@ public class CompleteMedicalEncounterCommandHandlerTests
         );
 
         var doctor = CreateDoctor(doctorId);
-        var appointment = CreateAppointment(appointmentId, appointmentTypeId, patientId, doctorId);
+        var appointment = CreateAppointment(
+            appointmentId,
+            appointmentTypeId,
+            patientId,
+            doctorId,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
         var appointmentType = CreateAppointmentTypeDefinition();
 
         _doctorRepositoryMock.Setup(x => x.GetByIdAsync(doctorId)).ReturnsAsync(doctor);
@@ -171,7 +180,13 @@ public class CompleteMedicalEncounterCommandHandlerTests
         );
 
         var doctor = CreateDoctor(doctorId);
-        var appointment = CreateAppointment(appointmentId, appointmentTypeId, patientId, doctorId);
+        var appointment = CreateAppointment(
+            appointmentId,
+            appointmentTypeId,
+            patientId,
+            doctorId,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
 
         _doctorRepositoryMock.Setup(x => x.GetByIdAsync(doctorId)).ReturnsAsync(doctor);
         _appointmentRepositoryMock
@@ -208,17 +223,22 @@ public class CompleteMedicalEncounterCommandHandlerTests
         Guid id,
         Guid appointmentTypeId,
         Guid patientId,
-        Guid doctorId
+        Guid doctorId,
+        DateTime dt
     )
     {
         var appointment = Appointment.Schedule(
             patientId,
             doctorId,
             appointmentTypeId,
-            DateTime.UtcNow.AddDays(1),
+            dt.AddDays(1).Date,
             TimeRange.Create(new TimeSpan(9, 0, 0), new TimeSpan(10, 0, 0))
         );
         appointment.SetId(id);
+
+        appointment.CheckIn(dt);
+        appointment.Start(doctorId, dt);
+
         return appointment;
     }
 

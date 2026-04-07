@@ -29,6 +29,8 @@ public class Appointment : BaseEntity
 
     public string ReceptionistNotes { get; private set; } = string.Empty;
 
+    public DateTime? CheckedInAt { get; private set; }
+
     public DateTime? ConfirmedAt { get; private set; }
 
     public DateTime? CancelledAt { get; private set; }
@@ -143,6 +145,52 @@ public class Appointment : BaseEntity
         ConfirmedAt = confirmedAt;
 
         AddDomainEvent(new AppointmentConfirmedEvent(this));
+    }
+
+    /// <summary>
+    /// Marks the appointment as checked in by staff, meaning the patient has arrived at the clinic.
+    /// </summary>
+    /// <exception cref="DomainValidationException"> Thrown when the appointment status is not <see cref="AppointmentStatus.Scheduled"/>. </exception>
+    public void CheckIn(DateTime checkedInAt)
+    {
+        if (Status is not (AppointmentStatus.Scheduled or AppointmentStatus.Confirmed))
+            throw new DomainValidationException(DomainErrors.Appointment.CannotCheckIn);
+
+        Status = AppointmentStatus.CheckedIn;
+        CheckedInAt = checkedInAt;
+
+        AddDomainEvent(new AppointmentCheckedInEvent(this, checkedInAt));
+    }
+
+    /// <summary>
+    /// Marks the appointment as started, meaning the doctor has initiated the consultation.
+    /// </summary>
+    /// <exception cref="DomainValidationException"> Thrown when the appointment status is not <see cref="AppointmentStatus.CheckedIn"/>. </exception>
+    public void Start(Guid initiatorDoctorId, DateTime startedAt)
+    {
+        if (initiatorDoctorId != DoctorId)
+            throw new DomainValidationException(DomainErrors.Appointment.UnauthorizedDoctor);
+
+        if (Status is not AppointmentStatus.CheckedIn)
+            throw new DomainValidationException(DomainErrors.Appointment.CannotStart);
+
+        Status = AppointmentStatus.InProgress;
+
+        AddDomainEvent(new AppointmentStartedEvent(this, startedAt));
+    }
+
+    /// <summary>
+    /// Marks the appointment as completed, meaning the consultation has finished.
+    /// </summary>
+    /// <exception cref="DomainValidationException"> Thrown when the appointment status is not <see cref="AppointmentStatus.InProgress"/>. </exception>
+    public void Complete(DateTime completedAt)
+    {
+        if (Status is not AppointmentStatus.InProgress)
+            throw new DomainValidationException(DomainErrors.Appointment.CannotComplete);
+
+        Status = AppointmentStatus.Completed;
+
+        AddDomainEvent(new AppointmentCompletedEvent(this, completedAt));
     }
 
     /// <summary>

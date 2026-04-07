@@ -36,6 +36,10 @@ public static class DomainErrors
         public const string Conflict = "APPOINTMENT_CONFLICT";
         public const string DataMismatch = "APPOINTMENT_DATA_MISMATCH";
         public const string UnauthorizedScheduling = "SCHEDULING_UNAUTHORIZED";
+        public const string CannotCheckIn = "CHECK_IN_NOT_ALLOWED";
+        public const string CannotStart = "START_NOT_ALLOWED";
+        public const string CannotComplete = "COMPLETE_NOT_ALLOWED";
+        public const string UnauthorizedDoctor = "UNAUTHORIZED_DOCTOR";
     }
 
     public static class AppointmentType
