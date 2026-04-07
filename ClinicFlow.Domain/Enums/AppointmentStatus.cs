@@ -23,7 +23,7 @@ public enum AppointmentStatus
     /// <summary>
     /// The appointment has been successfully completed.
     /// </summary>
-    completed = 4,
+    Completed = 4,
 
     /// <summary>
     /// The appointment was cancelled within the allowed cancellation window.
@@ -39,4 +39,9 @@ public enum AppointmentStatus
     /// The appointment was cancelled after the allowed cancellation window, incurring a penalty.
     /// </summary>
     LateCancellation = 7,
+
+    /// <summary>
+    /// The patient has arrived at the clinic and checked in, waiting for the doctor.
+    /// </summary>
+    CheckedIn = 8,
 }

@@ -234,6 +234,115 @@ public class AppointmentTests
         appointment.TimeRange.Should().Be(newTimeRange);
     }
 
+    [Fact]
+    public void CheckIn_ShouldSetStatusToCheckedIn_WhenStatusIsScheduled()
+    {
+        // Arrange
+        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+
+        // Act
+        appointment.CheckIn(_fakeTime.GetUtcNow().UtcDateTime);
+
+        // Assert
+        appointment.Status.Should().Be(AppointmentStatus.CheckedIn);
+        appointment.CheckedInAt.Should().Be(_fakeTime.GetUtcNow().UtcDateTime);
+        appointment.DomainEvents.Should().Contain(e => e is AppointmentCheckedInEvent);
+    }
+
+    [Fact]
+    public void CheckIn_ShouldThrowException_WhenStatusIsNotScheduled()
+    {
+        // Arrange
+        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var specialty = CreateSpecialty(24);
+        appointment.Cancel(Guid.NewGuid(), "Reason", specialty, _fakeTime.GetUtcNow().UtcDateTime);
+
+        // Act
+        var act = () => appointment.CheckIn(_fakeTime.GetUtcNow().UtcDateTime);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Appointment.CannotCheckIn);
+    }
+
+    [Fact]
+    public void Start_ShouldSetStatusToInProgress_WhenValid()
+    {
+        // Arrange
+        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        appointment.CheckIn(_fakeTime.GetUtcNow().UtcDateTime);
+
+        // Act
+        appointment.Start(appointment.DoctorId, _fakeTime.GetUtcNow().UtcDateTime);
+
+        // Assert
+        appointment.Status.Should().Be(AppointmentStatus.InProgress);
+        appointment.DomainEvents.Should().Contain(e => e is AppointmentStartedEvent);
+    }
+
+    [Fact]
+    public void Start_ShouldThrowException_WhenDoctorIdDiffers()
+    {
+        // Arrange
+        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        appointment.CheckIn(_fakeTime.GetUtcNow().UtcDateTime);
+
+        // Act
+        var act = () => appointment.Start(Guid.NewGuid(), _fakeTime.GetUtcNow().UtcDateTime);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Appointment.UnauthorizedDoctor);
+    }
+
+    [Fact]
+    public void Start_ShouldThrowException_WhenStatusIsNotCheckedIn()
+    {
+        // Arrange
+        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+
+        // Act
+        var act = () => appointment.Start(appointment.DoctorId, _fakeTime.GetUtcNow().UtcDateTime);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Appointment.CannotStart);
+    }
+
+    [Fact]
+    public void Complete_ShouldSetStatusToCompleted_WhenStatusIsInProgress()
+    {
+        // Arrange
+        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        appointment.CheckIn(_fakeTime.GetUtcNow().UtcDateTime);
+        appointment.Start(appointment.DoctorId, _fakeTime.GetUtcNow().UtcDateTime);
+
+        // Act
+        appointment.Complete(_fakeTime.GetUtcNow().UtcDateTime);
+
+        // Assert
+        appointment.Status.Should().Be(AppointmentStatus.Completed);
+        appointment.DomainEvents.Should().Contain(e => e is AppointmentCompletedEvent);
+    }
+
+    [Fact]
+    public void Complete_ShouldThrowException_WhenStatusIsNotInProgress()
+    {
+        // Arrange
+        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+
+        // Act
+        var act = () => appointment.Complete(_fakeTime.GetUtcNow().UtcDateTime);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Appointment.CannotComplete);
+    }
+
     private static Appointment CreateAppointment(DateTime scheduledDateTime) =>
         Appointment.Schedule(
             Guid.NewGuid(),
