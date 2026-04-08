@@ -15,3 +15,4 @@
 - [ ] Code follows project standards
 - [ ] Tests pass
 - [ ] No Console.WriteLine or dead code
+- [ ] Test / QA
