@@ -156,7 +156,9 @@ public class CancelAppointmentByPatientCommandHandlerTests
         var act = async () => await _sut.Handle(command, CancellationToken.None);
 
         // Assert
-        var exceptionAssertion = await act.Should().ThrowAsync<EntityNotFoundException>();
+        var exceptionAssertion = await act.Should()
+            .ThrowAsync<EntityNotFoundException>()
+            .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(Patient));
     }
 
@@ -201,7 +203,9 @@ public class CancelAppointmentByPatientCommandHandlerTests
         var act = async () => await _sut.Handle(command, CancellationToken.None);
 
         // Assert
-        var exceptionAssertion = await act.Should().ThrowAsync<EntityNotFoundException>();
+        var exceptionAssertion = await act.Should()
+            .ThrowAsync<EntityNotFoundException>()
+            .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(AppointmentTypeDefinition));
     }
 
@@ -250,7 +254,9 @@ public class CancelAppointmentByPatientCommandHandlerTests
         var act = async () => await _sut.Handle(command, CancellationToken.None);
 
         // Assert
-        var exceptionAssertion = await act.Should().ThrowAsync<EntityNotFoundException>();
+        var exceptionAssertion = await act.Should()
+            .ThrowAsync<EntityNotFoundException>()
+            .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(Doctor));
     }
 
@@ -304,7 +310,9 @@ public class CancelAppointmentByPatientCommandHandlerTests
         var act = async () => await _sut.Handle(command, CancellationToken.None);
 
         // Assert
-        var exceptionAssertion = await act.Should().ThrowAsync<EntityNotFoundException>();
+        var exceptionAssertion = await act.Should()
+            .ThrowAsync<EntityNotFoundException>()
+            .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(MedicalSpecialty));
     }
 
