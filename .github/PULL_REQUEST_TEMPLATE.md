@@ -7,6 +7,7 @@
 - [ ] Refactor
 - [ ] Documentation
 - [ ] Style / Tooling
+- [ ] Test / QA
 
 ## How to test
 <!-- Steps to verify this works as expected -->
@@ -15,4 +16,3 @@
 - [ ] Code follows project standards
 - [ ] Tests pass
 - [ ] No Console.WriteLine or dead code
-- [ ] Test / QA
