@@ -16,7 +16,7 @@ public class MarkAppointmentAsNoShowByStaffCommandValidatorTests
     public void Validate_ShouldBeValid_WhenAllPropertiesAreProvidedAndValid()
     {
         // Arrange
-        var command = new MarkAppointmentAsNoShowByStaffCommand(Guid.NewGuid(), Guid.NewGuid());
+        var command = new MarkAppointmentAsNoShowByStaffCommand(Guid.NewGuid());
 
         // Act
         var result = _sut.TestValidate(command);
@@ -29,25 +29,12 @@ public class MarkAppointmentAsNoShowByStaffCommandValidatorTests
     public void Validate_ShouldHaveError_WhenAppointmentIdIsEmpty()
     {
         // Arrange
-        var command = new MarkAppointmentAsNoShowByStaffCommand(Guid.Empty, Guid.NewGuid());
+        var command = new MarkAppointmentAsNoShowByStaffCommand(Guid.Empty);
 
         // Act
         var result = _sut.TestValidate(command);
 
         // Assert
         result.ShouldHaveValidationErrorFor(x => x.AppointmentId);
-    }
-
-    [Fact]
-    public void Validate_ShouldHaveError_WhenInitiatorUserIdIsEmpty()
-    {
-        // Arrange
-        var command = new MarkAppointmentAsNoShowByStaffCommand(Guid.NewGuid(), Guid.Empty);
-
-        // Act
-        var result = _sut.TestValidate(command);
-
-        // Assert
-        result.ShouldHaveValidationErrorFor(x => x.InitiatorUserId);
     }
 }

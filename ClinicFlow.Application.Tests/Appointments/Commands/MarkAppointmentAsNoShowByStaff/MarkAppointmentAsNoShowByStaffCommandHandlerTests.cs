@@ -32,7 +32,7 @@ public class MarkAppointmentAsNoShowByStaffCommandHandlerTests
     public async Task Handle_ShouldMarkAsNoShow()
     {
         // Arrange
-        var command = new MarkAppointmentAsNoShowByStaffCommand(Guid.NewGuid(), Guid.NewGuid());
+        var command = new MarkAppointmentAsNoShowByStaffCommand(Guid.NewGuid());
         var appointment = CreateAppointment();
 
         _appointmentRepositoryMock
@@ -55,7 +55,7 @@ public class MarkAppointmentAsNoShowByStaffCommandHandlerTests
     public async Task Handle_ShouldThrowEntityNotFound_WhenAppointmentNotFound()
     {
         // Arrange
-        var command = new MarkAppointmentAsNoShowByStaffCommand(Guid.NewGuid(), Guid.NewGuid());
+        var command = new MarkAppointmentAsNoShowByStaffCommand(Guid.NewGuid());
 
         _appointmentRepositoryMock
             .Setup(x => x.GetByIdAsync(command.AppointmentId, It.IsAny<CancellationToken>()))
