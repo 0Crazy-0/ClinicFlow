@@ -91,4 +91,53 @@ public class DoctorTests
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.Validation.ValueRequired);
     }
+
+    [Fact]
+    public void UpdateProfile_ShouldUpdateBiographyAndRoomNumber_WhenValidParameters()
+    {
+        // Arrange
+        var doctor = Doctor.Create(
+            Guid.NewGuid(),
+            MedicalLicenseNumber.Create("12345"),
+            Guid.NewGuid(),
+            "Original biography",
+            101
+        );
+
+        var newBiography = "Updated biography with new certifications";
+        var newRoomNumber = 205;
+
+        // Act
+        doctor.UpdateProfile(newBiography, newRoomNumber);
+
+        // Assert
+        doctor.Biography.Should().Be(newBiography);
+        doctor.ConsultationRoomNumber.Should().Be(newRoomNumber);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    [InlineData(-100)]
+    public void UpdateProfile_ShouldThrowException_WhenConsultationRoomNumberIsZeroOrNegative(
+        int roomNumber
+    )
+    {
+        // Arrange
+        var doctor = Doctor.Create(
+            Guid.NewGuid(),
+            MedicalLicenseNumber.Create("12345"),
+            Guid.NewGuid(),
+            "Biography",
+            101
+        );
+
+        // Act
+        var act = () => doctor.UpdateProfile("New biography", roomNumber);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueMustBePositive);
+    }
 }

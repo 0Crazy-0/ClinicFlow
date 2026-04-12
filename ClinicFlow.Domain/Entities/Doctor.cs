@@ -64,4 +64,17 @@ public class Doctor : BaseEntity
             consultationRoomNumber
         );
     }
+
+    /// <summary>
+    /// Updates the doctor's profile information.
+    /// </summary>
+    /// <exception cref="DomainValidationException">Thrown when the consultation room number is not positive.</exception>
+    public void UpdateProfile(string biography, int consultationRoomNumber)
+    {
+        if (consultationRoomNumber <= 0)
+            throw new DomainValidationException(DomainErrors.Validation.ValueMustBePositive);
+
+        Biography = biography;
+        ConsultationRoomNumber = consultationRoomNumber;
+    }
 }
