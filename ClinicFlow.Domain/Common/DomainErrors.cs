@@ -55,6 +55,8 @@ public static class DomainErrors
         public const string InvalidDayOfWeek = "INVALID_DAY_OF_WEEK";
         public const string InvalidTimeRange = "INVALID_TIME_RANGE";
         public const string DoctorNotAvailable = "DOCTOR_NOT_AVAILABLE";
+        public const string ScheduleAlreadyExists = "SCHEDULE_ALREADY_EXISTS";
+        public const string AlreadyInactive = "SCHEDULE_ALREADY_INACTIVE";
     }
 
     public static class Patient

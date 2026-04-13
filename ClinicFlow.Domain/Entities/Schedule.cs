@@ -1,5 +1,6 @@
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Exceptions.Base;
+using ClinicFlow.Domain.Exceptions.Scheduling;
 using ClinicFlow.Domain.ValueObjects;
 
 namespace ClinicFlow.Domain.Entities;
@@ -48,8 +49,42 @@ public class Schedule : BaseEntity
     }
 
     /// <summary>
+    /// Deactivates this schedule slot, preventing new appointments from being booked on this time range.
+    /// Existing appointments are not affected.
+    /// </summary>
+    /// <exception cref="DomainValidationException">Thrown when the schedule is already inactive.</exception>
+    public void Deactivate()
+    {
+        if (!IsActive)
+            throw new DomainValidationException(DomainErrors.Schedule.AlreadyInactive);
+
+        IsActive = false;
+    }
+
+    /// <summary>
     /// Checks whether this schedule slot fully covers the requested time range and is active.
     /// </summary>
     internal bool CoversTimeRange(TimeRange requestedRange) =>
         IsActive && TimeRange.Covers(requestedRange);
+
+    /// <summary>
+    /// Verifies that no active schedule already exists for the given doctor on the specified day.
+    /// </summary>
+    /// <param name="existingSchedules">The doctor's existing schedule records.</param>
+    /// <param name="doctorId">The doctor's unique identifier.</param>
+    /// <param name="dayOfWeek">The day of week to check for duplicates.</param>
+    /// <exception cref="ScheduleAlreadyExistsException">Thrown when an active schedule already exists for the given day.</exception>
+    public static void EnsureNoDuplicateDay(
+        IReadOnlyList<Schedule> existingSchedules,
+        Guid doctorId,
+        DayOfWeek dayOfWeek
+    )
+    {
+        if (existingSchedules.Any(s => s.DayOfWeek == dayOfWeek && s.IsActive))
+            throw new ScheduleAlreadyExistsException(
+                DomainErrors.Schedule.ScheduleAlreadyExists,
+                doctorId,
+                dayOfWeek
+            );
+    }
 }
