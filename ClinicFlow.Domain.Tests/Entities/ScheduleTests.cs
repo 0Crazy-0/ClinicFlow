@@ -1,6 +1,7 @@
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Exceptions.Base;
+using ClinicFlow.Domain.Exceptions.Scheduling;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
 
@@ -107,5 +108,125 @@ public class ScheduleTests
             )
             .Should()
             .Be(expected);
+    }
+
+    [Fact]
+    public void Deactivate_ShouldSetIsActiveToFalse_WhenScheduleIsActive()
+    {
+        // Arrange
+        var schedule = new ScheduleBuilder().Build();
+
+        // Act
+        schedule.Deactivate();
+
+        // Assert
+        schedule.IsActive.Should().BeFalse();
+    }
+
+    [Fact]
+    public void Deactivate_ShouldThrowException_WhenScheduleIsAlreadyInactive()
+    {
+        // Arrange
+        var schedule = new ScheduleBuilder().Build();
+        schedule.Deactivate();
+
+        // Act & Assert
+        schedule
+            .Invoking(s => s.Deactivate())
+            .Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Schedule.AlreadyInactive);
+    }
+
+    [Fact]
+    public void Deactivate_ShouldPreventCoversTimeRange_WhenDeactivated()
+    {
+        // Arrange
+        var schedule = new ScheduleBuilder().Build();
+
+        // Act
+        schedule.Deactivate();
+
+        // Assert
+        schedule
+            .CoversTimeRange(TimeRange.Create(TimeSpan.FromHours(10), TimeSpan.FromHours(12)))
+            .Should()
+            .BeFalse();
+    }
+
+    [Fact]
+    public void EnsureNoDuplicateDay_ShouldThrowException_WhenActiveDuplicateExists()
+    {
+        // Arrange
+        var doctorId = Guid.NewGuid();
+        var existingSchedules = new List<Schedule>
+        {
+            new ScheduleBuilder().WithDoctorId(doctorId).Build(),
+        };
+
+        // Act
+        var act = () =>
+            Schedule.EnsureNoDuplicateDay(existingSchedules, doctorId, DayOfWeek.Monday);
+
+        // Assert
+        var exceptionAssertion = act.Should()
+            .Throw<ScheduleAlreadyExistsException>()
+            .WithMessage(DomainErrors.Schedule.ScheduleAlreadyExists);
+        exceptionAssertion.Which.DoctorId.Should().Be(doctorId);
+        exceptionAssertion.Which.DayOfWeek.Should().Be(DayOfWeek.Monday);
+    }
+
+    [Fact]
+    public void EnsureNoDuplicateDay_ShouldNotThrow_WhenNoDuplicateExists()
+    {
+        // Arrange
+        var doctorId = Guid.NewGuid();
+        var existingSchedules = new List<Schedule>
+        {
+            new ScheduleBuilder().WithDoctorId(doctorId).Build(),
+        };
+
+        // Act
+        var act = () =>
+            Schedule.EnsureNoDuplicateDay(existingSchedules, doctorId, DayOfWeek.Tuesday);
+
+        // Assert
+        act.Should().NotThrow();
+    }
+
+    [Fact]
+    public void EnsureNoDuplicateDay_ShouldNotThrow_WhenDuplicateExistsButIsInactive()
+    {
+        // Arrange
+        var doctorId = Guid.NewGuid();
+        var inactiveSchedule = new ScheduleBuilder().WithDoctorId(doctorId).Build();
+        inactiveSchedule.Deactivate();
+
+        var existingSchedules = new List<Schedule> { inactiveSchedule };
+
+        // Act
+        var act = () =>
+            Schedule.EnsureNoDuplicateDay(existingSchedules, doctorId, DayOfWeek.Monday);
+
+        // Assert
+        act.Should().NotThrow();
+    }
+
+    private class ScheduleBuilder
+    {
+        private Guid _doctorId = Guid.NewGuid();
+
+        public ScheduleBuilder WithDoctorId(Guid doctorId)
+        {
+            _doctorId = doctorId;
+            return this;
+        }
+
+        public Schedule Build() =>
+            Schedule.Create(
+                _doctorId,
+                DayOfWeek.Monday,
+                TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(17))
+            );
     }
 }
