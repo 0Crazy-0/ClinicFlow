@@ -21,5 +21,14 @@ public interface IPatientPenaltyRepository
         CancellationToken cancellationToken = default
     );
 
+    Task<IReadOnlyList<PatientPenalty>> GetActiveBlocksAsync(
+        DateTime referenceTime,
+        CancellationToken cancellationToken = default
+    );
+
+    Task<IReadOnlyList<PatientPenalty>> GetActiveWarningsAsync(
+        CancellationToken cancellationToken = default
+    );
+
     Task UpdateAsync(PatientPenalty penalty, CancellationToken cancellationToken = default);
 }
