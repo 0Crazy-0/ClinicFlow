@@ -318,6 +318,28 @@ public class PatientTests
         return patient;
     }
 
+    [Fact]
+    public void EnsureNotBlocked_ShouldNotThrow_WhenActiveBlockIsRemoved()
+    {
+        // Arrange
+        var patient = CreatePatient();
+        var penalty = PatientPenalty.CreateBlock(
+            patient.Id,
+            "Removed Block",
+            _fakeTime.GetUtcNow().UtcDateTime.AddDays(10).Date,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+        penalty.Remove();
+
+        var penalties = new List<PatientPenalty> { penalty };
+
+        // Act
+        var act = () => Patient.EnsureNotBlocked(penalties, _fakeTime.GetUtcNow().UtcDateTime);
+
+        // Assert
+        act.Should().NotThrow();
+    }
+
     private static PatientPenalty CreateExpiredBlock(
         Guid patientId,
         string reason,

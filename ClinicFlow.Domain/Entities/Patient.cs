@@ -138,7 +138,8 @@ public class Patient : BaseEntity
     {
         var activePenalties = penalties
             .Where(p =>
-                p.Type is PenaltyType.TemporaryBlock
+                !p.IsRemoved
+                && p.Type is PenaltyType.TemporaryBlock
                 && p.BlockedUntil.HasValue
                 && p.BlockedUntil > referenceTime
             )

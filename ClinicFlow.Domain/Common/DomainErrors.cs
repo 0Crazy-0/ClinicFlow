@@ -66,6 +66,11 @@ public static class DomainErrors
         public const string ProfileIncomplete = "PATIENT_PROFILE_INCOMPLETE";
     }
 
+    public static class Penalty
+    {
+        public const string AlreadyRemoved = "PENALTY_ALREADY_REMOVED";
+    }
+
     public static class MedicalEncounter
     {
         public const string DoctorMismatch = "DOCTOR_MISMATCH";
