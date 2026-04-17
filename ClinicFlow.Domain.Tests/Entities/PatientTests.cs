@@ -265,10 +265,11 @@ public class PatientTests
         var patient = CreatePatient();
         var penalties = new List<PatientPenalty>
         {
-            CreateExpiredBlock(
+            PatientPenalty.CreateBlock(
                 patient.Id,
                 "Old Block",
-                _fakeTime.GetUtcNow().UtcDateTime.AddDays(-1).Date
+                _fakeTime.GetUtcNow().UtcDateTime.AddDays(-1).Date,
+                _fakeTime.GetUtcNow().UtcDateTime.AddDays(-2).Date
             ),
         };
 
@@ -338,29 +339,5 @@ public class PatientTests
 
         // Assert
         act.Should().NotThrow();
-    }
-
-    private static PatientPenalty CreateExpiredBlock(
-        Guid patientId,
-        string reason,
-        DateTime blockedUntil
-    )
-    {
-        var penalty = (PatientPenalty)Activator.CreateInstance(typeof(PatientPenalty), true)!;
-
-        typeof(PatientPenalty)
-            .GetProperty(nameof(PatientPenalty.PatientId))!
-            .SetValue(penalty, patientId);
-        typeof(PatientPenalty)
-            .GetProperty(nameof(PatientPenalty.Type))!
-            .SetValue(penalty, PenaltyType.TemporaryBlock);
-        typeof(PatientPenalty)
-            .GetProperty(nameof(PatientPenalty.Reason))!
-            .SetValue(penalty, reason);
-        typeof(PatientPenalty)
-            .GetProperty(nameof(PatientPenalty.BlockedUntil))!
-            .SetValue(penalty, blockedUntil);
-
-        return penalty;
     }
 }
