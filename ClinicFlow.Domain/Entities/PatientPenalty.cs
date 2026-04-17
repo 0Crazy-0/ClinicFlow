@@ -96,6 +96,34 @@ public class PatientPenalty : BaseEntity
     }
 
     /// <summary>
+    /// Creates a staff-issued temporary block penalty with a predefined duration.
+    /// </summary>
+    /// <param name="duration">The predefined block duration to apply.</param>
+    /// <exception cref="DomainValidationException">Thrown when the patient ID is empty or the reason is blank.</exception>
+    public static PatientPenalty CreateManualBlock(
+        Guid patientId,
+        string reason,
+        BlockDuration duration,
+        DateTime referenceTime
+    )
+    {
+        if (patientId == Guid.Empty)
+            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        if (string.IsNullOrWhiteSpace(reason))
+            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        if (!Enum.IsDefined(duration))
+            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+
+        return new PatientPenalty(
+            patientId,
+            null,
+            PenaltyType.TemporaryBlock,
+            reason,
+            referenceTime.Date.AddDays((int)duration)
+        );
+    }
+
+    /// <summary>
     /// Removes this penalty, marking it as no longer in effect.
     /// </summary>
     /// <exception cref="DomainValidationException">Thrown when the penalty has already been removed.</exception>

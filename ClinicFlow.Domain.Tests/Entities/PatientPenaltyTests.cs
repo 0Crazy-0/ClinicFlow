@@ -179,4 +179,88 @@ public class PatientPenaltyTests
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.Penalty.AlreadyRemoved);
     }
+
+    [Theory]
+    [InlineData(BlockDuration.Minor, 5)]
+    [InlineData(BlockDuration.Moderate, 15)]
+    [InlineData(BlockDuration.Severe, 30)]
+    public void CreateManualBlock_ShouldCreateBlockPenalty_WithCorrectDuration(
+        BlockDuration duration,
+        int expectedDays
+    )
+    {
+        // Arrange
+        var patientId = Guid.NewGuid();
+        var reason = "Patient was rude to staff";
+        var referenceTime = _fakeTime.GetUtcNow().UtcDateTime;
+
+        // Act
+        var penalty = PatientPenalty.CreateManualBlock(patientId, reason, duration, referenceTime);
+
+        // Assert
+        penalty.Should().NotBeNull();
+        penalty.PatientId.Should().Be(patientId);
+        penalty.AppointmentId.Should().BeNull();
+        penalty.Type.Should().Be(PenaltyType.TemporaryBlock);
+        penalty.Reason.Should().Be(reason);
+        penalty.BlockedUntil.Should().Be(referenceTime.AddDays(expectedDays));
+        penalty.IsRemoved.Should().BeFalse();
+    }
+
+    [Fact]
+    public void CreateManualBlock_ShouldThrowException_WhenPatientIdIsEmpty()
+    {
+        // Arrange & Act
+        var act = () =>
+            PatientPenalty.CreateManualBlock(
+                Guid.Empty,
+                "Block reason",
+                BlockDuration.Minor,
+                _fakeTime.GetUtcNow().UtcDateTime
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void CreateManualBlock_ShouldThrowException_WhenReasonIsEmpty(string? reason)
+    {
+        // Arrange & Act
+        var act = () =>
+            PatientPenalty.CreateManualBlock(
+                Guid.NewGuid(),
+                reason!,
+                BlockDuration.Minor,
+                _fakeTime.GetUtcNow().UtcDateTime
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void CreateManualBlock_ShouldThrowException_WhenDurationIsInvalid()
+    {
+        // Arrange & Act
+        var act = () =>
+            PatientPenalty.CreateManualBlock(
+                Guid.NewGuid(),
+                "Block reason",
+                (BlockDuration)999,
+                _fakeTime.GetUtcNow().UtcDateTime
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
 }
