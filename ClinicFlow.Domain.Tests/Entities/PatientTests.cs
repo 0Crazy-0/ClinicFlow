@@ -247,8 +247,8 @@ public class PatientTests
         var patient = CreatePatient();
         var penalties = new List<PatientPenalty>
         {
-            PatientPenalty.CreateWarning(patient.Id, Guid.NewGuid(), "Warning 1"),
-            PatientPenalty.CreateWarning(patient.Id, Guid.NewGuid(), "Warning 2"),
+            PatientPenalty.CreateAutomaticWarning(patient.Id, Guid.NewGuid(), "Warning 1"),
+            PatientPenalty.CreateAutomaticWarning(patient.Id, Guid.NewGuid(), "Warning 2"),
         };
 
         // Act
@@ -265,7 +265,7 @@ public class PatientTests
         var patient = CreatePatient();
         var penalties = new List<PatientPenalty>
         {
-            PatientPenalty.CreateBlock(
+            PatientPenalty.CreateAutomaticBlock(
                 patient.Id,
                 "Old Block",
                 _fakeTime.GetUtcNow().UtcDateTime.AddDays(-1).Date,
@@ -288,7 +288,7 @@ public class PatientTests
         var blockedUntil = _fakeTime.GetUtcNow().UtcDateTime.AddDays(10).Date;
         var penalties = new List<PatientPenalty>
         {
-            PatientPenalty.CreateBlock(
+            PatientPenalty.CreateAutomaticBlock(
                 patient.Id,
                 "Active Block",
                 blockedUntil,
@@ -324,7 +324,7 @@ public class PatientTests
     {
         // Arrange
         var patient = CreatePatient();
-        var penalty = PatientPenalty.CreateBlock(
+        var penalty = PatientPenalty.CreateAutomaticBlock(
             patient.Id,
             "Removed Block",
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(10).Date,

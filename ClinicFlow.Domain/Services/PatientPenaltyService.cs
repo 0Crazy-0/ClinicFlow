@@ -36,7 +36,7 @@ public static class PatientPenaltyService
     {
         var penaltiesToApply = new List<PatientPenalty>();
 
-        var newWarning = PatientPenalty.CreateWarning(patientId, appointmentId, reason);
+        var newWarning = PatientPenalty.CreateAutomaticWarning(patientId, appointmentId, reason);
 
         penaltiesToApply.Add(newWarning);
 
@@ -53,7 +53,7 @@ public static class PatientPenaltyService
 
             if (!isBlocked)
             {
-                var block = PatientPenalty.CreateBlock(
+                var block = PatientPenalty.CreateAutomaticBlock(
                     patientId,
                     PenaltyReasons.AutomaticBlock,
                     referenceTime.AddDays(BlockDurationDays),

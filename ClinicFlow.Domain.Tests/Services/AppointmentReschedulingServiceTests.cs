@@ -182,7 +182,7 @@ public class AppointmentReschedulingServiceTests
 
         var penalties = new[]
         {
-            PatientPenalty.CreateBlock(
+            PatientPenalty.CreateAutomaticBlock(
                 target.Id,
                 "Reason",
                 _fakeTime.GetUtcNow().UtcDateTime.AddDays(5).Date,
