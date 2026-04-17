@@ -12,7 +12,7 @@ public class PatientPenaltyTests
     private readonly FakeTimeProvider _fakeTime = new();
 
     [Fact]
-    public void CreateWarning_ShouldCreateWarningPenalty()
+    public void CreateAutomaticWarning_ShouldCreateWarningPenalty()
     {
         // Arrange
         var patientId = Guid.NewGuid();
@@ -32,7 +32,7 @@ public class PatientPenaltyTests
     }
 
     [Fact]
-    public void CreateWarning_ShouldThrowException_WhenPatientIdIsEmpty()
+    public void CreateAutomaticWarning_ShouldThrowException_WhenPatientIdIsEmpty()
     {
         // Arrange & Act
         var act = () =>
@@ -48,7 +48,7 @@ public class PatientPenaltyTests
     [InlineData(null)]
     [InlineData("")]
     [InlineData("   ")]
-    public void CreateWarning_ShouldThrowException_WhenReasonIsEmpty(string? reason)
+    public void CreateAutomaticWarning_ShouldThrowException_WhenReasonIsEmpty(string? reason)
     {
         // Arrange & Act
         var act = () =>
@@ -61,7 +61,7 @@ public class PatientPenaltyTests
     }
 
     [Fact]
-    public void CreateBlock_ShouldCreateBlockPenalty()
+    public void CreateAutomaticBlock_ShouldCreateBlockPenalty()
     {
         // Arrange
         var patientId = Guid.NewGuid();
@@ -86,7 +86,7 @@ public class PatientPenaltyTests
     }
 
     [Fact]
-    public void CreateBlock_ShouldThrowException_WhenPatientIdIsEmpty()
+    public void CreateAutomaticBlock_ShouldThrowException_WhenPatientIdIsEmpty()
     {
         // Arrange & Act
         var act = () =>
@@ -107,7 +107,7 @@ public class PatientPenaltyTests
     [InlineData(null)]
     [InlineData("")]
     [InlineData("   ")]
-    public void CreateBlock_ShouldThrowException_WhenReasonIsEmpty(string? reason)
+    public void CreateAutomaticBlock_ShouldThrowException_WhenReasonIsEmpty(string? reason)
     {
         // Arrange & Act
         var act = () =>
@@ -125,7 +125,7 @@ public class PatientPenaltyTests
     }
 
     [Fact]
-    public void CreateBlock_ShouldThrowException_WhenBlockedUntilIsInThePast()
+    public void CreateAutomaticBlock_ShouldThrowException_WhenBlockedUntilIsInThePast()
     {
         // Arrange & Act
         var act = () =>
