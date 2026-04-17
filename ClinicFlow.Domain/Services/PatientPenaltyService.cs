@@ -45,7 +45,8 @@ public static class PatientPenaltyService
         if (totalWarnings >= StrikesThreshold)
         {
             var isBlocked = existingPenalties.Any(p =>
-                p.Type is PenaltyType.TemporaryBlock
+                !p.IsRemoved
+                && p.Type is PenaltyType.TemporaryBlock
                 && p.BlockedUntil.HasValue
                 && p.BlockedUntil.Value > referenceTime
             );
