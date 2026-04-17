@@ -139,4 +139,42 @@ public class PatientPenaltyTests
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.Validation.ValueMustBeInFuture);
     }
+
+    [Fact]
+    public void Remove_ShouldSetIsRemovedToTrue()
+    {
+        // Arrange
+        var penalty = PatientPenalty.CreateBlock(
+            Guid.NewGuid(),
+            "Block reason",
+            _fakeTime.GetUtcNow().UtcDateTime.AddDays(30).Date,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        // Act
+        penalty.Remove();
+
+        // Assert
+        penalty.IsRemoved.Should().BeTrue();
+    }
+
+    [Fact]
+    public void Remove_ShouldThrowException_WhenAlreadyRemoved()
+    {
+        // Arrange
+        var penalty = PatientPenalty.CreateBlock(
+            Guid.NewGuid(),
+            "Block reason",
+            _fakeTime.GetUtcNow().UtcDateTime.AddDays(30).Date,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+        penalty.Remove();
+
+        // Act & Assert
+        penalty
+            .Invoking(p => p.Remove())
+            .Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Penalty.AlreadyRemoved);
+    }
 }

@@ -23,6 +23,14 @@ public class PatientPenalty : BaseEntity
     /// </summary>
     public DateTime? BlockedUntil { get; private set; }
 
+    /// <summary>
+    /// Indicates whether this penalty has been manually removed by staff.
+    /// </summary>
+    /// <remarks>
+    /// A removed penalty is excluded from all active-block checks.
+    /// </remarks>
+    public bool IsRemoved { get; private set; }
+
     // EF Core constructor
     private PatientPenalty() { }
 
@@ -81,5 +89,17 @@ public class PatientPenalty : BaseEntity
             reason,
             blockedUntil
         );
+    }
+
+    /// <summary>
+    /// Removes this penalty, marking it as no longer in effect.
+    /// </summary>
+    /// <exception cref="DomainValidationException">Thrown when the penalty has already been removed.</exception>
+    public void Remove()
+    {
+        if (IsRemoved)
+            throw new DomainValidationException(DomainErrors.Penalty.AlreadyRemoved);
+
+        IsRemoved = true;
     }
 }
