@@ -40,8 +40,8 @@ public class PatientPenaltyServiceTests
         var appointmentId = Guid.NewGuid();
         var existingPenalties = new List<PatientPenalty>
         {
-            PatientPenalty.CreateWarning(patientId, Guid.NewGuid(), "Warning 1"),
-            PatientPenalty.CreateWarning(patientId, Guid.NewGuid(), "Warning 2"),
+            PatientPenalty.CreateAutomaticWarning(patientId, Guid.NewGuid(), "Warning 1"),
+            PatientPenalty.CreateAutomaticWarning(patientId, Guid.NewGuid(), "Warning 2"),
         };
 
         // Act
@@ -73,9 +73,9 @@ public class PatientPenaltyServiceTests
 
         var existingPenalties = new List<PatientPenalty>
         {
-            PatientPenalty.CreateWarning(patientId, Guid.NewGuid(), "Warning 1"),
-            PatientPenalty.CreateWarning(patientId, Guid.NewGuid(), "Warning 2"),
-            PatientPenalty.CreateBlock(
+            PatientPenalty.CreateAutomaticWarning(patientId, Guid.NewGuid(), "Warning 1"),
+            PatientPenalty.CreateAutomaticWarning(patientId, Guid.NewGuid(), "Warning 2"),
+            PatientPenalty.CreateAutomaticBlock(
                 patientId,
                 "Existing Block",
                 _fakeTime.GetUtcNow().UtcDateTime.AddDays(10).Date,

@@ -53,7 +53,11 @@ public class PatientPenalty : BaseEntity
     /// Creates a warning penalty for the patient.
     /// </summary>
     /// <exception cref="DomainValidationException">Thrown when the patient ID is empty or the reason is blank.</exception>
-    internal static PatientPenalty CreateWarning(Guid patientId, Guid? appointmentId, string reason)
+    internal static PatientPenalty CreateAutomaticWarning(
+        Guid patientId,
+        Guid? appointmentId,
+        string reason
+    )
     {
         if (patientId == Guid.Empty)
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
@@ -68,7 +72,7 @@ public class PatientPenalty : BaseEntity
     /// </summary>
     /// <param name="blockedUntil">UTC date and time until which the block is in effect. Must be in the future.</param>
     /// <exception cref="DomainValidationException">Thrown when the patient ID is empty, the reason is blank, or the block date is not in the future.</exception>
-    internal static PatientPenalty CreateBlock(
+    internal static PatientPenalty CreateAutomaticBlock(
         Guid patientId,
         string reason,
         DateTime blockedUntil,

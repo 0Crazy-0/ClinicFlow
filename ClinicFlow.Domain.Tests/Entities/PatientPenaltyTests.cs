@@ -20,7 +20,7 @@ public class PatientPenaltyTests
         var reason = "No show";
 
         // Act
-        var penalty = PatientPenalty.CreateWarning(patientId, appointmentId, reason);
+        var penalty = PatientPenalty.CreateAutomaticWarning(patientId, appointmentId, reason);
 
         // Assert
         penalty.Should().NotBeNull();
@@ -35,7 +35,8 @@ public class PatientPenaltyTests
     public void CreateWarning_ShouldThrowException_WhenPatientIdIsEmpty()
     {
         // Arrange & Act
-        var act = () => PatientPenalty.CreateWarning(Guid.Empty, Guid.NewGuid(), "No show");
+        var act = () =>
+            PatientPenalty.CreateAutomaticWarning(Guid.Empty, Guid.NewGuid(), "No show");
 
         // Assert
         act.Should()
@@ -50,7 +51,8 @@ public class PatientPenaltyTests
     public void CreateWarning_ShouldThrowException_WhenReasonIsEmpty(string? reason)
     {
         // Arrange & Act
-        var act = () => PatientPenalty.CreateWarning(Guid.NewGuid(), Guid.NewGuid(), reason!);
+        var act = () =>
+            PatientPenalty.CreateAutomaticWarning(Guid.NewGuid(), Guid.NewGuid(), reason!);
 
         // Assert
         act.Should()
@@ -67,7 +69,7 @@ public class PatientPenaltyTests
         var blockedUntil = _fakeTime.GetUtcNow().UtcDateTime.AddDays(30).Date;
 
         // Act
-        var penalty = PatientPenalty.CreateBlock(
+        var penalty = PatientPenalty.CreateAutomaticBlock(
             patientId,
             reason,
             blockedUntil,
@@ -88,7 +90,7 @@ public class PatientPenaltyTests
     {
         // Arrange & Act
         var act = () =>
-            PatientPenalty.CreateBlock(
+            PatientPenalty.CreateAutomaticBlock(
                 Guid.Empty,
                 "Block reason",
                 _fakeTime.GetUtcNow().UtcDateTime.AddDays(30).Date,
@@ -109,7 +111,7 @@ public class PatientPenaltyTests
     {
         // Arrange & Act
         var act = () =>
-            PatientPenalty.CreateBlock(
+            PatientPenalty.CreateAutomaticBlock(
                 Guid.NewGuid(),
                 reason!,
                 _fakeTime.GetUtcNow().UtcDateTime.AddDays(30).Date,
@@ -127,7 +129,7 @@ public class PatientPenaltyTests
     {
         // Arrange & Act
         var act = () =>
-            PatientPenalty.CreateBlock(
+            PatientPenalty.CreateAutomaticBlock(
                 Guid.NewGuid(),
                 "Block reason",
                 _fakeTime.GetUtcNow().UtcDateTime.AddDays(-1).Date,
@@ -144,7 +146,7 @@ public class PatientPenaltyTests
     public void Remove_ShouldSetIsRemovedToTrue()
     {
         // Arrange
-        var penalty = PatientPenalty.CreateBlock(
+        var penalty = PatientPenalty.CreateAutomaticBlock(
             Guid.NewGuid(),
             "Block reason",
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(30).Date,
@@ -162,7 +164,7 @@ public class PatientPenaltyTests
     public void Remove_ShouldThrowException_WhenAlreadyRemoved()
     {
         // Arrange
-        var penalty = PatientPenalty.CreateBlock(
+        var penalty = PatientPenalty.CreateAutomaticBlock(
             Guid.NewGuid(),
             "Block reason",
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(30).Date,
