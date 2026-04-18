@@ -40,7 +40,7 @@ public class MedicalLicenseNumberTests
     [Fact]
     public void Create_ShouldTrimWhitespace()
     {
-        // Arrange & Act
+        // Arrange
         var license = MedicalLicenseNumber.Create("  MED-12345  ");
 
         // Assert
@@ -53,7 +53,7 @@ public class MedicalLicenseNumberTests
     [InlineData("LIC-2025-001")]
     public void Create_ShouldSucceed_WithValidLicenseNumber(string value)
     {
-        // Arrange & Act
+        // Arrange
         var license = MedicalLicenseNumber.Create(value);
 
         // Assert
@@ -78,7 +78,7 @@ public class MedicalLicenseNumberTests
         var l2 = MedicalLicenseNumber.Create("MED-12345");
         var l3 = MedicalLicenseNumber.Create("MED-99999");
 
-        // Act & Assert
+        // Assert
         (l1 == l2)
             .Should()
             .BeTrue();

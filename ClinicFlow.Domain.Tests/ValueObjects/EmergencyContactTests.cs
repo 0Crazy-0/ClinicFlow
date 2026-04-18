@@ -10,7 +10,7 @@ public class EmergencyContactTests
     [Fact]
     public void Create_WithStrings_ShouldSucceed()
     {
-        // Arrange & Act
+        // Arrange
         var contact = EmergencyContact.Create("Jane Doe", "+1234567890");
 
         // Assert
@@ -84,7 +84,7 @@ public class EmergencyContactTests
         var c2 = EmergencyContact.Create("Jane Doe", "+1234567890");
         var c3 = EmergencyContact.Create("John Doe", "+0987654321");
 
-        // Act & Assert
+        // Assert
         (c1 == c2)
             .Should()
             .BeTrue();

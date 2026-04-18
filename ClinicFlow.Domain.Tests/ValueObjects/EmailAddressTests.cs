@@ -42,7 +42,7 @@ public class EmailAddressTests
     [Fact]
     public void Create_ShouldNormalize_ToLowerInvariant()
     {
-        // Arrange & Act
+        // Arrange
         var email = EmailAddress.Create("User@MAIL.COM");
 
         // Assert
@@ -52,7 +52,7 @@ public class EmailAddressTests
     [Fact]
     public void Create_ShouldTrimWhitespace()
     {
-        // Arrange & Act
+        // Arrange
         var email = EmailAddress.Create("  user@mail.com  ");
 
         // Assert
@@ -65,7 +65,7 @@ public class EmailAddressTests
     [InlineData("user+tag@domain.co")]
     public void Create_ShouldSucceed_WithValidEmail(string value)
     {
-        // Arrange & Act
+        // Arrange
         var email = EmailAddress.Create(value);
 
         // Assert
@@ -91,7 +91,7 @@ public class EmailAddressTests
         var e2 = EmailAddress.Create("test@example.com");
         var e3 = EmailAddress.Create("other@example.com");
 
-        // Act & Assert
+        // Assert
         (e1 == e2)
             .Should()
             .BeTrue();

@@ -49,7 +49,7 @@ public class BloodTypeTests
     [InlineData("O-")]
     public void Create_ShouldSucceed_ForAllValidBloodTypes(string value)
     {
-        // Arrange & Act
+        // Arrange
         var bloodType = BloodType.Create(value);
 
         // Assert
@@ -59,7 +59,7 @@ public class BloodTypeTests
     [Fact]
     public void Create_ShouldNormalize_ToUpperInvariant()
     {
-        // Arrange & Act
+        // Arrange
         var bloodType = BloodType.Create("ab+");
 
         // Assert
@@ -69,7 +69,7 @@ public class BloodTypeTests
     [Fact]
     public void Create_ShouldTrimWhitespace()
     {
-        // Arrange & Act
+        // Arrange
         var bloodType = BloodType.Create("  B+  ");
 
         // Assert
@@ -82,7 +82,7 @@ public class BloodTypeTests
         // Arrange
         var bloodType = BloodType.Create("O+");
 
-        // Act & Assert
+        // Assert
         bloodType.ToString().Should().Be(bloodType.Value);
     }
 
@@ -94,7 +94,7 @@ public class BloodTypeTests
         var bt2 = BloodType.Create("A+");
         var bt3 = BloodType.Create("B-");
 
-        // Act & Assert
+        // Assert
         (bt1 == bt2)
             .Should()
             .BeTrue();
