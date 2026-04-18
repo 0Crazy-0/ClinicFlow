@@ -10,7 +10,7 @@ public class AgeEligibilityPolicyTests
     [Fact]
     public void Create_ShouldCreateInstance_WhenAgeRangeIsValid()
     {
-        // Arrange & Act
+        // Arrange
         var policy = AgeEligibilityPolicy.Create(18, 65, true);
 
         // Assert
@@ -23,7 +23,7 @@ public class AgeEligibilityPolicyTests
     [Fact]
     public void NoRestriction_ShouldReturnPolicyWithNullAgesAndNoGuardianRequired()
     {
-        // Arrange & Act
+        // Arrange
         var policy = AgeEligibilityPolicy.NoRestriction;
 
         // Assert

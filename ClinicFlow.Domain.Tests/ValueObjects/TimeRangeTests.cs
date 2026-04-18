@@ -25,7 +25,7 @@ public class TimeRangeTests
         // Arrange
         var timeRange = TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(10.5)); // 1.5 hours
 
-        // Act & Assert
+        // Assert
         timeRange.Duration.Should().Be(TimeSpan.FromMinutes(90));
     }
 
@@ -37,7 +37,7 @@ public class TimeRangeTests
         var tr2 = TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(10));
         var tr3 = TimeRange.Create(TimeSpan.FromHours(10), TimeSpan.FromHours(11));
 
-        // Act & Assert
+        // Assert
         (tr1 == tr2)
             .Should()
             .BeTrue();

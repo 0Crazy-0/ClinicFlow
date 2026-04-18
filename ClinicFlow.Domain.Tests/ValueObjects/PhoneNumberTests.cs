@@ -40,7 +40,7 @@ public class PhoneNumberTests
     [Fact]
     public void Create_ShouldTrimWhitespace()
     {
-        // Arrange & Act
+        // Arrange
         var phone = PhoneNumber.Create("  +1234567890  ");
 
         // Assert
@@ -54,7 +54,7 @@ public class PhoneNumberTests
     [InlineData("123-456-7890")]
     public void Create_ShouldSucceed_WithValidFormats(string value)
     {
-        // Arrange & Act
+        // Arrange
         var phone = PhoneNumber.Create(value);
 
         // Assert
@@ -79,7 +79,7 @@ public class PhoneNumberTests
         var p2 = PhoneNumber.Create("+1234567890");
         var p3 = PhoneNumber.Create("+0987654321");
 
-        // Act & Assert
+        // Assert
         (p1 == p2)
             .Should()
             .BeTrue();

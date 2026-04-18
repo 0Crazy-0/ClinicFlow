@@ -37,7 +37,7 @@ public class PersonNameTests
     [Fact]
     public void Create_ShouldTrimWhitespace()
     {
-        // Arrange & Act
+        // Arrange
         var name = PersonName.Create("  John Doe  ");
 
         // Assert
@@ -50,7 +50,7 @@ public class PersonNameTests
     [InlineData("María García López")]
     public void Create_ShouldSucceed_WithValidName(string value)
     {
-        // Arrange & Act
+        // Arrange
         var name = PersonName.Create(value);
 
         // Assert
@@ -75,7 +75,7 @@ public class PersonNameTests
         var n2 = PersonName.Create("John Doe");
         var n3 = PersonName.Create("Jane Doe");
 
-        // Act & Assert
+        // Assert
         (n1 == n2)
             .Should()
             .BeTrue();
