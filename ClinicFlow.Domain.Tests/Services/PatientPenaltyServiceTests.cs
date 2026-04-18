@@ -12,36 +12,38 @@ public class PatientPenaltyServiceTests
     private readonly FakeTimeProvider _fakeTime = new();
 
     [Fact]
-    public void ApplyPenalty_ShouldReturnWarning_WhenCalled()
+    public void ApplyPenalty_ShouldReturnWarningOnly_WhenFirstOffense()
     {
         // Arrange
         var patientId = Guid.NewGuid();
         var appointmentId = Guid.NewGuid();
-        var reason = "No show";
 
         // Act
         var result = PatientPenaltyService
-            .ApplyPenalty(patientId, [], appointmentId, reason, _fakeTime.GetUtcNow().UtcDateTime)
+            .ApplyPenalty(
+                patientId,
+                [],
+                appointmentId,
+                "No show",
+                _fakeTime.GetUtcNow().UtcDateTime
+            )
             .ToList();
 
         // Assert
         result.Should().ContainSingle();
         var warning = result.First();
-        warning.PatientId.Should().Be(patientId);
         warning.Type.Should().Be(PenaltyType.Warning);
-        warning.Reason.Should().Be(reason);
+        warning.Reason.Should().Be(PenaltyReasons.NoShow);
     }
 
     [Fact]
-    public void ApplyPenalty_ShouldReturnBlock_WhenStrikesThresholdReached()
+    public void ApplyPenalty_ShouldReturnMinorBlock_WhenSecondOffense()
     {
         // Arrange
         var patientId = Guid.NewGuid();
-        var appointmentId = Guid.NewGuid();
         var existingPenalties = new List<PatientPenalty>
         {
             PatientPenalty.CreateAutomaticWarning(patientId, Guid.NewGuid(), "Warning 1"),
-            PatientPenalty.CreateAutomaticWarning(patientId, Guid.NewGuid(), "Warning 2"),
         };
 
         // Act
@@ -49,7 +51,46 @@ public class PatientPenaltyServiceTests
             .ApplyPenalty(
                 patientId,
                 existingPenalties,
-                appointmentId,
+                Guid.NewGuid(),
+                "Warning 2",
+                _fakeTime.GetUtcNow().UtcDateTime
+            )
+            .ToList();
+
+        // Assert
+        result.Should().HaveCount(2);
+        result.Should().ContainSingle(p => p.Type == PenaltyType.Warning);
+
+        var block = result.Single(p => p.Type == PenaltyType.TemporaryBlock);
+        block.Reason.Should().Be(PenaltyReasons.AutomaticBlock);
+        block
+            .BlockedUntil.Should()
+            .Be(_fakeTime.GetUtcNow().UtcDateTime.Date.AddDays((int)BlockDuration.Minor));
+    }
+
+    [Fact]
+    public void ApplyPenalty_ShouldReturnModerateBlock_WhenThirdOffense()
+    {
+        // Arrange
+        var patientId = Guid.NewGuid();
+        var existingPenalties = new List<PatientPenalty>
+        {
+            PatientPenalty.CreateAutomaticWarning(patientId, Guid.NewGuid(), "Warning 1"),
+            PatientPenalty.CreateAutomaticWarning(patientId, Guid.NewGuid(), "Warning 2"),
+            PatientPenalty.CreateAutomaticBlock(
+                patientId,
+                PenaltyReasons.AutomaticBlock,
+                _fakeTime.GetUtcNow().UtcDateTime.AddDays(-1).Date,
+                _fakeTime.GetUtcNow().UtcDateTime.AddDays(-6).Date
+            ),
+        };
+
+        // Act
+        var result = PatientPenaltyService
+            .ApplyPenalty(
+                patientId,
+                existingPenalties,
+                Guid.NewGuid(),
                 "Warning 3",
                 _fakeTime.GetUtcNow().UtcDateTime
             )
@@ -58,11 +99,56 @@ public class PatientPenaltyServiceTests
         // Assert
         result.Should().HaveCount(2);
         result.Should().ContainSingle(p => p.Type == PenaltyType.Warning);
-        result
-            .Should()
-            .ContainSingle(p =>
-                p.Type == PenaltyType.TemporaryBlock && p.Reason == PenaltyReasons.AutomaticBlock
-            );
+
+        var block = result.Single(p => p.Type == PenaltyType.TemporaryBlock);
+        block
+            .BlockedUntil.Should()
+            .Be(_fakeTime.GetUtcNow().UtcDateTime.Date.AddDays((int)BlockDuration.Moderate));
+    }
+
+    [Fact]
+    public void ApplyPenalty_ShouldReturnSevereBlock_WhenFourthOffenseOrMore()
+    {
+        // Arrange
+        var patientId = Guid.NewGuid();
+        var existingPenalties = new List<PatientPenalty>
+        {
+            PatientPenalty.CreateAutomaticWarning(patientId, Guid.NewGuid(), "Warning 1"),
+            PatientPenalty.CreateAutomaticWarning(patientId, Guid.NewGuid(), "Warning 2"),
+            PatientPenalty.CreateAutomaticBlock(
+                patientId,
+                PenaltyReasons.AutomaticBlock,
+                _fakeTime.GetUtcNow().UtcDateTime.AddDays(-20).Date,
+                _fakeTime.GetUtcNow().UtcDateTime.AddDays(-25).Date
+            ),
+            PatientPenalty.CreateAutomaticWarning(patientId, Guid.NewGuid(), "Warning 3"),
+            PatientPenalty.CreateAutomaticBlock(
+                patientId,
+                PenaltyReasons.AutomaticBlock,
+                _fakeTime.GetUtcNow().UtcDateTime.AddDays(-1).Date,
+                _fakeTime.GetUtcNow().UtcDateTime.AddDays(-16).Date
+            ),
+        };
+
+        // Act
+        var result = PatientPenaltyService
+            .ApplyPenalty(
+                patientId,
+                existingPenalties,
+                Guid.NewGuid(),
+                "Warning 4",
+                _fakeTime.GetUtcNow().UtcDateTime
+            )
+            .ToList();
+
+        // Assert
+        result.Should().HaveCount(2);
+        result.Should().ContainSingle(p => p.Type == PenaltyType.Warning);
+
+        var block = result.Single(p => p.Type == PenaltyType.TemporaryBlock);
+        block
+            .BlockedUntil.Should()
+            .Be(_fakeTime.GetUtcNow().UtcDateTime.Date.AddDays((int)BlockDuration.Severe));
     }
 
     [Fact]
@@ -70,14 +156,12 @@ public class PatientPenaltyServiceTests
     {
         // Arrange
         var patientId = Guid.NewGuid();
-
         var existingPenalties = new List<PatientPenalty>
         {
             PatientPenalty.CreateAutomaticWarning(patientId, Guid.NewGuid(), "Warning 1"),
-            PatientPenalty.CreateAutomaticWarning(patientId, Guid.NewGuid(), "Warning 2"),
             PatientPenalty.CreateAutomaticBlock(
                 patientId,
-                "Existing Block",
+                PenaltyReasons.AutomaticBlock,
                 _fakeTime.GetUtcNow().UtcDateTime.AddDays(10).Date,
                 _fakeTime.GetUtcNow().UtcDateTime
             ),
@@ -89,7 +173,7 @@ public class PatientPenaltyServiceTests
                 patientId,
                 existingPenalties,
                 Guid.NewGuid(),
-                "Warning 3",
+                "Warning 2",
                 _fakeTime.GetUtcNow().UtcDateTime
             )
             .ToList();

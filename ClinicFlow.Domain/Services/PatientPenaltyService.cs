@@ -1,67 +1,48 @@
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
-using ClinicFlow.Domain.Enums;
+using ClinicFlow.Domain.ValueObjects;
 
 namespace ClinicFlow.Domain.Services;
 
 /// <summary>
 /// Domain service that manages the patient penalty workflow, applying warnings
-/// and automatically issuing temporary blocks after a configurable number of strikes.
+/// and automatically issuing progressive temporary blocks based on penalty history.
 /// </summary>
-/// <remarks>
-/// A patient is automatically blocked for <c>30</c> days after accumulating
-/// <c>3</c> warnings, unless they already have an active block.
-/// </remarks>
 public static class PatientPenaltyService
 {
-    private const int StrikesThreshold = 3;
-    private const int BlockDurationDays = 30;
-
     /// <summary>
-    /// Applies a warning penalty to the patient and, if the warning threshold is reached,
-    /// creates a temporary booking block.
+    /// Applies a penalty to the patient based on their penalty history,
+    /// escalating from a warning to progressively longer blocks.
     /// </summary>
-    /// <param name="patientId">The unique identifier of the patient receiving the penalty.</param>
-    /// <param name="existingPenalties">The history of penalties for the patient, used to determine if a block should be applied.</param>
-    /// <param name="appointmentId">The optional identifier of the appointment associated with the penalty.</param>
-    /// <param name="reason">The descriptive reason for issuing the warning.</param>
-    /// <returns>A collection of newly generated penalties (a warning and optionally a block) that need to be persisted.</returns>
+    /// <returns>A collection of newly generated penalties that need to be persisted.</returns>
+    /// <exception cref="DomainValidationException">Thrown when the patient ID is empty or the reason is blank.</exception>
     public static IEnumerable<PatientPenalty> ApplyPenalty(
         Guid patientId,
-        IEnumerable<PatientPenalty> existingPenalties,
+        IReadOnlyList<PatientPenalty> existingPenalties,
         Guid? appointmentId,
         string reason,
         DateTime referenceTime
     )
     {
+        var history = new PenaltyHistory(existingPenalties);
         var penaltiesToApply = new List<PatientPenalty>();
 
-        var newWarning = PatientPenalty.CreateAutomaticWarning(patientId, appointmentId, reason);
+        var warning = PatientPenalty.CreateAutomaticWarning(patientId, appointmentId, reason);
+        penaltiesToApply.Add(warning);
 
-        penaltiesToApply.Add(newWarning);
+        if (!history.HasPriorWarnings || history.IsCurrentlyBlocked(referenceTime))
+            return penaltiesToApply;
 
-        var totalWarnings = existingPenalties.Count(p => p.Type is PenaltyType.Warning) + 1;
+        var duration = history.DetermineNextBlockDuration();
 
-        if (totalWarnings >= StrikesThreshold)
-        {
-            var isBlocked = existingPenalties.Any(p =>
-                !p.IsRemoved
-                && p.Type is PenaltyType.TemporaryBlock
-                && p.BlockedUntil.HasValue
-                && p.BlockedUntil.Value > referenceTime
-            );
+        var block = PatientPenalty.CreateAutomaticBlock(
+            patientId,
+            PenaltyReasons.AutomaticBlock,
+            referenceTime.Date.AddDays((int)duration),
+            referenceTime
+        );
 
-            if (!isBlocked)
-            {
-                var block = PatientPenalty.CreateAutomaticBlock(
-                    patientId,
-                    PenaltyReasons.AutomaticBlock,
-                    referenceTime.AddDays(BlockDurationDays),
-                    referenceTime
-                );
-                penaltiesToApply.Add(block);
-            }
-        }
+        penaltiesToApply.Add(block);
 
         return penaltiesToApply;
     }
