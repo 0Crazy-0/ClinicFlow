@@ -106,7 +106,7 @@ public class AppointmentTypeDefinition : BaseEntity
     /// <param name="patientAgeInYears">The patient's age in full years.</param>
     /// <param name="hasGuardianConsent">Indicates if the appointment is being booked with the consent of an adult legal guardian.</param>
     /// <exception cref="DomainValidationException">Thrown if the patient does not meet the criteria.</exception>
-    public void ValidatePatientEligibility(
+    internal void ValidatePatientEligibility(
         int patientAgeInYears,
         bool hasGuardianConsent = false
     ) => AgePolicy.ValidatePatientEligibility(patientAgeInYears, hasGuardianConsent);
