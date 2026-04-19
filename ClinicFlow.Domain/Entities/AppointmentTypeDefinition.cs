@@ -76,6 +76,34 @@ public class AppointmentTypeDefinition : BaseEntity
     }
 
     /// <summary>
+    /// Updates the appointment type's general details.
+    /// </summary>
+    /// <exception cref="DomainValidationException">Thrown when the name is empty or the duration is not positive.</exception>
+    public void UpdateDetails(
+        AppointmentCategory category,
+        string name,
+        string description,
+        TimeSpan durationMinutes
+    )
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        if (durationMinutes <= TimeSpan.Zero)
+            throw new DomainValidationException(DomainErrors.Validation.ValueMustBePositive);
+
+        Category = category;
+        Name = name;
+        Description = description;
+        DurationMinutes = durationMinutes;
+    }
+
+    /// <summary>
+    /// Replaces the current age eligibility policy for this appointment type.
+    /// </summary>
+    public void ChangeAgePolicy(AgeEligibilityPolicy agePolicy) =>
+        AgePolicy = agePolicy ?? AgeEligibilityPolicy.NoRestriction;
+
+    /// <summary>
     /// Adds a required clinical form template to this appointment type.
     /// </summary>
     public void AddRequiredTemplate(ClinicalFormTemplate template)
