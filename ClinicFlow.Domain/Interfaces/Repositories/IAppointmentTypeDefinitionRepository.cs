@@ -11,4 +11,14 @@ public interface IAppointmentTypeDefinitionRepository
         Guid id,
         CancellationToken cancellationToken = default
     );
+
+    Task<AppointmentTypeDefinition> CreateAsync(
+        AppointmentTypeDefinition appointmentType,
+        CancellationToken cancellationToken = default
+    );
+
+    Task UpdateAsync(
+        AppointmentTypeDefinition appointmentType,
+        CancellationToken cancellationToken = default
+    );
 }
