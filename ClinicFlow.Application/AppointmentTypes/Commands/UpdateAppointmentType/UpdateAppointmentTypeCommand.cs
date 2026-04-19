@@ -1,3 +1,4 @@
+using ClinicFlow.Application.AppointmentTypes.Commands.Shared;
 using ClinicFlow.Domain.Enums;
 using MediatR;
 
@@ -12,4 +13,4 @@ public sealed record UpdateAppointmentTypeCommand(
     int? MinimumAge,
     int? MaximumAge,
     bool RequiresGuardianConsent
-) : IRequest;
+) : IRequest, IAppointmentTypeCommand;
