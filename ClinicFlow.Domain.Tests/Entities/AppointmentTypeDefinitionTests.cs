@@ -221,6 +221,99 @@ public class AppointmentTypeDefinitionTests
             .WithMessage(DomainErrors.AppointmentType.MinimumAgeNotMet);
     }
 
+    [Fact]
+    public void UpdateDetails_ShouldUpdateAllProperties_WhenValidParameters()
+    {
+        // Arrange
+        var appointmentType = new AppointmentTypeBuilder().Build();
+        var newCategory = AppointmentCategory.FollowUp;
+        var newName = "Updated Name";
+        var newDescription = "Updated Description";
+        var newDuration = TimeSpan.FromMinutes(60);
+
+        // Act
+        appointmentType.UpdateDetails(newCategory, newName, newDescription, newDuration);
+
+        // Assert
+        appointmentType.Category.Should().Be(newCategory);
+        appointmentType.Name.Should().Be(newName);
+        appointmentType.Description.Should().Be(newDescription);
+        appointmentType.DurationMinutes.Should().Be(newDuration);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void UpdateDetails_ShouldThrowException_WhenNameIsEmpty(string? name)
+    {
+        // Arrange
+        var appointmentType = new AppointmentTypeBuilder().Build();
+
+        // Act
+        var act = () =>
+            appointmentType.UpdateDetails(
+                AppointmentCategory.Checkup,
+                name!,
+                "Description",
+                TimeSpan.FromMinutes(30)
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Theory]
+    [MemberData(nameof(InvalidDurations))]
+    public void UpdateDetails_ShouldThrowException_WhenDurationIsZeroOrNegative(TimeSpan duration)
+    {
+        // Arrange
+        var appointmentType = new AppointmentTypeBuilder().Build();
+
+        // Act
+        var act = () =>
+            appointmentType.UpdateDetails(
+                AppointmentCategory.Checkup,
+                "Valid Name",
+                "Description",
+                duration
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueMustBePositive);
+    }
+
+    [Fact]
+    public void ChangeAgePolicy_ShouldUpdatePolicy_WhenValidPolicyProvided()
+    {
+        // Arrange
+        var appointmentType = new AppointmentTypeBuilder().Build();
+        var newPolicy = AgeEligibilityPolicy.Create(18, 65, false);
+
+        // Act
+        appointmentType.ChangeAgePolicy(newPolicy);
+
+        // Assert
+        appointmentType.AgePolicy.Should().Be(newPolicy);
+    }
+
+    [Fact]
+    public void ChangeAgePolicy_ShouldSetNoRestriction_WhenNullProvided()
+    {
+        // Arrange
+        var appointmentType = new AppointmentTypeBuilder().WithAgePolicy(18, 65, false).Build();
+
+        // Act
+        appointmentType.ChangeAgePolicy(null!);
+
+        // Assert
+        appointmentType.AgePolicy.Should().Be(AgeEligibilityPolicy.NoRestriction);
+    }
+
     private class AppointmentTypeBuilder
     {
         private AppointmentCategory _category = AppointmentCategory.Checkup;
