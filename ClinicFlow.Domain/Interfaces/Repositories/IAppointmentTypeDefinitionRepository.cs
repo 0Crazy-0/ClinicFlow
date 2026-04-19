@@ -1,4 +1,5 @@
 using ClinicFlow.Domain.Entities;
+using ClinicFlow.Domain.Enums;
 
 namespace ClinicFlow.Domain.Interfaces.Repositories;
 
@@ -9,6 +10,20 @@ public interface IAppointmentTypeDefinitionRepository
 {
     Task<AppointmentTypeDefinition?> GetByIdAsync(
         Guid id,
+        CancellationToken cancellationToken = default
+    );
+
+    Task<IReadOnlyList<AppointmentTypeDefinition>> GetAllActiveAsync(
+        CancellationToken cancellationToken = default
+    );
+
+    Task<IReadOnlyList<AppointmentTypeDefinition>> GetByCategoryAsync(
+        AppointmentCategory category,
+        CancellationToken cancellationToken = default
+    );
+
+    Task<IReadOnlyList<AppointmentTypeDefinition>> GetEligibleByAgeAsync(
+        int patientAgeInYears,
         CancellationToken cancellationToken = default
     );
 
