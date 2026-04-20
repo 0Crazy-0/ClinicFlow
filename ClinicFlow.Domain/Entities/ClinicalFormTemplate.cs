@@ -56,4 +56,24 @@ public class ClinicalFormTemplate : BaseEntity
 
         return new ClinicalFormTemplate(code, name, description, schemaToSave);
     }
+
+    /// <summary>
+    /// Updates descriptive details. Code is immutable: it serves as the business identity.
+    /// </summary>
+    public void UpdateDetails(string name, string description)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+
+        Name = name;
+        Description = description;
+    }
+
+    /// <summary>
+    /// Replaces the current JSON schema definition. Defaults to an empty object if null or whitespace.
+    /// </summary>
+    public void UpdateSchema(string jsonSchemaDefinition) =>
+        JsonSchemaDefinition = string.IsNullOrWhiteSpace(jsonSchemaDefinition)
+            ? "{}"
+            : jsonSchemaDefinition;
 }
