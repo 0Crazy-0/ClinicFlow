@@ -22,6 +22,7 @@ public static class DomainErrors
         public const string InvalidEmailFormat = "INVALID_EMAIL_FORMAT";
         public const string InvalidPhoneFormat = "INVALID_PHONE_FORMAT";
         public const string InvalidBloodType = "INVALID_BLOOD_TYPE";
+        public const string InvalidFormat = "INVALID_FORMAT";
     }
 
     public static class Appointment
