@@ -8,6 +8,10 @@ namespace ClinicFlow.Domain.Entities;
 /// </summary>
 public class ClinicalFormTemplate : BaseEntity
 {
+    /// <summary>
+    /// Immutable natural key that external systems and the frontend use to
+    /// reference this template. Changing it would break historical records.
+    /// </summary>
     public string Code { get; private set; } = string.Empty;
     public string Name { get; private set; } = string.Empty;
     public string Description { get; private set; } = string.Empty;
