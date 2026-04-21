@@ -27,7 +27,7 @@ public class GetPenaltiesByPatientIdQueryHandlerTests
         var block = PatientPenalty.CreateManualBlock(
             patientId,
             "Block 1",
-            Domain.Enums.BlockDuration.Minor,
+            BlockDuration.Minor,
             DateTime.UtcNow
         );
 
