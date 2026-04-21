@@ -70,8 +70,6 @@ public class AddCompleteFamilyMemberCommandHandlerTests
             .EmergencyContact.PhoneNumber.ToString()
             .Should()
             .Be(command.EmergencyContactPhone);
-
-        capturedPatient.HasCompleteMedicalProfile().Should().BeTrue();
     }
 
     [Fact]

@@ -56,6 +56,7 @@ public class CreatePatientProfileCommandHandlerTests
         capturedPatient.RelationshipToUser.Should().Be(PatientRelationship.Self);
         capturedPatient.DateOfBirth.Should().Be(command.DateOfBirth);
 
-        capturedPatient.HasCompleteMedicalProfile().Should().BeFalse();
+        capturedPatient.BloodType.Should().BeNull();
+        capturedPatient.EmergencyContact.Should().BeNull();
     }
 }

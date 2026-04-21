@@ -99,12 +99,6 @@ public class Patient : BaseEntity
         EmergencyContact = emergencyContact;
 
     /// <summary>
-    /// Checks if the patient has all required medical and emergency contact information.
-    /// </summary>
-    public bool HasCompleteMedicalProfile() =>
-        BloodType is not null && EmergencyContact is not null;
-
-    /// <summary>
     /// Ensures the patient's medical profile is complete before allowing certain actions.
     /// </summary>
     internal void EnsureCompleteProfile()
@@ -127,6 +121,22 @@ public class Patient : BaseEntity
         return age;
     }
 
+    /// <summary>
+    /// Verifies that the patient is not currently blocked from booking appointments.
+    /// </summary>
+    /// <param name="penalties">The patient's existing penalty records.</param>
+    internal static void EnsureNotBlocked(
+        IEnumerable<PatientPenalty> penalties,
+        DateTime referenceTime
+    )
+    {
+        if (IsBlockedFromBooking(penalties, referenceTime, out var blockedUntil))
+            throw new PatientBlockedException(
+                DomainErrors.Patient.Blocked,
+                blockedUntil ?? referenceTime
+            );
+    }
+
     private static bool IsBlockedFromBooking(
         IEnumerable<PatientPenalty> penalties,
         DateTime referenceTime,
@@ -147,19 +157,6 @@ public class Patient : BaseEntity
         return activePenalties.Count > 0;
     }
 
-    /// <summary>
-    /// Verifies that the patient is not currently blocked from booking appointments.
-    /// </summary>
-    /// <param name="penalties">The patient's existing penalty records.</param>
-    internal static void EnsureNotBlocked(
-        IEnumerable<PatientPenalty> penalties,
-        DateTime referenceTime
-    )
-    {
-        if (IsBlockedFromBooking(penalties, referenceTime, out var blockedUntil))
-            throw new PatientBlockedException(
-                DomainErrors.Patient.Blocked,
-                blockedUntil ?? referenceTime
-            );
-    }
+    private bool HasCompleteMedicalProfile() =>
+        BloodType is not null && EmergencyContact is not null;
 }
