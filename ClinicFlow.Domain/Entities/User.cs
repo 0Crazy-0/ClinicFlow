@@ -40,7 +40,6 @@ public class User : BaseEntity
     /// <summary>
     /// Creates a new user entity.
     /// </summary>
-    /// <exception cref="DomainValidationException">Thrown when the password hash is blank.</exception>
     public static User Create(
         EmailAddress email,
         string passwordHash,

@@ -52,7 +52,6 @@ public class AppointmentTypeDefinition : BaseEntity
     /// <summary>
     /// Creates a new appointment type definition.
     /// </summary>
-    /// <exception cref="DomainValidationException">Thrown when the name is empty, duration is not positive, or the age rules are invalid.</exception>
     public static AppointmentTypeDefinition Create(
         AppointmentCategory category,
         string name,
@@ -78,7 +77,6 @@ public class AppointmentTypeDefinition : BaseEntity
     /// <summary>
     /// Updates the appointment type's general details.
     /// </summary>
-    /// <exception cref="DomainValidationException">Thrown when the name is empty or the duration is not positive.</exception>
     public void UpdateDetails(
         AppointmentCategory category,
         string name,
@@ -131,9 +129,6 @@ public class AppointmentTypeDefinition : BaseEntity
     /// <summary>
     /// Verifies if the patient meets the age requirements and legal guardian requirements for this appointment type.
     /// </summary>
-    /// <param name="patientAgeInYears">The patient's age in full years.</param>
-    /// <param name="hasGuardianConsent">Indicates if the appointment is being booked with the consent of an adult legal guardian.</param>
-    /// <exception cref="DomainValidationException">Thrown if the patient does not meet the criteria.</exception>
     internal void ValidatePatientEligibility(
         int patientAgeInYears,
         bool hasGuardianConsent = false

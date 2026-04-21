@@ -40,7 +40,6 @@ public class Doctor : BaseEntity
     /// <summary>
     /// Creates a new doctor entity.
     /// </summary>
-    /// <exception cref="DomainValidationException">Thrown when the user ID or specialty ID is empty, or the room number is not positive.</exception>
     public static Doctor Create(
         Guid userId,
         MedicalLicenseNumber licenseNumber,
@@ -68,7 +67,6 @@ public class Doctor : BaseEntity
     /// <summary>
     /// Updates the doctor's profile information.
     /// </summary>
-    /// <exception cref="DomainValidationException">Thrown when the consultation room number is not positive.</exception>
     public void UpdateProfile(string biography, int consultationRoomNumber)
     {
         if (consultationRoomNumber <= 0)

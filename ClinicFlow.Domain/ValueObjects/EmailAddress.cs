@@ -24,7 +24,6 @@ public partial record EmailAddress
     /// <summary>
     /// Creates an <see cref="EmailAddress"/> after validating format and normalizing to lowercase.
     /// </summary>
-    /// <exception cref="BusinessRuleValidationException">Thrown when the value is empty or has an invalid format.</exception>
     internal static EmailAddress Create(string email)
     {
         if (string.IsNullOrWhiteSpace(email))

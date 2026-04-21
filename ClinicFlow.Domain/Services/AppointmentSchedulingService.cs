@@ -23,15 +23,6 @@ public static class AppointmentSchedulingService
     /// <param name="args">The scheduling arguments containing the initiator and target patients, the selected doctor, and the desired date and time.</param>
     /// <param name="context">Contextual scheduling data, such as doctor's availability schedule and existing conflicts.</param>
     /// <returns>A successfully scheduled <see cref="Appointment"/> instance.</returns>
-    /// <exception cref="AppointmentSchedulingUnauthorizedException">
-    /// Thrown when the initiator does not own the target patient's account,
-    /// or when a non-self patient attempts to schedule for a different patient.
-    /// </exception>
-    /// <exception cref="IncompleteProfileException">Thrown when the target patient's profile is missing required information.</exception>
-    /// <exception cref="PatientBlockedException">Thrown when the target patient is currently blocked from scheduling due to penalties.</exception>
-    /// <exception cref="DomainValidationException">Thrown when the target patient does not meet the appointment type's age or guardian requirements.</exception>
-    /// <exception cref="DoctorNotAvailableException">Thrown when the doctor's schedule does not cover the requested time range.</exception>
-    /// <exception cref="AppointmentConflictException">Thrown when the doctor already has an overlapping appointment.</exception>
     public static Appointment ScheduleByPatient(
         AppointmentTypeDefinition appointmentType,
         PatientSchedulingArgs args,
@@ -97,9 +88,6 @@ public static class AppointmentSchedulingService
     /// <param name="args">The scheduling arguments containing the initiator doctor, the target patient, the desired date/time, and whether overbooking is requested.</param>
     /// <param name="context">Contextual scheduling data, such as the doctor's schedule and conflicts.</param>
     /// <returns>A successfully scheduled <see cref="Appointment"/> instance.</returns>
-    /// <exception cref="AppointmentSchedulingUnauthorizedException">Thrown when the appointment category is not permitted for doctor scheduling.</exception>
-    /// <exception cref="DoctorNotAvailableException">Thrown when the doctor's schedule does not cover the requested time range and overbooking is not requested.</exception>
-    /// <exception cref="AppointmentConflictException">Thrown when there is an overlapping appointment and overbooking is not requested.</exception>
     public static Appointment ScheduleByDoctor(
         AppointmentTypeDefinition appointmentType,
         DoctorSchedulingArgs args,
@@ -152,10 +140,6 @@ public static class AppointmentSchedulingService
     /// <param name="args">The scheduling arguments including the target patient, the doctor, the desired date/time, and flags for guardian consent and overbooking.</param>
     /// <param name="context">Contextual scheduling data, such as the doctor's schedule and possible conflicts.</param>
     /// <returns>A successfully scheduled <see cref="Appointment"/> instance.</returns>
-    /// <exception cref="IncompleteProfileException">Thrown when the target patient's profile is missing required information.</exception>
-    /// <exception cref="DomainValidationException">Thrown when the target patient does not meet the appointment type's age or guardian requirements.</exception>
-    /// <exception cref="DoctorNotAvailableException">Thrown when the doctor is not available and overbooking is not requested.</exception>
-    /// <exception cref="AppointmentConflictException">Thrown when there is an appointment conflict and overbooking is not requested.</exception>
     public static Appointment ScheduleByStaff(
         AppointmentTypeDefinition appointmentType,
         StaffSchedulingArgs args,
