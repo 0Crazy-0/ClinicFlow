@@ -48,7 +48,6 @@ public class Patient : BaseEntity
     /// <summary>
     /// Creates a new patient entity for the primary user of an account.
     /// </summary>
-    /// <exception cref="DomainValidationException">Thrown when the user ID is empty or the date of birth is in the future.</exception>
     public static Patient CreateSelf(
         Guid userId,
         PersonName fullName,
@@ -67,7 +66,6 @@ public class Patient : BaseEntity
     /// <summary>
     /// Creates a new patient entity representing a family member dependent of a primary user.
     /// </summary>
-    /// <exception cref="DomainValidationException">Thrown when the relationship is Self, user ID is empty, or the date of birth is in the future.</exception>
     public static Patient CreateFamilyMember(
         Guid userId,
         PersonName fullName,
@@ -109,7 +107,6 @@ public class Patient : BaseEntity
     /// <summary>
     /// Ensures the patient's medical profile is complete before allowing certain actions.
     /// </summary>
-    /// <exception cref="IncompleteProfileException">Thrown when the profile is incomplete.</exception>
     internal void EnsureCompleteProfile()
     {
         if (!HasCompleteMedicalProfile())
@@ -154,7 +151,6 @@ public class Patient : BaseEntity
     /// Verifies that the patient is not currently blocked from booking appointments.
     /// </summary>
     /// <param name="penalties">The patient's existing penalty records.</param>
-    /// <exception cref="PatientBlockedException">Thrown when the patient has an active temporary block.</exception>
     internal static void EnsureNotBlocked(
         IEnumerable<PatientPenalty> penalties,
         DateTime referenceTime

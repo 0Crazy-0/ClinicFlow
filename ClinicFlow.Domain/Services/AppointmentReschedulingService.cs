@@ -22,14 +22,6 @@ public static class AppointmentReschedulingService
     /// <param name="appointment">The existing appointment to be rescheduled.</param>
     /// <param name="args">The rescheduling arguments containing the initiator and target patients, and the proposed new date and time.</param>
     /// <param name="context">Contextual rescheduling data, such as the doctor's schedule, penalties, and possible conflicts.</param>
-    /// <exception cref="DomainValidationException">Thrown when the target patient does not match the appointment's patient.</exception>
-    /// <exception cref="AppointmentSchedulingUnauthorizedException">
-    /// Thrown when the initiator does not own the target patient's account,
-    /// or when a non-self patient attempts to reschedule for a different patient.
-    /// </exception>
-    /// <exception cref="PatientBlockedException">Thrown when the target patient is currently blocked from scheduling due to penalties.</exception>
-    /// <exception cref="DoctorNotAvailableException">Thrown when the doctor's schedule does not cover the new time range.</exception>
-    /// <exception cref="AppointmentConflictException">Thrown when the doctor has an overlapping appointment at the new time.</exception>
     public static void RescheduleByPatient(
         Appointment appointment,
         PatientReschedulingArgs args,
@@ -81,9 +73,6 @@ public static class AppointmentReschedulingService
     /// <param name="appointment">The existing appointment to be rescheduled.</param>
     /// <param name="args">The rescheduling arguments containing the initiator doctor, the new date and time, and whether overbooking is requested.</param>
     /// <param name="context">Contextual rescheduling data, such as the doctor's schedule and conflicts.</param>
-    /// <exception cref="AppointmentSchedulingUnauthorizedException">Thrown when the initiating doctor is not the doctor associated with the appointment.</exception>
-    /// <exception cref="DoctorNotAvailableException">Thrown when the doctor is not available at the new time and overbooking is not requested.</exception>
-    /// <exception cref="AppointmentConflictException">Thrown when there is a scheduling conflict at the new time and overbooking is not requested.</exception>
     public static void RescheduleByDoctor(
         Appointment appointment,
         DoctorReschedulingArgs args,
@@ -122,8 +111,6 @@ public static class AppointmentReschedulingService
     /// <param name="appointment">The existing appointment to be rescheduled.</param>
     /// <param name="args">The rescheduling arguments containing the new date and time, and whether overbooking is requested.</param>
     /// <param name="context">Contextual rescheduling data, such as the doctor's schedule and conflicts.</param>
-    /// <exception cref="DoctorNotAvailableException">Thrown when the doctor is not available at the new time and overbooking is not requested.</exception>
-    /// <exception cref="AppointmentConflictException">Thrown when there is a scheduling conflict at the new time and overbooking is not requested.</exception>
     public static void RescheduleByStaff(
         Appointment appointment,
         StaffReschedulingArgs args,

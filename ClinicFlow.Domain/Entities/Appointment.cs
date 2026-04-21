@@ -65,7 +65,6 @@ public class Appointment : BaseEntity
     /// <summary>
     /// Creates a new appointment in <see cref="AppointmentStatus.Scheduled"/> status and raises an <see cref="AppointmentScheduledEvent"/>.
     /// </summary>
-    /// <exception cref="DomainValidationException">Thrown when any required identifier is empty or the time range is null.</exception>
     internal static Appointment Schedule(
         Guid patientId,
         Guid doctorId,
@@ -101,7 +100,6 @@ public class Appointment : BaseEntity
     /// the status is set to <see cref="AppointmentStatus.LateCancellation"/> instead.
     /// </summary>
     /// <param name="specialty">The medical specialty, used to evaluate the cancellation notice policy.</param>
-    /// <exception cref="AppointmentCancellationNotAllowedException">Thrown when the appointment is already cancelled.</exception>
     internal void Cancel(
         Guid cancelledByUserId,
         string? reason,
@@ -131,7 +129,6 @@ public class Appointment : BaseEntity
     /// <summary>
     /// Marks the appointment as checked in by staff, meaning the patient has arrived at the clinic.
     /// </summary>
-    /// <exception cref="DomainValidationException"> Thrown when the appointment status is not <see cref="AppointmentStatus.Scheduled"/>. </exception>
     public void CheckIn(DateTime checkedInAt)
     {
         if (Status is not AppointmentStatus.Scheduled)
@@ -146,7 +143,6 @@ public class Appointment : BaseEntity
     /// <summary>
     /// Marks the appointment as started, meaning the doctor has initiated the consultation.
     /// </summary>
-    /// <exception cref="DomainValidationException"> Thrown when the appointment status is not <see cref="AppointmentStatus.CheckedIn"/>. </exception>
     public void Start(Guid initiatorDoctorId, DateTime startedAt)
     {
         if (initiatorDoctorId != DoctorId)
@@ -163,7 +159,6 @@ public class Appointment : BaseEntity
     /// <summary>
     /// Marks the appointment as completed, meaning the consultation has finished.
     /// </summary>
-    /// <exception cref="DomainValidationException"> Thrown when the appointment status is not <see cref="AppointmentStatus.InProgress"/>. </exception>
     public void Complete(DateTime completedAt)
     {
         if (Status is not AppointmentStatus.InProgress)
@@ -177,7 +172,6 @@ public class Appointment : BaseEntity
     /// <summary>
     /// Reschedules the appointment to a new date and time range. Only one reschedule is allowed per appointment.
     /// </summary>
-    /// <exception cref="AppointmentReschedulingNotAllowedException">Thrown when the appointment has already been rescheduled or is not in a reschedulable status.</exception>
     internal void Reschedule(DateTime newDate, TimeRange newTimeRange)
     {
         if (!CanBeRescheduled())
@@ -199,16 +193,12 @@ public class Appointment : BaseEntity
     /// Marks the appointment as a no-show, indicating that the patient did not attend.
     /// This method is intended to be called by administrative staff.
     /// </summary>
-    /// <exception cref="DomainValidationException">Thrown when the appointment is not in a valid status to be marked as no-show.</exception>
     public void MarkAsNoShowByStaff() => MarkAsNoShow();
 
     /// <summary>
     /// Marks the appointment as a no-show, indicating that the patient did not attend.
     /// This method enforces that the doctor attempting to perform the action is the doctor assigned to the appointment.
     /// </summary>
-    /// <param name="initiatorDoctorId">The unique identifier of the doctor initiating the action.</param>
-    /// <exception cref="AppointmentNoShowUnauthorizedException">Thrown when the initiating doctor is not the assigned doctor.</exception>
-    /// <exception cref="DomainValidationException">Thrown when the appointment is not in a valid status to be marked as no-show.</exception>
     public void MarkAsNoShowByDoctor(Guid initiatorDoctorId)
     {
         if (initiatorDoctorId != DoctorId)

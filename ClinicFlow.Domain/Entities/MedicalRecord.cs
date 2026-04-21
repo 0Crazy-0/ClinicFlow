@@ -44,7 +44,6 @@ public class MedicalRecord : BaseEntity
     /// <summary>
     /// Creates a new medical record and raises a <see cref="MedicalRecordCreatedEvent"/>.
     /// </summary>
-    /// <exception cref="DomainValidationException">Thrown when any required identifier is empty or the chief complaint is blank.</exception>
     public static MedicalRecord Create(
         Guid patientId,
         Guid doctorId,
@@ -73,7 +72,6 @@ public class MedicalRecord : BaseEntity
     /// Used primarily by the <see cref="Services.MedicalEncounterService"/> after enforcing domain policies.
     /// </summary>
     /// <param name="detail">The specific detail object containing medical data.</param>
-    /// <exception cref="DomainValidationException">Thrown if the provided detail is null or a detail of that type was already added.</exception>
     internal void AddClinicalDetail(IClinicalDetailRecord detail)
     {
         if (detail is null)

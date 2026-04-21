@@ -20,8 +20,6 @@ public class MedicalEncounterService(
     /// </summary>
     /// <param name="record">The medical record to be validated and updated.</param>
     /// <param name="context">The contextual information for the encounter, including expected references (Doctor, Appointment) and new clinical details.</param>
-    /// <exception cref="DomainValidationException">Thrown if any of the required parameters or their essential properties are null.</exception>
-    /// <exception cref="BusinessRuleValidationException">Thrown if there is a mismatch between the expected doctor/appointment and the record, or if any policy fails.</exception>
     public void ValidateAndCompleteRecord(MedicalRecord record, MedicalEncounterContext context)
     {
         if (record is null)
@@ -59,8 +57,6 @@ public class MedicalEncounterService(
     /// <param name="record">The medical record where the detail will be appended.</param>
     /// <param name="newDetail">The new clinical detail containing the data payload to validate and append.</param>
     /// <param name="template">The clinical form template containing the schema requirements.</param>
-    /// <exception cref="DomainValidationException">Thrown if any of the provided parameters are null.</exception>
-    /// <exception cref="BusinessRuleValidationException">Thrown if the template code mismatches, the payload is missing, or the payload fails JSON schema validation.</exception>
     public void AppendClinicalDetail(
         MedicalRecord record,
         IClinicalDetailRecord newDetail,

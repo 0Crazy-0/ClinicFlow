@@ -52,7 +52,6 @@ public class PatientPenalty : BaseEntity
     /// <summary>
     /// Creates a warning penalty for the patient.
     /// </summary>
-    /// <exception cref="DomainValidationException">Thrown when the patient ID is empty or the reason is blank.</exception>
     internal static PatientPenalty CreateAutomaticWarning(
         Guid patientId,
         Guid? appointmentId,
@@ -71,7 +70,6 @@ public class PatientPenalty : BaseEntity
     /// Creates a temporary block penalty that prevents the patient from booking until the specified date.
     /// </summary>
     /// <param name="blockedUntil">UTC date and time until which the block is in effect. Must be in the future.</param>
-    /// <exception cref="DomainValidationException">Thrown when the patient ID is empty, the reason is blank, or the block date is not in the future.</exception>
     internal static PatientPenalty CreateAutomaticBlock(
         Guid patientId,
         string reason,
@@ -99,7 +97,6 @@ public class PatientPenalty : BaseEntity
     /// Creates a staff-issued temporary block penalty with a predefined duration.
     /// </summary>
     /// <param name="duration">The predefined block duration to apply.</param>
-    /// <exception cref="DomainValidationException">Thrown when the patient ID is empty or the reason is blank.</exception>
     public static PatientPenalty CreateManualBlock(
         Guid patientId,
         string reason,
@@ -126,7 +123,6 @@ public class PatientPenalty : BaseEntity
     /// <summary>
     /// Removes this penalty, marking it as no longer in effect.
     /// </summary>
-    /// <exception cref="DomainValidationException">Thrown when the penalty has already been removed.</exception>
     public void Remove()
     {
         if (IsRemoved)

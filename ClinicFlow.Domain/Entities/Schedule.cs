@@ -35,7 +35,6 @@ public class Schedule : BaseEntity
     /// <summary>
     /// Creates a new schedule slot for a doctor.
     /// </summary>
-    /// <exception cref="DomainValidationException">Thrown when the doctor ID is empty, the day of week is invalid, or the time range is null.</exception>
     public static Schedule Create(Guid doctorId, DayOfWeek dayOfWeek, TimeRange timeRange)
     {
         if (doctorId == Guid.Empty)
@@ -52,7 +51,6 @@ public class Schedule : BaseEntity
     /// Deactivates this schedule slot, preventing new appointments from being booked on this time range.
     /// Existing appointments are not affected.
     /// </summary>
-    /// <exception cref="DomainValidationException">Thrown when the schedule is already inactive.</exception>
     public void Deactivate()
     {
         if (!IsActive)
@@ -73,7 +71,6 @@ public class Schedule : BaseEntity
     /// <param name="existingSchedules">The doctor's existing schedule records.</param>
     /// <param name="doctorId">The doctor's unique identifier.</param>
     /// <param name="dayOfWeek">The day of week to check for duplicates.</param>
-    /// <exception cref="ScheduleAlreadyExistsException">Thrown when an active schedule already exists for the given day.</exception>
     public static void EnsureNoDuplicateDay(
         IReadOnlyList<Schedule> existingSchedules,
         Guid doctorId,

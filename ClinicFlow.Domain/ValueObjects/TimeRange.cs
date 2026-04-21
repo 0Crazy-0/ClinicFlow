@@ -23,7 +23,6 @@ public record TimeRange
     /// <summary>
     /// Creates a <see cref="TimeRange"/> after ensuring the start time precedes the end time.
     /// </summary>
-    /// <exception cref="InvalidTimeRangeException">Thrown when the start time is greater than or equal to the end time.</exception>
     internal static TimeRange Create(TimeSpan start, TimeSpan end)
     {
         if (start >= end)
@@ -35,7 +34,6 @@ public record TimeRange
     /// <summary>
     /// Checks whether this time range overlaps with another time range.
     /// </summary>
-    /// <exception cref="InvalidTimeRangeException">Thrown when the other time range is null.</exception>
     public bool OverlapsWith(TimeRange other)
     {
         if (other is null)
@@ -47,7 +45,6 @@ public record TimeRange
     /// <summary>
     /// Checks whether this time range completely encompasses another time range.
     /// </summary>
-    /// <exception cref="InvalidTimeRangeException">Thrown when the other time range is null.</exception>
     public bool Covers(TimeRange other)
     {
         if (other is null)

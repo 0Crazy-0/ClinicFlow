@@ -15,7 +15,6 @@ public static class PatientPenaltyService
     /// escalating from a warning to progressively longer blocks.
     /// </summary>
     /// <returns>A collection of newly generated penalties that need to be persisted.</returns>
-    /// <exception cref="DomainValidationException">Thrown when the patient ID is empty or the reason is blank.</exception>
     public static IEnumerable<PatientPenalty> ApplyPenalty(
         Guid patientId,
         IReadOnlyList<PatientPenalty> existingPenalties,

@@ -41,7 +41,6 @@ public class ClinicalFormTemplate : BaseEntity
     /// <summary>
     /// Creates a new clinical form template.
     /// </summary>
-    /// <exception cref="DomainValidationException">Thrown when code or name are empty.</exception>
     public static ClinicalFormTemplate Create(
         string code,
         string name,

@@ -18,7 +18,6 @@ public record MedicalLicenseNumber
     /// <summary>
     /// Creates a <see cref="MedicalLicenseNumber"/> after validating length constraints.
     /// </summary>
-    /// <exception cref="BusinessRuleValidationException">Thrown when the value is empty or shorter than 4 characters.</exception>
     internal static MedicalLicenseNumber Create(string licenseNumber)
     {
         if (string.IsNullOrWhiteSpace(licenseNumber))

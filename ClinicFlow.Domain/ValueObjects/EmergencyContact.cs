@@ -32,7 +32,6 @@ public record EmergencyContact
     /// <summary>
     /// Creates an <see cref="EmergencyContact"/> from pre-validated value objects.
     /// </summary>
-    /// <exception cref="BusinessRuleValidationException">Thrown when either the name or phone number is null.</exception>
     internal static EmergencyContact Create(PersonName name, PhoneNumber phoneNumber)
     {
         if (name is null)

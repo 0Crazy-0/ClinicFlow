@@ -18,7 +18,6 @@ public record PersonName
     /// <summary>
     /// Creates a <see cref="PersonName"/> after validating length constraints.
     /// </summary>
-    /// <exception cref="BusinessRuleValidationException">Thrown when the value is empty or shorter than 2 characters.</exception>
     internal static PersonName Create(string fullName)
     {
         if (string.IsNullOrWhiteSpace(fullName))

@@ -24,7 +24,6 @@ public partial record PhoneNumber
     /// <summary>
     /// Creates a <see cref="PhoneNumber"/> after validating format and length constraints.
     /// </summary>
-    /// <exception cref="BusinessRuleValidationException">Thrown when the value is empty, has an invalid format, or is shorter than 7 digits.</exception>
     internal static PhoneNumber Create(string number)
     {
         if (string.IsNullOrWhiteSpace(number))
