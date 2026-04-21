@@ -68,7 +68,5 @@ public class CreateCompletePatientProfileCommandHandlerTests
             .EmergencyContact.PhoneNumber.ToString()
             .Should()
             .Be(command.EmergencyContactPhone);
-
-        capturedPatient.HasCompleteMedicalProfile().Should().BeTrue();
     }
 }

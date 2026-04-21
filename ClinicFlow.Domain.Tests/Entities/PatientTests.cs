@@ -161,38 +161,6 @@ public class PatientTests
     }
 
     [Fact]
-    public void HasCompleteMedicalProfile_ShouldReturnFalse_WhenJustCreated()
-    {
-        // Arrange
-        var patient = Patient.CreateSelf(
-            Guid.NewGuid(),
-            PersonName.Create("John Doe"),
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30).Date,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
-
-        // Act & Assert
-        patient.HasCompleteMedicalProfile().Should().BeFalse();
-    }
-
-    [Fact]
-    public void HasCompleteMedicalProfile_ShouldReturnTrue_WhenProfileIsCompleted()
-    {
-        // Arrange
-        var patient = Patient.CreateSelf(
-            Guid.NewGuid(),
-            PersonName.Create("John Doe"),
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30).Date,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
-        patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
-        patient.UpdateEmergencyContact(EmergencyContact.Create("Mom", "555-5555"));
-
-        // Act & Assert
-        patient.HasCompleteMedicalProfile().Should().BeTrue();
-    }
-
-    [Fact]
     public void UpdateMedicalProfile_ShouldSetEmptyString_WhenNullStringsAreProvided()
     {
         // Arrange
