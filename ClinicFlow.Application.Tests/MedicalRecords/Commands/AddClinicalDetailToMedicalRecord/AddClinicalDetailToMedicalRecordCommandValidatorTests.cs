@@ -33,11 +33,7 @@ public class AddClinicalDetailToMedicalRecordCommandValidatorTests
     public void Validate_GivenEmptyMedicalRecordId_HasError()
     {
         // Arrange
-        var command = new AddClinicalDetailToMedicalRecordCommand(
-            Guid.Empty,
-            "vital-signs",
-            "{}"
-        );
+        var command = new AddClinicalDetailToMedicalRecordCommand(Guid.Empty, "vital-signs", "{}");
 
         // Act
         var result = _sut.TestValidate(command);
