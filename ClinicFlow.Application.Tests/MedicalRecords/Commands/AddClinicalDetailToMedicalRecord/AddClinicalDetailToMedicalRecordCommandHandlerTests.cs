@@ -47,7 +47,7 @@ public class AddClinicalDetailToMedicalRecordCommandHandlerTests
         var request = new AddClinicalDetailToMedicalRecordCommand(
             medicalRecordId,
             "lab-results",
-            "{\"glucose\": 90}"
+            """{"glucose": 90}"""
         );
 
         var record = CreateMedicalRecord(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "Checkup");
@@ -73,7 +73,7 @@ public class AddClinicalDetailToMedicalRecordCommandHandlerTests
         record
             .ClinicalDetails.Should()
             .ContainSingle(d =>
-                d.TemplateCode == "lab-results" && d.JsonDataPayload == "{\"glucose\": 90}"
+                d.TemplateCode == "lab-results" && d.JsonDataPayload == """{"glucose": 90}"""
             );
 
         _medicalRecordRepositoryMock.Verify(
