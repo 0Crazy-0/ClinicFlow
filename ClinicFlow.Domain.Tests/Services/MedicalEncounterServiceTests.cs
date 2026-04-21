@@ -299,16 +299,16 @@ public class MedicalEncounterServiceTests
 
         var mockDetail = new Mock<IClinicalDetailRecord>();
         mockDetail.Setup(d => d.TemplateCode).Returns("Test1");
-        mockDetail.Setup(d => d.JsonDataPayload).Returns("{\"invalid\": \"data\"}");
+        mockDetail.Setup(d => d.JsonDataPayload).Returns("""{"invalid": "data"}""");
 
-        var template = CreateFormTemplate("Test1", "{\"type\": \"object\"}");
+        var template = CreateFormTemplate("Test1", """{"type": "object"}""");
 
         string errorMessage = "Schema validation failed";
         _mockJsonValidator
             .Setup(v =>
                 v.ValidateSchema(
-                    "{\"type\": \"object\"}",
-                    "{\"invalid\": \"data\"}",
+                    """{"type": "object"}""",
+                    """{"invalid": "data"}""",
                     out errorMessage!
                 )
             )
@@ -328,16 +328,16 @@ public class MedicalEncounterServiceTests
 
         var mockDetail = new Mock<IClinicalDetailRecord>();
         mockDetail.Setup(d => d.TemplateCode).Returns("Test1");
-        mockDetail.Setup(d => d.JsonDataPayload).Returns("{\"valid\": \"data\"}");
+        mockDetail.Setup(d => d.JsonDataPayload).Returns("""{"valid": "data"}""");
 
-        var template = CreateFormTemplate("Test1", "{\"type\": \"object\"}");
+        var template = CreateFormTemplate("Test1", """{"type": "object"}""");
 
         string? errorMessage = null;
         _mockJsonValidator
             .Setup(v =>
                 v.ValidateSchema(
-                    "{\"type\": \"object\"}",
-                    "{\"valid\": \"data\"}",
+                    """{"type": "object"}""",
+                    """{"valid": "data"}""",
                     out errorMessage
                 )
             )

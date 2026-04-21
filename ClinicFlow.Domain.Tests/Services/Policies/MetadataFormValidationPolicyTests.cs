@@ -111,7 +111,7 @@ public class MetadataFormValidationPolicyTests
         // Arrange
         var template = ClinicalFormTemplate.Create("VITALS", "Vitals", "Vital signs", "");
         var appointmentType = CreateAppointmentTypeWithTemplates(template);
-        var detail = DynamicClinicalDetail.Create("VITALS", "{\"bp\":\"120/80\"}");
+        var detail = DynamicClinicalDetail.Create("VITALS", """{"bp":"120/80"}""");
         var details = new List<IClinicalDetailRecord> { detail };
 
         // Act
@@ -132,7 +132,7 @@ public class MetadataFormValidationPolicyTests
         // Arrange
         var template = CreateTemplateWithSchema("VITALS", "Vitals", "   ");
         var appointmentType = CreateAppointmentTypeWithTemplates(template);
-        var detail = DynamicClinicalDetail.Create("VITALS", "{\"bp\":\"120/80\"}");
+        var detail = DynamicClinicalDetail.Create("VITALS", """{"bp":"120/80"}""");
         var details = new List<IClinicalDetailRecord> { detail };
 
         // Act
@@ -151,8 +151,7 @@ public class MetadataFormValidationPolicyTests
     public void Validate_ShouldSucceed_WhenSchemaValidationPasses()
     {
         // Arrange
-        var schemaDefinition =
-            "{\"type\":\"object\",\"properties\":{\"bp\":{\"type\":\"string\"}}}";
+        var schemaDefinition = """{"type":"object","properties":{"bp":{"type":"string"}}}""";
         var template = ClinicalFormTemplate.Create(
             "VITALS",
             "Vitals",
@@ -160,7 +159,7 @@ public class MetadataFormValidationPolicyTests
             schemaDefinition
         );
         var appointmentType = CreateAppointmentTypeWithTemplates(template);
-        var payload = "{\"bp\":\"120/80\"}";
+        var payload = """{"bp":"120/80"}""";
         var detail = DynamicClinicalDetail.Create("VITALS", payload);
         var details = new List<IClinicalDetailRecord> { detail };
 
@@ -184,7 +183,7 @@ public class MetadataFormValidationPolicyTests
     public void Validate_ShouldThrowBusinessRuleValidationException_WhenSchemaValidationFails()
     {
         // Arrange
-        var schemaDefinition = "{\"type\":\"object\",\"required\":[\"bp\"]}";
+        var schemaDefinition = """{"type":"object","required":["bp"]}""";
         var template = ClinicalFormTemplate.Create(
             "VITALS",
             "Vitals",
@@ -192,7 +191,7 @@ public class MetadataFormValidationPolicyTests
             schemaDefinition
         );
         var appointmentType = CreateAppointmentTypeWithTemplates(template);
-        var payload = "{\"temperature\":\"37\"}";
+        var payload = """{"temperature":"37"}""";
         var detail = DynamicClinicalDetail.Create("VITALS", payload);
         var details = new List<IClinicalDetailRecord> { detail };
 
@@ -214,8 +213,8 @@ public class MetadataFormValidationPolicyTests
     public void Validate_ShouldValidateAllRequiredTemplates_WhenMultipleTemplatesExist()
     {
         // Arrange
-        var schema1 = "{\"type\":\"object\"}";
-        var schema2 = "{\"type\":\"object\"}";
+        var schema1 = """{"type":"object"}""";
+        var schema2 = """{"type":"object"}""";
         var template1 = ClinicalFormTemplate.Create("VITALS", "Vitals", "Vital signs", schema1);
         var template2 = ClinicalFormTemplate.Create(
             "ALLERGIES",
@@ -225,8 +224,8 @@ public class MetadataFormValidationPolicyTests
         );
         var appointmentType = CreateAppointmentTypeWithTemplates(template1, template2);
 
-        var payload1 = "{\"bp\":\"120/80\"}";
-        var payload2 = "{\"allergy\":\"none\"}";
+        var payload1 = """{"bp":"120/80"}""";
+        var payload2 = """{"allergy":"none"}""";
         var detail1 = DynamicClinicalDetail.Create("VITALS", payload1);
         var detail2 = DynamicClinicalDetail.Create("ALLERGIES", payload2);
         var details = new List<IClinicalDetailRecord> { detail1, detail2 };
@@ -264,7 +263,7 @@ public class MetadataFormValidationPolicyTests
         );
         var appointmentType = CreateAppointmentTypeWithTemplates(template1, template2);
 
-        var detail = DynamicClinicalDetail.Create("ALLERGIES", "{\"allergy\":\"none\"}");
+        var detail = DynamicClinicalDetail.Create("ALLERGIES", """{"allergy":"none"}""");
         var details = new List<IClinicalDetailRecord> { detail };
 
         // Act
