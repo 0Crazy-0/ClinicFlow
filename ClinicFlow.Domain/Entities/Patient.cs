@@ -98,18 +98,12 @@ public class Patient : BaseEntity
     public void UpdateEmergencyContact(EmergencyContact emergencyContact) =>
         EmergencyContact = emergencyContact;
 
-    /// <summary>
-    /// Ensures the patient's medical profile is complete before allowing certain actions.
-    /// </summary>
     internal void EnsureCompleteProfile()
     {
         if (!HasCompleteMedicalProfile())
             throw new IncompleteProfileException(DomainErrors.Patient.ProfileIncomplete);
     }
 
-    /// <summary>
-    /// Calculates the patient's current age in full years.
-    /// </summary>
     public int GetAge(DateTime referenceTime)
     {
         var today = referenceTime.Date;
@@ -121,10 +115,6 @@ public class Patient : BaseEntity
         return age;
     }
 
-    /// <summary>
-    /// Verifies that the patient is not currently blocked from booking appointments.
-    /// </summary>
-    /// <param name="penalties">The patient's existing penalty records.</param>
     internal static void EnsureNotBlocked(
         IEnumerable<PatientPenalty> penalties,
         DateTime referenceTime
