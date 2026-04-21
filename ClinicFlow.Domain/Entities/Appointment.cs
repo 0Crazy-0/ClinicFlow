@@ -62,9 +62,6 @@ public class Appointment : BaseEntity
         RescheduleCount = 0;
     }
 
-    /// <summary>
-    /// Creates a new appointment in <see cref="AppointmentStatus.Scheduled"/> status and raises an <see cref="AppointmentScheduledEvent"/>.
-    /// </summary>
     internal static Appointment Schedule(
         Guid patientId,
         Guid doctorId,
@@ -126,9 +123,6 @@ public class Appointment : BaseEntity
         AddDomainEvent(new AppointmentCancelledEvent(this, cancelledByUserId, reason));
     }
 
-    /// <summary>
-    /// Marks the appointment as checked in by staff, meaning the patient has arrived at the clinic.
-    /// </summary>
     public void CheckIn(DateTime checkedInAt)
     {
         if (Status is not AppointmentStatus.Scheduled)
@@ -140,9 +134,6 @@ public class Appointment : BaseEntity
         AddDomainEvent(new AppointmentCheckedInEvent(this, checkedInAt));
     }
 
-    /// <summary>
-    /// Marks the appointment as started, meaning the doctor has initiated the consultation.
-    /// </summary>
     public void Start(Guid initiatorDoctorId, DateTime startedAt)
     {
         if (initiatorDoctorId != DoctorId)
@@ -156,9 +147,6 @@ public class Appointment : BaseEntity
         AddDomainEvent(new AppointmentStartedEvent(this, startedAt));
     }
 
-    /// <summary>
-    /// Marks the appointment as completed, meaning the consultation has finished.
-    /// </summary>
     public void Complete(DateTime completedAt)
     {
         if (Status is not AppointmentStatus.InProgress)
@@ -169,9 +157,6 @@ public class Appointment : BaseEntity
         AddDomainEvent(new AppointmentCompletedEvent(this, completedAt));
     }
 
-    /// <summary>
-    /// Reschedules the appointment to a new date and time range. Only one reschedule is allowed per appointment.
-    /// </summary>
     internal void Reschedule(DateTime newDate, TimeRange newTimeRange)
     {
         if (!CanBeRescheduled())
@@ -189,16 +174,8 @@ public class Appointment : BaseEntity
         AddDomainEvent(new AppointmentRescheduledEvent(this, previousDate, previousTimeRange));
     }
 
-    /// <summary>
-    /// Marks the appointment as a no-show, indicating that the patient did not attend.
-    /// This method is intended to be called by administrative staff.
-    /// </summary>
     public void MarkAsNoShowByStaff() => MarkAsNoShow();
 
-    /// <summary>
-    /// Marks the appointment as a no-show, indicating that the patient did not attend.
-    /// This method enforces that the doctor attempting to perform the action is the doctor assigned to the appointment.
-    /// </summary>
     public void MarkAsNoShowByDoctor(Guid initiatorDoctorId)
     {
         if (initiatorDoctorId != DoctorId)
@@ -219,7 +196,6 @@ public class Appointment : BaseEntity
         AddDomainEvent(new AppointmentMarkedAsNoShowEvent(this));
     }
 
-    // Business Rules (Private)
     private bool CanBeCancelled(MedicalSpecialty specialty, DateTime referenceTime) =>
         specialty.IsCancellationAllowed(ScheduledDate.Add(TimeRange.Start), referenceTime);
 
