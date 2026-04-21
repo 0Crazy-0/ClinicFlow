@@ -161,6 +161,42 @@ public class PatientTests
     }
 
     [Fact]
+    public void EnsureCompleteProfile_ShouldNotThrow_WhenProfileIsComplete()
+    {
+        // Arrange
+        var patient = Patient.CreateSelf(
+            Guid.NewGuid(),
+            PersonName.Create("John Doe"),
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30).Date,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+        patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
+        patient.UpdateEmergencyContact(EmergencyContact.Create("Mom", "555-5555"));
+
+        // Act & Assert
+        patient.Invoking(p => p.EnsureCompleteProfile()).Should().NotThrow();
+    }
+
+    [Fact]
+    public void EnsureCompleteProfile_ShouldThrowIncompleteProfileException_WhenProfileIsIncomplete()
+    {
+        // Arrange
+        var patient = Patient.CreateSelf(
+            Guid.NewGuid(),
+            PersonName.Create("John Doe"),
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30).Date,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        // Act && Assert
+        patient
+            .Invoking(p => p.EnsureCompleteProfile())
+            .Should()
+            .Throw<IncompleteProfileException>()
+            .WithMessage(DomainErrors.Patient.ProfileIncomplete);
+    }
+
+    [Fact]
     public void UpdateMedicalProfile_ShouldSetEmptyString_WhenNullStringsAreProvided()
     {
         // Arrange
