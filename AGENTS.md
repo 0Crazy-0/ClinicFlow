@@ -539,7 +539,7 @@ Mark only what applies — do not over-select.
 
 1. **Be direct** — list the specific test classes that verify the changes. Do not describe what to "test manually" or say "run `dotnet test`".
 
-2. **Layer separation** — only separate into "Domain validation rules" and "Application Commands handling and validation" sections when the PR has meaningful, testable changes in **both** layers. If changes are concentrated in a single layer, list the test classes directly without section headers.
+2. **Layer separation** — only separate into "Domain" and "Application" sections when the PR has meaningful, testable changes in **both** layers. If changes are concentrated in a single layer, list the test classes directly without section headers.
 
 3. **No method-level instructions** — reference test classes, not individual test methods. Do not say "test the `Cancel` method".
 
@@ -556,12 +556,12 @@ Multi-layer example:
 
 ```markdown
 ## How to test
-**Domain validation rules**:
+**Domain**:
 - `AppointmentCancellationServiceTests`: Verifies the cancellation logic passes successfully with the newly modified object initializers for patient, doctor, and staff arguments.
 
 ---
 
-**Application Commands handling and validation**:
+**Application**:
 - `CancelAppointmentByDoctorCommandHandler`: Ensures the cancellation flow respects the new `init`-only property requirements.
 - `CancelAppointmentByPatientCommandHandler`: Verifies the argument mapping is correctly formed for patient-initiated cancellations.
 - `CancelAppointmentByStaffCommandHandler`: Verifies the argument mapping is correctly formed for staff-initiated cancellations.
