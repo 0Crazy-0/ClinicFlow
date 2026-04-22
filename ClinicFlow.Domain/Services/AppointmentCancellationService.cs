@@ -13,10 +13,11 @@ namespace ClinicFlow.Domain.Services;
 public static class AppointmentCancellationService
 {
     /// <summary>
-    /// Cancels an appointment on behalf of a patient, enforcing specific domain invariants.
+    /// Executes patient-initiated cancellation.
     /// </summary>
-    /// <param name="appointment">The appointment to be cancelled.</param>
-    /// <param name="args">The cancellation arguments containing the target patient, the initiator patient,category, specialty, and reason.</param>
+    /// <remarks>
+    /// Enforces authorization, restricts procedure cancellations, and automatically applies late cancellation if notice period is insufficient.
+    /// </remarks>
     public static void CancelByPatient(Appointment appointment, PatientCancellationArgs args)
     {
         if (appointment.PatientId != args.TargetPatient.Id)
@@ -38,19 +39,21 @@ public static class AppointmentCancellationService
         if (args.Category is AppointmentCategory.Emergency)
             ValidateEmergencyCancellation(args.TargetPatient, args.CancelledAt);
 
-        appointment.Cancel(
-            args.InitiatorPatient.UserId,
-            args.Reason,
-            args.Specialty,
-            args.CancelledAt
-        );
+        if (
+            args.Specialty.IsCancellationAllowed(
+                appointment.ScheduledDate.Add(appointment.TimeRange.Start),
+                args.CancelledAt
+            )
+        )
+        {
+            appointment.Cancel(args.InitiatorPatient.UserId, args.Reason, args.CancelledAt);
+        }
+        else
+        {
+            appointment.CancelLate(args.InitiatorPatient.UserId, args.Reason, args.CancelledAt);
+        }
     }
 
-    /// <summary>
-    /// Cancels an appointment on behalf of a doctor.
-    /// </summary>
-    /// <param name="appointment">The appointment to be cancelled.</param>
-    /// <param name="args">The cancellation arguments containing the initiator doctor, specialty, and reason.</param>
     public static void CancelByDoctor(Appointment appointment, DoctorCancellationArgs args)
     {
         if (args.InitiatorDoctor is null)
@@ -61,20 +64,9 @@ public static class AppointmentCancellationService
                 DomainErrors.Appointment.UnauthorizedCancellation
             );
 
-        appointment.Cancel(
-            args.InitiatorDoctor.UserId,
-            args.Reason,
-            args.Specialty,
-            args.CancelledAt,
-            true
-        );
+        appointment.Cancel(args.InitiatorDoctor.UserId, args.Reason, args.CancelledAt);
     }
 
-    /// <summary>
-    /// Cancels an appointment on behalf of a staff member. A cancellation reason is strictly required.
-    /// </summary>
-    /// <param name="appointment">The appointment to be cancelled.</param>
-    /// <param name="args">The cancellation arguments containing the initiator user, specialty, and required reason.</param>
     public static void CancelByStaff(Appointment appointment, StaffCancellationArgs args)
     {
         if (string.IsNullOrWhiteSpace(args.Reason))
@@ -82,20 +74,15 @@ public static class AppointmentCancellationService
                 DomainErrors.Appointment.MissingCancellationReason
             );
 
-        appointment.Cancel(
-            args.InitiatorUserId,
-            args.Reason,
-            args.Specialty,
-            args.CancelledAt,
-            true
-        );
+        appointment.Cancel(args.InitiatorUserId, args.Reason, args.CancelledAt);
     }
 
     /// <summary>
     /// Validates if an emergency appointment can be cancelled based on the relationship between the patient and the initiator user.
-    /// Emergency appointments can only be cancelled by the patients themselves or by a parent if the patient is under 18.
     /// </summary>
-    /// <param name="patient">The patient associated with the emergency appointment.</param>
+    /// <remarks>
+    /// Emergency appointments can only be cancelled by the patients themselves or by a parent if the patient is under 18.
+    /// </remarks>
     private static void ValidateEmergencyCancellation(Patient patient, DateTime referenceTime)
     {
         if (patient.RelationshipToUser is PatientRelationship.Self)

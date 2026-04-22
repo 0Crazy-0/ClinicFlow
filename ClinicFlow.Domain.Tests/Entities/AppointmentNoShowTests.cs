@@ -75,8 +75,7 @@ public class AppointmentNoShowTests
     {
         // Arrange
         var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2));
-        var specialty = CreateSpecialty(24);
-        appointment.Cancel(Guid.NewGuid(), "Reason", specialty, _fakeTime.GetUtcNow().UtcDateTime);
+        appointment.Cancel(Guid.NewGuid(), "Reason", _fakeTime.GetUtcNow().UtcDateTime);
 
         // Act && Assert
         appointment
@@ -97,7 +96,4 @@ public class AppointmentNoShowTests
                 scheduledDateTime.TimeOfDay.Add(TimeSpan.FromHours(1))
             )
         );
-
-    private static MedicalSpecialty CreateSpecialty(int minCancellationHours) =>
-        MedicalSpecialty.Create("Test Specialty", "Description", 30, minCancellationHours);
 }

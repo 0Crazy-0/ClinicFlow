@@ -92,35 +92,20 @@ public class Appointment : BaseEntity
         return appointment;
     }
 
-    /// <summary>
-    /// Cancels the appointment. If the cancellation falls within the specialty's minimum notice period,
-    /// the status is set to <see cref="AppointmentStatus.LateCancellation"/> instead.
-    /// </summary>
-    /// <param name="specialty">The medical specialty, used to evaluate the cancellation notice policy.</param>
-    internal void Cancel(
-        Guid cancelledByUserId,
-        string? reason,
-        MedicalSpecialty specialty,
-        DateTime cancelledAt,
-        bool isAdministrative = false
-    )
+    internal void Cancel(Guid cancelledByUserId, string? reason, DateTime cancelledAt)
     {
-        if (Status is AppointmentStatus.Cancelled or AppointmentStatus.LateCancellation)
-            throw new AppointmentCancellationNotAllowedException(
-                DomainErrors.Appointment.CannotCancel,
-                Status
-            );
+        EnsureCancellable();
 
-        if (!isAdministrative && !CanBeCancelled(specialty, cancelledAt))
-            Status = AppointmentStatus.LateCancellation;
-        else
-            Status = AppointmentStatus.Cancelled;
+        Status = AppointmentStatus.Cancelled;
+        ApplyCancellation(cancelledByUserId, reason, cancelledAt);
+    }
 
-        CancelledAt = cancelledAt;
-        CancelledByUserId = cancelledByUserId;
-        CancellationReason = reason;
+    internal void CancelLate(Guid cancelledByUserId, string? reason, DateTime cancelledAt)
+    {
+        EnsureCancellable();
 
-        AddDomainEvent(new AppointmentCancelledEvent(this, cancelledByUserId, reason));
+        Status = AppointmentStatus.LateCancellation;
+        ApplyCancellation(cancelledByUserId, reason, cancelledAt);
     }
 
     public void CheckIn(DateTime checkedInAt)
@@ -196,8 +181,23 @@ public class Appointment : BaseEntity
         AddDomainEvent(new AppointmentMarkedAsNoShowEvent(this));
     }
 
-    private bool CanBeCancelled(MedicalSpecialty specialty, DateTime referenceTime) =>
-        specialty.IsCancellationAllowed(ScheduledDate.Add(TimeRange.Start), referenceTime);
+    private void EnsureCancellable()
+    {
+        if (Status is AppointmentStatus.Cancelled or AppointmentStatus.LateCancellation)
+            throw new AppointmentCancellationNotAllowedException(
+                DomainErrors.Appointment.CannotCancel,
+                Status
+            );
+    }
+
+    private void ApplyCancellation(Guid cancelledByUserId, string? reason, DateTime cancelledAt)
+    {
+        CancelledAt = cancelledAt;
+        CancelledByUserId = cancelledByUserId;
+        CancellationReason = reason;
+
+        AddDomainEvent(new AppointmentCancelledEvent(this, cancelledByUserId, reason));
+    }
 
     private bool CanBeRescheduled() => RescheduleCount < 1 && Status is AppointmentStatus.Scheduled;
 }

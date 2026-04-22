@@ -12,8 +12,6 @@ namespace ClinicFlow.Application.Appointments.Commands.CancelAppointmentByStaff;
 public sealed class CancelAppointmentByStaffCommandHandler(
     TimeProvider timeProvider,
     IAppointmentRepository appointmentRepository,
-    IDoctorRepository doctorRepository,
-    IMedicalSpecialtyRepository specialtyRepository,
     IUnitOfWork unitOfWork
 ) : IRequestHandler<CancelAppointmentByStaffCommand>
 {
@@ -30,28 +28,11 @@ public sealed class CancelAppointmentByStaffCommandHandler(
                 request.AppointmentId
             );
 
-        var doctor =
-            await doctorRepository.GetByIdAsync(appointment.DoctorId, cancellationToken)
-            ?? throw new EntityNotFoundException(
-                DomainErrors.General.NotFound,
-                nameof(Doctor),
-                appointment.DoctorId
-            );
-
-        var specialty =
-            await specialtyRepository.GetByIdAsync(doctor.MedicalSpecialtyId, cancellationToken)
-            ?? throw new EntityNotFoundException(
-                DomainErrors.General.NotFound,
-                nameof(MedicalSpecialty),
-                doctor.MedicalSpecialtyId
-            );
-
         AppointmentCancellationService.CancelByStaff(
             appointment,
             new StaffCancellationArgs
             {
                 InitiatorUserId = request.InitiatorUserId,
-                Specialty = specialty,
                 Reason = request.Reason,
                 CancelledAt = timeProvider.GetUtcNow().UtcDateTime,
             }
