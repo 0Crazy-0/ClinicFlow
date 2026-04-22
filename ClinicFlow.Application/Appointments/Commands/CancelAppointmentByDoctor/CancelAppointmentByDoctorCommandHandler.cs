@@ -13,7 +13,6 @@ public sealed class CancelAppointmentByDoctorCommandHandler(
     TimeProvider timeProvider,
     IAppointmentRepository appointmentRepository,
     IDoctorRepository doctorRepository,
-    IMedicalSpecialtyRepository specialtyRepository,
     IUnitOfWork unitOfWork
 ) : IRequestHandler<CancelAppointmentByDoctorCommand>
 {
@@ -30,22 +29,6 @@ public sealed class CancelAppointmentByDoctorCommandHandler(
                 request.AppointmentId
             );
 
-        var doctor =
-            await doctorRepository.GetByIdAsync(appointment.DoctorId, cancellationToken)
-            ?? throw new EntityNotFoundException(
-                DomainErrors.General.NotFound,
-                nameof(Doctor),
-                appointment.DoctorId
-            );
-
-        var specialty =
-            await specialtyRepository.GetByIdAsync(doctor.MedicalSpecialtyId, cancellationToken)
-            ?? throw new EntityNotFoundException(
-                DomainErrors.General.NotFound,
-                nameof(MedicalSpecialty),
-                doctor.MedicalSpecialtyId
-            );
-
         var initiatorDoctor = await doctorRepository.GetByUserIdAsync(
             request.InitiatorUserId,
             cancellationToken
@@ -56,7 +39,6 @@ public sealed class CancelAppointmentByDoctorCommandHandler(
             new DoctorCancellationArgs
             {
                 InitiatorDoctor = initiatorDoctor,
-                Specialty = specialty,
                 Reason = request.Reason,
                 CancelledAt = timeProvider.GetUtcNow().UtcDateTime,
             }

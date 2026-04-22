@@ -28,7 +28,6 @@ public class AppointmentCancellationServiceTests
         var args = new StaffCancellationArgs
         {
             InitiatorUserId = initiatorUserId,
-            Specialty = CreateSpecialty(24),
             Reason = "Admin Reason",
             CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
         };
@@ -52,7 +51,6 @@ public class AppointmentCancellationServiceTests
         var args = new StaffCancellationArgs
         {
             InitiatorUserId = initiatorUserId,
-            Specialty = CreateSpecialty(24),
             Reason = "Receptionist Reason",
             CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
         };
@@ -79,7 +77,6 @@ public class AppointmentCancellationServiceTests
         var args = new StaffCancellationArgs
         {
             InitiatorUserId = Guid.NewGuid(),
-            Specialty = CreateSpecialty(24),
             Reason = reason!,
             CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
         };
@@ -104,7 +101,6 @@ public class AppointmentCancellationServiceTests
         var args = new DoctorCancellationArgs
         {
             InitiatorDoctor = doctor,
-            Specialty = CreateSpecialty(24),
             Reason = "Doctor Reason",
             CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
         };
@@ -127,7 +123,6 @@ public class AppointmentCancellationServiceTests
         var args = new DoctorCancellationArgs
         {
             InitiatorDoctor = doctor,
-            Specialty = CreateSpecialty(24),
             Reason = "Doctor reason",
             CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
         };
@@ -151,7 +146,6 @@ public class AppointmentCancellationServiceTests
         var args = new DoctorCancellationArgs
         {
             InitiatorDoctor = null,
-            Specialty = CreateSpecialty(24),
             Reason = "Doctor reason",
             CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
         };
@@ -449,6 +443,90 @@ public class AppointmentCancellationServiceTests
         act.Should()
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Theory]
+    [InlineData(24, 25)]
+    [InlineData(12, 13)]
+    [InlineData(2, 3)]
+    public void CancelByPatient_ShouldSetStatusToCancelled_WhenNoticePeriodIsSufficient(
+        int minHours,
+        int hoursUntilAppointment
+    )
+    {
+        // Arrange
+        var initiatorUserId = Guid.NewGuid();
+        var patientId = Guid.NewGuid();
+        var patient = CreateSelfPatient(
+            patientId,
+            initiatorUserId,
+            30,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+        var appointment = new AppointmentBuilder()
+            .WithScheduledDateTime(
+                _fakeTime.GetUtcNow().UtcDateTime.AddHours(hoursUntilAppointment)
+            )
+            .WithPatientId(patientId)
+            .Build();
+        var args = new PatientCancellationArgs
+        {
+            TargetPatient = patient,
+            InitiatorPatient = patient,
+            Category = AppointmentCategory.Checkup,
+            Specialty = CreateSpecialty(minHours),
+            Reason = "Test Policy",
+            CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
+        };
+
+        // Act
+        AppointmentCancellationService.CancelByPatient(appointment, args);
+
+        // Assert
+        appointment.Status.Should().Be(AppointmentStatus.Cancelled);
+        appointment.DomainEvents.OfType<AppointmentCancelledEvent>().Should().ContainSingle();
+    }
+
+    [Theory]
+    [InlineData(24, 23)]
+    [InlineData(12, 11)]
+    [InlineData(2, 1)]
+    public void CancelByPatient_ShouldSetStatusToLateCancellation_WhenNoticePeriodIsInsufficient(
+        int minHours,
+        int hoursUntilAppointment
+    )
+    {
+        // Arrange
+        var initiatorUserId = Guid.NewGuid();
+        var patientId = Guid.NewGuid();
+        var patient = CreateSelfPatient(
+            patientId,
+            initiatorUserId,
+            30,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+        var appointment = new AppointmentBuilder()
+            .WithScheduledDateTime(
+                _fakeTime.GetUtcNow().UtcDateTime.AddHours(hoursUntilAppointment)
+            )
+            .WithPatientId(patientId)
+            .Build();
+        var args = new PatientCancellationArgs
+        {
+            TargetPatient = patient,
+            InitiatorPatient = patient,
+            Category = AppointmentCategory.Checkup,
+            Specialty = CreateSpecialty(minHours),
+            Reason = "Test Policy",
+            CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
+        };
+
+        // Act
+        AppointmentCancellationService.CancelByPatient(appointment, args);
+
+        // Assert
+        appointment.Status.Should().Be(AppointmentStatus.LateCancellation);
+        appointment.DomainEvents.OfType<AppointmentCancelledEvent>().Should().ContainSingle();
     }
 
     private static MedicalSpecialty CreateSpecialty(int minCancellationHours)

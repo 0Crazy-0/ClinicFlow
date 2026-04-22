@@ -28,11 +28,21 @@ public class AppointmentCancelledEventHandlerTests
     {
         // Arrange
         var patientId = Guid.NewGuid();
-        var appointment = CreateLateCancelledAppointment(
-            Guid.NewGuid(),
+        var appointment = Appointment.Schedule(
             patientId,
             Guid.NewGuid(),
-            _fakeTime.GetUtcNow().UtcDateTime.AddHours(2)
+            Guid.NewGuid(),
+            _fakeTime.GetUtcNow().UtcDateTime.Date,
+            TimeRange.Create(
+                _fakeTime.GetUtcNow().UtcDateTime.TimeOfDay,
+                _fakeTime.GetUtcNow().UtcDateTime.TimeOfDay.Add(TimeSpan.FromHours(1))
+            )
+        );
+
+        appointment.CancelLate(
+            Guid.NewGuid(),
+            "Late",
+            _fakeTime.GetUtcNow().UtcDateTime.AddHours(-2)
         );
 
         var domainEvent = new AppointmentCancelledEvent(appointment, Guid.NewGuid(), "Too late");
@@ -63,11 +73,20 @@ public class AppointmentCancelledEventHandlerTests
     {
         // Arrange
         var patientId = Guid.NewGuid();
-        var appointment = CreateCancelledAppointment(
-            Guid.NewGuid(),
+        var appointment = Appointment.Schedule(
             patientId,
             Guid.NewGuid(),
-            _fakeTime.GetUtcNow().UtcDateTime.AddDays(2)
+            Guid.NewGuid(),
+            _fakeTime.GetUtcNow().UtcDateTime.Date,
+            TimeRange.Create(
+                _fakeTime.GetUtcNow().UtcDateTime.TimeOfDay,
+                _fakeTime.GetUtcNow().UtcDateTime.TimeOfDay.Add(TimeSpan.FromHours(1))
+            )
+        );
+        appointment.Cancel(
+            Guid.NewGuid(),
+            "Admin",
+            _fakeTime.GetUtcNow().UtcDateTime.AddDays(-2).Date
         );
 
         var domainEvent = new AppointmentCancelledEvent(appointment, Guid.NewGuid(), "In time");
@@ -89,63 +108,5 @@ public class AppointmentCancelledEventHandlerTests
                 ),
             Times.Never
         );
-    }
-
-    private static Appointment CreateLateCancelledAppointment(
-        Guid doctorId,
-        Guid patientId,
-        Guid typeId,
-        DateTime scheduledDateTime
-    )
-    {
-        var appointment = Appointment.Schedule(
-            patientId,
-            doctorId,
-            typeId,
-            scheduledDateTime.Date,
-            TimeRange.Create(
-                scheduledDateTime.TimeOfDay,
-                scheduledDateTime.TimeOfDay.Add(TimeSpan.FromHours(1))
-            )
-        );
-
-        appointment.Cancel(
-            Guid.NewGuid(),
-            "Late",
-            MedicalSpecialty.Create("Cardiology", "Heart", 60, 24),
-            scheduledDateTime.AddHours(-2),
-            false
-        );
-
-        return appointment;
-    }
-
-    private static Appointment CreateCancelledAppointment(
-        Guid doctorId,
-        Guid patientId,
-        Guid typeId,
-        DateTime scheduledDateTime
-    )
-    {
-        var appointment = Appointment.Schedule(
-            patientId,
-            doctorId,
-            typeId,
-            scheduledDateTime.Date,
-            TimeRange.Create(
-                scheduledDateTime.TimeOfDay,
-                scheduledDateTime.TimeOfDay.Add(TimeSpan.FromHours(1))
-            )
-        );
-
-        appointment.Cancel(
-            Guid.NewGuid(),
-            "Admin",
-            MedicalSpecialty.Create("Cardiology", "Heart", 60, 24),
-            scheduledDateTime.AddDays(-2),
-            true
-        );
-
-        return appointment;
     }
 }

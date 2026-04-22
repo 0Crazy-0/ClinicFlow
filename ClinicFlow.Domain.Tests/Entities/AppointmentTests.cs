@@ -105,35 +105,23 @@ public class AppointmentTests
     }
 
     [Fact]
-    public void Cancel_ShouldSetStatusToCancelled_WhenCalledWithValidParams()
+    public void Cancel_ShouldSetStatusToCancelled()
     {
+        // Arrange
         var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2));
         var userId = Guid.NewGuid();
-        var specialty = CreateSpecialty(24);
 
         // Act
-        appointment.Cancel(userId, "Reason", specialty, _fakeTime.GetUtcNow().UtcDateTime);
+        appointment.Cancel(userId, "Reason", _fakeTime.GetUtcNow().UtcDateTime);
 
         // Assert
         appointment.Status.Should().Be(AppointmentStatus.Cancelled);
         appointment.CancelledByUserId.Should().Be(userId);
+        appointment.CancellationReason.Should().Be("Reason");
+        appointment.CancelledAt.Should().Be(_fakeTime.GetUtcNow().UtcDateTime);
 
         var evt = appointment.DomainEvents.OfType<AppointmentCancelledEvent>().Single();
         evt.Reason.Should().Be("Reason");
-    }
-
-    [Fact]
-    public void Cancel_ShouldSetStatusToLateCancellation_WhenNoticePeriodIsInsufficient()
-    {
-        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddHours(2));
-        var userId = Guid.NewGuid();
-        var specialty = CreateSpecialty(24);
-
-        // Act
-        appointment.Cancel(userId, "Urgent", specialty, _fakeTime.GetUtcNow().UtcDateTime);
-
-        // Assert
-        appointment.Status.Should().Be(AppointmentStatus.LateCancellation);
     }
 
     [Fact]
@@ -142,45 +130,94 @@ public class AppointmentTests
         // Arrange
         var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2));
         var userId = Guid.NewGuid();
-        var specialty = CreateSpecialty(24);
 
-        appointment.Cancel(userId, "First", specialty, _fakeTime.GetUtcNow().UtcDateTime);
+        appointment.Cancel(userId, "First", _fakeTime.GetUtcNow().UtcDateTime);
 
         // Act
-        var act = () =>
-            appointment.Cancel(userId, "Second", specialty, _fakeTime.GetUtcNow().UtcDateTime);
+        var act = () => appointment.Cancel(userId, "Second", _fakeTime.GetUtcNow().UtcDateTime);
 
         // Assert
         act.Should()
             .Throw<AppointmentCancellationNotAllowedException>()
-            .Where(e => e.CurrentStatus == AppointmentStatus.Cancelled);
+            .Where(e => e.CurrentStatus == AppointmentStatus.Cancelled)
+            .WithMessage(DomainErrors.Appointment.CannotCancel);
     }
 
-    [Theory]
-    [InlineData(24, 25, AppointmentStatus.Cancelled)]
-    [InlineData(24, 23, AppointmentStatus.LateCancellation)]
-    [InlineData(12, 13, AppointmentStatus.Cancelled)]
-    [InlineData(12, 11, AppointmentStatus.LateCancellation)]
-    [InlineData(2, 3, AppointmentStatus.Cancelled)]
-    [InlineData(2, 1, AppointmentStatus.LateCancellation)]
-    public void Cancel_ShouldEnforceMinimumHoursPolicy(
-        int minHours,
-        int hoursUntilAppointment,
-        AppointmentStatus expectedStatus
-    )
+    [Fact]
+    public void Cancel_ShouldThrowException_WhenAlreadyLateCancelled()
     {
         // Arrange
-        var appointment = CreateAppointment(
-            _fakeTime.GetUtcNow().UtcDateTime.AddHours(hoursUntilAppointment)
-        );
+        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2));
         var userId = Guid.NewGuid();
-        var specialty = CreateSpecialty(minHours);
+
+        appointment.CancelLate(userId, "Late", _fakeTime.GetUtcNow().UtcDateTime);
 
         // Act
-        appointment.Cancel(userId, "Test Policy", specialty, _fakeTime.GetUtcNow().UtcDateTime);
+        var act = () => appointment.Cancel(userId, "Second", _fakeTime.GetUtcNow().UtcDateTime);
 
         // Assert
-        appointment.Status.Should().Be(expectedStatus);
+        act.Should()
+            .Throw<AppointmentCancellationNotAllowedException>()
+            .Where(e => e.CurrentStatus == AppointmentStatus.LateCancellation)
+            .WithMessage(DomainErrors.Appointment.CannotCancel);
+    }
+
+    [Fact]
+    public void CancelLate_ShouldSetStatusToLateCancellation()
+    {
+        // Arrange
+        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2));
+        var userId = Guid.NewGuid();
+
+        // Act
+        appointment.CancelLate(userId, "Late reason", _fakeTime.GetUtcNow().UtcDateTime);
+
+        // Assert
+        appointment.Status.Should().Be(AppointmentStatus.LateCancellation);
+        appointment.CancelledByUserId.Should().Be(userId);
+        appointment.CancellationReason.Should().Be("Late reason");
+        appointment.CancelledAt.Should().Be(_fakeTime.GetUtcNow().UtcDateTime);
+
+        var evt = appointment.DomainEvents.OfType<AppointmentCancelledEvent>().Single();
+        evt.Reason.Should().Be("Late reason");
+    }
+
+    [Fact]
+    public void CancelLate_ShouldThrowException_WhenAlreadyCancelled()
+    {
+        // Arrange
+        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2));
+        var userId = Guid.NewGuid();
+
+        appointment.Cancel(userId, "First", _fakeTime.GetUtcNow().UtcDateTime);
+
+        // Act
+        var act = () => appointment.CancelLate(userId, "Second", _fakeTime.GetUtcNow().UtcDateTime);
+
+        // Assert
+        act.Should()
+            .Throw<AppointmentCancellationNotAllowedException>()
+            .Where(e => e.CurrentStatus == AppointmentStatus.Cancelled)
+            .WithMessage(DomainErrors.Appointment.CannotCancel);
+    }
+
+    [Fact]
+    public void CancelLate_ShouldThrowException_WhenAlreadyLateCancelled()
+    {
+        // Arrange
+        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2));
+        var userId = Guid.NewGuid();
+
+        appointment.CancelLate(userId, "First", _fakeTime.GetUtcNow().UtcDateTime);
+
+        // Act
+        var act = () => appointment.CancelLate(userId, "Second", _fakeTime.GetUtcNow().UtcDateTime);
+
+        // Assert
+        act.Should()
+            .Throw<AppointmentCancellationNotAllowedException>()
+            .Where(e => e.CurrentStatus == AppointmentStatus.LateCancellation)
+            .WithMessage(DomainErrors.Appointment.CannotCancel);
     }
 
     [Fact]
@@ -219,8 +256,7 @@ public class AppointmentTests
     {
         // Arrange
         var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
-        var specialty = CreateSpecialty(24);
-        appointment.Cancel(Guid.NewGuid(), "Reason", specialty, _fakeTime.GetUtcNow().UtcDateTime);
+        appointment.Cancel(Guid.NewGuid(), "Reason", _fakeTime.GetUtcNow().UtcDateTime);
 
         // Act
         var act = () => appointment.CheckIn(_fakeTime.GetUtcNow().UtcDateTime);
@@ -319,7 +355,4 @@ public class AppointmentTests
                 scheduledDateTime.TimeOfDay.Add(TimeSpan.FromHours(1))
             )
         );
-
-    private static MedicalSpecialty CreateSpecialty(int minCancellationHours) =>
-        MedicalSpecialty.Create("Test Specialty", "Description", 30, minCancellationHours);
 }

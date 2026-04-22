@@ -17,7 +17,6 @@ public class CancelAppointmentByDoctorCommandHandlerTests
 {
     private readonly Mock<IAppointmentRepository> _appointmentRepositoryMock = new();
     private readonly Mock<IDoctorRepository> _doctorRepositoryMock = new();
-    private readonly Mock<IMedicalSpecialtyRepository> _specialtyRepositoryMock = new();
     private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
     private readonly FakeTimeProvider _fakeTime = new();
     private readonly CancelAppointmentByDoctorCommandHandler _sut;
@@ -28,7 +27,6 @@ public class CancelAppointmentByDoctorCommandHandlerTests
             _fakeTime,
             _appointmentRepositoryMock.Object,
             _doctorRepositoryMock.Object,
-            _specialtyRepositoryMock.Object,
             _unitOfWorkMock.Object
         );
     }
@@ -44,28 +42,28 @@ public class CancelAppointmentByDoctorCommandHandlerTests
         );
 
         var doctorId = Guid.NewGuid();
-        var specialtyId = Guid.NewGuid();
-        var appointment = CreateAppointment(
+        var appointment = Appointment.Schedule(
             Guid.NewGuid(),
             doctorId,
             Guid.NewGuid(),
-            _fakeTime.GetUtcNow().UtcDateTime
+            _fakeTime.GetUtcNow().UtcDateTime.AddDays(2).Date,
+            TimeRange.Create(new TimeSpan(10, 0, 0), new TimeSpan(11, 0, 0))
         );
-        var doctor = CreateDoctor(doctorId, command.InitiatorUserId, specialtyId);
-        var specialty = MedicalSpecialty.Create("Test Specialty", "Test Description", 30, 24);
+        var doctor = Doctor.Create(
+            command.InitiatorUserId,
+            MedicalLicenseNumber.Create("1234567"),
+            Guid.NewGuid(),
+            "555-1234",
+            101
+        );
+        doctor.SetId(doctorId);
 
         _appointmentRepositoryMock
             .Setup(r => r.GetByIdAsync(command.AppointmentId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(appointment);
         _doctorRepositoryMock
-            .Setup(r => r.GetByIdAsync(doctorId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(doctor);
-        _doctorRepositoryMock
             .Setup(r => r.GetByUserIdAsync(command.InitiatorUserId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(doctor);
-        _specialtyRepositoryMock
-            .Setup(r => r.GetByIdAsync(specialtyId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(specialty);
 
         // Act
         await _sut.Handle(command, CancellationToken.None);
@@ -101,115 +99,5 @@ public class CancelAppointmentByDoctorCommandHandlerTests
             .ThrowAsync<EntityNotFoundException>()
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(Appointment));
-    }
-
-    [Fact]
-    public async Task Handle_ShouldThrowEntityNotFoundException_WhenDoctorNotFound()
-    {
-        // Arrange
-        var command = new CancelAppointmentByDoctorCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            "Doctor reason"
-        );
-
-        var doctorId = Guid.NewGuid();
-        var specialtyId = Guid.NewGuid();
-        var typeId = Guid.NewGuid();
-        var patientId = Guid.NewGuid();
-
-        var appointment = CreateAppointment(
-            patientId,
-            doctorId,
-            typeId,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
-
-        _appointmentRepositoryMock
-            .Setup(r => r.GetByIdAsync(command.AppointmentId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(appointment);
-        _doctorRepositoryMock
-            .Setup(r => r.GetByIdAsync(doctorId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Doctor?)null);
-
-        // Act
-        var act = async () => await _sut.Handle(command, CancellationToken.None);
-
-        // Assert
-        var exceptionAssertion = await act.Should()
-            .ThrowAsync<EntityNotFoundException>()
-            .WithMessage(DomainErrors.General.NotFound);
-        exceptionAssertion.Which.EntityName.Should().Be(nameof(Doctor));
-    }
-
-    [Fact]
-    public async Task Handle_ShouldThrowEntityNotFoundException_WhenSpecialtyNotFound()
-    {
-        // Arrange
-        var command = new CancelAppointmentByDoctorCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            "Doctor reason"
-        );
-
-        var doctorId = Guid.NewGuid();
-        var specialtyId = Guid.NewGuid();
-        var typeId = Guid.NewGuid();
-        var patientId = Guid.NewGuid();
-
-        var appointment = CreateAppointment(
-            patientId,
-            doctorId,
-            typeId,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
-
-        var doctor = CreateDoctor(doctorId, command.InitiatorUserId, specialtyId);
-
-        _appointmentRepositoryMock
-            .Setup(r => r.GetByIdAsync(command.AppointmentId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(appointment);
-        _doctorRepositoryMock
-            .Setup(r => r.GetByIdAsync(doctorId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(doctor);
-        _specialtyRepositoryMock
-            .Setup(r => r.GetByIdAsync(specialtyId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync((MedicalSpecialty?)null);
-
-        // Act
-        var act = async () => await _sut.Handle(command, CancellationToken.None);
-
-        // Assert
-        var exceptionAssertion = await act.Should()
-            .ThrowAsync<EntityNotFoundException>()
-            .WithMessage(DomainErrors.General.NotFound);
-        exceptionAssertion.Which.EntityName.Should().Be(nameof(MedicalSpecialty));
-    }
-
-    private static Appointment CreateAppointment(
-        Guid patientId,
-        Guid doctorId,
-        Guid typeId,
-        DateTime referenceTime
-    ) =>
-        Appointment.Schedule(
-            patientId,
-            doctorId,
-            typeId,
-            referenceTime.AddDays(2).Date,
-            TimeRange.Create(new TimeSpan(10, 0, 0), new TimeSpan(11, 0, 0))
-        );
-
-    private static Doctor CreateDoctor(Guid id, Guid userId, Guid specialtyId)
-    {
-        var doctor = Doctor.Create(
-            userId,
-            MedicalLicenseNumber.Create("1234567"),
-            specialtyId,
-            "555-1234",
-            101
-        );
-        doctor.SetId(id);
-        return doctor;
     }
 }
