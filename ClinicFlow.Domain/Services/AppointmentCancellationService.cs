@@ -4,6 +4,7 @@ using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Appointments;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Services.Args.Cancellation;
+using ClinicFlow.Domain.Services.Contexts;
 
 namespace ClinicFlow.Domain.Services;
 
@@ -18,7 +19,11 @@ public static class AppointmentCancellationService
     /// <remarks>
     /// Enforces authorization, restricts procedure cancellations, and automatically applies late cancellation if notice period is insufficient.
     /// </remarks>
-    public static void CancelByPatient(Appointment appointment, PatientCancellationArgs args)
+    public static void CancelByPatient(
+        Appointment appointment,
+        AppointmentCancellationContext context,
+        PatientCancellationArgs args
+    )
     {
         if (appointment.PatientId != args.TargetPatient.Id)
             throw new DomainValidationException(DomainErrors.Appointment.DataMismatch);
@@ -31,16 +36,16 @@ public static class AppointmentCancellationService
                 DomainErrors.Appointment.UnauthorizedCancellation
             );
 
-        if (args.Category is AppointmentCategory.Procedure)
+        if (context.Category is AppointmentCategory.Procedure)
             throw new AppointmentCancellationUnauthorizedException(
                 DomainErrors.Appointment.CannotCancel
             );
 
-        if (args.Category is AppointmentCategory.Emergency)
+        if (context.Category is AppointmentCategory.Emergency)
             ValidateEmergencyCancellation(args.TargetPatient, args.CancelledAt);
 
         if (
-            args.Specialty.IsCancellationAllowed(
+            context.Specialty.IsCancellationAllowed(
                 appointment.ScheduledDate.Add(appointment.TimeRange.Start),
                 args.CancelledAt
             )
