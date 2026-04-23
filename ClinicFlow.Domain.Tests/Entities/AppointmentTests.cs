@@ -178,7 +178,7 @@ public class AppointmentTests
         appointment.CancellationReason.Should().Be("Late reason");
         appointment.CancelledAt.Should().Be(_fakeTime.GetUtcNow().UtcDateTime);
 
-        var evt = appointment.DomainEvents.OfType<AppointmentCancelledEvent>().Single();
+        var evt = appointment.DomainEvents.OfType<AppointmentLateCancelledEvent>().Single();
         evt.Reason.Should().Be("Late reason");
     }
 

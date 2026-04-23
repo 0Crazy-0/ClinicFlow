@@ -98,6 +98,7 @@ public class Appointment : BaseEntity
 
         Status = AppointmentStatus.Cancelled;
         ApplyCancellation(cancelledByUserId, reason, cancelledAt);
+        AddDomainEvent(new AppointmentCancelledEvent(this, cancelledByUserId, reason));
     }
 
     internal void CancelLate(Guid cancelledByUserId, string? reason, DateTime cancelledAt)
@@ -106,6 +107,7 @@ public class Appointment : BaseEntity
 
         Status = AppointmentStatus.LateCancellation;
         ApplyCancellation(cancelledByUserId, reason, cancelledAt);
+        AddDomainEvent(new AppointmentLateCancelledEvent(this, cancelledByUserId, reason));
     }
 
     public void CheckIn(DateTime checkedInAt)
@@ -195,8 +197,6 @@ public class Appointment : BaseEntity
         CancelledAt = cancelledAt;
         CancelledByUserId = cancelledByUserId;
         CancellationReason = reason;
-
-        AddDomainEvent(new AppointmentCancelledEvent(this, cancelledByUserId, reason));
     }
 
     private bool CanBeRescheduled() => RescheduleCount < 1 && Status is AppointmentStatus.Scheduled;
