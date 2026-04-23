@@ -525,7 +525,7 @@ public class AppointmentCancellationServiceTests
 
         // Assert
         appointment.Status.Should().Be(AppointmentStatus.LateCancellation);
-        appointment.DomainEvents.OfType<AppointmentCancelledEvent>().Should().ContainSingle();
+        appointment.DomainEvents.OfType<AppointmentLateCancelledEvent>().Should().ContainSingle();
     }
 
     [Theory]
