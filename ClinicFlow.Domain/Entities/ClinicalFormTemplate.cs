@@ -18,7 +18,7 @@ public class ClinicalFormTemplate : BaseEntity
 
     /// <summary>
     /// JSON string defining the schema, fields, and types required for this template.
-    /// This acts as the metadata for the frontend to render the form and the backend to optionally validate it.
+    /// This acts as the metadata for the frontend to render the form and the backend to validate it.
     /// </summary>
     public string JsonSchemaDefinition { get; private set; } = "{}";
 
