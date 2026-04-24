@@ -16,10 +16,9 @@ public class MedicalEncounterService(
 )
 {
     /// <summary>
-    /// Validates business rules against the provided context and updates the medical record with the given details.
+    /// Executes dynamic validation policies against the clinical details, populates the medical record,
+    /// and advances the appointment lifecycle status to Completed.
     /// </summary>
-    /// <param name="record">The medical record to be validated and updated.</param>
-    /// <param name="context">The contextual information for the encounter, including expected references (Doctor, Appointment) and new clinical details.</param>
     public void ValidateAndCompleteRecord(MedicalRecord record, MedicalEncounterContext context)
     {
         if (record is null)
@@ -51,12 +50,8 @@ public class MedicalEncounterService(
     }
 
     /// <summary>
-    /// Validates and appends a single clinical detail to an existing medical record.
-    /// Enforces that the detail's JSON structure complies with the template schema if one exists.
+    /// Enforces that the clinical detail's JSON structure complies with the template schema before appending it to the record.
     /// </summary>
-    /// <param name="record">The medical record where the detail will be appended.</param>
-    /// <param name="newDetail">The new clinical detail containing the data payload to validate and append.</param>
-    /// <param name="template">The clinical form template containing the schema requirements.</param>
     public void AppendClinicalDetail(
         MedicalRecord record,
         IClinicalDetailRecord newDetail,
