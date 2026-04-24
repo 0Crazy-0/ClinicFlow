@@ -10,19 +10,19 @@ using ClinicFlow.Domain.ValueObjects;
 namespace ClinicFlow.Domain.Services;
 
 /// <summary>
-/// Domain service that orchestrates appointment scheduling and rescheduling,
-/// enforcing availability and conflict rules.
+/// Domain service that orchestrates appointment scheduling,
+/// enforcing actor-specific rules and constraints.
 /// </summary>
+/// <remarks>
+/// Overbooking requests (bypassing availability and conflict checks) are permitted
+/// exclusively for Doctor and Staff roles.
+/// </remarks>
 public static class AppointmentSchedulingService
 {
     /// <summary>
-    /// Schedules a new appointment on behalf of a patient, enforcing ownership
-    /// authorization, profile completeness, eligibility rules, and doctor availability.
+    /// Schedules a new appointment on behalf of a patient, strictly enforcing ownership authorization,
+    /// profile completeness, penalty blocks, schedule conflicts, eligibility rules, and doctor availability
     /// </summary>
-    /// <param name="appointmentType">The definition of the appointment type, used to validate patient eligibility.</param>
-    /// <param name="args">The scheduling arguments containing the initiator and target patients, the selected doctor, and the desired date and time.</param>
-    /// <param name="context">Contextual scheduling data, such as doctor's availability schedule and existing conflicts.</param>
-    /// <returns>A successfully scheduled <see cref="Appointment"/> instance.</returns>
     public static Appointment ScheduleByPatient(
         AppointmentTypeDefinition appointmentType,
         PatientSchedulingArgs args,
@@ -81,13 +81,8 @@ public static class AppointmentSchedulingService
 
     /// <summary>
     /// Schedules a new appointment on behalf of a doctor, restricted to Follow-up
-    /// and Procedure categories, and bypassing availability and conflict checks
-    /// when overbooking is requested.
+    /// and Procedure categories.
     /// </summary>
-    /// <param name="appointmentType">The definition of the appointment type. Must be a Follow-up or Procedure.</param>
-    /// <param name="args">The scheduling arguments containing the initiator doctor, the target patient, the desired date/time, and whether overbooking is requested.</param>
-    /// <param name="context">Contextual scheduling data, such as the doctor's schedule and conflicts.</param>
-    /// <returns>A successfully scheduled <see cref="Appointment"/> instance.</returns>
     public static Appointment ScheduleByDoctor(
         AppointmentTypeDefinition appointmentType,
         DoctorSchedulingArgs args,
@@ -133,13 +128,8 @@ public static class AppointmentSchedulingService
 
     /// <summary>
     /// Schedules a new appointment on behalf of a staff member, enforcing profile
-    /// completeness and patient eligibility rules, and bypassing availability and
-    /// conflict checks when overbooking is requested.
+    /// completeness and patient eligibility rules.
     /// </summary>
-    /// <param name="appointmentType">The definition of the appointment type.</param>
-    /// <param name="args">The scheduling arguments including the target patient, the doctor, the desired date/time, and flags for guardian consent and overbooking.</param>
-    /// <param name="context">Contextual scheduling data, such as the doctor's schedule and possible conflicts.</param>
-    /// <returns>A successfully scheduled <see cref="Appointment"/> instance.</returns>
     public static Appointment ScheduleByStaff(
         AppointmentTypeDefinition appointmentType,
         StaffSchedulingArgs args,
