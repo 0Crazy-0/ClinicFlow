@@ -58,15 +58,12 @@ public static class AppointmentCancellationService
 
     public static void CancelByDoctor(Appointment appointment, DoctorCancellationArgs args)
     {
-        if (args.InitiatorDoctor is null)
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-
-        if (args.InitiatorDoctor.Id != appointment.DoctorId)
+        if (args.InitiatorDoctorId != appointment.DoctorId)
             throw new AppointmentCancellationUnauthorizedException(
                 DomainErrors.Appointment.UnauthorizedCancellation
             );
 
-        appointment.Cancel(args.InitiatorDoctor.UserId, args.Reason, args.CancelledAt);
+        appointment.Cancel(args.InitiatorUserId, args.Reason, args.CancelledAt);
     }
 
     public static void CancelByStaff(Appointment appointment, StaffCancellationArgs args)

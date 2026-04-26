@@ -100,4 +100,39 @@ public class CancelAppointmentByDoctorCommandHandlerTests
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(Appointment));
     }
+
+    [Fact]
+    public async Task Handle_ShouldThrowEntityNotFoundException_WhenDoctorNotFound()
+    {
+        // Arrange
+        var command = new CancelAppointmentByDoctorCommand(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            "Doctor reason"
+        );
+
+        var appointment = Appointment.Schedule(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            _fakeTime.GetUtcNow().UtcDateTime.AddDays(2).Date,
+            TimeRange.Create(new TimeSpan(10, 0, 0), new TimeSpan(11, 0, 0))
+        );
+
+        _appointmentRepositoryMock
+            .Setup(r => r.GetByIdAsync(command.AppointmentId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(appointment);
+        _doctorRepositoryMock
+            .Setup(r => r.GetByUserIdAsync(command.InitiatorUserId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Doctor?)null);
+
+        // Act
+        var act = async () => await _sut.Handle(command, CancellationToken.None);
+
+        // Assert
+        var exceptionAssertion = await act.Should()
+            .ThrowAsync<EntityNotFoundException>()
+            .WithMessage(DomainErrors.General.NotFound);
+        exceptionAssertion.Which.EntityName.Should().Be(nameof(Doctor));
+    }
 }
