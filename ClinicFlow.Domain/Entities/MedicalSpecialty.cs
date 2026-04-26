@@ -58,7 +58,7 @@ public class MedicalSpecialty : BaseEntity
         );
     }
 
-    public bool IsCancellationAllowed(DateTime appointmentDateTime, DateTime referenceTime)
+    internal bool IsCancellationAllowed(DateTime appointmentDateTime, DateTime referenceTime)
     {
         var hoursUntilAppointment = (appointmentDateTime - referenceTime).TotalHours;
         return hoursUntilAppointment >= MinCancellationHours;
