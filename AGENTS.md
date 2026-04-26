@@ -543,6 +543,12 @@ Mark only what applies — do not over-select.
 
 3. **No method-level instructions** — reference test classes, not individual test methods. Do not say "test the `Cancel` method".
 
+4. **Documentation-only PRs** — when the PR exclusively modifies XML documentation (`/// <summary>`, `/// <remarks>`, `/// <exception>`, etc.) with zero functional code changes, use this exact message instead of listing test classes:
+
+```
+No functional tests are required as these changes are strictly limited to XML documentation updates.
+```
+
 Single-layer example:
 
 ```markdown
