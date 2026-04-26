@@ -25,7 +25,7 @@ public record AgeEligibilityPolicy
         RequiresLegalGuardian = requiresLegalGuardian;
     }
 
-    internal static AgeEligibilityPolicy Create(
+    public static AgeEligibilityPolicy Create(
         int? minimumAge,
         int? maximumAge,
         bool requiresLegalGuardian
