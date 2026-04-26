@@ -68,11 +68,6 @@ public sealed class CancelAppointmentByPatientCommandHandler(
                 doctor.MedicalSpecialtyId
             );
 
-        var initiatorPatient = await patientRepository.GetByUserIdAsync(
-            request.InitiatorUserId,
-            cancellationToken
-        );
-
         AppointmentCancellationService.CancelByPatient(
             appointment,
             new AppointmentCancellationContext
@@ -83,7 +78,7 @@ public sealed class CancelAppointmentByPatientCommandHandler(
             new PatientCancellationArgs
             {
                 TargetPatient = targetPatient,
-                InitiatorPatient = initiatorPatient,
+                InitiatorPatientId = request.InitiatorUserId,
                 Reason = request.Reason,
                 CancelledAt = timeProvider.GetUtcNow().UtcDateTime,
             }
