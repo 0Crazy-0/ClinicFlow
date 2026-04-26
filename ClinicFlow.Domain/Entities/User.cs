@@ -5,9 +5,6 @@ using ClinicFlow.Domain.ValueObjects;
 
 namespace ClinicFlow.Domain.Entities;
 
-/// <summary>
-/// Represents a system user with authentication credentials and an assigned role.
-/// </summary>
 public class User : BaseEntity
 {
     public UserRole Role { get; private set; }
