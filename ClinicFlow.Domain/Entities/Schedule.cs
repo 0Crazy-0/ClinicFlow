@@ -61,7 +61,7 @@ public class Schedule : BaseEntity
     internal bool CoversTimeRange(TimeRange requestedRange) =>
         IsActive && TimeRange.Covers(requestedRange);
 
-    public static void EnsureNoDuplicateDay(
+    internal static void EnsureNoDuplicateDay(
         IReadOnlyList<Schedule> existingSchedules,
         Guid doctorId,
         DayOfWeek dayOfWeek
