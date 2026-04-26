@@ -10,10 +10,6 @@ namespace ClinicFlow.Domain.Services;
 /// </summary>
 public static class PatientPenaltyService
 {
-    /// <summary>
-    /// Applies a penalty to the patient based on their penalty history,
-    /// escalating from a warning to progressively longer blocks.
-    /// </summary>
     /// <returns>A collection of newly generated penalties that need to be persisted.</returns>
     public static IEnumerable<PatientPenalty> ApplyPenalty(
         Guid patientId,

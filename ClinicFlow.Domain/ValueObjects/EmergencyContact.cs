@@ -3,9 +3,6 @@ using ClinicFlow.Domain.Exceptions.Base;
 
 namespace ClinicFlow.Domain.ValueObjects;
 
-/// <summary>
-/// Value object representing a patient's emergency contact, composed of a name and phone number.
-/// </summary>
 public record EmergencyContact
 {
     public PersonName Name { get; }
@@ -18,9 +15,6 @@ public record EmergencyContact
         PhoneNumber = phoneNumber;
     }
 
-    /// <summary>
-    /// Creates an <see cref="EmergencyContact"/> from raw string values, delegating validation to <see cref="PersonName"/> and <see cref="PhoneNumber"/>.
-    /// </summary>
     internal static EmergencyContact Create(string name, string phoneNumber)
     {
         var nameVo = PersonName.Create(name);
@@ -29,9 +23,6 @@ public record EmergencyContact
         return Create(nameVo, phoneVo);
     }
 
-    /// <summary>
-    /// Creates an <see cref="EmergencyContact"/> from pre-validated value objects.
-    /// </summary>
     internal static EmergencyContact Create(PersonName name, PhoneNumber phoneNumber)
     {
         if (name is null)

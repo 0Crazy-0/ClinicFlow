@@ -5,19 +5,10 @@ namespace ClinicFlow.Domain.Enums;
 /// </summary>
 public enum AppointmentStatus
 {
-    /// <summary>
-    /// The appointment has been created and is scheduled.
-    /// </summary>
     Scheduled = 1,
 
-    /// <summary>
-    /// The appointment is currently taking place.
-    /// </summary>
     InProgress = 3,
 
-    /// <summary>
-    /// The appointment has been successfully completed.
-    /// </summary>
     Completed = 4,
 
     /// <summary>

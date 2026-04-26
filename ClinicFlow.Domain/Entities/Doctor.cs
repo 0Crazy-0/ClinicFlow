@@ -37,9 +37,6 @@ public class Doctor : BaseEntity
         ConsultationRoomNumber = consultationRoomNumber;
     }
 
-    /// <summary>
-    /// Creates a new doctor entity.
-    /// </summary>
     public static Doctor Create(
         Guid userId,
         MedicalLicenseNumber licenseNumber,
@@ -64,9 +61,6 @@ public class Doctor : BaseEntity
         );
     }
 
-    /// <summary>
-    /// Updates the doctor's profile information.
-    /// </summary>
     public void UpdateProfile(string biography, int consultationRoomNumber)
     {
         if (consultationRoomNumber <= 0)

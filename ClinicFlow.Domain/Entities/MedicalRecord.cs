@@ -41,9 +41,6 @@ public class MedicalRecord : BaseEntity
         ChiefComplaint = chiefComplaint;
     }
 
-    /// <summary>
-    /// Creates a new medical record and raises a <see cref="MedicalRecordCreatedEvent"/>.
-    /// </summary>
     public static MedicalRecord Create(
         Guid patientId,
         Guid doctorId,
@@ -67,11 +64,6 @@ public class MedicalRecord : BaseEntity
         return record;
     }
 
-    /// <summary>
-    /// Adds a strongly-typed clinical detail to this medical record.
-    /// Used primarily by the <see cref="Services.MedicalEncounterService"/> after enforcing domain policies.
-    /// </summary>
-    /// <param name="detail">The specific detail object containing medical data.</param>
     internal void AddClinicalDetail(IClinicalDetailRecord detail)
     {
         if (detail is null)

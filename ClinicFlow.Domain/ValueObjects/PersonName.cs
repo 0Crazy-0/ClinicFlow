@@ -3,9 +3,6 @@ using ClinicFlow.Domain.Exceptions.Base;
 
 namespace ClinicFlow.Domain.ValueObjects;
 
-/// <summary>
-/// Value object representing a validated person's full name.
-/// </summary>
 public record PersonName
 {
     public string FullName { get; }
@@ -15,9 +12,6 @@ public record PersonName
         FullName = fullName;
     }
 
-    /// <summary>
-    /// Creates a <see cref="PersonName"/> after validating length constraints.
-    /// </summary>
     internal static PersonName Create(string fullName)
     {
         if (string.IsNullOrWhiteSpace(fullName))

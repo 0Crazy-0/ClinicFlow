@@ -10,9 +10,6 @@ public enum UserRole
     /// </summary>
     Patient = 1,
 
-    /// <summary>
-    /// A physician who provides medical services.
-    /// </summary>
     Doctor = 2,
 
     /// <summary>

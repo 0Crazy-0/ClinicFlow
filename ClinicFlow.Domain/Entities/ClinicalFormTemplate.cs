@@ -38,9 +38,6 @@ public class ClinicalFormTemplate : BaseEntity
         JsonSchemaDefinition = jsonSchemaDefinition;
     }
 
-    /// <summary>
-    /// Creates a new clinical form template.
-    /// </summary>
     public static ClinicalFormTemplate Create(
         string code,
         string name,
@@ -60,9 +57,6 @@ public class ClinicalFormTemplate : BaseEntity
         return new ClinicalFormTemplate(code, name, description, schemaToSave);
     }
 
-    /// <summary>
-    /// Updates descriptive details. Code is immutable: it serves as the business identity.
-    /// </summary>
     public void UpdateDetails(string name, string description)
     {
         if (string.IsNullOrWhiteSpace(name))
@@ -72,9 +66,6 @@ public class ClinicalFormTemplate : BaseEntity
         Description = description;
     }
 
-    /// <summary>
-    /// Replaces the current JSON schema definition. Defaults to an empty object if null or whitespace.
-    /// </summary>
     public void UpdateSchema(string jsonSchemaDefinition) =>
         JsonSchemaDefinition = string.IsNullOrWhiteSpace(jsonSchemaDefinition)
             ? "{}"
