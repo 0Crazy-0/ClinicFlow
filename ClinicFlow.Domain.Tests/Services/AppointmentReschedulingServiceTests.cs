@@ -20,6 +20,108 @@ public class AppointmentReschedulingServiceTests
     private readonly FakeTimeProvider _fakeTime = new();
 
     [Fact]
+    public void RescheduleByPatient_ShouldThrowDomainValidationException_WhenAppointmentIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentReschedulingService.RescheduleByPatient(
+                null!,
+                CreateValidPatientReschedulingArgs(),
+                new AppointmentReschedulingContext()
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
+    public void RescheduleByPatient_ShouldThrowDomainValidationException_WhenArgsIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentReschedulingService.RescheduleByPatient(
+                new AppointmentBuilder()
+                    .WithScheduledDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2).Date)
+                    .Build(),
+                null!,
+                new AppointmentReschedulingContext()
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
+    public void RescheduleByPatient_ShouldThrowDomainValidationException_WhenTargetPatientIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentReschedulingService.RescheduleByPatient(
+                new AppointmentBuilder()
+                    .WithScheduledDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2).Date)
+                    .Build(),
+                CreateValidPatientReschedulingArgs() with
+                {
+                    TargetPatient = null!,
+                },
+                new AppointmentReschedulingContext()
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
+    public void RescheduleByPatient_ShouldThrowDomainValidationException_WhenInitiatorPatientIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentReschedulingService.RescheduleByPatient(
+                new AppointmentBuilder()
+                    .WithScheduledDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2).Date)
+                    .Build(),
+                CreateValidPatientReschedulingArgs() with
+                {
+                    InitiatorPatient = null!,
+                },
+                new AppointmentReschedulingContext()
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
+    public void RescheduleByPatient_ShouldThrowDomainValidationException_WhenNewTimeRangeIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentReschedulingService.RescheduleByPatient(
+                new AppointmentBuilder()
+                    .WithScheduledDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2).Date)
+                    .Build(),
+                CreateValidPatientReschedulingArgs() with
+                {
+                    NewTimeRange = null!,
+                },
+                new AppointmentReschedulingContext()
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
     public void RescheduleByPatient_ShouldThrowValidationException_WhenTargetMismatch()
     {
         // Arrange
@@ -333,6 +435,86 @@ public class AppointmentReschedulingServiceTests
     }
 
     [Fact]
+    public void RescheduleByDoctor_ShouldThrowDomainValidationException_WhenAppointmentIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentReschedulingService.RescheduleByDoctor(
+                null!,
+                CreateValidDoctorReschedulingArgs(),
+                new AppointmentReschedulingContext()
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
+    public void RescheduleByDoctor_ShouldThrowDomainValidationException_WhenArgsIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentReschedulingService.RescheduleByDoctor(
+                new AppointmentBuilder()
+                    .WithScheduledDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2).Date)
+                    .Build(),
+                null!,
+                new AppointmentReschedulingContext()
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
+    public void RescheduleByDoctor_ShouldThrowDomainValidationException_WhenInitiatorDoctorIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentReschedulingService.RescheduleByDoctor(
+                new AppointmentBuilder()
+                    .WithScheduledDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2).Date)
+                    .Build(),
+                CreateValidDoctorReschedulingArgs() with
+                {
+                    InitiatorDoctor = null!,
+                },
+                new AppointmentReschedulingContext()
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
+    public void RescheduleByDoctor_ShouldThrowDomainValidationException_WhenNewTimeRangeIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentReschedulingService.RescheduleByDoctor(
+                new AppointmentBuilder()
+                    .WithScheduledDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2).Date)
+                    .Build(),
+                CreateValidDoctorReschedulingArgs() with
+                {
+                    NewTimeRange = null!,
+                },
+                new AppointmentReschedulingContext()
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
     public void RescheduleByDoctor_ShouldThrowUnauthorized_WhenDoctorMismatch()
     {
         // Arrange
@@ -510,6 +692,64 @@ public class AppointmentReschedulingServiceTests
     }
 
     [Fact]
+    public void RescheduleByStaff_ShouldThrowDomainValidationException_WhenAppointmentIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentReschedulingService.RescheduleByStaff(
+                null!,
+                CreateValidStaffReschedulingArgs(),
+                new AppointmentReschedulingContext()
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
+    public void RescheduleByStaff_ShouldThrowDomainValidationException_WhenArgsIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentReschedulingService.RescheduleByStaff(
+                new AppointmentBuilder()
+                    .WithScheduledDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2).Date)
+                    .Build(),
+                null!,
+                new AppointmentReschedulingContext()
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
+    public void RescheduleByStaff_ShouldThrowDomainValidationException_WhenNewTimeRangeIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentReschedulingService.RescheduleByStaff(
+                new AppointmentBuilder()
+                    .WithScheduledDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2).Date)
+                    .Build(),
+                CreateValidStaffReschedulingArgs() with
+                {
+                    NewTimeRange = null!,
+                },
+                new AppointmentReschedulingContext()
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
     public void RescheduleByStaff_ShouldBypassAvailability_WhenOverbook()
     {
         // Arrange
@@ -636,6 +876,34 @@ public class AppointmentReschedulingServiceTests
         appointment.ScheduledDate.Should().Be(args.NewDate);
         appointment.TimeRange.Should().Be(args.NewTimeRange);
     }
+
+    private PatientReschedulingArgs CreateValidPatientReschedulingArgs() =>
+        new()
+        {
+            TargetPatient = CreateSelfPatient(
+                Guid.NewGuid(),
+                Guid.NewGuid(),
+                30,
+                _fakeTime.GetUtcNow().UtcDateTime
+            ),
+            InitiatorPatient = CreateSelfPatient(
+                Guid.NewGuid(),
+                Guid.NewGuid(),
+                30,
+                _fakeTime.GetUtcNow().UtcDateTime
+            ),
+            NewTimeRange = CreateTimeRange(10, 11),
+        };
+
+    private DoctorReschedulingArgs CreateValidDoctorReschedulingArgs() =>
+        new()
+        {
+            InitiatorDoctor = CreateDoctor(Guid.NewGuid(), Guid.NewGuid()),
+            NewTimeRange = CreateTimeRange(10, 11),
+        };
+
+    private static StaffReschedulingArgs CreateValidStaffReschedulingArgs() =>
+        new() { NewTimeRange = CreateTimeRange(10, 11) };
 
     private static TimeRange CreateTimeRange(int startHour, int endHour) =>
         TimeRange.Create(TimeSpan.FromHours(startHour), TimeSpan.FromHours(endHour));
