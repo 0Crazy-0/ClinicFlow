@@ -45,9 +45,11 @@ public class Schedule : BaseEntity
     }
 
     /// <summary>
-    /// Deactivates this schedule slot, preventing new appointments from being booked on this time range.
-    /// Existing appointments are not affected.
+    /// Marks the schedule slot as unavailable for new bookings.
     /// </summary>
+    /// <remarks>
+    /// Existing appointments within this slot are not affected by this status change.
+    /// </remarks>
     public void Deactivate()
     {
         if (!IsActive)
