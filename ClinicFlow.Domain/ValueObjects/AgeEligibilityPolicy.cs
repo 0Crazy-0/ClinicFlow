@@ -4,7 +4,7 @@ using ClinicFlow.Domain.Exceptions.Base;
 namespace ClinicFlow.Domain.ValueObjects;
 
 /// <summary>
-/// Value object representing the age eligibility rules for an appointment type.
+/// Defines the age restrictions and guardian requirements for booking a specific appointment type.
 /// </summary>
 public record AgeEligibilityPolicy
 {
