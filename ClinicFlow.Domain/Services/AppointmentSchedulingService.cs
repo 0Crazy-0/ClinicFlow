@@ -2,6 +2,7 @@ using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Appointments;
+using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Exceptions.Scheduling;
 using ClinicFlow.Domain.Services.Args.Scheduling;
 using ClinicFlow.Domain.Services.Contexts;
@@ -29,6 +30,17 @@ public static class AppointmentSchedulingService
         AppointmentSchedulingContext context
     )
     {
+        if (appointmentType is null)
+            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+
+        if (
+            args is null
+            || args.TargetPatient is null
+            || args.InitiatorPatient is null
+            || args.TimeRange is null
+        )
+            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+
         if (args.TargetPatient.UserId != args.InitiatorPatient.UserId)
             throw new AppointmentSchedulingUnauthorizedException(
                 DomainErrors.Appointment.UnauthorizedScheduling
@@ -89,6 +101,17 @@ public static class AppointmentSchedulingService
         AppointmentSchedulingContext context
     )
     {
+        if (appointmentType is null)
+            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+
+        if (
+            args is null
+            || args.InitiatorDoctor is null
+            || args.TargetPatient is null
+            || args.TimeRange is null
+        )
+            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+
         var allowedCategoriesForDoctors = new[]
         {
             AppointmentCategory.FollowUp,
@@ -136,6 +159,12 @@ public static class AppointmentSchedulingService
         AppointmentSchedulingContext context
     )
     {
+        if (appointmentType is null)
+            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+
+        if (args is null || args.TargetPatient is null || args.TimeRange is null)
+            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+
         args.TargetPatient.EnsureCompleteProfile();
 
         appointmentType.ValidatePatientEligibility(
