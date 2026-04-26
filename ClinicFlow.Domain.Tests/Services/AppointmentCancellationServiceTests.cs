@@ -101,7 +101,8 @@ public class AppointmentCancellationServiceTests
         var doctor = CreateDoctor(appointment.DoctorId, Guid.NewGuid());
         var args = new DoctorCancellationArgs
         {
-            InitiatorDoctor = doctor,
+            InitiatorDoctorId = doctor.Id,
+            InitiatorUserId = doctor.UserId,
             Reason = "Doctor Reason",
             CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
         };
@@ -123,7 +124,8 @@ public class AppointmentCancellationServiceTests
         var doctor = CreateDoctor(Guid.NewGuid(), Guid.NewGuid());
         var args = new DoctorCancellationArgs
         {
-            InitiatorDoctor = doctor,
+            InitiatorDoctorId = doctor.Id,
+            InitiatorUserId = doctor.UserId,
             Reason = "Doctor reason",
             CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
         };
@@ -135,29 +137,6 @@ public class AppointmentCancellationServiceTests
         act.Should()
             .Throw<AppointmentCancellationUnauthorizedException>()
             .WithMessage(DomainErrors.Appointment.UnauthorizedCancellation);
-    }
-
-    [Fact]
-    public void CancelByDoctor_ShouldThrowValidationException_WhenDoctorIsMissing()
-    {
-        // Arrange
-        var appointment = new AppointmentBuilder()
-            .WithScheduledDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2))
-            .Build();
-        var args = new DoctorCancellationArgs
-        {
-            InitiatorDoctor = null,
-            Reason = "Doctor reason",
-            CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
-        };
-
-        // Act
-        var act = () => AppointmentCancellationService.CancelByDoctor(appointment, args);
-
-        // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Theory]

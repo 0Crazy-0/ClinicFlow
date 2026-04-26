@@ -29,16 +29,20 @@ public sealed class CancelAppointmentByDoctorCommandHandler(
                 request.AppointmentId
             );
 
-        var initiatorDoctor = await doctorRepository.GetByUserIdAsync(
-            request.InitiatorUserId,
-            cancellationToken
-        );
+        var initiatorDoctor =
+            await doctorRepository.GetByUserIdAsync(request.InitiatorUserId, cancellationToken)
+            ?? throw new EntityNotFoundException(
+                DomainErrors.General.NotFound,
+                nameof(Doctor),
+                request.InitiatorUserId
+            );
 
         AppointmentCancellationService.CancelByDoctor(
             appointment,
             new DoctorCancellationArgs
             {
-                InitiatorDoctor = initiatorDoctor,
+                InitiatorDoctorId = initiatorDoctor.Id,
+                InitiatorUserId = request.InitiatorUserId,
                 Reason = request.Reason,
                 CancelledAt = timeProvider.GetUtcNow().UtcDateTime,
             }
