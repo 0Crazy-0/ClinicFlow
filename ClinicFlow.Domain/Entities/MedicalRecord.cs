@@ -74,11 +74,4 @@ public class MedicalRecord : BaseEntity
 
         _clinicalDetails.Add(detail);
     }
-
-    /// <summary>
-    /// Retrieves a specific clinical detail by its template code, or null if not present.
-    /// Useful for queries or view models that need to extract specialized data (e.g., getting the 'VITALS' form).
-    /// </summary>
-    public IClinicalDetailRecord? GetClinicalDetail(string templateCode) =>
-        _clinicalDetails.FirstOrDefault(d => d.TemplateCode == templateCode);
 }

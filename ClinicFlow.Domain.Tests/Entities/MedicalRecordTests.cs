@@ -144,37 +144,6 @@ public class MedicalRecordTests
             .WithMessage(DomainErrors.MedicalEncounter.DetailAlreadyExists);
     }
 
-    [Fact]
-    public void GetClinicalDetail_ShouldReturnDetail_WhenExists()
-    {
-        // Arrange
-        var record = CreateValidMedicalRecord();
-        var detail = new StubDynamicClinicalDetail("VITALS");
-        record.AddClinicalDetail(detail);
-
-        // Act
-        var result = record.GetClinicalDetail("VITALS");
-
-        // Assert
-        result.Should().NotBeNull();
-        result.Should().Be(detail);
-    }
-
-    [Fact]
-    public void GetClinicalDetail_ShouldReturnNull_WhenDoesNotExist()
-    {
-        // Arrange
-        var record = CreateValidMedicalRecord();
-        var detail = new StubDynamicClinicalDetail("VITALS");
-        record.AddClinicalDetail(detail);
-
-        // Act
-        var result = record.GetClinicalDetail("ALLERGIES");
-
-        // Assert
-        result.Should().BeNull();
-    }
-
     private static MedicalRecord CreateValidMedicalRecord() =>
         MedicalRecord.Create(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "General checkup");
 
