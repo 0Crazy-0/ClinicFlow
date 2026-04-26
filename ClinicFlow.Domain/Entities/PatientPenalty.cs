@@ -17,10 +17,9 @@ public class PatientPenalty : BaseEntity
 
     public string Reason { get; private set; } = string.Empty;
 
-    /// <summary>
-    /// UTC date and time until which the patient is blocked from booking.
-    /// Only set for <see cref="PenaltyType.TemporaryBlock"/> penalties.
-    /// </summary>
+    /// <remarks>
+    /// Only has a value when the penalty <see cref="Type"/> is a <see cref="PenaltyType.TemporaryBlock"/>.
+    /// </remarks>
     public DateTime? BlockedUntil { get; private set; }
 
     /// <summary>
