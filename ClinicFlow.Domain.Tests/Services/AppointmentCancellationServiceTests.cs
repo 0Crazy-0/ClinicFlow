@@ -192,7 +192,7 @@ public class AppointmentCancellationServiceTests
         var args = new PatientCancellationArgs
         {
             TargetPatient = patient,
-            InitiatorPatient = patient,
+            InitiatorPatientId = patient.UserId,
             Reason = "Patient reason",
             CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
         };
@@ -249,7 +249,7 @@ public class AppointmentCancellationServiceTests
         var args = new PatientCancellationArgs
         {
             TargetPatient = patient,
-            InitiatorPatient = initiatorPatient,
+            InitiatorPatientId = initiatorPatient.UserId,
             Reason = "Patient reason",
             CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
         };
@@ -288,7 +288,7 @@ public class AppointmentCancellationServiceTests
         var args = new PatientCancellationArgs
         {
             TargetPatient = patient,
-            InitiatorPatient = patient,
+            InitiatorPatientId = patient.UserId,
             Reason = "Patient reason",
             CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
         };
@@ -345,7 +345,7 @@ public class AppointmentCancellationServiceTests
         var args = new PatientCancellationArgs
         {
             TargetPatient = patient,
-            InitiatorPatient = initiatorPatient,
+            InitiatorPatientId = initiatorPatient.UserId,
             Reason = "Patient reason",
             CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
         };
@@ -394,7 +394,7 @@ public class AppointmentCancellationServiceTests
         var args = new PatientCancellationArgs
         {
             TargetPatient = patient,
-            InitiatorPatient = initiatorPatient,
+            InitiatorPatientId = initiatorPatient.UserId,
             Reason = "Patient reason",
             CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
         };
@@ -434,7 +434,7 @@ public class AppointmentCancellationServiceTests
         var args = new PatientCancellationArgs
         {
             TargetPatient = patient,
-            InitiatorPatient = patient,
+            InitiatorPatientId = patient.UserId,
             Reason = "Patient reason",
             CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
         };
@@ -446,47 +446,6 @@ public class AppointmentCancellationServiceTests
         act.Should()
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.Appointment.DataMismatch);
-    }
-
-    [Fact]
-    public void CancelByPatient_ShouldThrowValidationException_WhenInitiatorHasNoPatientProfile()
-    {
-        // Arrange
-        var initiatorUserId = Guid.NewGuid();
-        var patientId = Guid.NewGuid();
-        var patient = CreateSelfPatient(
-            patientId,
-            initiatorUserId,
-            30,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
-
-        var appointment = new AppointmentBuilder()
-            .WithScheduledDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2))
-            .WithPatientId(patientId)
-            .Build();
-
-        var context = new AppointmentCancellationContext
-        {
-            Category = AppointmentCategory.Checkup,
-            Specialty = CreateSpecialty(24),
-        };
-
-        var args = new PatientCancellationArgs
-        {
-            TargetPatient = patient,
-            InitiatorPatient = null,
-            Reason = "Patient reason",
-            CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
-        };
-
-        // Act
-        var act = () => AppointmentCancellationService.CancelByPatient(appointment, context, args);
-
-        // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Fact]
@@ -515,7 +474,7 @@ public class AppointmentCancellationServiceTests
         var args = new PatientCancellationArgs
         {
             TargetPatient = patient,
-            InitiatorPatient = patient,
+            InitiatorPatientId = patient.UserId,
             Reason = "Too late",
             CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
         };
@@ -567,7 +526,7 @@ public class AppointmentCancellationServiceTests
         var args = new PatientCancellationArgs
         {
             TargetPatient = patient,
-            InitiatorPatient = patient,
+            InitiatorPatientId = patient.UserId,
             Reason = "Test Policy",
             CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
         };
