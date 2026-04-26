@@ -49,9 +49,6 @@ public class AppointmentTypeDefinition : BaseEntity
         AgePolicy = agePolicy;
     }
 
-    /// <summary>
-    /// Creates a new appointment type definition.
-    /// </summary>
     public static AppointmentTypeDefinition Create(
         AppointmentCategory category,
         string name,
@@ -74,9 +71,6 @@ public class AppointmentTypeDefinition : BaseEntity
         );
     }
 
-    /// <summary>
-    /// Updates the appointment type's general details.
-    /// </summary>
     public void UpdateDetails(
         AppointmentCategory category,
         string name,
@@ -95,15 +89,9 @@ public class AppointmentTypeDefinition : BaseEntity
         DurationMinutes = durationMinutes;
     }
 
-    /// <summary>
-    /// Replaces the current age eligibility policy for this appointment type.
-    /// </summary>
     public void ChangeAgePolicy(AgeEligibilityPolicy agePolicy) =>
         AgePolicy = agePolicy ?? AgeEligibilityPolicy.NoRestriction;
 
-    /// <summary>
-    /// Adds a required clinical form template to this appointment type.
-    /// </summary>
     public void AddRequiredTemplate(ClinicalFormTemplate template)
     {
         if (template is null)
@@ -116,9 +104,6 @@ public class AppointmentTypeDefinition : BaseEntity
         _requiredTemplates.Add(template);
     }
 
-    /// <summary>
-    /// Removes a required clinical form template from this appointment type.
-    /// </summary>
     public void RemoveRequiredTemplate(ClinicalFormTemplate template)
     {
         if (template is null)

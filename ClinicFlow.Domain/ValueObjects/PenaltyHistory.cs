@@ -27,9 +27,6 @@ public record PenaltyHistory
     /// </summary>
     public int TotalHistoricalBlocks => _penalties.Count(p => p.Type is PenaltyType.TemporaryBlock);
 
-    /// <summary>
-    /// Determines whether the patient currently has an active (non-expired, non-removed) block.
-    /// </summary>
     public bool IsCurrentlyBlocked(DateTime referenceTime) =>
         _penalties.Any(p =>
             !p.IsRemoved

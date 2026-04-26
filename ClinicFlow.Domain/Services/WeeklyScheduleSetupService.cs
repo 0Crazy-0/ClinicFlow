@@ -10,13 +10,6 @@ namespace ClinicFlow.Domain.Services;
 /// </summary>
 public static class WeeklyScheduleSetupService
 {
-    /// <summary>
-    /// Creates a set of schedule slots for a doctor's weekly availability,
-    /// validating no duplicate active days exist.
-    /// </summary>
-    /// <param name="doctorId">The doctor's unique identifier.</param>
-    /// <param name="existingSchedules">The doctor's current schedule records from persistence.</param>
-    /// <param name="slots">The desired weekly availability slots to create.</param>
     /// <returns>A list of newly created <see cref="Schedule"/> entities ready for persistence.</returns>
     public static IReadOnlyList<Schedule> SetupWeeklySchedule(
         Guid doctorId,

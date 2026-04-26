@@ -25,9 +25,6 @@ public record AgeEligibilityPolicy
         RequiresLegalGuardian = requiresLegalGuardian;
     }
 
-    /// <summary>
-    /// Creates an <see cref="AgeEligibilityPolicy"/> after ensuring the age range is valid.
-    /// </summary>
     internal static AgeEligibilityPolicy Create(
         int? minimumAge,
         int? maximumAge,
@@ -40,10 +37,6 @@ public record AgeEligibilityPolicy
         return new AgeEligibilityPolicy(minimumAge, maximumAge, requiresLegalGuardian);
     }
 
-    /// <summary>
-    /// Verifies if the patient meets the age requirements and legal guardian requirements.
-    /// </summary>
-    /// <param name="patientAgeInYears">The patient's age in full years.</param>
     public void ValidatePatientEligibility(int patientAgeInYears, bool hasGuardianConsent = false)
     {
         if (MinimumAge.HasValue && patientAgeInYears < MinimumAge.Value)

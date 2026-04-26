@@ -37,9 +37,6 @@ public class User : BaseEntity
         Role = role;
     }
 
-    /// <summary>
-    /// Creates a new user entity.
-    /// </summary>
     public static User Create(
         EmailAddress email,
         string passwordHash,

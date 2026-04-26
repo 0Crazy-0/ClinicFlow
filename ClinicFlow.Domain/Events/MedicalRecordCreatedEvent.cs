@@ -3,7 +3,4 @@ using ClinicFlow.Domain.Entities;
 
 namespace ClinicFlow.Domain.Events;
 
-/// <summary>
-/// Raised when a new medical record is created for a patient encounter.
-/// </summary>
 public sealed record MedicalRecordCreatedEvent(MedicalRecord MedicalRecord) : IDomainEvent;

@@ -4,9 +4,6 @@ using ClinicFlow.Domain.Exceptions.Base;
 
 namespace ClinicFlow.Domain.ValueObjects;
 
-/// <summary>
-/// Value object representing a validated email address.
-/// </summary>
 public partial record EmailAddress
 {
     private const string EmailRegexPattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
@@ -21,9 +18,6 @@ public partial record EmailAddress
         Value = value;
     }
 
-    /// <summary>
-    /// Creates an <see cref="EmailAddress"/> after validating format and normalizing to lowercase.
-    /// </summary>
     internal static EmailAddress Create(string email)
     {
         if (string.IsNullOrWhiteSpace(email))

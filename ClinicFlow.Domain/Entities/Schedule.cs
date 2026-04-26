@@ -32,9 +32,6 @@ public class Schedule : BaseEntity
         IsActive = true;
     }
 
-    /// <summary>
-    /// Creates a new schedule slot for a doctor.
-    /// </summary>
     public static Schedule Create(Guid doctorId, DayOfWeek dayOfWeek, TimeRange timeRange)
     {
         if (doctorId == Guid.Empty)
@@ -59,18 +56,9 @@ public class Schedule : BaseEntity
         IsActive = false;
     }
 
-    /// <summary>
-    /// Checks whether this schedule slot fully covers the requested time range and is active.
-    /// </summary>
     internal bool CoversTimeRange(TimeRange requestedRange) =>
         IsActive && TimeRange.Covers(requestedRange);
 
-    /// <summary>
-    /// Verifies that no active schedule already exists for the given doctor on the specified day.
-    /// </summary>
-    /// <param name="existingSchedules">The doctor's existing schedule records.</param>
-    /// <param name="doctorId">The doctor's unique identifier.</param>
-    /// <param name="dayOfWeek">The day of week to check for duplicates.</param>
     public static void EnsureNoDuplicateDay(
         IReadOnlyList<Schedule> existingSchedules,
         Guid doctorId,

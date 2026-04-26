@@ -3,9 +3,6 @@ using ClinicFlow.Domain.Exceptions.Base;
 
 namespace ClinicFlow.Domain.ValueObjects;
 
-/// <summary>
-/// Value object representing a validated blood type (e.g., A+, O−, AB+).
-/// </summary>
 public record BloodType
 {
     public string Value { get; }
@@ -27,9 +24,6 @@ public record BloodType
         Value = value;
     }
 
-    /// <summary>
-    /// Creates a <see cref="BloodType"/> after validating and normalizing the input.
-    /// </summary>
     internal static BloodType Create(string bloodType)
     {
         if (string.IsNullOrWhiteSpace(bloodType))

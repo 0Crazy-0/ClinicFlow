@@ -49,9 +49,6 @@ public class PatientPenalty : BaseEntity
         BlockedUntil = blockedUntil;
     }
 
-    /// <summary>
-    /// Creates a warning penalty for the patient.
-    /// </summary>
     internal static PatientPenalty CreateAutomaticWarning(
         Guid patientId,
         Guid? appointmentId,
@@ -66,10 +63,6 @@ public class PatientPenalty : BaseEntity
         return new PatientPenalty(patientId, appointmentId, PenaltyType.Warning, reason, null);
     }
 
-    /// <summary>
-    /// Creates a temporary block penalty that prevents the patient from booking until the specified date.
-    /// </summary>
-    /// <param name="blockedUntil">UTC date and time until which the block is in effect. Must be in the future.</param>
     internal static PatientPenalty CreateAutomaticBlock(
         Guid patientId,
         string reason,
@@ -93,10 +86,6 @@ public class PatientPenalty : BaseEntity
         );
     }
 
-    /// <summary>
-    /// Creates a staff-issued temporary block penalty with a predefined duration.
-    /// </summary>
-    /// <param name="duration">The predefined block duration to apply.</param>
     public static PatientPenalty CreateManualBlock(
         Guid patientId,
         string reason,
@@ -120,9 +109,6 @@ public class PatientPenalty : BaseEntity
         );
     }
 
-    /// <summary>
-    /// Removes this penalty, marking it as no longer in effect.
-    /// </summary>
     public void Remove()
     {
         if (IsRemoved)
