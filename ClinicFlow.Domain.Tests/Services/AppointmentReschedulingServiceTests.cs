@@ -895,7 +895,7 @@ public class AppointmentReschedulingServiceTests
             NewTimeRange = CreateTimeRange(10, 11),
         };
 
-    private DoctorReschedulingArgs CreateValidDoctorReschedulingArgs() =>
+    private static DoctorReschedulingArgs CreateValidDoctorReschedulingArgs() =>
         new()
         {
             InitiatorDoctor = CreateDoctor(Guid.NewGuid(), Guid.NewGuid()),
