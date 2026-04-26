@@ -30,6 +30,17 @@ public static class AppointmentReschedulingService
         AppointmentReschedulingContext context
     )
     {
+        if (appointment is null)
+            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+
+        if (
+            args is null
+            || args.TargetPatient is null
+            || args.InitiatorPatient is null
+            || args.NewTimeRange is null
+        )
+            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+
         if (args.TargetPatient.Id != appointment.PatientId)
             throw new DomainValidationException(DomainErrors.Appointment.DataMismatch);
 
@@ -73,6 +84,12 @@ public static class AppointmentReschedulingService
         AppointmentReschedulingContext context
     )
     {
+        if (appointment is null)
+            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+
+        if (args is null || args.InitiatorDoctor is null || args.NewTimeRange is null)
+            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+
         if (args.InitiatorDoctor.Id != appointment.DoctorId)
             throw new AppointmentSchedulingUnauthorizedException(
                 DomainErrors.Appointment.UnauthorizedScheduling
@@ -104,6 +121,12 @@ public static class AppointmentReschedulingService
         AppointmentReschedulingContext context
     )
     {
+        if (appointment is null)
+            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+
+        if (args is null || args.NewTimeRange is null)
+            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+
         if (!args.IsOverbook)
         {
             EnsureDoctorIsAvailable(

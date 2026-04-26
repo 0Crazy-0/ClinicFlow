@@ -21,6 +21,100 @@ public class AppointmentSchedulingServiceTests
     private readonly FakeTimeProvider _fakeTime = new();
 
     [Fact]
+    public void ScheduleByPatient_ShouldThrowDomainValidationException_WhenAppointmentTypeIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentSchedulingService.ScheduleByPatient(
+                null!,
+                CreateValidPatientSchedulingArgs(),
+                new AppointmentSchedulingContext()
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
+    public void ScheduleByPatient_ShouldThrowDomainValidationException_WhenArgsIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentSchedulingService.ScheduleByPatient(
+                new AppointmentTypeBuilder().Build(),
+                null!,
+                new AppointmentSchedulingContext()
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
+    public void ScheduleByPatient_ShouldThrowDomainValidationException_WhenTargetPatientIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentSchedulingService.ScheduleByPatient(
+                new AppointmentTypeBuilder().Build(),
+                CreateValidPatientSchedulingArgs() with
+                {
+                    TargetPatient = null!,
+                },
+                new AppointmentSchedulingContext()
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
+    public void ScheduleByPatient_ShouldThrowDomainValidationException_WhenInitiatorPatientIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentSchedulingService.ScheduleByPatient(
+                new AppointmentTypeBuilder().Build(),
+                CreateValidPatientSchedulingArgs() with
+                {
+                    InitiatorPatient = null!,
+                },
+                new AppointmentSchedulingContext()
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
+    public void ScheduleByPatient_ShouldThrowDomainValidationException_WhenTimeRangeIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentSchedulingService.ScheduleByPatient(
+                new AppointmentTypeBuilder().Build(),
+                CreateValidPatientSchedulingArgs() with
+                {
+                    TimeRange = null!,
+                },
+                new AppointmentSchedulingContext()
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
     public void ScheduleByPatient_ShouldThrowUnauthorized_WhenUserIdMismatches()
     {
         // Arrange
@@ -415,6 +509,100 @@ public class AppointmentSchedulingServiceTests
     }
 
     [Fact]
+    public void ScheduleByDoctor_ShouldThrowDomainValidationException_WhenAppointmentTypeIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentSchedulingService.ScheduleByDoctor(
+                null!,
+                CreateValidDoctorSchedulingArgs(),
+                new AppointmentSchedulingContext()
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
+    public void ScheduleByDoctor_ShouldThrowDomainValidationException_WhenArgsIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentSchedulingService.ScheduleByDoctor(
+                new AppointmentTypeBuilder().Build(),
+                null!,
+                new AppointmentSchedulingContext()
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
+    public void ScheduleByDoctor_ShouldThrowDomainValidationException_WhenInitiatorDoctorIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentSchedulingService.ScheduleByDoctor(
+                new AppointmentTypeBuilder().Build(),
+                CreateValidDoctorSchedulingArgs() with
+                {
+                    InitiatorDoctor = null!,
+                },
+                new AppointmentSchedulingContext()
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
+    public void ScheduleByDoctor_ShouldThrowDomainValidationException_WhenTargetPatientIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentSchedulingService.ScheduleByDoctor(
+                new AppointmentTypeBuilder().Build(),
+                CreateValidDoctorSchedulingArgs() with
+                {
+                    TargetPatient = null!,
+                },
+                new AppointmentSchedulingContext()
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
+    public void ScheduleByDoctor_ShouldThrowDomainValidationException_WhenTimeRangeIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentSchedulingService.ScheduleByDoctor(
+                new AppointmentTypeBuilder().Build(),
+                CreateValidDoctorSchedulingArgs() with
+                {
+                    TimeRange = null!,
+                },
+                new AppointmentSchedulingContext()
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
     public void ScheduleByDoctor_ShouldThrowUnauthorized_WhenCategoryInvalid()
     {
         // Arrange
@@ -622,6 +810,80 @@ public class AppointmentSchedulingServiceTests
         appointment.ScheduledDate.Should().Be(args.ScheduledDate);
         appointment.TimeRange.Should().Be(args.TimeRange);
         appointment.Status.Should().Be(AppointmentStatus.Scheduled);
+    }
+
+    [Fact]
+    public void ScheduleByStaff_ShouldThrowDomainValidationException_WhenAppointmentTypeIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentSchedulingService.ScheduleByStaff(
+                null!,
+                CreateValidStaffSchedulingArgs(),
+                new AppointmentSchedulingContext()
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
+    public void ScheduleByStaff_ShouldThrowDomainValidationException_WhenArgsIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentSchedulingService.ScheduleByStaff(
+                new AppointmentTypeBuilder().Build(),
+                null!,
+                new AppointmentSchedulingContext()
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
+    public void ScheduleByStaff_ShouldThrowDomainValidationException_WhenTargetPatientIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentSchedulingService.ScheduleByStaff(
+                new AppointmentTypeBuilder().Build(),
+                CreateValidStaffSchedulingArgs() with
+                {
+                    TargetPatient = null!,
+                },
+                new AppointmentSchedulingContext()
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
+    public void ScheduleByStaff_ShouldThrowDomainValidationException_WhenTimeRangeIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentSchedulingService.ScheduleByStaff(
+                new AppointmentTypeBuilder().Build(),
+                CreateValidStaffSchedulingArgs() with
+                {
+                    TimeRange = null!,
+                },
+                new AppointmentSchedulingContext()
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 
     [Fact]
@@ -873,6 +1135,49 @@ public class AppointmentSchedulingServiceTests
         appointment.TimeRange.Should().Be(args.TimeRange);
         appointment.Status.Should().Be(AppointmentStatus.Scheduled);
     }
+
+    private PatientSchedulingArgs CreateValidPatientSchedulingArgs() =>
+        new()
+        {
+            TargetPatient = CreateSelfPatient(
+                Guid.NewGuid(),
+                Guid.NewGuid(),
+                30,
+                _fakeTime.GetUtcNow().UtcDateTime
+            ),
+            InitiatorPatient = CreateSelfPatient(
+                Guid.NewGuid(),
+                Guid.NewGuid(),
+                30,
+                _fakeTime.GetUtcNow().UtcDateTime
+            ),
+            TimeRange = CreateTimeRange(10, 11),
+        };
+
+    private DoctorSchedulingArgs CreateValidDoctorSchedulingArgs() =>
+        new()
+        {
+            InitiatorDoctor = CreateDoctor(Guid.NewGuid(), Guid.NewGuid()),
+            TargetPatient = CreateSelfPatient(
+                Guid.NewGuid(),
+                Guid.NewGuid(),
+                30,
+                _fakeTime.GetUtcNow().UtcDateTime
+            ),
+            TimeRange = CreateTimeRange(10, 11),
+        };
+
+    private StaffSchedulingArgs CreateValidStaffSchedulingArgs() =>
+        new()
+        {
+            TargetPatient = CreateSelfPatient(
+                Guid.NewGuid(),
+                Guid.NewGuid(),
+                30,
+                _fakeTime.GetUtcNow().UtcDateTime
+            ),
+            TimeRange = CreateTimeRange(10, 11),
+        };
 
     private static TimeRange CreateTimeRange(int startHour, int endHour) =>
         TimeRange.Create(TimeSpan.FromHours(startHour), TimeSpan.FromHours(endHour));
