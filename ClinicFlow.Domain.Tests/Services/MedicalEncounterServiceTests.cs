@@ -39,17 +39,7 @@ public class MedicalEncounterServiceTests
     public void ValidateAndCompleteRecord_ShouldThrowDomainValidationException_WhenRecordIsNull()
     {
         // Act
-        var act = () =>
-            _sut.ValidateAndCompleteRecord(
-                null!,
-                new MedicalEncounterContext
-                {
-                    ExpectedDoctor = null!,
-                    Appointment = null!,
-                    AppointmentTypeDefinition = null!,
-                    CompletedAt = _fakeTime.GetUtcNow().UtcDateTime,
-                }
-            );
+        var act = () => _sut.ValidateAndCompleteRecord(null!, CreateValidContext());
 
         // Assert
         act.Should()
@@ -73,20 +63,20 @@ public class MedicalEncounterServiceTests
     }
 
     [Fact]
-    public void ValidateAndCompleteRecord_ShouldThrowBusinessRuleValidationException_WhenExpectedDoctorIsNull()
+    public void ValidateAndCompleteRecord_ShouldThrowDomainValidationException_WhenExpectedDoctorIsNull()
     {
         // Arrange
         var record = CreateMedicalRecord(Guid.NewGuid(), Guid.NewGuid());
-        var context = new MedicalEncounterContext
-        {
-            ExpectedDoctor = null!,
-            Appointment = CreateAppointment(Guid.NewGuid(), _fakeTime.GetUtcNow().UtcDateTime),
-            AppointmentTypeDefinition = CreateAppointmentType(),
-            CompletedAt = _fakeTime.GetUtcNow().UtcDateTime,
-        };
 
         // Act
-        var act = () => _sut.ValidateAndCompleteRecord(record, context);
+        var act = () =>
+            _sut.ValidateAndCompleteRecord(
+                record,
+                CreateValidContext() with
+                {
+                    ExpectedDoctor = null!,
+                }
+            );
 
         // Assert
         act.Should()
@@ -95,20 +85,20 @@ public class MedicalEncounterServiceTests
     }
 
     [Fact]
-    public void ValidateAndCompleteRecord_ShouldThrowBusinessRuleValidationException_WhenAppointmentIsNull()
+    public void ValidateAndCompleteRecord_ShouldThrowDomainValidationException_WhenAppointmentIsNull()
     {
         // Arrange
         var record = CreateMedicalRecord(Guid.NewGuid(), Guid.NewGuid());
-        var context = new MedicalEncounterContext
-        {
-            ExpectedDoctor = CreateDoctor(Guid.NewGuid()),
-            Appointment = null!,
-            AppointmentTypeDefinition = CreateAppointmentType(),
-            CompletedAt = _fakeTime.GetUtcNow().UtcDateTime,
-        };
 
         // Act
-        var act = () => _sut.ValidateAndCompleteRecord(record, context);
+        var act = () =>
+            _sut.ValidateAndCompleteRecord(
+                record,
+                CreateValidContext() with
+                {
+                    Appointment = null!,
+                }
+            );
 
         // Assert
         act.Should()
@@ -117,20 +107,20 @@ public class MedicalEncounterServiceTests
     }
 
     [Fact]
-    public void ValidateAndCompleteRecord_ShouldThrowBusinessRuleValidationException_WhenAppointmentTypeDefinitionIsNull()
+    public void ValidateAndCompleteRecord_ShouldThrowDomainValidationException_WhenAppointmentTypeDefinitionIsNull()
     {
         // Arrange
         var record = CreateMedicalRecord(Guid.NewGuid(), Guid.NewGuid());
-        var context = new MedicalEncounterContext
-        {
-            ExpectedDoctor = CreateDoctor(Guid.NewGuid()),
-            Appointment = CreateAppointment(Guid.NewGuid(), _fakeTime.GetUtcNow().UtcDateTime),
-            AppointmentTypeDefinition = null!,
-            CompletedAt = _fakeTime.GetUtcNow().UtcDateTime,
-        };
 
         // Act
-        var act = () => _sut.ValidateAndCompleteRecord(record, context);
+        var act = () =>
+            _sut.ValidateAndCompleteRecord(
+                record,
+                CreateValidContext() with
+                {
+                    AppointmentTypeDefinition = null!,
+                }
+            );
 
         // Assert
         act.Should()
@@ -359,6 +349,15 @@ public class MedicalEncounterServiceTests
         public string TemplateCode => "Test2";
         public string JsonDataPayload => string.Empty;
     }
+
+    private MedicalEncounterContext CreateValidContext() =>
+        new()
+        {
+            ExpectedDoctor = CreateDoctor(Guid.NewGuid()),
+            Appointment = CreateAppointment(Guid.NewGuid(), _fakeTime.GetUtcNow().UtcDateTime),
+            AppointmentTypeDefinition = CreateAppointmentType(),
+            CompletedAt = _fakeTime.GetUtcNow().UtcDateTime,
+        };
 
     private static MedicalRecord CreateMedicalRecord(Guid doctorId, Guid appointmentId)
     {

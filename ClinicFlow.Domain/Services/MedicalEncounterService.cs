@@ -23,13 +23,13 @@ public class MedicalEncounterService(
     {
         if (record is null)
             throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
-        if (context is null)
-            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
-        if (context.ExpectedDoctor is null)
-            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
-        if (context.Appointment is null)
-            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
-        if (context.AppointmentTypeDefinition is null)
+
+        if (
+            context is null
+            || context.ExpectedDoctor is null
+            || context.Appointment is null
+            || context.AppointmentTypeDefinition is null
+        )
             throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
 
         if (record.DoctorId != context.ExpectedDoctor.Id)
@@ -58,11 +58,7 @@ public class MedicalEncounterService(
         ClinicalFormTemplate template
     )
     {
-        if (record is null)
-            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
-        if (newDetail is null)
-            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
-        if (template is null)
+        if (record is null || newDetail is null || template is null)
             throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
 
         if (newDetail.TemplateCode != template.Code)
