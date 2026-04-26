@@ -36,9 +36,7 @@ public record PenaltyHistory
         );
 
     /// <summary>
-    /// Determines the appropriate block duration for the next penalty
-    /// based on the number of historical blocks, escalating from
-    /// <see cref="BlockDuration.Minor"/> to <see cref="BlockDuration.Moderate"/> and capping at <see cref="BlockDuration.Severe"/>.
+    /// Evaluates historical offenses to escalate the penalty, capping the maximum duration at <see cref="BlockDuration.Severe"/>.
     /// </summary>
     public BlockDuration DetermineNextBlockDuration()
     {
