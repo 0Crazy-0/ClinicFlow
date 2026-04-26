@@ -17,7 +17,7 @@ public record TimeRange
         End = end;
     }
 
-    internal static TimeRange Create(TimeSpan start, TimeSpan end)
+    public static TimeRange Create(TimeSpan start, TimeSpan end)
     {
         if (start >= end)
             throw new InvalidTimeRangeException(DomainErrors.Schedule.InvalidTimeRange);
