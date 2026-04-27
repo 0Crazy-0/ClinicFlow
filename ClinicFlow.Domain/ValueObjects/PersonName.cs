@@ -12,7 +12,7 @@ public record PersonName
         FullName = fullName;
     }
 
-    internal static PersonName Create(string fullName)
+    public static PersonName Create(string fullName)
     {
         if (string.IsNullOrWhiteSpace(fullName))
             throw new BusinessRuleValidationException(DomainErrors.Validation.ValueRequired);
