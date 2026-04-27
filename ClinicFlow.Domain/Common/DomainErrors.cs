@@ -23,6 +23,9 @@ public static class DomainErrors
         public const string InvalidPhoneFormat = "INVALID_PHONE_FORMAT";
         public const string InvalidBloodType = "INVALID_BLOOD_TYPE";
         public const string InvalidFormat = "INVALID_FORMAT";
+        public const string StartTimeMustBeBeforeEndTime = "START_TIME_MUST_BE_BEFORE_END_TIME";
+        public const string EndTimeMustBeAfterStartTime = "END_TIME_MUST_BE_AFTER_START_TIME";
+        public const string InvalidDateRange = "INVALID_DATE_RANGE";
     }
 
     public static class Appointment
