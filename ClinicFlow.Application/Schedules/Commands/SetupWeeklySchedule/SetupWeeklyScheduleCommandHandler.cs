@@ -25,11 +25,9 @@ public sealed class SetupWeeklyScheduleCommandHandler(
             .Slots.Select(s => new WeeklyScheduleSlot(s.DayOfWeek, s.StartTime, s.EndTime))
             .ToList();
 
-        var schedules = WeeklyScheduleSetupService.SetupWeeklySchedule(
-            request.DoctorId,
-            existingSchedules,
-            slots
-        );
+        var schedules = WeeklyScheduleSetupService
+            .SetupWeeklySchedule(request.DoctorId, existingSchedules, slots)
+            .ToList();
 
         await scheduleRepository.CreateRangeAsync(schedules, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);

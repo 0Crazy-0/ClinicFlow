@@ -24,7 +24,7 @@ public class WeeklyScheduleSetupServiceTests
         };
 
         // Act
-        var result = WeeklyScheduleSetupService.SetupWeeklySchedule(doctorId, [], slots);
+        var result = WeeklyScheduleSetupService.SetupWeeklySchedule(doctorId, [], slots).ToList();
 
         // Assert
         result.Should().HaveCount(3);
@@ -93,11 +93,9 @@ public class WeeklyScheduleSetupServiceTests
         };
 
         // Act
-        var result = WeeklyScheduleSetupService.SetupWeeklySchedule(
-            doctorId,
-            existingSchedules,
-            slots
-        );
+        var result = WeeklyScheduleSetupService
+            .SetupWeeklySchedule(doctorId, existingSchedules, slots)
+            .ToList();
 
         // Assert
         result.Should().HaveCount(1);
