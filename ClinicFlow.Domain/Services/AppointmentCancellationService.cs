@@ -25,6 +25,15 @@ public static class AppointmentCancellationService
         PatientCancellationArgs args
     )
     {
+        if (appointment is null)
+            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+
+        if (args is null || args.TargetPatient is null)
+            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+
+        if (context is null || context.Specialty is null)
+            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+
         if (appointment.PatientId != args.TargetPatient.Id)
             throw new DomainValidationException(DomainErrors.Appointment.DataMismatch);
 
@@ -58,6 +67,9 @@ public static class AppointmentCancellationService
 
     public static void CancelByDoctor(Appointment appointment, DoctorCancellationArgs args)
     {
+        if (appointment is null)
+            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+
         if (args.InitiatorDoctorId != appointment.DoctorId)
             throw new AppointmentCancellationUnauthorizedException(
                 DomainErrors.Appointment.UnauthorizedCancellation
@@ -68,6 +80,9 @@ public static class AppointmentCancellationService
 
     public static void CancelByStaff(Appointment appointment, StaffCancellationArgs args)
     {
+        if (appointment is null)
+            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+
         if (string.IsNullOrWhiteSpace(args.Reason))
             throw new BusinessRuleValidationException(
                 DomainErrors.Appointment.MissingCancellationReason

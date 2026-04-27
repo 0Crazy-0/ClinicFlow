@@ -19,6 +19,27 @@ public class AppointmentCancellationServiceTests
     private readonly FakeTimeProvider _fakeTime = new();
 
     [Fact]
+    public void CancelByStaff_ShouldThrowDomainValidationException_WhenAppointmentIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentCancellationService.CancelByStaff(
+                null!,
+                new StaffCancellationArgs
+                {
+                    InitiatorUserId = Guid.NewGuid(),
+                    Reason = "Valid reason",
+                    CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
+                }
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
     public void CancelByStaff_ShouldSucceed_WhenAdmin()
     {
         // Arrange
@@ -92,6 +113,28 @@ public class AppointmentCancellationServiceTests
     }
 
     [Fact]
+    public void CancelByDoctor_ShouldThrowDomainValidationException_WhenAppointmentIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentCancellationService.CancelByDoctor(
+                null!,
+                new DoctorCancellationArgs
+                {
+                    InitiatorDoctorId = Guid.NewGuid(),
+                    InitiatorUserId = Guid.NewGuid(),
+                    Reason = "Valid reason",
+                    CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
+                }
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
     public void CancelByDoctor_ShouldSucceed_WhenDoctorCancelsOwnAppointment()
     {
         // Arrange
@@ -122,6 +165,7 @@ public class AppointmentCancellationServiceTests
             .WithScheduledDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2))
             .Build();
         var doctor = CreateDoctor(Guid.NewGuid(), Guid.NewGuid());
+
         var args = new DoctorCancellationArgs
         {
             InitiatorDoctorId = doctor.Id,
@@ -137,6 +181,105 @@ public class AppointmentCancellationServiceTests
         act.Should()
             .Throw<AppointmentCancellationUnauthorizedException>()
             .WithMessage(DomainErrors.Appointment.UnauthorizedCancellation);
+    }
+
+    [Fact]
+    public void CancelByPatient_ShouldThrowDomainValidationException_WhenAppointmentIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentCancellationService.CancelByPatient(
+                null!,
+                CreateValidCancellationContext(),
+                CreateValidPatientCancellationArgs()
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
+    public void CancelByPatient_ShouldThrowDomainValidationException_WhenArgsIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentCancellationService.CancelByPatient(
+                new AppointmentBuilder()
+                    .WithScheduledDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2))
+                    .Build(),
+                CreateValidCancellationContext(),
+                null!
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
+    public void CancelByPatient_ShouldThrowDomainValidationException_WhenTargetPatientIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentCancellationService.CancelByPatient(
+                new AppointmentBuilder()
+                    .WithScheduledDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2))
+                    .Build(),
+                CreateValidCancellationContext(),
+                CreateValidPatientCancellationArgs() with
+                {
+                    TargetPatient = null!,
+                }
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
+    public void CancelByPatient_ShouldThrowDomainValidationException_WhenContextIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentCancellationService.CancelByPatient(
+                new AppointmentBuilder()
+                    .WithScheduledDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2))
+                    .Build(),
+                null!,
+                CreateValidPatientCancellationArgs()
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
+    public void CancelByPatient_ShouldThrowDomainValidationException_WhenContextSpecialtyIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentCancellationService.CancelByPatient(
+                new AppointmentBuilder()
+                    .WithScheduledDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2))
+                    .Build(),
+                CreateValidCancellationContext() with
+                {
+                    Specialty = null!,
+                },
+                CreateValidPatientCancellationArgs()
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 
     [Theory]
@@ -616,4 +759,26 @@ public class AppointmentCancellationServiceTests
         doctor.SetId(id);
         return doctor;
     }
+
+    private PatientCancellationArgs CreateValidPatientCancellationArgs()
+    {
+        var userId = Guid.NewGuid();
+        var patient = CreateSelfPatient(
+            Guid.NewGuid(),
+            userId,
+            30,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        return new PatientCancellationArgs
+        {
+            TargetPatient = patient,
+            InitiatorPatientId = patient.UserId,
+            Reason = "Valid reason",
+            CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
+        };
+    }
+
+    private AppointmentCancellationContext CreateValidCancellationContext() =>
+        new() { Category = AppointmentCategory.Checkup, Specialty = CreateSpecialty(24) };
 }
