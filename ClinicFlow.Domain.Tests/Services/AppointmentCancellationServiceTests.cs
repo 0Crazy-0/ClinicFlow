@@ -779,6 +779,6 @@ public class AppointmentCancellationServiceTests
         };
     }
 
-    private AppointmentCancellationContext CreateValidCancellationContext() =>
+    private static AppointmentCancellationContext CreateValidCancellationContext() =>
         new() { Category = AppointmentCategory.Checkup, Specialty = CreateSpecialty(24) };
 }
