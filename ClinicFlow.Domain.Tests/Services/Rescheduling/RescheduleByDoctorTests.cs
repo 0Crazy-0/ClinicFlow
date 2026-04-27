@@ -255,7 +255,7 @@ public class RescheduleByDoctorTests
         appointment.TimeRange.Should().Be(args.NewTimeRange);
     }
 
-    private DoctorReschedulingArgs CreateValidDoctorReschedulingArgs() =>
+    private static DoctorReschedulingArgs CreateValidDoctorReschedulingArgs() =>
         new()
         {
             InitiatorDoctor = CreateDoctor(Guid.NewGuid(), Guid.NewGuid()),
