@@ -29,7 +29,7 @@ public class GetDoctorByIdQueryHandlerTests
             MedicalLicenseNumber.Create("12345"),
             Guid.NewGuid(),
             "Cardiologist with 10 years of experience",
-            101
+            ConsultationRoom.Create(1, "Cardiology A", 3)
         );
 
         _doctorRepositoryMock
@@ -46,7 +46,9 @@ public class GetDoctorByIdQueryHandlerTests
         result.MedicalSpecialtyId.Should().Be(doctor.MedicalSpecialtyId);
         result.LicenseNumber.Should().Be("12345");
         result.Biography.Should().Be("Cardiologist with 10 years of experience");
-        result.ConsultationRoomNumber.Should().Be(101);
+        result.ConsultationRoomNumber.Should().Be(1);
+        result.ConsultationRoomName.Should().Be("Cardiology A");
+        result.ConsultationRoomFloor.Should().Be(3);
     }
 
     [Fact]

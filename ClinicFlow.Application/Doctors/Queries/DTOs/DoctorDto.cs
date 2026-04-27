@@ -6,5 +6,7 @@ public sealed record DoctorDto(
     Guid MedicalSpecialtyId,
     string LicenseNumber,
     string Biography,
-    int ConsultationRoomNumber
+    int ConsultationRoomNumber,
+    string ConsultationRoomName,
+    int ConsultationRoomFloor
 );

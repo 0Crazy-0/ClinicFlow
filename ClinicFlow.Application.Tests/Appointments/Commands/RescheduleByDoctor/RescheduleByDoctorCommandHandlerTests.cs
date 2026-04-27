@@ -160,7 +160,7 @@ public class RescheduleByDoctorCommandHandlerTests
             MedicalLicenseNumber.Create("1234567"),
             specialtyId,
             "555-1234",
-            101
+            ConsultationRoom.Create(1, "Room A", 1)
         );
         doctor.SetId(id);
         return doctor;

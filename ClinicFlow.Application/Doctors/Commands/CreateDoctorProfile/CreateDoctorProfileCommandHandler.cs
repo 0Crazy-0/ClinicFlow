@@ -16,12 +16,18 @@ public sealed class CreateDoctorProfileCommandHandler(
         CancellationToken cancellationToken
     )
     {
+        var consultationRoom = ConsultationRoom.Create(
+            request.ConsultationRoomNumber,
+            request.ConsultationRoomName,
+            request.ConsultationRoomFloor
+        );
+
         var doctor = Doctor.Create(
             request.UserId,
             MedicalLicenseNumber.Create(request.LicenseNumber),
             request.MedicalSpecialtyId,
             request.Biography,
-            request.ConsultationRoomNumber
+            consultationRoom
         );
 
         await doctorRepository.CreateAsync(doctor, cancellationToken);

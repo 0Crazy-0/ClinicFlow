@@ -17,7 +17,7 @@ public class Doctor : BaseEntity
 
     public string Biography { get; private set; } = string.Empty;
 
-    public int ConsultationRoomNumber { get; private set; }
+    public ConsultationRoom ConsultationRoom { get; private set; } = null!;
 
     // EF Core constructor
     private Doctor() { }
@@ -27,14 +27,14 @@ public class Doctor : BaseEntity
         MedicalLicenseNumber licenseNumber,
         Guid medicalSpecialtyId,
         string biography,
-        int consultationRoomNumber
+        ConsultationRoom consultationRoom
     )
     {
         UserId = userId;
         LicenseNumber = licenseNumber;
         MedicalSpecialtyId = medicalSpecialtyId;
         Biography = biography;
-        ConsultationRoomNumber = consultationRoomNumber;
+        ConsultationRoom = consultationRoom;
     }
 
     public static Doctor Create(
@@ -42,31 +42,20 @@ public class Doctor : BaseEntity
         MedicalLicenseNumber licenseNumber,
         Guid medicalSpecialtyId,
         string biography,
-        int consultationRoomNumber
+        ConsultationRoom consultationRoom
     )
     {
         if (userId == Guid.Empty)
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
         if (medicalSpecialtyId == Guid.Empty)
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-        if (consultationRoomNumber <= 0)
-            throw new DomainValidationException(DomainErrors.Validation.ValueMustBePositive);
 
-        return new Doctor(
-            userId,
-            licenseNumber,
-            medicalSpecialtyId,
-            biography,
-            consultationRoomNumber
-        );
+        return new Doctor(userId, licenseNumber, medicalSpecialtyId, biography, consultationRoom);
     }
 
-    public void UpdateProfile(string biography, int consultationRoomNumber)
+    public void UpdateProfile(string biography, ConsultationRoom consultationRoom)
     {
-        if (consultationRoomNumber <= 0)
-            throw new DomainValidationException(DomainErrors.Validation.ValueMustBePositive);
-
         Biography = biography;
-        ConsultationRoomNumber = consultationRoomNumber;
+        ConsultationRoom = consultationRoom;
     }
 }

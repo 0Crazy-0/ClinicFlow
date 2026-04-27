@@ -29,7 +29,9 @@ public sealed class GetDoctorByUserIdQueryHandler(IDoctorRepository doctorReposi
             doctor.MedicalSpecialtyId,
             doctor.LicenseNumber.Value,
             doctor.Biography,
-            doctor.ConsultationRoomNumber
+            doctor.ConsultationRoom.Number,
+            doctor.ConsultationRoom.Name,
+            doctor.ConsultationRoom.Floor
         );
     }
 }

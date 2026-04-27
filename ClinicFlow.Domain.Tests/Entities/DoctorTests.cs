@@ -16,10 +16,10 @@ public class DoctorTests
         var licenseNumber = MedicalLicenseNumber.Create("12345");
         var specialtyId = Guid.NewGuid();
         var biography = "Cardiologist with 10 years of experience";
-        var roomNumber = 101;
+        var room = ConsultationRoom.Create(1, "Cardiology A", 3);
 
         // Act
-        var doctor = Doctor.Create(userId, licenseNumber, specialtyId, biography, roomNumber);
+        var doctor = Doctor.Create(userId, licenseNumber, specialtyId, biography, room);
 
         // Assert
         doctor.Should().NotBeNull();
@@ -27,31 +27,7 @@ public class DoctorTests
         doctor.LicenseNumber.Should().Be(licenseNumber);
         doctor.MedicalSpecialtyId.Should().Be(specialtyId);
         doctor.Biography.Should().Be(biography);
-        doctor.ConsultationRoomNumber.Should().Be(roomNumber);
-    }
-
-    [Theory]
-    [InlineData(0)]
-    [InlineData(-1)]
-    [InlineData(-100)]
-    public void Create_ShouldThrowException_WhenConsultationRoomNumberIsZeroOrNegative(
-        int roomNumber
-    )
-    {
-        // Arrange & Act
-        var act = () =>
-            Doctor.Create(
-                Guid.NewGuid(),
-                MedicalLicenseNumber.Create("12345"),
-                Guid.NewGuid(),
-                "Biography",
-                roomNumber
-            );
-
-        // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.Validation.ValueMustBePositive);
+        doctor.ConsultationRoom.Should().Be(room);
     }
 
     [Fact]
@@ -64,7 +40,7 @@ public class DoctorTests
                 MedicalLicenseNumber.Create("12345"),
                 Guid.NewGuid(),
                 "Biography",
-                101
+                ConsultationRoom.Create(1, "Room A", 1)
             );
 
         // Assert
@@ -83,7 +59,7 @@ public class DoctorTests
                 MedicalLicenseNumber.Create("12345"),
                 Guid.Empty,
                 "Biography",
-                101
+                ConsultationRoom.Create(1, "Room A", 1)
             );
 
         // Assert
@@ -93,7 +69,7 @@ public class DoctorTests
     }
 
     [Fact]
-    public void UpdateProfile_ShouldUpdateBiographyAndRoomNumber_WhenValidParameters()
+    public void UpdateProfile_ShouldUpdateBiographyAndConsultationRoom_WhenValidParameters()
     {
         // Arrange
         var doctor = Doctor.Create(
@@ -101,43 +77,17 @@ public class DoctorTests
             MedicalLicenseNumber.Create("12345"),
             Guid.NewGuid(),
             "Original biography",
-            101
+            ConsultationRoom.Create(1, "Room A", 1)
         );
 
         var newBiography = "Updated biography with new certifications";
-        var newRoomNumber = 205;
+        var newRoom = ConsultationRoom.Create(2, "Dermatology B", 5);
 
         // Act
-        doctor.UpdateProfile(newBiography, newRoomNumber);
+        doctor.UpdateProfile(newBiography, newRoom);
 
         // Assert
         doctor.Biography.Should().Be(newBiography);
-        doctor.ConsultationRoomNumber.Should().Be(newRoomNumber);
-    }
-
-    [Theory]
-    [InlineData(0)]
-    [InlineData(-1)]
-    [InlineData(-100)]
-    public void UpdateProfile_ShouldThrowException_WhenConsultationRoomNumberIsZeroOrNegative(
-        int roomNumber
-    )
-    {
-        // Arrange
-        var doctor = Doctor.Create(
-            Guid.NewGuid(),
-            MedicalLicenseNumber.Create("12345"),
-            Guid.NewGuid(),
-            "Biography",
-            101
-        );
-
-        // Act
-        var act = () => doctor.UpdateProfile("New biography", roomNumber);
-
-        // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.Validation.ValueMustBePositive);
+        doctor.ConsultationRoom.Should().Be(newRoom);
     }
 }

@@ -3,6 +3,7 @@ using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
+using ClinicFlow.Domain.ValueObjects;
 using MediatR;
 
 namespace ClinicFlow.Application.Doctors.Commands.UpdateDoctorProfile;
@@ -25,7 +26,13 @@ public sealed class UpdateDoctorProfileCommandHandler(
                 request.DoctorId
             );
 
-        doctor.UpdateProfile(request.Biography, request.ConsultationRoomNumber);
+        var consultationRoom = ConsultationRoom.Create(
+            request.ConsultationRoomNumber,
+            request.ConsultationRoomName,
+            request.ConsultationRoomFloor
+        );
+
+        doctor.UpdateProfile(request.Biography, consultationRoom);
 
         await doctorRepository.UpdateAsync(doctor, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);

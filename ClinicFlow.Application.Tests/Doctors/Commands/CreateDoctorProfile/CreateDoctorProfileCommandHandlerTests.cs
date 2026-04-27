@@ -32,7 +32,9 @@ public class CreateDoctorProfileCommandHandlerTests
             "12345",
             Guid.NewGuid(),
             "Cardiologist with 10 years of experience",
-            101
+            1,
+            "Cardiology A",
+            3
         );
 
         Doctor? capturedDoctor = null;
@@ -50,7 +52,9 @@ public class CreateDoctorProfileCommandHandlerTests
         capturedDoctor.LicenseNumber.Value.Should().Be(command.LicenseNumber);
         capturedDoctor.MedicalSpecialtyId.Should().Be(command.MedicalSpecialtyId);
         capturedDoctor.Biography.Should().Be(command.Biography);
-        capturedDoctor.ConsultationRoomNumber.Should().Be(command.ConsultationRoomNumber);
+        capturedDoctor.ConsultationRoom.Number.Should().Be(command.ConsultationRoomNumber);
+        capturedDoctor.ConsultationRoom.Name.Should().Be(command.ConsultationRoomName);
+        capturedDoctor.ConsultationRoom.Floor.Should().Be(command.ConsultationRoomFloor);
     }
 
     [Fact]
@@ -62,7 +66,9 @@ public class CreateDoctorProfileCommandHandlerTests
             "12345",
             Guid.NewGuid(),
             "Biography",
-            101
+            1,
+            "Room A",
+            1
         );
 
         _doctorRepositoryMock

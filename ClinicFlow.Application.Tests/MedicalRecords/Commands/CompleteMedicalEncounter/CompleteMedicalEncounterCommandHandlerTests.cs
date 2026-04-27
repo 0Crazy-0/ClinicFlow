@@ -213,7 +213,7 @@ public class CompleteMedicalEncounterCommandHandlerTests
             MedicalLicenseNumber.Create("RM-12345"),
             Guid.NewGuid(),
             "Bio",
-            101
+            ConsultationRoom.Create(1, "Room A", 1)
         );
         doctor.SetId(id);
         return doctor;

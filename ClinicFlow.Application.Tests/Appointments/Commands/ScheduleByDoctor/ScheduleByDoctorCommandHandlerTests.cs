@@ -199,7 +199,13 @@ public class ScheduleByDoctorCommandHandlerTests
     }
 
     private static Doctor CreateDoctor(Guid userId, Guid specialtyId) =>
-        Doctor.Create(userId, MedicalLicenseNumber.Create("1234567"), specialtyId, "555-1234", 101);
+        Doctor.Create(
+            userId,
+            MedicalLicenseNumber.Create("1234567"),
+            specialtyId,
+            "555-1234",
+            ConsultationRoom.Create(1, "Room A", 1)
+        );
 
     private static Patient CreateTargetPatient(Guid userId) =>
         Patient.CreateSelf(

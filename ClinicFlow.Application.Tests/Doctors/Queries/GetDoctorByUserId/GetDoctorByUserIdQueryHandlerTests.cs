@@ -30,7 +30,7 @@ public class GetDoctorByUserIdQueryHandlerTests
             MedicalLicenseNumber.Create("67890"),
             Guid.NewGuid(),
             "Dermatologist specialized in skin cancer detection",
-            205
+            ConsultationRoom.Create(2, "Dermatology B", 5)
         );
 
         _doctorRepositoryMock
@@ -46,7 +46,9 @@ public class GetDoctorByUserIdQueryHandlerTests
         result.UserId.Should().Be(userId);
         result.LicenseNumber.Should().Be("67890");
         result.Biography.Should().Be("Dermatologist specialized in skin cancer detection");
-        result.ConsultationRoomNumber.Should().Be(205);
+        result.ConsultationRoomNumber.Should().Be(2);
+        result.ConsultationRoomName.Should().Be("Dermatology B");
+        result.ConsultationRoomFloor.Should().Be(5);
     }
 
     [Fact]
