@@ -18,7 +18,7 @@ public partial record PhoneNumber
         Value = value;
     }
 
-    internal static PhoneNumber Create(string number)
+    public static PhoneNumber Create(string number)
     {
         if (string.IsNullOrWhiteSpace(number))
             throw new BusinessRuleValidationException(DomainErrors.Validation.ValueRequired);
