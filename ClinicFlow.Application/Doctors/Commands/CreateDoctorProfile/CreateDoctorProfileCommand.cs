@@ -7,5 +7,7 @@ public sealed record CreateDoctorProfileCommand(
     string LicenseNumber,
     Guid MedicalSpecialtyId,
     string Biography,
-    int ConsultationRoomNumber
+    int ConsultationRoomNumber,
+    string ConsultationRoomName,
+    int ConsultationRoomFloor
 ) : IRequest<Guid>;

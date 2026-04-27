@@ -33,7 +33,9 @@ public class UpdateDoctorProfileCommandHandlerTests
         var command = new UpdateDoctorProfileCommand(
             Guid.NewGuid(),
             "Updated biography with new certifications",
-            205
+            5,
+            "Dermatology B",
+            5
         );
 
         var doctor = Doctor.Create(
@@ -41,7 +43,7 @@ public class UpdateDoctorProfileCommandHandlerTests
             MedicalLicenseNumber.Create("12345"),
             Guid.NewGuid(),
             "Original biography",
-            101
+            ConsultationRoom.Create(1, "Room A", 1)
         );
 
         _doctorRepositoryMock
@@ -59,14 +61,22 @@ public class UpdateDoctorProfileCommandHandlerTests
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
 
         doctor.Biography.Should().Be(command.Biography);
-        doctor.ConsultationRoomNumber.Should().Be(command.ConsultationRoomNumber);
+        doctor.ConsultationRoom.Number.Should().Be(command.ConsultationRoomNumber);
+        doctor.ConsultationRoom.Name.Should().Be(command.ConsultationRoomName);
+        doctor.ConsultationRoom.Floor.Should().Be(command.ConsultationRoomFloor);
     }
 
     [Fact]
     public async Task Handle_ShouldThrowException_WhenDoctorDoesNotExist()
     {
         // Arrange
-        var command = new UpdateDoctorProfileCommand(Guid.NewGuid(), "New biography", 205);
+        var command = new UpdateDoctorProfileCommand(
+            Guid.NewGuid(),
+            "New biography",
+            5,
+            "Room B",
+            5
+        );
 
         _doctorRepositoryMock
             .Setup(x => x.GetByIdAsync(command.DoctorId, It.IsAny<CancellationToken>()))

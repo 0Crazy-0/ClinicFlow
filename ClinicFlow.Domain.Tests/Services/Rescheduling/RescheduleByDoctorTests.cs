@@ -279,7 +279,7 @@ public class RescheduleByDoctorTests
             MedicalLicenseNumber.Create("12345"),
             Guid.NewGuid(),
             "555-0000",
-            101
+            ConsultationRoom.Create(101, "Room A", 1)
         );
         doctor.SetId(id);
         return doctor;

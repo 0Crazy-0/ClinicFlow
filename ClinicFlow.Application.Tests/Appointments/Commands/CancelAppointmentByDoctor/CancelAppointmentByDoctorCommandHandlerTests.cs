@@ -54,7 +54,7 @@ public class CancelAppointmentByDoctorCommandHandlerTests
             MedicalLicenseNumber.Create("1234567"),
             Guid.NewGuid(),
             "555-1234",
-            101
+            ConsultationRoom.Create(1, "Room A", 1)
         );
         doctor.SetId(doctorId);
 

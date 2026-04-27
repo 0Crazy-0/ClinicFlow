@@ -373,7 +373,7 @@ public class MedicalEncounterServiceTests
             MedicalLicenseNumber.Create("12345"),
             Guid.NewGuid(),
             "555-0000",
-            101
+            ConsultationRoom.Create(1, "Room A", 1)
         );
         doctor.SetId(id);
         return doctor;

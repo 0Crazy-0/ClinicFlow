@@ -154,7 +154,7 @@ public class MarkAppointmentAsNoShowByDoctorCommandHandlerTests
             MedicalLicenseNumber.Create("12345"),
             Guid.NewGuid(),
             "Room 1",
-            10
+            ConsultationRoom.Create(1, "Room 1", 1)
         );
         doctor.SetId(id);
         return doctor;
