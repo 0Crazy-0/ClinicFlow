@@ -1,3 +1,4 @@
+using ClinicFlow.Domain.Common;
 using FluentValidation;
 
 namespace ClinicFlow.Application.MedicalRecords.Commands.CompleteMedicalEncounter;
@@ -7,13 +8,15 @@ public class CompleteMedicalEncounterCommandValidator
 {
     public CompleteMedicalEncounterCommandValidator()
     {
-        RuleFor(x => x.PatientId).NotEmpty().WithMessage("Patient ID is required.");
+        RuleFor(x => x.PatientId).NotEmpty().WithMessage(DomainErrors.Validation.ValueRequired);
 
-        RuleFor(x => x.DoctorId).NotEmpty().WithMessage("Doctor ID is required.");
+        RuleFor(x => x.DoctorId).NotEmpty().WithMessage(DomainErrors.Validation.ValueRequired);
 
-        RuleFor(x => x.AppointmentId).NotEmpty().WithMessage("Appointment ID is required.");
+        RuleFor(x => x.AppointmentId).NotEmpty().WithMessage(DomainErrors.Validation.ValueRequired);
 
-        RuleFor(x => x.ChiefComplaint).NotEmpty().WithMessage("Chief complaint is required.");
+        RuleFor(x => x.ChiefComplaint)
+            .NotEmpty()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
 
         RuleForEach(x => x.Details)
             .ChildRules(details =>
@@ -21,11 +24,11 @@ public class CompleteMedicalEncounterCommandValidator
                 details
                     .RuleFor(d => d.TemplateCode)
                     .NotEmpty()
-                    .WithMessage("Template code is required for each clinical detail.");
+                    .WithMessage(DomainErrors.Validation.ValueRequired);
                 details
                     .RuleFor(d => d.JsonDataPayload)
                     .NotEmpty()
-                    .WithMessage("JSON data payload is required for each clinical detail.");
+                    .WithMessage(DomainErrors.Validation.ValueRequired);
             });
     }
 }
