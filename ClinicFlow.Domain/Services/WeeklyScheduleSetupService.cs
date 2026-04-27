@@ -11,7 +11,7 @@ namespace ClinicFlow.Domain.Services;
 public static class WeeklyScheduleSetupService
 {
     /// <returns>A list of newly created <see cref="Schedule"/> entities ready for persistence.</returns>
-    public static IReadOnlyList<Schedule> SetupWeeklySchedule(
+    public static IEnumerable<Schedule> SetupWeeklySchedule(
         Guid doctorId,
         IReadOnlyList<Schedule> existingSchedules,
         IReadOnlyList<WeeklyScheduleSlot> slots
