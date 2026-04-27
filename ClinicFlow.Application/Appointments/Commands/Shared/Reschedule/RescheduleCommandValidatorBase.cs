@@ -1,3 +1,4 @@
+using ClinicFlow.Domain.Common;
 using FluentValidation;
 
 namespace ClinicFlow.Application.Appointments.Commands.Shared.Reschedule;
@@ -11,12 +12,12 @@ public abstract class RescheduleCommandValidatorBase<TCommand> : AbstractValidat
         RuleFor(x => x.AppointmentId).NotEmpty();
         RuleFor(x => x.NewDate)
             .GreaterThanOrEqualTo(DateTime.UtcNow.Date)
-            .WithMessage("Scheduled date cannot be in the past.");
+            .WithMessage(DomainErrors.Validation.ValueMustBeInFuture);
         RuleFor(x => x.NewStartTime)
             .LessThan(x => x.NewEndTime)
-            .WithMessage("Start time must be before end time.");
+            .WithMessage(DomainErrors.Validation.StartTimeMustBeBeforeEndTime);
         RuleFor(x => x.NewEndTime)
             .GreaterThan(x => x.NewStartTime)
-            .WithMessage("End time must be after start time.");
+            .WithMessage(DomainErrors.Validation.EndTimeMustBeAfterStartTime);
     }
 }

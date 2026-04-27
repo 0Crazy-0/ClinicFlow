@@ -1,4 +1,5 @@
 using ClinicFlow.Application.Appointments.Commands.Shared.Schedule;
+using ClinicFlow.Domain.Common;
 using FluentValidation.TestHelper;
 
 namespace ClinicFlow.Application.Tests.Appointments.Commands.Shared.Schedule;
@@ -120,7 +121,9 @@ public class ScheduleCommandValidatorBaseTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.ScheduledDate);
+        result
+            .ShouldHaveValidationErrorFor(x => x.ScheduledDate)
+            .WithErrorMessage(DomainErrors.Validation.ValueMustBeInFuture);
     }
 
     [Fact]
@@ -140,7 +143,11 @@ public class ScheduleCommandValidatorBaseTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.StartTime);
-        result.ShouldHaveValidationErrorFor(x => x.EndTime);
+        result
+            .ShouldHaveValidationErrorFor(x => x.StartTime)
+            .WithErrorMessage(DomainErrors.Validation.StartTimeMustBeBeforeEndTime);
+        result
+            .ShouldHaveValidationErrorFor(x => x.EndTime)
+            .WithErrorMessage(DomainErrors.Validation.EndTimeMustBeAfterStartTime);
     }
 }

@@ -1,4 +1,5 @@
 using ClinicFlow.Application.Appointments.Commands.Shared.Reschedule;
+using ClinicFlow.Domain.Common;
 using FluentValidation.TestHelper;
 
 namespace ClinicFlow.Application.Tests.Appointments.Commands.Shared.Reschedule;
@@ -96,7 +97,9 @@ public class RescheduleCommandValidatorBaseTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.NewDate);
+        result
+            .ShouldHaveValidationErrorFor(x => x.NewDate)
+            .WithErrorMessage(DomainErrors.Validation.ValueMustBeInFuture);
     }
 
     [Fact]
@@ -115,7 +118,11 @@ public class RescheduleCommandValidatorBaseTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.NewStartTime);
-        result.ShouldHaveValidationErrorFor(x => x.NewEndTime);
+        result
+            .ShouldHaveValidationErrorFor(x => x.NewStartTime)
+            .WithErrorMessage(DomainErrors.Validation.StartTimeMustBeBeforeEndTime);
+        result
+            .ShouldHaveValidationErrorFor(x => x.NewEndTime)
+            .WithErrorMessage(DomainErrors.Validation.EndTimeMustBeAfterStartTime);
     }
 }
