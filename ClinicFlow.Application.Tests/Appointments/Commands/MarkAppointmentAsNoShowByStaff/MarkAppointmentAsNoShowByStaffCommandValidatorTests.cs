@@ -1,4 +1,5 @@
 using ClinicFlow.Application.Appointments.Commands.MarkAppointmentAsNoShowByStaff;
+using ClinicFlow.Domain.Common;
 using FluentValidation.TestHelper;
 
 namespace ClinicFlow.Application.Tests.Appointments.Commands.MarkAppointmentAsNoShowByStaff;
@@ -35,6 +36,8 @@ public class MarkAppointmentAsNoShowByStaffCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.AppointmentId);
+        result
+            .ShouldHaveValidationErrorFor(x => x.AppointmentId)
+            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
     }
 }

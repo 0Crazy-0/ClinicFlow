@@ -1,4 +1,5 @@
 using ClinicFlow.Application.Appointments.Commands.CheckInAppointmentByStaff;
+using ClinicFlow.Domain.Common;
 using FluentValidation.TestHelper;
 
 namespace ClinicFlow.Application.Tests.Appointments.Commands.CheckInAppointmentByStaff;
@@ -35,6 +36,8 @@ public class CheckInAppointmentByStaffCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.AppointmentId);
+        result
+            .ShouldHaveValidationErrorFor(x => x.AppointmentId)
+            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
     }
 }

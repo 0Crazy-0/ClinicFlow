@@ -1,3 +1,4 @@
+using ClinicFlow.Domain.Common;
 using FluentValidation;
 
 namespace ClinicFlow.Application.Appointments.Commands.MarkAppointmentAsNoShowByStaff;
@@ -7,6 +8,6 @@ public class MarkAppointmentAsNoShowByStaffCommandValidator
 {
     public MarkAppointmentAsNoShowByStaffCommandValidator()
     {
-        RuleFor(x => x.AppointmentId).NotEmpty().WithMessage("Appointment ID is required.");
+        RuleFor(x => x.AppointmentId).NotEmpty().WithMessage(DomainErrors.Validation.ValueRequired);
     }
 }

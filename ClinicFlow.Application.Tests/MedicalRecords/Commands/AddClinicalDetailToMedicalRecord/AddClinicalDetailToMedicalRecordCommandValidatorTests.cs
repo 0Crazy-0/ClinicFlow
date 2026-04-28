@@ -1,4 +1,5 @@
 using ClinicFlow.Application.MedicalRecords.Commands.AddClinicalDetailToMedicalRecord;
+using ClinicFlow.Domain.Common;
 using FluentValidation.TestHelper;
 
 namespace ClinicFlow.Application.Tests.MedicalRecords.Commands.AddClinicalDetailToMedicalRecord;
@@ -41,7 +42,7 @@ public class AddClinicalDetailToMedicalRecordCommandValidatorTests
         // Assert
         result
             .ShouldHaveValidationErrorFor(c => c.MedicalRecordId)
-            .WithErrorMessage("Medical Record ID is required.");
+            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Theory]
@@ -63,7 +64,7 @@ public class AddClinicalDetailToMedicalRecordCommandValidatorTests
         // Assert
         result
             .ShouldHaveValidationErrorFor(c => c.TemplateCode)
-            .WithErrorMessage("Template code is required for the clinical detail.");
+            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Theory]
@@ -85,6 +86,6 @@ public class AddClinicalDetailToMedicalRecordCommandValidatorTests
         // Assert
         result
             .ShouldHaveValidationErrorFor(c => c.JsonDataPayload)
-            .WithErrorMessage("JSON data payload is required for the clinical detail.");
+            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
     }
 }

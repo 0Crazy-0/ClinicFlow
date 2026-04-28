@@ -1,4 +1,5 @@
 using ClinicFlow.Application.MedicalRecords.Commands.CompleteMedicalEncounter;
+using ClinicFlow.Domain.Common;
 using FluentValidation.TestHelper;
 
 namespace ClinicFlow.Application.Tests.MedicalRecords.Commands.CompleteMedicalEncounter;
@@ -47,7 +48,9 @@ public class CompleteMedicalEncounterCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.PatientId);
+        result
+            .ShouldHaveValidationErrorFor(x => x.PatientId)
+            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Fact]
@@ -66,7 +69,9 @@ public class CompleteMedicalEncounterCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.DoctorId);
+        result
+            .ShouldHaveValidationErrorFor(x => x.DoctorId)
+            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Fact]
@@ -85,7 +90,9 @@ public class CompleteMedicalEncounterCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.AppointmentId);
+        result
+            .ShouldHaveValidationErrorFor(x => x.AppointmentId)
+            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Fact]
@@ -104,7 +111,9 @@ public class CompleteMedicalEncounterCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.ChiefComplaint);
+        result
+            .ShouldHaveValidationErrorFor(x => x.ChiefComplaint)
+            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Fact]
@@ -123,7 +132,9 @@ public class CompleteMedicalEncounterCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor("Details[0].TemplateCode");
+        result
+            .ShouldHaveValidationErrorFor("Details[0].TemplateCode")
+            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Fact]
@@ -142,6 +153,8 @@ public class CompleteMedicalEncounterCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor("Details[0].JsonDataPayload");
+        result
+            .ShouldHaveValidationErrorFor("Details[0].JsonDataPayload")
+            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
     }
 }
