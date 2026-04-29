@@ -14,6 +14,7 @@ public static class DomainErrors
     public static class Validation
     {
         public const string ValueRequired = "VALUE_REQUIRED";
+        public const string InvalidValue = "INVALID_VALUE";
         public const string ValueTooShort = "VALUE_TOO_SHORT";
         public const string ValueCannotBeNegative = "VALUE_CANNOT_BE_NEGATIVE";
         public const string ValueMustBePositive = "VALUE_MUST_BE_POSITIVE";
@@ -26,6 +27,9 @@ public static class DomainErrors
         public const string StartTimeMustBeBeforeEndTime = "START_TIME_MUST_BE_BEFORE_END_TIME";
         public const string EndTimeMustBeAfterStartTime = "END_TIME_MUST_BE_AFTER_START_TIME";
         public const string InvalidDateRange = "INVALID_DATE_RANGE";
+        public const string InvalidEnumValue = "INVALID_ENUM_VALUE";
+        public const string ValueTooLong = "VALUE_TOO_LONG";
+        public const string ValueExceedsMaximum = "VALUE_EXCEEDS_MAXIMUM";
     }
 
     public static class Appointment
