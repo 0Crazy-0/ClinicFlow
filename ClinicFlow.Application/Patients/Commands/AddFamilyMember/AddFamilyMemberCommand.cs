@@ -1,3 +1,4 @@
+using ClinicFlow.Application.Patients.Commands.Shared.CreatePatient;
 using ClinicFlow.Domain.Enums;
 using MediatR;
 
@@ -9,4 +10,4 @@ public sealed record AddFamilyMemberCommand(
     string LastName,
     DateTime DateOfBirth,
     PatientRelationship Relationship
-) : IRequest<Guid>;
+) : IRequest<Guid>, ICreatePatientCommand;
