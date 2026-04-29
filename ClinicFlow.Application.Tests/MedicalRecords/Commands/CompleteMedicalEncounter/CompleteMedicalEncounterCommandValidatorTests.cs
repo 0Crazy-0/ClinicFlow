@@ -50,7 +50,7 @@ public class CompleteMedicalEncounterCommandValidatorTests
         // Assert
         result
             .ShouldHaveValidationErrorFor(x => x.PatientId)
-            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
+            .WithErrorMessage(DomainErrors.Validation.InvalidValue);
     }
 
     [Fact]
@@ -71,7 +71,7 @@ public class CompleteMedicalEncounterCommandValidatorTests
         // Assert
         result
             .ShouldHaveValidationErrorFor(x => x.DoctorId)
-            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
+            .WithErrorMessage(DomainErrors.Validation.InvalidValue);
     }
 
     [Fact]
@@ -92,7 +92,7 @@ public class CompleteMedicalEncounterCommandValidatorTests
         // Assert
         result
             .ShouldHaveValidationErrorFor(x => x.AppointmentId)
-            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
+            .WithErrorMessage(DomainErrors.Validation.InvalidValue);
     }
 
     [Fact]

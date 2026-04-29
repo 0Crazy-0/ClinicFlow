@@ -1,4 +1,5 @@
 using ClinicFlow.Application.Patients.Commands.AddCompleteFamilyMember;
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Enums;
 using FluentValidation.TestHelper;
 
@@ -58,11 +59,13 @@ public class AddCompleteFamilyMemberCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.UserId);
+        result
+            .ShouldHaveValidationErrorFor(x => x.UserId)
+            .WithErrorMessage(DomainErrors.Validation.InvalidValue);
     }
 
     [Fact]
-    public void Validate_ShouldHaveError_WhenFirstNameIsEmptyOrTooShort()
+    public void Validate_ShouldHaveError_WhenFirstNameIsTooShort()
     {
         // Arrange
         var command = new AddCompleteFamilyMemberCommand(
@@ -82,7 +85,9 @@ public class AddCompleteFamilyMemberCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.FirstName);
+        result
+            .ShouldHaveValidationErrorFor(x => x.FirstName)
+            .WithErrorMessage(DomainErrors.Validation.ValueTooShort);
     }
 
     [Fact]
@@ -106,7 +111,9 @@ public class AddCompleteFamilyMemberCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.LastName);
+        result
+            .ShouldHaveValidationErrorFor(x => x.LastName)
+            .WithErrorMessage(DomainErrors.Validation.ValueTooShort);
     }
 
     [Fact]
@@ -130,7 +137,9 @@ public class AddCompleteFamilyMemberCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.DateOfBirth);
+        result
+            .ShouldHaveValidationErrorFor(x => x.DateOfBirth)
+            .WithErrorMessage(DomainErrors.Validation.ValueCannotBeInFuture);
     }
 
     [Fact]
@@ -154,7 +163,9 @@ public class AddCompleteFamilyMemberCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.BloodType);
+        result
+            .ShouldHaveValidationErrorFor(x => x.BloodType)
+            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Fact]
@@ -178,7 +189,9 @@ public class AddCompleteFamilyMemberCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.EmergencyContactName);
+        result
+            .ShouldHaveValidationErrorFor(x => x.EmergencyContactName)
+            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Fact]
@@ -202,7 +215,9 @@ public class AddCompleteFamilyMemberCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.EmergencyContactPhone);
+        result
+            .ShouldHaveValidationErrorFor(x => x.EmergencyContactPhone)
+            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Fact]
@@ -226,6 +241,8 @@ public class AddCompleteFamilyMemberCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.Relationship);
+        result
+            .ShouldHaveValidationErrorFor(x => x.Relationship)
+            .WithErrorMessage(DomainErrors.Validation.InvalidEnumValue);
     }
 }

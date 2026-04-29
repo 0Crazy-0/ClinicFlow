@@ -1,4 +1,5 @@
 using ClinicFlow.Application.AppointmentTypes.Queries.GetEligibleAppointmentTypes;
+using ClinicFlow.Domain.Common;
 using FluentValidation.TestHelper;
 
 namespace ClinicFlow.Application.Tests.AppointmentTypes.Queries.GetEligibleAppointmentTypes;
@@ -48,6 +49,8 @@ public class GetEligibleAppointmentTypesQueryValidatorTests
         var result = _sut.TestValidate(query);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.PatientAgeInYears);
+        result
+            .ShouldHaveValidationErrorFor(x => x.PatientAgeInYears)
+            .WithErrorMessage(DomainErrors.Validation.ValueCannotBeNegative);
     }
 }

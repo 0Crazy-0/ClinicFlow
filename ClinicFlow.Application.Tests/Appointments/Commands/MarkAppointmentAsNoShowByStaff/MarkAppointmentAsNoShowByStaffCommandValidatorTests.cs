@@ -38,6 +38,6 @@ public class MarkAppointmentAsNoShowByStaffCommandValidatorTests
         // Assert
         result
             .ShouldHaveValidationErrorFor(x => x.AppointmentId)
-            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
+            .WithErrorMessage(DomainErrors.Validation.InvalidValue);
     }
 }

@@ -1,4 +1,5 @@
 using ClinicFlow.Application.ClinicalFormTemplates.Commands.Shared;
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Services.Policies;
 using FluentValidation.TestHelper;
 using Moq;
@@ -78,7 +79,9 @@ public class ClinicalFormTemplateCommandValidatorBaseTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.Name);
+        result
+            .ShouldHaveValidationErrorFor(x => x.Name)
+            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Fact]
@@ -92,7 +95,9 @@ public class ClinicalFormTemplateCommandValidatorBaseTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.Name);
+        result
+            .ShouldHaveValidationErrorFor(x => x.Name)
+            .WithErrorMessage(DomainErrors.Validation.ValueTooLong);
     }
 
     [Fact]
@@ -106,7 +111,9 @@ public class ClinicalFormTemplateCommandValidatorBaseTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.Description);
+        result
+            .ShouldHaveValidationErrorFor(x => x.Description)
+            .WithErrorMessage(DomainErrors.Validation.ValueTooLong);
     }
 
     [Fact]
@@ -125,6 +132,8 @@ public class ClinicalFormTemplateCommandValidatorBaseTests
         var result = sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.JsonSchemaDefinition);
+        result
+            .ShouldHaveValidationErrorFor(x => x.JsonSchemaDefinition)
+            .WithErrorMessage(DomainErrors.Validation.InvalidFormat);
     }
 }

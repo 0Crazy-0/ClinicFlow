@@ -1,4 +1,5 @@
 using ClinicFlow.Application.MedicalRecords.Queries.GetClinicalDetailByTemplateCode;
+using ClinicFlow.Domain.Common;
 using FluentValidation.TestHelper;
 
 namespace ClinicFlow.Application.Tests.MedicalRecords.Queries.GetClinicalDetailByTemplateCode;
@@ -35,7 +36,9 @@ public class GetClinicalDetailByTemplateCodeQueryValidatorTests
         var result = _sut.TestValidate(query);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.MedicalRecordId);
+        result
+            .ShouldHaveValidationErrorFor(x => x.MedicalRecordId)
+            .WithErrorMessage(DomainErrors.Validation.InvalidValue);
     }
 
     [Theory]
@@ -51,6 +54,8 @@ public class GetClinicalDetailByTemplateCodeQueryValidatorTests
         var result = _sut.TestValidate(query);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.TemplateCode);
+        result
+            .ShouldHaveValidationErrorFor(x => x.TemplateCode)
+            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
     }
 }

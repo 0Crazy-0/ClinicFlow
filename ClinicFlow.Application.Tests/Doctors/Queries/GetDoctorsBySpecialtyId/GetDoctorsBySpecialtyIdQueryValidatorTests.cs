@@ -1,4 +1,5 @@
 using ClinicFlow.Application.Doctors.Queries.GetDoctorsBySpecialtyId;
+using ClinicFlow.Domain.Common;
 using FluentValidation.TestHelper;
 
 namespace ClinicFlow.Application.Tests.Doctors.Queries.GetDoctorsBySpecialtyId;
@@ -22,7 +23,9 @@ public class GetDoctorsBySpecialtyIdQueryValidatorTests
         var result = _sut.TestValidate(query);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.SpecialtyId);
+        result
+            .ShouldHaveValidationErrorFor(x => x.SpecialtyId)
+            .WithErrorMessage(DomainErrors.Validation.InvalidValue);
     }
 
     [Fact]

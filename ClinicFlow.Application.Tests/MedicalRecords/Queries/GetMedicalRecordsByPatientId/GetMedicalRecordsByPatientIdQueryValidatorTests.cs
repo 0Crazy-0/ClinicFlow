@@ -1,4 +1,5 @@
 using ClinicFlow.Application.MedicalRecords.Queries.GetMedicalRecordsByPatientId;
+using ClinicFlow.Domain.Common;
 using FluentValidation.TestHelper;
 
 namespace ClinicFlow.Application.Tests.MedicalRecords.Queries.GetMedicalRecordsByPatientId;
@@ -22,7 +23,9 @@ public class GetMedicalRecordsByPatientIdQueryValidatorTests
         var result = _sut.TestValidate(query);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.PatientId);
+        result
+            .ShouldHaveValidationErrorFor(x => x.PatientId)
+            .WithErrorMessage(DomainErrors.Validation.InvalidValue);
     }
 
     [Fact]

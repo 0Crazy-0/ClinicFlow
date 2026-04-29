@@ -38,7 +38,7 @@ public class StartAppointmentByDoctorCommandValidatorTests
         // Assert
         result
             .ShouldHaveValidationErrorFor(x => x.AppointmentId)
-            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
+            .WithErrorMessage(DomainErrors.Validation.InvalidValue);
     }
 
     [Fact]
@@ -53,6 +53,6 @@ public class StartAppointmentByDoctorCommandValidatorTests
         // Assert
         result
             .ShouldHaveValidationErrorFor(x => x.InitiatorUserId)
-            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
+            .WithErrorMessage(DomainErrors.Validation.InvalidValue);
     }
 }

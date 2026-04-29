@@ -1,4 +1,5 @@
 using ClinicFlow.Application.AppointmentTypes.Commands.DeleteAppointmentType;
+using ClinicFlow.Domain.Common;
 using FluentValidation.TestHelper;
 
 namespace ClinicFlow.Application.Tests.AppointmentTypes.Commands.DeleteAppointmentType;
@@ -35,6 +36,8 @@ public class DeleteAppointmentTypeCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.AppointmentTypeId);
+        result
+            .ShouldHaveValidationErrorFor(x => x.AppointmentTypeId)
+            .WithErrorMessage(DomainErrors.Validation.InvalidValue);
     }
 }

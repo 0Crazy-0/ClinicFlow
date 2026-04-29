@@ -1,4 +1,5 @@
 using ClinicFlow.Application.Patients.Commands.AddFamilyMember;
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Enums;
 using FluentValidation.TestHelper;
 
@@ -48,7 +49,9 @@ public class AddFamilyMemberCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.UserId);
+        result
+            .ShouldHaveValidationErrorFor(x => x.UserId)
+            .WithErrorMessage(DomainErrors.Validation.InvalidValue);
     }
 
     [Fact]
@@ -67,7 +70,9 @@ public class AddFamilyMemberCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.FirstName);
+        result
+            .ShouldHaveValidationErrorFor(x => x.FirstName)
+            .WithErrorMessage(DomainErrors.Validation.ValueTooShort);
     }
 
     [Fact]
@@ -86,7 +91,9 @@ public class AddFamilyMemberCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.LastName);
+        result
+            .ShouldHaveValidationErrorFor(x => x.LastName)
+            .WithErrorMessage(DomainErrors.Validation.ValueTooShort);
     }
 
     [Fact]
@@ -105,7 +112,9 @@ public class AddFamilyMemberCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.DateOfBirth);
+        result
+            .ShouldHaveValidationErrorFor(x => x.DateOfBirth)
+            .WithErrorMessage(DomainErrors.Validation.ValueCannotBeInFuture);
     }
 
     [Fact]
@@ -124,6 +133,8 @@ public class AddFamilyMemberCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.Relationship);
+        result
+            .ShouldHaveValidationErrorFor(x => x.Relationship)
+            .WithErrorMessage(DomainErrors.Validation.InvalidEnumValue);
     }
 }

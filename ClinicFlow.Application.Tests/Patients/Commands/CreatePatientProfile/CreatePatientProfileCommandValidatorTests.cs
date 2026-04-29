@@ -1,4 +1,5 @@
 using ClinicFlow.Application.Patients.Commands.CreatePatientProfile;
+using ClinicFlow.Domain.Common;
 using FluentValidation.TestHelper;
 
 namespace ClinicFlow.Application.Tests.Patients.Commands.CreatePatientProfile;
@@ -45,7 +46,9 @@ public class CreatePatientProfileCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.UserId);
+        result
+            .ShouldHaveValidationErrorFor(x => x.UserId)
+            .WithErrorMessage(DomainErrors.Validation.InvalidValue);
     }
 
     [Fact]
@@ -63,7 +66,9 @@ public class CreatePatientProfileCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.FirstName);
+        result
+            .ShouldHaveValidationErrorFor(x => x.FirstName)
+            .WithErrorMessage(DomainErrors.Validation.ValueTooShort);
     }
 
     [Fact]
@@ -81,7 +86,9 @@ public class CreatePatientProfileCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.LastName);
+        result
+            .ShouldHaveValidationErrorFor(x => x.LastName)
+            .WithErrorMessage(DomainErrors.Validation.ValueTooShort);
     }
 
     [Fact]
@@ -99,6 +106,8 @@ public class CreatePatientProfileCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.DateOfBirth);
+        result
+            .ShouldHaveValidationErrorFor(x => x.DateOfBirth)
+            .WithErrorMessage(DomainErrors.Validation.ValueCannotBeInFuture);
     }
 }

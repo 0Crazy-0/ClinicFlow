@@ -1,4 +1,5 @@
 using ClinicFlow.Application.ClinicalFormTemplates.Commands.UpdateClinicalFormTemplate;
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Services.Policies;
 using FluentValidation.TestHelper;
 using Moq;
@@ -52,6 +53,8 @@ public class UpdateClinicalFormTemplateCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.TemplateId);
+        result
+            .ShouldHaveValidationErrorFor(x => x.TemplateId)
+            .WithErrorMessage(DomainErrors.Validation.InvalidValue);
     }
 }

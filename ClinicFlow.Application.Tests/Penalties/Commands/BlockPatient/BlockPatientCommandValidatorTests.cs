@@ -1,4 +1,5 @@
 using ClinicFlow.Application.Penalties.Commands.BlockPatient;
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Enums;
 using FluentValidation.TestHelper;
 
@@ -40,7 +41,9 @@ public class BlockPatientCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.PatientId);
+        result
+            .ShouldHaveValidationErrorFor(x => x.PatientId)
+            .WithErrorMessage(DomainErrors.Validation.InvalidValue);
     }
 
     [Theory]
@@ -56,7 +59,9 @@ public class BlockPatientCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.Reason);
+        result
+            .ShouldHaveValidationErrorFor(x => x.Reason)
+            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Fact]
@@ -69,6 +74,8 @@ public class BlockPatientCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.Duration);
+        result
+            .ShouldHaveValidationErrorFor(x => x.Duration)
+            .WithErrorMessage(DomainErrors.Validation.InvalidEnumValue);
     }
 }

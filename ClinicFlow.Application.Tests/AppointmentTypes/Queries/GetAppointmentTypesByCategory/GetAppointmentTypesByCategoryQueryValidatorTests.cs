@@ -1,4 +1,5 @@
 using ClinicFlow.Application.AppointmentTypes.Queries.GetAppointmentTypesByCategory;
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Enums;
 using FluentValidation.TestHelper;
 
@@ -36,6 +37,8 @@ public class GetAppointmentTypesByCategoryQueryValidatorTests
         var result = _sut.TestValidate(query);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.Category);
+        result
+            .ShouldHaveValidationErrorFor(x => x.Category)
+            .WithErrorMessage(DomainErrors.Validation.InvalidEnumValue);
     }
 }

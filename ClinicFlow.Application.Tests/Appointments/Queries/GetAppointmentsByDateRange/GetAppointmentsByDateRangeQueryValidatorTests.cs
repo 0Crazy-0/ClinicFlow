@@ -1,4 +1,5 @@
 using ClinicFlow.Application.Appointments.Queries.GetAppointmentsByDateRange;
+using ClinicFlow.Domain.Common;
 using FluentValidation.TestHelper;
 
 namespace ClinicFlow.Application.Tests.Appointments.Queries.GetAppointmentsByDateRange;
@@ -22,7 +23,9 @@ public class GetAppointmentsByDateRangeQueryValidatorTests
         var result = _sut.TestValidate(query);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.StartDate);
+        result
+            .ShouldHaveValidationErrorFor(x => x.StartDate)
+            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Fact]
@@ -35,7 +38,9 @@ public class GetAppointmentsByDateRangeQueryValidatorTests
         var result = _sut.TestValidate(query);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.EndDate);
+        result
+            .ShouldHaveValidationErrorFor(x => x.EndDate)
+            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Fact]
@@ -49,7 +54,9 @@ public class GetAppointmentsByDateRangeQueryValidatorTests
         var result = _sut.TestValidate(query);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.EndDate);
+        result
+            .ShouldHaveValidationErrorFor(x => x.EndDate)
+            .WithErrorMessage(DomainErrors.Validation.InvalidDateRange);
     }
 
     [Fact]

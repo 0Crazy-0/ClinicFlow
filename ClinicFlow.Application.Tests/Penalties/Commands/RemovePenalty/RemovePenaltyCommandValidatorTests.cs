@@ -1,4 +1,5 @@
 using ClinicFlow.Application.Penalties.Commands.RemovePenalty;
+using ClinicFlow.Domain.Common;
 using FluentValidation.TestHelper;
 
 namespace ClinicFlow.Application.Tests.Penalties.Commands.RemovePenalty;
@@ -35,6 +36,8 @@ public class RemovePenaltyCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.PenaltyId);
+        result
+            .ShouldHaveValidationErrorFor(x => x.PenaltyId)
+            .WithErrorMessage(DomainErrors.Validation.InvalidValue);
     }
 }

@@ -1,4 +1,5 @@
 using ClinicFlow.Application.Schedules.Queries.GetScheduleById;
+using ClinicFlow.Domain.Common;
 using FluentValidation.TestHelper;
 
 namespace ClinicFlow.Application.Tests.Schedules.Queries.GetScheduleById;
@@ -22,7 +23,9 @@ public class GetScheduleByIdQueryValidatorTests
         var result = _sut.TestValidate(query);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.ScheduleId);
+        result
+            .ShouldHaveValidationErrorFor(x => x.ScheduleId)
+            .WithErrorMessage(DomainErrors.Validation.InvalidValue);
     }
 
     [Fact]

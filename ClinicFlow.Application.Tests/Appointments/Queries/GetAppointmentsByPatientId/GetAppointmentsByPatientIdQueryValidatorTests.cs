@@ -1,4 +1,5 @@
 using ClinicFlow.Application.Appointments.Queries.GetAppointmentsByPatientId;
+using ClinicFlow.Domain.Common;
 using FluentValidation.TestHelper;
 
 namespace ClinicFlow.Application.Tests.Appointments.Queries.GetAppointmentsByPatientId;
@@ -22,7 +23,9 @@ public class GetAppointmentsByPatientIdQueryValidatorTests
         var result = _sut.TestValidate(query);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.PatientId);
+        result
+            .ShouldHaveValidationErrorFor(x => x.PatientId)
+            .WithErrorMessage(DomainErrors.Validation.InvalidValue);
     }
 
     [Fact]
