@@ -1,11 +1,9 @@
+using ClinicFlow.Application.Patients.Commands.Shared.CreatePatient;
+
 namespace ClinicFlow.Application.Patients.Commands.Shared.CompletePatient;
 
-public interface ICompletePatientCommand
+public interface ICompletePatientCommand : ICreatePatientCommand
 {
-    Guid UserId { get; }
-    string FirstName { get; }
-    string LastName { get; }
-    DateTime DateOfBirth { get; }
     string BloodType { get; }
     string EmergencyContactName { get; }
     string EmergencyContactPhone { get; }
