@@ -42,7 +42,7 @@ public class AddClinicalDetailToMedicalRecordCommandValidatorTests
         // Assert
         result
             .ShouldHaveValidationErrorFor(c => c.MedicalRecordId)
-            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
+            .WithErrorMessage(DomainErrors.Validation.InvalidValue);
     }
 
     [Theory]

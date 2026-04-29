@@ -1,3 +1,4 @@
+using ClinicFlow.Domain.Common;
 using FluentValidation;
 
 namespace ClinicFlow.Application.Doctors.Queries.GetDoctorsBySpecialtyId;
@@ -6,6 +7,6 @@ public class GetDoctorsBySpecialtyIdQueryValidator : AbstractValidator<GetDoctor
 {
     public GetDoctorsBySpecialtyIdQueryValidator()
     {
-        RuleFor(x => x.SpecialtyId).NotEmpty();
+        RuleFor(x => x.SpecialtyId).NotEmpty().WithMessage(DomainErrors.Validation.InvalidValue);
     }
 }

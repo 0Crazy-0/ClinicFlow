@@ -8,8 +8,8 @@ public class GetAppointmentsByDateRangeQueryValidator
 {
     public GetAppointmentsByDateRangeQueryValidator()
     {
-        RuleFor(x => x.StartDate).NotEmpty();
-        RuleFor(x => x.EndDate).NotEmpty();
+        RuleFor(x => x.StartDate).NotEmpty().WithMessage(DomainErrors.Validation.ValueRequired);
+        RuleFor(x => x.EndDate).NotEmpty().WithMessage(DomainErrors.Validation.ValueRequired);
         RuleFor(x => x.EndDate)
             .GreaterThanOrEqualTo(x => x.StartDate)
             .WithMessage(DomainErrors.Validation.InvalidDateRange);

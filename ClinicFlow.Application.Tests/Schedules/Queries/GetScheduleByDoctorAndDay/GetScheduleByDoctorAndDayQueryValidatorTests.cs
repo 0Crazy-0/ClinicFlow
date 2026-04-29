@@ -1,4 +1,5 @@
 using ClinicFlow.Application.Schedules.Queries.GetScheduleByDoctorAndDay;
+using ClinicFlow.Domain.Common;
 using FluentValidation.TestHelper;
 
 namespace ClinicFlow.Application.Tests.Schedules.Queries.GetScheduleByDoctorAndDay;
@@ -22,7 +23,9 @@ public class GetScheduleByDoctorAndDayQueryValidatorTests
         var result = _sut.TestValidate(query);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.DoctorId);
+        result
+            .ShouldHaveValidationErrorFor(x => x.DoctorId)
+            .WithErrorMessage(DomainErrors.Validation.InvalidValue);
     }
 
     [Fact]
@@ -35,7 +38,9 @@ public class GetScheduleByDoctorAndDayQueryValidatorTests
         var result = _sut.TestValidate(query);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.DayOfWeek);
+        result
+            .ShouldHaveValidationErrorFor(x => x.DayOfWeek)
+            .WithErrorMessage(DomainErrors.Validation.InvalidEnumValue);
     }
 
     [Fact]

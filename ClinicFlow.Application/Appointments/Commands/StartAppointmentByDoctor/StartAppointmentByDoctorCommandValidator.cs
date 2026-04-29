@@ -8,10 +8,9 @@ public class StartAppointmentByDoctorCommandValidator
 {
     public StartAppointmentByDoctorCommandValidator()
     {
-        RuleFor(x => x.AppointmentId).NotEmpty().WithMessage(DomainErrors.Validation.ValueRequired);
-
+        RuleFor(x => x.AppointmentId).NotEmpty().WithMessage(DomainErrors.Validation.InvalidValue);
         RuleFor(x => x.InitiatorUserId)
             .NotEmpty()
-            .WithMessage(DomainErrors.Validation.ValueRequired);
+            .WithMessage(DomainErrors.Validation.InvalidValue);
     }
 }

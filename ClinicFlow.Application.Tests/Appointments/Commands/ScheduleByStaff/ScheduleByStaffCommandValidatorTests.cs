@@ -1,4 +1,5 @@
 using ClinicFlow.Application.Appointments.Commands.ScheduleByStaff;
+using ClinicFlow.Domain.Common;
 using FluentValidation.TestHelper;
 
 namespace ClinicFlow.Application.Tests.Appointments.Commands.ScheduleByStaff;
@@ -55,6 +56,8 @@ public class ScheduleByStaffCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.DoctorId);
+        result
+            .ShouldHaveValidationErrorFor(x => x.DoctorId)
+            .WithErrorMessage(DomainErrors.Validation.InvalidValue);
     }
 }

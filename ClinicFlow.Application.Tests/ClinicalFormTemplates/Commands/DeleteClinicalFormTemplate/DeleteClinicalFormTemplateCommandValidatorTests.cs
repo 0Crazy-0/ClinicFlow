@@ -1,4 +1,5 @@
 using ClinicFlow.Application.ClinicalFormTemplates.Commands.DeleteClinicalFormTemplate;
+using ClinicFlow.Domain.Common;
 using FluentValidation.TestHelper;
 
 namespace ClinicFlow.Application.Tests.ClinicalFormTemplates.Commands.DeleteClinicalFormTemplate;
@@ -35,6 +36,8 @@ public class DeleteClinicalFormTemplateCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.TemplateId);
+        result
+            .ShouldHaveValidationErrorFor(x => x.TemplateId)
+            .WithErrorMessage(DomainErrors.Validation.InvalidValue);
     }
 }

@@ -1,4 +1,5 @@
 using ClinicFlow.Application.Appointments.Commands.CancelAppointmentByStaff;
+using ClinicFlow.Domain.Common;
 using FluentValidation.TestHelper;
 
 namespace ClinicFlow.Application.Tests.Appointments.Commands.CancelAppointmentByStaff;
@@ -39,6 +40,8 @@ public class CancelAppointmentByStaffCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.Reason);
+        result
+            .ShouldHaveValidationErrorFor(x => x.Reason)
+            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
     }
 }

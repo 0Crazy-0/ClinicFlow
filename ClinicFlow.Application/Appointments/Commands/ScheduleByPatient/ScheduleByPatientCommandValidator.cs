@@ -1,4 +1,5 @@
 using ClinicFlow.Application.Appointments.Commands.Shared.Schedule;
+using ClinicFlow.Domain.Common;
 using FluentValidation;
 
 namespace ClinicFlow.Application.Appointments.Commands.ScheduleByPatient;
@@ -8,6 +9,6 @@ public class ScheduleByPatientCommandValidator
 {
     public ScheduleByPatientCommandValidator()
     {
-        RuleFor(x => x.DoctorId).NotEmpty();
+        RuleFor(x => x.DoctorId).NotEmpty().WithMessage(DomainErrors.Validation.InvalidValue);
     }
 }

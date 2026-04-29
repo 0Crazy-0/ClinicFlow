@@ -10,10 +10,8 @@ public class AddClinicalDetailToMedicalRecordCommandValidator
     {
         RuleFor(x => x.MedicalRecordId)
             .NotEmpty()
-            .WithMessage(DomainErrors.Validation.ValueRequired);
-
+            .WithMessage(DomainErrors.Validation.InvalidValue);
         RuleFor(x => x.TemplateCode).NotEmpty().WithMessage(DomainErrors.Validation.ValueRequired);
-
         RuleFor(x => x.JsonDataPayload)
             .NotEmpty()
             .WithMessage(DomainErrors.Validation.ValueRequired);

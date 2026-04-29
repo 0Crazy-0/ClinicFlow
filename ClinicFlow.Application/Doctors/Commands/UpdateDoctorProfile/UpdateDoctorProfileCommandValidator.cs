@@ -7,15 +7,19 @@ public class UpdateDoctorProfileCommandValidator : AbstractValidator<UpdateDocto
 {
     public UpdateDoctorProfileCommandValidator()
     {
-        RuleFor(x => x.DoctorId).NotEmpty();
+        RuleFor(x => x.DoctorId).NotEmpty().WithMessage(DomainErrors.Validation.InvalidValue);
         RuleFor(x => x.ConsultationRoomNumber)
             .GreaterThan(0)
             .WithMessage(DomainErrors.Validation.ValueMustBePositive)
-            .LessThanOrEqualTo(35);
-        RuleFor(x => x.ConsultationRoomName).NotEmpty();
+            .LessThanOrEqualTo(35)
+            .WithMessage(DomainErrors.Validation.ValueExceedsMaximum);
+        RuleFor(x => x.ConsultationRoomName)
+            .NotEmpty()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
         RuleFor(x => x.ConsultationRoomFloor)
             .GreaterThan(0)
             .WithMessage(DomainErrors.Validation.ValueMustBePositive)
-            .LessThanOrEqualTo(8);
+            .LessThanOrEqualTo(8)
+            .WithMessage(DomainErrors.Validation.ValueExceedsMaximum);
     }
 }

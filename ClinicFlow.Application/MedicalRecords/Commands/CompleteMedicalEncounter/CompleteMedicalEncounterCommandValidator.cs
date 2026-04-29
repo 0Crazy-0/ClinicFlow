@@ -8,16 +8,12 @@ public class CompleteMedicalEncounterCommandValidator
 {
     public CompleteMedicalEncounterCommandValidator()
     {
-        RuleFor(x => x.PatientId).NotEmpty().WithMessage(DomainErrors.Validation.ValueRequired);
-
-        RuleFor(x => x.DoctorId).NotEmpty().WithMessage(DomainErrors.Validation.ValueRequired);
-
-        RuleFor(x => x.AppointmentId).NotEmpty().WithMessage(DomainErrors.Validation.ValueRequired);
-
+        RuleFor(x => x.PatientId).NotEmpty().WithMessage(DomainErrors.Validation.InvalidValue);
+        RuleFor(x => x.DoctorId).NotEmpty().WithMessage(DomainErrors.Validation.InvalidValue);
+        RuleFor(x => x.AppointmentId).NotEmpty().WithMessage(DomainErrors.Validation.InvalidValue);
         RuleFor(x => x.ChiefComplaint)
             .NotEmpty()
             .WithMessage(DomainErrors.Validation.ValueRequired);
-
         RuleForEach(x => x.Details)
             .ChildRules(details =>
             {

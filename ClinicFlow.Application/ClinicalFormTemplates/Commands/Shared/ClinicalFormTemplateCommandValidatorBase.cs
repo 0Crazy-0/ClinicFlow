@@ -12,8 +12,14 @@ public abstract class ClinicalFormTemplateCommandValidatorBase<TCommand>
         IJsonSchemaDefinitionValidator schemaDefinitionValidator
     )
     {
-        RuleFor(x => x.Name).NotEmpty().MaximumLength(100);
-        RuleFor(x => x.Description).MaximumLength(500);
+        RuleFor(x => x.Name)
+            .NotEmpty()
+            .WithMessage(DomainErrors.Validation.ValueRequired)
+            .MaximumLength(100)
+            .WithMessage(DomainErrors.Validation.ValueTooLong);
+        RuleFor(x => x.Description)
+            .MaximumLength(500)
+            .WithMessage(DomainErrors.Validation.ValueTooLong);
 
         RuleFor(x => x.JsonSchemaDefinition)
             .Must(json => schemaDefinitionValidator.IsValidSchema(json, out _))

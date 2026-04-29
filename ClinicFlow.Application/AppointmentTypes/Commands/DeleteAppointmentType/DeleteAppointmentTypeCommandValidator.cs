@@ -1,3 +1,4 @@
+using ClinicFlow.Domain.Common;
 using FluentValidation;
 
 namespace ClinicFlow.Application.AppointmentTypes.Commands.DeleteAppointmentType;
@@ -6,6 +7,8 @@ public class DeleteAppointmentTypeCommandValidator : AbstractValidator<DeleteApp
 {
     public DeleteAppointmentTypeCommandValidator()
     {
-        RuleFor(x => x.AppointmentTypeId).NotEmpty();
+        RuleFor(x => x.AppointmentTypeId)
+            .NotEmpty()
+            .WithMessage(DomainErrors.Validation.InvalidValue);
     }
 }

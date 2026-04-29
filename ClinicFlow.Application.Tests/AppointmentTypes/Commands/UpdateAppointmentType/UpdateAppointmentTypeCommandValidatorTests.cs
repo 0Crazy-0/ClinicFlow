@@ -1,4 +1,5 @@
 using ClinicFlow.Application.AppointmentTypes.Commands.UpdateAppointmentType;
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Enums;
 using FluentValidation.TestHelper;
 
@@ -54,6 +55,8 @@ public class UpdateAppointmentTypeCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.AppointmentTypeId);
+        result
+            .ShouldHaveValidationErrorFor(x => x.AppointmentTypeId)
+            .WithErrorMessage(DomainErrors.Validation.InvalidValue);
     }
 }

@@ -8,8 +8,10 @@ public abstract class RescheduleCommandValidatorBase<TCommand> : AbstractValidat
 {
     protected RescheduleCommandValidatorBase()
     {
-        RuleFor(x => x.InitiatorUserId).NotEmpty();
-        RuleFor(x => x.AppointmentId).NotEmpty();
+        RuleFor(x => x.InitiatorUserId)
+            .NotEmpty()
+            .WithMessage(DomainErrors.Validation.InvalidValue);
+        RuleFor(x => x.AppointmentId).NotEmpty().WithMessage(DomainErrors.Validation.InvalidValue);
         RuleFor(x => x.NewDate)
             .GreaterThanOrEqualTo(DateTime.UtcNow.Date)
             .WithMessage(DomainErrors.Validation.ValueMustBeInFuture);

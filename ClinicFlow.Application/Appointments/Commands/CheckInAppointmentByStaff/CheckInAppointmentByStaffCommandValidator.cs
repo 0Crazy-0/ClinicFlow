@@ -8,6 +8,6 @@ public class CheckInAppointmentByStaffCommandValidator
 {
     public CheckInAppointmentByStaffCommandValidator()
     {
-        RuleFor(x => x.AppointmentId).NotEmpty().WithMessage(DomainErrors.Validation.ValueRequired);
+        RuleFor(x => x.AppointmentId).NotEmpty().WithMessage(DomainErrors.Validation.InvalidValue);
     }
 }

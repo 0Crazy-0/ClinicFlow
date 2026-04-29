@@ -1,4 +1,5 @@
 using ClinicFlow.Application.Schedules.Commands.CreateSchedule;
+using ClinicFlow.Domain.Common;
 using FluentValidation.TestHelper;
 
 namespace ClinicFlow.Application.Tests.Schedules.Commands.CreateSchedule;
@@ -45,7 +46,9 @@ public class CreateScheduleCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.DoctorId);
+        result
+            .ShouldHaveValidationErrorFor(x => x.DoctorId)
+            .WithErrorMessage(DomainErrors.Validation.InvalidValue);
     }
 
     [Fact]
@@ -63,7 +66,9 @@ public class CreateScheduleCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.DayOfWeek);
+        result
+            .ShouldHaveValidationErrorFor(x => x.DayOfWeek)
+            .WithErrorMessage(DomainErrors.Validation.InvalidEnumValue);
     }
 
     [Fact]
@@ -81,7 +86,9 @@ public class CreateScheduleCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.EndTime);
+        result
+            .ShouldHaveValidationErrorFor(x => x.EndTime)
+            .WithErrorMessage(DomainErrors.Validation.EndTimeMustBeAfterStartTime);
     }
 
     [Fact]
@@ -99,6 +106,8 @@ public class CreateScheduleCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.EndTime);
+        result
+            .ShouldHaveValidationErrorFor(x => x.EndTime)
+            .WithErrorMessage(DomainErrors.Validation.EndTimeMustBeAfterStartTime);
     }
 }

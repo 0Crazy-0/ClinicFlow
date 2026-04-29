@@ -1,3 +1,4 @@
+using ClinicFlow.Domain.Common;
 using FluentValidation;
 
 namespace ClinicFlow.Application.Schedules.Queries.GetScheduleById;
@@ -6,6 +7,6 @@ public class GetScheduleByIdQueryValidator : AbstractValidator<GetScheduleByIdQu
 {
     public GetScheduleByIdQueryValidator()
     {
-        RuleFor(x => x.ScheduleId).NotEmpty();
+        RuleFor(x => x.ScheduleId).NotEmpty().WithMessage(DomainErrors.Validation.InvalidValue);
     }
 }

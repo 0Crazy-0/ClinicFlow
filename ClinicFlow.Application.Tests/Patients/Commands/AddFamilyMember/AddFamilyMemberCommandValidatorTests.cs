@@ -1,4 +1,5 @@
 using ClinicFlow.Application.Patients.Commands.AddFamilyMember;
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Enums;
 using FluentValidation.TestHelper;
 
@@ -33,82 +34,6 @@ public class AddFamilyMemberCommandValidatorTests
     }
 
     [Fact]
-    public void Validate_ShouldHaveError_WhenUserIdIsEmpty()
-    {
-        // Arrange
-        var command = new AddFamilyMemberCommand(
-            Guid.Empty,
-            "John",
-            "Doe",
-            DateTime.UtcNow.AddYears(-10),
-            PatientRelationship.Child
-        );
-
-        // Act
-        var result = _sut.TestValidate(command);
-
-        // Assert
-        result.ShouldHaveValidationErrorFor(x => x.UserId);
-    }
-
-    [Fact]
-    public void Validate_ShouldHaveError_WhenFirstNameIsEmptyOrTooShort()
-    {
-        // Arrange
-        var command = new AddFamilyMemberCommand(
-            Guid.NewGuid(),
-            "J",
-            "Doe",
-            DateTime.UtcNow.AddYears(-10),
-            PatientRelationship.Child
-        );
-
-        // Act
-        var result = _sut.TestValidate(command);
-
-        // Assert
-        result.ShouldHaveValidationErrorFor(x => x.FirstName);
-    }
-
-    [Fact]
-    public void Validate_ShouldHaveError_WhenLastNameIsEmptyOrTooShort()
-    {
-        // Arrange
-        var command = new AddFamilyMemberCommand(
-            Guid.NewGuid(),
-            "John",
-            "",
-            DateTime.UtcNow.AddYears(-10),
-            PatientRelationship.Child
-        );
-
-        // Act
-        var result = _sut.TestValidate(command);
-
-        // Assert
-        result.ShouldHaveValidationErrorFor(x => x.LastName);
-    }
-
-    [Fact]
-    public void Validate_ShouldHaveError_WhenDateOfBirthIsInTheFuture()
-    {
-        // Arrange
-        var command = new AddFamilyMemberCommand(
-            Guid.NewGuid(),
-            "John",
-            "Doe",
-            DateTime.UtcNow.AddDays(1),
-            PatientRelationship.Child
-        );
-
-        // Act
-        var result = _sut.TestValidate(command);
-
-        // Assert
-        result.ShouldHaveValidationErrorFor(x => x.DateOfBirth);
-    }
-
-    [Fact]
     public void Validate_ShouldHaveError_WhenRelationshipIsInvalidEnum()
     {
         // Arrange
@@ -124,6 +49,8 @@ public class AddFamilyMemberCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.Relationship);
+        result
+            .ShouldHaveValidationErrorFor(x => x.Relationship)
+            .WithErrorMessage(DomainErrors.Validation.InvalidEnumValue);
     }
 }

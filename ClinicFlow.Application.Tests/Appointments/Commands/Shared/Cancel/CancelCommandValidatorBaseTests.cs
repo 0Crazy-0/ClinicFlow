@@ -1,4 +1,5 @@
 using ClinicFlow.Application.Appointments.Commands.Shared.Cancel;
+using ClinicFlow.Domain.Common;
 using FluentValidation.TestHelper;
 
 namespace ClinicFlow.Application.Tests.Appointments.Commands.Shared.Cancel;
@@ -40,7 +41,9 @@ public class CancelCommandValidatorBaseTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.AppointmentId);
+        result
+            .ShouldHaveValidationErrorFor(x => x.AppointmentId)
+            .WithErrorMessage(DomainErrors.Validation.InvalidValue);
     }
 
     [Fact]
@@ -53,7 +56,9 @@ public class CancelCommandValidatorBaseTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.InitiatorUserId);
+        result
+            .ShouldHaveValidationErrorFor(x => x.InitiatorUserId)
+            .WithErrorMessage(DomainErrors.Validation.InvalidValue);
     }
 
     [Fact]
@@ -67,6 +72,8 @@ public class CancelCommandValidatorBaseTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.Reason);
+        result
+            .ShouldHaveValidationErrorFor(x => x.Reason)
+            .WithErrorMessage(DomainErrors.Validation.ValueTooLong);
     }
 }

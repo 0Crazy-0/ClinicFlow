@@ -1,4 +1,5 @@
 using ClinicFlow.Application.Patients.Commands.UpdatePatientProfile;
+using ClinicFlow.Domain.Common;
 using FluentValidation.TestHelper;
 
 namespace ClinicFlow.Application.Tests.Patients.Commands.UpdatePatientProfile;
@@ -49,7 +50,9 @@ public class UpdatePatientProfileCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.PatientId);
+        result
+            .ShouldHaveValidationErrorFor(x => x.PatientId)
+            .WithErrorMessage(DomainErrors.Validation.InvalidValue);
     }
 
     [Fact]
@@ -69,7 +72,9 @@ public class UpdatePatientProfileCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.BloodType);
+        result
+            .ShouldHaveValidationErrorFor(x => x.BloodType)
+            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Fact]
@@ -89,7 +94,9 @@ public class UpdatePatientProfileCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.EmergencyContactName);
+        result
+            .ShouldHaveValidationErrorFor(x => x.EmergencyContactName)
+            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Fact]
@@ -109,6 +116,8 @@ public class UpdatePatientProfileCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.EmergencyContactPhone);
+        result
+            .ShouldHaveValidationErrorFor(x => x.EmergencyContactPhone)
+            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
     }
 }

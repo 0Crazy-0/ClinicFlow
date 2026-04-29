@@ -1,4 +1,5 @@
 using ClinicFlow.Application.Doctors.Commands.UpdateDoctorProfile;
+using ClinicFlow.Domain.Common;
 using FluentValidation.TestHelper;
 
 namespace ClinicFlow.Application.Tests.Doctors.Commands.UpdateDoctorProfile;
@@ -54,7 +55,9 @@ public class UpdateDoctorProfileCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.DoctorId);
+        result
+            .ShouldHaveValidationErrorFor(x => x.DoctorId)
+            .WithErrorMessage(DomainErrors.Validation.InvalidValue);
     }
 
     [Theory]
@@ -76,7 +79,9 @@ public class UpdateDoctorProfileCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.ConsultationRoomNumber);
+        result
+            .ShouldHaveValidationErrorFor(x => x.ConsultationRoomNumber)
+            .WithErrorMessage(DomainErrors.Validation.ValueMustBePositive);
     }
 
     [Theory]
@@ -98,7 +103,9 @@ public class UpdateDoctorProfileCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.ConsultationRoomNumber);
+        result
+            .ShouldHaveValidationErrorFor(x => x.ConsultationRoomNumber)
+            .WithErrorMessage(DomainErrors.Validation.ValueExceedsMaximum);
     }
 
     [Theory]
@@ -114,7 +121,9 @@ public class UpdateDoctorProfileCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.ConsultationRoomName);
+        result
+            .ShouldHaveValidationErrorFor(x => x.ConsultationRoomName)
+            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Theory]
@@ -136,7 +145,9 @@ public class UpdateDoctorProfileCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.ConsultationRoomFloor);
+        result
+            .ShouldHaveValidationErrorFor(x => x.ConsultationRoomFloor)
+            .WithErrorMessage(DomainErrors.Validation.ValueMustBePositive);
     }
 
     [Theory]
@@ -158,6 +169,8 @@ public class UpdateDoctorProfileCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.ConsultationRoomFloor);
+        result
+            .ShouldHaveValidationErrorFor(x => x.ConsultationRoomFloor)
+            .WithErrorMessage(DomainErrors.Validation.ValueExceedsMaximum);
     }
 }

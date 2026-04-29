@@ -1,4 +1,5 @@
 using ClinicFlow.Application.Schedules.Commands.DeactivateSchedule;
+using ClinicFlow.Domain.Common;
 using FluentValidation.TestHelper;
 
 namespace ClinicFlow.Application.Tests.Schedules.Commands.DeactivateSchedule;
@@ -35,6 +36,8 @@ public class DeactivateScheduleCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.ScheduleId);
+        result
+            .ShouldHaveValidationErrorFor(x => x.ScheduleId)
+            .WithErrorMessage(DomainErrors.Validation.InvalidValue);
     }
 }

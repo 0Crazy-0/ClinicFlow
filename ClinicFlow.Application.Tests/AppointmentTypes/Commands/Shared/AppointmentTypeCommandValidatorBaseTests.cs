@@ -1,4 +1,5 @@
 using ClinicFlow.Application.AppointmentTypes.Commands.Shared;
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Enums;
 using FluentValidation.TestHelper;
 
@@ -89,7 +90,9 @@ public class AppointmentTypeCommandValidatorBaseTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.Name);
+        result
+            .ShouldHaveValidationErrorFor(x => x.Name)
+            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Theory]
@@ -112,7 +115,9 @@ public class AppointmentTypeCommandValidatorBaseTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.DurationMinutes);
+        result
+            .ShouldHaveValidationErrorFor(x => x.DurationMinutes)
+            .WithErrorMessage(DomainErrors.Validation.ValueMustBePositive);
     }
 
     [Fact]
@@ -133,7 +138,9 @@ public class AppointmentTypeCommandValidatorBaseTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.MinimumAge);
+        result
+            .ShouldHaveValidationErrorFor(x => x.MinimumAge)
+            .WithErrorMessage(DomainErrors.Validation.ValueCannotBeNegative);
     }
 
     [Fact]
@@ -154,6 +161,8 @@ public class AppointmentTypeCommandValidatorBaseTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.MaximumAge);
+        result
+            .ShouldHaveValidationErrorFor(x => x.MaximumAge)
+            .WithErrorMessage(DomainErrors.Validation.ValueCannotBeNegative);
     }
 }

@@ -1,18 +1,16 @@
+using ClinicFlow.Application.Patients.Commands.Shared.CreatePatient;
 using ClinicFlow.Domain.Common;
 using FluentValidation;
 
 namespace ClinicFlow.Application.Patients.Commands.AddFamilyMember;
 
-public class AddFamilyMemberCommandValidator : AbstractValidator<AddFamilyMemberCommand>
+public class AddFamilyMemberCommandValidator
+    : CreatePatientCommandValidatorBase<AddFamilyMemberCommand>
 {
     public AddFamilyMemberCommandValidator()
     {
-        RuleFor(x => x.UserId).NotEmpty();
-        RuleFor(x => x.FirstName).NotEmpty().MinimumLength(2);
-        RuleFor(x => x.LastName).NotEmpty().MinimumLength(2);
-        RuleFor(x => x.DateOfBirth)
-            .LessThanOrEqualTo(DateTime.UtcNow.Date)
-            .WithMessage(DomainErrors.Validation.ValueCannotBeInFuture);
-        RuleFor(x => x.Relationship).IsInEnum();
+        RuleFor(x => x.Relationship)
+            .IsInEnum()
+            .WithMessage(DomainErrors.Validation.InvalidEnumValue);
     }
 }

@@ -1,4 +1,5 @@
 using ClinicFlow.Application.Schedules.Commands.SetupWeeklySchedule;
+using ClinicFlow.Domain.Common;
 using FluentAssertions;
 using FluentValidation.TestHelper;
 
@@ -49,7 +50,9 @@ public class SetupWeeklyScheduleCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.DoctorId);
+        result
+            .ShouldHaveValidationErrorFor(x => x.DoctorId)
+            .WithErrorMessage(DomainErrors.Validation.InvalidValue);
     }
 
     [Fact]
@@ -62,7 +65,9 @@ public class SetupWeeklyScheduleCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.Slots);
+        result
+            .ShouldHaveValidationErrorFor(x => x.Slots)
+            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Fact]

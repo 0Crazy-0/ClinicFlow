@@ -1,3 +1,4 @@
+using ClinicFlow.Domain.Common;
 using FluentValidation;
 
 namespace ClinicFlow.Application.ClinicalFormTemplates.Commands.DeleteClinicalFormTemplate;
@@ -7,6 +8,6 @@ public class DeleteClinicalFormTemplateCommandValidator
 {
     public DeleteClinicalFormTemplateCommandValidator()
     {
-        RuleFor(x => x.TemplateId).NotEmpty();
+        RuleFor(x => x.TemplateId).NotEmpty().WithMessage(DomainErrors.Validation.InvalidValue);
     }
 }

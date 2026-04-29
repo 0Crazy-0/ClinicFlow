@@ -1,4 +1,5 @@
 using ClinicFlow.Application.ClinicalFormTemplates.Commands.CreateClinicalFormTemplate;
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Services.Policies;
 using FluentValidation.TestHelper;
 using Moq;
@@ -50,6 +51,8 @@ public class CreateClinicalFormTemplateCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldHaveValidationErrorFor(x => x.Code);
+        result
+            .ShouldHaveValidationErrorFor(x => x.Code)
+            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
     }
 }
