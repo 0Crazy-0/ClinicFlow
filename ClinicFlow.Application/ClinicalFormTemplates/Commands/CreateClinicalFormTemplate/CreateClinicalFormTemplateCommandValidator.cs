@@ -1,4 +1,5 @@
 using ClinicFlow.Application.ClinicalFormTemplates.Commands.Shared;
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Services.Policies;
 using FluentValidation;
 
@@ -12,6 +13,6 @@ public class CreateClinicalFormTemplateCommandValidator
     )
         : base(schemaDefinitionValidator)
     {
-        RuleFor(x => x.Code).NotEmpty();
+        RuleFor(x => x.Code).NotEmpty().WithMessage(DomainErrors.Validation.ValueRequired);
     }
 }

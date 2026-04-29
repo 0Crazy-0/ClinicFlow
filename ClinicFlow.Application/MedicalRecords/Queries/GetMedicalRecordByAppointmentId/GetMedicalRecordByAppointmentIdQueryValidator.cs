@@ -1,3 +1,4 @@
+using ClinicFlow.Domain.Common;
 using FluentValidation;
 
 namespace ClinicFlow.Application.MedicalRecords.Queries.GetMedicalRecordByAppointmentId;
@@ -7,6 +8,6 @@ public class GetMedicalRecordByAppointmentIdQueryValidator
 {
     public GetMedicalRecordByAppointmentIdQueryValidator()
     {
-        RuleFor(x => x.AppointmentId).NotEmpty();
+        RuleFor(x => x.AppointmentId).NotEmpty().WithMessage(DomainErrors.Validation.InvalidValue);
     }
 }

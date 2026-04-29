@@ -7,12 +7,22 @@ public class AddFamilyMemberCommandValidator : AbstractValidator<AddFamilyMember
 {
     public AddFamilyMemberCommandValidator()
     {
-        RuleFor(x => x.UserId).NotEmpty();
-        RuleFor(x => x.FirstName).NotEmpty().MinimumLength(2);
-        RuleFor(x => x.LastName).NotEmpty().MinimumLength(2);
+        RuleFor(x => x.UserId).NotEmpty().WithMessage(DomainErrors.Validation.InvalidValue);
+        RuleFor(x => x.FirstName)
+            .NotEmpty()
+            .WithMessage(DomainErrors.Validation.ValueRequired)
+            .MinimumLength(2)
+            .WithMessage(DomainErrors.Validation.ValueTooShort);
+        RuleFor(x => x.LastName)
+            .NotEmpty()
+            .WithMessage(DomainErrors.Validation.ValueRequired)
+            .MinimumLength(2)
+            .WithMessage(DomainErrors.Validation.ValueTooShort);
         RuleFor(x => x.DateOfBirth)
             .LessThanOrEqualTo(DateTime.UtcNow.Date)
             .WithMessage(DomainErrors.Validation.ValueCannotBeInFuture);
-        RuleFor(x => x.Relationship).IsInEnum();
+        RuleFor(x => x.Relationship)
+            .IsInEnum()
+            .WithMessage(DomainErrors.Validation.InvalidEnumValue);
     }
 }

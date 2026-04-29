@@ -1,3 +1,4 @@
+using ClinicFlow.Domain.Common;
 using FluentValidation;
 
 namespace ClinicFlow.Application.AppointmentTypes.Queries.GetAppointmentTypeById;
@@ -6,6 +7,8 @@ public class GetAppointmentTypeByIdQueryValidator : AbstractValidator<GetAppoint
 {
     public GetAppointmentTypeByIdQueryValidator()
     {
-        RuleFor(x => x.AppointmentTypeId).NotEmpty();
+        RuleFor(x => x.AppointmentTypeId)
+            .NotEmpty()
+            .WithMessage(DomainErrors.Validation.InvalidValue);
     }
 }

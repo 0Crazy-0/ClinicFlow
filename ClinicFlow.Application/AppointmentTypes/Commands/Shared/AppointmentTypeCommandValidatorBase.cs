@@ -8,7 +8,7 @@ public abstract class AppointmentTypeCommandValidatorBase<TCommand> : AbstractVa
 {
     protected AppointmentTypeCommandValidatorBase()
     {
-        RuleFor(x => x.Name).NotEmpty();
+        RuleFor(x => x.Name).NotEmpty().WithMessage(DomainErrors.Validation.ValueRequired);
         RuleFor(x => x.DurationMinutes)
             .GreaterThan(TimeSpan.Zero)
             .WithMessage(DomainErrors.Validation.ValueMustBePositive);

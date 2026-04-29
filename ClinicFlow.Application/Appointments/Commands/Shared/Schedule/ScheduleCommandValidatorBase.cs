@@ -8,9 +8,15 @@ public abstract class ScheduleCommandValidatorBase<TCommand> : AbstractValidator
 {
     protected ScheduleCommandValidatorBase()
     {
-        RuleFor(x => x.InitiatorUserId).NotEmpty();
-        RuleFor(x => x.TargetPatientId).NotEmpty();
-        RuleFor(x => x.AppointmentTypeId).NotEmpty();
+        RuleFor(x => x.InitiatorUserId)
+            .NotEmpty()
+            .WithMessage(DomainErrors.Validation.InvalidValue);
+        RuleFor(x => x.TargetPatientId)
+            .NotEmpty()
+            .WithMessage(DomainErrors.Validation.InvalidValue);
+        RuleFor(x => x.AppointmentTypeId)
+            .NotEmpty()
+            .WithMessage(DomainErrors.Validation.InvalidValue);
         RuleFor(x => x.ScheduledDate)
             .GreaterThanOrEqualTo(DateTime.UtcNow.Date)
             .WithMessage(DomainErrors.Validation.ValueMustBeInFuture);

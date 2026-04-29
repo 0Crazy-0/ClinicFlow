@@ -1,3 +1,4 @@
+using ClinicFlow.Domain.Common;
 using FluentValidation;
 
 namespace ClinicFlow.Application.Schedules.Queries.GetScheduleByDoctorAndDay;
@@ -7,7 +8,7 @@ public class GetScheduleByDoctorAndDayQueryValidator
 {
     public GetScheduleByDoctorAndDayQueryValidator()
     {
-        RuleFor(x => x.DoctorId).NotEmpty();
-        RuleFor(x => x.DayOfWeek).IsInEnum();
+        RuleFor(x => x.DoctorId).NotEmpty().WithMessage(DomainErrors.Validation.InvalidValue);
+        RuleFor(x => x.DayOfWeek).IsInEnum().WithMessage(DomainErrors.Validation.InvalidEnumValue);
     }
 }

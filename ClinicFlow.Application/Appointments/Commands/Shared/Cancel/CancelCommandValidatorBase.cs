@@ -8,10 +8,10 @@ public abstract class CancelCommandValidatorBase<TCommand> : AbstractValidator<T
 {
     protected CancelCommandValidatorBase()
     {
-        RuleFor(x => x.AppointmentId).NotEmpty().WithMessage(DomainErrors.Validation.ValueRequired);
+        RuleFor(x => x.AppointmentId).NotEmpty().WithMessage(DomainErrors.Validation.InvalidValue);
         RuleFor(x => x.InitiatorUserId)
             .NotEmpty()
-            .WithMessage(DomainErrors.Validation.ValueRequired);
-        RuleFor(x => x.Reason).MaximumLength(500);
+            .WithMessage(DomainErrors.Validation.InvalidValue);
+        RuleFor(x => x.Reason).MaximumLength(500).WithMessage(DomainErrors.Validation.ValueTooLong);
     }
 }

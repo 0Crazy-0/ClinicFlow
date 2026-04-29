@@ -1,3 +1,4 @@
+using ClinicFlow.Domain.Common;
 using FluentValidation;
 
 namespace ClinicFlow.Application.AppointmentTypes.Queries.GetAppointmentTypesByCategory;
@@ -7,6 +8,6 @@ public class GetAppointmentTypesByCategoryQueryValidator
 {
     public GetAppointmentTypesByCategoryQueryValidator()
     {
-        RuleFor(x => x.Category).IsInEnum();
+        RuleFor(x => x.Category).IsInEnum().WithMessage(DomainErrors.Validation.InvalidEnumValue);
     }
 }
