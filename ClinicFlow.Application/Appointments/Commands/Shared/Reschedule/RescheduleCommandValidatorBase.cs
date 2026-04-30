@@ -6,14 +6,14 @@ namespace ClinicFlow.Application.Appointments.Commands.Shared.Reschedule;
 public abstract class RescheduleCommandValidatorBase<TCommand> : AbstractValidator<TCommand>
     where TCommand : IRescheduleCommand
 {
-    protected RescheduleCommandValidatorBase()
+    protected RescheduleCommandValidatorBase(TimeProvider timeProvider)
     {
         RuleFor(x => x.InitiatorUserId)
             .NotEmpty()
             .WithMessage(DomainErrors.Validation.InvalidValue);
         RuleFor(x => x.AppointmentId).NotEmpty().WithMessage(DomainErrors.Validation.InvalidValue);
         RuleFor(x => x.NewDate)
-            .GreaterThanOrEqualTo(DateTime.UtcNow.Date)
+            .GreaterThanOrEqualTo(_ => timeProvider.GetUtcNow().UtcDateTime.Date)
             .WithMessage(DomainErrors.Validation.ValueMustBeInFuture);
         RuleFor(x => x.NewStartTime)
             .LessThan(x => x.NewEndTime)

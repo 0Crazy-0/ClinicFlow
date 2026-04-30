@@ -1,6 +1,7 @@
 using ClinicFlow.Application.Appointments.Commands.Shared.Schedule;
 using ClinicFlow.Domain.Common;
 using FluentValidation.TestHelper;
+using Microsoft.Extensions.Time.Testing;
 
 namespace ClinicFlow.Application.Tests.Appointments.Commands.Shared.Schedule;
 
@@ -13,15 +14,17 @@ public record DummyScheduleCommand(
     TimeSpan EndTime
 ) : IScheduleCommand;
 
-public class DummyScheduleCommandValidator : ScheduleCommandValidatorBase<DummyScheduleCommand> { }
+public class DummyScheduleCommandValidator(TimeProvider timeProvider)
+    : ScheduleCommandValidatorBase<DummyScheduleCommand>(timeProvider);
 
 public class ScheduleCommandValidatorBaseTests
 {
+    private readonly FakeTimeProvider _fakeTime = new();
     private readonly DummyScheduleCommandValidator _sut;
 
     public ScheduleCommandValidatorBaseTests()
     {
-        _sut = new DummyScheduleCommandValidator();
+        _sut = new DummyScheduleCommandValidator(_fakeTime);
     }
 
     [Fact]
@@ -32,7 +35,7 @@ public class ScheduleCommandValidatorBaseTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             Guid.NewGuid(),
-            DateTime.UtcNow.AddDays(1).Date,
+            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
             new TimeSpan(10, 0, 0),
             new TimeSpan(11, 0, 0)
         );
@@ -52,7 +55,7 @@ public class ScheduleCommandValidatorBaseTests
             Guid.Empty,
             Guid.NewGuid(),
             Guid.NewGuid(),
-            DateTime.UtcNow.AddDays(1).Date,
+            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
             new TimeSpan(10, 0, 0),
             new TimeSpan(11, 0, 0)
         );
@@ -72,7 +75,7 @@ public class ScheduleCommandValidatorBaseTests
             Guid.NewGuid(),
             Guid.Empty,
             Guid.NewGuid(),
-            DateTime.UtcNow.AddDays(1).Date,
+            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
             new TimeSpan(10, 0, 0),
             new TimeSpan(11, 0, 0)
         );
@@ -92,7 +95,7 @@ public class ScheduleCommandValidatorBaseTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             Guid.Empty,
-            DateTime.UtcNow.AddDays(1).Date,
+            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
             new TimeSpan(10, 0, 0),
             new TimeSpan(11, 0, 0)
         );
@@ -112,7 +115,7 @@ public class ScheduleCommandValidatorBaseTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             Guid.NewGuid(),
-            DateTime.UtcNow.AddDays(-1).Date,
+            _fakeTime.GetUtcNow().UtcDateTime.AddDays(-1).Date,
             new TimeSpan(10, 0, 0),
             new TimeSpan(11, 0, 0)
         );
@@ -134,7 +137,7 @@ public class ScheduleCommandValidatorBaseTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             Guid.NewGuid(),
-            DateTime.UtcNow.AddDays(1).Date,
+            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
             new TimeSpan(12, 0, 0),
             new TimeSpan(11, 0, 0)
         );

@@ -1,6 +1,7 @@
 using ClinicFlow.Application.Appointments.Commands.Shared.Reschedule;
 using ClinicFlow.Domain.Common;
 using FluentValidation.TestHelper;
+using Microsoft.Extensions.Time.Testing;
 
 namespace ClinicFlow.Application.Tests.Appointments.Commands.Shared.Reschedule;
 
@@ -12,16 +13,17 @@ public record DummyRescheduleCommand(
     TimeSpan NewEndTime
 ) : IRescheduleCommand;
 
-public class DummyRescheduleCommandValidator
-    : RescheduleCommandValidatorBase<DummyRescheduleCommand> { }
+public class DummyRescheduleCommandValidator(TimeProvider timeProvider)
+    : RescheduleCommandValidatorBase<DummyRescheduleCommand>(timeProvider);
 
 public class RescheduleCommandValidatorBaseTests
 {
+    private readonly FakeTimeProvider _fakeTime = new();
     private readonly DummyRescheduleCommandValidator _sut;
 
     public RescheduleCommandValidatorBaseTests()
     {
-        _sut = new DummyRescheduleCommandValidator();
+        _sut = new DummyRescheduleCommandValidator(_fakeTime);
     }
 
     [Fact]
@@ -31,7 +33,7 @@ public class RescheduleCommandValidatorBaseTests
         var command = new DummyRescheduleCommand(
             Guid.NewGuid(),
             Guid.NewGuid(),
-            DateTime.UtcNow.AddDays(1).Date,
+            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
             new TimeSpan(10, 0, 0),
             new TimeSpan(11, 0, 0)
         );
@@ -50,7 +52,7 @@ public class RescheduleCommandValidatorBaseTests
         var command = new DummyRescheduleCommand(
             Guid.NewGuid(),
             Guid.Empty,
-            DateTime.UtcNow.AddDays(1).Date,
+            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
             new TimeSpan(10, 0, 0),
             new TimeSpan(11, 0, 0)
         );
@@ -69,7 +71,7 @@ public class RescheduleCommandValidatorBaseTests
         var command = new DummyRescheduleCommand(
             Guid.Empty,
             Guid.NewGuid(),
-            DateTime.UtcNow.AddDays(1).Date,
+            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
             new TimeSpan(10, 0, 0),
             new TimeSpan(11, 0, 0)
         );
@@ -88,7 +90,7 @@ public class RescheduleCommandValidatorBaseTests
         var command = new DummyRescheduleCommand(
             Guid.NewGuid(),
             Guid.NewGuid(),
-            DateTime.UtcNow.AddDays(-1).Date,
+            _fakeTime.GetUtcNow().UtcDateTime.AddDays(-1).Date,
             new TimeSpan(10, 0, 0),
             new TimeSpan(11, 0, 0)
         );
@@ -109,7 +111,7 @@ public class RescheduleCommandValidatorBaseTests
         var command = new DummyRescheduleCommand(
             Guid.NewGuid(),
             Guid.NewGuid(),
-            DateTime.UtcNow.AddDays(1).Date,
+            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
             new TimeSpan(12, 0, 0),
             new TimeSpan(11, 0, 0)
         );

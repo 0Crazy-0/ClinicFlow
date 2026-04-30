@@ -7,7 +7,8 @@ namespace ClinicFlow.Application.Appointments.Commands.ScheduleByPatient;
 public class ScheduleByPatientCommandValidator
     : ScheduleCommandValidatorBase<ScheduleByPatientCommand>
 {
-    public ScheduleByPatientCommandValidator()
+    public ScheduleByPatientCommandValidator(TimeProvider timeProvider)
+        : base(timeProvider)
     {
         RuleFor(x => x.DoctorId).NotEmpty().WithMessage(DomainErrors.Validation.InvalidValue);
     }
