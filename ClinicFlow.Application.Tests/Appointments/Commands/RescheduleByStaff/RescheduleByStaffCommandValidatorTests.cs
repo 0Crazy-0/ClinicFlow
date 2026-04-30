@@ -1,15 +1,17 @@
 using ClinicFlow.Application.Appointments.Commands.RescheduleByStaff;
 using FluentValidation.TestHelper;
+using Microsoft.Extensions.Time.Testing;
 
 namespace ClinicFlow.Application.Tests.Appointments.Commands.RescheduleByStaff;
 
 public class RescheduleByStaffCommandValidatorTests
 {
+    private readonly FakeTimeProvider _fakeTime = new();
     private readonly RescheduleByStaffCommandValidator _sut;
 
     public RescheduleByStaffCommandValidatorTests()
     {
-        _sut = new RescheduleByStaffCommandValidator();
+        _sut = new RescheduleByStaffCommandValidator(_fakeTime);
     }
 
     [Fact]
@@ -19,7 +21,7 @@ public class RescheduleByStaffCommandValidatorTests
         var command = new RescheduleByStaffCommand(
             Guid.NewGuid(),
             Guid.NewGuid(),
-            DateTime.UtcNow.AddDays(1).Date,
+            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
             new TimeSpan(10, 0, 0),
             new TimeSpan(11, 0, 0),
             false
