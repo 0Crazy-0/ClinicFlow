@@ -5,9 +5,10 @@
 - [ ] Bug fix
 - [ ] New feature
 - [ ] Refactor
-- [ ] Documentation
-- [ ] Style / Tooling
 - [ ] Test / QA
+- [ ] Documentation
+- [ ] Tooling
+- [ ] Style
 
 ## How to test
 <!-- Steps to verify this works as expected -->
