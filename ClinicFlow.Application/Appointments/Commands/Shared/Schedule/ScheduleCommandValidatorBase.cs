@@ -20,9 +20,6 @@ public abstract class ScheduleCommandValidatorBase<TCommand> : AbstractValidator
         RuleFor(x => x.ScheduledDate)
             .GreaterThanOrEqualTo(_ => timeProvider.GetUtcNow().UtcDateTime.Date)
             .WithMessage(DomainErrors.Validation.ValueMustBeInFuture);
-        RuleFor(x => x.StartTime)
-            .LessThan(x => x.EndTime)
-            .WithMessage(DomainErrors.Validation.StartTimeMustBeBeforeEndTime);
         RuleFor(x => x.EndTime)
             .GreaterThan(x => x.StartTime)
             .WithMessage(DomainErrors.Validation.EndTimeMustBeAfterStartTime);
