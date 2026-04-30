@@ -6,7 +6,7 @@ namespace ClinicFlow.Application.Appointments.Commands.Shared.Schedule;
 public abstract class ScheduleCommandValidatorBase<TCommand> : AbstractValidator<TCommand>
     where TCommand : IScheduleCommand
 {
-    protected ScheduleCommandValidatorBase()
+    protected ScheduleCommandValidatorBase(TimeProvider timeProvider)
     {
         RuleFor(x => x.InitiatorUserId)
             .NotEmpty()
@@ -18,7 +18,7 @@ public abstract class ScheduleCommandValidatorBase<TCommand> : AbstractValidator
             .NotEmpty()
             .WithMessage(DomainErrors.Validation.InvalidValue);
         RuleFor(x => x.ScheduledDate)
-            .GreaterThanOrEqualTo(DateTime.UtcNow.Date)
+            .GreaterThanOrEqualTo(_ => timeProvider.GetUtcNow().UtcDateTime.Date)
             .WithMessage(DomainErrors.Validation.ValueMustBeInFuture);
         RuleFor(x => x.StartTime)
             .LessThan(x => x.EndTime)

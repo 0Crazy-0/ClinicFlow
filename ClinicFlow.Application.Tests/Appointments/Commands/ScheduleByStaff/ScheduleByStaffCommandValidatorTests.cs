@@ -1,16 +1,18 @@
 using ClinicFlow.Application.Appointments.Commands.ScheduleByStaff;
 using ClinicFlow.Domain.Common;
 using FluentValidation.TestHelper;
+using Microsoft.Extensions.Time.Testing;
 
 namespace ClinicFlow.Application.Tests.Appointments.Commands.ScheduleByStaff;
 
 public class ScheduleByStaffCommandValidatorTests
 {
+    private readonly FakeTimeProvider _fakeTime = new();
     private readonly ScheduleByStaffCommandValidator _sut;
 
     public ScheduleByStaffCommandValidatorTests()
     {
-        _sut = new ScheduleByStaffCommandValidator();
+        _sut = new ScheduleByStaffCommandValidator(_fakeTime);
     }
 
     [Fact]
@@ -22,7 +24,7 @@ public class ScheduleByStaffCommandValidatorTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             Guid.NewGuid(),
-            DateTime.UtcNow.AddDays(1).Date,
+            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
             new TimeSpan(10, 0, 0),
             new TimeSpan(11, 0, 0),
             false,
@@ -45,7 +47,7 @@ public class ScheduleByStaffCommandValidatorTests
             Guid.NewGuid(),
             Guid.Empty,
             Guid.NewGuid(),
-            DateTime.UtcNow.AddDays(1).Date,
+            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
             new TimeSpan(10, 0, 0),
             new TimeSpan(11, 0, 0),
             false,
