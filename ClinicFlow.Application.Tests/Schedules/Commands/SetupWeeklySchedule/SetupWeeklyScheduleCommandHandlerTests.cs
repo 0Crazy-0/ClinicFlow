@@ -1,5 +1,4 @@
 using ClinicFlow.Application.Schedules.Commands.SetupWeeklySchedule;
-using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Exceptions.Scheduling;
 using ClinicFlow.Domain.Interfaces;
@@ -7,6 +6,11 @@ using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
 using Moq;
+using ScheduleSlot = (
+    System.DayOfWeek DayOfWeek,
+    System.TimeSpan StartTime,
+    System.TimeSpan EndTime
+);
 
 namespace ClinicFlow.Application.Tests.Schedules.Commands.SetupWeeklySchedule;
 

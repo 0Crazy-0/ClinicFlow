@@ -2,6 +2,11 @@ using ClinicFlow.Application.Schedules.Commands.SetupWeeklySchedule;
 using ClinicFlow.Domain.Common;
 using FluentAssertions;
 using FluentValidation.TestHelper;
+using ScheduleSlot = (
+    System.DayOfWeek DayOfWeek,
+    System.TimeSpan StartTime,
+    System.TimeSpan EndTime
+);
 
 namespace ClinicFlow.Application.Tests.Schedules.Commands.SetupWeeklySchedule;
 
