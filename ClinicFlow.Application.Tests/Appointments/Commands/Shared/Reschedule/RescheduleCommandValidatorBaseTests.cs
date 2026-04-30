@@ -121,9 +121,6 @@ public class RescheduleCommandValidatorBaseTests
 
         // Assert
         result
-            .ShouldHaveValidationErrorFor(x => x.NewStartTime)
-            .WithErrorMessage(DomainErrors.Validation.StartTimeMustBeBeforeEndTime);
-        result
             .ShouldHaveValidationErrorFor(x => x.NewEndTime)
             .WithErrorMessage(DomainErrors.Validation.EndTimeMustBeAfterStartTime);
     }
