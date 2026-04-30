@@ -1,8 +1,7 @@
 using MediatR;
+using DynamicClinicalDetailDto = (string TemplateCode, string JsonDataPayload);
 
 namespace ClinicFlow.Application.MedicalRecords.Commands.CompleteMedicalEncounter;
-
-public record DynamicClinicalDetailDto(string TemplateCode, string JsonDataPayload);
 
 public sealed record CompleteMedicalEncounterCommand(
     Guid PatientId,

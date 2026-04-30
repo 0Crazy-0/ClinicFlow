@@ -1,6 +1,7 @@
 using ClinicFlow.Application.MedicalRecords.Commands.CompleteMedicalEncounter;
 using ClinicFlow.Domain.Common;
 using FluentValidation.TestHelper;
+using DynamicClinicalDetailDto = (string TemplateCode, string JsonDataPayload);
 
 namespace ClinicFlow.Application.Tests.MedicalRecords.Commands.CompleteMedicalEncounter;
 

@@ -12,6 +12,7 @@ using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
 using Microsoft.Extensions.Time.Testing;
 using Moq;
+using DynamicClinicalDetailDto = (string TemplateCode, string JsonDataPayload);
 
 namespace ClinicFlow.Application.Tests.MedicalRecords.Commands.CompleteMedicalEncounter;
 
