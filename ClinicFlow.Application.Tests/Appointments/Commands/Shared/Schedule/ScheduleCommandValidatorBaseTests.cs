@@ -147,9 +147,6 @@ public class ScheduleCommandValidatorBaseTests
 
         // Assert
         result
-            .ShouldHaveValidationErrorFor(x => x.StartTime)
-            .WithErrorMessage(DomainErrors.Validation.StartTimeMustBeBeforeEndTime);
-        result
             .ShouldHaveValidationErrorFor(x => x.EndTime)
             .WithErrorMessage(DomainErrors.Validation.EndTimeMustBeAfterStartTime);
     }

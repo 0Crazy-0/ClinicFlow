@@ -15,9 +15,6 @@ public abstract class RescheduleCommandValidatorBase<TCommand> : AbstractValidat
         RuleFor(x => x.NewDate)
             .GreaterThanOrEqualTo(_ => timeProvider.GetUtcNow().UtcDateTime.Date)
             .WithMessage(DomainErrors.Validation.ValueMustBeInFuture);
-        RuleFor(x => x.NewStartTime)
-            .LessThan(x => x.NewEndTime)
-            .WithMessage(DomainErrors.Validation.StartTimeMustBeBeforeEndTime);
         RuleFor(x => x.NewEndTime)
             .GreaterThan(x => x.NewStartTime)
             .WithMessage(DomainErrors.Validation.EndTimeMustBeAfterStartTime);
