@@ -83,7 +83,11 @@ public class SetupWeeklyScheduleCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
+
         result.IsValid.Should().BeFalse();
+        result
+            .Errors.Should()
+            .ContainSingle(e => e.ErrorMessage == DomainErrors.Validation.InvalidEnumValue);
     }
 
     [Fact]
@@ -100,5 +104,10 @@ public class SetupWeeklyScheduleCommandValidatorTests
 
         // Assert
         result.IsValid.Should().BeFalse();
+        result
+            .Errors.Should()
+            .ContainSingle(e =>
+                e.ErrorMessage == DomainErrors.Validation.EndTimeMustBeAfterStartTime
+            );
     }
 }
