@@ -72,6 +72,10 @@ public static class DomainErrors
         public const string Blocked = "PATIENT_BLOCKED";
         public const string CannotBeSelf = "INVALID_FAMILY_RELATIONSHIP";
         public const string ProfileIncomplete = "PATIENT_PROFILE_INCOMPLETE";
+        public const string CannotRemovePrimaryUser = "CANNOT_REMOVE_PRIMARY_USER";
+        public const string OnlyPrimaryUserCanCloseAccount = "ONLY_PRIMARY_USER_CAN_CLOSE_ACCOUNT";
+        public const string CannotCloseAccountWithPendingAppointments =
+            "CANNOT_CLOSE_ACCOUNT_WITH_PENDING_APPOINTMENTS";
     }
 
     public static class Penalty

@@ -161,6 +161,88 @@ public class PatientTests
     }
 
     [Fact]
+    public void RemoveFamilyMember_ShouldMarkAsDeleted_WhenPatientIsFamilyMember()
+    {
+        // Arrange
+        var patient = Patient.CreateFamilyMember(
+            Guid.NewGuid(),
+            PersonName.Create("Family Member"),
+            PatientRelationship.Child,
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-10).Date,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        // Act
+        patient.RemoveFamilyMember();
+
+        // Assert
+        patient.IsDeleted.Should().BeTrue();
+    }
+
+    [Fact]
+    public void RemoveFamilyMember_ShouldThrowException_WhenPatientIsPrimaryUser()
+    {
+        // Arrange
+        var patient = CreatePatient();
+
+        //Act && Assert
+        patient
+            .Invoking(p => p.RemoveFamilyMember())
+            .Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Patient.CannotRemovePrimaryUser);
+    }
+
+    [Fact]
+    public void CloseAccount_ShouldMarkAsDeleted_WhenPrimaryUserHasNoPendingAppointments()
+    {
+        // Arrange
+        var patient = CreatePatient();
+
+        // Act
+        patient.CloseAccount(false);
+
+        // Assert
+        patient.IsDeleted.Should().BeTrue();
+    }
+
+    [Fact]
+    public void CloseAccount_ShouldThrowException_WhenPatientIsNotPrimaryUser()
+    {
+        // Arrange
+        var patient = Patient.CreateFamilyMember(
+            Guid.NewGuid(),
+            PersonName.Create("Family Member"),
+            PatientRelationship.Child,
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-10).Date,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        // Act
+        var act = () => patient.CloseAccount(false);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Patient.OnlyPrimaryUserCanCloseAccount);
+    }
+
+    [Fact]
+    public void CloseAccount_ShouldThrowException_WhenPrimaryUserHasPendingAppointments()
+    {
+        // Arrange
+        var patient = CreatePatient();
+
+        // Act
+        var act = () => patient.CloseAccount(true);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Patient.CannotCloseAccountWithPendingAppointments);
+    }
+
+    [Fact]
     public void EnsureCompleteProfile_ShouldNotThrow_WhenProfileIsComplete()
     {
         // Arrange
@@ -310,19 +392,6 @@ public class PatientTests
             .Where(e => e.BlockedUntil == blockedUntil);
     }
 
-    private Patient CreatePatient()
-    {
-        var patient = Patient.CreateSelf(
-            Guid.NewGuid(),
-            PersonName.Create("John Doe"),
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30).Date,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
-        patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
-        patient.UpdateEmergencyContact(EmergencyContact.Create("Mom", "555-5555"));
-        return patient;
-    }
-
     [Fact]
     public void EnsureNotBlocked_ShouldNotThrow_WhenActiveBlockIsRemoved()
     {
@@ -343,5 +412,18 @@ public class PatientTests
 
         // Assert
         act.Should().NotThrow();
+    }
+
+    private Patient CreatePatient()
+    {
+        var patient = Patient.CreateSelf(
+            Guid.NewGuid(),
+            PersonName.Create("John Doe"),
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30).Date,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+        patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
+        patient.UpdateEmergencyContact(EmergencyContact.Create("Mom", "555-5555"));
+        return patient;
     }
 }

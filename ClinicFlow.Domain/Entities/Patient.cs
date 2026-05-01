@@ -84,6 +84,30 @@ public class Patient : BaseEntity
         return new Patient(userId, fullName, relationshipToUser, dateOfBirth);
     }
 
+    public void RemoveFamilyMember()
+    {
+        if (RelationshipToUser is PatientRelationship.Self)
+            throw new DomainValidationException(DomainErrors.Patient.CannotRemovePrimaryUser);
+
+        MarkAsDeleted();
+    }
+
+    /// <param name="hasPendingAppointments">Indicates if the patient has any active, future appointments.</param>
+    public void CloseAccount(bool hasPendingAppointments)
+    {
+        if (RelationshipToUser is not PatientRelationship.Self)
+            throw new DomainValidationException(
+                DomainErrors.Patient.OnlyPrimaryUserCanCloseAccount
+            );
+
+        if (hasPendingAppointments)
+            throw new DomainValidationException(
+                DomainErrors.Patient.CannotCloseAccountWithPendingAppointments
+            );
+
+        MarkAsDeleted();
+    }
+
     public void UpdateMedicalProfile(
         BloodType bloodType,
         string allergies,
