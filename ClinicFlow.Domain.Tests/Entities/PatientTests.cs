@@ -164,8 +164,9 @@ public class PatientTests
     public void RemoveFamilyMember_ShouldMarkAsDeleted_WhenPatientIsFamilyMember()
     {
         // Arrange
+        var userId = Guid.NewGuid();
         var patient = Patient.CreateFamilyMember(
-            Guid.NewGuid(),
+            userId,
             PersonName.Create("Family Member"),
             PatientRelationship.Child,
             _fakeTime.GetUtcNow().UtcDateTime.AddYears(-10).Date,
@@ -173,7 +174,7 @@ public class PatientTests
         );
 
         // Act
-        patient.RemoveFamilyMember();
+        patient.RemoveFamilyMember(userId);
 
         // Assert
         patient.IsDeleted.Should().BeTrue();
@@ -187,10 +188,32 @@ public class PatientTests
 
         //Act && Assert
         patient
-            .Invoking(p => p.RemoveFamilyMember())
+            .Invoking(p => p.RemoveFamilyMember(patient.UserId))
             .Should()
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.Patient.CannotRemovePrimaryUser);
+    }
+
+    [Fact]
+    public void RemoveFamilyMember_ShouldThrowException_WhenInitiatorIsUnauthorized()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var patient = Patient.CreateFamilyMember(
+            userId,
+            PersonName.Create("Family Member"),
+            PatientRelationship.Child,
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-10).Date,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+        var anotherUserId = Guid.NewGuid();
+
+        //Act && Assert
+        patient
+            .Invoking(p => p.RemoveFamilyMember(anotherUserId))
+            .Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Patient.UnauthorizedRemoval);
     }
 
     [Fact]
