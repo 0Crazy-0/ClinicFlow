@@ -7,7 +7,8 @@ namespace ClinicFlow.Application.Patients.Commands.AddCompleteFamilyMember;
 public class AddCompleteFamilyMemberCommandValidator
     : CompletePatientCommandValidatorBase<AddCompleteFamilyMemberCommand>
 {
-    public AddCompleteFamilyMemberCommandValidator()
+    public AddCompleteFamilyMemberCommandValidator(TimeProvider timeProvider)
+        : base(timeProvider)
     {
         RuleFor(x => x.Relationship)
             .IsInEnum()

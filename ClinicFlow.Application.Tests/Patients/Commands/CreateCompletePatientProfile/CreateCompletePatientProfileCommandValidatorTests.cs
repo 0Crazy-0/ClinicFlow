@@ -1,15 +1,17 @@
 using ClinicFlow.Application.Patients.Commands.CreateCompletePatientProfile;
 using FluentValidation.TestHelper;
+using Microsoft.Extensions.Time.Testing;
 
 namespace ClinicFlow.Application.Tests.Patients.Commands.CreateCompletePatientProfile;
 
 public class CreateCompletePatientProfileCommandValidatorTests
 {
+    private readonly FakeTimeProvider _fakeTime = new();
     private readonly CreateCompletePatientProfileCommandValidator _sut;
 
     public CreateCompletePatientProfileCommandValidatorTests()
     {
-        _sut = new CreateCompletePatientProfileCommandValidator();
+        _sut = new CreateCompletePatientProfileCommandValidator(_fakeTime);
     }
 
     [Fact]
@@ -20,7 +22,7 @@ public class CreateCompletePatientProfileCommandValidatorTests
             Guid.NewGuid(),
             "John",
             "Doe",
-            DateTime.UtcNow.AddYears(-30),
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30),
             "O+",
             "None",
             "None",

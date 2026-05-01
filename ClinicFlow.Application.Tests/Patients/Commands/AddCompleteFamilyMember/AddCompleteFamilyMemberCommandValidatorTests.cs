@@ -2,16 +2,18 @@ using ClinicFlow.Application.Patients.Commands.AddCompleteFamilyMember;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Enums;
 using FluentValidation.TestHelper;
+using Microsoft.Extensions.Time.Testing;
 
 namespace ClinicFlow.Application.Tests.Patients.Commands.AddCompleteFamilyMember;
 
 public class AddCompleteFamilyMemberCommandValidatorTests
 {
+    private readonly FakeTimeProvider _fakeTime = new();
     private readonly AddCompleteFamilyMemberCommandValidator _sut;
 
     public AddCompleteFamilyMemberCommandValidatorTests()
     {
-        _sut = new AddCompleteFamilyMemberCommandValidator();
+        _sut = new AddCompleteFamilyMemberCommandValidator(_fakeTime);
     }
 
     [Fact]
@@ -22,7 +24,7 @@ public class AddCompleteFamilyMemberCommandValidatorTests
             Guid.NewGuid(),
             "John",
             "Doe",
-            DateTime.UtcNow.AddYears(-10),
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-10),
             "O+",
             "None",
             "None",
@@ -46,7 +48,7 @@ public class AddCompleteFamilyMemberCommandValidatorTests
             Guid.NewGuid(),
             "John",
             "Doe",
-            DateTime.UtcNow.AddYears(-10),
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-10),
             "O+",
             "None",
             "None",

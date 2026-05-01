@@ -6,7 +6,7 @@ namespace ClinicFlow.Application.Patients.Commands.Shared.CreatePatient;
 public abstract class CreatePatientCommandValidatorBase<TCommand> : AbstractValidator<TCommand>
     where TCommand : ICreatePatientCommand
 {
-    protected CreatePatientCommandValidatorBase()
+    protected CreatePatientCommandValidatorBase(TimeProvider timeProvider)
     {
         RuleFor(x => x.UserId).NotEmpty().WithMessage(DomainErrors.Validation.InvalidValue);
         RuleFor(x => x.FirstName)
@@ -20,7 +20,7 @@ public abstract class CreatePatientCommandValidatorBase<TCommand> : AbstractVali
             .MinimumLength(2)
             .WithMessage(DomainErrors.Validation.ValueTooShort);
         RuleFor(x => x.DateOfBirth)
-            .LessThanOrEqualTo(DateTime.UtcNow.Date)
+            .LessThanOrEqualTo(_ => timeProvider.GetUtcNow().UtcDateTime.Date)
             .WithMessage(DomainErrors.Validation.ValueCannotBeInFuture);
     }
 }
