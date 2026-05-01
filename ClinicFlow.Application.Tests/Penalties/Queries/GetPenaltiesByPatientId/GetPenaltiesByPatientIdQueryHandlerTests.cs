@@ -3,12 +3,14 @@ using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using FluentAssertions;
+using Microsoft.Extensions.Time.Testing;
 using Moq;
 
 namespace ClinicFlow.Application.Tests.Penalties.Queries.GetPenaltiesByPatientId;
 
 public class GetPenaltiesByPatientIdQueryHandlerTests
 {
+    private readonly FakeTimeProvider _fakeTime = new();
     private readonly Mock<IPatientPenaltyRepository> _penaltyRepositoryMock;
     private readonly GetPenaltiesByPatientIdQueryHandler _sut;
 
@@ -28,7 +30,7 @@ public class GetPenaltiesByPatientIdQueryHandlerTests
             patientId,
             "Block 1",
             BlockDuration.Minor,
-            DateTime.UtcNow
+            _fakeTime.GetUtcNow().UtcDateTime
         );
 
         _penaltyRepositoryMock
