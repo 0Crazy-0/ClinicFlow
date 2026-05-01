@@ -55,13 +55,16 @@ public class UpdatePatientProfileCommandValidatorTests
             .WithErrorMessage(DomainErrors.Validation.InvalidValue);
     }
 
-    [Fact]
-    public void Validate_ShouldHaveError_WhenBloodTypeIsEmpty()
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Validate_ShouldHaveError_WhenBloodTypeIsEmpty(string? bloodType)
     {
         // Arrange
         var command = new UpdatePatientProfileCommand(
             Guid.NewGuid(),
-            "",
+            bloodType!,
             "None",
             "None",
             "Mom",
@@ -77,8 +80,13 @@ public class UpdatePatientProfileCommandValidatorTests
             .WithErrorMessage(DomainErrors.Validation.ValueRequired);
     }
 
-    [Fact]
-    public void Validate_ShouldHaveError_WhenEmergencyContactNameIsEmpty()
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Validate_ShouldHaveError_WhenEmergencyContactNameIsEmpty(
+        string? emergencyContactName
+    )
     {
         // Arrange
         var command = new UpdatePatientProfileCommand(
@@ -86,7 +94,7 @@ public class UpdatePatientProfileCommandValidatorTests
             "O+",
             "None",
             "None",
-            "",
+            emergencyContactName!,
             "555-5555"
         );
 
@@ -99,8 +107,13 @@ public class UpdatePatientProfileCommandValidatorTests
             .WithErrorMessage(DomainErrors.Validation.ValueRequired);
     }
 
-    [Fact]
-    public void Validate_ShouldHaveError_WhenEmergencyContactPhoneIsEmpty()
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Validate_ShouldHaveError_WhenEmergencyContactPhoneIsEmpty(
+        string? emergencyContactPhone
+    )
     {
         // Arrange
         var command = new UpdatePatientProfileCommand(
@@ -109,7 +122,7 @@ public class UpdatePatientProfileCommandValidatorTests
             "None",
             "None",
             "Mom",
-            ""
+            emergencyContactPhone!
         );
 
         // Act
