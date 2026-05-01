@@ -84,8 +84,11 @@ public class Patient : BaseEntity
         return new Patient(userId, fullName, relationshipToUser, dateOfBirth);
     }
 
-    public void RemoveFamilyMember()
+    public void RemoveFamilyMember(Guid initiatorUserId)
     {
+        if (UserId != initiatorUserId)
+            throw new DomainValidationException(DomainErrors.Patient.UnauthorizedRemoval);
+
         if (RelationshipToUser is PatientRelationship.Self)
             throw new DomainValidationException(DomainErrors.Patient.CannotRemovePrimaryUser);
 
