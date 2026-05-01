@@ -436,18 +436,19 @@ Use the following template:
 
 ```markdown
 ## Summary
-<!-- Paragraph-style summary — see rules below -->
+<!-- What changed and why, in a few lines -->
 
 ## Type of change
 - [ ] Bug fix
 - [ ] New feature
 - [ ] Refactor
-- [ ] Documentation
-- [ ] Style / Tooling
 - [ ] Test / QA
+- [ ] Documentation
+- [ ] Tooling
+- [ ] Style
 
 ## How to test
-<!-- Test verification — see rules below -->
+<!-- Steps to verify this works as expected -->
 
 ## Checklist
 - [ ] Code follows project standards
