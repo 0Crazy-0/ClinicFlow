@@ -12,14 +12,12 @@ public record DummyClinicalFormTemplateCommand(
     string JsonSchemaDefinition
 ) : IClinicalFormTemplateCommand;
 
-public class DummyClinicalFormTemplateCommandValidator
-    : ClinicalFormTemplateCommandValidatorBase<DummyClinicalFormTemplateCommand>
-{
-    public DummyClinicalFormTemplateCommandValidator(
-        IJsonSchemaDefinitionValidator schemaDefinitionValidator
-    )
-        : base(schemaDefinitionValidator) { }
-}
+public class DummyClinicalFormTemplateCommandValidator(
+    IJsonSchemaDefinitionValidator schemaDefinitionValidator
+)
+    : ClinicalFormTemplateCommandValidatorBase<DummyClinicalFormTemplateCommand>(
+        schemaDefinitionValidator
+    ) { }
 
 public class ClinicalFormTemplateCommandValidatorBaseTests
 {
