@@ -6,12 +6,14 @@ using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
+using Microsoft.Extensions.Time.Testing;
 using Moq;
 
 namespace ClinicFlow.Application.Tests.Appointments.Queries.GetAppointmentById;
 
 public class GetAppointmentByIdQueryHandlerTests
 {
+    private readonly FakeTimeProvider _fakeTime = new();
     private readonly Mock<IAppointmentRepository> _appointmentRepositoryMock;
     private readonly GetAppointmentByIdQueryHandler _sut;
 
@@ -69,13 +71,13 @@ public class GetAppointmentByIdQueryHandlerTests
         exceptionAssertion.Which.EntityName.Should().Be(nameof(Appointment));
     }
 
-    private static Appointment CreateAppointment(Guid id, Guid patientId, Guid doctorId)
+    private Appointment CreateAppointment(Guid id, Guid patientId, Guid doctorId)
     {
         var appointment = Appointment.Schedule(
             patientId,
             doctorId,
             Guid.NewGuid(),
-            DateTime.UtcNow.Date.AddDays(1),
+            _fakeTime.GetUtcNow().UtcDateTime.Date.AddDays(1),
             TimeRange.Create(new TimeSpan(9, 0, 0), new TimeSpan(10, 0, 0))
         );
         appointment.SetId(id);

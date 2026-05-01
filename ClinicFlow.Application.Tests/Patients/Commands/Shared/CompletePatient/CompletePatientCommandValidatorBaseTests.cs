@@ -1,6 +1,7 @@
 using ClinicFlow.Application.Patients.Commands.Shared.CompletePatient;
 using ClinicFlow.Domain.Common;
 using FluentValidation.TestHelper;
+using Microsoft.Extensions.Time.Testing;
 
 namespace ClinicFlow.Application.Tests.Patients.Commands.Shared.CompletePatient;
 
@@ -14,16 +15,17 @@ public record DummyCompletePatientCommand(
     string EmergencyContactPhone
 ) : ICompletePatientCommand;
 
-public class DummyCompletePatientCommandValidator
-    : CompletePatientCommandValidatorBase<DummyCompletePatientCommand> { }
+public class DummyCompletePatientCommandValidator(TimeProvider timeProvider)
+    : CompletePatientCommandValidatorBase<DummyCompletePatientCommand>(timeProvider) { }
 
 public class CompletePatientCommandValidatorBaseTests
 {
+    private readonly FakeTimeProvider _fakeTime = new();
     private readonly DummyCompletePatientCommandValidator _sut;
 
     public CompletePatientCommandValidatorBaseTests()
     {
-        _sut = new DummyCompletePatientCommandValidator();
+        _sut = new DummyCompletePatientCommandValidator(_fakeTime);
     }
 
     [Fact]
@@ -34,7 +36,7 @@ public class CompletePatientCommandValidatorBaseTests
             Guid.NewGuid(),
             "John",
             "Doe",
-            DateTime.UtcNow.AddYears(-30),
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30),
             "O+",
             "Mom",
             "555-5555"
@@ -55,7 +57,7 @@ public class CompletePatientCommandValidatorBaseTests
             Guid.NewGuid(),
             "John",
             "Doe",
-            DateTime.UtcNow.AddYears(-30),
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30),
             "",
             "Mom",
             "555-5555"
@@ -78,7 +80,7 @@ public class CompletePatientCommandValidatorBaseTests
             Guid.NewGuid(),
             "John",
             "Doe",
-            DateTime.UtcNow.AddYears(-30),
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30),
             "O+",
             "",
             "555-5555"
@@ -101,7 +103,7 @@ public class CompletePatientCommandValidatorBaseTests
             Guid.NewGuid(),
             "John",
             "Doe",
-            DateTime.UtcNow.AddYears(-30),
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30),
             "O+",
             "Mom",
             ""

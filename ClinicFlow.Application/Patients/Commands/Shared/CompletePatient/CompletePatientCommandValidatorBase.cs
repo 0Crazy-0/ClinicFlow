@@ -8,7 +8,8 @@ public abstract class CompletePatientCommandValidatorBase<TCommand>
     : CreatePatientCommandValidatorBase<TCommand>
     where TCommand : ICompletePatientCommand
 {
-    protected CompletePatientCommandValidatorBase()
+    protected CompletePatientCommandValidatorBase(TimeProvider timeProvider)
+        : base(timeProvider)
     {
         RuleFor(x => x.BloodType).NotEmpty().WithMessage(DomainErrors.Validation.ValueRequired);
         RuleFor(x => x.EmergencyContactName)

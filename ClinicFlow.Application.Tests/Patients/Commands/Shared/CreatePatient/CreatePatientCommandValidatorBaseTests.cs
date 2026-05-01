@@ -1,6 +1,7 @@
 using ClinicFlow.Application.Patients.Commands.Shared.CreatePatient;
 using ClinicFlow.Domain.Common;
 using FluentValidation.TestHelper;
+using Microsoft.Extensions.Time.Testing;
 
 namespace ClinicFlow.Application.Tests.Patients.Commands.Shared.CreatePatient;
 
@@ -11,16 +12,17 @@ public record DummyCreatePatientCommand(
     DateTime DateOfBirth
 ) : ICreatePatientCommand;
 
-public class DummyCreatePatientCommandValidator
-    : CreatePatientCommandValidatorBase<DummyCreatePatientCommand> { }
+public class DummyCreatePatientCommandValidator(TimeProvider timeProvider)
+    : CreatePatientCommandValidatorBase<DummyCreatePatientCommand>(timeProvider) { }
 
 public class CreatePatientCommandValidatorBaseTests
 {
+    private readonly FakeTimeProvider _fakeTime = new();
     private readonly DummyCreatePatientCommandValidator _sut;
 
     public CreatePatientCommandValidatorBaseTests()
     {
-        _sut = new DummyCreatePatientCommandValidator();
+        _sut = new DummyCreatePatientCommandValidator(_fakeTime);
     }
 
     [Fact]
@@ -31,7 +33,7 @@ public class CreatePatientCommandValidatorBaseTests
             Guid.NewGuid(),
             "John",
             "Doe",
-            DateTime.UtcNow.AddYears(-30)
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)
         );
 
         // Act
@@ -49,7 +51,7 @@ public class CreatePatientCommandValidatorBaseTests
             Guid.Empty,
             "John",
             "Doe",
-            DateTime.UtcNow.AddYears(-30)
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)
         );
 
         // Act
@@ -69,7 +71,7 @@ public class CreatePatientCommandValidatorBaseTests
             Guid.NewGuid(),
             "J",
             "Doe",
-            DateTime.UtcNow.AddYears(-30)
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)
         );
 
         // Act
@@ -89,7 +91,7 @@ public class CreatePatientCommandValidatorBaseTests
             Guid.NewGuid(),
             "John",
             "",
-            DateTime.UtcNow.AddYears(-30)
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)
         );
 
         // Act
@@ -109,7 +111,7 @@ public class CreatePatientCommandValidatorBaseTests
             Guid.NewGuid(),
             "John",
             "Doe",
-            DateTime.UtcNow.AddDays(1)
+            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1)
         );
 
         // Act

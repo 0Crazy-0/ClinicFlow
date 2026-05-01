@@ -4,12 +4,14 @@ using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
+using Microsoft.Extensions.Time.Testing;
 using Moq;
 
 namespace ClinicFlow.Application.Tests.Appointments.Queries.GetAppointmentsByDateRange;
 
 public class GetAppointmentsByDateRangeQueryHandlerTests
 {
+    private readonly FakeTimeProvider _fakeTime = new();
     private readonly Mock<IAppointmentRepository> _appointmentRepositoryMock;
     private readonly GetAppointmentsByDateRangeQueryHandler _sut;
 
@@ -23,7 +25,7 @@ public class GetAppointmentsByDateRangeQueryHandlerTests
     public async Task Handle_ShouldReturnEmptyList_WhenNoAppointmentsInDateRange()
     {
         // Arrange
-        var startDate = DateTime.UtcNow.Date;
+        var startDate = _fakeTime.GetUtcNow().UtcDateTime.Date;
         var endDate = startDate.AddDays(7);
         var query = new GetAppointmentsByDateRangeQuery(startDate, endDate);
 
@@ -46,7 +48,7 @@ public class GetAppointmentsByDateRangeQueryHandlerTests
     public async Task Handle_ShouldReturnAppointmentList_WhenAppointmentsExistInDateRange()
     {
         // Arrange
-        var startDate = DateTime.UtcNow.Date;
+        var startDate = _fakeTime.GetUtcNow().UtcDateTime.Date;
         var endDate = startDate.AddDays(7);
         var query = new GetAppointmentsByDateRangeQuery(startDate, endDate);
 

@@ -7,12 +7,14 @@ using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
+using Microsoft.Extensions.Time.Testing;
 using Moq;
 
 namespace ClinicFlow.Application.Tests.Appointments.Commands.ScheduleByDoctor;
 
 public class ScheduleByDoctorCommandHandlerTests
 {
+    private readonly FakeTimeProvider _fakeTime = new();
     private readonly Mock<IDoctorRepository> _doctorRepositoryMock = new();
     private readonly Mock<IPatientRepository> _patientRepositoryMock = new();
     private readonly Mock<IAppointmentTypeDefinitionRepository> _appointmentTypeRepositoryMock =
@@ -38,7 +40,7 @@ public class ScheduleByDoctorCommandHandlerTests
     public async Task Handle_ShouldSucceed_WhenValidRequest()
     {
         // Arrange
-        var scheduledDate = DateTime.UtcNow.AddDays(1).Date;
+        var scheduledDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date;
         var startTime = new TimeSpan(10, 0, 0);
         var endTime = new TimeSpan(11, 0, 0);
 
@@ -106,7 +108,7 @@ public class ScheduleByDoctorCommandHandlerTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             Guid.NewGuid(),
-            DateTime.UtcNow.AddDays(1).Date,
+            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
             new TimeSpan(10, 0, 0),
             new TimeSpan(11, 0, 0),
             false
@@ -133,7 +135,7 @@ public class ScheduleByDoctorCommandHandlerTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             Guid.NewGuid(),
-            DateTime.UtcNow.AddDays(1).Date,
+            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
             new TimeSpan(10, 0, 0),
             new TimeSpan(11, 0, 0),
             false
@@ -167,7 +169,7 @@ public class ScheduleByDoctorCommandHandlerTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             Guid.NewGuid(),
-            DateTime.UtcNow.AddDays(1).Date,
+            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
             new TimeSpan(10, 0, 0),
             new TimeSpan(11, 0, 0),
             false
@@ -207,12 +209,12 @@ public class ScheduleByDoctorCommandHandlerTests
             ConsultationRoom.Create(1, "Room A", 1)
         );
 
-    private static Patient CreateTargetPatient(Guid userId) =>
+    private Patient CreateTargetPatient(Guid userId) =>
         Patient.CreateSelf(
             userId,
             PersonName.Create("Test"),
-            DateTime.UtcNow.AddYears(-30),
-            DateTime.UtcNow
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30),
+            _fakeTime.GetUtcNow().UtcDateTime
         );
 
     private static AppointmentTypeDefinition CreateAppointmentType() =>

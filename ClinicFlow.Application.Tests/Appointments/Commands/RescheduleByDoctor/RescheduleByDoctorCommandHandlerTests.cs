@@ -7,12 +7,14 @@ using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
+using Microsoft.Extensions.Time.Testing;
 using Moq;
 
 namespace ClinicFlow.Application.Tests.Appointments.Commands.RescheduleByDoctor;
 
 public class RescheduleByDoctorCommandHandlerTests
 {
+    private readonly FakeTimeProvider _fakeTime = new();
     private readonly Mock<IAppointmentRepository> _appointmentRepositoryMock = new();
     private readonly Mock<IDoctorRepository> _doctorRepositoryMock = new();
     private readonly Mock<IScheduleRepository> _scheduleRepositoryMock = new();
@@ -33,7 +35,7 @@ public class RescheduleByDoctorCommandHandlerTests
     public async Task Handle_ShouldSucceed_WhenValidRequest()
     {
         // Arrange
-        var newDate = DateTime.UtcNow.AddDays(1).Date;
+        var newDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date;
         var newStartTime = new TimeSpan(10, 0, 0);
         var newEndTime = new TimeSpan(11, 0, 0);
 
@@ -92,7 +94,7 @@ public class RescheduleByDoctorCommandHandlerTests
         var command = new RescheduleByDoctorCommand(
             Guid.NewGuid(),
             Guid.NewGuid(),
-            DateTime.UtcNow.AddDays(1).Date,
+            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
             new TimeSpan(10, 0, 0),
             new TimeSpan(11, 0, 0),
             false
@@ -119,7 +121,7 @@ public class RescheduleByDoctorCommandHandlerTests
         var command = new RescheduleByDoctorCommand(
             Guid.NewGuid(),
             Guid.NewGuid(),
-            DateTime.UtcNow.AddDays(1).Date,
+            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
             new TimeSpan(10, 0, 0),
             new TimeSpan(11, 0, 0),
             false
@@ -144,12 +146,12 @@ public class RescheduleByDoctorCommandHandlerTests
         exceptionAssertion.Which.EntityName.Should().Be(nameof(Doctor));
     }
 
-    private static Appointment CreateAppointment(Guid patientId, Guid doctorId, Guid typeId) =>
+    private Appointment CreateAppointment(Guid patientId, Guid doctorId, Guid typeId) =>
         Appointment.Schedule(
             patientId,
             doctorId,
             typeId,
-            DateTime.UtcNow.AddDays(1).Date,
+            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
             TimeRange.Create(new TimeSpan(10, 0, 0), new TimeSpan(11, 0, 0))
         );
 

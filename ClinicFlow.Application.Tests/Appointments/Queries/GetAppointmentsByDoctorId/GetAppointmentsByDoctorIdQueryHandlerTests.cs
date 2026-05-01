@@ -4,12 +4,14 @@ using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
+using Microsoft.Extensions.Time.Testing;
 using Moq;
 
 namespace ClinicFlow.Application.Tests.Appointments.Queries.GetAppointmentsByDoctorId;
 
 public class GetAppointmentsByDoctorIdQueryHandlerTests
 {
+    private readonly FakeTimeProvider _fakeTime = new();
     private readonly Mock<IAppointmentRepository> _appointmentRepositoryMock;
     private readonly GetAppointmentsByDoctorIdQueryHandler _sut;
 
@@ -23,7 +25,10 @@ public class GetAppointmentsByDoctorIdQueryHandlerTests
     public async Task Handle_ShouldReturnEmptyList_WhenDoctorHasNoAppointmentsOnDate()
     {
         // Arrange
-        var query = new GetAppointmentsByDoctorIdQuery(Guid.NewGuid(), DateTime.UtcNow.Date);
+        var query = new GetAppointmentsByDoctorIdQuery(
+            Guid.NewGuid(),
+            _fakeTime.GetUtcNow().UtcDateTime.Date
+        );
 
         _appointmentRepositoryMock
             .Setup(x => x.GetByDoctorIdAsync(query.DoctorId, query.Date))
@@ -45,7 +50,7 @@ public class GetAppointmentsByDoctorIdQueryHandlerTests
     {
         // Arrange
         var doctorId = Guid.NewGuid();
-        var date = DateTime.UtcNow.Date;
+        var date = _fakeTime.GetUtcNow().UtcDateTime.Date;
         var query = new GetAppointmentsByDoctorIdQuery(doctorId, date);
 
         var appointments = new List<Appointment>

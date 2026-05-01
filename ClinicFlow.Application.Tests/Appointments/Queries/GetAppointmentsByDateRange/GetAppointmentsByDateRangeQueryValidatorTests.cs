@@ -1,11 +1,13 @@
 using ClinicFlow.Application.Appointments.Queries.GetAppointmentsByDateRange;
 using ClinicFlow.Domain.Common;
 using FluentValidation.TestHelper;
+using Microsoft.Extensions.Time.Testing;
 
 namespace ClinicFlow.Application.Tests.Appointments.Queries.GetAppointmentsByDateRange;
 
 public class GetAppointmentsByDateRangeQueryValidatorTests
 {
+    private readonly FakeTimeProvider _fakeTime = new();
     private readonly GetAppointmentsByDateRangeQueryValidator _sut;
 
     public GetAppointmentsByDateRangeQueryValidatorTests()
@@ -17,7 +19,7 @@ public class GetAppointmentsByDateRangeQueryValidatorTests
     public void Validate_ShouldHaveError_WhenStartDateIsEmpty()
     {
         // Arrange
-        var query = new GetAppointmentsByDateRangeQuery(default, DateTime.UtcNow);
+        var query = new GetAppointmentsByDateRangeQuery(default, _fakeTime.GetUtcNow().UtcDateTime);
 
         // Act
         var result = _sut.TestValidate(query);
@@ -32,7 +34,7 @@ public class GetAppointmentsByDateRangeQueryValidatorTests
     public void Validate_ShouldHaveError_WhenEndDateIsEmpty()
     {
         // Arrange
-        var query = new GetAppointmentsByDateRangeQuery(DateTime.UtcNow, default);
+        var query = new GetAppointmentsByDateRangeQuery(_fakeTime.GetUtcNow().UtcDateTime, default);
 
         // Act
         var result = _sut.TestValidate(query);
@@ -47,7 +49,7 @@ public class GetAppointmentsByDateRangeQueryValidatorTests
     public void Validate_ShouldHaveError_WhenEndDateIsBeforeStartDate()
     {
         // Arrange
-        var now = DateTime.UtcNow;
+        var now = _fakeTime.GetUtcNow().UtcDateTime;
         var query = new GetAppointmentsByDateRangeQuery(now, now.AddDays(-1));
 
         // Act
@@ -63,7 +65,7 @@ public class GetAppointmentsByDateRangeQueryValidatorTests
     public void Validate_ShouldNotHaveError_WhenQueryIsValid()
     {
         // Arrange
-        var now = DateTime.UtcNow;
+        var now = _fakeTime.GetUtcNow().UtcDateTime;
         var query = new GetAppointmentsByDateRangeQuery(now, now.AddDays(7));
 
         // Act
@@ -78,7 +80,7 @@ public class GetAppointmentsByDateRangeQueryValidatorTests
     public void Validate_ShouldNotHaveError_WhenStartDateEqualsEndDate()
     {
         // Arrange
-        var now = DateTime.UtcNow;
+        var now = _fakeTime.GetUtcNow().UtcDateTime;
         var query = new GetAppointmentsByDateRangeQuery(now, now);
 
         // Act

@@ -9,12 +9,14 @@ using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
+using Microsoft.Extensions.Time.Testing;
 using Moq;
 
 namespace ClinicFlow.Application.Tests.Appointments.Commands.MarkAppointmentAsNoShowByDoctor;
 
 public class MarkAppointmentAsNoShowByDoctorCommandHandlerTests
 {
+    private readonly FakeTimeProvider _fakeTime = new();
     private readonly Mock<IAppointmentRepository> _appointmentRepositoryMock;
     private readonly Mock<IDoctorRepository> _doctorRepositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
@@ -130,9 +132,9 @@ public class MarkAppointmentAsNoShowByDoctorCommandHandlerTests
         exceptionAssertion.Which.EntityName.Should().Be(nameof(Doctor));
     }
 
-    private static Appointment CreateAppointment(Guid id, Guid doctorId)
+    private Appointment CreateAppointment(Guid id, Guid doctorId)
     {
-        var scheduledDateTime = DateTime.UtcNow.AddDays(-1);
+        var scheduledDateTime = _fakeTime.GetUtcNow().UtcDateTime.AddDays(-1);
         var appointment = Appointment.Schedule(
             Guid.NewGuid(),
             doctorId,
