@@ -1,11 +1,13 @@
 using ClinicFlow.Application.Appointments.Queries.GetAppointmentsByDoctorId;
 using ClinicFlow.Domain.Common;
 using FluentValidation.TestHelper;
+using Microsoft.Extensions.Time.Testing;
 
 namespace ClinicFlow.Application.Tests.Appointments.Queries.GetAppointmentsByDoctorId;
 
 public class GetAppointmentsByDoctorIdQueryValidatorTests
 {
+    private readonly FakeTimeProvider _fakeTime = new();
     private readonly GetAppointmentsByDoctorIdQueryValidator _sut;
 
     public GetAppointmentsByDoctorIdQueryValidatorTests()
@@ -17,7 +19,10 @@ public class GetAppointmentsByDoctorIdQueryValidatorTests
     public void Validate_ShouldHaveError_WhenDoctorIdIsEmpty()
     {
         // Arrange
-        var query = new GetAppointmentsByDoctorIdQuery(Guid.Empty, DateTime.UtcNow);
+        var query = new GetAppointmentsByDoctorIdQuery(
+            Guid.Empty,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
 
         // Act
         var result = _sut.TestValidate(query);
@@ -47,7 +52,10 @@ public class GetAppointmentsByDoctorIdQueryValidatorTests
     public void Validate_ShouldNotHaveError_WhenQueryIsValid()
     {
         // Arrange
-        var query = new GetAppointmentsByDoctorIdQuery(Guid.NewGuid(), DateTime.UtcNow);
+        var query = new GetAppointmentsByDoctorIdQuery(
+            Guid.NewGuid(),
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
 
         // Act
         var result = _sut.TestValidate(query);

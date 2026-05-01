@@ -6,12 +6,14 @@ using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
+using Microsoft.Extensions.Time.Testing;
 using Moq;
 
 namespace ClinicFlow.Application.Tests.Appointments.Commands.RescheduleByStaff;
 
 public class RescheduleByStaffCommandHandlerTests
 {
+    private readonly FakeTimeProvider _fakeTime = new();
     private readonly Mock<IAppointmentRepository> _appointmentRepositoryMock = new();
     private readonly Mock<IScheduleRepository> _scheduleRepositoryMock = new();
     private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
@@ -30,7 +32,7 @@ public class RescheduleByStaffCommandHandlerTests
     public async Task Handle_ShouldSucceed_WhenValidRequest()
     {
         // Arrange
-        var newDate = DateTime.UtcNow.AddDays(1).Date;
+        var newDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date;
         var newStartTime = new TimeSpan(10, 0, 0);
         var newEndTime = new TimeSpan(11, 0, 0);
 
@@ -85,7 +87,7 @@ public class RescheduleByStaffCommandHandlerTests
         var command = new RescheduleByStaffCommand(
             Guid.NewGuid(),
             Guid.NewGuid(),
-            DateTime.UtcNow.AddDays(1).Date,
+            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
             new TimeSpan(10, 0, 0),
             new TimeSpan(11, 0, 0),
             false
@@ -105,12 +107,12 @@ public class RescheduleByStaffCommandHandlerTests
         exceptionAssertion.Which.EntityName.Should().Be(nameof(Appointment));
     }
 
-    private static Appointment CreateAppointment(Guid patientId, Guid doctorId, Guid typeId) =>
+    private Appointment CreateAppointment(Guid patientId, Guid doctorId, Guid typeId) =>
         Appointment.Schedule(
             patientId,
             doctorId,
             typeId,
-            DateTime.UtcNow.AddDays(1).Date,
+            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
             TimeRange.Create(new TimeSpan(10, 0, 0), new TimeSpan(11, 0, 0))
         );
 

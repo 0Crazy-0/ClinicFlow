@@ -7,12 +7,14 @@ using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
+using Microsoft.Extensions.Time.Testing;
 using Moq;
 
 namespace ClinicFlow.Application.Tests.Appointments.Commands.RescheduleByPatient;
 
 public class RescheduleByPatientCommandHandlerTests
 {
+    private readonly FakeTimeProvider _fakeTime = new();
     private readonly Mock<IAppointmentRepository> _appointmentRepositoryMock = new();
     private readonly Mock<IPatientRepository> _patientRepositoryMock = new();
     private readonly Mock<IScheduleRepository> _scheduleRepositoryMock = new();
@@ -35,7 +37,7 @@ public class RescheduleByPatientCommandHandlerTests
     public async Task Handle_ShouldSucceed_WhenValidRequest()
     {
         // Arrange
-        var newDate = DateTime.UtcNow.AddDays(1).Date;
+        var newDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date;
         var newStartTime = new TimeSpan(10, 0, 0);
         var newEndTime = new TimeSpan(11, 0, 0);
 
@@ -100,7 +102,7 @@ public class RescheduleByPatientCommandHandlerTests
         var command = new RescheduleByPatientCommand(
             Guid.NewGuid(),
             Guid.NewGuid(),
-            DateTime.UtcNow.AddDays(1).Date,
+            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
             new TimeSpan(10, 0, 0),
             new TimeSpan(11, 0, 0)
         );
@@ -126,7 +128,7 @@ public class RescheduleByPatientCommandHandlerTests
         var command = new RescheduleByPatientCommand(
             Guid.NewGuid(),
             Guid.NewGuid(),
-            DateTime.UtcNow.AddDays(1).Date,
+            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
             new TimeSpan(10, 0, 0),
             new TimeSpan(11, 0, 0)
         );
@@ -157,7 +159,7 @@ public class RescheduleByPatientCommandHandlerTests
         var command = new RescheduleByPatientCommand(
             Guid.NewGuid(),
             Guid.NewGuid(),
-            DateTime.UtcNow.AddDays(1).Date,
+            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
             new TimeSpan(10, 0, 0),
             new TimeSpan(11, 0, 0)
         );
@@ -188,22 +190,22 @@ public class RescheduleByPatientCommandHandlerTests
         exceptionAssertion.Which.EntityName.Should().Be(nameof(Patient));
     }
 
-    private static Appointment CreateAppointment(Guid patientId, Guid doctorId, Guid typeId) =>
+    private Appointment CreateAppointment(Guid patientId, Guid doctorId, Guid typeId) =>
         Appointment.Schedule(
             patientId,
             doctorId,
             typeId,
-            DateTime.UtcNow.AddDays(1).Date,
+            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
             TimeRange.Create(new TimeSpan(10, 0, 0), new TimeSpan(11, 0, 0))
         );
 
-    private static Patient CreatePatient(Guid id, Guid userId)
+    private Patient CreatePatient(Guid id, Guid userId)
     {
         var patient = Patient.CreateSelf(
             userId,
             PersonName.Create("Test"),
-            DateTime.UtcNow.AddYears(-30),
-            DateTime.UtcNow
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30),
+            _fakeTime.GetUtcNow().UtcDateTime
         );
         patient.SetId(id);
         return patient;
