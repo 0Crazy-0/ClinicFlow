@@ -1,4 +1,5 @@
 using ClinicFlow.Domain.Entities;
+using ClinicFlow.Domain.ValueObjects;
 
 namespace ClinicFlow.Domain.Interfaces.Repositories;
 
@@ -13,6 +14,13 @@ public interface IPatientRepository
 
     Task<IReadOnlyList<Patient>> GetAllByUserIdAsync(
         Guid userId,
+        CancellationToken cancellationToken = default
+    );
+
+    Task<Patient?> GetIncludingDeletedByNameAndDobAsync(
+        Guid userId,
+        PersonName fullName,
+        DateTime dateOfBirth,
         CancellationToken cancellationToken = default
     );
 
