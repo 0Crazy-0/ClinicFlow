@@ -28,6 +28,7 @@ public class UserTests
         user.PhoneNumber.Should().Be(phone);
         user.Role.Should().Be(role);
         user.IsActive.Should().BeTrue();
+        user.IsPhoneVerified.Should().BeFalse();
         user.LastLoginAt.Should().BeNull();
     }
 
@@ -51,4 +52,54 @@ public class UserTests
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.Validation.ValueRequired);
     }
+
+    [Fact]
+    public void MarkPhoneAsVerified_ShouldSetIsPhoneVerifiedToTrue_WhenCodeIsValid()
+    {
+        // Arrange
+        var user = CreateUser();
+
+        // Act
+        user.MarkPhoneAsVerified(true);
+
+        // Assert
+        user.IsPhoneVerified.Should().BeTrue();
+    }
+
+    [Fact]
+    public void MarkPhoneAsVerified_ShouldThrowException_WhenCodeIsInvalid()
+    {
+        // Arrange
+        var user = CreateUser();
+
+        // Act && Assert
+        user.Invoking(u => u.MarkPhoneAsVerified(false))
+            .Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.User.InvalidVerificationCode);
+
+        user.IsPhoneVerified.Should().BeFalse();
+    }
+
+    [Fact]
+    public void MarkPhoneAsVerified_ShouldThrowException_WhenAlreadyVerified()
+    {
+        // Arrange
+        var user = CreateUser();
+        user.MarkPhoneAsVerified(true);
+
+        // Act && Assert
+        user.Invoking(u => u.MarkPhoneAsVerified(true))
+            .Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.User.PhoneAlreadyVerified);
+    }
+
+    private static User CreateUser() =>
+        User.Create(
+            EmailAddress.Create("test@clinic.com"),
+            "hashedpassword123",
+            PhoneNumber.Create("555-1234"),
+            UserRole.Doctor
+        );
 }

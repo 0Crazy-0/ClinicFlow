@@ -19,10 +19,13 @@ public class User : BaseEntity
 
     public bool IsActive { get; private set; }
 
+    public bool IsPhoneVerified { get; private set; }
+
     // EF Core constructor
     private User()
     {
         IsActive = true;
+        IsPhoneVerified = false;
     }
 
     private User(EmailAddress email, string passwordHash, PhoneNumber phoneNumber, UserRole role)
@@ -45,5 +48,17 @@ public class User : BaseEntity
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
 
         return new User(email, passwordHash, phoneNumber, role);
+    }
+
+    /// <param name="isVerificationCodeValid">The result of the external verification check.</param>
+    public void MarkPhoneAsVerified(bool isVerificationCodeValid)
+    {
+        if (!isVerificationCodeValid)
+            throw new DomainValidationException(DomainErrors.User.InvalidVerificationCode);
+
+        if (IsPhoneVerified)
+            throw new DomainValidationException(DomainErrors.User.PhoneAlreadyVerified);
+
+        IsPhoneVerified = true;
     }
 }
