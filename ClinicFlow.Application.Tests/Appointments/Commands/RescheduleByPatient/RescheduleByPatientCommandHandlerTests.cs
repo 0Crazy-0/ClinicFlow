@@ -2,6 +2,7 @@ using ClinicFlow.Application.Appointments.Commands.RescheduleByPatient;
 using ClinicFlow.Application.Tests.Shared;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
+using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
@@ -55,7 +56,11 @@ public class RescheduleByPatientCommandHandlerTests
         var doctorId = Guid.NewGuid();
         var appointment = CreateAppointment(patientId, doctorId, Guid.NewGuid());
         var targetPatient = CreatePatient(patientId, command.InitiatorUserId);
-        var schedule = CreateSchedule(doctorId, newDate.DayOfWeek, newStartTime, newEndTime);
+        var schedule = Schedule.Create(
+            doctorId,
+            newDate.DayOfWeek,
+            TimeRange.Create(newStartTime, newEndTime)
+        );
 
         _appointmentRepositoryMock
             .Setup(r => r.GetByIdAsync(command.AppointmentId, It.IsAny<CancellationToken>()))
@@ -85,7 +90,14 @@ public class RescheduleByPatientCommandHandlerTests
             )
             .ReturnsAsync(false);
 
-        var user = CreateVerifiedUser();
+        var user = User.Create(
+            EmailAddress.Create("test@clinic.com"),
+            "hashedpassword",
+            PhoneNumber.Create("555-1234"),
+            UserRole.Patient
+        );
+
+        user.MarkPhoneAsVerified(true);
 
         _userRepositoryMock
             .Setup(r => r.GetByIdAsync(command.InitiatorUserId, It.IsAny<CancellationToken>()))
@@ -258,24 +270,5 @@ public class RescheduleByPatientCommandHandlerTests
         );
         patient.SetId(id);
         return patient;
-    }
-
-    private static Schedule CreateSchedule(
-        Guid doctorId,
-        DayOfWeek dayOfWeek,
-        TimeSpan start,
-        TimeSpan end
-    ) => Schedule.Create(doctorId, dayOfWeek, TimeRange.Create(start, end));
-
-    private static User CreateVerifiedUser()
-    {
-        var user = User.Create(
-            EmailAddress.Create("test@clinic.com"),
-            "hashedpassword",
-            PhoneNumber.Create("555-1234"),
-            Domain.Enums.UserRole.Patient
-        );
-        user.MarkPhoneAsVerified(true);
-        return user;
     }
 }
