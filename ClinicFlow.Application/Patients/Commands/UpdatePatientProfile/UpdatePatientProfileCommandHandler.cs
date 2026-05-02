@@ -35,7 +35,6 @@ public sealed class UpdatePatientProfileCommandHandler(
         patient.UpdateMedicalProfile(bloodType, request.Allergies, request.ChronicConditions);
         patient.UpdateEmergencyContact(emergencyContact);
 
-        await patientRepository.UpdateAsync(patient, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }

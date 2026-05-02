@@ -30,7 +30,6 @@ public sealed class DeleteAppointmentTypeCommandHandler(
 
         appointmentType.MarkAsDeleted();
 
-        await appointmentTypeRepository.UpdateAsync(appointmentType, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }

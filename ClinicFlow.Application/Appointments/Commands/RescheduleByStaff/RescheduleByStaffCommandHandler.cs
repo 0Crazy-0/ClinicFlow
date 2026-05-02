@@ -59,7 +59,6 @@ public sealed class RescheduleByStaffCommandHandler(
             }
         );
 
-        await appointmentRepository.UpdateAsync(appointment, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }

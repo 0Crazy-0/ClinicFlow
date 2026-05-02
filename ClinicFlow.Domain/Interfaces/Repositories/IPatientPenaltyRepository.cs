@@ -29,6 +29,4 @@ public interface IPatientPenaltyRepository
     Task<IReadOnlyList<PatientPenalty>> GetActiveWarningsAsync(
         CancellationToken cancellationToken = default
     );
-
-    Task UpdateAsync(PatientPenalty penalty, CancellationToken cancellationToken = default);
 }

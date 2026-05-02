@@ -17,6 +17,4 @@ public interface IDoctorRepository
     );
 
     Task<Doctor> CreateAsync(Doctor doctor, CancellationToken cancellationToken = default);
-
-    Task UpdateAsync(Doctor doctor, CancellationToken cancellationToken = default);
 }

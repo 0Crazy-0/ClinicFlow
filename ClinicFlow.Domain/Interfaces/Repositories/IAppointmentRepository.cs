@@ -32,8 +32,6 @@ public interface IAppointmentRepository
         CancellationToken cancellationToken = default
     );
 
-    Task UpdateAsync(Appointment appointment, CancellationToken cancellationToken = default);
-
     /// <summary>
     /// Checks whether any patient under the specified user account has active future appointments.
     /// </summary>

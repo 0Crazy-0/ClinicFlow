@@ -37,7 +37,6 @@ public sealed class StartAppointmentByDoctorCommandHandler(
 
         appointment.Start(initiatorDoctor.Id, timeProvider.GetUtcNow().UtcDateTime);
 
-        await appointmentRepository.UpdateAsync(appointment, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }

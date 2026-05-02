@@ -75,10 +75,6 @@ public class AddClinicalDetailToMedicalRecordCommandHandlerTests
                 d.TemplateCode == "lab-results" && d.JsonDataPayload == """{"glucose": 90}"""
             );
 
-        _medicalRecordRepositoryMock.Verify(
-            x => x.UpdateAsync(record, CancellationToken.None),
-            Times.Once
-        );
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(CancellationToken.None), Times.Once);
     }
 
@@ -109,10 +105,7 @@ public class AddClinicalDetailToMedicalRecordCommandHandlerTests
             x => x.GetByCodeAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()),
             Times.Never
         );
-        _medicalRecordRepositoryMock.Verify(
-            x => x.UpdateAsync(It.IsAny<MedicalRecord>(), It.IsAny<CancellationToken>()),
-            Times.Never
-        );
+
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
@@ -145,10 +138,6 @@ public class AddClinicalDetailToMedicalRecordCommandHandlerTests
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(ClinicalFormTemplate));
 
-        _medicalRecordRepositoryMock.Verify(
-            x => x.UpdateAsync(It.IsAny<MedicalRecord>(), It.IsAny<CancellationToken>()),
-            Times.Never
-        );
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 

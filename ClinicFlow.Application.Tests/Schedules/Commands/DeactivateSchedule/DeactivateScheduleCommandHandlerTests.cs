@@ -48,10 +48,6 @@ public class DeactivateScheduleCommandHandlerTests
         // Assert
         schedule.IsActive.Should().BeFalse();
 
-        _scheduleRepositoryMock.Verify(
-            x => x.UpdateAsync(schedule, It.IsAny<CancellationToken>()),
-            Times.Once
-        );
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -75,10 +71,6 @@ public class DeactivateScheduleCommandHandlerTests
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(Schedule));
 
-        _scheduleRepositoryMock.Verify(
-            x => x.UpdateAsync(It.IsAny<Schedule>(), It.IsAny<CancellationToken>()),
-            Times.Never
-        );
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 }
