@@ -10,4 +10,5 @@ public sealed record PatientSchedulingArgs
     public Guid DoctorId { get; init; }
     public DateTime ScheduledDate { get; init; }
     public required TimeRange TimeRange { get; init; }
+    public bool IsInitiatorPhoneVerified { get; init; }
 }

@@ -1,5 +1,4 @@
 using ClinicFlow.Application.Appointments.Commands.ScheduleByPatient;
-using ClinicFlow.Application.Tests.Shared;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
@@ -21,6 +20,7 @@ public class ScheduleByPatientCommandHandlerTests
         new();
     private readonly Mock<IScheduleRepository> _scheduleRepositoryMock = new();
     private readonly Mock<IAppointmentRepository> _appointmentRepositoryMock = new();
+    private readonly Mock<IUserRepository> _userRepositoryMock = new();
     private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
     private readonly FakeTimeProvider _fakeTime = new();
     private readonly ScheduleByPatientCommandHandler _sut;
@@ -33,6 +33,7 @@ public class ScheduleByPatientCommandHandlerTests
             _appointmentTypeRepositoryMock.Object,
             _scheduleRepositoryMock.Object,
             _appointmentRepositoryMock.Object,
+            _userRepositoryMock.Object,
             _unitOfWorkMock.Object
         );
     }
@@ -100,6 +101,12 @@ public class ScheduleByPatientCommandHandlerTests
                 )
             )
             .ReturnsAsync(false);
+
+        var user = CreateVerifiedUser();
+
+        _userRepositoryMock
+            .Setup(r => r.GetByIdAsync(command.InitiatorUserId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(user);
 
         // Act
         var result = await _sut.Handle(command, CancellationToken.None);
@@ -208,6 +215,12 @@ public class ScheduleByPatientCommandHandlerTests
             .Setup(r => r.GetByUserIdAsync(command.InitiatorUserId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(initiatorPatient);
 
+        var user = CreateVerifiedUser();
+
+        _userRepositoryMock
+            .Setup(r => r.GetByIdAsync(command.InitiatorUserId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(user);
+
         _appointmentTypeRepositoryMock
             .Setup(r => r.GetByIdAsync(command.AppointmentTypeId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((AppointmentTypeDefinition?)null);
@@ -220,6 +233,51 @@ public class ScheduleByPatientCommandHandlerTests
             .ThrowAsync<EntityNotFoundException>()
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(AppointmentTypeDefinition));
+    }
+
+    [Fact]
+    public async Task Handle_ShouldThrowEntityNotFoundException_WhenUserNotFound()
+    {
+        // Arrange
+        var command = new ScheduleByPatientCommand(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
+            new TimeSpan(10, 0, 0),
+            new TimeSpan(11, 0, 0)
+        );
+
+        var targetPatient = CreateTargetPatient(
+            command.TargetPatientId,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+        var initiatorPatient = CreateTargetPatient(
+            command.InitiatorUserId,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        _patientRepositoryMock
+            .Setup(r => r.GetByIdAsync(command.TargetPatientId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(targetPatient);
+
+        _patientRepositoryMock
+            .Setup(r => r.GetByUserIdAsync(command.InitiatorUserId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(initiatorPatient);
+
+        _userRepositoryMock
+            .Setup(r => r.GetByIdAsync(command.InitiatorUserId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((User?)null);
+
+        // Act
+        var act = async () => await _sut.Handle(command, CancellationToken.None);
+
+        // Assert
+        var exceptionAssertion = await act.Should()
+            .ThrowAsync<EntityNotFoundException>()
+            .WithMessage(DomainErrors.General.NotFound);
+        exceptionAssertion.Which.EntityName.Should().Be(nameof(User));
     }
 
     private static Patient CreateTargetPatient(Guid userId, DateTime referenceTime)
@@ -253,4 +311,16 @@ public class ScheduleByPatientCommandHandlerTests
         TimeSpan start,
         TimeSpan end
     ) => Schedule.Create(doctorId, dayOfWeek, TimeRange.Create(start, end));
+
+    private static User CreateVerifiedUser()
+    {
+        var user = User.Create(
+            EmailAddress.Create("test@clinic.com"),
+            "hashedpassword",
+            PhoneNumber.Create("555-1234"),
+            UserRole.Patient
+        );
+        user.MarkPhoneAsVerified(true);
+        return user;
+    }
 }

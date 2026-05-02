@@ -59,6 +59,11 @@ public static class AppointmentReschedulingService
             );
         }
 
+        if (!args.IsInitiatorPhoneVerified)
+            throw new AppointmentSchedulingUnauthorizedException(
+                DomainErrors.Appointment.PhoneNotVerified
+            );
+
         Patient.EnsureNotBlocked(context.Penalties, args.NewDate);
 
         EnsureDoctorIsAvailable(

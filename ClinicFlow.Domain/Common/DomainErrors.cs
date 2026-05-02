@@ -47,6 +47,7 @@ public static class DomainErrors
         public const string CannotStart = "START_NOT_ALLOWED";
         public const string CannotComplete = "COMPLETE_NOT_ALLOWED";
         public const string UnauthorizedDoctor = "UNAUTHORIZED_DOCTOR";
+        public const string PhoneNotVerified = "PHONE_NOT_VERIFIED";
     }
 
     public static class AppointmentType

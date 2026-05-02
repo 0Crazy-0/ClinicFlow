@@ -16,6 +16,7 @@ public sealed class RescheduleByPatientCommandHandler(
     IPatientRepository patientRepository,
     IScheduleRepository scheduleRepository,
     IPatientPenaltyRepository penaltyRepository,
+    IUserRepository userRepository,
     IUnitOfWork unitOfWork
 ) : IRequestHandler<RescheduleByPatientCommand>
 {
@@ -48,6 +49,14 @@ public sealed class RescheduleByPatientCommandHandler(
                 request.InitiatorUserId
             );
 
+        var user =
+            await userRepository.GetByIdAsync(request.InitiatorUserId, cancellationToken)
+            ?? throw new EntityNotFoundException(
+                DomainErrors.General.NotFound,
+                nameof(User),
+                request.InitiatorUserId
+            );
+
         var penalties = await penaltyRepository.GetByPatientIdAsync(
             appointment.PatientId,
             cancellationToken
@@ -76,6 +85,7 @@ public sealed class RescheduleByPatientCommandHandler(
                 InitiatorPatient = initiatorPatient,
                 NewDate = request.NewDate,
                 NewTimeRange = newTimeRange,
+                IsInitiatorPhoneVerified = user.IsPhoneVerified,
             },
             new AppointmentReschedulingContext
             {
