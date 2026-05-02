@@ -17,6 +17,7 @@ public sealed class ScheduleByPatientCommandHandler(
     IAppointmentTypeDefinitionRepository appointmentTypeRepository,
     IScheduleRepository scheduleRepository,
     IAppointmentRepository appointmentRepository,
+    IUserRepository userRepository,
     IUnitOfWork unitOfWork
 ) : IRequestHandler<ScheduleByPatientCommand, Guid>
 {
@@ -38,6 +39,14 @@ public sealed class ScheduleByPatientCommandHandler(
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Patient),
+                request.InitiatorUserId
+            );
+
+        var user =
+            await userRepository.GetByIdAsync(request.InitiatorUserId, cancellationToken)
+            ?? throw new EntityNotFoundException(
+                DomainErrors.General.NotFound,
+                nameof(User),
                 request.InitiatorUserId
             );
 
@@ -79,6 +88,7 @@ public sealed class ScheduleByPatientCommandHandler(
                 DoctorId = request.DoctorId,
                 ScheduledDate = request.ScheduledDate,
                 TimeRange = timeRange,
+                IsInitiatorPhoneVerified = user.IsPhoneVerified,
             },
             new AppointmentSchedulingContext
             {

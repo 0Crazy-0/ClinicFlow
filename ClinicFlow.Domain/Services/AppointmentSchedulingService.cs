@@ -56,6 +56,11 @@ public static class AppointmentSchedulingService
             );
         }
 
+        if (!args.IsInitiatorPhoneVerified)
+            throw new AppointmentSchedulingUnauthorizedException(
+                DomainErrors.Appointment.PhoneNotVerified
+            );
+
         args.TargetPatient.EnsureCompleteProfile();
         Patient.EnsureNotBlocked(context.Penalties, args.ScheduledDate);
 

@@ -132,6 +132,7 @@ public class RescheduleByPatientTests
             TargetPatient = target,
             NewDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(3).Date,
             NewTimeRange = CreateTimeRange(10, 11),
+            IsInitiatorPhoneVerified = true,
         };
 
         var context = new AppointmentReschedulingContext
@@ -175,6 +176,7 @@ public class RescheduleByPatientTests
             TargetPatient = target,
             NewDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(3).Date,
             NewTimeRange = CreateTimeRange(10, 11),
+            IsInitiatorPhoneVerified = true,
         };
 
         var context = new AppointmentReschedulingContext
@@ -223,6 +225,7 @@ public class RescheduleByPatientTests
             TargetPatient = target,
             NewDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(3).Date,
             NewTimeRange = CreateTimeRange(10, 11),
+            IsInitiatorPhoneVerified = true,
         };
 
         var context = new AppointmentReschedulingContext
@@ -239,6 +242,45 @@ public class RescheduleByPatientTests
         act.Should()
             .Throw<AppointmentSchedulingUnauthorizedException>()
             .WithMessage(DomainErrors.Appointment.UnauthorizedScheduling);
+    }
+
+    [Fact]
+    public void RescheduleByPatient_ShouldThrowUnauthorized_WhenPhoneIsNotVerified()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var target = CreateSelfPatient(
+            Guid.NewGuid(),
+            userId,
+            30,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        var appointment = CreateAppointment(target.Id);
+
+        var args = new PatientReschedulingArgs
+        {
+            InitiatorPatient = target,
+            TargetPatient = target,
+            NewDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(3).Date,
+            NewTimeRange = CreateTimeRange(10, 11),
+            IsInitiatorPhoneVerified = false,
+        };
+
+        var context = new AppointmentReschedulingContext
+        {
+            DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek, 9, 17),
+            HasConflict = false,
+        };
+
+        // Act
+        var act = () =>
+            AppointmentReschedulingService.RescheduleByPatient(appointment, args, context);
+
+        // Assert
+        act.Should()
+            .Throw<AppointmentSchedulingUnauthorizedException>()
+            .WithMessage(DomainErrors.Appointment.PhoneNotVerified);
     }
 
     [Fact]
@@ -261,6 +303,7 @@ public class RescheduleByPatientTests
             TargetPatient = target,
             NewDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(3).Date,
             NewTimeRange = CreateTimeRange(10, 11),
+            IsInitiatorPhoneVerified = true,
         };
 
         var penalties = new[]
@@ -308,6 +351,7 @@ public class RescheduleByPatientTests
             TargetPatient = target,
             NewDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(3).Date,
             NewTimeRange = CreateTimeRange(18, 19), // 6pm - 7pm
+            IsInitiatorPhoneVerified = true,
         };
 
         var context = new AppointmentReschedulingContext
@@ -346,6 +390,7 @@ public class RescheduleByPatientTests
             TargetPatient = target,
             NewDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(3).Date,
             NewTimeRange = CreateTimeRange(10, 11),
+            IsInitiatorPhoneVerified = true,
         };
 
         var context = new AppointmentReschedulingContext
@@ -384,6 +429,7 @@ public class RescheduleByPatientTests
             TargetPatient = target,
             NewDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(3).Date,
             NewTimeRange = CreateTimeRange(10, 11),
+            IsInitiatorPhoneVerified = true,
         };
 
         var context = new AppointmentReschedulingContext
@@ -422,6 +468,7 @@ public class RescheduleByPatientTests
                 _fakeTime.GetUtcNow().UtcDateTime
             ),
             NewTimeRange = CreateTimeRange(10, 11),
+            IsInitiatorPhoneVerified = true,
         };
 
     private static TimeRange CreateTimeRange(int startHour, int endHour) =>
