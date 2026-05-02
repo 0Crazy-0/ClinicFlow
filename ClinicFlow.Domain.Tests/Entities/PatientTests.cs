@@ -1,6 +1,7 @@
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
+using ClinicFlow.Domain.Events;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Exceptions.Patients;
 using ClinicFlow.Domain.ValueObjects;
@@ -263,6 +264,100 @@ public class PatientTests
         act.Should()
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.Patient.CannotCloseAccountWithPendingAppointments);
+    }
+
+    [Fact]
+    public void ReactivateAsPrimary_ShouldUndoDeletionAndRestoreSelfRelationship_WhenCalled()
+    {
+        // Arrange
+        var patient = CreatePatient();
+        patient.CloseAccount(false);
+
+        // Act
+        patient.ReactivateAsPrimary();
+
+        // Assert
+        patient.IsDeleted.Should().BeFalse();
+        patient.RelationshipToUser.Should().Be(PatientRelationship.Self);
+    }
+
+    [Fact]
+    public void ReactivateAsPrimary_ShouldEmitPatientReactivatedEvent_WhenCalled()
+    {
+        // Arrange
+        var patient = CreatePatient();
+        patient.CloseAccount(false);
+        patient.ClearDomainEvents();
+
+        // Act
+        patient.ReactivateAsPrimary();
+
+        // Assert
+        patient.DomainEvents.OfType<PatientReactivatedEvent>().Should().ContainSingle();
+    }
+
+    [Fact]
+    public void ReactivateAsFamilyMember_ShouldUndoDeletionAndUpdateRelationship_WhenCalled()
+    {
+        // Arrange
+        var patient = Patient.CreateFamilyMember(
+            Guid.NewGuid(),
+            PersonName.Create("Family Member"),
+            PatientRelationship.Child,
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-10).Date,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+        patient.RemoveFamilyMember(patient.UserId);
+
+        // Act
+        patient.ReactivateAsFamilyMember(PatientRelationship.Sibling);
+
+        // Assert
+        patient.IsDeleted.Should().BeFalse();
+        patient.RelationshipToUser.Should().Be(PatientRelationship.Sibling);
+    }
+
+    [Fact]
+    public void ReactivateAsFamilyMember_ShouldEmitPatientReactivatedEvent_WhenCalled()
+    {
+        // Arrange
+        var patient = Patient.CreateFamilyMember(
+            Guid.NewGuid(),
+            PersonName.Create("Family Member"),
+            PatientRelationship.Child,
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-10).Date,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+        patient.RemoveFamilyMember(patient.UserId);
+        patient.ClearDomainEvents();
+
+        // Act
+        patient.ReactivateAsFamilyMember(PatientRelationship.Sibling);
+
+        // Assert
+        patient.DomainEvents.OfType<PatientReactivatedEvent>().Should().ContainSingle();
+    }
+
+    [Fact]
+    public void ReactivateAsFamilyMember_ShouldThrowException_WhenRelationshipIsSelf()
+    {
+        // Arrange
+        var patient = Patient.CreateFamilyMember(
+            Guid.NewGuid(),
+            PersonName.Create("Family Member"),
+            PatientRelationship.Child,
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-10).Date,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+        patient.RemoveFamilyMember(patient.UserId);
+
+        // Act
+        var act = () => patient.ReactivateAsFamilyMember(PatientRelationship.Self);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Patient.CannotBeSelf);
     }
 
     [Fact]

@@ -1,5 +1,6 @@
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Enums;
+using ClinicFlow.Domain.Events;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Exceptions.Patients;
 using ClinicFlow.Domain.ValueObjects;
@@ -109,6 +110,25 @@ public class Patient : BaseEntity
             );
 
         MarkAsDeleted();
+    }
+
+    internal void ReactivateAsPrimary()
+    {
+        UndoDeletion();
+
+        RelationshipToUser = PatientRelationship.Self;
+        AddDomainEvent(new PatientReactivatedEvent(Id));
+    }
+
+    internal void ReactivateAsFamilyMember(PatientRelationship newRelationship)
+    {
+        if (newRelationship is PatientRelationship.Self)
+            throw new DomainValidationException(DomainErrors.Patient.CannotBeSelf);
+
+        UndoDeletion();
+
+        RelationshipToUser = newRelationship;
+        AddDomainEvent(new PatientReactivatedEvent(Id));
     }
 
     public void UpdateMedicalProfile(

@@ -39,4 +39,9 @@ public abstract class BaseEntity
     /// Marks the entity as soft-deleted and updates the modification timestamp.
     /// </summary>
     public void MarkAsDeleted() => IsDeleted = true;
+
+    /// <summary>
+    /// Reverts a soft-deleted entity back to active state.
+    /// </summary>
+    protected void UndoDeletion() => IsDeleted = false;
 }
