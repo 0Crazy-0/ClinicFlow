@@ -584,26 +584,30 @@ The checklist is filled by the **developer manually** before merging. The agent 
 
 ### Entities
 
-`Appointment`, `AppointmentTypeDefinition`, `ClinicalFormTemplate`, `Doctor`, `MedicalRecord`, `MedicalSpecialty`, `Patient`, `PatientPenalty`, `Schedule`
+`Appointment`, `AppointmentTypeDefinition`, `ClinicalFormTemplate`, `Doctor`, `MedicalRecord`, `MedicalSpecialty`, `Patient`, `PatientPenalty`, `Schedule`, `User`
 
 (Sub-entities under `Entities/ClinicalDetails/`: `DynamicClinicalDetail`)
 
 ### Value Objects
 
-`AgeEligibilityPolicy`, `BloodType`, `EmailAddress`, `EmergencyContact`, `MedicalLicenseNumber`, `PenaltyHistory`, `PersonName`, `PhoneNumber`, `TimeRange`
+`AgeEligibilityPolicy`, `BloodType`, `ConsultationRoom`, `EmailAddress`, `EmergencyContact`, `MedicalLicenseNumber`, `PenaltyHistory`, `PersonName`, `PhoneNumber`, `TimeRange`
 
 ### Enums
 
-`AppointmentCategory`, `AppointmentStatus`, `BlockDuration`, `DayOfWeek`, `PatientRelationship`, `PenaltyType`, `UserRole`
+`AppointmentCategory`, `AppointmentStatus`, `BlockDuration`, `PatientRelationship`, `PenaltyType`, `UserRole`
 
 ### Domain Events
 
-`AppointmentCancelledEvent`, `AppointmentCheckedInEvent`, `AppointmentCompletedEvent`, `AppointmentMarkedAsNoShowEvent`, `AppointmentRescheduledEvent`, `AppointmentScheduledEvent`, `AppointmentStartedEvent`, `MedicalRecordCreatedEvent`
+`AppointmentCancelledEvent`, `AppointmentCheckedInEvent`, `AppointmentCompletedEvent`, `AppointmentLateCancelledEvent`, `AppointmentMarkedAsNoShowEvent`, `AppointmentRescheduledEvent`, `AppointmentScheduledEvent`, `AppointmentStartedEvent`, `MedicalRecordCreatedEvent`, `PatientReactivatedEvent`
 
-### Domain Services
+### Domain Services & Policies
 
-`AppointmentCancellationService`, `AppointmentReschedulingService`, `AppointmentSchedulingService`, `MedicalEncounterService`, `PatientPenaltyService`
+`AppointmentCancellationService`, `AppointmentReschedulingService`, `AppointmentSchedulingService`, `FamilyMemberRegistrationService`, `MedicalEncounterService`, `MetadataFormValidationPolicy`, `PatientPenaltyService`, `PrimaryProfileRegistrationService`, `WeeklyScheduleSetupService`
 
 ### Repository Interfaces
 
-`IAppointmentRepository`, `IAppointmentTypeDefinitionRepository`, `IClinicalFormTemplateRepository`, `IDoctorRepository`, `IMedicalRecordRepository`, `IMedicalSpecialtyRepository`, `IPatientPenaltyRepository`, `IPatientRepository`, `IScheduleRepository`, `IUnitOfWork`
+`IAppointmentRepository`, `IAppointmentTypeDefinitionRepository`, `IClinicalFormTemplateRepository`, `IDoctorRepository`, `IMedicalRecordRepository`, `IMedicalSpecialtyRepository`, `IPatientPenaltyRepository`, `IPatientRepository`, `IScheduleRepository`, `IUserRepository`
+
+### External & Infrastructure Interfaces
+
+`IJsonSchemaDefinitionValidator`, `IJsonSchemaValidator`, `IMedicalRecordValidationPolicy`, `IPhoneVerificationService`, `IUnitOfWork`
