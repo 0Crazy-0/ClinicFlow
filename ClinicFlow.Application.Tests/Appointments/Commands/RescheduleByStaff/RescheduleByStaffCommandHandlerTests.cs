@@ -72,10 +72,6 @@ public class RescheduleByStaffCommandHandlerTests
         await _sut.Handle(command, CancellationToken.None);
 
         // Assert
-        _appointmentRepositoryMock.Verify(
-            r => r.UpdateAsync(appointment, It.IsAny<CancellationToken>()),
-            Times.Once
-        );
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
         appointment.ScheduledDate.Should().Be(newDate);
     }

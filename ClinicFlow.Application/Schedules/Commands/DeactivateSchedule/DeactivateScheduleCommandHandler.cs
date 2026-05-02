@@ -24,7 +24,6 @@ public sealed class DeactivateScheduleCommandHandler(
 
         schedule.Deactivate();
 
-        await scheduleRepository.UpdateAsync(schedule, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }

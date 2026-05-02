@@ -26,6 +26,4 @@ public interface IScheduleRepository
         IReadOnlyList<Schedule> schedules,
         CancellationToken cancellationToken = default
     );
-
-    Task UpdateAsync(Schedule schedule, CancellationToken cancellationToken = default);
 }

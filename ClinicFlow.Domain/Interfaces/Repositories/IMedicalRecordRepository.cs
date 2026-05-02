@@ -28,6 +28,4 @@ public interface IMedicalRecordRepository
         MedicalRecord medicalRecord,
         CancellationToken cancellationToken = default
     );
-
-    Task UpdateAsync(MedicalRecord medicalRecord, CancellationToken cancellationToken = default);
 }

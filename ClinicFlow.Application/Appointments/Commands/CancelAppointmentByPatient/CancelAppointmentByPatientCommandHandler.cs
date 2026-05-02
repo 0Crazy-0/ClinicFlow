@@ -84,7 +84,6 @@ public sealed class CancelAppointmentByPatientCommandHandler(
             }
         );
 
-        await appointmentRepository.UpdateAsync(appointment, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }

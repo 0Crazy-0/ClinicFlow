@@ -48,10 +48,6 @@ public class DeleteClinicalFormTemplateCommandHandlerTests
         // Assert
         existingTemplate.IsDeleted.Should().BeTrue();
 
-        _repositoryMock.Verify(
-            x => x.UpdateAsync(existingTemplate, It.IsAny<CancellationToken>()),
-            Times.Once
-        );
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -73,10 +69,5 @@ public class DeleteClinicalFormTemplateCommandHandlerTests
             .ThrowAsync<EntityNotFoundException>()
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(ClinicalFormTemplate));
-
-        _repositoryMock.Verify(
-            x => x.UpdateAsync(It.IsAny<ClinicalFormTemplate>(), It.IsAny<CancellationToken>()),
-            Times.Never
-        );
     }
 }

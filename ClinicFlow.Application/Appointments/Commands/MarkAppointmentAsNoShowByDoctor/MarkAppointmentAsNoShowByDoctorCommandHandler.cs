@@ -36,7 +36,6 @@ public sealed class MarkAppointmentAsNoShowByDoctorCommandHandler(
 
         appointment.MarkAsNoShowByDoctor(doctor.Id);
 
-        await appointmentRepository.UpdateAsync(appointment, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }

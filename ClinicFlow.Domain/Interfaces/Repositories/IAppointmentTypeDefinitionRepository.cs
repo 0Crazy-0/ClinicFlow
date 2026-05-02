@@ -31,9 +31,4 @@ public interface IAppointmentTypeDefinitionRepository
         AppointmentTypeDefinition appointmentType,
         CancellationToken cancellationToken = default
     );
-
-    Task UpdateAsync(
-        AppointmentTypeDefinition appointmentType,
-        CancellationToken cancellationToken = default
-    );
 }

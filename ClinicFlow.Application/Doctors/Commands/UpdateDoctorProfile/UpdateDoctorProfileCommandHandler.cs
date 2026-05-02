@@ -34,7 +34,6 @@ public sealed class UpdateDoctorProfileCommandHandler(
 
         doctor.UpdateProfile(request.Biography, consultationRoom);
 
-        await doctorRepository.UpdateAsync(doctor, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }

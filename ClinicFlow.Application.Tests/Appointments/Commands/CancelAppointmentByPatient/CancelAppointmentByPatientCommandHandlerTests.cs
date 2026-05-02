@@ -92,10 +92,6 @@ public class CancelAppointmentByPatientCommandHandlerTests
         await _sut.Handle(command, CancellationToken.None);
 
         // Assert
-        _appointmentRepositoryMock.Verify(
-            r => r.UpdateAsync(appointment, It.IsAny<CancellationToken>()),
-            Times.Once
-        );
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
         appointment.Status.Should().Be(AppointmentStatus.Cancelled);
     }

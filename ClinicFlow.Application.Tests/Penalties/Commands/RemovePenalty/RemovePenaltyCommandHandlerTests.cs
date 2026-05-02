@@ -52,10 +52,6 @@ public class RemovePenaltyCommandHandlerTests
         // Assert
         penalty.IsRemoved.Should().BeTrue();
 
-        _penaltyRepositoryMock.Verify(
-            x => x.UpdateAsync(penalty, It.IsAny<CancellationToken>()),
-            Times.Once
-        );
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -79,10 +75,6 @@ public class RemovePenaltyCommandHandlerTests
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(PatientPenalty));
 
-        _penaltyRepositoryMock.Verify(
-            x => x.UpdateAsync(It.IsAny<PatientPenalty>(), It.IsAny<CancellationToken>()),
-            Times.Never
-        );
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 }

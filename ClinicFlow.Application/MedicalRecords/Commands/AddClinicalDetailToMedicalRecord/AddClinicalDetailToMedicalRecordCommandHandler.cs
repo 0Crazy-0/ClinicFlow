@@ -41,7 +41,6 @@ public sealed class AddClinicalDetailToMedicalRecordCommandHandler(
 
         medicalEncounterService.AppendClinicalDetail(record, detail, template);
 
-        await medicalRecordRepository.UpdateAsync(record, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }

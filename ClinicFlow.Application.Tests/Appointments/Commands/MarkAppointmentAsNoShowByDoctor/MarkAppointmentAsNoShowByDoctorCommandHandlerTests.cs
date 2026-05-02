@@ -56,10 +56,7 @@ public class MarkAppointmentAsNoShowByDoctorCommandHandlerTests
 
         // Assert
         appointment.Status.Should().Be(AppointmentStatus.NoShow);
-        _appointmentRepositoryMock.Verify(
-            x => x.UpdateAsync(appointment, It.IsAny<CancellationToken>()),
-            Times.Once
-        );
+
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 

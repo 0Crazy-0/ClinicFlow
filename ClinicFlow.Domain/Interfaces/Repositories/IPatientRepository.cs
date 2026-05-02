@@ -25,6 +25,4 @@ public interface IPatientRepository
     );
 
     Task<Patient> CreateAsync(Patient patient, CancellationToken cancellationToken = default);
-
-    Task UpdateAsync(Patient patient, CancellationToken cancellationToken = default);
 }

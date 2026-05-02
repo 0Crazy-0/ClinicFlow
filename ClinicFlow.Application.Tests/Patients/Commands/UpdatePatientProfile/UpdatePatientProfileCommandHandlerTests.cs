@@ -56,10 +56,6 @@ public class UpdatePatientProfileCommandHandlerTests
         await _sut.Handle(command, CancellationToken.None);
 
         // Assert
-        _patientRepositoryMock.Verify(
-            x => x.UpdateAsync(patient, It.IsAny<CancellationToken>()),
-            Times.Once
-        );
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
 
         patient.BloodType.ToString().Should().Be(command.BloodType);
@@ -95,10 +91,6 @@ public class UpdatePatientProfileCommandHandlerTests
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(Patient));
 
-        _patientRepositoryMock.Verify(
-            x => x.UpdateAsync(It.IsAny<Patient>(), It.IsAny<CancellationToken>()),
-            Times.Never
-        );
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 }

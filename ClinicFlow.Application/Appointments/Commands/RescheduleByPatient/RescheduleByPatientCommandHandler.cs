@@ -95,7 +95,6 @@ public sealed class RescheduleByPatientCommandHandler(
             }
         );
 
-        await appointmentRepository.UpdateAsync(appointment, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }

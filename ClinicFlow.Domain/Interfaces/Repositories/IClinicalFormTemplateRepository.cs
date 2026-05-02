@@ -18,6 +18,4 @@ public interface IClinicalFormTemplateRepository
         ClinicalFormTemplate template,
         CancellationToken cancellationToken = default
     );
-
-    Task UpdateAsync(ClinicalFormTemplate template, CancellationToken cancellationToken = default);
 }

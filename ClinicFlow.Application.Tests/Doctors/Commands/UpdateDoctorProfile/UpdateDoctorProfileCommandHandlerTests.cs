@@ -54,10 +54,6 @@ public class UpdateDoctorProfileCommandHandlerTests
         await _sut.Handle(command, CancellationToken.None);
 
         // Assert
-        _doctorRepositoryMock.Verify(
-            x => x.UpdateAsync(doctor, It.IsAny<CancellationToken>()),
-            Times.Once
-        );
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
 
         doctor.Biography.Should().Be(command.Biography);
@@ -91,10 +87,6 @@ public class UpdateDoctorProfileCommandHandlerTests
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(Doctor));
 
-        _doctorRepositoryMock.Verify(
-            x => x.UpdateAsync(It.IsAny<Doctor>(), It.IsAny<CancellationToken>()),
-            Times.Never
-        );
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 }

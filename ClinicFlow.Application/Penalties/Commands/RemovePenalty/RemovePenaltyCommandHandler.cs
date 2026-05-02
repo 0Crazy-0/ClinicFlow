@@ -24,7 +24,6 @@ public sealed class RemovePenaltyCommandHandler(
 
         penalty.Remove();
 
-        await penaltyRepository.UpdateAsync(penalty, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }

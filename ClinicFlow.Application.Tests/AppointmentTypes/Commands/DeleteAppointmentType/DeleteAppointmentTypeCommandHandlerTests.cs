@@ -48,11 +48,6 @@ public class DeleteAppointmentTypeCommandHandlerTests
 
         // Assert
         existingEntity.IsDeleted.Should().BeTrue();
-
-        _appointmentTypeRepositoryMock.Verify(
-            x => x.UpdateAsync(existingEntity, It.IsAny<CancellationToken>()),
-            Times.Once
-        );
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -75,11 +70,6 @@ public class DeleteAppointmentTypeCommandHandlerTests
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(AppointmentTypeDefinition));
 
-        _appointmentTypeRepositoryMock.Verify(
-            x =>
-                x.UpdateAsync(It.IsAny<AppointmentTypeDefinition>(), It.IsAny<CancellationToken>()),
-            Times.Never
-        );
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 }

@@ -44,7 +44,6 @@ public sealed class UpdateAppointmentTypeCommandHandler(
 
         appointmentType.ChangeAgePolicy(agePolicy);
 
-        await appointmentTypeRepository.UpdateAsync(appointmentType, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }

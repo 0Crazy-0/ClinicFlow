@@ -28,7 +28,6 @@ public sealed class UpdateClinicalFormTemplateCommandHandler(
         template.UpdateDetails(request.Name, request.Description);
         template.UpdateSchema(request.JsonSchemaDefinition);
 
-        await clinicalFormTemplateRepository.UpdateAsync(template, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }

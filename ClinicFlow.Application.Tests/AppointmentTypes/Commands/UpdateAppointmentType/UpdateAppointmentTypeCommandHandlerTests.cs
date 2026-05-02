@@ -56,10 +56,6 @@ public class UpdateAppointmentTypeCommandHandlerTests
         await _sut.Handle(command, CancellationToken.None);
 
         // Assert
-        _appointmentTypeRepositoryMock.Verify(
-            x => x.UpdateAsync(existingEntity, It.IsAny<CancellationToken>()),
-            Times.Once
-        );
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
 
         existingEntity.Category.Should().Be(command.Category);
@@ -96,11 +92,6 @@ public class UpdateAppointmentTypeCommandHandlerTests
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(AppointmentTypeDefinition));
 
-        _appointmentTypeRepositoryMock.Verify(
-            x =>
-                x.UpdateAsync(It.IsAny<AppointmentTypeDefinition>(), It.IsAny<CancellationToken>()),
-            Times.Never
-        );
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 }
