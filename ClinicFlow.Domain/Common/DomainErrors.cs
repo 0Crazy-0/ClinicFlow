@@ -79,6 +79,12 @@ public static class DomainErrors
             "CANNOT_CLOSE_ACCOUNT_WITH_PENDING_APPOINTMENTS";
     }
 
+    public static class User
+    {
+        public const string PhoneAlreadyVerified = "PHONE_ALREADY_VERIFIED";
+        public const string InvalidVerificationCode = "INVALID_VERIFICATION_CODE";
+    }
+
     public static class Penalty
     {
         public const string AlreadyRemoved = "PENALTY_ALREADY_REMOVED";
