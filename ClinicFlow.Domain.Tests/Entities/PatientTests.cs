@@ -166,13 +166,7 @@ public class PatientTests
     {
         // Arrange
         var userId = Guid.NewGuid();
-        var patient = Patient.CreateFamilyMember(
-            userId,
-            PersonName.Create("Family Member"),
-            PatientRelationship.Child,
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-10).Date,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
+        var patient = CreateFamilyMember(userId);
 
         // Act
         patient.RemoveFamilyMember(userId);
@@ -200,13 +194,7 @@ public class PatientTests
     {
         // Arrange
         var userId = Guid.NewGuid();
-        var patient = Patient.CreateFamilyMember(
-            userId,
-            PersonName.Create("Family Member"),
-            PatientRelationship.Child,
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-10).Date,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
+        var patient = CreateFamilyMember(userId);
         var anotherUserId = Guid.NewGuid();
 
         //Act && Assert
@@ -234,13 +222,7 @@ public class PatientTests
     public void CloseAccount_ShouldThrowException_WhenPatientIsNotPrimaryUser()
     {
         // Arrange
-        var patient = Patient.CreateFamilyMember(
-            Guid.NewGuid(),
-            PersonName.Create("Family Member"),
-            PatientRelationship.Child,
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-10).Date,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
+        var patient = CreateFamilyMember(Guid.NewGuid());
 
         // Act
         var act = () => patient.CloseAccount(false);
@@ -300,13 +282,7 @@ public class PatientTests
     public void ReactivateAsFamilyMember_ShouldUndoDeletionAndUpdateRelationship_WhenCalled()
     {
         // Arrange
-        var patient = Patient.CreateFamilyMember(
-            Guid.NewGuid(),
-            PersonName.Create("Family Member"),
-            PatientRelationship.Child,
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-10).Date,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
+        var patient = CreateFamilyMember(Guid.NewGuid());
         patient.RemoveFamilyMember(patient.UserId);
 
         // Act
@@ -321,13 +297,7 @@ public class PatientTests
     public void ReactivateAsFamilyMember_ShouldEmitPatientReactivatedEvent_WhenCalled()
     {
         // Arrange
-        var patient = Patient.CreateFamilyMember(
-            Guid.NewGuid(),
-            PersonName.Create("Family Member"),
-            PatientRelationship.Child,
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-10).Date,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
+        var patient = CreateFamilyMember(Guid.NewGuid());
         patient.RemoveFamilyMember(patient.UserId);
         patient.ClearDomainEvents();
 
@@ -342,13 +312,7 @@ public class PatientTests
     public void ReactivateAsFamilyMember_ShouldThrowException_WhenRelationshipIsSelf()
     {
         // Arrange
-        var patient = Patient.CreateFamilyMember(
-            Guid.NewGuid(),
-            PersonName.Create("Family Member"),
-            PatientRelationship.Child,
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-10).Date,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
+        var patient = CreateFamilyMember(Guid.NewGuid());
         patient.RemoveFamilyMember(patient.UserId);
 
         // Act
@@ -544,4 +508,13 @@ public class PatientTests
         patient.UpdateEmergencyContact(EmergencyContact.Create("Mom", "555-5555"));
         return patient;
     }
+
+    private Patient CreateFamilyMember(Guid userId) =>
+        Patient.CreateFamilyMember(
+            userId,
+            PersonName.Create("Family Member"),
+            PatientRelationship.Child,
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-10).Date,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
 }
