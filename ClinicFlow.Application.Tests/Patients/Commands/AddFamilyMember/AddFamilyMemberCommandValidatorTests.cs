@@ -55,4 +55,25 @@ public class AddFamilyMemberCommandValidatorTests
             .ShouldHaveValidationErrorFor(x => x.Relationship)
             .WithErrorMessage(DomainErrors.Validation.InvalidEnumValue);
     }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenRelationshipIsSelf()
+    {
+        // Arrange
+        var command = new AddFamilyMemberCommand(
+            Guid.NewGuid(),
+            "John",
+            "Doe",
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-10),
+            PatientRelationship.Self
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.Relationship)
+            .WithErrorMessage(DomainErrors.Patient.CannotBeSelf);
+    }
 }

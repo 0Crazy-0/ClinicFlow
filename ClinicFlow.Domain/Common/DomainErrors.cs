@@ -78,6 +78,8 @@ public static class DomainErrors
         public const string OnlyPrimaryUserCanCloseAccount = "ONLY_PRIMARY_USER_CAN_CLOSE_ACCOUNT";
         public const string CannotCloseAccountWithPendingAppointments =
             "CANNOT_CLOSE_ACCOUNT_WITH_PENDING_APPOINTMENTS";
+        public const string ActiveProfileAlreadyExists = "PATIENT_ACTIVE_PROFILE_ALREADY_EXISTS";
+        public const string UserIdMismatch = "PATIENT_USER_ID_MISMATCH";
     }
 
     public static class User
