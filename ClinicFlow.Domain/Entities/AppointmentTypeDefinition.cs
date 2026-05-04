@@ -20,6 +20,16 @@ public class AppointmentTypeDefinition : BaseEntity
 
     public AgeEligibilityPolicy AgePolicy { get; private set; }
 
+    /// <summary>
+    /// When <c>true</c>, any doctor within the specialty can schedule this type.
+    /// <see cref="AllowedSpecialtyIds"/> is ignored.
+    /// </summary>
+    public bool IsUnrestrictedBySpecialty { get; private set; }
+
+    private readonly HashSet<Guid> _allowedSpecialtyIds = [];
+
+    public IReadOnlyCollection<Guid> AllowedSpecialtyIds => _allowedSpecialtyIds;
+
     private readonly List<ClinicalFormTemplate> _requiredTemplates = [];
 
     /// <summary>
@@ -39,7 +49,8 @@ public class AppointmentTypeDefinition : BaseEntity
         string name,
         string description,
         TimeSpan durationMinutes,
-        AgeEligibilityPolicy agePolicy
+        AgeEligibilityPolicy agePolicy,
+        bool isUnrestrictedBySpecialty
     )
     {
         Category = category;
@@ -47,6 +58,7 @@ public class AppointmentTypeDefinition : BaseEntity
         Description = description;
         DurationMinutes = durationMinutes;
         AgePolicy = agePolicy;
+        IsUnrestrictedBySpecialty = isUnrestrictedBySpecialty;
     }
 
     public static AppointmentTypeDefinition Create(
@@ -67,7 +79,8 @@ public class AppointmentTypeDefinition : BaseEntity
             name,
             description,
             durationMinutes,
-            agePolicy ?? AgeEligibilityPolicy.NoRestriction
+            agePolicy ?? AgeEligibilityPolicy.NoRestriction,
+            true
         );
     }
 
@@ -87,6 +100,73 @@ public class AppointmentTypeDefinition : BaseEntity
         Name = name;
         Description = description;
         DurationMinutes = durationMinutes;
+    }
+
+    public void MakeUnrestricted()
+    {
+        if (IsUnrestrictedBySpecialty)
+            throw new DomainValidationException(DomainErrors.AppointmentType.AlreadyUnrestricted);
+
+        _allowedSpecialtyIds.Clear();
+        IsUnrestrictedBySpecialty = true;
+    }
+
+    public void RestrictToSpecialties(IReadOnlyCollection<Guid> specialtyIds)
+    {
+        if (!IsUnrestrictedBySpecialty)
+            throw new DomainValidationException(DomainErrors.AppointmentType.AlreadyRestricted);
+
+        if (specialtyIds is null || specialtyIds.Count is 0)
+            throw new DomainValidationException(
+                DomainErrors.AppointmentType.RequiresAtLeastOneSpecialty
+            );
+
+        if (specialtyIds.Any(id => id == Guid.Empty))
+            throw new DomainValidationException(DomainErrors.Validation.InvalidValue);
+
+        if (specialtyIds.Count != specialtyIds.Distinct().Count())
+            throw new DomainValidationException(DomainErrors.Validation.DuplicateValues);
+
+        _allowedSpecialtyIds.Clear();
+        _allowedSpecialtyIds.UnionWith(specialtyIds);
+
+        IsUnrestrictedBySpecialty = false;
+    }
+
+    public void AddAllowedSpecialty(Guid specialtyId)
+    {
+        if (IsUnrestrictedBySpecialty)
+            throw new DomainValidationException(
+                DomainErrors.AppointmentType.CannotAddSpecialtyToGlobalType
+            );
+
+        if (specialtyId == Guid.Empty)
+            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+
+        if (_allowedSpecialtyIds.Contains(specialtyId))
+            throw new DomainValidationException(
+                DomainErrors.AppointmentType.SpecialtyAlreadyAllowed
+            );
+
+        _allowedSpecialtyIds.Add(specialtyId);
+    }
+
+    public void RemoveAllowedSpecialty(Guid specialtyId)
+    {
+        if (IsUnrestrictedBySpecialty)
+            throw new DomainValidationException(
+                DomainErrors.AppointmentType.CannotRemoveSpecialtyFromGlobalType
+            );
+
+        if (!_allowedSpecialtyIds.Contains(specialtyId))
+            throw new DomainValidationException(DomainErrors.AppointmentType.SpecialtyNotFound);
+
+        if (_allowedSpecialtyIds.Count is 1)
+            throw new DomainValidationException(
+                DomainErrors.AppointmentType.RequiresAtLeastOneSpecialty
+            );
+
+        _allowedSpecialtyIds.Remove(specialtyId);
     }
 
     public void ChangeAgePolicy(AgeEligibilityPolicy agePolicy) =>

@@ -30,6 +30,7 @@ public static class DomainErrors
         public const string InvalidEnumValue = "INVALID_ENUM_VALUE";
         public const string ValueTooLong = "VALUE_TOO_LONG";
         public const string ValueExceedsMaximum = "VALUE_EXCEEDS_MAXIMUM";
+        public const string DuplicateValues = "DUPLICATE_VALUES";
     }
 
     public static class Appointment
@@ -47,12 +48,21 @@ public static class DomainErrors
         public const string CannotStart = "START_NOT_ALLOWED";
         public const string CannotComplete = "COMPLETE_NOT_ALLOWED";
         public const string UnauthorizedDoctor = "UNAUTHORIZED_DOCTOR";
+        public const string UnauthorizedSpecialty = "UNAUTHORIZED_SPECIALTY";
         public const string PhoneNotVerified = "PHONE_NOT_VERIFIED";
     }
 
     public static class AppointmentType
     {
         public const string TemplateAlreadyRequired = "TEMPLATE_ALREADY_REQUIRED";
+        public const string SpecialtyAlreadyAllowed = "SPECIALTY_ALREADY_ALLOWED";
+        public const string CannotAddSpecialtyToGlobalType = "CANNOT_ADD_SPECIALTY_TO_GLOBAL_TYPE";
+        public const string CannotRemoveSpecialtyFromGlobalType =
+            "CANNOT_REMOVE_SPECIALTY_FROM_GLOBAL_TYPE";
+        public const string AlreadyRestricted = "ALREADY_RESTRICTED";
+        public const string RequiresAtLeastOneSpecialty = "REQUIRES_AT_LEAST_ONE_SPECIALTY";
+        public const string AlreadyUnrestricted = "ALREADY_UNRESTRICTED";
+        public const string SpecialtyNotFound = "SPECIALTY_NOT_FOUND";
         public const string InvalidAgeRange = "INVALID_AGE_RANGE";
         public const string MinimumAgeNotMet = "MINIMUM_AGE_NOT_MET";
         public const string MaximumAgeExceeded = "MAXIMUM_AGE_EXCEEDED";
