@@ -63,6 +63,7 @@ public static class DomainErrors
         public const string RequiresAtLeastOneSpecialty = "REQUIRES_AT_LEAST_ONE_SPECIALTY";
         public const string AlreadyUnrestricted = "ALREADY_UNRESTRICTED";
         public const string SpecialtyNotFound = "SPECIALTY_NOT_FOUND";
+        public const string TemplateNotFound = "TEMPLATE_NOT_FOUND";
         public const string InvalidAgeRange = "INVALID_AGE_RANGE";
         public const string MinimumAgeNotMet = "MINIMUM_AGE_NOT_MET";
         public const string MaximumAgeExceeded = "MAXIMUM_AGE_EXCEEDED";

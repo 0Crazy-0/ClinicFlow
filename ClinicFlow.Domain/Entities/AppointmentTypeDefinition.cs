@@ -187,8 +187,13 @@ public class AppointmentTypeDefinition : BaseEntity
     public void RemoveRequiredTemplate(ClinicalFormTemplate template)
     {
         if (template is null)
-            return;
-        _requiredTemplates.RemoveAll(t => t.Id == template.Id || t.Code == template.Code);
+            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+
+        var existing =
+            _requiredTemplates.Find(t => t.Id == template.Id)
+            ?? throw new DomainValidationException(DomainErrors.AppointmentType.TemplateNotFound);
+
+        _requiredTemplates.Remove(existing);
     }
 
     /// <summary>
