@@ -3,6 +3,7 @@ using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
+using ClinicFlow.Domain.Interfaces.Services;
 using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Args.Rescheduling;
 using ClinicFlow.Domain.Services.Contexts;
@@ -14,9 +15,12 @@ namespace ClinicFlow.Application.Appointments.Commands.RescheduleByPatient;
 public sealed class RescheduleByPatientCommandHandler(
     IAppointmentRepository appointmentRepository,
     IPatientRepository patientRepository,
+    IDoctorRepository doctorRepository,
+    IAppointmentTypeDefinitionRepository appointmentTypeRepository,
     IScheduleRepository scheduleRepository,
     IPatientPenaltyRepository penaltyRepository,
     IUserRepository userRepository,
+    IRegionalSchedulingService regionalSchedulingService,
     IUnitOfWork unitOfWork
 ) : IRequestHandler<RescheduleByPatientCommand>
 {
@@ -49,12 +53,31 @@ public sealed class RescheduleByPatientCommandHandler(
                 request.InitiatorUserId
             );
 
+        var targetDoctor =
+            await doctorRepository.GetByIdAsync(appointment.DoctorId, cancellationToken)
+            ?? throw new EntityNotFoundException(
+                DomainErrors.General.NotFound,
+                nameof(Doctor),
+                appointment.DoctorId
+            );
+
         var user =
             await userRepository.GetByIdAsync(request.InitiatorUserId, cancellationToken)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(User),
                 request.InitiatorUserId
+            );
+
+        var appointmentType =
+            await appointmentTypeRepository.GetByIdAsync(
+                appointment.AppointmentTypeId,
+                cancellationToken
+            )
+            ?? throw new EntityNotFoundException(
+                DomainErrors.General.NotFound,
+                nameof(AppointmentTypeDefinition),
+                appointment.AppointmentTypeId
             );
 
         var penalties = await penaltyRepository.GetByPatientIdAsync(
@@ -77,6 +100,12 @@ public sealed class RescheduleByPatientCommandHandler(
             cancellationToken
         );
 
+        var clearance = regionalSchedulingService.EnforceSchedulingRegulations(
+            targetDoctor,
+            targetPatient,
+            appointmentType
+        );
+
         AppointmentReschedulingService.RescheduleByPatient(
             appointment,
             new PatientReschedulingArgs
@@ -92,7 +121,8 @@ public sealed class RescheduleByPatientCommandHandler(
                 Penalties = penalties,
                 DoctorSchedule = doctorSchedule,
                 HasConflict = hasConflict,
-            }
+            },
+            clearance
         );
 
         await unitOfWork.SaveChangesAsync(cancellationToken);

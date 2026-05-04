@@ -12,10 +12,11 @@ namespace ClinicFlow.Domain.Services;
 
 /// <summary>
 /// Domain service that orchestrates appointment rescheduling,
-/// enforcing availability and conflict rules for different actors.
+/// enforcing regional scheduling regulations, availability, and conflict rules for different actors.
 /// </summary>
 /// <remarks>
-/// Overbooking requests (bypassing availability and conflict checks) are strictly
+/// All rescheduling requests must be accompanied by a valid scheduling clearance to ensure compliance
+/// with regional policies. Overbooking requests (bypassing availability and conflict checks) are strictly
 /// restricted to Doctor and Staff roles. Patient-initiated rescheduling must always
 /// pass availability checks and penalty validations.
 /// </remarks>
@@ -27,7 +28,8 @@ public static class AppointmentReschedulingService
     public static void RescheduleByPatient(
         Appointment appointment,
         PatientReschedulingArgs args,
-        AppointmentReschedulingContext context
+        AppointmentReschedulingContext context,
+        SchedulingClearance clearance
     )
     {
         if (appointment is null)
@@ -39,6 +41,9 @@ public static class AppointmentReschedulingService
             || args.InitiatorPatient is null
             || args.NewTimeRange is null
         )
+            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+
+        if (clearance is null)
             throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
 
         if (args.TargetPatient.Id != appointment.PatientId)
@@ -86,13 +91,17 @@ public static class AppointmentReschedulingService
     public static void RescheduleByDoctor(
         Appointment appointment,
         DoctorReschedulingArgs args,
-        AppointmentReschedulingContext context
+        AppointmentReschedulingContext context,
+        SchedulingClearance clearance
     )
     {
         if (appointment is null)
             throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
 
         if (args is null || args.InitiatorDoctor is null || args.NewTimeRange is null)
+            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+
+        if (clearance is null)
             throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
 
         if (args.InitiatorDoctor.Id != appointment.DoctorId)
@@ -123,13 +132,17 @@ public static class AppointmentReschedulingService
     public static void RescheduleByStaff(
         Appointment appointment,
         StaffReschedulingArgs args,
-        AppointmentReschedulingContext context
+        AppointmentReschedulingContext context,
+        SchedulingClearance clearance
     )
     {
         if (appointment is null)
             throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
 
         if (args is null || args.NewTimeRange is null)
+            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+
+        if (clearance is null)
             throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
 
         if (!args.IsOverbook)
