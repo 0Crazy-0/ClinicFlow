@@ -25,7 +25,8 @@ public class RescheduleByStaffTests
             AppointmentReschedulingService.RescheduleByStaff(
                 null!,
                 CreateValidStaffReschedulingArgs(),
-                new AppointmentReschedulingContext()
+                new AppointmentReschedulingContext(),
+                SchedulingClearance.Granted()
             );
 
         // Assert
@@ -42,7 +43,8 @@ public class RescheduleByStaffTests
             AppointmentReschedulingService.RescheduleByStaff(
                 CreateAppointment(),
                 null!,
-                new AppointmentReschedulingContext()
+                new AppointmentReschedulingContext(),
+                SchedulingClearance.Granted()
             );
 
         // Assert
@@ -62,7 +64,26 @@ public class RescheduleByStaffTests
                 {
                     NewTimeRange = null!,
                 },
-                new AppointmentReschedulingContext()
+                new AppointmentReschedulingContext(),
+                SchedulingClearance.Granted()
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
+    public void RescheduleByStaff_ShouldThrowDomainValidationException_WhenClearanceIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentReschedulingService.RescheduleByStaff(
+                CreateAppointment(),
+                CreateValidStaffReschedulingArgs(),
+                new AppointmentReschedulingContext(),
+                null!
             );
 
         // Assert
@@ -87,7 +108,12 @@ public class RescheduleByStaffTests
         var context = new AppointmentReschedulingContext { HasConflict = true };
 
         // Act
-        AppointmentReschedulingService.RescheduleByStaff(appointment, args, context);
+        AppointmentReschedulingService.RescheduleByStaff(
+            appointment,
+            args,
+            context,
+            SchedulingClearance.Granted()
+        );
 
         // Assert
         appointment
@@ -121,7 +147,12 @@ public class RescheduleByStaffTests
 
         // Act
         var act = () =>
-            AppointmentReschedulingService.RescheduleByStaff(appointment, args, context);
+            AppointmentReschedulingService.RescheduleByStaff(
+                appointment,
+                args,
+                context,
+                SchedulingClearance.Granted()
+            );
 
         // Assert
         act.Should()
@@ -150,7 +181,12 @@ public class RescheduleByStaffTests
 
         // Act
         var act = () =>
-            AppointmentReschedulingService.RescheduleByStaff(appointment, args, context);
+            AppointmentReschedulingService.RescheduleByStaff(
+                appointment,
+                args,
+                context,
+                SchedulingClearance.Granted()
+            );
 
         // Assert
         act.Should()
@@ -178,7 +214,12 @@ public class RescheduleByStaffTests
         };
 
         // Act
-        AppointmentReschedulingService.RescheduleByStaff(appointment, args, context);
+        AppointmentReschedulingService.RescheduleByStaff(
+            appointment,
+            args,
+            context,
+            SchedulingClearance.Granted()
+        );
 
         // Assert
         appointment

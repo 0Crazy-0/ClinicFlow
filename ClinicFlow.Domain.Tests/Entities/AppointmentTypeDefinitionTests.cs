@@ -314,6 +314,265 @@ public class AppointmentTypeDefinitionTests
         appointmentType.AgePolicy.Should().Be(AgeEligibilityPolicy.NoRestriction);
     }
 
+    [Fact]
+    public void MakeUnrestricted_ShouldSetUnrestrictedAndClearSpecialties_WhenCurrentlyRestricted()
+    {
+        // Arrange
+        var appointmentType = new AppointmentTypeBuilder().Build();
+        appointmentType.RestrictToSpecialties([Guid.NewGuid()]);
+
+        // Act
+        appointmentType.MakeUnrestricted();
+
+        // Assert
+        appointmentType.IsUnrestrictedBySpecialty.Should().BeTrue();
+        appointmentType.AllowedSpecialtyIds.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void MakeUnrestricted_ShouldThrowException_WhenAlreadyUnrestricted()
+    {
+        // Arrange
+        var appointmentType = new AppointmentTypeBuilder().Build();
+
+        // Act & Assert
+        appointmentType
+            .Invoking(x => x.MakeUnrestricted())
+            .Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.AppointmentType.AlreadyUnrestricted);
+    }
+
+    [Fact]
+    public void RestrictToSpecialties_ShouldSetSpecialties_WhenCurrentlyUnrestricted()
+    {
+        // Arrange
+        var appointmentType = new AppointmentTypeBuilder().Build();
+        var specialtyId1 = Guid.NewGuid();
+        var specialtyId2 = Guid.NewGuid();
+
+        // Act
+        appointmentType.RestrictToSpecialties([specialtyId1, specialtyId2]);
+
+        // Assert
+        appointmentType.IsUnrestrictedBySpecialty.Should().BeFalse();
+        appointmentType.AllowedSpecialtyIds.Should().HaveCount(2);
+        appointmentType.AllowedSpecialtyIds.Should().Contain(specialtyId1);
+        appointmentType.AllowedSpecialtyIds.Should().Contain(specialtyId2);
+    }
+
+    [Fact]
+    public void RestrictToSpecialties_ShouldThrowException_WhenAlreadyRestricted()
+    {
+        // Arrange
+        var appointmentType = new AppointmentTypeBuilder().Build();
+        appointmentType.RestrictToSpecialties([Guid.NewGuid()]);
+
+        // Act
+        var act = () => appointmentType.RestrictToSpecialties([Guid.NewGuid()]);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.AppointmentType.AlreadyRestricted);
+    }
+
+    [Fact]
+    public void RestrictToSpecialties_ShouldThrowException_WhenListIsEmpty()
+    {
+        // Arrange
+        var appointmentType = new AppointmentTypeBuilder().Build();
+
+        // Act
+        var act = () => appointmentType.RestrictToSpecialties([]);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.AppointmentType.RequiresAtLeastOneSpecialty);
+    }
+
+    [Fact]
+    public void RestrictToSpecialties_ShouldThrowException_WhenListIsNull()
+    {
+        // Arrange
+        var appointmentType = new AppointmentTypeBuilder().Build();
+
+        // Act
+        var act = () => appointmentType.RestrictToSpecialties(null!);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.AppointmentType.RequiresAtLeastOneSpecialty);
+    }
+
+    [Fact]
+    public void RestrictToSpecialties_ShouldThrowException_WhenAnyIdIsEmpty()
+    {
+        // Arrange
+        var appointmentType = new AppointmentTypeBuilder().Build();
+
+        // Act
+        var act = () => appointmentType.RestrictToSpecialties([Guid.NewGuid(), Guid.Empty]);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.InvalidValue);
+    }
+
+    [Fact]
+    public void RestrictToSpecialties_ShouldThrowException_WhenDuplicateIdsProvided()
+    {
+        // Arrange
+        var appointmentType = new AppointmentTypeBuilder().Build();
+        var duplicateId = Guid.NewGuid();
+
+        // Act
+        var act = () => appointmentType.RestrictToSpecialties([duplicateId, duplicateId]);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.DuplicateValues);
+    }
+
+    [Fact]
+    public void AddAllowedSpecialty_ShouldAddSpecialty_WhenValidAndRestricted()
+    {
+        // Arrange
+        var appointmentType = new AppointmentTypeBuilder().Build();
+        var baseSpecialtyId = Guid.NewGuid();
+        appointmentType.RestrictToSpecialties([baseSpecialtyId]);
+        var specialtyId = Guid.NewGuid();
+
+        // Act
+        appointmentType.AddAllowedSpecialty(specialtyId);
+
+        // Assert
+        appointmentType.AllowedSpecialtyIds.Should().HaveCount(2);
+        appointmentType.AllowedSpecialtyIds.Should().Contain(specialtyId);
+    }
+
+    [Fact]
+    public void AddAllowedSpecialty_ShouldThrowException_WhenTypeIsUnrestricted()
+    {
+        // Arrange
+        var appointmentType = new AppointmentTypeBuilder().Build();
+
+        // Act
+        var act = () => appointmentType.AddAllowedSpecialty(Guid.NewGuid());
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.AppointmentType.CannotAddSpecialtyToGlobalType);
+    }
+
+    [Fact]
+    public void AddAllowedSpecialty_ShouldThrowException_WhenSpecialtyIdIsEmpty()
+    {
+        // Arrange
+        var appointmentType = new AppointmentTypeBuilder().Build();
+        appointmentType.RestrictToSpecialties([Guid.NewGuid()]);
+
+        // Act
+        var act = () => appointmentType.AddAllowedSpecialty(Guid.Empty);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void AddAllowedSpecialty_ShouldThrowException_WhenSpecialtyAlreadyAllowed()
+    {
+        // Arrange
+        var appointmentType = new AppointmentTypeBuilder().Build();
+        var specialtyId = Guid.NewGuid();
+        appointmentType.RestrictToSpecialties([specialtyId]);
+
+        // Act
+        var act = () => appointmentType.AddAllowedSpecialty(specialtyId);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.AppointmentType.SpecialtyAlreadyAllowed);
+    }
+
+    [Fact]
+    public void RemoveAllowedSpecialty_ShouldRemoveSpecialty_WhenItExists()
+    {
+        // Arrange
+        var appointmentType = new AppointmentTypeBuilder().Build();
+        var specialtyId1 = Guid.NewGuid();
+        var specialtyId2 = Guid.NewGuid();
+        appointmentType.RestrictToSpecialties([specialtyId1, specialtyId2]);
+
+        // Act
+        appointmentType.RemoveAllowedSpecialty(specialtyId1);
+
+        // Assert
+        appointmentType
+            .AllowedSpecialtyIds.Should()
+            .ContainSingle()
+            .Which.Should()
+            .Be(specialtyId2);
+    }
+
+    [Fact]
+    public void RemoveAllowedSpecialty_ShouldThrowException_WhenTypeIsUnrestricted()
+    {
+        // Arrange
+        var appointmentType = new AppointmentTypeBuilder().Build();
+
+        // Act
+        var act = () => appointmentType.RemoveAllowedSpecialty(Guid.NewGuid());
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.AppointmentType.CannotRemoveSpecialtyFromGlobalType);
+    }
+
+    [Fact]
+    public void RemoveAllowedSpecialty_ShouldThrowException_WhenSpecialtyDoesNotExist()
+    {
+        // Arrange
+        var appointmentType = new AppointmentTypeBuilder().Build();
+        var existingId = Guid.NewGuid();
+        var existingId2 = Guid.NewGuid();
+        appointmentType.RestrictToSpecialties([existingId, existingId2]);
+
+        // Act
+        var act = () => appointmentType.RemoveAllowedSpecialty(Guid.NewGuid());
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.AppointmentType.SpecialtyNotFound);
+    }
+
+    [Fact]
+    public void RemoveAllowedSpecialty_ShouldThrowException_WhenIsLastSpecialty()
+    {
+        // Arrange
+        var appointmentType = new AppointmentTypeBuilder().Build();
+        var specialtyId = Guid.NewGuid();
+        appointmentType.RestrictToSpecialties([specialtyId]);
+
+        // Act
+        var act = () => appointmentType.RemoveAllowedSpecialty(specialtyId);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.AppointmentType.RequiresAtLeastOneSpecialty);
+    }
+
     private class AppointmentTypeBuilder
     {
         private AppointmentCategory _category = AppointmentCategory.Checkup;

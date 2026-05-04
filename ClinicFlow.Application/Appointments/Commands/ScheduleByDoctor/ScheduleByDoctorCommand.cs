@@ -10,5 +10,6 @@ public sealed record ScheduleByDoctorCommand(
     DateTime ScheduledDate,
     TimeSpan StartTime,
     TimeSpan EndTime,
-    bool IsOverbook
+    bool IsOverbook,
+    bool HasGuardianConsentVerified
 ) : IRequest<Guid>, IScheduleCommand;

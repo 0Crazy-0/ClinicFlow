@@ -27,7 +27,8 @@ public class RescheduleByPatientTests
             AppointmentReschedulingService.RescheduleByPatient(
                 null!,
                 CreateValidPatientReschedulingArgs(),
-                new AppointmentReschedulingContext()
+                new AppointmentReschedulingContext(),
+                SchedulingClearance.Granted()
             );
 
         // Assert
@@ -44,7 +45,8 @@ public class RescheduleByPatientTests
             AppointmentReschedulingService.RescheduleByPatient(
                 CreateAppointment(Guid.NewGuid()),
                 null!,
-                new AppointmentReschedulingContext()
+                new AppointmentReschedulingContext(),
+                SchedulingClearance.Granted()
             );
 
         // Assert
@@ -64,7 +66,8 @@ public class RescheduleByPatientTests
                 {
                     TargetPatient = null!,
                 },
-                new AppointmentReschedulingContext()
+                new AppointmentReschedulingContext(),
+                SchedulingClearance.Granted()
             );
 
         // Assert
@@ -84,7 +87,8 @@ public class RescheduleByPatientTests
                 {
                     InitiatorPatient = null!,
                 },
-                new AppointmentReschedulingContext()
+                new AppointmentReschedulingContext(),
+                SchedulingClearance.Granted()
             );
 
         // Assert
@@ -104,7 +108,26 @@ public class RescheduleByPatientTests
                 {
                     NewTimeRange = null!,
                 },
-                new AppointmentReschedulingContext()
+                new AppointmentReschedulingContext(),
+                SchedulingClearance.Granted()
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
+    public void RescheduleByPatient_ShouldThrowDomainValidationException_WhenClearanceIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentReschedulingService.RescheduleByPatient(
+                CreateAppointment(Guid.NewGuid()),
+                CreateValidPatientReschedulingArgs(),
+                new AppointmentReschedulingContext(),
+                null!
             );
 
         // Assert
@@ -143,7 +166,12 @@ public class RescheduleByPatientTests
 
         // Act
         var act = () =>
-            AppointmentReschedulingService.RescheduleByPatient(appointment, args, context);
+            AppointmentReschedulingService.RescheduleByPatient(
+                appointment,
+                args,
+                context,
+                SchedulingClearance.Granted()
+            );
 
         // Assert
         act.Should()
@@ -187,7 +215,12 @@ public class RescheduleByPatientTests
 
         // Act
         var act = () =>
-            AppointmentReschedulingService.RescheduleByPatient(appointment, args, context);
+            AppointmentReschedulingService.RescheduleByPatient(
+                appointment,
+                args,
+                context,
+                SchedulingClearance.Granted()
+            );
 
         // Assert
         act.Should()
@@ -236,7 +269,12 @@ public class RescheduleByPatientTests
 
         // Act
         var act = () =>
-            AppointmentReschedulingService.RescheduleByPatient(appointment, args, context);
+            AppointmentReschedulingService.RescheduleByPatient(
+                appointment,
+                args,
+                context,
+                SchedulingClearance.Granted()
+            );
 
         // Assert
         act.Should()
@@ -275,7 +313,12 @@ public class RescheduleByPatientTests
 
         // Act
         var act = () =>
-            AppointmentReschedulingService.RescheduleByPatient(appointment, args, context);
+            AppointmentReschedulingService.RescheduleByPatient(
+                appointment,
+                args,
+                context,
+                SchedulingClearance.Granted()
+            );
 
         // Assert
         act.Should()
@@ -325,7 +368,12 @@ public class RescheduleByPatientTests
 
         // Act
         var act = () =>
-            AppointmentReschedulingService.RescheduleByPatient(appointment, args, context);
+            AppointmentReschedulingService.RescheduleByPatient(
+                appointment,
+                args,
+                context,
+                SchedulingClearance.Granted()
+            );
 
         // Assert
         act.Should().Throw<PatientBlockedException>().WithMessage(DomainErrors.Patient.Blocked);
@@ -362,7 +410,12 @@ public class RescheduleByPatientTests
 
         // Act
         var act = () =>
-            AppointmentReschedulingService.RescheduleByPatient(appointment, args, context);
+            AppointmentReschedulingService.RescheduleByPatient(
+                appointment,
+                args,
+                context,
+                SchedulingClearance.Granted()
+            );
 
         // Assert
         act.Should()
@@ -401,7 +454,12 @@ public class RescheduleByPatientTests
 
         // Act
         var act = () =>
-            AppointmentReschedulingService.RescheduleByPatient(appointment, args, context);
+            AppointmentReschedulingService.RescheduleByPatient(
+                appointment,
+                args,
+                context,
+                SchedulingClearance.Granted()
+            );
 
         // Assert
         act.Should()
@@ -439,7 +497,12 @@ public class RescheduleByPatientTests
         };
 
         // Act
-        AppointmentReschedulingService.RescheduleByPatient(appointment, args, context);
+        AppointmentReschedulingService.RescheduleByPatient(
+            appointment,
+            args,
+            context,
+            SchedulingClearance.Granted()
+        );
 
         // Assert
         appointment

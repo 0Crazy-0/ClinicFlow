@@ -3,6 +3,7 @@ using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
+using ClinicFlow.Domain.Interfaces.Services;
 using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Args.Rescheduling;
 using ClinicFlow.Domain.Services.Contexts;
@@ -14,7 +15,10 @@ namespace ClinicFlow.Application.Appointments.Commands.RescheduleByDoctor;
 public sealed class RescheduleByDoctorCommandHandler(
     IAppointmentRepository appointmentRepository,
     IDoctorRepository doctorRepository,
+    IPatientRepository patientRepository,
+    IAppointmentTypeDefinitionRepository appointmentTypeRepository,
     IScheduleRepository scheduleRepository,
+    IRegionalSchedulingService regionalSchedulingService,
     IUnitOfWork unitOfWork
 ) : IRequestHandler<RescheduleByDoctorCommand>
 {
@@ -36,6 +40,25 @@ public sealed class RescheduleByDoctorCommandHandler(
                 request.InitiatorUserId
             );
 
+        var targetPatient =
+            await patientRepository.GetByIdAsync(appointment.PatientId, cancellationToken)
+            ?? throw new EntityNotFoundException(
+                DomainErrors.General.NotFound,
+                nameof(Patient),
+                appointment.PatientId
+            );
+
+        var appointmentType =
+            await appointmentTypeRepository.GetByIdAsync(
+                appointment.AppointmentTypeId,
+                cancellationToken
+            )
+            ?? throw new EntityNotFoundException(
+                DomainErrors.General.NotFound,
+                nameof(AppointmentTypeDefinition),
+                appointment.AppointmentTypeId
+            );
+
         var newTimeRange = TimeRange.Create(request.NewStartTime, request.NewEndTime);
 
         var doctorSchedule = await scheduleRepository.GetByDoctorAndDayAsync(
@@ -49,6 +72,12 @@ public sealed class RescheduleByDoctorCommandHandler(
             request.NewDate,
             newTimeRange,
             cancellationToken
+        );
+
+        var clearance = regionalSchedulingService.EnforceSchedulingRegulations(
+            initiatorDoctor,
+            targetPatient,
+            appointmentType
         );
 
         AppointmentReschedulingService.RescheduleByDoctor(
@@ -65,7 +94,8 @@ public sealed class RescheduleByDoctorCommandHandler(
                 Penalties = [],
                 DoctorSchedule = doctorSchedule,
                 HasConflict = hasConflict,
-            }
+            },
+            clearance
         );
 
         await unitOfWork.SaveChangesAsync(cancellationToken);

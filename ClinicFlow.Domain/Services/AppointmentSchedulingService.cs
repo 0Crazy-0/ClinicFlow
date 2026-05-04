@@ -12,10 +12,11 @@ namespace ClinicFlow.Domain.Services;
 
 /// <summary>
 /// Domain service that orchestrates appointment scheduling,
-/// enforcing actor-specific rules and constraints.
+/// enforcing regional scheduling regulations, actor-specific rules, and constraints.
 /// </summary>
 /// <remarks>
-/// Overbooking requests (bypassing availability and conflict checks) are permitted
+/// All scheduling requests must be accompanied by a valid scheduling clearance to ensure compliance
+/// with regional policies. Overbooking requests (bypassing availability and conflict checks) are permitted
 /// exclusively for Doctor and Staff roles.
 /// </remarks>
 public static class AppointmentSchedulingService
@@ -27,7 +28,8 @@ public static class AppointmentSchedulingService
     public static Appointment ScheduleByPatient(
         AppointmentTypeDefinition appointmentType,
         PatientSchedulingArgs args,
-        AppointmentSchedulingContext context
+        AppointmentSchedulingContext context,
+        SchedulingClearance clearance
     )
     {
         if (appointmentType is null)
@@ -39,6 +41,9 @@ public static class AppointmentSchedulingService
             || args.InitiatorPatient is null
             || args.TimeRange is null
         )
+            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+
+        if (clearance is null)
             throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
 
         if (args.TargetPatient.UserId != args.InitiatorPatient.UserId)
@@ -97,13 +102,13 @@ public static class AppointmentSchedulingService
     }
 
     /// <summary>
-    /// Schedules a new appointment on behalf of a doctor, restricted to Follow-up
-    /// and Procedure categories.
+    /// Schedules a new appointment on behalf of a doctor.
     /// </summary>
     public static Appointment ScheduleByDoctor(
         AppointmentTypeDefinition appointmentType,
         DoctorSchedulingArgs args,
-        AppointmentSchedulingContext context
+        AppointmentSchedulingContext context,
+        SchedulingClearance clearance
     )
     {
         if (appointmentType is null)
@@ -117,16 +122,13 @@ public static class AppointmentSchedulingService
         )
             throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
 
-        var allowedCategoriesForDoctors = new[]
-        {
-            AppointmentCategory.FollowUp,
-            AppointmentCategory.Procedure,
-        };
+        if (clearance is null)
+            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
 
-        if (!allowedCategoriesForDoctors.Contains(appointmentType.Category))
-            throw new AppointmentSchedulingUnauthorizedException(
-                DomainErrors.Appointment.UnauthorizedScheduling
-            );
+        appointmentType.ValidatePatientEligibility(
+            args.TargetPatient.GetAge(args.ScheduledDate),
+            args.HasGuardianConsentVerified
+        );
 
         if (!args.IsOverbook)
         {
@@ -161,13 +163,17 @@ public static class AppointmentSchedulingService
     public static Appointment ScheduleByStaff(
         AppointmentTypeDefinition appointmentType,
         StaffSchedulingArgs args,
-        AppointmentSchedulingContext context
+        AppointmentSchedulingContext context,
+        SchedulingClearance clearance
     )
     {
         if (appointmentType is null)
             throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
 
         if (args is null || args.TargetPatient is null || args.TimeRange is null)
+            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+
+        if (clearance is null)
             throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
 
         args.TargetPatient.EnsureCompleteProfile();

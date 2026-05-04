@@ -3,6 +3,7 @@ using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
+using ClinicFlow.Domain.Interfaces.Services;
 using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Args.Scheduling;
 using ClinicFlow.Domain.Services.Contexts;
@@ -17,6 +18,7 @@ public sealed class ScheduleByDoctorCommandHandler(
     IAppointmentTypeDefinitionRepository appointmentTypeRepository,
     IScheduleRepository scheduleRepository,
     IAppointmentRepository appointmentRepository,
+    IRegionalSchedulingService regionalSchedulingService,
     IUnitOfWork unitOfWork
 ) : IRequestHandler<ScheduleByDoctorCommand, Guid>
 {
@@ -66,6 +68,12 @@ public sealed class ScheduleByDoctorCommandHandler(
             cancellationToken
         );
 
+        var clearance = regionalSchedulingService.EnforceSchedulingRegulations(
+            initiatorDoctor,
+            targetPatient,
+            appointmentType
+        );
+
         var appointment = AppointmentSchedulingService.ScheduleByDoctor(
             appointmentType,
             new DoctorSchedulingArgs
@@ -75,13 +83,15 @@ public sealed class ScheduleByDoctorCommandHandler(
                 ScheduledDate = request.ScheduledDate,
                 TimeRange = timeRange,
                 IsOverbook = request.IsOverbook,
+                HasGuardianConsentVerified = request.HasGuardianConsentVerified,
             },
             new AppointmentSchedulingContext
             {
                 Penalties = [],
                 DoctorSchedule = doctorSchedule,
                 HasConflict = hasConflict,
-            }
+            },
+            clearance
         );
 
         await appointmentRepository.CreateAsync(appointment, cancellationToken);

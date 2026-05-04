@@ -3,6 +3,7 @@ using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
+using ClinicFlow.Domain.Interfaces.Services;
 using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Args.Scheduling;
 using ClinicFlow.Domain.Services.Contexts;
@@ -13,9 +14,11 @@ namespace ClinicFlow.Application.Appointments.Commands.ScheduleByStaff;
 
 public sealed class ScheduleByStaffCommandHandler(
     IPatientRepository patientRepository,
+    IDoctorRepository doctorRepository,
     IAppointmentTypeDefinitionRepository appointmentTypeRepository,
     IScheduleRepository scheduleRepository,
     IAppointmentRepository appointmentRepository,
+    IRegionalSchedulingService regionalSchedulingService,
     IUnitOfWork unitOfWork
 ) : IRequestHandler<ScheduleByStaffCommand, Guid>
 {
@@ -30,6 +33,14 @@ public sealed class ScheduleByStaffCommandHandler(
                 DomainErrors.General.NotFound,
                 nameof(Patient),
                 request.TargetPatientId
+            );
+
+        var targetDoctor =
+            await doctorRepository.GetByIdAsync(request.DoctorId, cancellationToken)
+            ?? throw new EntityNotFoundException(
+                DomainErrors.General.NotFound,
+                nameof(Doctor),
+                request.DoctorId
             );
 
         var appointmentType =
@@ -57,6 +68,12 @@ public sealed class ScheduleByStaffCommandHandler(
             cancellationToken
         );
 
+        var clearance = regionalSchedulingService.EnforceSchedulingRegulations(
+            targetDoctor,
+            targetPatient,
+            appointmentType
+        );
+
         var appointment = AppointmentSchedulingService.ScheduleByStaff(
             appointmentType,
             new StaffSchedulingArgs
@@ -74,7 +91,8 @@ public sealed class ScheduleByStaffCommandHandler(
                 Penalties = [],
                 DoctorSchedule = doctorSchedule,
                 HasConflict = hasConflict,
-            }
+            },
+            clearance
         );
 
         await appointmentRepository.CreateAsync(appointment, cancellationToken);

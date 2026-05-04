@@ -26,7 +26,8 @@ public class RescheduleByDoctorTests
             AppointmentReschedulingService.RescheduleByDoctor(
                 null!,
                 CreateValidDoctorReschedulingArgs(),
-                new AppointmentReschedulingContext()
+                new AppointmentReschedulingContext(),
+                SchedulingClearance.Granted()
             );
 
         // Assert
@@ -43,7 +44,8 @@ public class RescheduleByDoctorTests
             AppointmentReschedulingService.RescheduleByDoctor(
                 CreateAppointment(Guid.NewGuid()),
                 null!,
-                new AppointmentReschedulingContext()
+                new AppointmentReschedulingContext(),
+                SchedulingClearance.Granted()
             );
 
         // Assert
@@ -63,7 +65,8 @@ public class RescheduleByDoctorTests
                 {
                     InitiatorDoctor = null!,
                 },
-                new AppointmentReschedulingContext()
+                new AppointmentReschedulingContext(),
+                SchedulingClearance.Granted()
             );
 
         // Assert
@@ -83,7 +86,26 @@ public class RescheduleByDoctorTests
                 {
                     NewTimeRange = null!,
                 },
-                new AppointmentReschedulingContext()
+                new AppointmentReschedulingContext(),
+                SchedulingClearance.Granted()
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
+    public void RescheduleByDoctor_ShouldThrowDomainValidationException_WhenClearanceIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentReschedulingService.RescheduleByDoctor(
+                CreateAppointment(Guid.NewGuid()),
+                CreateValidDoctorReschedulingArgs(),
+                new AppointmentReschedulingContext(),
+                null!
             );
 
         // Assert
@@ -115,7 +137,12 @@ public class RescheduleByDoctorTests
 
         // Act
         var act = () =>
-            AppointmentReschedulingService.RescheduleByDoctor(appointment, args, context);
+            AppointmentReschedulingService.RescheduleByDoctor(
+                appointment,
+                args,
+                context,
+                SchedulingClearance.Granted()
+            );
 
         // Assert
         act.Should()
@@ -142,7 +169,12 @@ public class RescheduleByDoctorTests
         var context = new AppointmentReschedulingContext { HasConflict = true };
 
         // Act
-        AppointmentReschedulingService.RescheduleByDoctor(appointment, args, context);
+        AppointmentReschedulingService.RescheduleByDoctor(
+            appointment,
+            args,
+            context,
+            SchedulingClearance.Granted()
+        );
 
         // Assert
         appointment
@@ -179,7 +211,12 @@ public class RescheduleByDoctorTests
 
         // Act
         var act = () =>
-            AppointmentReschedulingService.RescheduleByDoctor(appointment, args, context);
+            AppointmentReschedulingService.RescheduleByDoctor(
+                appointment,
+                args,
+                context,
+                SchedulingClearance.Granted()
+            );
 
         // Assert
         act.Should()
@@ -211,7 +248,12 @@ public class RescheduleByDoctorTests
 
         // Act
         var act = () =>
-            AppointmentReschedulingService.RescheduleByDoctor(appointment, args, context);
+            AppointmentReschedulingService.RescheduleByDoctor(
+                appointment,
+                args,
+                context,
+                SchedulingClearance.Granted()
+            );
 
         // Assert
         act.Should()
@@ -242,7 +284,12 @@ public class RescheduleByDoctorTests
         };
 
         // Act
-        AppointmentReschedulingService.RescheduleByDoctor(appointment, args, context);
+        AppointmentReschedulingService.RescheduleByDoctor(
+            appointment,
+            args,
+            context,
+            SchedulingClearance.Granted()
+        );
 
         // Assert
         appointment

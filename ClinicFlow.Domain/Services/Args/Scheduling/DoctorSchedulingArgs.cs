@@ -10,4 +10,5 @@ public sealed record DoctorSchedulingArgs
     public DateTime ScheduledDate { get; init; }
     public required TimeRange TimeRange { get; init; }
     public bool IsOverbook { get; init; }
+    public bool HasGuardianConsentVerified { get; init; }
 }
