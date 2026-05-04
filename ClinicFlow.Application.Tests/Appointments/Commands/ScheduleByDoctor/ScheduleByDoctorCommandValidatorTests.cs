@@ -25,6 +25,7 @@ public class ScheduleByDoctorCommandValidatorTests
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
             new TimeSpan(10, 0, 0),
             new TimeSpan(11, 0, 0),
+            false,
             false
         );
 

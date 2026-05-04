@@ -28,7 +28,8 @@ public class ScheduleByStaffTests
             AppointmentSchedulingService.ScheduleByStaff(
                 null!,
                 CreateValidStaffSchedulingArgs(),
-                new AppointmentSchedulingContext()
+                new AppointmentSchedulingContext(),
+                SchedulingClearance.Granted()
             );
 
         // Assert
@@ -45,7 +46,8 @@ public class ScheduleByStaffTests
             AppointmentSchedulingService.ScheduleByStaff(
                 CreateAppointmentType(),
                 null!,
-                new AppointmentSchedulingContext()
+                new AppointmentSchedulingContext(),
+                SchedulingClearance.Granted()
             );
 
         // Assert
@@ -65,7 +67,8 @@ public class ScheduleByStaffTests
                 {
                     TargetPatient = null!,
                 },
-                new AppointmentSchedulingContext()
+                new AppointmentSchedulingContext(),
+                SchedulingClearance.Granted()
             );
 
         // Assert
@@ -85,7 +88,26 @@ public class ScheduleByStaffTests
                 {
                     TimeRange = null!,
                 },
-                new AppointmentSchedulingContext()
+                new AppointmentSchedulingContext(),
+                SchedulingClearance.Granted()
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
+    public void ScheduleByStaff_ShouldThrowDomainValidationException_WhenClearanceIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentSchedulingService.ScheduleByStaff(
+                CreateAppointmentType(),
+                CreateValidStaffSchedulingArgs(),
+                new AppointmentSchedulingContext(),
+                null!
             );
 
         // Assert
@@ -126,7 +148,12 @@ public class ScheduleByStaffTests
 
         // Act
         var act = () =>
-            AppointmentSchedulingService.ScheduleByStaff(appointmentType, args, context);
+            AppointmentSchedulingService.ScheduleByStaff(
+                appointmentType,
+                args,
+                context,
+                SchedulingClearance.Granted()
+            );
 
         // Assert
         act.Should()
@@ -171,7 +198,12 @@ public class ScheduleByStaffTests
 
         // Act
         var act = () =>
-            AppointmentSchedulingService.ScheduleByStaff(appointmentType, args, context);
+            AppointmentSchedulingService.ScheduleByStaff(
+                appointmentType,
+                args,
+                context,
+                SchedulingClearance.Granted()
+            );
 
         // Assert
         act.Should()
@@ -207,7 +239,8 @@ public class ScheduleByStaffTests
         var appointment = AppointmentSchedulingService.ScheduleByStaff(
             appointmentType,
             args,
-            context
+            context,
+            SchedulingClearance.Granted()
         );
 
         // Assert
@@ -251,7 +284,12 @@ public class ScheduleByStaffTests
 
         // Act
         var act = () =>
-            AppointmentSchedulingService.ScheduleByStaff(appointmentType, args, context);
+            AppointmentSchedulingService.ScheduleByStaff(
+                appointmentType,
+                args,
+                context,
+                SchedulingClearance.Granted()
+            );
 
         // Assert
         act.Should()
@@ -289,7 +327,12 @@ public class ScheduleByStaffTests
 
         // Act
         var act = () =>
-            AppointmentSchedulingService.ScheduleByStaff(appointmentType, args, context);
+            AppointmentSchedulingService.ScheduleByStaff(
+                appointmentType,
+                args,
+                context,
+                SchedulingClearance.Granted()
+            );
 
         // Assert
         act.Should()
@@ -329,7 +372,8 @@ public class ScheduleByStaffTests
         var appointment = AppointmentSchedulingService.ScheduleByStaff(
             appointmentType,
             args,
-            context
+            context,
+            SchedulingClearance.Granted()
         );
 
         // Assert

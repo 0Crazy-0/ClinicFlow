@@ -28,7 +28,8 @@ public class ScheduleByPatientTests
             AppointmentSchedulingService.ScheduleByPatient(
                 null!,
                 CreateValidPatientSchedulingArgs(),
-                new AppointmentSchedulingContext()
+                new AppointmentSchedulingContext(),
+                SchedulingClearance.Granted()
             );
 
         // Assert
@@ -45,7 +46,8 @@ public class ScheduleByPatientTests
             AppointmentSchedulingService.ScheduleByPatient(
                 CreateAppointmentType(),
                 null!,
-                new AppointmentSchedulingContext()
+                new AppointmentSchedulingContext(),
+                SchedulingClearance.Granted()
             );
 
         // Assert
@@ -65,7 +67,8 @@ public class ScheduleByPatientTests
                 {
                     TargetPatient = null!,
                 },
-                new AppointmentSchedulingContext()
+                new AppointmentSchedulingContext(),
+                SchedulingClearance.Granted()
             );
 
         // Assert
@@ -85,7 +88,8 @@ public class ScheduleByPatientTests
                 {
                     InitiatorPatient = null!,
                 },
-                new AppointmentSchedulingContext()
+                new AppointmentSchedulingContext(),
+                SchedulingClearance.Granted()
             );
 
         // Assert
@@ -105,7 +109,26 @@ public class ScheduleByPatientTests
                 {
                     TimeRange = null!,
                 },
-                new AppointmentSchedulingContext()
+                new AppointmentSchedulingContext(),
+                SchedulingClearance.Granted()
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
+    public void ScheduleByPatient_ShouldThrowDomainValidationException_WhenClearanceIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentSchedulingService.ScheduleByPatient(
+                CreateAppointmentType(),
+                CreateValidPatientSchedulingArgs(),
+                new AppointmentSchedulingContext(),
+                null!
             );
 
         // Assert
@@ -150,7 +173,12 @@ public class ScheduleByPatientTests
 
         // Act
         var act = () =>
-            AppointmentSchedulingService.ScheduleByPatient(appointmentType, args, context);
+            AppointmentSchedulingService.ScheduleByPatient(
+                appointmentType,
+                args,
+                context,
+                SchedulingClearance.Granted()
+            );
 
         // Assert
         act.Should()
@@ -199,7 +227,12 @@ public class ScheduleByPatientTests
 
         // Act
         var act = () =>
-            AppointmentSchedulingService.ScheduleByPatient(appointmentType, args, context);
+            AppointmentSchedulingService.ScheduleByPatient(
+                appointmentType,
+                args,
+                context,
+                SchedulingClearance.Granted()
+            );
 
         // Assert
         act.Should()
@@ -245,7 +278,8 @@ public class ScheduleByPatientTests
         var appointment = AppointmentSchedulingService.ScheduleByPatient(
             appointmentType,
             args,
-            context
+            context,
+            SchedulingClearance.Granted()
         );
 
         // Assert
@@ -291,7 +325,12 @@ public class ScheduleByPatientTests
 
         // Act
         var act = () =>
-            AppointmentSchedulingService.ScheduleByPatient(appointmentType, args, context);
+            AppointmentSchedulingService.ScheduleByPatient(
+                appointmentType,
+                args,
+                context,
+                SchedulingClearance.Granted()
+            );
 
         // Assert
         act.Should()
@@ -332,7 +371,12 @@ public class ScheduleByPatientTests
 
         // Act
         var act = () =>
-            AppointmentSchedulingService.ScheduleByPatient(appointmentType, args, context);
+            AppointmentSchedulingService.ScheduleByPatient(
+                appointmentType,
+                args,
+                context,
+                SchedulingClearance.Granted()
+            );
 
         // Assert
         act.Should()
@@ -382,7 +426,12 @@ public class ScheduleByPatientTests
 
         // Act
         var act = () =>
-            AppointmentSchedulingService.ScheduleByPatient(appointmentType, args, context);
+            AppointmentSchedulingService.ScheduleByPatient(
+                appointmentType,
+                args,
+                context,
+                SchedulingClearance.Granted()
+            );
 
         // Assert
         act.Should().Throw<PatientBlockedException>().WithMessage(DomainErrors.Patient.Blocked);
@@ -426,7 +475,12 @@ public class ScheduleByPatientTests
 
         // Act
         var act = () =>
-            AppointmentSchedulingService.ScheduleByPatient(appointmentType, args, context);
+            AppointmentSchedulingService.ScheduleByPatient(
+                appointmentType,
+                args,
+                context,
+                SchedulingClearance.Granted()
+            );
 
         // Assert
         act.Should()
@@ -465,7 +519,12 @@ public class ScheduleByPatientTests
 
         // Act
         var act = () =>
-            AppointmentSchedulingService.ScheduleByPatient(appointmentType, args, context);
+            AppointmentSchedulingService.ScheduleByPatient(
+                appointmentType,
+                args,
+                context,
+                SchedulingClearance.Granted()
+            );
 
         // Assert
         act.Should()
@@ -504,7 +563,12 @@ public class ScheduleByPatientTests
 
         // Act
         var act = () =>
-            AppointmentSchedulingService.ScheduleByPatient(appointmentType, args, context);
+            AppointmentSchedulingService.ScheduleByPatient(
+                appointmentType,
+                args,
+                context,
+                SchedulingClearance.Granted()
+            );
 
         // Assert
         act.Should()
@@ -545,7 +609,8 @@ public class ScheduleByPatientTests
         var appointment = AppointmentSchedulingService.ScheduleByPatient(
             appointmentType,
             args,
-            context
+            context,
+            SchedulingClearance.Granted()
         );
 
         // Assert

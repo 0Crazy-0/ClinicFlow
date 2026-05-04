@@ -5,6 +5,7 @@ using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
+using ClinicFlow.Domain.Interfaces.Services;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
 using Microsoft.Extensions.Time.Testing;
@@ -22,6 +23,7 @@ public class ScheduleByDoctorCommandHandlerTests
     private readonly Mock<IScheduleRepository> _scheduleRepositoryMock = new();
     private readonly Mock<IAppointmentRepository> _appointmentRepositoryMock = new();
     private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
+    private readonly Mock<IRegionalSchedulingService> _regionalSchedulingServiceMock = new();
     private readonly ScheduleByDoctorCommandHandler _sut;
 
     public ScheduleByDoctorCommandHandlerTests()
@@ -32,6 +34,7 @@ public class ScheduleByDoctorCommandHandlerTests
             _appointmentTypeRepositoryMock.Object,
             _scheduleRepositoryMock.Object,
             _appointmentRepositoryMock.Object,
+            _regionalSchedulingServiceMock.Object,
             _unitOfWorkMock.Object
         );
     }
@@ -51,6 +54,7 @@ public class ScheduleByDoctorCommandHandlerTests
             scheduledDate,
             startTime,
             endTime,
+            false,
             false
         );
 
@@ -87,6 +91,15 @@ public class ScheduleByDoctorCommandHandlerTests
                 )
             )
             .ReturnsAsync(false);
+        _regionalSchedulingServiceMock
+            .Setup(x =>
+                x.EnforceSchedulingRegulations(
+                    It.IsAny<Doctor>(),
+                    It.IsAny<Patient>(),
+                    It.IsAny<AppointmentTypeDefinition>()
+                )
+            )
+            .Returns(SchedulingClearance.Granted());
 
         // Act
         var result = await _sut.Handle(command, CancellationToken.None);
@@ -111,6 +124,7 @@ public class ScheduleByDoctorCommandHandlerTests
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
             new TimeSpan(10, 0, 0),
             new TimeSpan(11, 0, 0),
+            false,
             false
         );
         _doctorRepositoryMock
@@ -138,6 +152,7 @@ public class ScheduleByDoctorCommandHandlerTests
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
             new TimeSpan(10, 0, 0),
             new TimeSpan(11, 0, 0),
+            false,
             false
         );
 
@@ -172,6 +187,7 @@ public class ScheduleByDoctorCommandHandlerTests
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
             new TimeSpan(10, 0, 0),
             new TimeSpan(11, 0, 0),
+            false,
             false
         );
 

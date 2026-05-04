@@ -27,7 +27,8 @@ public class ScheduleByDoctorTests
             AppointmentSchedulingService.ScheduleByDoctor(
                 null!,
                 CreateValidDoctorSchedulingArgs(),
-                new AppointmentSchedulingContext()
+                new AppointmentSchedulingContext(),
+                SchedulingClearance.Granted()
             );
 
         // Assert
@@ -44,7 +45,8 @@ public class ScheduleByDoctorTests
             AppointmentSchedulingService.ScheduleByDoctor(
                 CreateAppointmentType(AppointmentCategory.Checkup),
                 null!,
-                new AppointmentSchedulingContext()
+                new AppointmentSchedulingContext(),
+                SchedulingClearance.Granted()
             );
 
         // Assert
@@ -64,7 +66,8 @@ public class ScheduleByDoctorTests
                 {
                     InitiatorDoctor = null!,
                 },
-                new AppointmentSchedulingContext()
+                new AppointmentSchedulingContext(),
+                SchedulingClearance.Granted()
             );
 
         // Assert
@@ -84,7 +87,8 @@ public class ScheduleByDoctorTests
                 {
                     TargetPatient = null!,
                 },
-                new AppointmentSchedulingContext()
+                new AppointmentSchedulingContext(),
+                SchedulingClearance.Granted()
             );
 
         // Assert
@@ -104,7 +108,8 @@ public class ScheduleByDoctorTests
                 {
                     TimeRange = null!,
                 },
-                new AppointmentSchedulingContext()
+                new AppointmentSchedulingContext(),
+                SchedulingClearance.Granted()
             );
 
         // Assert
@@ -114,15 +119,40 @@ public class ScheduleByDoctorTests
     }
 
     [Fact]
-    public void ScheduleByDoctor_ShouldThrowUnauthorized_WhenCategoryInvalid()
+    public void ScheduleByDoctor_ShouldThrowDomainValidationException_WhenClearanceIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentSchedulingService.ScheduleByDoctor(
+                CreateAppointmentType(AppointmentCategory.Checkup),
+                CreateValidDoctorSchedulingArgs(),
+                new AppointmentSchedulingContext(),
+                null!
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
+    public void ScheduleByDoctor_ShouldThrowDomainValidationException_WhenPatientTooYoung()
     {
         // Arrange
-        var appointmentType = CreateAppointmentType(AppointmentCategory.Checkup);
+        var appointmentType = AppointmentTypeDefinition.Create(
+            AppointmentCategory.Checkup,
+            "Checkup",
+            "Description",
+            TimeSpan.FromMinutes(30),
+            AgeEligibilityPolicy.Create(18, null, false)
+        );
+
         var doctor = CreateDoctor(Guid.NewGuid(), Guid.NewGuid());
         var target = CreateSelfPatient(
             Guid.NewGuid(),
             Guid.NewGuid(),
-            30,
+            15,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -133,22 +163,33 @@ public class ScheduleByDoctorTests
             ScheduledDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
             TimeRange = CreateTimeRange(10, 11),
             IsOverbook = false,
+            HasGuardianConsentVerified = false,
         };
 
         var context = new AppointmentSchedulingContext
         {
-            DoctorSchedule = CreateSchedule(doctor.Id, args.ScheduledDate.DayOfWeek, 9, 17),
+            DoctorSchedule = CreateSchedule(
+                args.InitiatorDoctor.Id,
+                args.ScheduledDate.DayOfWeek,
+                9,
+                17
+            ),
             HasConflict = false,
         };
 
         // Act
         var act = () =>
-            AppointmentSchedulingService.ScheduleByDoctor(appointmentType, args, context);
+            AppointmentSchedulingService.ScheduleByDoctor(
+                appointmentType,
+                args,
+                context,
+                SchedulingClearance.Granted()
+            );
 
         // Assert
         act.Should()
-            .Throw<AppointmentSchedulingUnauthorizedException>()
-            .WithMessage(DomainErrors.Appointment.UnauthorizedScheduling);
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.AppointmentType.MinimumAgeNotMet);
     }
 
     [Fact]
@@ -179,7 +220,8 @@ public class ScheduleByDoctorTests
         var appointment = AppointmentSchedulingService.ScheduleByDoctor(
             appointmentType,
             args,
-            context
+            context,
+            SchedulingClearance.Granted()
         );
 
         // Assert
@@ -217,7 +259,12 @@ public class ScheduleByDoctorTests
 
         // Act
         var act = () =>
-            AppointmentSchedulingService.ScheduleByDoctor(appointmentType, args, context);
+            AppointmentSchedulingService.ScheduleByDoctor(
+                appointmentType,
+                args,
+                context,
+                SchedulingClearance.Granted()
+            );
 
         // Assert
         act.Should()
@@ -255,7 +302,12 @@ public class ScheduleByDoctorTests
 
         // Act
         var act = () =>
-            AppointmentSchedulingService.ScheduleByDoctor(appointmentType, args, context);
+            AppointmentSchedulingService.ScheduleByDoctor(
+                appointmentType,
+                args,
+                context,
+                SchedulingClearance.Granted()
+            );
 
         // Assert
         act.Should()
@@ -295,7 +347,8 @@ public class ScheduleByDoctorTests
         var appointment = AppointmentSchedulingService.ScheduleByDoctor(
             appointmentType,
             args,
-            context
+            context,
+            SchedulingClearance.Granted()
         );
 
         // Assert
