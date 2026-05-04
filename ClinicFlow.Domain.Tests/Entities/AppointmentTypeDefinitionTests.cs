@@ -123,9 +123,6 @@ public class AppointmentTypeDefinitionTests
         var template1 = ClinicalFormTemplate.Create("CODE1", "Name", "Desc", "{}");
         var template2 = ClinicalFormTemplate.Create("CODE1", "Another Name", "Desc", "{}");
 
-        template1.SetId(Guid.NewGuid());
-        template2.SetId(Guid.NewGuid());
-
         appointmentType.AddRequiredTemplate(template1);
 
         // Act
@@ -138,59 +135,51 @@ public class AppointmentTypeDefinitionTests
     }
 
     [Fact]
-    public void RemoveRequiredTemplate_ShouldDoNothing_WhenTemplateIsNull()
+    public void RemoveRequiredTemplate_ShouldRemoveTemplate_WhenMatchingIdProvided()
     {
         // Arrange
         var appointmentType = new AppointmentTypeBuilder().Build();
-        var template = ClinicalFormTemplate.Create("CODE1", "Name", "Desc", "{}");
-        appointmentType.AddRequiredTemplate(template);
+        var templateToRemove = ClinicalFormTemplate.Create("CODE2", "Diff", "Desc", "{}");
+        appointmentType.AddRequiredTemplate(templateToRemove);
+
+        // Act
+        appointmentType.RemoveRequiredTemplate(templateToRemove);
+
+        // Assert
+        appointmentType.RequiredTemplates.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void RemoveRequiredTemplate_ShouldThrowException_WhenTemplateIsNull()
+    {
+        // Arrange
+        var appointmentType = new AppointmentTypeBuilder().Build();
 
         // Act
         var act = () => appointmentType.RemoveRequiredTemplate(null!);
 
         // Assert
-        act.Should().NotThrow();
-        appointmentType.RequiredTemplates.Should().ContainSingle();
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 
     [Fact]
-    public void RemoveRequiredTemplate_ShouldRemoveTemplate_WhenMatchingIdProvided()
+    public void RemoveRequiredTemplate_ShouldThrow_WhenTemplateDoesNotExist()
     {
         // Arrange
         var appointmentType = new AppointmentTypeBuilder().Build();
-        var template1 = ClinicalFormTemplate.Create("CODE1", "Name", "Desc", "{}");
-        var templateToRemove = ClinicalFormTemplate.Create("CODE2", "Diff", "Desc", "{}");
-
-        var sharedId = Guid.NewGuid();
-        template1.SetId(sharedId);
-        templateToRemove.SetId(sharedId);
-
-        appointmentType.AddRequiredTemplate(template1);
+        var template = ClinicalFormTemplate.Create("CODE1", "Name", "Desc", "{}");
+        var unrelatedTemplate = ClinicalFormTemplate.Create("CODE2", "Other", "Desc", "{}");
+        appointmentType.AddRequiredTemplate(template);
 
         // Act
-        appointmentType.RemoveRequiredTemplate(templateToRemove);
+        var act = () => appointmentType.RemoveRequiredTemplate(unrelatedTemplate);
 
         // Assert
-        appointmentType.RequiredTemplates.Should().BeEmpty();
-    }
-
-    [Fact]
-    public void RemoveRequiredTemplate_ShouldRemoveTemplate_WhenMatchingCodeProvided()
-    {
-        // Arrange
-        var appointmentType = new AppointmentTypeBuilder().Build();
-        var template1 = ClinicalFormTemplate.Create("CODE1", "Name", "Desc", "{}");
-        var templateToRemove = ClinicalFormTemplate.Create("CODE1", "Different", "Desc", "{}");
-
-        templateToRemove.SetId(Guid.NewGuid());
-
-        appointmentType.AddRequiredTemplate(template1);
-
-        // Act
-        appointmentType.RemoveRequiredTemplate(templateToRemove);
-
-        // Assert
-        appointmentType.RequiredTemplates.Should().BeEmpty();
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.AppointmentType.TemplateNotFound);
     }
 
     [Fact]
