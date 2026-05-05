@@ -14,22 +14,17 @@ public class AppointmentTypeDefinitionTests
     public void Create_ShouldCreateInstance_WhenValidParameters()
     {
         // Arrange
-        var type = AppointmentCategory.Checkup;
+        var category = AppointmentCategory.Checkup;
         var name = "General Checkup";
         var description = "Routine consultation";
         var duration = TimeSpan.FromMinutes(30);
 
         // Act
-        var result = new AppointmentTypeBuilder()
-            .WithCategory(type)
-            .WithName(name)
-            .WithDescription(description)
-            .WithDurationMinutes(duration)
-            .Build();
+        var result = AppointmentTypeDefinition.Create(category, name, description, duration);
 
         // Assert
         result.Should().NotBeNull();
-        result.Category.Should().Be(type);
+        result.Category.Should().Be(category);
         result.Name.Should().Be(name);
         result.Description.Should().Be(description);
         result.DurationMinutes.Should().Be(duration);
@@ -42,7 +37,13 @@ public class AppointmentTypeDefinitionTests
     public void Create_ShouldThrowException_WhenNameIsEmpty(string? name)
     {
         // Arrange & Act
-        var act = () => new AppointmentTypeBuilder().WithName(name!).Build();
+        var act = () =>
+            AppointmentTypeDefinition.Create(
+                AppointmentCategory.Checkup,
+                name!,
+                "Description",
+                TimeSpan.FromMinutes(30)
+            );
 
         // Assert
         act.Should()
@@ -55,7 +56,13 @@ public class AppointmentTypeDefinitionTests
     public void Create_ShouldThrowException_WhenDurationIsZeroOrNegative(TimeSpan duration)
     {
         // Arrange & Act
-        var act = () => new AppointmentTypeBuilder().WithDurationMinutes(duration).Build();
+        var act = () =>
+            AppointmentTypeDefinition.Create(
+                AppointmentCategory.Checkup,
+                "Checkup",
+                "Description",
+                duration
+            );
 
         // Assert
         act.Should()
@@ -67,7 +74,7 @@ public class AppointmentTypeDefinitionTests
     public void AddRequiredTemplate_ShouldThrowException_WhenTemplateIsNull()
     {
         // Arrange
-        var appointmentType = new AppointmentTypeBuilder().Build();
+        var appointmentType = CreateAppointmentTypeDefinition();
 
         // Act
         var act = () => appointmentType.AddRequiredTemplate(null!);
@@ -82,7 +89,7 @@ public class AppointmentTypeDefinitionTests
     public void AddRequiredTemplate_ShouldAddTemplate_WhenTemplateIsNew()
     {
         // Arrange
-        var appointmentType = new AppointmentTypeBuilder().Build();
+        var appointmentType = CreateAppointmentTypeDefinition();
         var template = ClinicalFormTemplate.Create("CODE1", "Name", "Desc", "{}");
 
         // Act
@@ -96,7 +103,7 @@ public class AppointmentTypeDefinitionTests
     public void AddRequiredTemplate_ShouldThrowException_WhenTemplateAlreadyExists_ById()
     {
         // Arrange
-        var appointmentType = new AppointmentTypeBuilder().Build();
+        var appointmentType = CreateAppointmentTypeDefinition();
         var template1 = ClinicalFormTemplate.Create("CODE1", "Name", "Desc", "{}");
         var template2 = ClinicalFormTemplate.Create("CODE2", "Different", "Desc", "{}");
         var sharedId = Guid.NewGuid();
@@ -119,7 +126,7 @@ public class AppointmentTypeDefinitionTests
     public void AddRequiredTemplate_ShouldThrowException_WhenTemplateAlreadyExists_ByCode()
     {
         // Arrange
-        var appointmentType = new AppointmentTypeBuilder().Build();
+        var appointmentType = CreateAppointmentTypeDefinition();
         var template1 = ClinicalFormTemplate.Create("CODE1", "Name", "Desc", "{}");
         var template2 = ClinicalFormTemplate.Create("CODE1", "Another Name", "Desc", "{}");
 
@@ -138,7 +145,7 @@ public class AppointmentTypeDefinitionTests
     public void RemoveRequiredTemplate_ShouldRemoveTemplate_WhenMatchingIdProvided()
     {
         // Arrange
-        var appointmentType = new AppointmentTypeBuilder().Build();
+        var appointmentType = CreateAppointmentTypeDefinition();
         var templateToRemove = ClinicalFormTemplate.Create("CODE2", "Diff", "Desc", "{}");
         appointmentType.AddRequiredTemplate(templateToRemove);
 
@@ -153,7 +160,7 @@ public class AppointmentTypeDefinitionTests
     public void RemoveRequiredTemplate_ShouldThrowException_WhenTemplateIsNull()
     {
         // Arrange
-        var appointmentType = new AppointmentTypeBuilder().Build();
+        var appointmentType = CreateAppointmentTypeDefinition();
 
         // Act
         var act = () => appointmentType.RemoveRequiredTemplate(null!);
@@ -168,7 +175,7 @@ public class AppointmentTypeDefinitionTests
     public void RemoveRequiredTemplate_ShouldThrow_WhenTemplateDoesNotExist()
     {
         // Arrange
-        var appointmentType = new AppointmentTypeBuilder().Build();
+        var appointmentType = CreateAppointmentTypeDefinition();
         var template = ClinicalFormTemplate.Create("CODE1", "Name", "Desc", "{}");
         var unrelatedTemplate = ClinicalFormTemplate.Create("CODE2", "Other", "Desc", "{}");
         appointmentType.AddRequiredTemplate(template);
@@ -186,7 +193,13 @@ public class AppointmentTypeDefinitionTests
     public void ValidatePatientEligibility_ShouldNotThrowException_WhenPatientMeetsAllCriteria()
     {
         // Arrange
-        var appointmentType = new AppointmentTypeBuilder().WithAgePolicy(18, 65, false).Build();
+        var appointmentType = AppointmentTypeDefinition.Create(
+            AppointmentCategory.Checkup,
+            "Checkup",
+            "Description",
+            TimeSpan.FromMinutes(30),
+            AgeEligibilityPolicy.Create(18, 65, false)
+        );
 
         // Act
         var act = () => appointmentType.ValidatePatientEligibility(30);
@@ -199,7 +212,13 @@ public class AppointmentTypeDefinitionTests
     public void ValidatePatientEligibility_ShouldThrowException_WhenPatientIsTooYoung()
     {
         // Arrange
-        var appointmentType = new AppointmentTypeBuilder().WithAgePolicy(18, null, false).Build();
+        var appointmentType = AppointmentTypeDefinition.Create(
+            AppointmentCategory.Checkup,
+            "Checkup",
+            "Description",
+            TimeSpan.FromMinutes(30),
+            AgeEligibilityPolicy.Create(18, null, false)
+        );
 
         // Act
         var act = () => appointmentType.ValidatePatientEligibility(15);
@@ -214,7 +233,7 @@ public class AppointmentTypeDefinitionTests
     public void UpdateDetails_ShouldUpdateAllProperties_WhenValidParameters()
     {
         // Arrange
-        var appointmentType = new AppointmentTypeBuilder().Build();
+        var appointmentType = CreateAppointmentTypeDefinition();
         var newCategory = AppointmentCategory.FollowUp;
         var newName = "Updated Name";
         var newDescription = "Updated Description";
@@ -237,7 +256,7 @@ public class AppointmentTypeDefinitionTests
     public void UpdateDetails_ShouldThrowException_WhenNameIsEmpty(string? name)
     {
         // Arrange
-        var appointmentType = new AppointmentTypeBuilder().Build();
+        var appointmentType = CreateAppointmentTypeDefinition();
 
         // Act
         var act = () =>
@@ -259,7 +278,7 @@ public class AppointmentTypeDefinitionTests
     public void UpdateDetails_ShouldThrowException_WhenDurationIsZeroOrNegative(TimeSpan duration)
     {
         // Arrange
-        var appointmentType = new AppointmentTypeBuilder().Build();
+        var appointmentType = CreateAppointmentTypeDefinition();
 
         // Act
         var act = () =>
@@ -280,7 +299,7 @@ public class AppointmentTypeDefinitionTests
     public void ChangeAgePolicy_ShouldUpdatePolicy_WhenValidPolicyProvided()
     {
         // Arrange
-        var appointmentType = new AppointmentTypeBuilder().Build();
+        var appointmentType = CreateAppointmentTypeDefinition();
         var newPolicy = AgeEligibilityPolicy.Create(18, 65, false);
 
         // Act
@@ -294,7 +313,13 @@ public class AppointmentTypeDefinitionTests
     public void ChangeAgePolicy_ShouldSetNoRestriction_WhenNullProvided()
     {
         // Arrange
-        var appointmentType = new AppointmentTypeBuilder().WithAgePolicy(18, 65, false).Build();
+        var appointmentType = AppointmentTypeDefinition.Create(
+            AppointmentCategory.Checkup,
+            "Checkup",
+            "Description",
+            TimeSpan.FromMinutes(30),
+            AgeEligibilityPolicy.Create(18, 65, false)
+        );
 
         // Act
         appointmentType.ChangeAgePolicy(null!);
@@ -307,7 +332,7 @@ public class AppointmentTypeDefinitionTests
     public void MakeUnrestricted_ShouldSetUnrestrictedAndClearSpecialties_WhenCurrentlyRestricted()
     {
         // Arrange
-        var appointmentType = new AppointmentTypeBuilder().Build();
+        var appointmentType = CreateAppointmentTypeDefinition();
         appointmentType.RestrictToSpecialties([Guid.NewGuid()]);
 
         // Act
@@ -322,7 +347,7 @@ public class AppointmentTypeDefinitionTests
     public void MakeUnrestricted_ShouldThrowException_WhenAlreadyUnrestricted()
     {
         // Arrange
-        var appointmentType = new AppointmentTypeBuilder().Build();
+        var appointmentType = CreateAppointmentTypeDefinition();
 
         // Act & Assert
         appointmentType
@@ -336,7 +361,7 @@ public class AppointmentTypeDefinitionTests
     public void RestrictToSpecialties_ShouldSetSpecialties_WhenCurrentlyUnrestricted()
     {
         // Arrange
-        var appointmentType = new AppointmentTypeBuilder().Build();
+        var appointmentType = CreateAppointmentTypeDefinition();
         var specialtyId1 = Guid.NewGuid();
         var specialtyId2 = Guid.NewGuid();
 
@@ -354,7 +379,7 @@ public class AppointmentTypeDefinitionTests
     public void RestrictToSpecialties_ShouldThrowException_WhenAlreadyRestricted()
     {
         // Arrange
-        var appointmentType = new AppointmentTypeBuilder().Build();
+        var appointmentType = CreateAppointmentTypeDefinition();
         appointmentType.RestrictToSpecialties([Guid.NewGuid()]);
 
         // Act
@@ -370,7 +395,7 @@ public class AppointmentTypeDefinitionTests
     public void RestrictToSpecialties_ShouldThrowException_WhenListIsEmpty()
     {
         // Arrange
-        var appointmentType = new AppointmentTypeBuilder().Build();
+        var appointmentType = CreateAppointmentTypeDefinition();
 
         // Act
         var act = () => appointmentType.RestrictToSpecialties([]);
@@ -385,7 +410,7 @@ public class AppointmentTypeDefinitionTests
     public void RestrictToSpecialties_ShouldThrowException_WhenListIsNull()
     {
         // Arrange
-        var appointmentType = new AppointmentTypeBuilder().Build();
+        var appointmentType = CreateAppointmentTypeDefinition();
 
         // Act
         var act = () => appointmentType.RestrictToSpecialties(null!);
@@ -400,7 +425,7 @@ public class AppointmentTypeDefinitionTests
     public void RestrictToSpecialties_ShouldThrowException_WhenAnyIdIsEmpty()
     {
         // Arrange
-        var appointmentType = new AppointmentTypeBuilder().Build();
+        var appointmentType = CreateAppointmentTypeDefinition();
 
         // Act
         var act = () => appointmentType.RestrictToSpecialties([Guid.NewGuid(), Guid.Empty]);
@@ -415,7 +440,7 @@ public class AppointmentTypeDefinitionTests
     public void RestrictToSpecialties_ShouldThrowException_WhenDuplicateIdsProvided()
     {
         // Arrange
-        var appointmentType = new AppointmentTypeBuilder().Build();
+        var appointmentType = CreateAppointmentTypeDefinition();
         var duplicateId = Guid.NewGuid();
 
         // Act
@@ -431,7 +456,7 @@ public class AppointmentTypeDefinitionTests
     public void AddAllowedSpecialty_ShouldAddSpecialty_WhenValidAndRestricted()
     {
         // Arrange
-        var appointmentType = new AppointmentTypeBuilder().Build();
+        var appointmentType = CreateAppointmentTypeDefinition();
         var baseSpecialtyId = Guid.NewGuid();
         appointmentType.RestrictToSpecialties([baseSpecialtyId]);
         var specialtyId = Guid.NewGuid();
@@ -448,7 +473,7 @@ public class AppointmentTypeDefinitionTests
     public void AddAllowedSpecialty_ShouldThrowException_WhenTypeIsUnrestricted()
     {
         // Arrange
-        var appointmentType = new AppointmentTypeBuilder().Build();
+        var appointmentType = CreateAppointmentTypeDefinition();
 
         // Act
         var act = () => appointmentType.AddAllowedSpecialty(Guid.NewGuid());
@@ -463,7 +488,7 @@ public class AppointmentTypeDefinitionTests
     public void AddAllowedSpecialty_ShouldThrowException_WhenSpecialtyIdIsEmpty()
     {
         // Arrange
-        var appointmentType = new AppointmentTypeBuilder().Build();
+        var appointmentType = CreateAppointmentTypeDefinition();
         appointmentType.RestrictToSpecialties([Guid.NewGuid()]);
 
         // Act
@@ -479,7 +504,7 @@ public class AppointmentTypeDefinitionTests
     public void AddAllowedSpecialty_ShouldThrowException_WhenSpecialtyAlreadyAllowed()
     {
         // Arrange
-        var appointmentType = new AppointmentTypeBuilder().Build();
+        var appointmentType = CreateAppointmentTypeDefinition();
         var specialtyId = Guid.NewGuid();
         appointmentType.RestrictToSpecialties([specialtyId]);
 
@@ -496,7 +521,7 @@ public class AppointmentTypeDefinitionTests
     public void RemoveAllowedSpecialty_ShouldRemoveSpecialty_WhenItExists()
     {
         // Arrange
-        var appointmentType = new AppointmentTypeBuilder().Build();
+        var appointmentType = CreateAppointmentTypeDefinition();
         var specialtyId1 = Guid.NewGuid();
         var specialtyId2 = Guid.NewGuid();
         appointmentType.RestrictToSpecialties([specialtyId1, specialtyId2]);
@@ -516,7 +541,7 @@ public class AppointmentTypeDefinitionTests
     public void RemoveAllowedSpecialty_ShouldThrowException_WhenTypeIsUnrestricted()
     {
         // Arrange
-        var appointmentType = new AppointmentTypeBuilder().Build();
+        var appointmentType = CreateAppointmentTypeDefinition();
 
         // Act
         var act = () => appointmentType.RemoveAllowedSpecialty(Guid.NewGuid());
@@ -531,7 +556,7 @@ public class AppointmentTypeDefinitionTests
     public void RemoveAllowedSpecialty_ShouldThrowException_WhenSpecialtyDoesNotExist()
     {
         // Arrange
-        var appointmentType = new AppointmentTypeBuilder().Build();
+        var appointmentType = CreateAppointmentTypeDefinition();
         var existingId = Guid.NewGuid();
         var existingId2 = Guid.NewGuid();
         appointmentType.RestrictToSpecialties([existingId, existingId2]);
@@ -549,7 +574,7 @@ public class AppointmentTypeDefinitionTests
     public void RemoveAllowedSpecialty_ShouldThrowException_WhenIsLastSpecialty()
     {
         // Arrange
-        var appointmentType = new AppointmentTypeBuilder().Build();
+        var appointmentType = CreateAppointmentTypeDefinition();
         var specialtyId = Guid.NewGuid();
         appointmentType.RestrictToSpecialties([specialtyId]);
 
@@ -562,53 +587,13 @@ public class AppointmentTypeDefinitionTests
             .WithMessage(DomainErrors.AppointmentType.RequiresAtLeastOneSpecialty);
     }
 
-    private class AppointmentTypeBuilder
-    {
-        private AppointmentCategory _category = AppointmentCategory.Checkup;
-        private string _name = "Checkup";
-        private string _description = "Description";
-        private TimeSpan _durationMinutes = TimeSpan.FromMinutes(30);
-        private AgeEligibilityPolicy? _agePolicy = null;
-
-        public AppointmentTypeBuilder WithName(string name)
-        {
-            _name = name;
-            return this;
-        }
-
-        public AppointmentTypeBuilder WithDescription(string description)
-        {
-            _description = description;
-            return this;
-        }
-
-        public AppointmentTypeBuilder WithDurationMinutes(TimeSpan duration)
-        {
-            _durationMinutes = duration;
-            return this;
-        }
-
-        public AppointmentTypeBuilder WithAgePolicy(int? min, int? max, bool requiresGuardian)
-        {
-            _agePolicy = AgeEligibilityPolicy.Create(min, max, requiresGuardian);
-            return this;
-        }
-
-        public AppointmentTypeBuilder WithCategory(AppointmentCategory category)
-        {
-            _category = category;
-            return this;
-        }
-
-        public AppointmentTypeDefinition Build() =>
-            AppointmentTypeDefinition.Create(
-                _category,
-                _name,
-                _description,
-                _durationMinutes,
-                _agePolicy
-            );
-    }
+    private static AppointmentTypeDefinition CreateAppointmentTypeDefinition() =>
+        AppointmentTypeDefinition.Create(
+            AppointmentCategory.Checkup,
+            "Checkup",
+            "Description",
+            TimeSpan.FromMinutes(30)
+        );
 
     public static TheoryData<TimeSpan> InvalidDurations =>
         [TimeSpan.Zero, TimeSpan.FromMinutes(-10)];
