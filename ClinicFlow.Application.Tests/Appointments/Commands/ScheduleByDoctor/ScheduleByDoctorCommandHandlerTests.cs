@@ -60,8 +60,19 @@ public class ScheduleByDoctorCommandHandlerTests
 
         var doctor = CreateDoctor(command.InitiatorUserId, Guid.NewGuid());
         var targetPatient = CreateTargetPatient(command.TargetPatientId);
-        var appointmentType = CreateAppointmentType();
-        var schedule = CreateSchedule(doctor.Id, scheduledDate.DayOfWeek, startTime, endTime);
+        var appointmentType = AppointmentTypeDefinition.Create(
+            AppointmentCategory.FollowUp,
+            "FollowUp",
+            "Follow up visit",
+            TimeSpan.FromMinutes(30),
+            AgeEligibilityPolicy.Create(0, 100, false)
+        );
+
+        var schedule = Schedule.Create(
+            doctor.Id,
+            scheduledDate.DayOfWeek,
+            TimeRange.Create(startTime, endTime)
+        );
 
         _doctorRepositoryMock
             .Setup(r => r.GetByUserIdAsync(command.InitiatorUserId, It.IsAny<CancellationToken>()))
@@ -232,20 +243,4 @@ public class ScheduleByDoctorCommandHandlerTests
             _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30),
             _fakeTime.GetUtcNow().UtcDateTime
         );
-
-    private static AppointmentTypeDefinition CreateAppointmentType() =>
-        AppointmentTypeDefinition.Create(
-            AppointmentCategory.FollowUp,
-            "FollowUp",
-            "Follow up visit",
-            TimeSpan.FromMinutes(30),
-            AgeEligibilityPolicy.Create(0, 100, false)
-        );
-
-    private static Schedule CreateSchedule(
-        Guid doctorId,
-        DayOfWeek dayOfWeek,
-        TimeSpan start,
-        TimeSpan end
-    ) => Schedule.Create(doctorId, dayOfWeek, TimeRange.Create(start, end));
 }

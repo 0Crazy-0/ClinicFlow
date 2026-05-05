@@ -60,12 +60,18 @@ public class ScheduleByStaffCommandHandlerTests
         );
 
         var targetPatient = CreateTargetPatient(Guid.NewGuid(), _fakeTime.GetUtcNow().UtcDateTime);
-        var appointmentType = CreateAppointmentType();
-        var schedule = CreateSchedule(
+        var appointmentType = AppointmentTypeDefinition.Create(
+            AppointmentCategory.Checkup,
+            "Checkup",
+            "Desc",
+            TimeSpan.FromMinutes(30),
+            AgeEligibilityPolicy.Create(0, 100, false)
+        );
+
+        var schedule = Schedule.Create(
             command.DoctorId,
             scheduledDate.DayOfWeek,
-            startTime,
-            endTime
+            TimeRange.Create(startTime, endTime)
         );
 
         var doctor = Doctor.Create(
@@ -248,20 +254,4 @@ public class ScheduleByStaffCommandHandlerTests
 
         return patient;
     }
-
-    private static AppointmentTypeDefinition CreateAppointmentType() =>
-        AppointmentTypeDefinition.Create(
-            AppointmentCategory.Checkup,
-            "Checkup",
-            "Desc",
-            TimeSpan.FromMinutes(30),
-            AgeEligibilityPolicy.Create(0, 100, false)
-        );
-
-    private static Schedule CreateSchedule(
-        Guid doctorId,
-        DayOfWeek dayOfWeek,
-        TimeSpan start,
-        TimeSpan end
-    ) => Schedule.Create(doctorId, dayOfWeek, TimeRange.Create(start, end));
 }
