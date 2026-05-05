@@ -1,5 +1,4 @@
 using ClinicFlow.Application.Appointments.Commands.RescheduleByStaff;
-using ClinicFlow.Application.Tests.Shared;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
@@ -60,10 +59,14 @@ public class RescheduleByStaffCommandHandlerTests
         var doctorId = Guid.NewGuid();
         var patientId = Guid.NewGuid();
         var appointment = CreateAppointment(patientId, doctorId, Guid.NewGuid());
-        var schedule = CreateSchedule(doctorId, newDate.DayOfWeek, newStartTime, newEndTime);
+        var schedule = Schedule.Create(
+            doctorId,
+            newDate.DayOfWeek,
+            TimeRange.Create(newStartTime, newEndTime)
+        );
+
         var targetPatient = CreatePatient();
         var doctor = CreateDoctor();
-
         var appointmentType = AppointmentTypeDefinition.Create(
             AppointmentCategory.Checkup,
             "Checkup",
@@ -281,11 +284,4 @@ public class RescheduleByStaffCommandHandlerTests
         );
         return patient;
     }
-
-    private static Schedule CreateSchedule(
-        Guid doctorId,
-        DayOfWeek dayOfWeek,
-        TimeSpan start,
-        TimeSpan end
-    ) => Schedule.Create(doctorId, dayOfWeek, TimeRange.Create(start, end));
 }

@@ -62,9 +62,13 @@ public class RescheduleByDoctorCommandHandlerTests
         var typeId = Guid.NewGuid();
         var appointment = CreateAppointment(patientId, doctorId, typeId);
         var doctor = CreateDoctor(doctorId, command.InitiatorUserId, Guid.NewGuid());
-        var schedule = CreateSchedule(doctorId, newDate.DayOfWeek, newStartTime, newEndTime);
-        var targetPatient = CreatePatient();
+        var schedule = Schedule.Create(
+            doctorId,
+            newDate.DayOfWeek,
+            TimeRange.Create(newStartTime, newEndTime)
+        );
 
+        var targetPatient = CreatePatient();
         var appointmentType = AppointmentTypeDefinition.Create(
             AppointmentCategory.Checkup,
             "Checkup",
@@ -286,11 +290,4 @@ public class RescheduleByDoctorCommandHandlerTests
 
         return patient;
     }
-
-    private static Schedule CreateSchedule(
-        Guid doctorId,
-        DayOfWeek dayOfWeek,
-        TimeSpan start,
-        TimeSpan end
-    ) => Schedule.Create(doctorId, dayOfWeek, TimeRange.Create(start, end));
 }
