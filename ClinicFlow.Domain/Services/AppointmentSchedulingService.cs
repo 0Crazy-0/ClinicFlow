@@ -21,10 +21,6 @@ namespace ClinicFlow.Domain.Services;
 /// </remarks>
 public static class AppointmentSchedulingService
 {
-    /// <summary>
-    /// Schedules a new appointment on behalf of a patient, strictly enforcing ownership authorization,
-    /// profile completeness, penalty blocks, schedule conflicts, eligibility rules, and doctor availability
-    /// </summary>
     public static Appointment ScheduleByPatient(
         AppointmentTypeDefinition appointmentType,
         PatientSchedulingArgs args,
@@ -101,9 +97,6 @@ public static class AppointmentSchedulingService
         );
     }
 
-    /// <summary>
-    /// Schedules a new appointment on behalf of a doctor.
-    /// </summary>
     public static Appointment ScheduleByDoctor(
         AppointmentTypeDefinition appointmentType,
         DoctorSchedulingArgs args,
@@ -156,10 +149,6 @@ public static class AppointmentSchedulingService
         );
     }
 
-    /// <summary>
-    /// Schedules a new appointment on behalf of a staff member, enforcing profile
-    /// completeness and patient eligibility rules.
-    /// </summary>
     public static Appointment ScheduleByStaff(
         AppointmentTypeDefinition appointmentType,
         StaffSchedulingArgs args,
