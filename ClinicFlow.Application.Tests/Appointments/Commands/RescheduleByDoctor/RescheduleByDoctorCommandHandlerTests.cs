@@ -61,7 +61,7 @@ public class RescheduleByDoctorCommandHandlerTests
         var patientId = Guid.NewGuid();
         var typeId = Guid.NewGuid();
         var appointment = CreateAppointment(patientId, doctorId, typeId);
-        var doctor = CreateDoctor(doctorId, command.InitiatorUserId, Guid.NewGuid());
+        var doctor = CreateDoctor(doctorId, command.InitiatorUserId);
         var schedule = Schedule.Create(
             doctorId,
             newDate.DayOfWeek,
@@ -191,7 +191,7 @@ public class RescheduleByDoctorCommandHandlerTests
 
         var doctorId = Guid.NewGuid();
         var appointment = CreateAppointment(Guid.NewGuid(), doctorId, Guid.NewGuid());
-        var doctor = CreateDoctor(doctorId, command.InitiatorUserId, Guid.NewGuid());
+        var doctor = CreateDoctor(doctorId, command.InitiatorUserId);
 
         _appointmentRepositoryMock
             .Setup(r => r.GetByIdAsync(command.AppointmentId, It.IsAny<CancellationToken>()))
@@ -229,7 +229,7 @@ public class RescheduleByDoctorCommandHandlerTests
         var doctorId = Guid.NewGuid();
         var patientId = Guid.NewGuid();
         var appointment = CreateAppointment(patientId, doctorId, Guid.NewGuid());
-        var doctor = CreateDoctor(doctorId, command.InitiatorUserId, Guid.NewGuid());
+        var doctor = CreateDoctor(doctorId, command.InitiatorUserId);
         var targetPatient = CreatePatient();
 
         _appointmentRepositoryMock
@@ -266,12 +266,12 @@ public class RescheduleByDoctorCommandHandlerTests
             TimeRange.Create(new TimeSpan(10, 0, 0), new TimeSpan(11, 0, 0))
         );
 
-    private static Doctor CreateDoctor(Guid id, Guid userId, Guid specialtyId)
+    private static Doctor CreateDoctor(Guid id, Guid userId)
     {
         var doctor = Doctor.Create(
             userId,
             MedicalLicenseNumber.Create("1234567"),
-            specialtyId,
+            Guid.NewGuid(),
             "555-1234",
             ConsultationRoom.Create(1, "Room A", 1)
         );
