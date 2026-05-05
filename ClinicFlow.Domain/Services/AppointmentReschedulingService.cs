@@ -22,9 +22,6 @@ namespace ClinicFlow.Domain.Services;
 /// </remarks>
 public static class AppointmentReschedulingService
 {
-    /// <summary>
-    /// Reschedules an existing appointment on behalf of a patient, enforcing ownership authorization, penalty rules, and doctor availability.
-    /// </summary>
     public static void RescheduleByPatient(
         Appointment appointment,
         PatientReschedulingArgs args,
