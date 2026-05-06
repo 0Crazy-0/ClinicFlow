@@ -30,4 +30,9 @@ public enum AppointmentStatus
     /// The patient has arrived at the clinic and checked in, waiting for the doctor.
     /// </summary>
     CheckedIn = 8,
+
+    /// <summary>
+    /// The appointment's doctor was suspended and the appointment awaits reassignment to a new doctor.
+    /// </summary>
+    RequiresReassignment = 9,
 }

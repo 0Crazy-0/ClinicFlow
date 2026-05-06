@@ -1,4 +1,5 @@
 using ClinicFlow.Domain.Common;
+using ClinicFlow.Domain.Events;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.ValueObjects;
 
@@ -55,6 +56,29 @@ public class Doctor : BaseEntity
 
     public void UpdateProfile(string biography, ConsultationRoom consultationRoom)
     {
+        Biography = biography;
+        ConsultationRoom = consultationRoom;
+    }
+
+    /// <remarks>
+    /// Emitting <see cref="DoctorSuspendedEvent"/> triggers a downstream
+    /// handler that automatically flags all of the doctor's future scheduled appointments as requiring reassignment.
+    /// </remarks>
+    public void Suspend()
+    {
+        if (IsDeleted)
+            throw new BusinessRuleValidationException(DomainErrors.Doctor.AlreadySuspended);
+
+        MarkAsDeleted();
+        AddDomainEvent(new DoctorSuspendedEvent(Id));
+    }
+
+    public void Reactivate(string biography, ConsultationRoom consultationRoom)
+    {
+        if (!IsDeleted)
+            throw new BusinessRuleValidationException(DomainErrors.Doctor.AlreadyActive);
+
+        UndoDeletion();
         Biography = biography;
         ConsultationRoom = consultationRoom;
     }
