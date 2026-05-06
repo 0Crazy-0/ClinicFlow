@@ -1,6 +1,8 @@
-using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
+using ClinicFlow.Domain.Services;
+using ClinicFlow.Domain.Services.Args.Registration;
+using ClinicFlow.Domain.Services.Contexts;
 using ClinicFlow.Domain.ValueObjects;
 using MediatR;
 
@@ -16,19 +18,25 @@ public sealed class CreateDoctorProfileCommandHandler(
         CancellationToken cancellationToken
     )
     {
-        var consultationRoom = ConsultationRoom.Create(
-            request.ConsultationRoomNumber,
-            request.ConsultationRoomName,
-            request.ConsultationRoomFloor
+        var existingDoctor = await doctorRepository.GetIncludingDeletedByLicenseNumberAsync(
+            request.LicenseNumber,
+            cancellationToken
         );
 
-        var doctor = Doctor.Create(
-            request.UserId,
-            MedicalLicenseNumber.Create(request.LicenseNumber),
-            request.MedicalSpecialtyId,
-            request.Biography,
-            consultationRoom
-        );
+        var context = new DoctorRegistrationContext { ExistingDoctor = existingDoctor };
+        var args = new DoctorRegistrationArgs
+        {
+            UserId = request.UserId,
+            LicenseNumber = MedicalLicenseNumber.Create(request.LicenseNumber),
+            MedicalSpecialtyId = request.MedicalSpecialtyId,
+            Biography = request.Biography,
+            ConsultationRoom = ConsultationRoom.Create(
+                request.ConsultationRoomNumber,
+                request.ConsultationRoomName,
+                request.ConsultationRoomFloor
+            ),
+        };
+        var doctor = DoctorRegistrationService.Register(args, context);
 
         await doctorRepository.CreateAsync(doctor, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
