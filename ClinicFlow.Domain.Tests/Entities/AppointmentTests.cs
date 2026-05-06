@@ -344,6 +344,122 @@ public class AppointmentTests
             .WithMessage(DomainErrors.Appointment.CannotComplete);
     }
 
+    [Fact]
+    public void MarkAsRequiresReassignment_ShouldSetStatus_WhenScheduled()
+    {
+        // Arrange
+        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+
+        // Act
+        appointment.MarkAsRequiresReassignment();
+
+        // Assert
+        appointment.Status.Should().Be(AppointmentStatus.RequiresReassignment);
+    }
+
+    [Fact]
+    public void MarkAsRequiresReassignment_ShouldThrowException_WhenNotScheduled()
+    {
+        // Arrange
+        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        appointment.Cancel(Guid.NewGuid(), "Reason", _fakeTime.GetUtcNow().UtcDateTime);
+
+        // Act & Assert
+        appointment
+            .Invoking(a => a.MarkAsRequiresReassignment())
+            .Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Appointment.CannotReassign);
+    }
+
+    [Fact]
+    public void Reassign_ShouldUpdateDoctorAndScheduleAndEmitEvent_WhenValid()
+    {
+        // Arrange
+        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var originalDoctorId = appointment.DoctorId;
+        appointment.MarkAsRequiresReassignment();
+        appointment.ClearDomainEvents();
+
+        var newDoctorId = Guid.NewGuid();
+        var newDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(3).Date;
+        var newTimeRange = TimeRange.Create(TimeSpan.FromHours(14), TimeSpan.FromHours(15));
+
+        // Act
+        appointment.Reassign(newDoctorId, newDate, newTimeRange);
+
+        // Assert
+        appointment.DoctorId.Should().Be(newDoctorId);
+        appointment.ScheduledDate.Should().Be(newDate);
+        appointment.TimeRange.Should().Be(newTimeRange);
+        appointment.Status.Should().Be(AppointmentStatus.Scheduled);
+
+        var evt = appointment.DomainEvents.OfType<AppointmentReassignedEvent>().Single();
+        evt.PreviousDoctorId.Should().Be(originalDoctorId);
+    }
+
+    [Fact]
+    public void Reassign_ShouldThrowException_WhenNewTimeRangeIsNull()
+    {
+        // Arrange
+        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        appointment.MarkAsRequiresReassignment();
+
+        // Act
+        var act = () =>
+            appointment.Reassign(
+                Guid.NewGuid(),
+                _fakeTime.GetUtcNow().UtcDateTime.AddDays(3).Date,
+                null!
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
+    public void Reassign_ShouldThrowException_WhenNewDoctorIdIsEmpty()
+    {
+        // Arrange
+        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        appointment.MarkAsRequiresReassignment();
+
+        // Act
+        var act = () =>
+            appointment.Reassign(
+                Guid.Empty,
+                _fakeTime.GetUtcNow().UtcDateTime.AddDays(3).Date,
+                TimeRange.Create(TimeSpan.FromHours(14), TimeSpan.FromHours(15))
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void Reassign_ShouldThrowException_WhenNotInRequiresReassignment()
+    {
+        // Arrange
+        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+
+        // Act
+        var act = () =>
+            appointment.Reassign(
+                Guid.NewGuid(),
+                _fakeTime.GetUtcNow().UtcDateTime.AddDays(3).Date,
+                TimeRange.Create(TimeSpan.FromHours(14), TimeSpan.FromHours(15))
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Appointment.CannotReassign);
+    }
+
     private static Appointment CreateAppointment(DateTime scheduledDateTime) =>
         Appointment.Schedule(
             Guid.NewGuid(),

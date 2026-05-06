@@ -1,5 +1,6 @@
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
+using ClinicFlow.Domain.Events;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
@@ -90,4 +91,76 @@ public class DoctorTests
         doctor.Biography.Should().Be(newBiography);
         doctor.ConsultationRoom.Should().Be(newRoom);
     }
+
+    [Fact]
+    public void Suspend_ShouldMarkAsDeletedAndEmitEvent()
+    {
+        // Arrange
+        var doctor = CreateDoctor();
+
+        // Act
+        doctor.Suspend();
+
+        // Assert
+        doctor.IsDeleted.Should().BeTrue();
+        doctor.DomainEvents.OfType<DoctorSuspendedEvent>().Should().ContainSingle();
+    }
+
+    [Fact]
+    public void Suspend_ShouldThrowException_WhenAlreadySuspended()
+    {
+        // Arrange
+        var doctor = CreateDoctor();
+        doctor.Suspend();
+
+        // Act & Assert
+        doctor
+            .Invoking(d => d.Suspend())
+            .Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.Doctor.AlreadySuspended);
+    }
+
+    [Fact]
+    public void Reactivate_ShouldUndoDeletionAndUpdateProfile()
+    {
+        // Arrange
+        var doctor = CreateDoctor();
+        doctor.Suspend();
+
+        var newBiography = "biography2";
+        var newRoom = ConsultationRoom.Create(5, "Pediatrics", 2);
+
+        // Act
+        doctor.Reactivate(newBiography, newRoom);
+
+        // Assert
+        doctor.IsDeleted.Should().BeFalse();
+        doctor.Biography.Should().Be(newBiography);
+        doctor.ConsultationRoom.Should().Be(newRoom);
+    }
+
+    [Fact]
+    public void Reactivate_ShouldThrowException_WhenAlreadyActive()
+    {
+        // Arrange
+        var doctor = CreateDoctor();
+
+        // Act
+        var act = () => doctor.Reactivate("Bio", ConsultationRoom.Create(2, "Room B", 2));
+
+        // Assert
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.Doctor.AlreadyActive);
+    }
+
+    private static Doctor CreateDoctor() =>
+        Doctor.Create(
+            Guid.NewGuid(),
+            MedicalLicenseNumber.Create("12345"),
+            Guid.NewGuid(),
+            "Biography",
+            ConsultationRoom.Create(1, "Room A", 1)
+        );
 }
