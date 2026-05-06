@@ -1,7 +1,10 @@
 using ClinicFlow.Application.Doctors.Commands.CreateDoctorProfile;
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
+using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
+using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
 using Moq;
 
@@ -31,11 +34,20 @@ public class CreateDoctorProfileCommandHandlerTests
             Guid.NewGuid(),
             "12345",
             Guid.NewGuid(),
-            "Cardiologist with 10 years of experience",
+            "Biography",
             1,
-            "Cardiology A",
+            "Cardiology",
             3
         );
+
+        _doctorRepositoryMock
+            .Setup(x =>
+                x.GetIncludingDeletedByLicenseNumberAsync(
+                    command.LicenseNumber,
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync((Doctor?)null);
 
         Doctor? capturedDoctor = null;
         _doctorRepositoryMock
@@ -48,7 +60,7 @@ public class CreateDoctorProfileCommandHandlerTests
         // Assert
         result.Should().NotBeEmpty();
         capturedDoctor.Should().NotBeNull();
-        capturedDoctor!.UserId.Should().Be(command.UserId);
+        capturedDoctor.UserId.Should().Be(command.UserId);
         capturedDoctor.LicenseNumber.Value.Should().Be(command.LicenseNumber);
         capturedDoctor.MedicalSpecialtyId.Should().Be(command.MedicalSpecialtyId);
         capturedDoctor.Biography.Should().Be(command.Biography);
@@ -70,6 +82,15 @@ public class CreateDoctorProfileCommandHandlerTests
             "Room A",
             1
         );
+
+        _doctorRepositoryMock
+            .Setup(x =>
+                x.GetIncludingDeletedByLicenseNumberAsync(
+                    command.LicenseNumber,
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync((Doctor?)null);
 
         _doctorRepositoryMock
             .Setup(x => x.CreateAsync(It.IsAny<Doctor>(), It.IsAny<CancellationToken>()))
