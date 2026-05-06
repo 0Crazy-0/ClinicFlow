@@ -49,4 +49,10 @@ public interface IAppointmentRepository
         TimeRange timeRange,
         CancellationToken cancellationToken = default
     );
+
+    Task<IReadOnlyList<Appointment>> GetFutureScheduledByDoctorIdAsync(
+        Guid doctorId,
+        DateTime referenceDate,
+        CancellationToken cancellationToken = default
+    );
 }

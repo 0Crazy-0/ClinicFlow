@@ -15,7 +15,7 @@ public class Appointment : BaseEntity
 {
     public Guid PatientId { get; init; }
 
-    public Guid DoctorId { get; init; }
+    public Guid DoctorId { get; private set; }
 
     public Guid AppointmentTypeId { get; init; }
 
@@ -159,6 +159,40 @@ public class Appointment : BaseEntity
         RescheduleCount++;
 
         AddDomainEvent(new AppointmentRescheduledEvent(this, previousDate, previousTimeRange));
+    }
+
+    /// <remarks>
+    /// This method is invoked during administrative or clinical disruptions.
+    /// It places the appointment in a holding queue, ensuring the patient is not penalized
+    /// while the staff searches for a new available slot.
+    /// </remarks>
+    internal void MarkAsRequiresReassignment()
+    {
+        if (Status is not AppointmentStatus.Scheduled)
+            throw new DomainValidationException(DomainErrors.Appointment.CannotReassign);
+
+        Status = AppointmentStatus.RequiresReassignment;
+    }
+
+    internal void Reassign(Guid newDoctorId, DateTime newDate, TimeRange newTimeRange)
+    {
+        if (newTimeRange is null)
+            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+
+        if (newDoctorId == Guid.Empty)
+            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+
+        if (Status is not AppointmentStatus.RequiresReassignment)
+            throw new DomainValidationException(DomainErrors.Appointment.CannotReassign);
+
+        var previousDoctorId = DoctorId;
+
+        DoctorId = newDoctorId;
+        ScheduledDate = newDate;
+        TimeRange = newTimeRange;
+        Status = AppointmentStatus.Scheduled;
+
+        AddDomainEvent(new AppointmentReassignedEvent(this, previousDoctorId));
     }
 
     public void MarkAsNoShowByStaff() => MarkAsNoShow();
