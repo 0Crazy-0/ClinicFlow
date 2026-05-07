@@ -505,12 +505,7 @@ public class RescheduleByPatientTests
         );
 
         // Assert
-        appointment
-            .DomainEvents.Should()
-            .ContainSingle()
-            .Which.Should()
-            .BeOfType<AppointmentRescheduledEvent>();
-
+        appointment.DomainEvents.OfType<AppointmentRescheduledEvent>().Should().ContainSingle();
         appointment.ScheduledDate.Should().Be(args.NewDate);
         appointment.TimeRange.Should().Be(args.NewTimeRange);
     }

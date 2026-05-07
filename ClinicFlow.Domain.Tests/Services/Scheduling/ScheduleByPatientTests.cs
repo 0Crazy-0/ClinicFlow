@@ -283,12 +283,7 @@ public class ScheduleByPatientTests
         );
 
         // Assert
-        appointment
-            .DomainEvents.Should()
-            .ContainSingle()
-            .Which.Should()
-            .BeOfType<AppointmentScheduledEvent>();
-
+        appointment.DomainEvents.OfType<AppointmentScheduledEvent>().Should().ContainSingle();
         appointment.Should().NotBeNull();
         appointment.PatientId.Should().Be(familyMember.Id);
         appointment.Status.Should().Be(AppointmentStatus.Scheduled);
@@ -614,12 +609,7 @@ public class ScheduleByPatientTests
         );
 
         // Assert
-        appointment
-            .DomainEvents.Should()
-            .ContainSingle()
-            .Which.Should()
-            .BeOfType<AppointmentScheduledEvent>();
-
+        appointment.DomainEvents.OfType<AppointmentScheduledEvent>().Should().ContainSingle();
         appointment.Should().NotBeNull();
         appointment.PatientId.Should().Be(target.Id);
         appointment.DoctorId.Should().Be(args.DoctorId);

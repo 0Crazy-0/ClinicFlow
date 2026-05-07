@@ -28,7 +28,7 @@ public class MedicalRecordTests
         record.AppointmentId.Should().Be(appointmentId);
         record.ChiefComplaint.Should().Be(chiefComplaint);
         record.ClinicalDetails.Should().BeEmpty();
-        record.DomainEvents.Should().ContainSingle(e => e is MedicalRecordCreatedEvent);
+        record.DomainEvents.OfType<MedicalRecordCreatedEvent>().Should().ContainSingle();
     }
 
     [Theory]

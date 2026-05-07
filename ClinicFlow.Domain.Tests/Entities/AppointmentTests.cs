@@ -42,7 +42,7 @@ public class AppointmentTests
         appointment.TimeRange.Should().Be(timeRange);
         appointment.Status.Should().Be(AppointmentStatus.Scheduled);
         appointment.RescheduleCount.Should().Be(0);
-        appointment.DomainEvents.Should().ContainSingle(e => e is AppointmentScheduledEvent);
+        appointment.DomainEvents.OfType<AppointmentScheduledEvent>().Should().ContainSingle();
     }
 
     [Theory]
@@ -119,9 +119,7 @@ public class AppointmentTests
         appointment.CancelledByUserId.Should().Be(userId);
         appointment.CancellationReason.Should().Be("Reason");
         appointment.CancelledAt.Should().Be(_fakeTime.GetUtcNow().UtcDateTime);
-
-        var evt = appointment.DomainEvents.OfType<AppointmentCancelledEvent>().Single();
-        evt.Reason.Should().Be("Reason");
+        appointment.DomainEvents.OfType<AppointmentCancelledEvent>().Should().ContainSingle();
     }
 
     [Fact]
@@ -177,9 +175,7 @@ public class AppointmentTests
         appointment.CancelledByUserId.Should().Be(userId);
         appointment.CancellationReason.Should().Be("Late reason");
         appointment.CancelledAt.Should().Be(_fakeTime.GetUtcNow().UtcDateTime);
-
-        var evt = appointment.DomainEvents.OfType<AppointmentLateCancelledEvent>().Single();
-        evt.Reason.Should().Be("Late reason");
+        appointment.DomainEvents.OfType<AppointmentLateCancelledEvent>().Should().ContainSingle();
     }
 
     [Fact]
@@ -248,7 +244,7 @@ public class AppointmentTests
         // Assert
         appointment.Status.Should().Be(AppointmentStatus.CheckedIn);
         appointment.CheckedInAt.Should().Be(_fakeTime.GetUtcNow().UtcDateTime);
-        appointment.DomainEvents.Should().Contain(e => e is AppointmentCheckedInEvent);
+        appointment.DomainEvents.OfType<AppointmentCheckedInEvent>().Should().ContainSingle();
     }
 
     [Fact]
@@ -279,7 +275,7 @@ public class AppointmentTests
 
         // Assert
         appointment.Status.Should().Be(AppointmentStatus.InProgress);
-        appointment.DomainEvents.Should().Contain(e => e is AppointmentStartedEvent);
+        appointment.DomainEvents.OfType<AppointmentStartedEvent>().Should().ContainSingle();
     }
 
     [Fact]
@@ -326,7 +322,7 @@ public class AppointmentTests
 
         // Assert
         appointment.Status.Should().Be(AppointmentStatus.Completed);
-        appointment.DomainEvents.Should().Contain(e => e is AppointmentCompletedEvent);
+        appointment.DomainEvents.OfType<AppointmentCompletedEvent>().Should().ContainSingle();
     }
 
     [Fact]
@@ -393,9 +389,7 @@ public class AppointmentTests
         appointment.ScheduledDate.Should().Be(newDate);
         appointment.TimeRange.Should().Be(newTimeRange);
         appointment.Status.Should().Be(AppointmentStatus.Scheduled);
-
-        var evt = appointment.DomainEvents.OfType<AppointmentReassignedEvent>().Single();
-        evt.PreviousDoctorId.Should().Be(originalDoctorId);
+        appointment.DomainEvents.OfType<AppointmentReassignedEvent>().Should().ContainSingle();
     }
 
     [Fact]

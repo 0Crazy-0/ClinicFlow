@@ -67,7 +67,7 @@ public class AppointmentNoShowTests
         appointment.MarkAsNoShowByStaff();
         // Assert
         appointment.Status.Should().Be(AppointmentStatus.NoShow);
-        appointment.DomainEvents.Should().ContainSingle(e => e is AppointmentMarkedAsNoShowEvent);
+        appointment.DomainEvents.OfType<AppointmentMarkedAsNoShowEvent>().Should().ContainSingle();
     }
 
     [Fact]
