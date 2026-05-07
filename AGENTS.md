@@ -336,6 +336,14 @@ public void HasPriorWarnings_ShouldReturnTrue_WhenWarningsExist()
 }
 ```
 
+### Domain Event Assertions
+
+When verifying that a specific domain event was emitted and is the only one of its type in the collection, standardize on the following pattern using `OfType<T>()` and `ContainSingle()`:
+
+```csharp
+entity.DomainEvents.OfType<XEvent>().Should().ContainSingle();
+```
+
 ### Application Handler Tests — Callback Pattern
 
 When a handler's return is not explicit (e.g., it returns the Id from the repository `AddAsync`), use Moq's `.Callback` to capture the entity:
