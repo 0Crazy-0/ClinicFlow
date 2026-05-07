@@ -55,4 +55,12 @@ public interface IAppointmentRepository
         DateTime referenceDate,
         CancellationToken cancellationToken = default
     );
+
+    /// <summary>
+    /// Retrieves all appointments in RequiresReassignment status whose scheduled time has passed.
+    /// </summary>
+    Task<IReadOnlyList<Appointment>> GetExpiredDisplacedAppointmentsAsync(
+        DateTime referenceTime,
+        CancellationToken cancellationToken = default
+    );
 }

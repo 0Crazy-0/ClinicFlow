@@ -13,6 +13,9 @@ namespace ClinicFlow.Domain.Entities;
 /// </summary>
 public class Appointment : BaseEntity
 {
+    public const string SystemTimeoutCancellationReason =
+        "System timeout: Displaced appointment was not reassigned.";
+
     public Guid PatientId { get; init; }
 
     public Guid DoctorId { get; private set; }
@@ -195,6 +198,20 @@ public class Appointment : BaseEntity
         AddDomainEvent(new AppointmentReassignedEvent(this, previousDoctorId));
     }
 
+    /// <remarks>
+    /// Cancels a displaced appointment that was never reassigned before its scheduled time.
+    /// No patient penalty is applied since the cancellation is due to clinic inaction.
+    /// </remarks>
+    public void CancelDueToSystemTimeout(DateTime cancelledAt)
+    {
+        if (Status is not AppointmentStatus.RequiresReassignment)
+            throw new DomainValidationException(DomainErrors.Appointment.CannotCancel);
+
+        Status = AppointmentStatus.Cancelled;
+        ApplyCancellation(null, SystemTimeoutCancellationReason, cancelledAt);
+        AddDomainEvent(new AppointmentSystemCancelledEvent(this));
+    }
+
     public void MarkAsNoShowByStaff() => MarkAsNoShow();
 
     public void MarkAsNoShowByDoctor(Guid initiatorDoctorId)
@@ -226,7 +243,7 @@ public class Appointment : BaseEntity
             );
     }
 
-    private void ApplyCancellation(Guid cancelledByUserId, string? reason, DateTime cancelledAt)
+    private void ApplyCancellation(Guid? cancelledByUserId, string? reason, DateTime cancelledAt)
     {
         CancelledAt = cancelledAt;
         CancelledByUserId = cancelledByUserId;

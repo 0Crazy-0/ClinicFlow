@@ -460,6 +460,40 @@ public class AppointmentTests
             .WithMessage(DomainErrors.Appointment.CannotReassign);
     }
 
+    [Fact]
+    public void CancelDueToSystemTimeout_ShouldCancelAndEmitEvent_WhenRequiresReassignment()
+    {
+        // Arrange
+        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        appointment.MarkAsRequiresReassignment();
+        var cancelledAt = _fakeTime.GetUtcNow().UtcDateTime;
+
+        // Act
+        appointment.CancelDueToSystemTimeout(cancelledAt);
+
+        // Assert
+        appointment.Status.Should().Be(AppointmentStatus.Cancelled);
+        appointment.CancelledAt.Should().Be(cancelledAt);
+        appointment.CancelledByUserId.Should().BeNull();
+        appointment.CancellationReason.Should().Be(Appointment.SystemTimeoutCancellationReason);
+        appointment.DomainEvents.OfType<AppointmentSystemCancelledEvent>().Should().ContainSingle();
+    }
+
+    [Fact]
+    public void CancelDueToSystemTimeout_ShouldThrowException_WhenNotInRequiresReassignment()
+    {
+        // Arrange
+        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+
+        // Act
+        var act = () => appointment.CancelDueToSystemTimeout(_fakeTime.GetUtcNow().UtcDateTime);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Appointment.CannotCancel);
+    }
+
     private static Appointment CreateAppointment(DateTime scheduledDateTime) =>
         Appointment.Schedule(
             Guid.NewGuid(),
