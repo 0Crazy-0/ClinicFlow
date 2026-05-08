@@ -45,6 +45,8 @@ public class MedicalSpecialty : BaseEntity
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        if (string.IsNullOrWhiteSpace(description))
+            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
         if (typicalDurationMinutes <= 0)
             throw new DomainValidationException(DomainErrors.Validation.ValueMustBePositive);
         if (minCancellationHours < 0)
@@ -56,6 +58,50 @@ public class MedicalSpecialty : BaseEntity
             typicalDurationMinutes,
             minCancellationHours
         );
+    }
+
+    public void UpdateDetails(
+        string name,
+        string description,
+        int typicalDurationMinutes,
+        int minCancellationHours
+    )
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        if (string.IsNullOrWhiteSpace(description))
+            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        if (typicalDurationMinutes <= 0)
+            throw new DomainValidationException(DomainErrors.Validation.ValueMustBePositive);
+        if (minCancellationHours < 0)
+            throw new DomainValidationException(DomainErrors.Validation.ValueCannotBeNegative);
+
+        Name = name;
+        Description = description;
+        TypicalDurationMinutes = typicalDurationMinutes;
+        MinCancellationHours = minCancellationHours;
+    }
+
+    public void Reactivate()
+    {
+        if (!IsDeleted)
+            throw new BusinessRuleValidationException(DomainErrors.MedicalSpecialty.AlreadyActive);
+
+        UndoDeletion();
+    }
+
+    public void Deactivate(bool hasActiveDoctors)
+    {
+        if (IsDeleted)
+            throw new BusinessRuleValidationException(
+                DomainErrors.MedicalSpecialty.AlreadyInactive
+            );
+        if (hasActiveDoctors)
+            throw new BusinessRuleValidationException(
+                DomainErrors.MedicalSpecialty.HasActiveDoctors
+            );
+
+        MarkAsDeleted();
     }
 
     internal bool IsCancellationAllowed(DateTime appointmentDateTime, DateTime referenceTime)

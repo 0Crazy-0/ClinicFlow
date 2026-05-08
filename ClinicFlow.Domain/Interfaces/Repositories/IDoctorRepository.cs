@@ -18,6 +18,11 @@ public interface IDoctorRepository
 
     Task<Doctor> CreateAsync(Doctor doctor, CancellationToken cancellationToken = default);
 
+    Task<bool> HasActiveBySpecialtyIdAsync(
+        Guid specialtyId,
+        CancellationToken cancellationToken = default
+    );
+
     Task<Doctor?> GetIncludingDeletedByLicenseNumberAsync(
         string licenseNumber,
         CancellationToken cancellationToken = default
