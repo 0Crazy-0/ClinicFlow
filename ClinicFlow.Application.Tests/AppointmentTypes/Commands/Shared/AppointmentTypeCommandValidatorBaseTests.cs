@@ -9,10 +9,7 @@ public record DummyAppointmentTypeCommand(
     AppointmentCategory Category,
     string Name,
     string Description,
-    TimeSpan DurationMinutes,
-    int? MinimumAge,
-    int? MaximumAge,
-    bool RequiresGuardianConsent
+    TimeSpan DurationMinutes
 ) : IAppointmentTypeCommand;
 
 public class DummyAppointmentTypeCommandValidator
@@ -35,31 +32,7 @@ public class AppointmentTypeCommandValidatorBaseTests
             AppointmentCategory.Checkup,
             "General Checkup",
             "Routine consultation",
-            TimeSpan.FromMinutes(30),
-            18,
-            65,
-            false
-        );
-
-        // Act
-        var result = _sut.TestValidate(command);
-
-        // Assert
-        result.ShouldNotHaveAnyValidationErrors();
-    }
-
-    [Fact]
-    public void Validate_ShouldBeValid_WhenAgeFieldsAreNull()
-    {
-        // Arrange
-        var command = new DummyAppointmentTypeCommand(
-            AppointmentCategory.Checkup,
-            "General Checkup",
-            "Routine consultation",
-            TimeSpan.FromMinutes(30),
-            null,
-            null,
-            false
+            TimeSpan.FromMinutes(30)
         );
 
         // Act
@@ -80,10 +53,7 @@ public class AppointmentTypeCommandValidatorBaseTests
             AppointmentCategory.Checkup,
             name!,
             "Description",
-            TimeSpan.FromMinutes(30),
-            null,
-            null,
-            false
+            TimeSpan.FromMinutes(30)
         );
 
         // Act
@@ -105,10 +75,7 @@ public class AppointmentTypeCommandValidatorBaseTests
             AppointmentCategory.Checkup,
             "Checkup",
             "Description",
-            TimeSpan.FromMinutes(minutes),
-            null,
-            null,
-            false
+            TimeSpan.FromMinutes(minutes)
         );
 
         // Act
@@ -118,51 +85,5 @@ public class AppointmentTypeCommandValidatorBaseTests
         result
             .ShouldHaveValidationErrorFor(x => x.DurationMinutes)
             .WithErrorMessage(DomainErrors.Validation.ValueMustBePositive);
-    }
-
-    [Fact]
-    public void Validate_ShouldHaveError_WhenMinimumAgeIsNegative()
-    {
-        // Arrange
-        var command = new DummyAppointmentTypeCommand(
-            AppointmentCategory.Checkup,
-            "Checkup",
-            "Description",
-            TimeSpan.FromMinutes(30),
-            -1,
-            null,
-            false
-        );
-
-        // Act
-        var result = _sut.TestValidate(command);
-
-        // Assert
-        result
-            .ShouldHaveValidationErrorFor(x => x.MinimumAge)
-            .WithErrorMessage(DomainErrors.Validation.ValueCannotBeNegative);
-    }
-
-    [Fact]
-    public void Validate_ShouldHaveError_WhenMaximumAgeIsNegative()
-    {
-        // Arrange
-        var command = new DummyAppointmentTypeCommand(
-            AppointmentCategory.Checkup,
-            "Checkup",
-            "Description",
-            TimeSpan.FromMinutes(30),
-            null,
-            -5,
-            false
-        );
-
-        // Act
-        var result = _sut.TestValidate(command);
-
-        // Assert
-        result
-            .ShouldHaveValidationErrorFor(x => x.MaximumAge)
-            .WithErrorMessage(DomainErrors.Validation.ValueCannotBeNegative);
     }
 }

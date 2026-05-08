@@ -1,4 +1,4 @@
-using ClinicFlow.Application.AppointmentTypes.Commands.UpdateAppointmentType;
+using ClinicFlow.Application.AppointmentTypes.Commands.ChangeAppointmentTypeAgePolicy;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
@@ -8,46 +8,40 @@ using ClinicFlow.Domain.Interfaces.Repositories;
 using FluentAssertions;
 using Moq;
 
-namespace ClinicFlow.Application.Tests.AppointmentTypes.Commands.UpdateAppointmentType;
+namespace ClinicFlow.Application.Tests.AppointmentTypes.Commands.ChangeAppointmentTypeAgePolicy;
 
-public class UpdateAppointmentTypeCommandHandlerTests
+public class ChangeAppointmentTypeAgePolicyCommandHandlerTests
 {
     private readonly Mock<IAppointmentTypeDefinitionRepository> _appointmentTypeRepositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
-    private readonly UpdateAppointmentTypeCommandHandler _sut;
+    private readonly ChangeAppointmentTypeAgePolicyCommandHandler _sut;
 
-    public UpdateAppointmentTypeCommandHandlerTests()
+    public ChangeAppointmentTypeAgePolicyCommandHandlerTests()
     {
         _appointmentTypeRepositoryMock = new Mock<IAppointmentTypeDefinitionRepository>();
         _unitOfWorkMock = new Mock<IUnitOfWork>();
-        _sut = new UpdateAppointmentTypeCommandHandler(
+        _sut = new ChangeAppointmentTypeAgePolicyCommandHandler(
             _appointmentTypeRepositoryMock.Object,
             _unitOfWorkMock.Object
         );
     }
 
     [Fact]
-    public async Task Handle_ShouldUpdateAppointmentType_WhenEntityExists()
+    public async Task Handle_ShouldChangeAgePolicy_WhenEntityExists()
     {
         // Arrange
-        var command = new UpdateAppointmentTypeCommand(
-            Guid.NewGuid(),
-            AppointmentCategory.FollowUp,
-            "Updated Checkup",
-            "Updated description",
-            TimeSpan.FromMinutes(45)
-        );
+        var command = new ChangeAppointmentTypeAgePolicyCommand(Guid.NewGuid(), 21, 60, false);
 
-        var existingEntity = AppointmentTypeDefinition.Create(
+        var appointmentType = AppointmentTypeDefinition.Create(
             AppointmentCategory.Checkup,
-            "Original Checkup",
-            "Original description",
+            "Checkup",
+            "Description",
             TimeSpan.FromMinutes(30)
         );
 
         _appointmentTypeRepositoryMock
             .Setup(x => x.GetByIdAsync(command.AppointmentTypeId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(existingEntity);
+            .ReturnsAsync(appointmentType);
 
         // Act
         await _sut.Handle(command, CancellationToken.None);
@@ -55,23 +49,18 @@ public class UpdateAppointmentTypeCommandHandlerTests
         // Assert
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
 
-        existingEntity.Category.Should().Be(command.Category);
-        existingEntity.Name.Should().Be(command.Name);
-        existingEntity.Description.Should().Be(command.Description);
-        existingEntity.DurationMinutes.Should().Be(command.DurationMinutes);
+        appointmentType.AgePolicy.MinimumAge.Should().Be(command.MinimumAge);
+        appointmentType.AgePolicy.MaximumAge.Should().Be(command.MaximumAge);
+        appointmentType
+            .AgePolicy.RequiresLegalGuardian.Should()
+            .Be(command.RequiresGuardianConsent);
     }
 
     [Fact]
     public async Task Handle_ShouldThrowException_WhenEntityDoesNotExist()
     {
         // Arrange
-        var command = new UpdateAppointmentTypeCommand(
-            Guid.NewGuid(),
-            AppointmentCategory.Checkup,
-            "Checkup",
-            "Description",
-            TimeSpan.FromMinutes(30)
-        );
+        var command = new ChangeAppointmentTypeAgePolicyCommand(Guid.NewGuid(), null, null, false);
 
         _appointmentTypeRepositoryMock
             .Setup(x => x.GetByIdAsync(command.AppointmentTypeId, It.IsAny<CancellationToken>()))

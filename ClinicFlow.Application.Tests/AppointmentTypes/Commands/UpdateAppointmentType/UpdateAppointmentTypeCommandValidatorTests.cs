@@ -23,10 +23,7 @@ public class UpdateAppointmentTypeCommandValidatorTests
             AppointmentCategory.Checkup,
             "General Checkup",
             "Routine consultation",
-            TimeSpan.FromMinutes(30),
-            18,
-            65,
-            false
+            TimeSpan.FromMinutes(30)
         );
 
         // Act
@@ -45,10 +42,7 @@ public class UpdateAppointmentTypeCommandValidatorTests
             AppointmentCategory.Checkup,
             "Checkup",
             "Description",
-            TimeSpan.FromMinutes(30),
-            null,
-            null,
-            false
+            TimeSpan.FromMinutes(30)
         );
 
         // Act
