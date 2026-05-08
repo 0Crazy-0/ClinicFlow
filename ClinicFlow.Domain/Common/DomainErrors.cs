@@ -101,6 +101,13 @@ public static class DomainErrors
         public const string AlreadySuspended = "DOCTOR_ALREADY_SUSPENDED";
     }
 
+    public static class MedicalSpecialty
+    {
+        public const string AlreadyActive = "SPECIALTY_ALREADY_ACTIVE";
+        public const string AlreadyInactive = "SPECIALTY_ALREADY_INACTIVE";
+        public const string HasActiveDoctors = "SPECIALTY_HAS_ACTIVE_DOCTORS";
+    }
+
     public static class User
     {
         public const string PhoneAlreadyVerified = "PHONE_ALREADY_VERIFIED";
