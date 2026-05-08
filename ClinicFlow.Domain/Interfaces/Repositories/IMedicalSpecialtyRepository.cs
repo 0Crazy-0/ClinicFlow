@@ -8,4 +8,14 @@ namespace ClinicFlow.Domain.Interfaces.Repositories;
 public interface IMedicalSpecialtyRepository
 {
     Task<MedicalSpecialty?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+
+    Task<MedicalSpecialty?> GetByIdIncludingDeletedAsync(
+        Guid id,
+        CancellationToken cancellationToken = default
+    );
+
+    Task<MedicalSpecialty> CreateAsync(
+        MedicalSpecialty specialty,
+        CancellationToken cancellationToken = default
+    );
 }
