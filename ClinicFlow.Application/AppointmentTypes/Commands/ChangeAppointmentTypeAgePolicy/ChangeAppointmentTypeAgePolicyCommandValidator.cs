@@ -1,14 +1,16 @@
-using ClinicFlow.Application.AppointmentTypes.Commands.Shared;
 using ClinicFlow.Domain.Common;
 using FluentValidation;
 
-namespace ClinicFlow.Application.AppointmentTypes.Commands.CreateAppointmentType;
+namespace ClinicFlow.Application.AppointmentTypes.Commands.ChangeAppointmentTypeAgePolicy;
 
-public class CreateAppointmentTypeCommandValidator
-    : AppointmentTypeCommandValidatorBase<CreateAppointmentTypeCommand>
+public class ChangeAppointmentTypeAgePolicyCommandValidator
+    : AbstractValidator<ChangeAppointmentTypeAgePolicyCommand>
 {
-    public CreateAppointmentTypeCommandValidator()
+    public ChangeAppointmentTypeAgePolicyCommandValidator()
     {
+        RuleFor(x => x.AppointmentTypeId)
+            .NotEmpty()
+            .WithMessage(DomainErrors.Validation.InvalidValue);
         RuleFor(x => x.MinimumAge)
             .GreaterThanOrEqualTo(0)
             .When(x => x.MinimumAge.HasValue)

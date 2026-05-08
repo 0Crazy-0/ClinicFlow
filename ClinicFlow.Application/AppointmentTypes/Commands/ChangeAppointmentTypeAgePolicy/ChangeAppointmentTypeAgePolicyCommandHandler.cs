@@ -3,17 +3,18 @@ using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
+using ClinicFlow.Domain.ValueObjects;
 using MediatR;
 
-namespace ClinicFlow.Application.AppointmentTypes.Commands.UpdateAppointmentType;
+namespace ClinicFlow.Application.AppointmentTypes.Commands.ChangeAppointmentTypeAgePolicy;
 
-public sealed class UpdateAppointmentTypeCommandHandler(
+public sealed class ChangeAppointmentTypeAgePolicyCommandHandler(
     IAppointmentTypeDefinitionRepository appointmentTypeRepository,
     IUnitOfWork unitOfWork
-) : IRequestHandler<UpdateAppointmentTypeCommand>
+) : IRequestHandler<ChangeAppointmentTypeAgePolicyCommand>
 {
     public async Task Handle(
-        UpdateAppointmentTypeCommand request,
+        ChangeAppointmentTypeAgePolicyCommand request,
         CancellationToken cancellationToken
     )
     {
@@ -28,12 +29,13 @@ public sealed class UpdateAppointmentTypeCommandHandler(
                 request.AppointmentTypeId
             );
 
-        appointmentType.UpdateDetails(
-            request.Category,
-            request.Name,
-            request.Description,
-            request.DurationMinutes
+        var agePolicy = AgeEligibilityPolicy.Create(
+            request.MinimumAge,
+            request.MaximumAge,
+            request.RequiresGuardianConsent
         );
+
+        appointmentType.ChangeAgePolicy(agePolicy);
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }

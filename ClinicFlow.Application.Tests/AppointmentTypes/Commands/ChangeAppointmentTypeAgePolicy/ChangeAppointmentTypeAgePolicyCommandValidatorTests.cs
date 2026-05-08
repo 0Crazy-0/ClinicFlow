@@ -1,32 +1,23 @@
-using ClinicFlow.Application.AppointmentTypes.Commands.CreateAppointmentType;
+using ClinicFlow.Application.AppointmentTypes.Commands.ChangeAppointmentTypeAgePolicy;
 using ClinicFlow.Domain.Common;
-using ClinicFlow.Domain.Enums;
 using FluentValidation.TestHelper;
 
-namespace ClinicFlow.Application.Tests.AppointmentTypes.Commands.CreateAppointmentType;
+namespace ClinicFlow.Application.Tests.AppointmentTypes.Commands.ChangeAppointmentTypeAgePolicy;
 
-public class CreateAppointmentTypeCommandValidatorTests
+public class ChangeAppointmentTypeAgePolicyCommandValidatorTests
 {
-    private readonly CreateAppointmentTypeCommandValidator _sut;
+    private readonly ChangeAppointmentTypeAgePolicyCommandValidator _sut;
 
-    public CreateAppointmentTypeCommandValidatorTests()
+    public ChangeAppointmentTypeAgePolicyCommandValidatorTests()
     {
-        _sut = new CreateAppointmentTypeCommandValidator();
+        _sut = new ChangeAppointmentTypeAgePolicyCommandValidator();
     }
 
     [Fact]
     public void Validate_ShouldBeValid_WhenAllPropertiesAreProvidedAndValid()
     {
         // Arrange
-        var command = new CreateAppointmentTypeCommand(
-            AppointmentCategory.Checkup,
-            "General Checkup",
-            "Routine consultation",
-            TimeSpan.FromMinutes(30),
-            18,
-            65,
-            false
-        );
+        var command = new ChangeAppointmentTypeAgePolicyCommand(Guid.NewGuid(), 18, 65, false);
 
         // Act
         var result = _sut.TestValidate(command);
@@ -39,21 +30,28 @@ public class CreateAppointmentTypeCommandValidatorTests
     public void Validate_ShouldBeValid_WhenAgeFieldsAreNull()
     {
         // Arrange
-        var command = new CreateAppointmentTypeCommand(
-            AppointmentCategory.Checkup,
-            "General Checkup",
-            "Routine consultation",
-            TimeSpan.FromMinutes(30),
-            null,
-            null,
-            false
-        );
+        var command = new ChangeAppointmentTypeAgePolicyCommand(Guid.NewGuid(), null, null, false);
 
         // Act
         var result = _sut.TestValidate(command);
 
         // Assert
         result.ShouldNotHaveAnyValidationErrors();
+    }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenAppointmentTypeIdIsEmpty()
+    {
+        // Arrange
+        var command = new ChangeAppointmentTypeAgePolicyCommand(Guid.Empty, null, null, false);
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.AppointmentTypeId)
+            .WithErrorMessage(DomainErrors.Validation.InvalidValue);
     }
 
     [Theory]
@@ -63,11 +61,8 @@ public class CreateAppointmentTypeCommandValidatorTests
     public void Validate_ShouldHaveError_WhenMinimumAgeIsNegative(int minimumAge)
     {
         // Arrange
-        var command = new CreateAppointmentTypeCommand(
-            AppointmentCategory.Checkup,
-            "Checkup",
-            "Description",
-            TimeSpan.FromMinutes(30),
+        var command = new ChangeAppointmentTypeAgePolicyCommand(
+            Guid.NewGuid(),
             minimumAge,
             null,
             false
@@ -89,11 +84,8 @@ public class CreateAppointmentTypeCommandValidatorTests
     public void Validate_ShouldHaveError_WhenMaximumAgeIsNegative(int maximumAge)
     {
         // Arrange
-        var command = new CreateAppointmentTypeCommand(
-            AppointmentCategory.Checkup,
-            "Checkup",
-            "Description",
-            TimeSpan.FromMinutes(30),
+        var command = new ChangeAppointmentTypeAgePolicyCommand(
+            Guid.NewGuid(),
             null,
             maximumAge,
             false

@@ -9,8 +9,5 @@ public sealed record UpdateAppointmentTypeCommand(
     AppointmentCategory Category,
     string Name,
     string Description,
-    TimeSpan DurationMinutes,
-    int? MinimumAge,
-    int? MaximumAge,
-    bool RequiresGuardianConsent
+    TimeSpan DurationMinutes
 ) : IRequest, IAppointmentTypeCommand;
