@@ -1,4 +1,6 @@
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
+using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using MediatR;
@@ -15,6 +17,16 @@ public sealed class CreateClinicalFormTemplateCommandHandler(
         CancellationToken cancellationToken
     )
     {
+        if (await clinicalFormTemplateRepository.ExistsByCodeAsync(request.Code, cancellationToken))
+            throw new BusinessRuleValidationException(
+                DomainErrors.ClinicalFormTemplate.CodeAlreadyExists
+            );
+
+        if (await clinicalFormTemplateRepository.ExistsByNameAsync(request.Name, cancellationToken))
+            throw new BusinessRuleValidationException(
+                DomainErrors.ClinicalFormTemplate.NameAlreadyExists
+            );
+
         var template = ClinicalFormTemplate.Create(
             request.Code,
             request.Name,

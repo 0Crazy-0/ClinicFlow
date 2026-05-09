@@ -25,6 +25,17 @@ public sealed class UpdateClinicalFormTemplateCommandHandler(
                 request.TemplateId
             );
 
+        if (
+            await clinicalFormTemplateRepository.ExistsByNameExcludingAsync(
+                request.Name,
+                request.TemplateId,
+                cancellationToken
+            )
+        )
+            throw new BusinessRuleValidationException(
+                DomainErrors.ClinicalFormTemplate.NameAlreadyExists
+            );
+
         template.UpdateDetails(request.Name, request.Description);
         template.UpdateSchema(request.JsonSchemaDefinition);
 
