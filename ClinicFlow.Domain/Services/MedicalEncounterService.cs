@@ -15,7 +15,10 @@ public class MedicalEncounterService(
     IJsonSchemaValidator jsonSchemaValidator
 )
 {
-    public MedicalRecord InitiateMedicalRecord(Appointment appointment, string chiefComplaint)
+    public static MedicalRecord InitiateMedicalRecord(
+        Appointment appointment,
+        string chiefComplaint
+    )
     {
         if (appointment is null)
             throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
