@@ -141,6 +141,62 @@ public class ClinicalFormTemplateTests
         template.JsonSchemaDefinition.Should().Be("{}");
     }
 
+    [Fact]
+    public void Deactivate_ShouldMarkAsDeleted_WhenActive()
+    {
+        // Arrange
+        var template = CreateDefaultTemplate();
+
+        // Act
+        template.Deactivate();
+
+        // Assert
+        template.IsDeleted.Should().BeTrue();
+    }
+
+    [Fact]
+    public void Deactivate_ShouldThrowException_WhenAlreadyInactive()
+    {
+        // Arrange
+        var template = CreateDefaultTemplate();
+        template.Deactivate();
+
+        // Act & Assert
+        template
+            .Invoking(t => t.Deactivate())
+            .Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.ClinicalFormTemplate.AlreadyInactive);
+    }
+
+    [Fact]
+    public void Reactivate_ShouldUnmarkAsDeleted_WhenInactive()
+    {
+        // Arrange
+        var template = CreateDefaultTemplate();
+        template.Deactivate();
+
+        // Act
+        template.Reactivate();
+
+        // Assert
+        template.IsDeleted.Should().BeFalse();
+    }
+
+    [Fact]
+    public void Reactivate_ShouldThrowException_WhenAlreadyActive()
+    {
+        // Arrange
+        var template = CreateDefaultTemplate();
+
+        // Act & Assert
+        template
+            .Invoking(t => t.Reactivate())
+            .Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.ClinicalFormTemplate.AlreadyActive);
+    }
+
     private static ClinicalFormTemplate CreateDefaultTemplate() =>
         ClinicalFormTemplate.Create(
             "TEMPLATE_001",

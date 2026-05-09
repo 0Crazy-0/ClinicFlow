@@ -18,6 +18,11 @@ public interface IClinicalFormTemplateRepository
 
     Task<bool> ExistsByNameAsync(string name, CancellationToken cancellationToken = default);
 
+    Task<ClinicalFormTemplate?> GetByIdIncludingDeletedAsync(
+        Guid id,
+        CancellationToken cancellationToken = default
+    );
+
     Task<bool> ExistsByNameExcludingAsync(
         string name,
         Guid excludeId,
