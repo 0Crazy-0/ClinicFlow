@@ -149,7 +149,7 @@ public class Appointment : BaseEntity
 
     internal void Reschedule(DateTime newDate, TimeRange newTimeRange)
     {
-        if (!CanBeRescheduled())
+        if (RescheduleCount >= 1 || Status is not AppointmentStatus.Scheduled)
             throw new AppointmentReschedulingNotAllowedException(
                 DomainErrors.Appointment.CannotReschedule
             );
@@ -249,6 +249,4 @@ public class Appointment : BaseEntity
         CancelledByUserId = cancelledByUserId;
         CancellationReason = reason;
     }
-
-    private bool CanBeRescheduled() => RescheduleCount < 1 && Status is AppointmentStatus.Scheduled;
 }
