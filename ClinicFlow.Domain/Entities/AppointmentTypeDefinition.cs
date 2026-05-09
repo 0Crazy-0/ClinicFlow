@@ -196,6 +196,22 @@ public class AppointmentTypeDefinition : BaseEntity
         _requiredTemplates.Remove(existing);
     }
 
+    public void Deactivate()
+    {
+        if (IsDeleted)
+            throw new BusinessRuleValidationException(DomainErrors.AppointmentType.AlreadyInactive);
+
+        MarkAsDeleted();
+    }
+
+    public void Reactivate()
+    {
+        if (!IsDeleted)
+            throw new BusinessRuleValidationException(DomainErrors.AppointmentType.AlreadyActive);
+
+        UndoDeletion();
+    }
+
     /// <summary>
     /// Verifies if the patient meets the age requirements and legal guardian requirements for this appointment type.
     /// </summary>

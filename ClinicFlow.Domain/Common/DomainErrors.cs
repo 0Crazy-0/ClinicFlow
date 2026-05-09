@@ -56,6 +56,8 @@ public static class DomainErrors
     public static class AppointmentType
     {
         public const string NameAlreadyExists = "APPOINTMENT_TYPE_NAME_ALREADY_EXISTS";
+        public const string AlreadyActive = "APPOINTMENT_TYPE_ALREADY_ACTIVE";
+        public const string AlreadyInactive = "APPOINTMENT_TYPE_ALREADY_INACTIVE";
         public const string TemplateAlreadyRequired = "TEMPLATE_ALREADY_REQUIRED";
         public const string SpecialtyAlreadyAllowed = "SPECIALTY_ALREADY_ALLOWED";
         public const string CannotAddSpecialtyToGlobalType = "CANNOT_ADD_SPECIALTY_TO_GLOBAL_TYPE";

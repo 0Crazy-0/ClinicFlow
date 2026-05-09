@@ -587,6 +587,62 @@ public class AppointmentTypeDefinitionTests
             .WithMessage(DomainErrors.AppointmentType.RequiresAtLeastOneSpecialty);
     }
 
+    [Fact]
+    public void Deactivate_ShouldMarkAsDeleted_WhenActive()
+    {
+        // Arrange
+        var appointmentType = CreateAppointmentTypeDefinition();
+
+        // Act
+        appointmentType.Deactivate();
+
+        // Assert
+        appointmentType.IsDeleted.Should().BeTrue();
+    }
+
+    [Fact]
+    public void Deactivate_ShouldThrowException_WhenAlreadyInactive()
+    {
+        // Arrange
+        var appointmentType = CreateAppointmentTypeDefinition();
+        appointmentType.Deactivate();
+
+        // Act & Assert
+        appointmentType
+            .Invoking(a => a.Deactivate())
+            .Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.AppointmentType.AlreadyInactive);
+    }
+
+    [Fact]
+    public void Reactivate_ShouldUnmarkAsDeleted_WhenInactive()
+    {
+        // Arrange
+        var appointmentType = CreateAppointmentTypeDefinition();
+        appointmentType.Deactivate();
+
+        // Act
+        appointmentType.Reactivate();
+
+        // Assert
+        appointmentType.IsDeleted.Should().BeFalse();
+    }
+
+    [Fact]
+    public void Reactivate_ShouldThrowException_WhenAlreadyActive()
+    {
+        // Arrange
+        var appointmentType = CreateAppointmentTypeDefinition();
+
+        // Act & Assert
+        appointmentType
+            .Invoking(a => a.Reactivate())
+            .Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.AppointmentType.AlreadyActive);
+    }
+
     private static AppointmentTypeDefinition CreateAppointmentTypeDefinition() =>
         AppointmentTypeDefinition.Create(
             AppointmentCategory.Checkup,
