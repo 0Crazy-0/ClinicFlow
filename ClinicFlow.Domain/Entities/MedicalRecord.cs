@@ -1,6 +1,5 @@
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities.ClinicalDetails;
-using ClinicFlow.Domain.Events;
 using ClinicFlow.Domain.Exceptions.Base;
 
 namespace ClinicFlow.Domain.Entities;
@@ -41,7 +40,7 @@ public class MedicalRecord : BaseEntity
         ChiefComplaint = chiefComplaint;
     }
 
-    public static MedicalRecord Create(
+    internal static MedicalRecord Create(
         Guid patientId,
         Guid doctorId,
         Guid appointmentId,
