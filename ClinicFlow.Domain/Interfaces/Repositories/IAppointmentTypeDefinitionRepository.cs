@@ -29,6 +29,11 @@ public interface IAppointmentTypeDefinitionRepository
 
     Task<bool> ExistsByNameAsync(string name, CancellationToken cancellationToken = default);
 
+    Task<AppointmentTypeDefinition?> GetByIdIncludingDeletedAsync(
+        Guid id,
+        CancellationToken cancellationToken = default
+    );
+
     Task<bool> ExistsByNameExcludingAsync(
         string name,
         Guid excludeId,
