@@ -233,6 +233,46 @@ public class AppointmentTests
     }
 
     [Fact]
+    public void Reschedule_ShouldThrowException_WhenAlreadyRescheduled()
+    {
+        // Arrange
+        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var newDate1 = _fakeTime.GetUtcNow().UtcDateTime.AddDays(2).Date;
+        var newTimeRange1 = TimeRange.Create(TimeSpan.FromHours(14), TimeSpan.FromHours(15));
+        appointment.Reschedule(newDate1, newTimeRange1);
+
+        var newDate2 = _fakeTime.GetUtcNow().UtcDateTime.AddDays(3).Date;
+        var newTimeRange2 = TimeRange.Create(TimeSpan.FromHours(16), TimeSpan.FromHours(17));
+
+        // Act
+        var act = () => appointment.Reschedule(newDate2, newTimeRange2);
+
+        // Assert
+        act.Should()
+            .Throw<AppointmentReschedulingNotAllowedException>()
+            .WithMessage(DomainErrors.Appointment.CannotReschedule);
+    }
+
+    [Fact]
+    public void Reschedule_ShouldThrowException_WhenStatusIsNotScheduled()
+    {
+        // Arrange
+        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        appointment.Cancel(Guid.NewGuid(), "Reason", _fakeTime.GetUtcNow().UtcDateTime);
+
+        var newDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(2).Date;
+        var newTimeRange = TimeRange.Create(TimeSpan.FromHours(14), TimeSpan.FromHours(15));
+
+        // Act
+        var act = () => appointment.Reschedule(newDate, newTimeRange);
+
+        // Assert
+        act.Should()
+            .Throw<AppointmentReschedulingNotAllowedException>()
+            .WithMessage(DomainErrors.Appointment.CannotReschedule);
+    }
+
+    [Fact]
     public void CheckIn_ShouldSetStatusToCheckedIn_WhenStatusIsScheduled()
     {
         // Arrange
