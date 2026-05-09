@@ -67,7 +67,7 @@ public sealed class CompleteMedicalEncounterCommandHandler(
             CompletedAt = timeProvider.GetUtcNow().UtcDateTime,
         };
 
-        var medicalRecord = medicalEncounterService.InitiateMedicalRecord(
+        var medicalRecord = MedicalEncounterService.InitiateMedicalRecord(
             appointment,
             request.ChiefComplaint
         );

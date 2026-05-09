@@ -39,7 +39,7 @@ public class MedicalEncounterServiceTests
     public void InitiateMedicalRecord_ShouldThrowDomainValidationException_WhenAppointmentIsNull()
     {
         // Act
-        var act = () => _sut.InitiateMedicalRecord(null!, "Chief complaint");
+        var act = () => MedicalEncounterService.InitiateMedicalRecord(null!, "Chief complaint");
 
         // Assert
         act.Should()
@@ -60,7 +60,8 @@ public class MedicalEncounterServiceTests
         );
 
         // Act
-        var act = () => _sut.InitiateMedicalRecord(scheduledAppointment, "Chief complaint");
+        var act = () =>
+            MedicalEncounterService.InitiateMedicalRecord(scheduledAppointment, "Chief complaint");
 
         // Assert
         act.Should()
@@ -76,7 +77,7 @@ public class MedicalEncounterServiceTests
         var chiefComplaint = "Headache";
 
         // Act
-        var result = _sut.InitiateMedicalRecord(appointment, chiefComplaint);
+        var result = MedicalEncounterService.InitiateMedicalRecord(appointment, chiefComplaint);
 
         // Assert
         result.Should().NotBeNull();
