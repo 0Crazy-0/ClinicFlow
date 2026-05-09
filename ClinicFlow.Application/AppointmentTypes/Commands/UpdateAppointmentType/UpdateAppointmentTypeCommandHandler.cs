@@ -28,6 +28,17 @@ public sealed class UpdateAppointmentTypeCommandHandler(
                 request.AppointmentTypeId
             );
 
+        if (
+            await appointmentTypeRepository.ExistsByNameExcludingAsync(
+                request.Name,
+                request.AppointmentTypeId,
+                cancellationToken
+            )
+        )
+            throw new BusinessRuleValidationException(
+                DomainErrors.AppointmentType.NameAlreadyExists
+            );
+
         appointmentType.UpdateDetails(
             request.Category,
             request.Name,

@@ -1,4 +1,6 @@
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
+using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.ValueObjects;
@@ -16,6 +18,11 @@ public sealed class CreateAppointmentTypeCommandHandler(
         CancellationToken cancellationToken
     )
     {
+        if (await appointmentTypeRepository.ExistsByNameAsync(request.Name, cancellationToken))
+            throw new BusinessRuleValidationException(
+                DomainErrors.AppointmentType.NameAlreadyExists
+            );
+
         var agePolicy = AgeEligibilityPolicy.Create(
             request.MinimumAge,
             request.MaximumAge,

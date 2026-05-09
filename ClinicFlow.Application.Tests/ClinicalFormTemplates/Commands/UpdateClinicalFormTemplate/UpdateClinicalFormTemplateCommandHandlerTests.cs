@@ -83,4 +83,47 @@ public class UpdateClinicalFormTemplateCommandHandlerTests
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(ClinicalFormTemplate));
     }
+
+    [Fact]
+    public async Task Handle_ShouldThrowException_WhenNameAlreadyExists()
+    {
+        // Arrange
+        var existingTemplate = ClinicalFormTemplate.Create(
+            "CARDIO_01",
+            "Old Name",
+            "Old Description",
+            """{"fields":[]}"""
+        );
+
+        var command = new UpdateClinicalFormTemplateCommand(
+            existingTemplate.Id,
+            "Existing Name",
+            "Updated Description",
+            """{"fields":["heartRate"]}"""
+        );
+
+        _repositoryMock
+            .Setup(x => x.GetByIdAsync(command.TemplateId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(existingTemplate);
+
+        _repositoryMock
+            .Setup(x =>
+                x.ExistsByNameExcludingAsync(
+                    command.Name,
+                    command.TemplateId,
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(true);
+
+        // Act
+        var act = async () => await _sut.Handle(command, CancellationToken.None);
+
+        // Assert
+        await act.Should()
+            .ThrowAsync<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.ClinicalFormTemplate.NameAlreadyExists);
+
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+    }
 }

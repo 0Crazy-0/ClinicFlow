@@ -14,6 +14,14 @@ public interface IMedicalSpecialtyRepository
         CancellationToken cancellationToken = default
     );
 
+    Task<bool> ExistsByNameAsync(string name, CancellationToken cancellationToken = default);
+
+    Task<bool> ExistsByNameExcludingAsync(
+        string name,
+        Guid excludeId,
+        CancellationToken cancellationToken = default
+    );
+
     Task<MedicalSpecialty> CreateAsync(
         MedicalSpecialty specialty,
         CancellationToken cancellationToken = default

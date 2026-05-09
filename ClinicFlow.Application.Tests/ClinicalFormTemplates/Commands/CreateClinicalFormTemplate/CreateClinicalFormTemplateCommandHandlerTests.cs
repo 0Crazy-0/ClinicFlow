@@ -1,5 +1,7 @@
 using ClinicFlow.Application.ClinicalFormTemplates.Commands.CreateClinicalFormTemplate;
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
+using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using FluentAssertions;
@@ -31,7 +33,7 @@ public class CreateClinicalFormTemplateCommandHandlerTests
             "CARDIO_01",
             "Cardiology Form",
             "For cardiac evaluations",
-            """{"fields":["heartRate"]}"""
+            """{\"fields\":["heartRate"]}"""
         );
 
         ClinicalFormTemplate? capturedTemplate = null;
@@ -79,5 +81,63 @@ public class CreateClinicalFormTemplateCommandHandlerTests
             Times.Once
         );
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldThrowException_WhenCodeAlreadyExists()
+    {
+        // Arrange
+        var command = new CreateClinicalFormTemplateCommand(
+            "CARDIO_01",
+            "Cardiology Form",
+            "For cardiac evaluations",
+            "{}"
+        );
+
+        _repositoryMock
+            .Setup(x => x.ExistsByCodeAsync(command.Code, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
+
+        // Act
+        var act = async () => await _sut.Handle(command, CancellationToken.None);
+
+        // Assert
+        await act.Should()
+            .ThrowAsync<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.ClinicalFormTemplate.CodeAlreadyExists);
+
+        _repositoryMock.Verify(
+            x => x.CreateAsync(It.IsAny<ClinicalFormTemplate>(), It.IsAny<CancellationToken>()),
+            Times.Never
+        );
+    }
+
+    [Fact]
+    public async Task Handle_ShouldThrowException_WhenNameAlreadyExists()
+    {
+        // Arrange
+        var command = new CreateClinicalFormTemplateCommand(
+            "NEW_CODE",
+            "Existing Name",
+            "Description",
+            "{}"
+        );
+
+        _repositoryMock
+            .Setup(x => x.ExistsByNameAsync(command.Name, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
+
+        // Act
+        var act = async () => await _sut.Handle(command, CancellationToken.None);
+
+        // Assert
+        await act.Should()
+            .ThrowAsync<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.ClinicalFormTemplate.NameAlreadyExists);
+
+        _repositoryMock.Verify(
+            x => x.CreateAsync(It.IsAny<ClinicalFormTemplate>(), It.IsAny<CancellationToken>()),
+            Times.Never
+        );
     }
 }
