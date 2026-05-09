@@ -1,4 +1,6 @@
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
+using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using MediatR;
@@ -15,6 +17,11 @@ public sealed class CreateMedicalSpecialtyCommandHandler(
         CancellationToken cancellationToken
     )
     {
+        if (await medicalSpecialtyRepository.ExistsByNameAsync(request.Name, cancellationToken))
+            throw new BusinessRuleValidationException(
+                DomainErrors.MedicalSpecialty.NameAlreadyExists
+            );
+
         var specialty = MedicalSpecialty.Create(
             request.Name,
             request.Description,

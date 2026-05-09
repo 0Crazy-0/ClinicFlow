@@ -25,6 +25,17 @@ public sealed class UpdateMedicalSpecialtyCommandHandler(
                 request.SpecialtyId
             );
 
+        if (
+            await medicalSpecialtyRepository.ExistsByNameExcludingAsync(
+                request.Name,
+                request.SpecialtyId,
+                cancellationToken
+            )
+        )
+            throw new BusinessRuleValidationException(
+                DomainErrors.MedicalSpecialty.NameAlreadyExists
+            );
+
         specialty.UpdateDetails(
             request.Name,
             request.Description,

@@ -1,5 +1,7 @@
 using ClinicFlow.Application.MedicalSpecialties.Commands.CreateMedicalSpecialty;
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
+using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using FluentAssertions;
@@ -65,5 +67,29 @@ public class CreateMedicalSpecialtyCommandHandlerTests
             Times.Once
         );
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldThrowException_WhenNameAlreadyExists()
+    {
+        // Arrange
+        var command = new CreateMedicalSpecialtyCommand("Cardiology", "Heart specialty", 30, 24);
+
+        _medicalSpecialtyRepositoryMock
+            .Setup(x => x.ExistsByNameAsync(command.Name, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
+
+        // Act
+        var act = async () => await _sut.Handle(command, CancellationToken.None);
+
+        // Assert
+        await act.Should()
+            .ThrowAsync<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.MedicalSpecialty.NameAlreadyExists);
+
+        _medicalSpecialtyRepositoryMock.Verify(
+            x => x.CreateAsync(It.IsAny<MedicalSpecialty>(), It.IsAny<CancellationToken>()),
+            Times.Never
+        );
     }
 }

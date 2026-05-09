@@ -79,4 +79,42 @@ public class UpdateMedicalSpecialtyCommandHandlerTests
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(MedicalSpecialty));
     }
+
+    [Fact]
+    public async Task Handle_ShouldThrowException_WhenNameAlreadyExists()
+    {
+        // Arrange
+        var specialty = MedicalSpecialty.Create("Cardiology", "Heart specialty", 30, 24);
+        var command = new UpdateMedicalSpecialtyCommand(
+            specialty.Id,
+            "Existing Name",
+            "New description",
+            45,
+            12
+        );
+
+        _medicalSpecialtyRepositoryMock
+            .Setup(x => x.GetByIdAsync(command.SpecialtyId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(specialty);
+
+        _medicalSpecialtyRepositoryMock
+            .Setup(x =>
+                x.ExistsByNameExcludingAsync(
+                    command.Name,
+                    command.SpecialtyId,
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(true);
+
+        // Act
+        var act = async () => await _sut.Handle(command, CancellationToken.None);
+
+        // Assert
+        await act.Should()
+            .ThrowAsync<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.MedicalSpecialty.NameAlreadyExists);
+
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+    }
 }
