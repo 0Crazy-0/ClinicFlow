@@ -70,4 +70,24 @@ public class ClinicalFormTemplate : BaseEntity
         JsonSchemaDefinition = string.IsNullOrWhiteSpace(jsonSchemaDefinition)
             ? "{}"
             : jsonSchemaDefinition;
+
+    public void Deactivate()
+    {
+        if (IsDeleted)
+            throw new BusinessRuleValidationException(
+                DomainErrors.ClinicalFormTemplate.AlreadyInactive
+            );
+
+        MarkAsDeleted();
+    }
+
+    public void Reactivate()
+    {
+        if (!IsDeleted)
+            throw new BusinessRuleValidationException(
+                DomainErrors.ClinicalFormTemplate.AlreadyActive
+            );
+
+        UndoDeletion();
+    }
 }

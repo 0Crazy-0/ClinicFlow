@@ -116,6 +116,8 @@ public static class DomainErrors
     {
         public const string CodeAlreadyExists = "TEMPLATE_CODE_ALREADY_EXISTS";
         public const string NameAlreadyExists = "TEMPLATE_NAME_ALREADY_EXISTS";
+        public const string AlreadyActive = "TEMPLATE_ALREADY_ACTIVE";
+        public const string AlreadyInactive = "TEMPLATE_ALREADY_INACTIVE";
     }
 
     public static class User
