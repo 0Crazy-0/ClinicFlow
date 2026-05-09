@@ -15,6 +15,27 @@ public class MedicalEncounterService(
     IJsonSchemaValidator jsonSchemaValidator
 )
 {
+    public static MedicalRecord InitiateMedicalRecord(
+        Appointment appointment,
+        string chiefComplaint
+    )
+    {
+        if (appointment is null)
+            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+
+        if (appointment.Status is not Enums.AppointmentStatus.InProgress)
+            throw new BusinessRuleValidationException(
+                DomainErrors.MedicalEncounter.AppointmentNotInProgress
+            );
+
+        return MedicalRecord.Create(
+            appointment.PatientId,
+            appointment.DoctorId,
+            appointment.Id,
+            chiefComplaint
+        );
+    }
+
     /// <summary>
     /// Executes dynamic validation policies against the clinical details, populates the medical record,
     /// and advances the appointment lifecycle status to Completed.

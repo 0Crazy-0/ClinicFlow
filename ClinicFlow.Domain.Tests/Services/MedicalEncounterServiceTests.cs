@@ -36,6 +36,58 @@ public class MedicalEncounterServiceTests
     }
 
     [Fact]
+    public void InitiateMedicalRecord_ShouldThrowDomainValidationException_WhenAppointmentIsNull()
+    {
+        // Act
+        var act = () => MedicalEncounterService.InitiateMedicalRecord(null!, "Chief complaint");
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
+    public void InitiateMedicalRecord_ShouldThrowBusinessRuleValidationException_WhenAppointmentIsNotInProgress()
+    {
+        // Arrange
+        var scheduledAppointment = Appointment.Schedule(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
+            TimeRange.Create(new TimeSpan(10, 0, 0), new TimeSpan(11, 0, 0))
+        );
+
+        // Act
+        var act = () =>
+            MedicalEncounterService.InitiateMedicalRecord(scheduledAppointment, "Chief complaint");
+
+        // Assert
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.MedicalEncounter.AppointmentNotInProgress);
+    }
+
+    [Fact]
+    public void InitiateMedicalRecord_ShouldReturnMedicalRecord_WhenAppointmentIsInProgress()
+    {
+        // Arrange
+        var appointment = CreateAppointment(Guid.NewGuid(), _fakeTime.GetUtcNow().UtcDateTime);
+        var chiefComplaint = "Headache";
+
+        // Act
+        var result = MedicalEncounterService.InitiateMedicalRecord(appointment, chiefComplaint);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.AppointmentId.Should().Be(appointment.Id);
+        result.PatientId.Should().Be(appointment.PatientId);
+        result.DoctorId.Should().Be(appointment.DoctorId);
+        result.ChiefComplaint.Should().Be(chiefComplaint);
+    }
+
+    [Fact]
     public void ValidateAndCompleteRecord_ShouldThrowDomainValidationException_WhenRecordIsNull()
     {
         // Act

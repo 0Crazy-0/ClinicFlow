@@ -128,5 +128,6 @@ public static class DomainErrors
         public const string ValidationFailed = "VALIDATION_FAILED";
         public const string MissingRequiredTemplate = "MISSING_REQUIRED_TEMPLATE";
         public const string DetailAlreadyExists = "CLINICAL_DETAIL_ALREADY_EXISTS";
+        public const string AppointmentNotInProgress = "APPOINTMENT_NOT_IN_PROGRESS";
     }
 }
