@@ -88,4 +88,48 @@ public class UpdateAppointmentTypeCommandHandlerTests
 
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
+
+    [Fact]
+    public async Task Handle_ShouldThrowException_WhenNameAlreadyExists()
+    {
+        // Arrange
+        var command = new UpdateAppointmentTypeCommand(
+            Guid.NewGuid(),
+            AppointmentCategory.Checkup,
+            "Existing Name",
+            "Description",
+            TimeSpan.FromMinutes(30)
+        );
+
+        var existingEntity = AppointmentTypeDefinition.Create(
+            AppointmentCategory.Checkup,
+            "Original Name",
+            "Original description",
+            TimeSpan.FromMinutes(30)
+        );
+
+        _appointmentTypeRepositoryMock
+            .Setup(x => x.GetByIdAsync(command.AppointmentTypeId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(existingEntity);
+
+        _appointmentTypeRepositoryMock
+            .Setup(x =>
+                x.ExistsByNameExcludingAsync(
+                    command.Name,
+                    command.AppointmentTypeId,
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(true);
+
+        // Act
+        var act = async () => await _sut.Handle(command, CancellationToken.None);
+
+        // Assert
+        await act.Should()
+            .ThrowAsync<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.AppointmentType.NameAlreadyExists);
+
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+    }
 }

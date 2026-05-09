@@ -55,6 +55,7 @@ public static class DomainErrors
 
     public static class AppointmentType
     {
+        public const string NameAlreadyExists = "APPOINTMENT_TYPE_NAME_ALREADY_EXISTS";
         public const string TemplateAlreadyRequired = "TEMPLATE_ALREADY_REQUIRED";
         public const string SpecialtyAlreadyAllowed = "SPECIALTY_ALREADY_ALLOWED";
         public const string CannotAddSpecialtyToGlobalType = "CANNOT_ADD_SPECIALTY_TO_GLOBAL_TYPE";
@@ -103,9 +104,16 @@ public static class DomainErrors
 
     public static class MedicalSpecialty
     {
+        public const string NameAlreadyExists = "SPECIALTY_NAME_ALREADY_EXISTS";
         public const string AlreadyActive = "SPECIALTY_ALREADY_ACTIVE";
         public const string AlreadyInactive = "SPECIALTY_ALREADY_INACTIVE";
         public const string HasActiveDoctors = "SPECIALTY_HAS_ACTIVE_DOCTORS";
+    }
+
+    public static class ClinicalFormTemplate
+    {
+        public const string CodeAlreadyExists = "TEMPLATE_CODE_ALREADY_EXISTS";
+        public const string NameAlreadyExists = "TEMPLATE_NAME_ALREADY_EXISTS";
     }
 
     public static class User

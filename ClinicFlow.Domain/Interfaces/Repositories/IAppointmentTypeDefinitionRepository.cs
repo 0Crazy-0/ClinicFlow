@@ -27,6 +27,14 @@ public interface IAppointmentTypeDefinitionRepository
         CancellationToken cancellationToken = default
     );
 
+    Task<bool> ExistsByNameAsync(string name, CancellationToken cancellationToken = default);
+
+    Task<bool> ExistsByNameExcludingAsync(
+        string name,
+        Guid excludeId,
+        CancellationToken cancellationToken = default
+    );
+
     Task<AppointmentTypeDefinition> CreateAsync(
         AppointmentTypeDefinition appointmentType,
         CancellationToken cancellationToken = default

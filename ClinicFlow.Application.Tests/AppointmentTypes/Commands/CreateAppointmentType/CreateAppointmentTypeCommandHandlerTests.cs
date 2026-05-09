@@ -1,6 +1,8 @@
 using ClinicFlow.Application.AppointmentTypes.Commands.CreateAppointmentType;
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
+using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using FluentAssertions;
@@ -89,5 +91,38 @@ public class CreateAppointmentTypeCommandHandlerTests
             Times.Once
         );
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldThrowException_WhenNameAlreadyExists()
+    {
+        // Arrange
+        var command = new CreateAppointmentTypeCommand(
+            AppointmentCategory.Checkup,
+            "General Checkup",
+            "Routine consultation",
+            TimeSpan.FromMinutes(30),
+            null,
+            null,
+            false
+        );
+
+        _appointmentTypeRepositoryMock
+            .Setup(x => x.ExistsByNameAsync(command.Name, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
+
+        // Act
+        var act = async () => await _sut.Handle(command, CancellationToken.None);
+
+        // Assert
+        await act.Should()
+            .ThrowAsync<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.AppointmentType.NameAlreadyExists);
+
+        _appointmentTypeRepositoryMock.Verify(
+            x =>
+                x.CreateAsync(It.IsAny<AppointmentTypeDefinition>(), It.IsAny<CancellationToken>()),
+            Times.Never
+        );
     }
 }
