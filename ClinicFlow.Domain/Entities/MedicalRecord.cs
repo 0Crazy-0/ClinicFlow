@@ -59,8 +59,6 @@ public class MedicalRecord : BaseEntity
 
         var record = new MedicalRecord(patientId, doctorId, appointmentId, chiefComplaint);
 
-        record.AddDomainEvent(new MedicalRecordCreatedEvent(record));
-
         return record;
     }
 
