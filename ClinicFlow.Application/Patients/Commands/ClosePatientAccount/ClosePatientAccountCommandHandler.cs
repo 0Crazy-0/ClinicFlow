@@ -11,15 +11,9 @@ public sealed class ClosePatientAccountCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<ClosePatientAccountCommand>
 {
-    public async Task Handle(
-        ClosePatientAccountCommand request,
-        CancellationToken cancellationToken
-    )
+    public async Task Handle(ClosePatientAccountCommand request, CancellationToken ct)
     {
-        var patients = await patientRepository.GetAllByUserIdAsync(
-            request.UserId,
-            cancellationToken
-        );
+        var patients = await patientRepository.GetAllByUserIdAsync(request.UserId, ct);
 
         var primaryPatient = patients.Single(p => p.RelationshipToUser is PatientRelationship.Self);
         var familyMembers = patients
@@ -28,12 +22,12 @@ public sealed class ClosePatientAccountCommandHandler(
 
         var hasPendingAppointments = await appointmentRepository.HasActiveAppointmentsForUserAsync(
             request.UserId,
-            cancellationToken
+            ct
         );
 
         primaryPatient.CloseAccount(hasPendingAppointments);
         familyMembers.ForEach(member => member.RemoveFamilyMember(request.UserId));
 
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(ct);
     }
 }

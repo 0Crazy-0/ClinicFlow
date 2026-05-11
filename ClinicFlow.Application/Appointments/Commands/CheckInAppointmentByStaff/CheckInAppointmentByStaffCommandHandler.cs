@@ -13,13 +13,10 @@ public sealed class CheckInAppointmentByStaffCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<CheckInAppointmentByStaffCommand>
 {
-    public async Task Handle(
-        CheckInAppointmentByStaffCommand request,
-        CancellationToken cancellationToken
-    )
+    public async Task Handle(CheckInAppointmentByStaffCommand request, CancellationToken ct)
     {
         var appointment =
-            await appointmentRepository.GetByIdAsync(request.AppointmentId, cancellationToken)
+            await appointmentRepository.GetByIdAsync(request.AppointmentId, ct)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Appointment),
@@ -28,6 +25,6 @@ public sealed class CheckInAppointmentByStaffCommandHandler(
 
         appointment.CheckIn(timeProvider.GetUtcNow().UtcDateTime);
 
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(ct);
     }
 }

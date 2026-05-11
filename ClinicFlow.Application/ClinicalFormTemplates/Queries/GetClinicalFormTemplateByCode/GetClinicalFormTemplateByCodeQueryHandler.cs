@@ -13,11 +13,11 @@ public sealed class GetClinicalFormTemplateByCodeQueryHandler(
 {
     public async Task<ClinicalFormTemplateDto> Handle(
         GetClinicalFormTemplateByCodeQuery request,
-        CancellationToken cancellationToken
+        CancellationToken ct
     )
     {
         var template =
-            await clinicalFormTemplateRepository.GetByCodeAsync(request.Code, cancellationToken)
+            await clinicalFormTemplateRepository.GetByCodeAsync(request.Code, ct)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(ClinicalFormTemplate),

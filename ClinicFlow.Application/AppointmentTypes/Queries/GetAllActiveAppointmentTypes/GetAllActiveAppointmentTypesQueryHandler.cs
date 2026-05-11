@@ -10,10 +10,10 @@ public sealed class GetAllActiveAppointmentTypesQueryHandler(
 {
     public async Task<IReadOnlyList<AppointmentTypeDto>> Handle(
         GetAllActiveAppointmentTypesQuery request,
-        CancellationToken cancellationToken
+        CancellationToken ct
     )
     {
-        var appointmentTypes = await appointmentTypeRepository.GetAllActiveAsync(cancellationToken);
+        var appointmentTypes = await appointmentTypeRepository.GetAllActiveAsync(ct);
 
         return
         [

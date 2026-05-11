@@ -10,13 +10,13 @@ public sealed class GetAppointmentsByDateRangeQueryHandler(
 {
     public async Task<IReadOnlyList<AppointmentDto>> Handle(
         GetAppointmentsByDateRangeQuery request,
-        CancellationToken cancellationToken
+        CancellationToken ct
     )
     {
         var appointments = await appointmentRepository.GetByDateRangeAsync(
             request.StartDate,
             request.EndDate,
-            cancellationToken
+            ct
         );
 
         return

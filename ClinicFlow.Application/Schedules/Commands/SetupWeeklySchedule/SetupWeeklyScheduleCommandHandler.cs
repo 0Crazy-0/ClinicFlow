@@ -13,13 +13,10 @@ public sealed class SetupWeeklyScheduleCommandHandler(
 {
     public async Task<IReadOnlyList<Guid>> Handle(
         SetupWeeklyScheduleCommand request,
-        CancellationToken cancellationToken
+        CancellationToken ct
     )
     {
-        var existingSchedules = await scheduleRepository.GetByDoctorIdAsync(
-            request.DoctorId,
-            cancellationToken
-        );
+        var existingSchedules = await scheduleRepository.GetByDoctorIdAsync(request.DoctorId, ct);
 
         var slots = request
             .Slots.Select(s => new WeeklyScheduleSlot(s.DayOfWeek, s.StartTime, s.EndTime))
@@ -29,8 +26,8 @@ public sealed class SetupWeeklyScheduleCommandHandler(
             .SetupWeeklySchedule(request.DoctorId, existingSchedules, slots)
             .ToList();
 
-        await scheduleRepository.CreateRangeAsync(schedules, cancellationToken);
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await scheduleRepository.CreateRangeAsync(schedules, ct);
+        await unitOfWork.SaveChangesAsync(ct);
 
         return [.. schedules.Select(s => s.Id)];
     }

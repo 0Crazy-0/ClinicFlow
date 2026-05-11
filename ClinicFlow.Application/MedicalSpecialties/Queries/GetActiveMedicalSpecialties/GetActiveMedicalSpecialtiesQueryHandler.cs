@@ -10,10 +10,10 @@ public sealed class GetActiveMedicalSpecialtiesQueryHandler(
 {
     public async Task<IReadOnlyList<MedicalSpecialtyDto>> Handle(
         GetActiveMedicalSpecialtiesQuery request,
-        CancellationToken cancellationToken
+        CancellationToken ct
     )
     {
-        var specialties = await medicalSpecialtyRepository.GetAllActiveAsync(cancellationToken);
+        var specialties = await medicalSpecialtyRepository.GetAllActiveAsync(ct);
 
         return
         [

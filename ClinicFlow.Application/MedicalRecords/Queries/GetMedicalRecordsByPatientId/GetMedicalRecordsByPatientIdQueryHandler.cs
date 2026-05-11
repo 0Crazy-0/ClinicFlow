@@ -10,13 +10,10 @@ public sealed class GetMedicalRecordsByPatientIdQueryHandler(
 {
     public async Task<IEnumerable<MedicalRecordDto>> Handle(
         GetMedicalRecordsByPatientIdQuery request,
-        CancellationToken cancellationToken
+        CancellationToken ct
     )
     {
-        var records = await medicalRecordRepository.GetByPatientIdAsync(
-            request.PatientId,
-            cancellationToken
-        );
+        var records = await medicalRecordRepository.GetByPatientIdAsync(request.PatientId, ct);
 
         return
         [

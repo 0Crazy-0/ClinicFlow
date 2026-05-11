@@ -12,15 +12,12 @@ public sealed class ReactivateAppointmentTypeCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<ReactivateAppointmentTypeCommand>
 {
-    public async Task Handle(
-        ReactivateAppointmentTypeCommand request,
-        CancellationToken cancellationToken
-    )
+    public async Task Handle(ReactivateAppointmentTypeCommand request, CancellationToken ct)
     {
         var appointmentType =
             await appointmentTypeRepository.GetByIdIncludingDeletedAsync(
                 request.AppointmentTypeId,
-                cancellationToken
+                ct
             )
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
@@ -28,18 +25,13 @@ public sealed class ReactivateAppointmentTypeCommandHandler(
                 request.AppointmentTypeId
             );
 
-        if (
-            await appointmentTypeRepository.ExistsByNameAsync(
-                appointmentType.Name,
-                cancellationToken
-            )
-        )
+        if (await appointmentTypeRepository.ExistsByNameAsync(appointmentType.Name, ct))
             throw new BusinessRuleValidationException(
                 DomainErrors.AppointmentType.NameAlreadyExists
             );
 
         appointmentType.Reactivate();
 
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(ct);
     }
 }

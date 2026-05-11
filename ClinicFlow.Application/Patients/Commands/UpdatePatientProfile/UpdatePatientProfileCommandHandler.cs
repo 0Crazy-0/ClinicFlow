@@ -13,13 +13,10 @@ public sealed class UpdatePatientProfileCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<UpdatePatientProfileCommand>
 {
-    public async Task Handle(
-        UpdatePatientProfileCommand request,
-        CancellationToken cancellationToken
-    )
+    public async Task Handle(UpdatePatientProfileCommand request, CancellationToken ct)
     {
         var patient =
-            await patientRepository.GetByIdAsync(request.PatientId, cancellationToken)
+            await patientRepository.GetByIdAsync(request.PatientId, ct)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Patient),
@@ -35,6 +32,6 @@ public sealed class UpdatePatientProfileCommandHandler(
         patient.UpdateMedicalProfile(bloodType, request.Allergies, request.ChronicConditions);
         patient.UpdateEmergencyContact(emergencyContact);
 
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(ct);
     }
 }

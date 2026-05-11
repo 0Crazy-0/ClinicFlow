@@ -10,13 +10,10 @@ namespace ClinicFlow.Application.Patients.Queries.GetPatientById;
 public sealed class GetPatientByIdQueryHandler(IPatientRepository patientRepository)
     : IRequestHandler<GetPatientByIdQuery, PatientDto>
 {
-    public async Task<PatientDto> Handle(
-        GetPatientByIdQuery request,
-        CancellationToken cancellationToken
-    )
+    public async Task<PatientDto> Handle(GetPatientByIdQuery request, CancellationToken ct)
     {
         var patient =
-            await patientRepository.GetByIdAsync(request.PatientId, cancellationToken)
+            await patientRepository.GetByIdAsync(request.PatientId, ct)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Patient),

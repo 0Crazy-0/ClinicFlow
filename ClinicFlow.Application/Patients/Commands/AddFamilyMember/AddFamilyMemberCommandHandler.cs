@@ -13,17 +13,14 @@ public sealed class AddFamilyMemberCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<AddFamilyMemberCommand, Guid>
 {
-    public async Task<Guid> Handle(
-        AddFamilyMemberCommand request,
-        CancellationToken cancellationToken
-    )
+    public async Task<Guid> Handle(AddFamilyMemberCommand request, CancellationToken ct)
     {
         var fullName = PersonName.Create($"{request.FirstName} {request.LastName}");
         var existingProfile = await patientRepository.GetIncludingDeletedByNameAndDobAsync(
             request.UserId,
             fullName,
             request.DateOfBirth,
-            cancellationToken
+            ct
         );
 
         var patient = FamilyMemberRegistrationService.Register(
@@ -39,9 +36,9 @@ public sealed class AddFamilyMemberCommandHandler(
         );
 
         if (existingProfile is null)
-            await patientRepository.CreateAsync(patient, cancellationToken);
+            await patientRepository.CreateAsync(patient, ct);
 
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(ct);
 
         return patient.Id;
     }

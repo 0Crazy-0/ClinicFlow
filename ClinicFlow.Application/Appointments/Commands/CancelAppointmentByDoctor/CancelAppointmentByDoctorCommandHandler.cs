@@ -16,13 +16,10 @@ public sealed class CancelAppointmentByDoctorCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<CancelAppointmentByDoctorCommand>
 {
-    public async Task Handle(
-        CancelAppointmentByDoctorCommand request,
-        CancellationToken cancellationToken
-    )
+    public async Task Handle(CancelAppointmentByDoctorCommand request, CancellationToken ct)
     {
         var appointment =
-            await appointmentRepository.GetByIdAsync(request.AppointmentId, cancellationToken)
+            await appointmentRepository.GetByIdAsync(request.AppointmentId, ct)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Appointment),
@@ -30,7 +27,7 @@ public sealed class CancelAppointmentByDoctorCommandHandler(
             );
 
         var initiatorDoctor =
-            await doctorRepository.GetByUserIdAsync(request.InitiatorUserId, cancellationToken)
+            await doctorRepository.GetByUserIdAsync(request.InitiatorUserId, ct)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Doctor),
@@ -48,6 +45,6 @@ public sealed class CancelAppointmentByDoctorCommandHandler(
             }
         );
 
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(ct);
     }
 }

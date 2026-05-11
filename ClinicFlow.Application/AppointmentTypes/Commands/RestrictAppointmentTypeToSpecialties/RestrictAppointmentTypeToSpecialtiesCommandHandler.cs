@@ -14,14 +14,11 @@ public sealed class RestrictAppointmentTypeToSpecialtiesCommandHandler(
 {
     public async Task Handle(
         RestrictAppointmentTypeToSpecialtiesCommand request,
-        CancellationToken cancellationToken
+        CancellationToken ct
     )
     {
         var appointmentType =
-            await appointmentTypeRepository.GetByIdAsync(
-                request.AppointmentTypeId,
-                cancellationToken
-            )
+            await appointmentTypeRepository.GetByIdAsync(request.AppointmentTypeId, ct)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(AppointmentTypeDefinition),
@@ -30,6 +27,6 @@ public sealed class RestrictAppointmentTypeToSpecialtiesCommandHandler(
 
         appointmentType.RestrictToSpecialties(request.SpecialtyIds);
 
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(ct);
     }
 }

@@ -20,13 +20,10 @@ public sealed class CancelAppointmentByPatientCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<CancelAppointmentByPatientCommand>
 {
-    public async Task Handle(
-        CancelAppointmentByPatientCommand request,
-        CancellationToken cancellationToken
-    )
+    public async Task Handle(CancelAppointmentByPatientCommand request, CancellationToken ct)
     {
         var appointment =
-            await appointmentRepository.GetByIdAsync(request.AppointmentId, cancellationToken)
+            await appointmentRepository.GetByIdAsync(request.AppointmentId, ct)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Appointment),
@@ -34,7 +31,7 @@ public sealed class CancelAppointmentByPatientCommandHandler(
             );
 
         var targetPatient =
-            await patientRepository.GetByIdAsync(appointment.PatientId, cancellationToken)
+            await patientRepository.GetByIdAsync(appointment.PatientId, ct)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Patient),
@@ -42,10 +39,7 @@ public sealed class CancelAppointmentByPatientCommandHandler(
             );
 
         var appointmentType =
-            await appointmentTypeRepository.GetByIdAsync(
-                appointment.AppointmentTypeId,
-                cancellationToken
-            )
+            await appointmentTypeRepository.GetByIdAsync(appointment.AppointmentTypeId, ct)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(AppointmentTypeDefinition),
@@ -53,7 +47,7 @@ public sealed class CancelAppointmentByPatientCommandHandler(
             );
 
         var doctor =
-            await doctorRepository.GetByIdAsync(appointment.DoctorId, cancellationToken)
+            await doctorRepository.GetByIdAsync(appointment.DoctorId, ct)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Doctor),
@@ -61,7 +55,7 @@ public sealed class CancelAppointmentByPatientCommandHandler(
             );
 
         var specialty =
-            await specialtyRepository.GetByIdAsync(doctor.MedicalSpecialtyId, cancellationToken)
+            await specialtyRepository.GetByIdAsync(doctor.MedicalSpecialtyId, ct)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(MedicalSpecialty),
@@ -84,6 +78,6 @@ public sealed class CancelAppointmentByPatientCommandHandler(
             }
         );
 
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(ct);
     }
 }

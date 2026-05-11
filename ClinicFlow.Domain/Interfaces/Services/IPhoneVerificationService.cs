@@ -7,14 +7,11 @@ namespace ClinicFlow.Domain.Interfaces.Services;
 /// </summary>
 public interface IPhoneVerificationService
 {
-    Task SendVerificationCodeAsync(
-        PhoneNumber phoneNumber,
-        CancellationToken cancellationToken = default
-    );
+    Task SendVerificationCodeAsync(PhoneNumber phoneNumber, CancellationToken ct = default);
 
     Task<bool> VerifyCodeAsync(
         PhoneNumber phoneNumber,
         string code,
-        CancellationToken cancellationToken = default
+        CancellationToken ct = default
     );
 }

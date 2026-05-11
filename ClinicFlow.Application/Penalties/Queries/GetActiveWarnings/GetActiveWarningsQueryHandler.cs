@@ -9,10 +9,10 @@ public sealed class GetActiveWarningsQueryHandler(IPatientPenaltyRepository pena
 {
     public async Task<IReadOnlyList<PatientPenaltyDto>> Handle(
         GetActiveWarningsQuery request,
-        CancellationToken cancellationToken
+        CancellationToken ct
     )
     {
-        var penalties = await penaltyRepository.GetActiveWarningsAsync(cancellationToken);
+        var penalties = await penaltyRepository.GetActiveWarningsAsync(ct);
 
         return
         [

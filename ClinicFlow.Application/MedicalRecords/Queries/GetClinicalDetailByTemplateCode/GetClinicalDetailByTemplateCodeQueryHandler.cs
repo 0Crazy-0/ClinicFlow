@@ -13,11 +13,11 @@ public sealed class GetClinicalDetailByTemplateCodeQueryHandler(
 {
     public async Task<ClinicalDetailDto?> Handle(
         GetClinicalDetailByTemplateCodeQuery request,
-        CancellationToken cancellationToken
+        CancellationToken ct
     )
     {
         var record =
-            await medicalRecordRepository.GetByIdAsync(request.MedicalRecordId, cancellationToken)
+            await medicalRecordRepository.GetByIdAsync(request.MedicalRecordId, ct)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(MedicalRecord),

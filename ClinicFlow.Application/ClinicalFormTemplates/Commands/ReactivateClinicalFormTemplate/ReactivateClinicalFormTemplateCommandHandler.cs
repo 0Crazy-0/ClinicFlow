@@ -12,15 +12,12 @@ public sealed class ReactivateClinicalFormTemplateCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<ReactivateClinicalFormTemplateCommand>
 {
-    public async Task Handle(
-        ReactivateClinicalFormTemplateCommand request,
-        CancellationToken cancellationToken
-    )
+    public async Task Handle(ReactivateClinicalFormTemplateCommand request, CancellationToken ct)
     {
         var template =
             await clinicalFormTemplateRepository.GetByIdIncludingDeletedAsync(
                 request.TemplateId,
-                cancellationToken
+                ct
             )
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
@@ -28,22 +25,18 @@ public sealed class ReactivateClinicalFormTemplateCommandHandler(
                 request.TemplateId
             );
 
-        if (
-            await clinicalFormTemplateRepository.ExistsByCodeAsync(template.Code, cancellationToken)
-        )
+        if (await clinicalFormTemplateRepository.ExistsByCodeAsync(template.Code, ct))
             throw new BusinessRuleValidationException(
                 DomainErrors.ClinicalFormTemplate.CodeAlreadyExists
             );
 
-        if (
-            await clinicalFormTemplateRepository.ExistsByNameAsync(template.Name, cancellationToken)
-        )
+        if (await clinicalFormTemplateRepository.ExistsByNameAsync(template.Name, ct))
             throw new BusinessRuleValidationException(
                 DomainErrors.ClinicalFormTemplate.NameAlreadyExists
             );
 
         template.Reactivate();
 
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(ct);
     }
 }

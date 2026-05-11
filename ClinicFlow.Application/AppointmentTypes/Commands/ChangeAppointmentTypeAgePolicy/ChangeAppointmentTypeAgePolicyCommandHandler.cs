@@ -13,16 +13,10 @@ public sealed class ChangeAppointmentTypeAgePolicyCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<ChangeAppointmentTypeAgePolicyCommand>
 {
-    public async Task Handle(
-        ChangeAppointmentTypeAgePolicyCommand request,
-        CancellationToken cancellationToken
-    )
+    public async Task Handle(ChangeAppointmentTypeAgePolicyCommand request, CancellationToken ct)
     {
         var appointmentType =
-            await appointmentTypeRepository.GetByIdAsync(
-                request.AppointmentTypeId,
-                cancellationToken
-            )
+            await appointmentTypeRepository.GetByIdAsync(request.AppointmentTypeId, ct)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(AppointmentTypeDefinition),
@@ -37,6 +31,6 @@ public sealed class ChangeAppointmentTypeAgePolicyCommandHandler(
 
         appointmentType.ChangeAgePolicy(agePolicy);
 
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(ct);
     }
 }

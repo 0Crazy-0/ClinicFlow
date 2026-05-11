@@ -12,13 +12,10 @@ public sealed class DeactivateClinicalFormTemplateCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<DeactivateClinicalFormTemplateCommand>
 {
-    public async Task Handle(
-        DeactivateClinicalFormTemplateCommand request,
-        CancellationToken cancellationToken
-    )
+    public async Task Handle(DeactivateClinicalFormTemplateCommand request, CancellationToken ct)
     {
         var template =
-            await clinicalFormTemplateRepository.GetByIdAsync(request.TemplateId, cancellationToken)
+            await clinicalFormTemplateRepository.GetByIdAsync(request.TemplateId, ct)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(ClinicalFormTemplate),
@@ -27,6 +24,6 @@ public sealed class DeactivateClinicalFormTemplateCommandHandler(
 
         template.Deactivate();
 
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(ct);
     }
 }

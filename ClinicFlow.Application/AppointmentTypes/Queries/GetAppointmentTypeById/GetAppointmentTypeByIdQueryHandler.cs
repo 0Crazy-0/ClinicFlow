@@ -13,14 +13,11 @@ public sealed class GetAppointmentTypeByIdQueryHandler(
 {
     public async Task<AppointmentTypeDto> Handle(
         GetAppointmentTypeByIdQuery request,
-        CancellationToken cancellationToken
+        CancellationToken ct
     )
     {
         var appointmentType =
-            await appointmentTypeRepository.GetByIdAsync(
-                request.AppointmentTypeId,
-                cancellationToken
-            )
+            await appointmentTypeRepository.GetByIdAsync(request.AppointmentTypeId, ct)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(AppointmentTypeDefinition),

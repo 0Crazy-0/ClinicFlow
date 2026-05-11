@@ -7,26 +7,21 @@ namespace ClinicFlow.Domain.Interfaces.Repositories;
 /// </summary>
 public interface IPatientPenaltyRepository
 {
-    Task<PatientPenalty?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<PatientPenalty?> GetByIdAsync(Guid id, CancellationToken ct = default);
 
-    Task AddAsync(PatientPenalty penalty, CancellationToken cancellationToken = default);
+    Task AddAsync(PatientPenalty penalty, CancellationToken ct = default);
 
-    Task AddRangeAsync(
-        IEnumerable<PatientPenalty> penalties,
-        CancellationToken cancellationToken = default
-    );
+    Task AddRangeAsync(IEnumerable<PatientPenalty> penalties, CancellationToken ct = default);
 
     Task<IReadOnlyList<PatientPenalty>> GetByPatientIdAsync(
         Guid patientId,
-        CancellationToken cancellationToken = default
+        CancellationToken ct = default
     );
 
     Task<IReadOnlyList<PatientPenalty>> GetActiveBlocksAsync(
         DateTime referenceTime,
-        CancellationToken cancellationToken = default
+        CancellationToken ct = default
     );
 
-    Task<IReadOnlyList<PatientPenalty>> GetActiveWarningsAsync(
-        CancellationToken cancellationToken = default
-    );
+    Task<IReadOnlyList<PatientPenalty>> GetActiveWarningsAsync(CancellationToken ct = default);
 }

@@ -11,15 +11,9 @@ public sealed class CreateScheduleCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<CreateScheduleCommand, Guid>
 {
-    public async Task<Guid> Handle(
-        CreateScheduleCommand request,
-        CancellationToken cancellationToken
-    )
+    public async Task<Guid> Handle(CreateScheduleCommand request, CancellationToken ct)
     {
-        var existingSchedules = await scheduleRepository.GetByDoctorIdAsync(
-            request.DoctorId,
-            cancellationToken
-        );
+        var existingSchedules = await scheduleRepository.GetByDoctorIdAsync(request.DoctorId, ct);
 
         Schedule.EnsureNoDuplicateDay(existingSchedules, request.DoctorId, request.DayOfWeek);
 
@@ -29,8 +23,8 @@ public sealed class CreateScheduleCommandHandler(
             TimeRange.Create(request.StartTime, request.EndTime)
         );
 
-        await scheduleRepository.CreateAsync(schedule, cancellationToken);
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await scheduleRepository.CreateAsync(schedule, ct);
+        await unitOfWork.SaveChangesAsync(ct);
 
         return schedule.Id;
     }

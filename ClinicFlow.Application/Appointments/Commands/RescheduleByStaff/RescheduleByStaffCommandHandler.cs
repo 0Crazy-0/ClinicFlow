@@ -22,10 +22,10 @@ public sealed class RescheduleByStaffCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<RescheduleByStaffCommand>
 {
-    public async Task Handle(RescheduleByStaffCommand request, CancellationToken cancellationToken)
+    public async Task Handle(RescheduleByStaffCommand request, CancellationToken ct)
     {
         var appointment =
-            await appointmentRepository.GetByIdAsync(request.AppointmentId, cancellationToken)
+            await appointmentRepository.GetByIdAsync(request.AppointmentId, ct)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Appointment),
@@ -33,7 +33,7 @@ public sealed class RescheduleByStaffCommandHandler(
             );
 
         var targetPatient =
-            await patientRepository.GetByIdAsync(appointment.PatientId, cancellationToken)
+            await patientRepository.GetByIdAsync(appointment.PatientId, ct)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Patient),
@@ -41,7 +41,7 @@ public sealed class RescheduleByStaffCommandHandler(
             );
 
         var targetDoctor =
-            await doctorRepository.GetByIdAsync(appointment.DoctorId, cancellationToken)
+            await doctorRepository.GetByIdAsync(appointment.DoctorId, ct)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Doctor),
@@ -49,10 +49,7 @@ public sealed class RescheduleByStaffCommandHandler(
             );
 
         var appointmentType =
-            await appointmentTypeRepository.GetByIdAsync(
-                appointment.AppointmentTypeId,
-                cancellationToken
-            )
+            await appointmentTypeRepository.GetByIdAsync(appointment.AppointmentTypeId, ct)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(AppointmentTypeDefinition),
@@ -64,14 +61,14 @@ public sealed class RescheduleByStaffCommandHandler(
         var doctorSchedule = await scheduleRepository.GetByDoctorAndDayAsync(
             appointment.DoctorId,
             request.NewDate.DayOfWeek,
-            cancellationToken
+            ct
         );
 
         var hasConflict = await appointmentRepository.HasConflictAsync(
             appointment.DoctorId,
             request.NewDate,
             newTimeRange,
-            cancellationToken
+            ct
         );
 
         var clearance = regionalSchedulingService.EnforceSchedulingRegulations(
@@ -98,6 +95,6 @@ public sealed class RescheduleByStaffCommandHandler(
             clearance
         );
 
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(ct);
     }
 }

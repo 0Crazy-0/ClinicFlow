@@ -18,13 +18,10 @@ public sealed class ReassignAppointmentCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<ReassignAppointmentCommand>
 {
-    public async Task Handle(
-        ReassignAppointmentCommand request,
-        CancellationToken cancellationToken
-    )
+    public async Task Handle(ReassignAppointmentCommand request, CancellationToken ct)
     {
         var appointment =
-            await appointmentRepository.GetByIdAsync(request.AppointmentId, cancellationToken)
+            await appointmentRepository.GetByIdAsync(request.AppointmentId, ct)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Appointment),
@@ -32,7 +29,7 @@ public sealed class ReassignAppointmentCommandHandler(
             );
 
         var newDoctor =
-            await doctorRepository.GetByIdAsync(request.NewDoctorId, cancellationToken)
+            await doctorRepository.GetByIdAsync(request.NewDoctorId, ct)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Doctor),
@@ -43,14 +40,14 @@ public sealed class ReassignAppointmentCommandHandler(
         var newDoctorSchedule = await scheduleRepository.GetByDoctorAndDayAsync(
             newDoctor.Id,
             request.NewDate.DayOfWeek,
-            cancellationToken
+            ct
         );
 
         var hasConflict = await appointmentRepository.HasConflictAsync(
             newDoctor.Id,
             request.NewDate,
             newTimeRange,
-            cancellationToken
+            ct
         );
 
         AppointmentReassignmentService.Reassign(
@@ -68,6 +65,6 @@ public sealed class ReassignAppointmentCommandHandler(
             }
         );
 
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(ct);
     }
 }

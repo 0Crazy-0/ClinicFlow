@@ -10,13 +10,13 @@ public sealed class GetAppointmentsByDoctorIdQueryHandler(
 {
     public async Task<IReadOnlyList<AppointmentDto>> Handle(
         GetAppointmentsByDoctorIdQuery request,
-        CancellationToken cancellationToken
+        CancellationToken ct
     )
     {
         var appointments = await appointmentRepository.GetByDoctorIdAsync(
             request.DoctorId,
             request.Date,
-            cancellationToken
+            ct
         );
 
         return

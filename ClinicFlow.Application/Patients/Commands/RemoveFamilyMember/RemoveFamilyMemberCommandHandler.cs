@@ -12,10 +12,10 @@ public sealed class RemoveFamilyMemberCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<RemoveFamilyMemberCommand>
 {
-    public async Task Handle(RemoveFamilyMemberCommand request, CancellationToken cancellationToken)
+    public async Task Handle(RemoveFamilyMemberCommand request, CancellationToken ct)
     {
         var patient =
-            await patientRepository.GetByIdAsync(request.PatientId, cancellationToken)
+            await patientRepository.GetByIdAsync(request.PatientId, ct)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Patient),
@@ -24,6 +24,6 @@ public sealed class RemoveFamilyMemberCommandHandler(
 
         patient.RemoveFamilyMember(request.UserId);
 
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(ct);
     }
 }

@@ -12,10 +12,7 @@ public sealed class AddCompleteFamilyMemberCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<AddCompleteFamilyMemberCommand, Guid>
 {
-    public async Task<Guid> Handle(
-        AddCompleteFamilyMemberCommand request,
-        CancellationToken cancellationToken
-    )
+    public async Task<Guid> Handle(AddCompleteFamilyMemberCommand request, CancellationToken ct)
     {
         var fullName = PersonName.Create($"{request.FirstName} {request.LastName}");
 
@@ -36,8 +33,8 @@ public sealed class AddCompleteFamilyMemberCommandHandler(
         familyMember.UpdateMedicalProfile(bloodType, request.Allergies, request.ChronicConditions);
         familyMember.UpdateEmergencyContact(emergencyContact);
 
-        await patientRepository.CreateAsync(familyMember, cancellationToken);
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await patientRepository.CreateAsync(familyMember, ct);
+        await unitOfWork.SaveChangesAsync(ct);
 
         return familyMember.Id;
     }

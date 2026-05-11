@@ -20,13 +20,10 @@ public sealed class CompleteMedicalEncounterCommandHandler(
     TimeProvider timeProvider
 ) : IRequestHandler<CompleteMedicalEncounterCommand, Guid>
 {
-    public async Task<Guid> Handle(
-        CompleteMedicalEncounterCommand request,
-        CancellationToken cancellationToken
-    )
+    public async Task<Guid> Handle(CompleteMedicalEncounterCommand request, CancellationToken ct)
     {
         var doctor =
-            await doctorRepository.GetByIdAsync(request.DoctorId, cancellationToken)
+            await doctorRepository.GetByIdAsync(request.DoctorId, ct)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Doctor),
@@ -34,7 +31,7 @@ public sealed class CompleteMedicalEncounterCommandHandler(
             );
 
         var appointment =
-            await appointmentRepository.GetByIdAsync(request.AppointmentId, cancellationToken)
+            await appointmentRepository.GetByIdAsync(request.AppointmentId, ct)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Appointment),
@@ -42,10 +39,7 @@ public sealed class CompleteMedicalEncounterCommandHandler(
             );
 
         var appointmentType =
-            await appointmentTypeRepository.GetByIdAsync(
-                appointment.AppointmentTypeId,
-                cancellationToken
-            )
+            await appointmentTypeRepository.GetByIdAsync(appointment.AppointmentTypeId, ct)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(AppointmentTypeDefinition),
@@ -74,8 +68,8 @@ public sealed class CompleteMedicalEncounterCommandHandler(
 
         medicalEncounterService.ValidateAndCompleteRecord(medicalRecord, context);
 
-        await medicalRecordRepository.CreateAsync(medicalRecord, cancellationToken);
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await medicalRecordRepository.CreateAsync(medicalRecord, ct);
+        await unitOfWork.SaveChangesAsync(ct);
 
         return medicalRecord.Id;
     }

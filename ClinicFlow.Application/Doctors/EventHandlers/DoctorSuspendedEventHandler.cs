@@ -12,7 +12,7 @@ public sealed class DoctorSuspendedEventHandler(
 {
     public async Task Handle(
         DomainEventNotification<DoctorSuspendedEvent> notification,
-        CancellationToken cancellationToken
+        CancellationToken ct
     )
     {
         var doctorId = notification.DomainEvent.DoctorId;
@@ -20,7 +20,7 @@ public sealed class DoctorSuspendedEventHandler(
         var futureAppointments = await appointmentRepository.GetFutureScheduledByDoctorIdAsync(
             doctorId,
             referenceDate,
-            cancellationToken
+            ct
         );
 
         foreach (var appointment in futureAppointments)

@@ -7,31 +7,23 @@ namespace ClinicFlow.Domain.Interfaces.Repositories;
 /// </summary>
 public interface IMedicalSpecialtyRepository
 {
-    Task<MedicalSpecialty?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<MedicalSpecialty?> GetByIdAsync(Guid id, CancellationToken ct = default);
 
-    Task<MedicalSpecialty?> GetByIdIncludingDeletedAsync(
-        Guid id,
-        CancellationToken cancellationToken = default
-    );
+    Task<MedicalSpecialty?> GetByIdIncludingDeletedAsync(Guid id, CancellationToken ct = default);
 
-    Task<bool> ExistsByNameAsync(string name, CancellationToken cancellationToken = default);
+    Task<bool> ExistsByNameAsync(string name, CancellationToken ct = default);
 
     Task<bool> ExistsByNameExcludingAsync(
         string name,
         Guid excludeId,
-        CancellationToken cancellationToken = default
+        CancellationToken ct = default
     );
 
-    Task<IReadOnlyList<MedicalSpecialty>> GetAllActiveAsync(
-        CancellationToken cancellationToken = default
-    );
+    Task<IReadOnlyList<MedicalSpecialty>> GetAllActiveAsync(CancellationToken ct = default);
 
     Task<IReadOnlyList<MedicalSpecialty>> GetAllIncludingDeletedAsync(
-        CancellationToken cancellationToken = default
+        CancellationToken ct = default
     );
 
-    Task<MedicalSpecialty> CreateAsync(
-        MedicalSpecialty specialty,
-        CancellationToken cancellationToken = default
-    );
+    Task<MedicalSpecialty> CreateAsync(MedicalSpecialty specialty, CancellationToken ct = default);
 }

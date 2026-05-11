@@ -12,16 +12,10 @@ public sealed class DeleteAppointmentTypeCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<DeleteAppointmentTypeCommand>
 {
-    public async Task Handle(
-        DeleteAppointmentTypeCommand request,
-        CancellationToken cancellationToken
-    )
+    public async Task Handle(DeleteAppointmentTypeCommand request, CancellationToken ct)
     {
         var appointmentType =
-            await appointmentTypeRepository.GetByIdAsync(
-                request.AppointmentTypeId,
-                cancellationToken
-            )
+            await appointmentTypeRepository.GetByIdAsync(request.AppointmentTypeId, ct)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(AppointmentTypeDefinition),
@@ -30,6 +24,6 @@ public sealed class DeleteAppointmentTypeCommandHandler(
 
         appointmentType.MarkAsDeleted();
 
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(ct);
     }
 }

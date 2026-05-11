@@ -9,13 +9,10 @@ public sealed class GetPatientsByUserIdQueryHandler(IPatientRepository patientRe
 {
     public async Task<IReadOnlyList<PatientDto>> Handle(
         GetPatientsByUserIdQuery request,
-        CancellationToken cancellationToken
+        CancellationToken ct
     )
     {
-        var patients = await patientRepository.GetAllByUserIdAsync(
-            request.UserId,
-            cancellationToken
-        );
+        var patients = await patientRepository.GetAllByUserIdAsync(request.UserId, ct);
 
         return
         [

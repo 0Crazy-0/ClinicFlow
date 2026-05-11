@@ -13,17 +13,14 @@ public sealed class CreatePatientProfileCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<CreatePatientProfileCommand, Guid>
 {
-    public async Task<Guid> Handle(
-        CreatePatientProfileCommand request,
-        CancellationToken cancellationToken
-    )
+    public async Task<Guid> Handle(CreatePatientProfileCommand request, CancellationToken ct)
     {
         var fullName = PersonName.Create($"{request.FirstName} {request.LastName}");
         var existingProfile = await patientRepository.GetIncludingDeletedByNameAndDobAsync(
             request.UserId,
             fullName,
             request.DateOfBirth,
-            cancellationToken
+            ct
         );
 
         var patient = PrimaryProfileRegistrationService.Register(
@@ -38,9 +35,9 @@ public sealed class CreatePatientProfileCommandHandler(
         );
 
         if (existingProfile is null)
-            await patientRepository.CreateAsync(patient, cancellationToken);
+            await patientRepository.CreateAsync(patient, ct);
 
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(ct);
 
         return patient.Id;
     }

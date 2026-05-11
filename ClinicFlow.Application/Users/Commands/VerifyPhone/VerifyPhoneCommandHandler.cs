@@ -14,10 +14,10 @@ public sealed class VerifyPhoneCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<VerifyPhoneCommand>
 {
-    public async Task Handle(VerifyPhoneCommand request, CancellationToken cancellationToken)
+    public async Task Handle(VerifyPhoneCommand request, CancellationToken ct)
     {
         var user =
-            await userRepository.GetByIdAsync(request.UserId, cancellationToken)
+            await userRepository.GetByIdAsync(request.UserId, ct)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(User),
@@ -27,11 +27,11 @@ public sealed class VerifyPhoneCommandHandler(
         var isValid = await phoneVerificationService.VerifyCodeAsync(
             user.PhoneNumber,
             request.Code,
-            cancellationToken
+            ct
         );
 
         user.MarkPhoneAsVerified(isValid);
 
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(ct);
     }
 }

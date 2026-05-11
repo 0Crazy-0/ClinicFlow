@@ -11,12 +11,12 @@ public sealed class GetActiveBlockedPatientsQueryHandler(
 {
     public async Task<IReadOnlyList<PatientPenaltyDto>> Handle(
         GetActiveBlockedPatientsQuery request,
-        CancellationToken cancellationToken
+        CancellationToken ct
     )
     {
         var penalties = await penaltyRepository.GetActiveBlocksAsync(
             timeProvider.GetUtcNow().UtcDateTime,
-            cancellationToken
+            ct
         );
 
         return

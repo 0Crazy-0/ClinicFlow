@@ -10,13 +10,10 @@ namespace ClinicFlow.Application.Appointments.Queries.GetAppointmentById;
 public sealed class GetAppointmentByIdQueryHandler(IAppointmentRepository appointmentRepository)
     : IRequestHandler<GetAppointmentByIdQuery, AppointmentDto>
 {
-    public async Task<AppointmentDto> Handle(
-        GetAppointmentByIdQuery request,
-        CancellationToken cancellationToken
-    )
+    public async Task<AppointmentDto> Handle(GetAppointmentByIdQuery request, CancellationToken ct)
     {
         var appointment =
-            await appointmentRepository.GetByIdAsync(request.AppointmentId, cancellationToken)
+            await appointmentRepository.GetByIdAsync(request.AppointmentId, ct)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Appointment),

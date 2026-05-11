@@ -14,13 +14,10 @@ public sealed class StartAppointmentByDoctorCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<StartAppointmentByDoctorCommand>
 {
-    public async Task Handle(
-        StartAppointmentByDoctorCommand request,
-        CancellationToken cancellationToken
-    )
+    public async Task Handle(StartAppointmentByDoctorCommand request, CancellationToken ct)
     {
         var appointment =
-            await appointmentRepository.GetByIdAsync(request.AppointmentId, cancellationToken)
+            await appointmentRepository.GetByIdAsync(request.AppointmentId, ct)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Appointment),
@@ -28,7 +25,7 @@ public sealed class StartAppointmentByDoctorCommandHandler(
             );
 
         var initiatorDoctor =
-            await doctorRepository.GetByUserIdAsync(request.InitiatorUserId, cancellationToken)
+            await doctorRepository.GetByUserIdAsync(request.InitiatorUserId, ct)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Doctor),
@@ -37,6 +34,6 @@ public sealed class StartAppointmentByDoctorCommandHandler(
 
         appointment.Start(initiatorDoctor.Id, timeProvider.GetUtcNow().UtcDateTime);
 
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(ct);
     }
 }

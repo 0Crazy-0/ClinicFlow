@@ -11,7 +11,7 @@ public sealed class BlockPatientCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<BlockPatientCommand, Guid>
 {
-    public async Task<Guid> Handle(BlockPatientCommand request, CancellationToken cancellationToken)
+    public async Task<Guid> Handle(BlockPatientCommand request, CancellationToken ct)
     {
         var penalty = PatientPenalty.CreateManualBlock(
             request.PatientId,
@@ -20,8 +20,8 @@ public sealed class BlockPatientCommandHandler(
             timeProvider.GetUtcNow().UtcDateTime
         );
 
-        await penaltyRepository.AddAsync(penalty, cancellationToken);
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await penaltyRepository.AddAsync(penalty, ct);
+        await unitOfWork.SaveChangesAsync(ct);
 
         return penalty.Id;
     }

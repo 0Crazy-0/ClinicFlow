@@ -16,13 +16,10 @@ public sealed class AddClinicalDetailToMedicalRecordCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<AddClinicalDetailToMedicalRecordCommand>
 {
-    public async Task Handle(
-        AddClinicalDetailToMedicalRecordCommand request,
-        CancellationToken cancellationToken
-    )
+    public async Task Handle(AddClinicalDetailToMedicalRecordCommand request, CancellationToken ct)
     {
         var record =
-            await medicalRecordRepository.GetByIdAsync(request.MedicalRecordId, cancellationToken)
+            await medicalRecordRepository.GetByIdAsync(request.MedicalRecordId, ct)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(MedicalRecord),
@@ -30,7 +27,7 @@ public sealed class AddClinicalDetailToMedicalRecordCommandHandler(
             );
 
         var template =
-            await templateRepository.GetByCodeAsync(request.TemplateCode, cancellationToken)
+            await templateRepository.GetByCodeAsync(request.TemplateCode, ct)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(ClinicalFormTemplate),
@@ -41,6 +38,6 @@ public sealed class AddClinicalDetailToMedicalRecordCommandHandler(
 
         medicalEncounterService.AppendClinicalDetail(record, detail, template);
 
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(ct);
     }
 }

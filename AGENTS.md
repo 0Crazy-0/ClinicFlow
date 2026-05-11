@@ -205,7 +205,7 @@ When fetching an entity that business logic requires, always use this pattern:
 
 ```csharp
 var appointment =
-    await appointmentRepository.GetByIdAsync(request.AppointmentId, cancellationToken)
+    await appointmentRepository.GetByIdAsync(request.AppointmentId, ct)
     ?? throw new EntityNotFoundException(
         DomainErrors.General.NotFound,
         nameof(Appointment),

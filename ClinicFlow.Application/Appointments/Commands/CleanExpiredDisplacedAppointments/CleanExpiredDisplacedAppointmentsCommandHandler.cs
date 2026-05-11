@@ -10,20 +10,17 @@ public sealed class CleanExpiredDisplacedAppointmentsCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<CleanExpiredDisplacedAppointmentsCommand>
 {
-    public async Task Handle(
-        CleanExpiredDisplacedAppointmentsCommand request,
-        CancellationToken cancellationToken
-    )
+    public async Task Handle(CleanExpiredDisplacedAppointmentsCommand request, CancellationToken ct)
     {
         var now = timeProvider.GetUtcNow().UtcDateTime;
         var expiredAppointments = await appointmentRepository.GetExpiredDisplacedAppointmentsAsync(
             now,
-            cancellationToken
+            ct
         );
 
         foreach (var appointment in expiredAppointments)
             appointment.CancelDueToSystemTimeout(now);
 
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(ct);
     }
 }

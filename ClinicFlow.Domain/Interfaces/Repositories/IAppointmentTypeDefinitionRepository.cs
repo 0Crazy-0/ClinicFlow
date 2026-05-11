@@ -8,40 +8,37 @@ namespace ClinicFlow.Domain.Interfaces.Repositories;
 /// </summary>
 public interface IAppointmentTypeDefinitionRepository
 {
-    Task<AppointmentTypeDefinition?> GetByIdAsync(
-        Guid id,
-        CancellationToken cancellationToken = default
-    );
+    Task<AppointmentTypeDefinition?> GetByIdAsync(Guid id, CancellationToken ct = default);
 
     Task<IReadOnlyList<AppointmentTypeDefinition>> GetAllActiveAsync(
-        CancellationToken cancellationToken = default
+        CancellationToken ct = default
     );
 
     Task<IReadOnlyList<AppointmentTypeDefinition>> GetByCategoryAsync(
         AppointmentCategory category,
-        CancellationToken cancellationToken = default
+        CancellationToken ct = default
     );
 
     Task<IReadOnlyList<AppointmentTypeDefinition>> GetEligibleByAgeAsync(
         int patientAgeInYears,
-        CancellationToken cancellationToken = default
+        CancellationToken ct = default
     );
 
-    Task<bool> ExistsByNameAsync(string name, CancellationToken cancellationToken = default);
+    Task<bool> ExistsByNameAsync(string name, CancellationToken ct = default);
 
     Task<AppointmentTypeDefinition?> GetByIdIncludingDeletedAsync(
         Guid id,
-        CancellationToken cancellationToken = default
+        CancellationToken ct = default
     );
 
     Task<bool> ExistsByNameExcludingAsync(
         string name,
         Guid excludeId,
-        CancellationToken cancellationToken = default
+        CancellationToken ct = default
     );
 
     Task<AppointmentTypeDefinition> CreateAsync(
         AppointmentTypeDefinition appointmentType,
-        CancellationToken cancellationToken = default
+        CancellationToken ct = default
     );
 }

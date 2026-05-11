@@ -22,13 +22,10 @@ public sealed class ScheduleByStaffCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<ScheduleByStaffCommand, Guid>
 {
-    public async Task<Guid> Handle(
-        ScheduleByStaffCommand request,
-        CancellationToken cancellationToken
-    )
+    public async Task<Guid> Handle(ScheduleByStaffCommand request, CancellationToken ct)
     {
         var targetPatient =
-            await patientRepository.GetByIdAsync(request.TargetPatientId, cancellationToken)
+            await patientRepository.GetByIdAsync(request.TargetPatientId, ct)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Patient),
@@ -36,7 +33,7 @@ public sealed class ScheduleByStaffCommandHandler(
             );
 
         var targetDoctor =
-            await doctorRepository.GetByIdAsync(request.DoctorId, cancellationToken)
+            await doctorRepository.GetByIdAsync(request.DoctorId, ct)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Doctor),
@@ -44,10 +41,7 @@ public sealed class ScheduleByStaffCommandHandler(
             );
 
         var appointmentType =
-            await appointmentTypeRepository.GetByIdAsync(
-                request.AppointmentTypeId,
-                cancellationToken
-            )
+            await appointmentTypeRepository.GetByIdAsync(request.AppointmentTypeId, ct)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(AppointmentTypeDefinition),
@@ -59,13 +53,13 @@ public sealed class ScheduleByStaffCommandHandler(
         var doctorSchedule = await scheduleRepository.GetByDoctorAndDayAsync(
             request.DoctorId,
             request.ScheduledDate.DayOfWeek,
-            cancellationToken
+            ct
         );
         var hasConflict = await appointmentRepository.HasConflictAsync(
             request.DoctorId,
             request.ScheduledDate,
             timeRange,
-            cancellationToken
+            ct
         );
 
         var clearance = regionalSchedulingService.EnforceSchedulingRegulations(
@@ -95,8 +89,8 @@ public sealed class ScheduleByStaffCommandHandler(
             clearance
         );
 
-        await appointmentRepository.CreateAsync(appointment, cancellationToken);
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await appointmentRepository.CreateAsync(appointment, ct);
+        await unitOfWork.SaveChangesAsync(ct);
 
         return appointment.Id;
     }

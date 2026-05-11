@@ -14,14 +14,14 @@ public sealed class AppointmentMarkedAsNoShowEventHandler(
 {
     public async Task Handle(
         DomainEventNotification<AppointmentMarkedAsNoShowEvent> notification,
-        CancellationToken cancellationToken
+        CancellationToken ct
     )
     {
         var appointment = notification.DomainEvent.Appointment;
 
         var existingPenalties = await patientPenaltyRepository.GetByPatientIdAsync(
             appointment.PatientId,
-            cancellationToken
+            ct
         );
 
         var newPenalties = PatientPenaltyService.ApplyPenalty(
@@ -32,6 +32,6 @@ public sealed class AppointmentMarkedAsNoShowEventHandler(
             timeProvider.GetUtcNow().UtcDateTime
         );
 
-        await patientPenaltyRepository.AddRangeAsync(newPenalties, cancellationToken);
+        await patientPenaltyRepository.AddRangeAsync(newPenalties, ct);
     }
 }

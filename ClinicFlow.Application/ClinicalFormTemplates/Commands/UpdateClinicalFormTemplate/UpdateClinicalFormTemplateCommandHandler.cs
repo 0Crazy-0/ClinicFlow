@@ -12,13 +12,10 @@ public sealed class UpdateClinicalFormTemplateCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<UpdateClinicalFormTemplateCommand>
 {
-    public async Task Handle(
-        UpdateClinicalFormTemplateCommand request,
-        CancellationToken cancellationToken
-    )
+    public async Task Handle(UpdateClinicalFormTemplateCommand request, CancellationToken ct)
     {
         var template =
-            await clinicalFormTemplateRepository.GetByIdAsync(request.TemplateId, cancellationToken)
+            await clinicalFormTemplateRepository.GetByIdAsync(request.TemplateId, ct)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(ClinicalFormTemplate),
@@ -29,7 +26,7 @@ public sealed class UpdateClinicalFormTemplateCommandHandler(
             await clinicalFormTemplateRepository.ExistsByNameExcludingAsync(
                 request.Name,
                 request.TemplateId,
-                cancellationToken
+                ct
             )
         )
             throw new BusinessRuleValidationException(
@@ -39,6 +36,6 @@ public sealed class UpdateClinicalFormTemplateCommandHandler(
         template.UpdateDetails(request.Name, request.Description);
         template.UpdateSchema(request.JsonSchemaDefinition);
 
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(ct);
     }
 }

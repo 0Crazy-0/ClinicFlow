@@ -12,13 +12,10 @@ public sealed class UpdateMedicalSpecialtyCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<UpdateMedicalSpecialtyCommand>
 {
-    public async Task Handle(
-        UpdateMedicalSpecialtyCommand request,
-        CancellationToken cancellationToken
-    )
+    public async Task Handle(UpdateMedicalSpecialtyCommand request, CancellationToken ct)
     {
         var specialty =
-            await medicalSpecialtyRepository.GetByIdAsync(request.SpecialtyId, cancellationToken)
+            await medicalSpecialtyRepository.GetByIdAsync(request.SpecialtyId, ct)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(MedicalSpecialty),
@@ -29,7 +26,7 @@ public sealed class UpdateMedicalSpecialtyCommandHandler(
             await medicalSpecialtyRepository.ExistsByNameExcludingAsync(
                 request.Name,
                 request.SpecialtyId,
-                cancellationToken
+                ct
             )
         )
             throw new BusinessRuleValidationException(
@@ -43,6 +40,6 @@ public sealed class UpdateMedicalSpecialtyCommandHandler(
             request.MinCancellationHours
         );
 
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(ct);
     }
 }

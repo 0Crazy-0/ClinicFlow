@@ -12,17 +12,14 @@ public sealed class CreateClinicalFormTemplateCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<CreateClinicalFormTemplateCommand, Guid>
 {
-    public async Task<Guid> Handle(
-        CreateClinicalFormTemplateCommand request,
-        CancellationToken cancellationToken
-    )
+    public async Task<Guid> Handle(CreateClinicalFormTemplateCommand request, CancellationToken ct)
     {
-        if (await clinicalFormTemplateRepository.ExistsByCodeAsync(request.Code, cancellationToken))
+        if (await clinicalFormTemplateRepository.ExistsByCodeAsync(request.Code, ct))
             throw new BusinessRuleValidationException(
                 DomainErrors.ClinicalFormTemplate.CodeAlreadyExists
             );
 
-        if (await clinicalFormTemplateRepository.ExistsByNameAsync(request.Name, cancellationToken))
+        if (await clinicalFormTemplateRepository.ExistsByNameAsync(request.Name, ct))
             throw new BusinessRuleValidationException(
                 DomainErrors.ClinicalFormTemplate.NameAlreadyExists
             );
@@ -34,8 +31,8 @@ public sealed class CreateClinicalFormTemplateCommandHandler(
             request.JsonSchemaDefinition
         );
 
-        await clinicalFormTemplateRepository.CreateAsync(template, cancellationToken);
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await clinicalFormTemplateRepository.CreateAsync(template, ct);
+        await unitOfWork.SaveChangesAsync(ct);
 
         return template.Id;
     }

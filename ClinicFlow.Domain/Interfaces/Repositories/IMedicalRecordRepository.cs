@@ -7,25 +7,22 @@ namespace ClinicFlow.Domain.Interfaces.Repositories;
 /// </summary>
 public interface IMedicalRecordRepository
 {
-    Task<MedicalRecord?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<MedicalRecord?> GetByIdAsync(Guid id, CancellationToken ct = default);
 
     Task<IReadOnlyList<MedicalRecord>> GetByPatientIdAsync(
         Guid patientId,
-        CancellationToken cancellationToken = default
+        CancellationToken ct = default
     );
 
     Task<IReadOnlyList<MedicalRecord>> GetByDoctorIdAsync(
         Guid doctorId,
-        CancellationToken cancellationToken = default
+        CancellationToken ct = default
     );
 
     Task<MedicalRecord?> GetByAppointmentIdAsync(
         Guid appointmentId,
-        CancellationToken cancellationToken = default
+        CancellationToken ct = default
     );
 
-    Task<MedicalRecord> CreateAsync(
-        MedicalRecord medicalRecord,
-        CancellationToken cancellationToken = default
-    );
+    Task<MedicalRecord> CreateAsync(MedicalRecord medicalRecord, CancellationToken ct = default);
 }

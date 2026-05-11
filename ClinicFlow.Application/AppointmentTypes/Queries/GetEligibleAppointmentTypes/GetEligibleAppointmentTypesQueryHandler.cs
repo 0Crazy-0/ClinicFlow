@@ -10,12 +10,12 @@ public sealed class GetEligibleAppointmentTypesQueryHandler(
 {
     public async Task<IReadOnlyList<AppointmentTypeDto>> Handle(
         GetEligibleAppointmentTypesQuery request,
-        CancellationToken cancellationToken
+        CancellationToken ct
     )
     {
         var appointmentTypes = await appointmentTypeRepository.GetEligibleByAgeAsync(
             request.PatientAgeInYears,
-            cancellationToken
+            ct
         );
 
         return

@@ -9,13 +9,10 @@ public sealed class GetDoctorsBySpecialtyIdQueryHandler(IDoctorRepository doctor
 {
     public async Task<IReadOnlyList<DoctorDto>> Handle(
         GetDoctorsBySpecialtyIdQuery request,
-        CancellationToken cancellationToken
+        CancellationToken ct
     )
     {
-        var doctors = await doctorRepository.GetBySpecialtyIdAsync(
-            request.SpecialtyId,
-            cancellationToken
-        );
+        var doctors = await doctorRepository.GetBySpecialtyIdAsync(request.SpecialtyId, ct);
 
         return
         [

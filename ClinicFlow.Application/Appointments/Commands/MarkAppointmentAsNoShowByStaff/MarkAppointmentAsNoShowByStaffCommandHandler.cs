@@ -12,13 +12,10 @@ public sealed class MarkAppointmentAsNoShowByStaffCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<MarkAppointmentAsNoShowByStaffCommand>
 {
-    public async Task Handle(
-        MarkAppointmentAsNoShowByStaffCommand request,
-        CancellationToken cancellationToken
-    )
+    public async Task Handle(MarkAppointmentAsNoShowByStaffCommand request, CancellationToken ct)
     {
         var appointment =
-            await appointmentRepository.GetByIdAsync(request.AppointmentId, cancellationToken)
+            await appointmentRepository.GetByIdAsync(request.AppointmentId, ct)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Appointment),
@@ -27,6 +24,6 @@ public sealed class MarkAppointmentAsNoShowByStaffCommandHandler(
 
         appointment.MarkAsNoShowByStaff();
 
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(ct);
     }
 }

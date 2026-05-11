@@ -13,26 +13,20 @@ public sealed class DeactivateMedicalSpecialtyCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<DeactivateMedicalSpecialtyCommand>
 {
-    public async Task Handle(
-        DeactivateMedicalSpecialtyCommand request,
-        CancellationToken cancellationToken
-    )
+    public async Task Handle(DeactivateMedicalSpecialtyCommand request, CancellationToken ct)
     {
         var specialty =
-            await medicalSpecialtyRepository.GetByIdAsync(request.SpecialtyId, cancellationToken)
+            await medicalSpecialtyRepository.GetByIdAsync(request.SpecialtyId, ct)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(MedicalSpecialty),
                 request.SpecialtyId
             );
 
-        var hasActiveDoctors = await doctorRepository.HasActiveBySpecialtyIdAsync(
-            specialty.Id,
-            cancellationToken
-        );
+        var hasActiveDoctors = await doctorRepository.HasActiveBySpecialtyIdAsync(specialty.Id, ct);
 
         specialty.Deactivate(hasActiveDoctors);
 
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(ct);
     }
 }

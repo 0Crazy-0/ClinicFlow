@@ -13,12 +13,9 @@ public sealed class CreateAppointmentTypeCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<CreateAppointmentTypeCommand, Guid>
 {
-    public async Task<Guid> Handle(
-        CreateAppointmentTypeCommand request,
-        CancellationToken cancellationToken
-    )
+    public async Task<Guid> Handle(CreateAppointmentTypeCommand request, CancellationToken ct)
     {
-        if (await appointmentTypeRepository.ExistsByNameAsync(request.Name, cancellationToken))
+        if (await appointmentTypeRepository.ExistsByNameAsync(request.Name, ct))
             throw new BusinessRuleValidationException(
                 DomainErrors.AppointmentType.NameAlreadyExists
             );
@@ -37,8 +34,8 @@ public sealed class CreateAppointmentTypeCommandHandler(
             agePolicy
         );
 
-        await appointmentTypeRepository.CreateAsync(appointmentType, cancellationToken);
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await appointmentTypeRepository.CreateAsync(appointmentType, ct);
+        await unitOfWork.SaveChangesAsync(ct);
 
         return appointmentType.Id;
     }

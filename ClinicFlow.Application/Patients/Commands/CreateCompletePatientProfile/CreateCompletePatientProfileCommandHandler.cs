@@ -14,7 +14,7 @@ public sealed class CreateCompletePatientProfileCommandHandler(
 {
     public async Task<Guid> Handle(
         CreateCompletePatientProfileCommand request,
-        CancellationToken cancellationToken
+        CancellationToken ct
     )
     {
         var fullName = PersonName.Create($"{request.FirstName} {request.LastName}");
@@ -35,8 +35,8 @@ public sealed class CreateCompletePatientProfileCommandHandler(
         patient.UpdateMedicalProfile(bloodType, request.Allergies, request.ChronicConditions);
         patient.UpdateEmergencyContact(emergencyContact);
 
-        await patientRepository.CreateAsync(patient, cancellationToken);
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await patientRepository.CreateAsync(patient, ct);
+        await unitOfWork.SaveChangesAsync(ct);
 
         return patient.Id;
     }

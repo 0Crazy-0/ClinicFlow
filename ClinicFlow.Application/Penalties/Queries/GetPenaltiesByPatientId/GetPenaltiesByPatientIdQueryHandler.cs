@@ -9,13 +9,10 @@ public sealed class GetPenaltiesByPatientIdQueryHandler(IPatientPenaltyRepositor
 {
     public async Task<IReadOnlyList<PatientPenaltyDto>> Handle(
         GetPenaltiesByPatientIdQuery request,
-        CancellationToken cancellationToken
+        CancellationToken ct
     )
     {
-        var penalties = await penaltyRepository.GetByPatientIdAsync(
-            request.PatientId,
-            cancellationToken
-        );
+        var penalties = await penaltyRepository.GetByPatientIdAsync(request.PatientId, ct);
 
         return
         [

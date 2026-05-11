@@ -12,10 +12,10 @@ public sealed class DeactivateScheduleCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<DeactivateScheduleCommand>
 {
-    public async Task Handle(DeactivateScheduleCommand request, CancellationToken cancellationToken)
+    public async Task Handle(DeactivateScheduleCommand request, CancellationToken ct)
     {
         var schedule =
-            await scheduleRepository.GetByIdAsync(request.ScheduleId, cancellationToken)
+            await scheduleRepository.GetByIdAsync(request.ScheduleId, ct)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Schedule),
@@ -24,6 +24,6 @@ public sealed class DeactivateScheduleCommandHandler(
 
         schedule.Deactivate();
 
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(ct);
     }
 }

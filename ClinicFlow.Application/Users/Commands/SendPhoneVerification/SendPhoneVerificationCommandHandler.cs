@@ -12,22 +12,16 @@ public sealed class SendPhoneVerificationCommandHandler(
     IPhoneVerificationService phoneVerificationService
 ) : IRequestHandler<SendPhoneVerificationCommand>
 {
-    public async Task Handle(
-        SendPhoneVerificationCommand request,
-        CancellationToken cancellationToken
-    )
+    public async Task Handle(SendPhoneVerificationCommand request, CancellationToken ct)
     {
         var user =
-            await userRepository.GetByIdAsync(request.UserId, cancellationToken)
+            await userRepository.GetByIdAsync(request.UserId, ct)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(User),
                 request.UserId
             );
 
-        await phoneVerificationService.SendVerificationCodeAsync(
-            user.PhoneNumber,
-            cancellationToken
-        );
+        await phoneVerificationService.SendVerificationCodeAsync(user.PhoneNumber, ct);
     }
 }

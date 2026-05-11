@@ -13,14 +13,11 @@ public sealed class CreateDoctorProfileCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<CreateDoctorProfileCommand, Guid>
 {
-    public async Task<Guid> Handle(
-        CreateDoctorProfileCommand request,
-        CancellationToken cancellationToken
-    )
+    public async Task<Guid> Handle(CreateDoctorProfileCommand request, CancellationToken ct)
     {
         var existingDoctor = await doctorRepository.GetIncludingDeletedByLicenseNumberAsync(
             request.LicenseNumber,
-            cancellationToken
+            ct
         );
 
         var context = new DoctorRegistrationContext { ExistingDoctor = existingDoctor };
@@ -38,8 +35,8 @@ public sealed class CreateDoctorProfileCommandHandler(
         };
         var doctor = DoctorRegistrationService.Register(args, context);
 
-        await doctorRepository.CreateAsync(doctor, cancellationToken);
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await doctorRepository.CreateAsync(doctor, ct);
+        await unitOfWork.SaveChangesAsync(ct);
 
         return doctor.Id;
     }

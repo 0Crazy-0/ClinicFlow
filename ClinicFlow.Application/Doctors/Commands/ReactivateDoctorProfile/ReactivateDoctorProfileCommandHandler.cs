@@ -13,13 +13,10 @@ public sealed class ReactivateDoctorProfileCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<ReactivateDoctorProfileCommand>
 {
-    public async Task Handle(
-        ReactivateDoctorProfileCommand request,
-        CancellationToken cancellationToken
-    )
+    public async Task Handle(ReactivateDoctorProfileCommand request, CancellationToken ct)
     {
         var doctor =
-            await doctorRepository.GetByIdAsync(request.DoctorId, cancellationToken)
+            await doctorRepository.GetByIdAsync(request.DoctorId, ct)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Doctor),
@@ -34,6 +31,6 @@ public sealed class ReactivateDoctorProfileCommandHandler(
 
         doctor.Reactivate(request.Biography, consultationRoom);
 
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(ct);
     }
 }

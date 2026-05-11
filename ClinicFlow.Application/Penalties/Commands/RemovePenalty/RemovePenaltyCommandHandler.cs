@@ -12,10 +12,10 @@ public sealed class RemovePenaltyCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<RemovePenaltyCommand>
 {
-    public async Task Handle(RemovePenaltyCommand request, CancellationToken cancellationToken)
+    public async Task Handle(RemovePenaltyCommand request, CancellationToken ct)
     {
         var penalty =
-            await penaltyRepository.GetByIdAsync(request.PenaltyId, cancellationToken)
+            await penaltyRepository.GetByIdAsync(request.PenaltyId, ct)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(PatientPenalty),
@@ -24,6 +24,6 @@ public sealed class RemovePenaltyCommandHandler(
 
         penalty.Remove();
 
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(ct);
     }
 }

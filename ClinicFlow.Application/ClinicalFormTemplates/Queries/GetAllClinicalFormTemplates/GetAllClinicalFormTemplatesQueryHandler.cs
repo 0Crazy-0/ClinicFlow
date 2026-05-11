@@ -10,12 +10,10 @@ public sealed class GetAllClinicalFormTemplatesQueryHandler(
 {
     public async Task<IReadOnlyList<ClinicalFormTemplateDto>> Handle(
         GetAllClinicalFormTemplatesQuery request,
-        CancellationToken cancellationToken
+        CancellationToken ct
     )
     {
-        var templates = await clinicalFormTemplateRepository.GetAllIncludingDeletedAsync(
-            cancellationToken
-        );
+        var templates = await clinicalFormTemplateRepository.GetAllIncludingDeletedAsync(ct);
 
         return
         [

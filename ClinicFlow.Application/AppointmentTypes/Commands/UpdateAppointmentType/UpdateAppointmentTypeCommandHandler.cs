@@ -12,16 +12,10 @@ public sealed class UpdateAppointmentTypeCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<UpdateAppointmentTypeCommand>
 {
-    public async Task Handle(
-        UpdateAppointmentTypeCommand request,
-        CancellationToken cancellationToken
-    )
+    public async Task Handle(UpdateAppointmentTypeCommand request, CancellationToken ct)
     {
         var appointmentType =
-            await appointmentTypeRepository.GetByIdAsync(
-                request.AppointmentTypeId,
-                cancellationToken
-            )
+            await appointmentTypeRepository.GetByIdAsync(request.AppointmentTypeId, ct)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(AppointmentTypeDefinition),
@@ -32,7 +26,7 @@ public sealed class UpdateAppointmentTypeCommandHandler(
             await appointmentTypeRepository.ExistsByNameExcludingAsync(
                 request.Name,
                 request.AppointmentTypeId,
-                cancellationToken
+                ct
             )
         )
             throw new BusinessRuleValidationException(
@@ -46,6 +40,6 @@ public sealed class UpdateAppointmentTypeCommandHandler(
             request.DurationMinutes
         );
 
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(ct);
     }
 }

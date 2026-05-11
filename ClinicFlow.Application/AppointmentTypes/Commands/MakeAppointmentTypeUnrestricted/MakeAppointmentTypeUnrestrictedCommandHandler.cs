@@ -12,16 +12,10 @@ public sealed class MakeAppointmentTypeUnrestrictedCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<MakeAppointmentTypeUnrestrictedCommand>
 {
-    public async Task Handle(
-        MakeAppointmentTypeUnrestrictedCommand request,
-        CancellationToken cancellationToken
-    )
+    public async Task Handle(MakeAppointmentTypeUnrestrictedCommand request, CancellationToken ct)
     {
         var appointmentType =
-            await appointmentTypeRepository.GetByIdAsync(
-                request.AppointmentTypeId,
-                cancellationToken
-            )
+            await appointmentTypeRepository.GetByIdAsync(request.AppointmentTypeId, ct)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(AppointmentTypeDefinition),
@@ -30,6 +24,6 @@ public sealed class MakeAppointmentTypeUnrestrictedCommandHandler(
 
         appointmentType.MakeUnrestricted();
 
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await unitOfWork.SaveChangesAsync(ct);
     }
 }

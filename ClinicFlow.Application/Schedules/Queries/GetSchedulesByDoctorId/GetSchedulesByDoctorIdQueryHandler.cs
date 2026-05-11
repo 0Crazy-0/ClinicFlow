@@ -9,13 +9,10 @@ public sealed class GetSchedulesByDoctorIdQueryHandler(IScheduleRepository sched
 {
     public async Task<IReadOnlyList<ScheduleDto>> Handle(
         GetSchedulesByDoctorIdQuery request,
-        CancellationToken cancellationToken
+        CancellationToken ct
     )
     {
-        var schedules = await scheduleRepository.GetByDoctorIdAsync(
-            request.DoctorId,
-            cancellationToken
-        );
+        var schedules = await scheduleRepository.GetByDoctorIdAsync(request.DoctorId, ct);
 
         return
         [

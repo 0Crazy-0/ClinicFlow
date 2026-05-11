@@ -12,12 +12,9 @@ public sealed class CreateMedicalSpecialtyCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<CreateMedicalSpecialtyCommand, Guid>
 {
-    public async Task<Guid> Handle(
-        CreateMedicalSpecialtyCommand request,
-        CancellationToken cancellationToken
-    )
+    public async Task<Guid> Handle(CreateMedicalSpecialtyCommand request, CancellationToken ct)
     {
-        if (await medicalSpecialtyRepository.ExistsByNameAsync(request.Name, cancellationToken))
+        if (await medicalSpecialtyRepository.ExistsByNameAsync(request.Name, ct))
             throw new BusinessRuleValidationException(
                 DomainErrors.MedicalSpecialty.NameAlreadyExists
             );
@@ -29,8 +26,8 @@ public sealed class CreateMedicalSpecialtyCommandHandler(
             request.MinCancellationHours
         );
 
-        await medicalSpecialtyRepository.CreateAsync(specialty, cancellationToken);
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await medicalSpecialtyRepository.CreateAsync(specialty, ct);
+        await unitOfWork.SaveChangesAsync(ct);
 
         return specialty.Id;
     }

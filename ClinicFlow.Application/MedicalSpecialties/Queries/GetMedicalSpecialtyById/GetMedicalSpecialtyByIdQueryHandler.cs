@@ -13,14 +13,11 @@ public sealed class GetMedicalSpecialtyByIdQueryHandler(
 {
     public async Task<MedicalSpecialtyDto> Handle(
         GetMedicalSpecialtyByIdQuery request,
-        CancellationToken cancellationToken
+        CancellationToken ct
     )
     {
         var specialty =
-            await medicalSpecialtyRepository.GetByIdAsync(
-                request.MedicalSpecialtyId,
-                cancellationToken
-            )
+            await medicalSpecialtyRepository.GetByIdAsync(request.MedicalSpecialtyId, ct)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(MedicalSpecialty),

@@ -10,13 +10,10 @@ namespace ClinicFlow.Application.Schedules.Queries.GetScheduleById;
 public sealed class GetScheduleByIdQueryHandler(IScheduleRepository scheduleRepository)
     : IRequestHandler<GetScheduleByIdQuery, ScheduleDto>
 {
-    public async Task<ScheduleDto> Handle(
-        GetScheduleByIdQuery request,
-        CancellationToken cancellationToken
-    )
+    public async Task<ScheduleDto> Handle(GetScheduleByIdQuery request, CancellationToken ct)
     {
         var schedule =
-            await scheduleRepository.GetByIdAsync(request.ScheduleId, cancellationToken)
+            await scheduleRepository.GetByIdAsync(request.ScheduleId, ct)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Schedule),

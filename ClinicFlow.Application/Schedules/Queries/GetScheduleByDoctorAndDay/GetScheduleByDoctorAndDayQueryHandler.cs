@@ -9,13 +9,13 @@ public sealed class GetScheduleByDoctorAndDayQueryHandler(IScheduleRepository sc
 {
     public async Task<ScheduleDto?> Handle(
         GetScheduleByDoctorAndDayQuery request,
-        CancellationToken cancellationToken
+        CancellationToken ct
     )
     {
         var schedule = await scheduleRepository.GetByDoctorAndDayAsync(
             request.DoctorId,
             request.DayOfWeek,
-            cancellationToken
+            ct
         );
 
         return schedule is null

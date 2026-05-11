@@ -10,12 +10,12 @@ public sealed class GetAppointmentTypesByCategoryQueryHandler(
 {
     public async Task<IReadOnlyList<AppointmentTypeDto>> Handle(
         GetAppointmentTypesByCategoryQuery request,
-        CancellationToken cancellationToken
+        CancellationToken ct
     )
     {
         var appointmentTypes = await appointmentTypeRepository.GetByCategoryAsync(
             request.Category,
-            cancellationToken
+            ct
         );
 
         return
