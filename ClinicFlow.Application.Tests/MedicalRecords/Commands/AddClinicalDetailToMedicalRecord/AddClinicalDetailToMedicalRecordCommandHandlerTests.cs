@@ -50,14 +50,14 @@ public class AddClinicalDetailToMedicalRecordCommandHandlerTests
         );
 
         var record = CreateMedicalRecord(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "Checkup");
-        var template = CreateFormTemplate("lab-results");
+        var template = ClinicalFormTemplate.Create("lab-results", "Test Form", "Description", "{}");
 
         _medicalRecordRepositoryMock
             .Setup(x => x.GetByIdAsync(medicalRecordId, CancellationToken.None))
             .ReturnsAsync(record);
 
         _templateRepositoryMock
-            .Setup(x => x.GetByCodeAsync("lab-results", CancellationToken.None))
+            .Setup(x => x.GetByCodeAsync(template.Code, CancellationToken.None))
             .ReturnsAsync(template);
 
         string? errorMessage = null;
@@ -126,7 +126,7 @@ public class AddClinicalDetailToMedicalRecordCommandHandlerTests
             .ReturnsAsync(record);
 
         _templateRepositoryMock
-            .Setup(x => x.GetByCodeAsync("invalid-code", CancellationToken.None))
+            .Setup(x => x.GetByCodeAsync(request.TemplateCode, CancellationToken.None))
             .ReturnsAsync((ClinicalFormTemplate?)null);
 
         // Act
@@ -147,9 +147,4 @@ public class AddClinicalDetailToMedicalRecordCommandHandlerTests
         Guid appointmentId,
         string chiefComplaint
     ) => MedicalRecord.Create(patientId, doctorId, appointmentId, chiefComplaint);
-
-    private static ClinicalFormTemplate CreateFormTemplate(
-        string code = "Test1",
-        string jsonSchema = "{}"
-    ) => ClinicalFormTemplate.Create(code, "Test Form", "Description", jsonSchema);
 }
