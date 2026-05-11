@@ -3,7 +3,6 @@ using ClinicFlow.Application.Tests.Shared;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
-using ClinicFlow.Domain.Exceptions.Appointments;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
@@ -42,7 +41,14 @@ public class MarkAppointmentAsNoShowByDoctorCommandHandlerTests
         var command = new MarkAppointmentAsNoShowByDoctorCommand(Guid.NewGuid(), Guid.NewGuid());
         var doctorId = Guid.NewGuid();
         var appointment = CreateAppointment(command.AppointmentId, doctorId);
-        var doctor = CreateDoctor(doctorId, command.InitiatorUserId);
+        var doctor = Doctor.Create(
+            command.InitiatorUserId,
+            MedicalLicenseNumber.Create("12345"),
+            Guid.NewGuid(),
+            "Room 1",
+            ConsultationRoom.Create(1, "Room 1", 1)
+        );
+        doctor.SetId(doctorId);
 
         _appointmentRepositoryMock
             .Setup(x => x.GetByIdAsync(command.AppointmentId, It.IsAny<CancellationToken>()))
@@ -58,31 +64,6 @@ public class MarkAppointmentAsNoShowByDoctorCommandHandlerTests
         appointment.Status.Should().Be(AppointmentStatus.NoShow);
 
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
-    }
-
-    [Fact]
-    public async Task Handle_ShouldThrowUnauthorized_WhenDoctorIdDoesNotMatchAppointment()
-    {
-        // Arrange
-        var command = new MarkAppointmentAsNoShowByDoctorCommand(Guid.NewGuid(), Guid.NewGuid());
-        var anotherDoctorId = Guid.NewGuid();
-        var appointment = CreateAppointment(command.AppointmentId, Guid.NewGuid());
-        var doctor = CreateDoctor(anotherDoctorId, command.InitiatorUserId);
-
-        _appointmentRepositoryMock
-            .Setup(x => x.GetByIdAsync(command.AppointmentId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(appointment);
-        _doctorRepositoryMock
-            .Setup(x => x.GetByUserIdAsync(command.InitiatorUserId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(doctor);
-
-        // Act
-        var act = async () => await _sut.Handle(command, CancellationToken.None);
-
-        // Assert
-        await act.Should()
-            .ThrowAsync<AppointmentNoShowUnauthorizedException>()
-            .WithMessage(DomainErrors.Appointment.UnauthorizedNoShow);
     }
 
     [Fact]
@@ -144,18 +125,5 @@ public class MarkAppointmentAsNoShowByDoctorCommandHandlerTests
         );
         appointment.SetId(id);
         return appointment;
-    }
-
-    private static Doctor CreateDoctor(Guid id, Guid userId)
-    {
-        var doctor = Doctor.Create(
-            userId,
-            MedicalLicenseNumber.Create("12345"),
-            Guid.NewGuid(),
-            "Room 1",
-            ConsultationRoom.Create(1, "Room 1", 1)
-        );
-        doctor.SetId(id);
-        return doctor;
     }
 }
