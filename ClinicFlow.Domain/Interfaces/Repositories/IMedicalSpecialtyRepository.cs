@@ -22,6 +22,14 @@ public interface IMedicalSpecialtyRepository
         CancellationToken cancellationToken = default
     );
 
+    Task<IReadOnlyList<MedicalSpecialty>> GetAllActiveAsync(
+        CancellationToken cancellationToken = default
+    );
+
+    Task<IReadOnlyList<MedicalSpecialty>> GetAllIncludingDeletedAsync(
+        CancellationToken cancellationToken = default
+    );
+
     Task<MedicalSpecialty> CreateAsync(
         MedicalSpecialty specialty,
         CancellationToken cancellationToken = default
