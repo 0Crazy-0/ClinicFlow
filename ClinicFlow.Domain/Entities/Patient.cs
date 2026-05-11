@@ -147,7 +147,7 @@ public class Patient : BaseEntity
 
     internal void EnsureCompleteProfile()
     {
-        if (!HasCompleteMedicalProfile())
+        if (BloodType is null || EmergencyContact is null)
             throw new IncompleteProfileException(DomainErrors.Patient.ProfileIncomplete);
     }
 
@@ -167,19 +167,6 @@ public class Patient : BaseEntity
         DateTime referenceTime
     )
     {
-        if (IsBlockedFromBooking(penalties, referenceTime, out var blockedUntil))
-            throw new PatientBlockedException(
-                DomainErrors.Patient.Blocked,
-                blockedUntil ?? referenceTime
-            );
-    }
-
-    private static bool IsBlockedFromBooking(
-        IEnumerable<PatientPenalty> penalties,
-        DateTime referenceTime,
-        out DateTime? blockedUntil
-    )
-    {
         var activePenalties = penalties
             .Where(p =>
                 !p.IsRemoved
@@ -189,11 +176,10 @@ public class Patient : BaseEntity
             )
             .ToList();
 
-        blockedUntil = activePenalties.Count > 0 ? activePenalties.Max(p => p.BlockedUntil) : null;
-
-        return activePenalties.Count > 0;
+        if (activePenalties.Count > 0)
+            throw new PatientBlockedException(
+                DomainErrors.Patient.Blocked,
+                activePenalties.Max(p => p.BlockedUntil) ?? referenceTime
+            );
     }
-
-    private bool HasCompleteMedicalProfile() =>
-        BloodType is not null && EmergencyContact is not null;
 }
