@@ -373,6 +373,85 @@ var exceptionAssertion = await act.Should()
 exceptionAssertion.Which.EntityName.Should().Be(nameof(Appointment));
 ```
 
+### Application Handler Tests — UnitOfWork Verification on Exceptions
+
+When testing that a handler throws an exception, **always** verify that `SaveChangesAsync` was never called. This ensures that a failed operation never persists partial state:
+
+```csharp
+// Assert
+await act.Should()
+    .ThrowAsync<EntityNotFoundException>()
+    .WithMessage(DomainErrors.General.NotFound);
+
+_unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+```
+
+This rule applies to **every** exception scenario — `EntityNotFoundException`, `BusinessRuleValidationException`, domain-specific exceptions, etc. If the handler also calls a repository write method like `CreateAsync`, verify that it was never called as well.
+
+### Application Handler Tests — Create Handler Split
+
+When a create handler returns a `Guid` and persists via a repository + `IUnitOfWork`, always split the happy path into **two separate tests**:
+
+1. **Data validation test** — uses the `Callback` pattern to capture the entity and assert its properties:
+
+```csharp
+[Fact]
+public async Task Handle_ShouldCreateEntity_WhenValidCommand()
+{
+    // Arrange
+    Entity? capturedEntity = null;
+    _repositoryMock
+        .Setup(x => x.CreateAsync(It.IsAny<Entity>(), It.IsAny<CancellationToken>()))
+        .Callback<Entity, CancellationToken>((e, _) => capturedEntity = e);
+
+    // Act
+    var result = await _sut.Handle(command, CancellationToken.None);
+
+    // Assert
+    result.Should().NotBeEmpty();
+    capturedEntity.Should().NotBeNull();
+    capturedEntity!.Name.Should().Be(command.Name);
+    // ... assert all mapped properties
+}
+```
+
+2. **Persistence verification test** — verifies that both the repository and `SaveChangesAsync` were called exactly once:
+
+```csharp
+[Fact]
+public async Task Handle_ShouldCallRepositoryCreateAndSaveChanges_WhenValidCommand()
+{
+    // Arrange
+    _repositoryMock
+        .Setup(x => x.CreateAsync(It.IsAny<Entity>(), It.IsAny<CancellationToken>()))
+        .ReturnsAsync((Entity e, CancellationToken _) => e);
+
+    // Act
+    await _sut.Handle(command, CancellationToken.None);
+
+    // Assert
+    _repositoryMock.Verify(
+        x => x.CreateAsync(It.IsAny<Entity>(), It.IsAny<CancellationToken>()),
+        Times.Once
+    );
+    _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+}
+```
+
+This separation keeps each test focused on a single concern: one validates correctness of the created entity, the other validates the persistence pipeline.
+
+### Application Handler Tests — UnitOfWork Verification on Success
+
+For command handlers that modify an entity and persist via `IUnitOfWork` without returning a value (e.g., reactivate, deactivate, add/remove associations), the happy path test must **always** verify that `SaveChangesAsync` was called exactly once:
+
+```csharp
+// Assert
+appointmentType.IsDeleted.Should().BeFalse();
+_unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+```
+
+This verification ensures the handler completes the full orchestration pipeline: fetch → delegate to domain → persist.
+
 ---
 
 ## Code Style
