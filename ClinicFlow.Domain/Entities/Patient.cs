@@ -163,7 +163,7 @@ public class Patient : BaseEntity
     }
 
     internal static void EnsureNotBlocked(
-        IEnumerable<PatientPenalty> penalties,
+        IReadOnlyList<PatientPenalty> penalties,
         DateTime referenceTime
     )
     {
