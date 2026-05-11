@@ -477,7 +477,7 @@ Titles follow **Conventional Commits** format in lowercase:
 **Scope rules:**
 
 - The scope is optional. Use it only when the PR is clearly focused on a specific area and the scope adds value.
-- Predefined scopes: `appointments`, `appointment-type`, `clinical-forms`, `agents`, `penalty`, `schedule`, `doctor`, `github`, `medical-records`, `patients`.
+- Predefined scopes: `appointments`, `appointment-type`, `clinical-forms`, `agents`, `penalty`, `schedule`, `doctor`, `github`, `medical-records`, `patients`, `medical-specialty`.
 - If the changes touch an area not covered by the predefined scopes, suggest a new scope that is concise and meaningful.
 - If the PR is test-related (adding, refactoring, or fixing tests), the title **must** start with `test`, never `refactor(test)`.
 
