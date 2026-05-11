@@ -74,7 +74,13 @@ public class CompleteMedicalEncounterCommandHandlerTests
             doctorId,
             _fakeTime.GetUtcNow().UtcDateTime
         );
-        var appointmentType = CreateAppointmentTypeDefinition();
+        var appointmentType = AppointmentTypeDefinition.Create(
+            AppointmentCategory.Checkup,
+            "Checkup",
+            "Desc",
+            TimeSpan.FromMinutes(30),
+            AgeEligibilityPolicy.Create(0, 100, false)
+        );
 
         _doctorRepositoryMock.Setup(x => x.GetByIdAsync(doctorId)).ReturnsAsync(doctor);
         _appointmentRepositoryMock
@@ -241,13 +247,4 @@ public class CompleteMedicalEncounterCommandHandlerTests
 
         return appointment;
     }
-
-    private static AppointmentTypeDefinition CreateAppointmentTypeDefinition() =>
-        AppointmentTypeDefinition.Create(
-            AppointmentCategory.Checkup,
-            "Checkup",
-            "Desc",
-            TimeSpan.FromMinutes(30),
-            AgeEligibilityPolicy.Create(0, 100, false)
-        );
 }

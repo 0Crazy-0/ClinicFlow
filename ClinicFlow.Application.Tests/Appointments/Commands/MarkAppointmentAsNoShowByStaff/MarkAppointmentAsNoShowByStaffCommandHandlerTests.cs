@@ -35,7 +35,17 @@ public class MarkAppointmentAsNoShowByStaffCommandHandlerTests
     {
         // Arrange
         var command = new MarkAppointmentAsNoShowByStaffCommand(Guid.NewGuid());
-        var appointment = CreateAppointment();
+        var scheduledDateTime = _fakeTime.GetUtcNow().UtcDateTime.AddDays(-1);
+        var appointment = Appointment.Schedule(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            scheduledDateTime.Date,
+            TimeRange.Create(
+                scheduledDateTime.TimeOfDay,
+                scheduledDateTime.TimeOfDay.Add(TimeSpan.FromHours(1))
+            )
+        );
 
         _appointmentRepositoryMock
             .Setup(x => x.GetByIdAsync(command.AppointmentId, It.IsAny<CancellationToken>()))
@@ -68,21 +78,5 @@ public class MarkAppointmentAsNoShowByStaffCommandHandlerTests
             .ThrowAsync<EntityNotFoundException>()
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(Appointment));
-    }
-
-    private Appointment CreateAppointment()
-    {
-        var scheduledDateTime = _fakeTime.GetUtcNow().UtcDateTime.AddDays(-1);
-        var appointment = Appointment.Schedule(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            scheduledDateTime.Date,
-            TimeRange.Create(
-                scheduledDateTime.TimeOfDay,
-                scheduledDateTime.TimeOfDay.Add(TimeSpan.FromHours(1))
-            )
-        );
-        return appointment;
     }
 }
