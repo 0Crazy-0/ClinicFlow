@@ -29,6 +29,14 @@ public interface IClinicalFormTemplateRepository
         CancellationToken cancellationToken = default
     );
 
+    Task<IReadOnlyList<ClinicalFormTemplate>> GetAllActiveAsync(
+        CancellationToken cancellationToken = default
+    );
+
+    Task<IReadOnlyList<ClinicalFormTemplate>> GetAllIncludingDeletedAsync(
+        CancellationToken cancellationToken = default
+    );
+
     Task<ClinicalFormTemplate> CreateAsync(
         ClinicalFormTemplate template,
         CancellationToken cancellationToken = default
