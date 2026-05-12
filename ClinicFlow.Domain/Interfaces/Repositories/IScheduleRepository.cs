@@ -20,6 +20,11 @@ public interface IScheduleRepository
         CancellationToken cancellationToken = default
     );
 
+    Task<IReadOnlyList<Schedule>> GetActiveByDoctorIdAsync(
+        Guid doctorId,
+        CancellationToken cancellationToken = default
+    );
+
     Task<Schedule> CreateAsync(Schedule schedule, CancellationToken cancellationToken = default);
 
     Task CreateRangeAsync(
