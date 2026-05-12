@@ -28,7 +28,7 @@ public sealed class DeleteAppointmentTypeCommandHandler(
                 request.AppointmentTypeId
             );
 
-        appointmentType.MarkAsDeleted();
+        appointmentType.Deactivate();
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
