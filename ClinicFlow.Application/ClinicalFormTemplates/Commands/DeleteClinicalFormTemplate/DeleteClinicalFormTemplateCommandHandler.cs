@@ -25,7 +25,7 @@ public sealed class DeleteClinicalFormTemplateCommandHandler(
                 request.TemplateId
             );
 
-        template.MarkAsDeleted();
+        template.Deactivate();
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }

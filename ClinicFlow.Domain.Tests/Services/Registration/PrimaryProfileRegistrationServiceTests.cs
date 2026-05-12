@@ -122,7 +122,7 @@ public class PrimaryProfileRegistrationServiceTests
             _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30).Date,
             _fakeTime.GetUtcNow().UtcDateTime
         );
-        patient.MarkAsDeleted();
+        patient.CloseAccount(false);
         return patient;
     }
 }

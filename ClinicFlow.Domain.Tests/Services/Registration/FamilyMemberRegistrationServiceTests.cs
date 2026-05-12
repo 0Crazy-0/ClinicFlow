@@ -126,7 +126,7 @@ public class FamilyMemberRegistrationServiceTests
     private Patient CreateDeletedPatient(PatientRelationship relationship, Guid userId)
     {
         var patient = CreateActivePatient(relationship, userId);
-        patient.MarkAsDeleted();
+        patient.RemoveFamilyMember(userId);
         return patient;
     }
 }

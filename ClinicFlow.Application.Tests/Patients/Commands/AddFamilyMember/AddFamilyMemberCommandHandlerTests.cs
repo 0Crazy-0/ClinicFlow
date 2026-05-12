@@ -95,7 +95,7 @@ public class AddFamilyMemberCommandHandlerTests
             command.DateOfBirth,
             _fakeTime.GetUtcNow().UtcDateTime
         );
-        deletedMember.MarkAsDeleted();
+        deletedMember.RemoveFamilyMember(command.UserId);
 
         _patientRepositoryMock
             .Setup(x =>
