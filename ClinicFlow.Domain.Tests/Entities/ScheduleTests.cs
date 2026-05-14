@@ -1,5 +1,6 @@
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
+using ClinicFlow.Domain.Events;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Exceptions.Scheduling;
 using ClinicFlow.Domain.ValueObjects;
@@ -121,6 +122,28 @@ public class ScheduleTests
 
         // Assert
         schedule.IsActive.Should().BeFalse();
+    }
+
+    [Fact]
+    public void Deactivate_ShouldEmitScheduleDeactivatedEvent_WhenScheduleIsActive()
+    {
+        // Arrange
+        var doctorId = Guid.NewGuid();
+        var schedule = new ScheduleBuilder().WithDoctorId(doctorId).Build();
+
+        // Act
+        schedule.Deactivate();
+
+        // Assert
+        var domainEvent = schedule
+            .DomainEvents.OfType<ScheduleDeactivatedEvent>()
+            .Should()
+            .ContainSingle()
+            .Subject;
+
+        domainEvent.ScheduleId.Should().Be(schedule.Id);
+        domainEvent.DoctorId.Should().Be(doctorId);
+        domainEvent.DayOfWeek.Should().Be(DayOfWeek.Monday);
     }
 
     [Fact]

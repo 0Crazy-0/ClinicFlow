@@ -1,4 +1,5 @@
 using ClinicFlow.Domain.Common;
+using ClinicFlow.Domain.Events;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Exceptions.Scheduling;
 using ClinicFlow.Domain.ValueObjects;
@@ -56,6 +57,8 @@ public class Schedule : BaseEntity
             throw new DomainValidationException(DomainErrors.Schedule.AlreadyInactive);
 
         IsActive = false;
+
+        AddDomainEvent(new ScheduleDeactivatedEvent(Id, DoctorId, DayOfWeek));
     }
 
     internal bool CoversTimeRange(TimeRange requestedRange) =>
