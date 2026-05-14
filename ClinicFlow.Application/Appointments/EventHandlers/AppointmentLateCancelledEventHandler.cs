@@ -1,6 +1,6 @@
 using ClinicFlow.Application.Common.Models;
 using ClinicFlow.Domain.Common;
-using ClinicFlow.Domain.Events;
+using ClinicFlow.Domain.Events.Appointments;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.Services;
 using MediatR;

@@ -2,7 +2,7 @@ using ClinicFlow.Application.Appointments.EventHandlers;
 using ClinicFlow.Application.Common.Models;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
-using ClinicFlow.Domain.Events;
+using ClinicFlow.Domain.Events.Appointments;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.ValueObjects;
 using Microsoft.Extensions.Time.Testing;
