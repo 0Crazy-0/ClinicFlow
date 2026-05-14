@@ -1,5 +1,5 @@
 using ClinicFlow.Application.Common.Models;
-using ClinicFlow.Domain.Events;
+using ClinicFlow.Domain.Events.Schedules;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using MediatR;
 

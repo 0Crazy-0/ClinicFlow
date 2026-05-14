@@ -2,7 +2,7 @@ using ClinicFlow.Application.Appointments.Commands.ReassignAppointment;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
-using ClinicFlow.Domain.Events;
+using ClinicFlow.Domain.Events.Appointments;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
