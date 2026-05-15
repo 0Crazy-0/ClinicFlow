@@ -117,8 +117,11 @@ public class UpdateMedicalSpecialtyCommandValidatorTests
             .WithErrorMessage(DomainErrors.Validation.ValueMustBePositive);
     }
 
-    [Fact]
-    public void Validate_ShouldFail_WhenMinCancellationHoursIsNegative()
+    [Theory]
+    [InlineData(-1)]
+    [InlineData(47)]
+    [InlineData(100)]
+    public void Validate_ShouldFail_WhenMinCancellationHoursIsInvalid(int hours)
     {
         // Arrange
         var command = new UpdateMedicalSpecialtyCommand(
@@ -126,7 +129,7 @@ public class UpdateMedicalSpecialtyCommandValidatorTests
             "Cardiology",
             "Heart specialty",
             30,
-            -1
+            hours
         );
 
         // Act
@@ -135,6 +138,6 @@ public class UpdateMedicalSpecialtyCommandValidatorTests
         // Assert
         result
             .ShouldHaveValidationErrorFor(x => x.MinCancellationHours)
-            .WithErrorMessage(DomainErrors.Validation.ValueCannotBeNegative);
+            .WithErrorMessage(DomainErrors.MedicalSpecialty.InvalidCancellationLimit);
     }
 }
