@@ -236,6 +236,9 @@ _pkginfo.txt
 # but keep track of directories ending in .cache
 !?*.[Cc]ache/
 
+# C# Dev Kit language service cache (generated on extension update, not for VCS)
+*.lscache
+
 # Others
 ClientBin/
 ~$*
