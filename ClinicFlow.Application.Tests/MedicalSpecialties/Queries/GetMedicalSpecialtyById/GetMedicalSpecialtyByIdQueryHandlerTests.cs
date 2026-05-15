@@ -45,7 +45,7 @@ public class GetMedicalSpecialtyByIdQueryHandlerTests
         result.Name.Should().Be(specialty.Name);
         result.Description.Should().Be(specialty.Description);
         result.TypicalDurationMinutes.Should().Be(specialty.TypicalDurationMinutes);
-        result.MinCancellationHours.Should().Be(specialty.MinCancellationHours);
+        result.MinCancellationHours.Should().Be(specialty.CancellationPolicy.Hours);
     }
 
     [Fact]

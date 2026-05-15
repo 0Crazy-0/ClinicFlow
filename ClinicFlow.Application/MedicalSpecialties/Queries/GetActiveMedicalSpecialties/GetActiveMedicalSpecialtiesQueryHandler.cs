@@ -22,7 +22,7 @@ public sealed class GetActiveMedicalSpecialtiesQueryHandler(
                 specialty.Name,
                 specialty.Description,
                 specialty.TypicalDurationMinutes,
-                specialty.MinCancellationHours,
+                specialty.CancellationPolicy.Hours,
                 specialty.IsDeleted
             )),
         ];

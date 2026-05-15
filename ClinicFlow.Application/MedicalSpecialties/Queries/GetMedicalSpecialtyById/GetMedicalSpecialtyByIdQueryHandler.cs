@@ -32,7 +32,7 @@ public sealed class GetMedicalSpecialtyByIdQueryHandler(
             specialty.Name,
             specialty.Description,
             specialty.TypicalDurationMinutes,
-            specialty.MinCancellationHours,
+            specialty.CancellationPolicy.Hours,
             specialty.IsDeleted
         );
     }

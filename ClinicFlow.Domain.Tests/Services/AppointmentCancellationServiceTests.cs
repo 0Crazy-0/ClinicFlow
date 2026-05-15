@@ -614,8 +614,8 @@ public class AppointmentCancellationServiceTests
     [InlineData(24, 23, AppointmentStatus.LateCancellation)]
     [InlineData(12, 13, AppointmentStatus.Cancelled)]
     [InlineData(12, 11, AppointmentStatus.LateCancellation)]
-    [InlineData(2, 3, AppointmentStatus.Cancelled)]
-    [InlineData(2, 1, AppointmentStatus.LateCancellation)]
+    [InlineData(48, 49, AppointmentStatus.Cancelled)]
+    [InlineData(48, 47, AppointmentStatus.LateCancellation)]
     public void CancelByPatient_ShouldEnforceMinimumHoursPolicy(
         int minHours,
         int hoursUntilAppointment,

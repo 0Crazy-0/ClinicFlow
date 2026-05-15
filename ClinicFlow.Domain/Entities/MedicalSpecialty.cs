@@ -1,5 +1,6 @@
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Exceptions.Base;
+using ClinicFlow.Domain.ValueObjects;
 
 namespace ClinicFlow.Domain.Entities;
 
@@ -18,22 +19,25 @@ public class MedicalSpecialty : BaseEntity
 
     public int TypicalDurationMinutes { get; private set; }
 
-    public int MinCancellationHours { get; private set; }
+    public CancellationLimit CancellationPolicy { get; private set; }
 
     // EF Core
-    private MedicalSpecialty() { }
+    private MedicalSpecialty()
+    {
+        CancellationPolicy = null!;
+    }
 
     private MedicalSpecialty(
         string name,
         string description,
         int typicalDurationMinutes,
-        int minCancellationHours
+        CancellationLimit cancellationPolicy
     )
     {
         Name = name;
         Description = description;
         TypicalDurationMinutes = typicalDurationMinutes;
-        MinCancellationHours = minCancellationHours;
+        CancellationPolicy = cancellationPolicy;
     }
 
     public static MedicalSpecialty Create(
@@ -49,15 +53,10 @@ public class MedicalSpecialty : BaseEntity
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
         if (typicalDurationMinutes <= 0)
             throw new DomainValidationException(DomainErrors.Validation.ValueMustBePositive);
-        if (minCancellationHours < 0)
-            throw new DomainValidationException(DomainErrors.Validation.ValueCannotBeNegative);
 
-        return new MedicalSpecialty(
-            name,
-            description,
-            typicalDurationMinutes,
-            minCancellationHours
-        );
+        var cancellationPolicy = CancellationLimit.FromHours(minCancellationHours);
+
+        return new MedicalSpecialty(name, description, typicalDurationMinutes, cancellationPolicy);
     }
 
     public void UpdateDetails(
@@ -73,13 +72,13 @@ public class MedicalSpecialty : BaseEntity
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
         if (typicalDurationMinutes <= 0)
             throw new DomainValidationException(DomainErrors.Validation.ValueMustBePositive);
-        if (minCancellationHours < 0)
-            throw new DomainValidationException(DomainErrors.Validation.ValueCannotBeNegative);
+
+        var cancellationPolicy = CancellationLimit.FromHours(minCancellationHours);
 
         Name = name;
         Description = description;
         TypicalDurationMinutes = typicalDurationMinutes;
-        MinCancellationHours = minCancellationHours;
+        CancellationPolicy = cancellationPolicy;
     }
 
     public void Reactivate()
@@ -104,9 +103,6 @@ public class MedicalSpecialty : BaseEntity
         MarkAsDeleted();
     }
 
-    internal bool IsCancellationAllowed(DateTime appointmentDateTime, DateTime referenceTime)
-    {
-        var hoursUntilAppointment = (appointmentDateTime - referenceTime).TotalHours;
-        return hoursUntilAppointment >= MinCancellationHours;
-    }
+    internal bool IsCancellationAllowed(DateTime appointmentDateTime, DateTime referenceTime) =>
+        CancellationPolicy.IsNoticePeriodMet(appointmentDateTime, referenceTime);
 }
