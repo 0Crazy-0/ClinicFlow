@@ -1,4 +1,5 @@
 using ClinicFlow.Domain.Common;
+using ClinicFlow.Domain.ValueObjects;
 using FluentValidation;
 
 namespace ClinicFlow.Application.MedicalSpecialties.Commands.CreateMedicalSpecialty;
@@ -14,7 +15,7 @@ public class CreateMedicalSpecialtyCommandValidator
             .GreaterThan(0)
             .WithMessage(DomainErrors.Validation.ValueMustBePositive);
         RuleFor(x => x.MinCancellationHours)
-            .GreaterThanOrEqualTo(0)
-            .WithMessage(DomainErrors.Validation.ValueCannotBeNegative);
+            .Must(x => CancellationLimit.AllowedHours.Contains(x))
+            .WithMessage(DomainErrors.MedicalSpecialty.InvalidCancellationLimit);
     }
 }

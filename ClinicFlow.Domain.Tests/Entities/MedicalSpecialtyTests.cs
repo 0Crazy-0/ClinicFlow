@@ -32,7 +32,7 @@ public class MedicalSpecialtyTests
         specialty.Name.Should().Be(name);
         specialty.Description.Should().Be(description);
         specialty.TypicalDurationMinutes.Should().Be(typicalDuration);
-        specialty.MinCancellationHours.Should().Be(minCancellationHours);
+        specialty.CancellationPolicy.Hours.Should().Be(minCancellationHours);
     }
 
     [Theory]
@@ -79,16 +79,19 @@ public class MedicalSpecialtyTests
             .WithMessage(DomainErrors.Validation.ValueMustBePositive);
     }
 
-    [Fact]
-    public void Create_ShouldThrowException_WhenMinCancellationHoursIsNegative()
+    [Theory]
+    [InlineData(-1)]
+    [InlineData(13)]
+    [InlineData(23)]
+    public void Create_ShouldThrowException_WhenMinCancellationHoursIsInvalid(int hours)
     {
         // Arrange & Act
-        var act = () => MedicalSpecialty.Create("Cardiology", "Description", 30, -1);
+        var act = () => MedicalSpecialty.Create("Cardiology", "Description", 30, hours);
 
         // Assert
         act.Should()
             .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.Validation.ValueCannotBeNegative);
+            .WithMessage(DomainErrors.MedicalSpecialty.InvalidCancellationLimit);
     }
 
     [Fact]
@@ -108,7 +111,7 @@ public class MedicalSpecialtyTests
         specialty.Name.Should().Be(newName);
         specialty.Description.Should().Be(newDescription);
         specialty.TypicalDurationMinutes.Should().Be(newDuration);
-        specialty.MinCancellationHours.Should().Be(newCancellationHours);
+        specialty.CancellationPolicy.Hours.Should().Be(newCancellationHours);
     }
 
     [Theory]
@@ -164,19 +167,22 @@ public class MedicalSpecialtyTests
             .WithMessage(DomainErrors.Validation.ValueMustBePositive);
     }
 
-    [Fact]
-    public void UpdateDetails_ShouldThrowException_WhenMinCancellationHoursIsNegative()
+    [Theory]
+    [InlineData(-1)]
+    [InlineData(49)]
+    [InlineData(71)]
+    public void UpdateDetails_ShouldThrowException_WhenMinCancellationHoursIsInvalid(int hours)
     {
         // Arrange
         var specialty = CreateSpecialty();
 
         // Act
-        var act = () => specialty.UpdateDetails("Cardiology", "Description", 30, -1);
+        var act = () => specialty.UpdateDetails("Cardiology", "Description", 30, hours);
 
         // Assert
         act.Should()
             .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.Validation.ValueCannotBeNegative);
+            .WithMessage(DomainErrors.MedicalSpecialty.InvalidCancellationLimit);
     }
 
     [Fact]
