@@ -59,7 +59,7 @@ public class Appointment : BaseEntity
         PatientId = patientId;
         DoctorId = doctorId;
         AppointmentTypeId = appointmentTypeId;
-        ScheduledDate = scheduledDate;
+        ScheduledDate = scheduledDate.Date;
         TimeRange = timeRange;
         Status = AppointmentStatus.Scheduled;
         RescheduleCount = 0;
