@@ -70,6 +70,7 @@ public class CancelAppointmentByDoctorCommandHandlerTests
 
         // Assert
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+
         appointment.Status.Should().Be(AppointmentStatus.Cancelled);
     }
 
@@ -95,6 +96,8 @@ public class CancelAppointmentByDoctorCommandHandlerTests
             .ThrowAsync<EntityNotFoundException>()
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(Appointment));
+
+        _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -130,5 +133,7 @@ public class CancelAppointmentByDoctorCommandHandlerTests
             .ThrowAsync<EntityNotFoundException>()
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(Doctor));
+
+        _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 }

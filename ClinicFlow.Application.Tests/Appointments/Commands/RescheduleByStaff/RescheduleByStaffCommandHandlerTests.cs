@@ -46,7 +46,6 @@ public class RescheduleByStaffCommandHandlerTests
         var newDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date;
         var newStartTime = new TimeSpan(10, 0, 0);
         var newEndTime = new TimeSpan(11, 0, 0);
-
         var command = new RescheduleByStaffCommand(
             Guid.NewGuid(),
             Guid.NewGuid(),
@@ -113,6 +112,7 @@ public class RescheduleByStaffCommandHandlerTests
 
         // Assert
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+
         appointment.ScheduledDate.Should().Be(newDate);
     }
 
@@ -141,6 +141,8 @@ public class RescheduleByStaffCommandHandlerTests
             .ThrowAsync<EntityNotFoundException>()
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(Appointment));
+
+        _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -173,6 +175,8 @@ public class RescheduleByStaffCommandHandlerTests
             .ThrowAsync<EntityNotFoundException>()
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(Patient));
+
+        _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -209,6 +213,8 @@ public class RescheduleByStaffCommandHandlerTests
             .ThrowAsync<EntityNotFoundException>()
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(Doctor));
+
+        _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -251,6 +257,8 @@ public class RescheduleByStaffCommandHandlerTests
             .ThrowAsync<EntityNotFoundException>()
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(AppointmentTypeDefinition));
+
+        _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
     private Appointment CreateAppointment(Guid patientId, Guid doctorId, Guid typeId) =>

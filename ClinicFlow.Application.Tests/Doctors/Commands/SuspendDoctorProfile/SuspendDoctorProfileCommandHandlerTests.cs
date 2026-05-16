@@ -49,9 +49,10 @@ public class SuspendDoctorProfileCommandHandlerTests
         await _sut.Handle(command, CancellationToken.None);
 
         // Assert
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+
         doctor.IsDeleted.Should().BeTrue();
         doctor.DomainEvents.OfType<DoctorSuspendedEvent>().Should().ContainSingle();
-        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -72,5 +73,7 @@ public class SuspendDoctorProfileCommandHandlerTests
             .ThrowAsync<EntityNotFoundException>()
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(Doctor));
+
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 }

@@ -55,7 +55,7 @@ public class CreateAppointmentTypeCommandHandlerTests
         // Assert
         result.Should().NotBeEmpty();
         capturedEntity.Should().NotBeNull();
-        capturedEntity!.Category.Should().Be(command.Category);
+        capturedEntity.Category.Should().Be(command.Category);
         capturedEntity.Name.Should().Be(command.Name);
         capturedEntity.Description.Should().Be(command.Description);
         capturedEntity.DurationMinutes.Should().Be(command.DurationMinutes);
@@ -124,5 +124,6 @@ public class CreateAppointmentTypeCommandHandlerTests
                 x.CreateAsync(It.IsAny<AppointmentTypeDefinition>(), It.IsAny<CancellationToken>()),
             Times.Never
         );
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 }

@@ -1,5 +1,4 @@
 using ClinicFlow.Application.Schedules.Commands.SetupWeeklySchedule;
-using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Exceptions.Scheduling;
 using ClinicFlow.Domain.Interfaces;
@@ -48,13 +47,56 @@ public class SetupWeeklyScheduleCommandHandlerTests
             .Setup(x => x.GetByDoctorIdAsync(doctorId, It.IsAny<CancellationToken>()))
             .ReturnsAsync([]);
 
+        IReadOnlyList<Schedule>? capturedSchedules = null;
+        _scheduleRepositoryMock
+            .Setup(x =>
+                x.CreateRangeAsync(
+                    It.IsAny<IReadOnlyList<Schedule>>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .Callback<IReadOnlyList<Schedule>, CancellationToken>((s, _) => capturedSchedules = s);
+
         // Act
         var result = await _sut.Handle(command, CancellationToken.None);
 
         // Assert
         result.Should().HaveCount(3);
         result.Should().AllSatisfy(id => id.Should().NotBeEmpty());
+        capturedSchedules.Should().NotBeNull();
+        capturedSchedules.Should().HaveCount(3);
+        capturedSchedules[0].DoctorId.Should().Be(doctorId);
+        capturedSchedules[0].DayOfWeek.Should().Be(DayOfWeek.Monday);
+        capturedSchedules[1].DayOfWeek.Should().Be(DayOfWeek.Wednesday);
+        capturedSchedules[2].DayOfWeek.Should().Be(DayOfWeek.Friday);
+    }
 
+    [Fact]
+    public async Task Handle_ShouldCallRepositoryCreateRangeAndSaveChanges_WhenNoDuplicatesExist()
+    {
+        // Arrange
+        var doctorId = Guid.NewGuid();
+        var command = new SetupWeeklyScheduleCommand(
+            doctorId,
+            [
+                new ScheduleSlot(DayOfWeek.Monday, TimeSpan.FromHours(8), TimeSpan.FromHours(13)),
+                new ScheduleSlot(
+                    DayOfWeek.Wednesday,
+                    TimeSpan.FromHours(8),
+                    TimeSpan.FromHours(13)
+                ),
+                new ScheduleSlot(DayOfWeek.Friday, TimeSpan.FromHours(14), TimeSpan.FromHours(18)),
+            ]
+        );
+
+        _scheduleRepositoryMock
+            .Setup(x => x.GetByDoctorIdAsync(doctorId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync([]);
+
+        // Act
+        await _sut.Handle(command, CancellationToken.None);
+
+        // Assert
         _scheduleRepositoryMock.Verify(
             x =>
                 x.CreateRangeAsync(

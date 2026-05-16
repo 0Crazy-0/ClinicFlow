@@ -49,7 +49,7 @@ public class CreateClinicalFormTemplateCommandHandlerTests
         // Assert
         result.Should().NotBeEmpty();
         capturedTemplate.Should().NotBeNull();
-        capturedTemplate!.Code.Should().Be(command.Code);
+        capturedTemplate.Code.Should().Be(command.Code);
         capturedTemplate.Name.Should().Be(command.Name);
         capturedTemplate.Description.Should().Be(command.Description);
         capturedTemplate.JsonSchemaDefinition.Should().Be(command.JsonSchemaDefinition);
@@ -110,6 +110,7 @@ public class CreateClinicalFormTemplateCommandHandlerTests
             x => x.CreateAsync(It.IsAny<ClinicalFormTemplate>(), It.IsAny<CancellationToken>()),
             Times.Never
         );
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -139,5 +140,6 @@ public class CreateClinicalFormTemplateCommandHandlerTests
             x => x.CreateAsync(It.IsAny<ClinicalFormTemplate>(), It.IsAny<CancellationToken>()),
             Times.Never
         );
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 }

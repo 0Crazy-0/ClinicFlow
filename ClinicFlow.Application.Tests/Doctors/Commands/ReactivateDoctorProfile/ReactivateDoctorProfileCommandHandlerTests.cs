@@ -37,6 +37,7 @@ public class ReactivateDoctorProfileCommandHandlerTests
             "Old biography",
             ConsultationRoom.Create(1, "Old Room", 1)
         );
+
         doctor.Suspend();
 
         var command = new ReactivateDoctorProfileCommand(
@@ -55,12 +56,13 @@ public class ReactivateDoctorProfileCommandHandlerTests
         await _sut.Handle(command, CancellationToken.None);
 
         // Assert
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+
         doctor.IsDeleted.Should().BeFalse();
         doctor.Biography.Should().Be(command.Biography);
         doctor.ConsultationRoom.Number.Should().Be(command.ConsultationRoomNumber);
         doctor.ConsultationRoom.Name.Should().Be(command.ConsultationRoomName);
         doctor.ConsultationRoom.Floor.Should().Be(command.ConsultationRoomFloor);
-        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -81,5 +83,7 @@ public class ReactivateDoctorProfileCommandHandlerTests
             .ThrowAsync<EntityNotFoundException>()
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(Doctor));
+
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 }

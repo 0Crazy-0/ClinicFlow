@@ -98,11 +98,12 @@ public class ReassignAppointmentCommandHandlerTests
         await _sut.Handle(command, CancellationToken.None);
 
         // Assert
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+
         appointment.DoctorId.Should().Be(newDoctor.Id);
         appointment.ScheduledDate.Should().Be(newDate);
         appointment.Status.Should().Be(AppointmentStatus.Scheduled);
         appointment.DomainEvents.OfType<AppointmentReassignedEvent>().Should().ContainSingle();
-        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -129,6 +130,8 @@ public class ReassignAppointmentCommandHandlerTests
             .ThrowAsync<EntityNotFoundException>()
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(Appointment));
+
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -160,6 +163,8 @@ public class ReassignAppointmentCommandHandlerTests
             .ThrowAsync<EntityNotFoundException>()
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(Doctor));
+
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
     private Appointment CreateDisplacedAppointment()
