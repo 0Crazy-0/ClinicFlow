@@ -13,8 +13,8 @@ public class UpdateMedicalSpecialtyCommandValidator
         RuleFor(x => x.Name).NotEmpty().WithMessage(DomainErrors.Validation.ValueRequired);
         RuleFor(x => x.Description).NotEmpty().WithMessage(DomainErrors.Validation.ValueRequired);
         RuleFor(x => x.TypicalDurationMinutes)
-            .GreaterThan(0)
-            .WithMessage(DomainErrors.Validation.ValueMustBePositive);
+            .Must(EncounterDuration.IsValid)
+            .WithMessage(DomainErrors.MedicalSpecialty.InvalidEncounterDuration);
         RuleFor(x => x.MinCancellationHours)
             .Must(x => CancellationLimit.AllowedHours.Contains(x))
             .WithMessage(DomainErrors.MedicalSpecialty.InvalidCancellationLimit);

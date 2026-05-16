@@ -17,26 +17,27 @@ public class MedicalSpecialty : BaseEntity
 
     public string Description { get; private set; } = string.Empty;
 
-    public int TypicalDurationMinutes { get; private set; }
+    public EncounterDuration TypicalDuration { get; private set; }
 
     public CancellationLimit CancellationPolicy { get; private set; }
 
     // EF Core
     private MedicalSpecialty()
     {
+        TypicalDuration = null!;
         CancellationPolicy = null!;
     }
 
     private MedicalSpecialty(
         string name,
         string description,
-        int typicalDurationMinutes,
+        EncounterDuration typicalDuration,
         CancellationLimit cancellationPolicy
     )
     {
         Name = name;
         Description = description;
-        TypicalDurationMinutes = typicalDurationMinutes;
+        TypicalDuration = typicalDuration;
         CancellationPolicy = cancellationPolicy;
     }
 
@@ -51,12 +52,11 @@ public class MedicalSpecialty : BaseEntity
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
         if (string.IsNullOrWhiteSpace(description))
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-        if (typicalDurationMinutes <= 0)
-            throw new DomainValidationException(DomainErrors.Validation.ValueMustBePositive);
 
+        var typicalDuration = EncounterDuration.FromMinutes(typicalDurationMinutes);
         var cancellationPolicy = CancellationLimit.FromHours(minCancellationHours);
 
-        return new MedicalSpecialty(name, description, typicalDurationMinutes, cancellationPolicy);
+        return new MedicalSpecialty(name, description, typicalDuration, cancellationPolicy);
     }
 
     public void UpdateDetails(
@@ -70,14 +70,13 @@ public class MedicalSpecialty : BaseEntity
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
         if (string.IsNullOrWhiteSpace(description))
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-        if (typicalDurationMinutes <= 0)
-            throw new DomainValidationException(DomainErrors.Validation.ValueMustBePositive);
 
+        var typicalDuration = EncounterDuration.FromMinutes(typicalDurationMinutes);
         var cancellationPolicy = CancellationLimit.FromHours(minCancellationHours);
 
         Name = name;
         Description = description;
-        TypicalDurationMinutes = typicalDurationMinutes;
+        TypicalDuration = typicalDuration;
         CancellationPolicy = cancellationPolicy;
     }
 

@@ -31,7 +31,7 @@ public class MedicalSpecialtyTests
         specialty.Should().NotBeNull();
         specialty.Name.Should().Be(name);
         specialty.Description.Should().Be(description);
-        specialty.TypicalDurationMinutes.Should().Be(typicalDuration);
+        specialty.TypicalDuration.Minutes.Should().Be(typicalDuration);
         specialty.CancellationPolicy.Hours.Should().Be(minCancellationHours);
     }
 
@@ -67,8 +67,10 @@ public class MedicalSpecialtyTests
 
     [Theory]
     [InlineData(0)]
-    [InlineData(-1)]
-    public void Create_ShouldThrowException_WhenDurationIsZeroOrNegative(int duration)
+    [InlineData(9)]
+    [InlineData(12)]
+    [InlineData(95)]
+    public void Create_ShouldThrowException_WhenDurationIsInvalid(int duration)
     {
         // Arrange & Act
         var act = () => MedicalSpecialty.Create("Cardiology", "Description", duration, 24);
@@ -76,7 +78,7 @@ public class MedicalSpecialtyTests
         // Assert
         act.Should()
             .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.Validation.ValueMustBePositive);
+            .WithMessage(DomainErrors.MedicalSpecialty.InvalidEncounterDuration);
     }
 
     [Theory]
@@ -110,7 +112,7 @@ public class MedicalSpecialtyTests
         // Assert
         specialty.Name.Should().Be(newName);
         specialty.Description.Should().Be(newDescription);
-        specialty.TypicalDurationMinutes.Should().Be(newDuration);
+        specialty.TypicalDuration.Minutes.Should().Be(newDuration);
         specialty.CancellationPolicy.Hours.Should().Be(newCancellationHours);
     }
 
@@ -152,8 +154,10 @@ public class MedicalSpecialtyTests
 
     [Theory]
     [InlineData(0)]
-    [InlineData(-1)]
-    public void UpdateDetails_ShouldThrowException_WhenDurationIsZeroOrNegative(int duration)
+    [InlineData(11)]
+    [InlineData(39)]
+    [InlineData(81)]
+    public void UpdateDetails_ShouldThrowException_WhenDurationIsInvalid(int duration)
     {
         // Arrange
         var specialty = CreateSpecialty();
@@ -164,7 +168,7 @@ public class MedicalSpecialtyTests
         // Assert
         act.Should()
             .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.Validation.ValueMustBePositive);
+            .WithMessage(DomainErrors.MedicalSpecialty.InvalidEncounterDuration);
     }
 
     [Theory]
