@@ -359,7 +359,7 @@ var result = await _sut.Handle(command, CancellationToken.None);
 
 // Assert
 capturedPatient.Should().NotBeNull();
-capturedPatient!.UserId.Should().Be(command.UserId);
+capturedPatient.UserId.Should().Be(command.UserId);
 ```
 
 ### Application Handler Tests — EntityNotFoundException
@@ -375,7 +375,7 @@ exceptionAssertion.Which.EntityName.Should().Be(nameof(Appointment));
 
 ### Application Handler Tests — UnitOfWork Verification on Exceptions
 
-When testing that a handler throws an exception, **always** verify that `SaveChangesAsync` was never called. This ensures that a failed operation never persists partial state:
+When testing that a handler throws an exception, **always** verify that `SaveChangesAsync` was never called. This ensures that a failed operation never persists partial state. If the handler also calls a repository write method (`CreateAsync`, `CreateRangeAsync`, etc.), **always** verify that it was never called as well — both verifications must appear together:
 
 ```csharp
 // Assert
@@ -383,10 +383,14 @@ await act.Should()
     .ThrowAsync<EntityNotFoundException>()
     .WithMessage(DomainErrors.General.NotFound);
 
+_repositoryMock.Verify(
+    x => x.CreateAsync(It.IsAny<Entity>(), It.IsAny<CancellationToken>()),
+    Times.Never
+);
 _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
 ```
 
-This rule applies to **every** exception scenario — `EntityNotFoundException`, `BusinessRuleValidationException`, domain-specific exceptions, etc. If the handler also calls a repository write method like `CreateAsync`, verify that it was never called as well.
+This rule applies to **every** exception scenario — `EntityNotFoundException`, `BusinessRuleValidationException`, domain-specific exceptions, etc. The repository write method verification is **mandatory** whenever the handler's code path includes a call to any persistence method (`CreateAsync`, `CreateRangeAsync`, `UpdateAsync`, etc.). Both `Times.Never` assertions must always appear as a pair.
 
 ### Application Handler Tests — Create Handler Split
 
@@ -439,6 +443,34 @@ public async Task Handle_ShouldCallRepositoryCreateAndSaveChanges_WhenValidComma
 ```
 
 This separation keeps each test focused on a single concern: one validates correctness of the created entity, the other validates the persistence pipeline.
+
+### Application Handler Tests — Repository Write Method Verification
+
+Any handler that calls a repository write method (`CreateAsync`, `CreateRangeAsync`, `UpdateAsync`, etc.) must verify that method in **both** happy and unhappy path tests, always paired with the `SaveChangesAsync` verification:
+
+**Happy path** — verify both were called exactly once:
+
+```csharp
+// Assert
+_repositoryMock.Verify(
+    x => x.CreateAsync(It.IsAny<Entity>(), It.IsAny<CancellationToken>()),
+    Times.Once
+);
+_unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+```
+
+**Unhappy path** — verify neither was called:
+
+```csharp
+// Assert
+_repositoryMock.Verify(
+    x => x.CreateAsync(It.IsAny<Entity>(), It.IsAny<CancellationToken>()),
+    Times.Never
+);
+_unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+```
+
+This applies regardless of the specific write method — `CreateRangeAsync`, `UpdateAsync`, etc. The key principle: repository write verification and `SaveChangesAsync` verification are **inseparable pairs**. If one is present, the other must be too.
 
 ### Application Handler Tests — UnitOfWork Verification on Success
 
@@ -636,6 +668,12 @@ Mark only what applies — do not over-select.
 
 ```
 No functional tests are required as these changes are strictly limited to XML documentation updates.
+```
+
+5. **AGENTS.md-only PRs** — when the PR exclusively modifies the `AGENTS.md` file, use this exact message:
+
+```
+No functional tests are required as these changes are strictly limited to project documentation updates in AGENTS.md.
 ```
 
 Single-layer example:
