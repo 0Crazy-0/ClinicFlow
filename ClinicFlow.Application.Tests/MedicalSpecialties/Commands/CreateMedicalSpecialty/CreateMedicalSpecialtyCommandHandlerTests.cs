@@ -44,7 +44,7 @@ public class CreateMedicalSpecialtyCommandHandlerTests
         capturedSpecialty.Should().NotBeNull();
         capturedSpecialty.Name.Should().Be(command.Name);
         capturedSpecialty.Description.Should().Be(command.Description);
-        capturedSpecialty.TypicalDurationMinutes.Should().Be(command.TypicalDurationMinutes);
+        capturedSpecialty.TypicalDuration.Minutes.Should().Be(command.TypicalDurationMinutes);
         capturedSpecialty.CancellationPolicy.Hours.Should().Be(command.MinCancellationHours);
     }
 

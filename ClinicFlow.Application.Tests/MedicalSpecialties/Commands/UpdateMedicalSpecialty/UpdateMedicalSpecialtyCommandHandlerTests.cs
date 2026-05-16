@@ -50,7 +50,7 @@ public class UpdateMedicalSpecialtyCommandHandlerTests
 
         specialty.Name.Should().Be(command.Name);
         specialty.Description.Should().Be(command.Description);
-        specialty.TypicalDurationMinutes.Should().Be(command.TypicalDurationMinutes);
+        specialty.TypicalDuration.Minutes.Should().Be(command.TypicalDurationMinutes);
         specialty.CancellationPolicy.Hours.Should().Be(command.MinCancellationHours);
     }
 
