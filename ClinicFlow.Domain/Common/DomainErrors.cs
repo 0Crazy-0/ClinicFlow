@@ -111,6 +111,7 @@ public static class DomainErrors
         public const string AlreadyInactive = "SPECIALTY_ALREADY_INACTIVE";
         public const string HasActiveDoctors = "SPECIALTY_HAS_ACTIVE_DOCTORS";
         public const string InvalidCancellationLimit = "INVALID_CANCELLATION_LIMIT";
+        public const string InvalidEncounterDuration = "INVALID_ENCOUNTER_DURATION";
     }
 
     public static class ClinicalFormTemplate
