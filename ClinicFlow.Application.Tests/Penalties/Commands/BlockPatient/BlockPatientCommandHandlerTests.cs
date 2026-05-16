@@ -55,14 +55,29 @@ public class BlockPatientCommandHandlerTests
         // Assert
         result.Should().NotBeEmpty();
         capturedPenalty.Should().NotBeNull();
-        capturedPenalty!.PatientId.Should().Be(command.PatientId);
+        capturedPenalty.PatientId.Should().Be(command.PatientId);
         capturedPenalty.Reason.Should().Be(command.Reason);
         capturedPenalty.Type.Should().Be(PenaltyType.TemporaryBlock);
         capturedPenalty
             .BlockedUntil.Should()
             .Be(_fakeTime.GetUtcNow().UtcDateTime.Date.AddDays(expectedDays));
         capturedPenalty.IsRemoved.Should().BeFalse();
+    }
 
+    [Fact]
+    public async Task Handle_ShouldCallRepositoryAddAndSaveChanges_WhenValidCommand()
+    {
+        // Arrange
+        var command = new BlockPatientCommand(
+            Guid.NewGuid(),
+            "Patient was rude to staff",
+            BlockDuration.Minor
+        );
+
+        // Act
+        await _sut.Handle(command, CancellationToken.None);
+
+        // Assert
         _penaltyRepositoryMock.Verify(
             x => x.AddAsync(It.IsAny<PatientPenalty>(), It.IsAny<CancellationToken>()),
             Times.Once

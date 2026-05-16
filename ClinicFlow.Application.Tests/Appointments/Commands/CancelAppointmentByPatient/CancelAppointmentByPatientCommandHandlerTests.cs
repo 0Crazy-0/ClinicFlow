@@ -52,7 +52,6 @@ public class CancelAppointmentByPatientCommandHandlerTests
         var doctorId = Guid.NewGuid();
         var specialtyId = Guid.NewGuid();
         var typeId = Guid.NewGuid();
-
         var appointment = CreateAppointment(
             patientId,
             doctorId,
@@ -93,6 +92,7 @@ public class CancelAppointmentByPatientCommandHandlerTests
 
         // Assert
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+
         appointment.Status.Should().Be(AppointmentStatus.Cancelled);
     }
 
@@ -118,6 +118,8 @@ public class CancelAppointmentByPatientCommandHandlerTests
             .ThrowAsync<EntityNotFoundException>()
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(Appointment));
+
+        _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -133,7 +135,6 @@ public class CancelAppointmentByPatientCommandHandlerTests
         var patientId = Guid.NewGuid();
         var doctorId = Guid.NewGuid();
         var typeId = Guid.NewGuid();
-
         var appointment = CreateAppointment(
             patientId,
             doctorId,
@@ -156,6 +157,8 @@ public class CancelAppointmentByPatientCommandHandlerTests
             .ThrowAsync<EntityNotFoundException>()
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(Patient));
+
+        _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -171,7 +174,6 @@ public class CancelAppointmentByPatientCommandHandlerTests
         var patientId = Guid.NewGuid();
         var doctorId = Guid.NewGuid();
         var typeId = Guid.NewGuid();
-
         var appointment = CreateAppointment(
             patientId,
             doctorId,
@@ -203,6 +205,8 @@ public class CancelAppointmentByPatientCommandHandlerTests
             .ThrowAsync<EntityNotFoundException>()
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(AppointmentTypeDefinition));
+
+        _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -218,7 +222,6 @@ public class CancelAppointmentByPatientCommandHandlerTests
         var patientId = Guid.NewGuid();
         var doctorId = Guid.NewGuid();
         var typeId = Guid.NewGuid();
-
         var appointment = CreateAppointment(
             patientId,
             doctorId,
@@ -254,6 +257,8 @@ public class CancelAppointmentByPatientCommandHandlerTests
             .ThrowAsync<EntityNotFoundException>()
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(Doctor));
+
+        _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -270,7 +275,6 @@ public class CancelAppointmentByPatientCommandHandlerTests
         var doctorId = Guid.NewGuid();
         var specialtyId = Guid.NewGuid();
         var typeId = Guid.NewGuid();
-
         var appointment = CreateAppointment(
             patientId,
             doctorId,
@@ -283,6 +287,7 @@ public class CancelAppointmentByPatientCommandHandlerTests
             command.InitiatorUserId,
             _fakeTime.GetUtcNow().UtcDateTime
         );
+
         var typeDef = CreateAppointmentType();
         var doctor = CreateDoctor(command.InitiatorUserId, specialtyId);
 
@@ -310,6 +315,8 @@ public class CancelAppointmentByPatientCommandHandlerTests
             .ThrowAsync<EntityNotFoundException>()
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(MedicalSpecialty));
+
+        _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
     private static Appointment CreateAppointment(

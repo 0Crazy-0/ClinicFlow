@@ -44,8 +44,7 @@ public class CreateScheduleCommandHandlerTests
         Schedule? capturedSchedule = null;
         _scheduleRepositoryMock
             .Setup(x => x.CreateAsync(It.IsAny<Schedule>(), It.IsAny<CancellationToken>()))
-            .Callback<Schedule, CancellationToken>((s, _) => capturedSchedule = s)
-            .ReturnsAsync((Schedule s, CancellationToken _) => s);
+            .Callback<Schedule, CancellationToken>((s, _) => capturedSchedule = s);
 
         // Act
         var result = await _sut.Handle(command, CancellationToken.None);
@@ -58,7 +57,31 @@ public class CreateScheduleCommandHandlerTests
         capturedSchedule.TimeRange.Start.Should().Be(command.StartTime);
         capturedSchedule.TimeRange.End.Should().Be(command.EndTime);
         capturedSchedule.IsActive.Should().BeTrue();
+    }
 
+    [Fact]
+    public async Task Handle_ShouldCallRepositoryCreateAndSaveChanges_WhenNoDuplicateExists()
+    {
+        // Arrange
+        var command = new CreateScheduleCommand(
+            Guid.NewGuid(),
+            DayOfWeek.Monday,
+            TimeSpan.FromHours(9),
+            TimeSpan.FromHours(17)
+        );
+
+        _scheduleRepositoryMock
+            .Setup(x => x.GetByDoctorIdAsync(command.DoctorId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync([]);
+
+        // Act
+        await _sut.Handle(command, CancellationToken.None);
+
+        // Assert
+        _scheduleRepositoryMock.Verify(
+            x => x.CreateAsync(It.IsAny<Schedule>(), It.IsAny<CancellationToken>()),
+            Times.Once
+        );
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 

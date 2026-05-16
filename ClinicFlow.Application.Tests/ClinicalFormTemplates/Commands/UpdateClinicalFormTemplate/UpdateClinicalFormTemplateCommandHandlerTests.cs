@@ -51,12 +51,12 @@ public class UpdateClinicalFormTemplateCommandHandlerTests
         await _sut.Handle(command, CancellationToken.None);
 
         // Assert
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+
         existingTemplate.Name.Should().Be(command.Name);
         existingTemplate.Description.Should().Be(command.Description);
         existingTemplate.JsonSchemaDefinition.Should().Be(command.JsonSchemaDefinition);
         existingTemplate.Code.Should().Be("CARDIO_01");
-
-        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -82,6 +82,8 @@ public class UpdateClinicalFormTemplateCommandHandlerTests
             .ThrowAsync<EntityNotFoundException>()
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(ClinicalFormTemplate));
+
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]

@@ -55,9 +55,9 @@ public class MarkAppointmentAsNoShowByStaffCommandHandlerTests
         await _sut.Handle(command, CancellationToken.None);
 
         // Assert
-        appointment.Status.Should().Be(AppointmentStatus.NoShow);
-
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+
+        appointment.Status.Should().Be(AppointmentStatus.NoShow);
     }
 
     [Fact]
@@ -78,5 +78,7 @@ public class MarkAppointmentAsNoShowByStaffCommandHandlerTests
             .ThrowAsync<EntityNotFoundException>()
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(Appointment));
+
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 }

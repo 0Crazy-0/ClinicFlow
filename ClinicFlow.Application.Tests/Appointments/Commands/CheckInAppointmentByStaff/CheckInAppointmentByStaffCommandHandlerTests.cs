@@ -50,6 +50,7 @@ public class CheckInAppointmentByStaffCommandHandlerTests
 
         // Assert
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+
         appointment.Status.Should().Be(AppointmentStatus.CheckedIn);
         appointment.CheckedInAt.Should().Be(_fakeTime.GetUtcNow().UtcDateTime);
     }
@@ -72,5 +73,7 @@ public class CheckInAppointmentByStaffCommandHandlerTests
             .ThrowAsync<EntityNotFoundException>()
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(Appointment));
+
+        _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 }

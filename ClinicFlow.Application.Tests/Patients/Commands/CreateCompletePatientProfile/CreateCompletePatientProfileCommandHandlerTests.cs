@@ -56,7 +56,7 @@ public class CreateCompletePatientProfileCommandHandlerTests
         // Assert
         result.Should().NotBeEmpty();
         capturedPatient.Should().NotBeNull();
-        capturedPatient!.UserId.Should().Be(command.UserId);
+        capturedPatient.UserId.Should().Be(command.UserId);
         capturedPatient.FullName.ToString().Should().Be($"{command.FirstName} {command.LastName}");
         capturedPatient.RelationshipToUser.Should().Be(PatientRelationship.Self);
         capturedPatient.DateOfBirth.Should().Be(command.DateOfBirth);
@@ -68,5 +68,32 @@ public class CreateCompletePatientProfileCommandHandlerTests
             .EmergencyContact.PhoneNumber.ToString()
             .Should()
             .Be(command.EmergencyContactPhone);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldCallRepositoryCreateAndSaveChanges_WhenValidCommand()
+    {
+        // Arrange
+        var command = new CreateCompletePatientProfileCommand(
+            Guid.NewGuid(),
+            "John",
+            "Doe",
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30).Date,
+            "O+",
+            "None",
+            "None",
+            "Mom",
+            "555-5555"
+        );
+
+        // Act
+        await _sut.Handle(command, CancellationToken.None);
+
+        // Assert
+        _patientRepositoryMock.Verify(
+            x => x.CreateAsync(It.IsAny<Patient>(), It.IsAny<CancellationToken>()),
+            Times.Once
+        );
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 }

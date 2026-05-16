@@ -48,6 +48,7 @@ public class MarkAppointmentAsNoShowByDoctorCommandHandlerTests
             "Room 1",
             ConsultationRoom.Create(1, "Room 1", 1)
         );
+
         doctor.SetId(doctorId);
 
         _appointmentRepositoryMock
@@ -61,9 +62,9 @@ public class MarkAppointmentAsNoShowByDoctorCommandHandlerTests
         await _sut.Handle(command, CancellationToken.None);
 
         // Assert
-        appointment.Status.Should().Be(AppointmentStatus.NoShow);
-
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+
+        appointment.Status.Should().Be(AppointmentStatus.NoShow);
     }
 
     [Fact]
@@ -84,6 +85,8 @@ public class MarkAppointmentAsNoShowByDoctorCommandHandlerTests
             .ThrowAsync<EntityNotFoundException>()
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(Appointment));
+
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -108,6 +111,8 @@ public class MarkAppointmentAsNoShowByDoctorCommandHandlerTests
             .ThrowAsync<EntityNotFoundException>()
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(Doctor));
+
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
     private Appointment CreateAppointment(Guid id, Guid doctorId)

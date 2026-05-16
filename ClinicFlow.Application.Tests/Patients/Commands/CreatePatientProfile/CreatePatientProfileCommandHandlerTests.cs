@@ -54,20 +54,12 @@ public class CreatePatientProfileCommandHandlerTests
         Patient? capturedPatient = null;
         _patientRepositoryMock
             .Setup(x => x.CreateAsync(It.IsAny<Patient>(), It.IsAny<CancellationToken>()))
-            .Callback<Patient, CancellationToken>((p, _) => capturedPatient = p)
-            .ReturnsAsync((Patient p, CancellationToken _) => p);
+            .Callback<Patient, CancellationToken>((p, _) => capturedPatient = p);
 
         // Act
         var result = await _sut.Handle(command, CancellationToken.None);
 
         // Assert
-        _patientRepositoryMock.Verify(
-            x => x.CreateAsync(It.IsAny<Patient>(), It.IsAny<CancellationToken>()),
-            Times.Once
-        );
-
-        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
-
         result.Should().NotBeEmpty();
         capturedPatient.Should().NotBeNull();
         capturedPatient.UserId.Should().Be(command.UserId);
@@ -112,14 +104,47 @@ public class CreatePatientProfileCommandHandlerTests
         var result = await _sut.Handle(command, CancellationToken.None);
 
         // Assert
-        result.Should().Be(deletedPatient.Id);
-        deletedPatient.IsDeleted.Should().BeFalse();
-        deletedPatient.RelationshipToUser.Should().Be(PatientRelationship.Self);
-
         _patientRepositoryMock.Verify(
             r => r.CreateAsync(It.IsAny<Patient>(), It.IsAny<CancellationToken>()),
             Times.Never
         );
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+
+        result.Should().Be(deletedPatient.Id);
+        deletedPatient.IsDeleted.Should().BeFalse();
+        deletedPatient.RelationshipToUser.Should().Be(PatientRelationship.Self);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldCallRepositoryCreateAndSaveChanges_WhenValidCommand()
+    {
+        // Arrange
+        var command = new CreatePatientProfileCommand(
+            Guid.NewGuid(),
+            "John",
+            "Doe",
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30).Date
+        );
+
+        _patientRepositoryMock
+            .Setup(x =>
+                x.GetIncludingDeletedByNameAndDobAsync(
+                    command.UserId,
+                    It.IsAny<PersonName>(),
+                    command.DateOfBirth,
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync((Patient?)null);
+
+        // Act
+        await _sut.Handle(command, CancellationToken.None);
+
+        // Assert
+        _patientRepositoryMock.Verify(
+            x => x.CreateAsync(It.IsAny<Patient>(), It.IsAny<CancellationToken>()),
+            Times.Once
+        );
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 }

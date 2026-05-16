@@ -91,5 +91,6 @@ public class CreateMedicalSpecialtyCommandHandlerTests
             x => x.CreateAsync(It.IsAny<MedicalSpecialty>(), It.IsAny<CancellationToken>()),
             Times.Never
         );
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 }

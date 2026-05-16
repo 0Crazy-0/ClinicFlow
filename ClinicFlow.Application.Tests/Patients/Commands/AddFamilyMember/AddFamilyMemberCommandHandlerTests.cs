@@ -55,19 +55,12 @@ public class AddFamilyMemberCommandHandlerTests
         Patient? capturedPatient = null;
         _patientRepositoryMock
             .Setup(x => x.CreateAsync(It.IsAny<Patient>(), It.IsAny<CancellationToken>()))
-            .Callback<Patient, CancellationToken>((p, _) => capturedPatient = p)
-            .ReturnsAsync((Patient p, CancellationToken _) => p);
+            .Callback<Patient, CancellationToken>((p, _) => capturedPatient = p);
 
         // Act
         var result = await _sut.Handle(command, CancellationToken.None);
 
         // Assert
-        _patientRepositoryMock.Verify(
-            x => x.CreateAsync(It.IsAny<Patient>(), It.IsAny<CancellationToken>()),
-            Times.Once
-        );
-        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
-
         result.Should().NotBeEmpty();
         capturedPatient.Should().NotBeNull();
         capturedPatient.UserId.Should().Be(command.UserId);
@@ -95,6 +88,7 @@ public class AddFamilyMemberCommandHandlerTests
             command.DateOfBirth,
             _fakeTime.GetUtcNow().UtcDateTime
         );
+
         deletedMember.RemoveFamilyMember(command.UserId);
 
         _patientRepositoryMock
@@ -112,14 +106,48 @@ public class AddFamilyMemberCommandHandlerTests
         var result = await _sut.Handle(command, CancellationToken.None);
 
         // Assert
-        result.Should().Be(deletedMember.Id);
-        deletedMember.IsDeleted.Should().BeFalse();
-        deletedMember.RelationshipToUser.Should().Be(PatientRelationship.Child);
-
         _patientRepositoryMock.Verify(
             r => r.CreateAsync(It.IsAny<Patient>(), It.IsAny<CancellationToken>()),
             Times.Never
         );
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+
+        result.Should().Be(deletedMember.Id);
+        deletedMember.IsDeleted.Should().BeFalse();
+        deletedMember.RelationshipToUser.Should().Be(PatientRelationship.Child);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldCallRepositoryCreateAndSaveChanges_WhenValidCommand()
+    {
+        // Arrange
+        var command = new AddFamilyMemberCommand(
+            Guid.NewGuid(),
+            "Child",
+            "Doe",
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-5).Date,
+            PatientRelationship.Child
+        );
+
+        _patientRepositoryMock
+            .Setup(x =>
+                x.GetIncludingDeletedByNameAndDobAsync(
+                    command.UserId,
+                    It.IsAny<PersonName>(),
+                    command.DateOfBirth,
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync((Patient?)null);
+
+        // Act
+        await _sut.Handle(command, CancellationToken.None);
+
+        // Assert
+        _patientRepositoryMock.Verify(
+            x => x.CreateAsync(It.IsAny<Patient>(), It.IsAny<CancellationToken>()),
+            Times.Once
+        );
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 }

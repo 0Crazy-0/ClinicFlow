@@ -44,13 +44,12 @@ public class ScheduleByPatientCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ShouldSucceed_WhenValidRequest()
+    public async Task Handle_ShouldCreateAppointment_WhenValidRequest()
     {
         // Arrange
         var scheduledDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date;
         var startTime = new TimeSpan(10, 0, 0);
         var endTime = new TimeSpan(11, 0, 0);
-
         var command = new ScheduleByPatientCommand(
             Guid.NewGuid(),
             Guid.NewGuid(),
@@ -86,6 +85,8 @@ public class ScheduleByPatientCommandHandlerTests
             "Bio",
             ConsultationRoom.Create(1, "Room", 1)
         );
+
+        var user = CreateVerifiedUser();
 
         _patientRepositoryMock
             .Setup(r => r.GetByIdAsync(command.TargetPatientId, It.IsAny<CancellationToken>()))
@@ -127,14 +128,118 @@ public class ScheduleByPatientCommandHandlerTests
             )
             .ReturnsAsync(false);
 
+        _userRepositoryMock
+            .Setup(r => r.GetByIdAsync(command.InitiatorUserId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(user);
+
+        Appointment? capturedAppointment = null;
+        _appointmentRepositoryMock
+            .Setup(r => r.CreateAsync(It.IsAny<Appointment>(), It.IsAny<CancellationToken>()))
+            .Callback<Appointment, CancellationToken>((a, _) => capturedAppointment = a);
+
+        // Act
+        var result = await _sut.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.Should().NotBeEmpty();
+        capturedAppointment.Should().NotBeNull();
+        capturedAppointment.DoctorId.Should().Be(command.DoctorId);
+        capturedAppointment.PatientId.Should().Be(targetPatient.Id);
+        capturedAppointment.AppointmentTypeId.Should().Be(appointmentType.Id);
+        capturedAppointment.ScheduledDate.Should().Be(scheduledDate);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldCallRepositoryCreateAndSaveChanges_WhenValidRequest()
+    {
+        // Arrange
+        var scheduledDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date;
+        var startTime = new TimeSpan(10, 0, 0);
+        var endTime = new TimeSpan(11, 0, 0);
+        var command = new ScheduleByPatientCommand(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            scheduledDate,
+            startTime,
+            endTime
+        );
+
+        var targetPatient = CreateTargetPatient(
+            command.InitiatorUserId,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+        var appointmentType = AppointmentTypeDefinition.Create(
+            AppointmentCategory.Checkup,
+            "Checkup",
+            "Desc",
+            TimeSpan.FromMinutes(30),
+            AgeEligibilityPolicy.Create(0, 100, false)
+        );
+
+        var schedule = Schedule.Create(
+            command.DoctorId,
+            scheduledDate.DayOfWeek,
+            TimeRange.Create(startTime, endTime)
+        );
+
+        var doctor = Doctor.Create(
+            Guid.NewGuid(),
+            MedicalLicenseNumber.Create("LIC-123"),
+            Guid.NewGuid(),
+            "Bio",
+            ConsultationRoom.Create(1, "Room", 1)
+        );
+
         var user = CreateVerifiedUser();
+
+        _patientRepositoryMock
+            .Setup(r => r.GetByIdAsync(command.TargetPatientId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(targetPatient);
+        _patientRepositoryMock
+            .Setup(r => r.GetByUserIdAsync(command.InitiatorUserId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(targetPatient);
+        _doctorRepositoryMock
+            .Setup(r => r.GetByIdAsync(command.DoctorId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(doctor);
+        _regionalSchedulingServiceMock
+            .Setup(s => s.EnforceSchedulingRegulations(doctor, targetPatient, appointmentType))
+            .Returns(SchedulingClearance.Granted());
+        _appointmentTypeRepositoryMock
+            .Setup(r => r.GetByIdAsync(command.AppointmentTypeId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(appointmentType);
+        _penaltyRepositoryMock
+            .Setup(r =>
+                r.GetByPatientIdAsync(command.TargetPatientId, It.IsAny<CancellationToken>())
+            )
+            .ReturnsAsync([]);
+        _scheduleRepositoryMock
+            .Setup(r =>
+                r.GetByDoctorAndDayAsync(
+                    command.DoctorId,
+                    scheduledDate.DayOfWeek,
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(schedule);
+        _appointmentRepositoryMock
+            .Setup(r =>
+                r.HasConflictAsync(
+                    command.DoctorId,
+                    scheduledDate,
+                    It.IsAny<TimeRange>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(false);
 
         _userRepositoryMock
             .Setup(r => r.GetByIdAsync(command.InitiatorUserId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
 
         // Act
-        var result = await _sut.Handle(command, CancellationToken.None);
+        await _sut.Handle(command, CancellationToken.None);
 
         // Assert
         _appointmentRepositoryMock.Verify(
@@ -142,7 +247,6 @@ public class ScheduleByPatientCommandHandlerTests
             Times.Once
         );
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
-        result.Should().NotBeEmpty();
     }
 
     [Fact]
@@ -170,6 +274,12 @@ public class ScheduleByPatientCommandHandlerTests
             .ThrowAsync<EntityNotFoundException>()
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(Patient));
+
+        _appointmentRepositoryMock.Verify(
+            r => r.CreateAsync(It.IsAny<Appointment>(), It.IsAny<CancellationToken>()),
+            Times.Never
+        );
+        _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -215,6 +325,12 @@ public class ScheduleByPatientCommandHandlerTests
             .ThrowAsync<EntityNotFoundException>()
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(Doctor));
+
+        _appointmentRepositoryMock.Verify(
+            r => r.CreateAsync(It.IsAny<Appointment>(), It.IsAny<CancellationToken>()),
+            Times.Never
+        );
+        _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -252,6 +368,12 @@ public class ScheduleByPatientCommandHandlerTests
             .ThrowAsync<EntityNotFoundException>()
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(Patient));
+
+        _appointmentRepositoryMock.Verify(
+            r => r.CreateAsync(It.IsAny<Appointment>(), It.IsAny<CancellationToken>()),
+            Times.Never
+        );
+        _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -315,6 +437,12 @@ public class ScheduleByPatientCommandHandlerTests
             .ThrowAsync<EntityNotFoundException>()
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(AppointmentTypeDefinition));
+
+        _appointmentRepositoryMock.Verify(
+            r => r.CreateAsync(It.IsAny<Appointment>(), It.IsAny<CancellationToken>()),
+            Times.Never
+        );
+        _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -372,6 +500,12 @@ public class ScheduleByPatientCommandHandlerTests
             .ThrowAsync<EntityNotFoundException>()
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(User));
+
+        _appointmentRepositoryMock.Verify(
+            r => r.CreateAsync(It.IsAny<Appointment>(), It.IsAny<CancellationToken>()),
+            Times.Never
+        );
+        _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
     private static Patient CreateTargetPatient(Guid userId, DateTime referenceTime)
@@ -384,7 +518,6 @@ public class ScheduleByPatientCommandHandlerTests
         );
 
         patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
-
         patient.UpdateEmergencyContact(EmergencyContact.Create("Emergency Name", "555-1234567"));
 
         return patient;
