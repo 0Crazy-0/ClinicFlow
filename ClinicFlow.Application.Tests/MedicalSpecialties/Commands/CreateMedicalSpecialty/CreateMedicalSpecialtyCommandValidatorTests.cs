@@ -57,11 +57,21 @@ public class CreateMedicalSpecialtyCommandValidatorTests
             .WithErrorMessage(DomainErrors.Validation.ValueRequired);
     }
 
-    [Fact]
-    public void Validate_ShouldFail_WhenTypicalDurationMinutesIsZero()
+    [Theory]
+    [InlineData(0)]
+    [InlineData(5)]
+    [InlineData(9)]
+    [InlineData(44)]
+    [InlineData(95)]
+    public void Validate_ShouldFail_WhenTypicalDurationMinutesIsInvalid(int duration)
     {
         // Arrange
-        var command = new CreateMedicalSpecialtyCommand("Cardiology", "Heart specialty", 0, 24);
+        var command = new CreateMedicalSpecialtyCommand(
+            "Cardiology",
+            "Heart specialty",
+            duration,
+            24
+        );
 
         // Act
         var result = _sut.TestValidate(command);
@@ -69,7 +79,7 @@ public class CreateMedicalSpecialtyCommandValidatorTests
         // Assert
         result
             .ShouldHaveValidationErrorFor(x => x.TypicalDurationMinutes)
-            .WithErrorMessage(DomainErrors.Validation.ValueMustBePositive);
+            .WithErrorMessage(DomainErrors.MedicalSpecialty.InvalidEncounterDuration);
     }
 
     [Theory]

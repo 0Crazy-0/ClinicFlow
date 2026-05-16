@@ -96,15 +96,20 @@ public class UpdateMedicalSpecialtyCommandValidatorTests
             .WithErrorMessage(DomainErrors.Validation.ValueRequired);
     }
 
-    [Fact]
-    public void Validate_ShouldFail_WhenTypicalDurationMinutesIsZero()
+    [Theory]
+    [InlineData(0)]
+    [InlineData(5)]
+    [InlineData(11)]
+    [InlineData(29)]
+    [InlineData(91)]
+    public void Validate_ShouldFail_WhenTypicalDurationMinutesIsInvalid(int duration)
     {
         // Arrange
         var command = new UpdateMedicalSpecialtyCommand(
             Guid.NewGuid(),
             "Cardiology",
             "Heart specialty",
-            0,
+            duration,
             24
         );
 
@@ -114,7 +119,7 @@ public class UpdateMedicalSpecialtyCommandValidatorTests
         // Assert
         result
             .ShouldHaveValidationErrorFor(x => x.TypicalDurationMinutes)
-            .WithErrorMessage(DomainErrors.Validation.ValueMustBePositive);
+            .WithErrorMessage(DomainErrors.MedicalSpecialty.InvalidEncounterDuration);
     }
 
     [Theory]
