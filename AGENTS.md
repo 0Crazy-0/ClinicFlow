@@ -410,7 +410,7 @@ public async Task Handle_ShouldCreateEntity_WhenValidCommand()
     // Assert
     result.Should().NotBeEmpty();
     capturedEntity.Should().NotBeNull();
-    capturedEntity!.Name.Should().Be(command.Name);
+    capturedEntity.Name.Should().Be(command.Name);
     // ... assert all mapped properties
 }
 ```
@@ -446,8 +446,9 @@ For command handlers that modify an entity and persist via `IUnitOfWork` without
 
 ```csharp
 // Assert
-appointmentType.IsDeleted.Should().BeFalse();
 _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+
+appointmentType.IsDeleted.Should().BeFalse();
 ```
 
 This verification ensures the handler completes the full orchestration pipeline: fetch → delegate to domain → persist.
