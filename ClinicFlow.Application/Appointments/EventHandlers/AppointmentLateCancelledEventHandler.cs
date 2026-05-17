@@ -1,6 +1,7 @@
 using ClinicFlow.Application.Common.Models;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Events.Appointments;
+using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.Services;
 using MediatR;
@@ -9,7 +10,8 @@ namespace ClinicFlow.Application.Appointments.EventHandlers;
 
 public sealed class AppointmentLateCancelledEventHandler(
     TimeProvider timeProvider,
-    IPatientPenaltyRepository patientPenaltyRepository
+    IPatientPenaltyRepository patientPenaltyRepository,
+    IUnitOfWork unitOfWork
 ) : INotificationHandler<DomainEventNotification<AppointmentLateCancelledEvent>>
 {
     public async Task Handle(
@@ -32,5 +34,6 @@ public sealed class AppointmentLateCancelledEventHandler(
         );
 
         await patientPenaltyRepository.CreateRangeAsync(newPenalties, cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }
