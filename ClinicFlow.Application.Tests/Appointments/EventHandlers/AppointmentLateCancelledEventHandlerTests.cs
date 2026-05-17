@@ -1,10 +1,13 @@
 using ClinicFlow.Application.Appointments.EventHandlers;
 using ClinicFlow.Application.Common.Models;
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Events.Appointments;
+using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.ValueObjects;
+using FluentAssertions;
 using Microsoft.Extensions.Time.Testing;
 using Moq;
 
@@ -13,6 +16,7 @@ namespace ClinicFlow.Application.Tests.Appointments.EventHandlers;
 public class AppointmentLateCancelledEventHandlerTests
 {
     private readonly Mock<IPatientPenaltyRepository> _penaltyRepositoryMock;
+    private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly FakeTimeProvider _fakeTime;
     private readonly AppointmentLateCancelledEventHandler _sut;
 
@@ -20,11 +24,16 @@ public class AppointmentLateCancelledEventHandlerTests
     {
         _fakeTime = new FakeTimeProvider();
         _penaltyRepositoryMock = new Mock<IPatientPenaltyRepository>();
-        _sut = new AppointmentLateCancelledEventHandler(_fakeTime, _penaltyRepositoryMock.Object);
+        _unitOfWorkMock = new Mock<IUnitOfWork>();
+        _sut = new AppointmentLateCancelledEventHandler(
+            _fakeTime,
+            _penaltyRepositoryMock.Object,
+            _unitOfWorkMock.Object
+        );
     }
 
     [Fact]
-    public async Task Handle_ShouldApplyPenalty()
+    public async Task Handle_ShouldCreatePenaltiesWithCorrectProperties()
     {
         // Arrange
         var patientId = Guid.NewGuid();
@@ -50,6 +59,65 @@ public class AppointmentLateCancelledEventHandlerTests
             Guid.NewGuid(),
             "Too late"
         );
+
+        var notification = new DomainEventNotification<AppointmentLateCancelledEvent>(domainEvent);
+
+        IEnumerable<PatientPenalty>? capturedPenalties = null;
+        _penaltyRepositoryMock
+            .Setup(x => x.GetByPatientIdAsync(patientId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync([]);
+
+        _penaltyRepositoryMock
+            .Setup(x =>
+                x.CreateRangeAsync(
+                    It.IsAny<IEnumerable<PatientPenalty>>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .Callback<IEnumerable<PatientPenalty>, CancellationToken>(
+                (penalties, _) => capturedPenalties = penalties
+            );
+
+        // Act
+        await _sut.Handle(notification, CancellationToken.None);
+
+        // Assert
+        var penalty = capturedPenalties.Should().ContainSingle().Subject;
+
+        penalty.Type.Should().Be(PenaltyType.Warning);
+        penalty.Reason.Should().Be(PenaltyReasons.LateCancellation);
+        penalty.PatientId.Should().Be(patientId);
+        capturedPenalties.Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task Handle_ShouldCallRepositoryCreateRangeAndSaveChanges()
+    {
+        // Arrange
+        var patientId = Guid.NewGuid();
+        var appointment = Appointment.Schedule(
+            patientId,
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            _fakeTime.GetUtcNow().UtcDateTime.Date,
+            TimeRange.Create(
+                _fakeTime.GetUtcNow().UtcDateTime.TimeOfDay,
+                _fakeTime.GetUtcNow().UtcDateTime.TimeOfDay.Add(TimeSpan.FromHours(1))
+            )
+        );
+
+        appointment.CancelLate(
+            Guid.NewGuid(),
+            "Late",
+            _fakeTime.GetUtcNow().UtcDateTime.AddHours(-2)
+        );
+
+        var domainEvent = new AppointmentLateCancelledEvent(
+            appointment,
+            Guid.NewGuid(),
+            "Too late"
+        );
+
         var notification = new DomainEventNotification<AppointmentLateCancelledEvent>(domainEvent);
 
         _penaltyRepositoryMock
@@ -63,12 +131,11 @@ public class AppointmentLateCancelledEventHandlerTests
         _penaltyRepositoryMock.Verify(
             x =>
                 x.CreateRangeAsync(
-                    It.Is<IEnumerable<PatientPenalty>>(penalties =>
-                        penalties.Any(p => p.Type == PenaltyType.Warning)
-                    ),
+                    It.IsAny<IEnumerable<PatientPenalty>>(),
                     It.IsAny<CancellationToken>()
                 ),
             Times.Once
         );
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 }
