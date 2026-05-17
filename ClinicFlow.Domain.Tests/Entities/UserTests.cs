@@ -4,11 +4,14 @@ using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
+using Microsoft.Extensions.Time.Testing;
 
 namespace ClinicFlow.Domain.Tests.Entities;
 
 public class UserTests
 {
+    private readonly FakeTimeProvider _fakeTime = new();
+
     [Fact]
     public void Create_ShouldCreateUser_WhenValidParameters()
     {
@@ -30,6 +33,8 @@ public class UserTests
         user.IsActive.Should().BeTrue();
         user.IsPhoneVerified.Should().BeFalse();
         user.LastLoginAt.Should().BeNull();
+        user.FailedLoginAttempts.Should().Be(0);
+        user.LockoutEnd.Should().BeNull();
     }
 
     [Theory]
@@ -95,6 +100,274 @@ public class UserTests
             .WithMessage(DomainErrors.User.PhoneAlreadyVerified);
     }
 
+    [Fact]
+    public void RecordLogin_ShouldUpdateLastLoginAt_WhenAccountIsActive()
+    {
+        // Arrange
+        var user = CreateUser();
+        var loginTime = _fakeTime.GetUtcNow().UtcDateTime;
+
+        // Act
+        user.RecordLogin(loginTime);
+
+        // Assert
+        user.LastLoginAt.Should().Be(loginTime);
+        user.FailedLoginAttempts.Should().Be(0);
+        user.LockoutEnd.Should().BeNull();
+    }
+
+    [Fact]
+    public void RecordLogin_ShouldResetFailedAttempts_WhenPreviousFailedAttemptsExist()
+    {
+        // Arrange
+        var user = CreateUser();
+        var referenceTime = _fakeTime.GetUtcNow().UtcDateTime;
+
+        user.RecordFailedLogin(referenceTime);
+        user.RecordFailedLogin(referenceTime);
+
+        // Act
+        user.RecordLogin(referenceTime);
+
+        // Assert
+        user.FailedLoginAttempts.Should().Be(0);
+        user.LockoutEnd.Should().BeNull();
+        user.LastLoginAt.Should().Be(referenceTime);
+    }
+
+    [Fact]
+    public void RecordLogin_ShouldThrowException_WhenAccountIsInactive()
+    {
+        // Arrange
+        var user = CreateUser();
+
+        user.Deactivate();
+
+        // Act
+        var act = () => user.RecordLogin(_fakeTime.GetUtcNow().UtcDateTime);
+
+        // Assert
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.User.AccountInactive);
+    }
+
+    [Fact]
+    public void RecordLogin_ShouldThrowException_WhenAccountIsLockedOut()
+    {
+        // Arrange
+        var user = CreateUser();
+        var lockTime = _fakeTime.GetUtcNow().UtcDateTime;
+
+        LockOutUser(user, lockTime);
+
+        _fakeTime.Advance(TimeSpan.FromMinutes(5));
+
+        // Act
+        var act = () => user.RecordLogin(_fakeTime.GetUtcNow().UtcDateTime);
+
+        // Assert
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.User.AccountLockedOut);
+    }
+
+    [Fact]
+    public void RecordLogin_ShouldResetLockoutState_WhenLockoutEndEqualsLoginTime()
+    {
+        // Arrange
+        var user = CreateUser();
+        var lockTime = _fakeTime.GetUtcNow().UtcDateTime;
+
+        LockOutUser(user, lockTime);
+
+        var loginTime = user.LockoutEnd!.Value;
+
+        // Act
+        user.RecordLogin(loginTime);
+
+        // Assert
+        user.LastLoginAt.Should().Be(loginTime);
+        user.FailedLoginAttempts.Should().Be(0);
+        user.LockoutEnd.Should().BeNull();
+    }
+
+    [Fact]
+    public void RecordFailedLogin_ShouldIncrementFailedAttempts()
+    {
+        // Arrange
+        var user = CreateUser();
+        var referenceTime = _fakeTime.GetUtcNow().UtcDateTime;
+
+        // Act
+        user.RecordFailedLogin(referenceTime);
+
+        // Assert
+        user.FailedLoginAttempts.Should().Be(1);
+        user.LockoutEnd.Should().BeNull();
+    }
+
+    [Fact]
+    public void RecordFailedLogin_ShouldLockAccount_WhenMaxAttemptsReached()
+    {
+        // Arrange
+        var user = CreateUser();
+        var referenceTime = _fakeTime.GetUtcNow().UtcDateTime;
+
+        for (var i = 0; i < User.MaxFailedLoginAttempts - 1; i++)
+            user.RecordFailedLogin(referenceTime);
+
+        // Act
+        user.RecordFailedLogin(referenceTime);
+
+        // Assert
+        user.FailedLoginAttempts.Should().Be(User.MaxFailedLoginAttempts);
+        user.LockoutEnd.Should().Be(referenceTime.AddMinutes(15));
+    }
+
+    [Fact]
+    public void RecordFailedLogin_ShouldThrowException_WhenAccountIsInactive()
+    {
+        // Arrange
+        var user = CreateUser();
+
+        user.Deactivate();
+
+        // Act
+        var act = () => user.RecordFailedLogin(_fakeTime.GetUtcNow().UtcDateTime);
+
+        // Assert
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.User.AccountInactive);
+    }
+
+    [Fact]
+    public void ChangePassword_ShouldUpdateHash_WhenValidHash()
+    {
+        // Arrange
+        var user = CreateUser();
+        var newHash = "newhashedpassword456";
+
+        // Act
+        user.ChangePassword(newHash);
+
+        // Assert
+        user.PasswordHash.Should().Be(newHash);
+        user.FailedLoginAttempts.Should().Be(0);
+        user.LockoutEnd.Should().BeNull();
+    }
+
+    [Fact]
+    public void ChangePassword_ShouldResetLockoutState_WhenUserWasLockedOut()
+    {
+        // Arrange
+        var user = CreateUser();
+        var lockTime = _fakeTime.GetUtcNow().UtcDateTime;
+        LockOutUser(user, lockTime);
+
+        // Act
+        user.ChangePassword("newhashedpassword456");
+
+        // Assert
+        user.FailedLoginAttempts.Should().Be(0);
+        user.LockoutEnd.Should().BeNull();
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData(" ")]
+    [InlineData(null)]
+    public void ChangePassword_ShouldThrowException_WhenHashIsEmpty(string? invalidHash)
+    {
+        // Arrange
+        var user = CreateUser();
+
+        // Act
+        var act = () => user.ChangePassword(invalidHash!);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void Deactivate_ShouldSetIsActiveToFalse()
+    {
+        // Arrange
+        var user = CreateUser();
+
+        // Act
+        user.Deactivate();
+
+        // Assert
+        user.IsActive.Should().BeFalse();
+    }
+
+    [Fact]
+    public void Deactivate_ShouldThrowException_WhenAlreadyInactive()
+    {
+        // Arrange
+        var user = CreateUser();
+
+        user.Deactivate();
+
+        // Act & Assert
+        user.Invoking(u => u.Deactivate())
+            .Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.User.AlreadyInactive);
+    }
+
+    [Fact]
+    public void Reactivate_ShouldSetIsActiveToTrue()
+    {
+        // Arrange
+        var user = CreateUser();
+
+        user.Deactivate();
+
+        // Act
+        user.Reactivate();
+
+        // Assert
+        user.IsActive.Should().BeTrue();
+    }
+
+    [Fact]
+    public void Reactivate_ShouldResetLockoutState()
+    {
+        // Arrange
+        var user = CreateUser();
+        var lockTime = _fakeTime.GetUtcNow().UtcDateTime;
+
+        LockOutUser(user, lockTime);
+
+        user.Deactivate();
+
+        // Act
+        user.Reactivate();
+
+        // Assert
+        user.IsActive.Should().BeTrue();
+        user.FailedLoginAttempts.Should().Be(0);
+        user.LockoutEnd.Should().BeNull();
+    }
+
+    [Fact]
+    public void Reactivate_ShouldThrowException_WhenAlreadyActive()
+    {
+        // Arrange
+        var user = CreateUser();
+
+        // Act & Assert
+        user.Invoking(u => u.Reactivate())
+            .Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.User.AlreadyActive);
+    }
+
     private static User CreateUser() =>
         User.Create(
             EmailAddress.Create("test@clinic.com"),
@@ -102,4 +375,10 @@ public class UserTests
             PhoneNumber.Create("555-1234"),
             UserRole.Doctor
         );
+
+    private static void LockOutUser(User user, DateTime referenceTime)
+    {
+        for (var i = 0; i < User.MaxFailedLoginAttempts; i++)
+            user.RecordFailedLogin(referenceTime);
+    }
 }
