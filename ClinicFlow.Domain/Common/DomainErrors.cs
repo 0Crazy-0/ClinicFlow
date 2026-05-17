@@ -126,6 +126,10 @@ public static class DomainErrors
     {
         public const string PhoneAlreadyVerified = "PHONE_ALREADY_VERIFIED";
         public const string InvalidVerificationCode = "INVALID_VERIFICATION_CODE";
+        public const string AccountInactive = "ACCOUNT_INACTIVE";
+        public const string AccountLockedOut = "ACCOUNT_LOCKED_OUT";
+        public const string AlreadyActive = "USER_ALREADY_ACTIVE";
+        public const string AlreadyInactive = "USER_ALREADY_INACTIVE";
     }
 
     public static class Penalty

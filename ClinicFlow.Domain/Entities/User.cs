@@ -5,8 +5,14 @@ using ClinicFlow.Domain.ValueObjects;
 
 namespace ClinicFlow.Domain.Entities;
 
+/// <summary>
+/// Represents a user account in the system, responsible for authentication and access control.
+/// </summary>
 public class User : BaseEntity
 {
+    public const int MaxFailedLoginAttempts = 5;
+    private static readonly TimeSpan LockoutDuration = TimeSpan.FromMinutes(15);
+
     public UserRole Role { get; private set; }
 
     public DateTime? LastLoginAt { get; private set; }
@@ -21,11 +27,16 @@ public class User : BaseEntity
 
     public bool IsPhoneVerified { get; private set; }
 
+    public int FailedLoginAttempts { get; private set; }
+
+    public DateTime? LockoutEnd { get; private set; }
+
     // EF Core constructor
     private User()
     {
         IsActive = true;
         IsPhoneVerified = false;
+        FailedLoginAttempts = 0;
     }
 
     private User(EmailAddress email, string passwordHash, PhoneNumber phoneNumber, UserRole role)
@@ -60,5 +71,57 @@ public class User : BaseEntity
             throw new DomainValidationException(DomainErrors.User.PhoneAlreadyVerified);
 
         IsPhoneVerified = true;
+    }
+
+    public void RecordLogin(DateTime loginTime)
+    {
+        if (!IsActive)
+            throw new BusinessRuleValidationException(DomainErrors.User.AccountInactive);
+
+        if (LockoutEnd.HasValue && LockoutEnd > loginTime)
+            throw new BusinessRuleValidationException(DomainErrors.User.AccountLockedOut);
+
+        FailedLoginAttempts = 0;
+        LockoutEnd = null;
+        LastLoginAt = loginTime;
+    }
+
+    public void RecordFailedLogin(DateTime referenceTime)
+    {
+        if (!IsActive)
+            throw new BusinessRuleValidationException(DomainErrors.User.AccountInactive);
+
+        FailedLoginAttempts++;
+
+        if (FailedLoginAttempts >= MaxFailedLoginAttempts)
+            LockoutEnd = referenceTime.Add(LockoutDuration);
+    }
+
+    public void ChangePassword(string newPasswordHash)
+    {
+        if (string.IsNullOrWhiteSpace(newPasswordHash))
+            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+
+        PasswordHash = newPasswordHash;
+        FailedLoginAttempts = 0;
+        LockoutEnd = null;
+    }
+
+    public void Deactivate()
+    {
+        if (!IsActive)
+            throw new BusinessRuleValidationException(DomainErrors.User.AlreadyInactive);
+
+        IsActive = false;
+    }
+
+    public void Reactivate()
+    {
+        if (IsActive)
+            throw new BusinessRuleValidationException(DomainErrors.User.AlreadyActive);
+
+        IsActive = true;
+        FailedLoginAttempts = 0;
+        LockoutEnd = null;
     }
 }
