@@ -2,6 +2,7 @@ using ClinicFlow.Application.Common.Models;
 using ClinicFlow.Application.Doctors.EventHandlers;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Events.Doctors;
+using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
@@ -12,12 +13,17 @@ namespace ClinicFlow.Application.Tests.Doctors.EventHandlers;
 public class DeactivateDoctorSchedulesEventHandlerTests
 {
     private readonly Mock<IScheduleRepository> _scheduleRepositoryMock;
+    private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly DeactivateDoctorSchedulesEventHandler _sut;
 
     public DeactivateDoctorSchedulesEventHandlerTests()
     {
         _scheduleRepositoryMock = new Mock<IScheduleRepository>();
-        _sut = new DeactivateDoctorSchedulesEventHandler(_scheduleRepositoryMock.Object);
+        _unitOfWorkMock = new Mock<IUnitOfWork>();
+        _sut = new DeactivateDoctorSchedulesEventHandler(
+            _scheduleRepositoryMock.Object,
+            _unitOfWorkMock.Object
+        );
     }
 
     [Fact]
@@ -49,17 +55,14 @@ public class DeactivateDoctorSchedulesEventHandlerTests
         await _sut.Handle(notification, CancellationToken.None);
 
         // Assert
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+
         activeSchedule1.IsActive.Should().BeFalse();
         activeSchedule2.IsActive.Should().BeFalse();
-
-        _scheduleRepositoryMock.Verify(
-            x => x.GetActiveByDoctorIdAsync(doctorId, It.IsAny<CancellationToken>()),
-            Times.Once
-        );
     }
 
     [Fact]
-    public async Task Handle_ShouldNotDeactivateAnySchedule_WhenDoctorHasNoActiveSchedules()
+    public async Task Handle_ShouldCallSaveChanges_WhenDoctorHasNoActiveSchedules()
     {
         // Arrange
         var doctorId = Guid.NewGuid();
@@ -75,9 +78,6 @@ public class DeactivateDoctorSchedulesEventHandlerTests
         await _sut.Handle(notification, CancellationToken.None);
 
         // Assert
-        _scheduleRepositoryMock.Verify(
-            x => x.GetActiveByDoctorIdAsync(doctorId, It.IsAny<CancellationToken>()),
-            Times.Once
-        );
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 }

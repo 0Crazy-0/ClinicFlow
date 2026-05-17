@@ -3,6 +3,7 @@ using ClinicFlow.Application.Doctors.EventHandlers;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Events.Doctors;
+using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
@@ -14,6 +15,7 @@ namespace ClinicFlow.Application.Tests.Doctors.EventHandlers;
 public class DoctorSuspendedEventHandlerTests
 {
     private readonly Mock<IAppointmentRepository> _appointmentRepositoryMock;
+    private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly FakeTimeProvider _fakeTime;
     private readonly DoctorSuspendedEventHandler _sut;
 
@@ -21,7 +23,12 @@ public class DoctorSuspendedEventHandlerTests
     {
         _fakeTime = new FakeTimeProvider();
         _appointmentRepositoryMock = new Mock<IAppointmentRepository>();
-        _sut = new DoctorSuspendedEventHandler(_fakeTime, _appointmentRepositoryMock.Object);
+        _unitOfWorkMock = new Mock<IUnitOfWork>();
+        _sut = new DoctorSuspendedEventHandler(
+            _fakeTime,
+            _appointmentRepositoryMock.Object,
+            _unitOfWorkMock.Object
+        );
     }
 
     [Fact]
@@ -52,10 +59,12 @@ public class DoctorSuspendedEventHandlerTests
         // Assert
         appointment1.Status.Should().Be(AppointmentStatus.RequiresReassignment);
         appointment2.Status.Should().Be(AppointmentStatus.RequiresReassignment);
+
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
-    public async Task Handle_ShouldNotMarkAnyAppointment_WhenDoctorHasNoFutureAppointments()
+    public async Task Handle_ShouldCallSaveChanges_WhenDoctorHasNoFutureAppointments()
     {
         // Arrange
         var doctorId = Guid.NewGuid();
@@ -77,15 +86,7 @@ public class DoctorSuspendedEventHandlerTests
         await _sut.Handle(notification, CancellationToken.None);
 
         // Assert
-        _appointmentRepositoryMock.Verify(
-            x =>
-                x.GetFutureScheduledByDoctorIdAsync(
-                    doctorId,
-                    It.IsAny<DateTime>(),
-                    It.IsAny<CancellationToken>()
-                ),
-            Times.Once
-        );
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
     private static Appointment CreateScheduledAppointment(Guid doctorId, DateTime scheduledDate) =>

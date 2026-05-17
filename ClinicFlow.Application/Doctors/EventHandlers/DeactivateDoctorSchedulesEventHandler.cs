@@ -1,12 +1,15 @@
 using ClinicFlow.Application.Common.Models;
 using ClinicFlow.Domain.Events.Doctors;
+using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using MediatR;
 
 namespace ClinicFlow.Application.Doctors.EventHandlers;
 
-public sealed class DeactivateDoctorSchedulesEventHandler(IScheduleRepository scheduleRepository)
-    : INotificationHandler<DomainEventNotification<DoctorSuspendedEvent>>
+public sealed class DeactivateDoctorSchedulesEventHandler(
+    IScheduleRepository scheduleRepository,
+    IUnitOfWork unitOfWork
+) : INotificationHandler<DomainEventNotification<DoctorSuspendedEvent>>
 {
     public async Task Handle(
         DomainEventNotification<DoctorSuspendedEvent> notification,
@@ -22,5 +25,7 @@ public sealed class DeactivateDoctorSchedulesEventHandler(IScheduleRepository sc
 
         foreach (var schedule in activeSchedules)
             schedule.Deactivate();
+
+        await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }

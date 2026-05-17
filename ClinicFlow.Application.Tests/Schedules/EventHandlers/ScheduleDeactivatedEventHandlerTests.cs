@@ -3,6 +3,7 @@ using ClinicFlow.Application.Schedules.EventHandlers;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Events.Schedules;
+using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
@@ -15,6 +16,7 @@ public class ScheduleDeactivatedEventHandlerTests
 {
     private readonly Mock<IAppointmentRepository> _appointmentRepositoryMock;
     private readonly Mock<IScheduleRepository> _scheduleRepositoryMock;
+    private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly FakeTimeProvider _fakeTime;
     private readonly ScheduleDeactivatedEventHandler _sut;
 
@@ -23,10 +25,12 @@ public class ScheduleDeactivatedEventHandlerTests
         _fakeTime = new FakeTimeProvider();
         _appointmentRepositoryMock = new Mock<IAppointmentRepository>();
         _scheduleRepositoryMock = new Mock<IScheduleRepository>();
+        _unitOfWorkMock = new Mock<IUnitOfWork>();
         _sut = new ScheduleDeactivatedEventHandler(
             _fakeTime,
             _appointmentRepositoryMock.Object,
-            _scheduleRepositoryMock.Object
+            _scheduleRepositoryMock.Object,
+            _unitOfWorkMock.Object
         );
     }
 
@@ -69,6 +73,8 @@ public class ScheduleDeactivatedEventHandlerTests
         await _sut.Handle(notification, CancellationToken.None);
 
         // Assert
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+
         appointment.Status.Should().Be(AppointmentStatus.RequiresReassignment);
     }
 
@@ -117,6 +123,8 @@ public class ScheduleDeactivatedEventHandlerTests
         await _sut.Handle(notification, CancellationToken.None);
 
         // Assert
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+
         appointmentOutside.Status.Should().Be(AppointmentStatus.RequiresReassignment);
     }
 
@@ -165,6 +173,8 @@ public class ScheduleDeactivatedEventHandlerTests
         await _sut.Handle(notification, CancellationToken.None);
 
         // Assert
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+
         appointmentInside.Status.Should().Be(AppointmentStatus.Scheduled);
     }
 
@@ -207,11 +217,13 @@ public class ScheduleDeactivatedEventHandlerTests
         await _sut.Handle(notification, CancellationToken.None);
 
         // Assert
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+
         tuesdayAppointment.Status.Should().Be(AppointmentStatus.Scheduled);
     }
 
     [Fact]
-    public async Task Handle_ShouldNotMarkAnyAppointment_WhenDoctorHasNoFutureAppointments()
+    public async Task Handle_ShouldCallSaveChanges_WhenDoctorHasNoFutureAppointments()
     {
         // Arrange
         var doctorId = Guid.NewGuid();
@@ -233,14 +245,6 @@ public class ScheduleDeactivatedEventHandlerTests
         await _sut.Handle(notification, CancellationToken.None);
 
         // Assert
-        _appointmentRepositoryMock.Verify(
-            x =>
-                x.GetFutureScheduledByDoctorIdAsync(
-                    doctorId,
-                    It.IsAny<DateTime>(),
-                    It.IsAny<CancellationToken>()
-                ),
-            Times.Once
-        );
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 }
