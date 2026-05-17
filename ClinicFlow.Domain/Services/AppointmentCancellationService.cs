@@ -37,7 +37,7 @@ public static class AppointmentCancellationService
         if (appointment.PatientId != args.TargetPatient.Id)
             throw new DomainValidationException(DomainErrors.Appointment.DataMismatch);
 
-        if (args.TargetPatient.UserId != args.InitiatorPatientId)
+        if (args.TargetPatient.UserId != args.InitiatorUserId)
             throw new AppointmentCancellationUnauthorizedException(
                 DomainErrors.Appointment.UnauthorizedCancellation
             );
@@ -57,11 +57,11 @@ public static class AppointmentCancellationService
             )
         )
         {
-            appointment.Cancel(args.InitiatorPatientId, args.Reason, args.CancelledAt);
+            appointment.Cancel(args.InitiatorUserId, args.Reason, args.CancelledAt);
         }
         else
         {
-            appointment.CancelLate(args.InitiatorPatientId, args.Reason, args.CancelledAt);
+            appointment.CancelLate(args.InitiatorUserId, args.Reason, args.CancelledAt);
         }
     }
 
