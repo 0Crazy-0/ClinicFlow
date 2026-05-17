@@ -40,7 +40,7 @@ public class MarkAppointmentAsNoShowByDoctorCommandHandlerTests
         // Arrange
         var command = new MarkAppointmentAsNoShowByDoctorCommand(Guid.NewGuid(), Guid.NewGuid());
         var doctorId = Guid.NewGuid();
-        var appointment = CreateAppointment(command.AppointmentId, doctorId);
+        var appointment = CreateAppointment(doctorId);
         var doctor = Doctor.Create(
             command.InitiatorUserId,
             MedicalLicenseNumber.Create("12345"),
@@ -94,7 +94,7 @@ public class MarkAppointmentAsNoShowByDoctorCommandHandlerTests
     {
         // Arrange
         var command = new MarkAppointmentAsNoShowByDoctorCommand(Guid.NewGuid(), Guid.NewGuid());
-        var appointment = CreateAppointment(command.AppointmentId, Guid.NewGuid());
+        var appointment = CreateAppointment(Guid.NewGuid());
 
         _appointmentRepositoryMock
             .Setup(x => x.GetByIdAsync(command.AppointmentId, It.IsAny<CancellationToken>()))
@@ -115,20 +115,15 @@ public class MarkAppointmentAsNoShowByDoctorCommandHandlerTests
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
-    private Appointment CreateAppointment(Guid id, Guid doctorId)
-    {
-        var scheduledDateTime = _fakeTime.GetUtcNow().UtcDateTime.AddDays(-1);
-        var appointment = Appointment.Schedule(
+    private Appointment CreateAppointment(Guid doctorId) =>
+        Appointment.Schedule(
             Guid.NewGuid(),
             doctorId,
             Guid.NewGuid(),
-            scheduledDateTime.Date,
+            _fakeTime.GetUtcNow().UtcDateTime.AddDays(-1).Date,
             TimeRange.Create(
-                scheduledDateTime.TimeOfDay,
-                scheduledDateTime.TimeOfDay.Add(TimeSpan.FromHours(1))
+                _fakeTime.GetUtcNow().UtcDateTime.AddDays(-1).TimeOfDay,
+                _fakeTime.GetUtcNow().UtcDateTime.AddDays(-1).TimeOfDay.Add(TimeSpan.FromHours(1))
             )
         );
-        appointment.SetId(id);
-        return appointment;
-    }
 }

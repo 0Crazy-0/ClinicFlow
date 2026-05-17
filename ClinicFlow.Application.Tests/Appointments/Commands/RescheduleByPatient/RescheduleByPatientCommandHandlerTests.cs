@@ -389,17 +389,14 @@ public class RescheduleByPatientCommandHandlerTests
         return user;
     }
 
-    private static Doctor CreateDoctor()
-    {
-        var doctor = Doctor.Create(
+    private static Doctor CreateDoctor() =>
+        Doctor.Create(
             Guid.NewGuid(),
             MedicalLicenseNumber.Create("1234567"),
             Guid.NewGuid(),
             "555-1234",
             ConsultationRoom.Create(1, "Room A", 1)
         );
-        return doctor;
-    }
 
     private Appointment CreateAppointment(Guid patientId, Guid doctorId, Guid typeId) =>
         Appointment.Schedule(

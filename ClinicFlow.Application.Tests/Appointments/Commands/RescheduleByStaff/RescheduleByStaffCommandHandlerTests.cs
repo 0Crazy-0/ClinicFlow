@@ -270,26 +270,20 @@ public class RescheduleByStaffCommandHandlerTests
             TimeRange.Create(new TimeSpan(10, 0, 0), new TimeSpan(11, 0, 0))
         );
 
-    private static Doctor CreateDoctor()
-    {
-        var doctor = Doctor.Create(
+    private static Doctor CreateDoctor() =>
+        Doctor.Create(
             Guid.NewGuid(),
             MedicalLicenseNumber.Create("1234567"),
             Guid.NewGuid(),
             "555-1234",
             ConsultationRoom.Create(1, "Room A", 1)
         );
-        return doctor;
-    }
 
-    private Patient CreatePatient()
-    {
-        var patient = Patient.CreateSelf(
+    private Patient CreatePatient() =>
+        Patient.CreateSelf(
             Guid.NewGuid(),
             PersonName.Create("Test"),
             _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30),
             _fakeTime.GetUtcNow().UtcDateTime
         );
-        return patient;
-    }
 }
