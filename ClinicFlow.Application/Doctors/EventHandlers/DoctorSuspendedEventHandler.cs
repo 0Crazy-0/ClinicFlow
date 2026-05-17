@@ -1,5 +1,6 @@
 using ClinicFlow.Application.Common.Models;
 using ClinicFlow.Domain.Events.Doctors;
+using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using MediatR;
 
@@ -7,7 +8,8 @@ namespace ClinicFlow.Application.Doctors.EventHandlers;
 
 public sealed class DoctorSuspendedEventHandler(
     TimeProvider timeProvider,
-    IAppointmentRepository appointmentRepository
+    IAppointmentRepository appointmentRepository,
+    IUnitOfWork unitOfWork
 ) : INotificationHandler<DomainEventNotification<DoctorSuspendedEvent>>
 {
     public async Task Handle(
@@ -25,5 +27,7 @@ public sealed class DoctorSuspendedEventHandler(
 
         foreach (var appointment in futureAppointments)
             appointment.MarkAsRequiresReassignment();
+
+        await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }
