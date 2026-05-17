@@ -130,6 +130,8 @@ public static class DomainErrors
         public const string AccountLockedOut = "ACCOUNT_LOCKED_OUT";
         public const string AlreadyActive = "USER_ALREADY_ACTIVE";
         public const string AlreadyInactive = "USER_ALREADY_INACTIVE";
+        public const string InvalidCredentials = "INVALID_CREDENTIALS";
+        public const string EmailAlreadyExists = "EMAIL_ALREADY_EXISTS";
     }
 
     public static class Penalty
