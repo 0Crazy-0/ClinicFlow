@@ -31,6 +31,6 @@ public sealed class AppointmentLateCancelledEventHandler(
             timeProvider.GetUtcNow().UtcDateTime
         );
 
-        await patientPenaltyRepository.AddRangeAsync(newPenalties, cancellationToken);
+        await patientPenaltyRepository.CreateRangeAsync(newPenalties, cancellationToken);
     }
 }
