@@ -1,5 +1,6 @@
 using ClinicFlow.Application.Common.Models;
 using ClinicFlow.Domain.Events.Schedules;
+using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using MediatR;
 
@@ -8,7 +9,8 @@ namespace ClinicFlow.Application.Schedules.EventHandlers;
 public sealed class ScheduleDeactivatedEventHandler(
     TimeProvider timeProvider,
     IAppointmentRepository appointmentRepository,
-    IScheduleRepository scheduleRepository
+    IScheduleRepository scheduleRepository,
+    IUnitOfWork unitOfWork
 ) : INotificationHandler<DomainEventNotification<ScheduleDeactivatedEvent>>
 {
     public async Task Handle(
@@ -37,5 +39,7 @@ public sealed class ScheduleDeactivatedEventHandler(
 
         foreach (var appointment in appointmentsToReassign)
             appointment.MarkAsRequiresReassignment();
+
+        await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }
