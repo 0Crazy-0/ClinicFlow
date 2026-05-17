@@ -46,7 +46,7 @@ public class BlockPatientCommandHandlerTests
 
         PatientPenalty? capturedPenalty = null;
         _penaltyRepositoryMock
-            .Setup(x => x.AddAsync(It.IsAny<PatientPenalty>(), It.IsAny<CancellationToken>()))
+            .Setup(x => x.CreateAsync(It.IsAny<PatientPenalty>(), It.IsAny<CancellationToken>()))
             .Callback<PatientPenalty, CancellationToken>((p, _) => capturedPenalty = p);
 
         // Act
@@ -65,7 +65,7 @@ public class BlockPatientCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ShouldCallRepositoryAddAndSaveChanges_WhenValidCommand()
+    public async Task Handle_ShouldCallRepositoryCreateAndSaveChanges_WhenValidCommand()
     {
         // Arrange
         var command = new BlockPatientCommand(
@@ -79,7 +79,7 @@ public class BlockPatientCommandHandlerTests
 
         // Assert
         _penaltyRepositoryMock.Verify(
-            x => x.AddAsync(It.IsAny<PatientPenalty>(), It.IsAny<CancellationToken>()),
+            x => x.CreateAsync(It.IsAny<PatientPenalty>(), It.IsAny<CancellationToken>()),
             Times.Once
         );
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);

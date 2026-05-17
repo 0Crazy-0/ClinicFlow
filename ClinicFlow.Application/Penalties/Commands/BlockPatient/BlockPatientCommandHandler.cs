@@ -20,7 +20,7 @@ public sealed class BlockPatientCommandHandler(
             timeProvider.GetUtcNow().UtcDateTime
         );
 
-        await penaltyRepository.AddAsync(penalty, cancellationToken);
+        await penaltyRepository.CreateAsync(penalty, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return penalty.Id;

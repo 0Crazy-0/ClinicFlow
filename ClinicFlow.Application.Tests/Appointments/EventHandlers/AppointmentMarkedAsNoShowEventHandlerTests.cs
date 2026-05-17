@@ -46,7 +46,7 @@ public class AppointmentMarkedAsNoShowEventHandlerTests
         // Assert
         _patientPenaltyRepositoryMock.Verify(
             x =>
-                x.AddRangeAsync(
+                x.CreateRangeAsync(
                     It.Is<IEnumerable<PatientPenalty>>(penalties =>
                         penalties.Any(p =>
                             p.Type == PenaltyType.Warning && p.Reason == PenaltyReasons.NoShow
