@@ -6,18 +6,26 @@ namespace ClinicFlow.Application.Tests.Appointments.Queries.GetAppointmentsByPat
 
 public class GetAppointmentsByPatientIdQueryValidatorTests
 {
-    private readonly GetAppointmentsByPatientIdQueryValidator _sut;
+    private readonly GetAppointmentsByPatientIdQueryValidator _sut = new();
 
-    public GetAppointmentsByPatientIdQueryValidatorTests()
+    [Fact]
+    public void Validate_ShouldNotHaveError_WhenQueryIsValid()
     {
-        _sut = new GetAppointmentsByPatientIdQueryValidator();
+        // Arrange
+        var query = new GetAppointmentsByPatientIdQuery(Guid.NewGuid(), 1, 10);
+
+        // Act
+        var result = _sut.TestValidate(query);
+
+        // Assert
+        result.ShouldNotHaveAnyValidationErrors();
     }
 
     [Fact]
     public void Validate_ShouldHaveError_WhenPatientIdIsEmpty()
     {
         // Arrange
-        var query = new GetAppointmentsByPatientIdQuery(Guid.Empty);
+        var query = new GetAppointmentsByPatientIdQuery(Guid.Empty, 1, 10);
 
         // Act
         var result = _sut.TestValidate(query);
@@ -28,16 +36,38 @@ public class GetAppointmentsByPatientIdQueryValidatorTests
             .WithErrorMessage(DomainErrors.Validation.InvalidValue);
     }
 
-    [Fact]
-    public void Validate_ShouldNotHaveError_WhenPatientIdIsValid()
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    public void Validate_ShouldHaveError_WhenPageNumberIsLessThanOne(int pageNumber)
     {
         // Arrange
-        var query = new GetAppointmentsByPatientIdQuery(Guid.NewGuid());
+        var query = new GetAppointmentsByPatientIdQuery(Guid.NewGuid(), pageNumber, 10);
 
         // Act
         var result = _sut.TestValidate(query);
 
         // Assert
-        result.ShouldNotHaveValidationErrorFor(x => x.PatientId);
+        result
+            .ShouldHaveValidationErrorFor(x => x.PageNumber)
+            .WithErrorMessage(DomainErrors.Validation.InvalidValue);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    [InlineData(101)]
+    public void Validate_ShouldHaveError_WhenPageSizeIsOutOfRange(int pageSize)
+    {
+        // Arrange
+        var query = new GetAppointmentsByPatientIdQuery(Guid.NewGuid(), 1, pageSize);
+
+        // Act
+        var result = _sut.TestValidate(query);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.PageSize)
+            .WithErrorMessage(DomainErrors.Validation.InvalidValue);
     }
 }

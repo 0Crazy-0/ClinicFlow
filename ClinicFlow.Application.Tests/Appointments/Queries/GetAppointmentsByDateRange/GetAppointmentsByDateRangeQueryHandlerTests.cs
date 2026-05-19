@@ -1,4 +1,3 @@
-using ClinicFlow.Application.Appointments.Queries.DTOs;
 using ClinicFlow.Application.Appointments.Queries.GetAppointmentsByDateRange;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Interfaces.Repositories;
@@ -22,36 +21,12 @@ public class GetAppointmentsByDateRangeQueryHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ShouldReturnEmptyList_WhenNoAppointmentsInDateRange()
+    public async Task Handle_ShouldReturnPaginatedList_WhenAppointmentsExistInDateRange()
     {
         // Arrange
         var startDate = _fakeTime.GetUtcNow().UtcDateTime.Date;
         var endDate = startDate.AddDays(7);
-        var query = new GetAppointmentsByDateRangeQuery(startDate, endDate);
-
-        _appointmentRepositoryMock
-            .Setup(x => x.GetByDateRangeAsync(query.StartDate, query.EndDate))
-            .ReturnsAsync([]);
-
-        // Act
-        var result = await _sut.Handle(query, CancellationToken.None);
-
-        // Assert
-        result.Should().BeEmpty();
-        _appointmentRepositoryMock.Verify(
-            x => x.GetByDateRangeAsync(query.StartDate, query.EndDate),
-            Times.Once
-        );
-    }
-
-    [Fact]
-    public async Task Handle_ShouldReturnAppointmentList_WhenAppointmentsExistInDateRange()
-    {
-        // Arrange
-        var startDate = _fakeTime.GetUtcNow().UtcDateTime.Date;
-        var endDate = startDate.AddDays(7);
-        var query = new GetAppointmentsByDateRangeQuery(startDate, endDate);
-
+        var query = new GetAppointmentsByDateRangeQuery(startDate, endDate, 1, 10);
         var appointments = new List<Appointment>
         {
             CreateAppointment(Guid.NewGuid(), Guid.NewGuid(), startDate.AddDays(1)),
@@ -59,24 +34,60 @@ public class GetAppointmentsByDateRangeQueryHandlerTests
         };
 
         _appointmentRepositoryMock
-            .Setup(x => x.GetByDateRangeAsync(startDate, endDate))
-            .ReturnsAsync(appointments);
+            .Setup(x =>
+                x.GetByDateRangePaginatedAsync(
+                    startDate,
+                    endDate,
+                    1,
+                    10,
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync((appointments, 2));
 
         // Act
         var result = await _sut.Handle(query, CancellationToken.None);
 
         // Assert
-        result.Should().HaveCount(2);
-        result.Should().AllBeOfType<AppointmentDto>();
+        result.Should().NotBeNull();
+        result.TotalCount.Should().Be(2);
+        result.PageNumber.Should().Be(1);
+        result.TotalPages.Should().Be(1);
+        result.Items.Should().HaveCount(2);
         result
-            .Select(x => x.ScheduledDate)
+            .Items.Select(x => x.ScheduledDate)
             .Should()
             .OnlyContain(d => d >= startDate && d <= endDate);
+    }
 
-        _appointmentRepositoryMock.Verify(
-            x => x.GetByDateRangeAsync(startDate, endDate),
-            Times.Once
-        );
+    [Fact]
+    public async Task Handle_ShouldReturnEmptyPaginatedList_WhenNoAppointmentsInDateRange()
+    {
+        // Arrange
+        var startDate = _fakeTime.GetUtcNow().UtcDateTime.Date;
+        var endDate = startDate.AddDays(7);
+        var query = new GetAppointmentsByDateRangeQuery(startDate, endDate, 1, 10);
+
+        _appointmentRepositoryMock
+            .Setup(x =>
+                x.GetByDateRangePaginatedAsync(
+                    startDate,
+                    endDate,
+                    1,
+                    10,
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync((new List<Appointment>(), 0));
+
+        // Act
+        var result = await _sut.Handle(query, CancellationToken.None);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Items.Should().BeEmpty();
+        result.TotalCount.Should().Be(0);
+        result.TotalPages.Should().Be(0);
     }
 
     private static Appointment CreateAppointment(
