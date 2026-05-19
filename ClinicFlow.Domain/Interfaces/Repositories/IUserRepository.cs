@@ -1,4 +1,5 @@
 using ClinicFlow.Domain.Entities;
+using ClinicFlow.Domain.Enums;
 
 namespace ClinicFlow.Domain.Interfaces.Repositories;
 
@@ -11,4 +12,22 @@ public interface IUserRepository
     Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken = default);
     Task<User> CreateAsync(User user, CancellationToken cancellationToken = default);
     Task<bool> ExistsByEmailAsync(string email, CancellationToken cancellationToken = default);
+    Task<bool> ExistsByPhoneNumberAsync(
+        string phoneNumber,
+        CancellationToken cancellationToken = default
+    );
+
+    Task<(IReadOnlyCollection<User> Items, int TotalCount)> GetPaginatedAsync(
+        int pageNumber,
+        int pageSize,
+        UserRole? role,
+        bool? isActive,
+        string? searchTerm,
+        CancellationToken cancellationToken = default
+    );
+
+    Task<IReadOnlyCollection<User>> GetLockedOutUsersAsync(
+        DateTime referenceTime,
+        CancellationToken cancellationToken = default
+    );
 }
