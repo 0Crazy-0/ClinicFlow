@@ -1,4 +1,5 @@
 using ClinicFlow.Application.Appointments.Queries.DTOs;
+using ClinicFlow.Application.Common.Models;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using MediatR;
 
@@ -6,22 +7,23 @@ namespace ClinicFlow.Application.Appointments.Queries.GetAppointmentsByDoctorId;
 
 public sealed class GetAppointmentsByDoctorIdQueryHandler(
     IAppointmentRepository appointmentRepository
-) : IRequestHandler<GetAppointmentsByDoctorIdQuery, IReadOnlyList<AppointmentDto>>
+) : IRequestHandler<GetAppointmentsByDoctorIdQuery, PaginatedList<AppointmentDto>>
 {
-    public async Task<IReadOnlyList<AppointmentDto>> Handle(
+    public async Task<PaginatedList<AppointmentDto>> Handle(
         GetAppointmentsByDoctorIdQuery request,
         CancellationToken cancellationToken
     )
     {
-        var appointments = await appointmentRepository.GetByDoctorIdAsync(
+        var (items, totalCount) = await appointmentRepository.GetByDoctorIdPaginatedAsync(
             request.DoctorId,
             request.Date,
+            request.PageNumber,
+            request.PageSize,
             cancellationToken
         );
 
-        return
-        [
-            .. appointments.Select(a => new AppointmentDto(
+        var dtos = items
+            .Select(a => new AppointmentDto(
                 a.Id,
                 a.PatientId,
                 a.DoctorId,
@@ -32,7 +34,14 @@ public sealed class GetAppointmentsByDoctorIdQueryHandler(
                 a.Status,
                 a.PatientNotes,
                 a.ReceptionistNotes
-            )),
-        ];
+            ))
+            .ToList();
+
+        return new PaginatedList<AppointmentDto>(
+            dtos,
+            totalCount,
+            request.PageNumber,
+            request.PageSize
+        );
     }
 }

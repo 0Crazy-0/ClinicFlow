@@ -18,5 +18,11 @@ public class GetAppointmentsByDateRangeQueryValidator
                     .GreaterThanOrEqualTo(x => x.StartDate)
                     .WithMessage(DomainErrors.Validation.InvalidDateRange);
             });
+        RuleFor(x => x.PageNumber)
+            .GreaterThanOrEqualTo(1)
+            .WithMessage(DomainErrors.Validation.InvalidValue);
+        RuleFor(x => x.PageSize)
+            .InclusiveBetween(1, 100)
+            .WithMessage(DomainErrors.Validation.InvalidValue);
     }
 }

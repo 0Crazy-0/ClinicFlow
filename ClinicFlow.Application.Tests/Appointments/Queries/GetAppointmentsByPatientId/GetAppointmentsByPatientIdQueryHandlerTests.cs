@@ -1,4 +1,3 @@
-using ClinicFlow.Application.Appointments.Queries.DTOs;
 using ClinicFlow.Application.Appointments.Queries.GetAppointmentsByPatientId;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Interfaces.Repositories;
@@ -22,30 +21,11 @@ public class GetAppointmentsByPatientIdQueryHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ShouldReturnEmptyList_WhenPatientHasNoAppointments()
-    {
-        // Arrange
-        var query = new GetAppointmentsByPatientIdQuery(Guid.NewGuid());
-
-        _appointmentRepositoryMock
-            .Setup(x => x.GetByPatientIdAsync(query.PatientId))
-            .ReturnsAsync([]);
-
-        // Act
-        var result = await _sut.Handle(query, CancellationToken.None);
-
-        // Assert
-        result.Should().BeEmpty();
-        _appointmentRepositoryMock.Verify(x => x.GetByPatientIdAsync(query.PatientId), Times.Once);
-    }
-
-    [Fact]
-    public async Task Handle_ShouldReturnAppointmentList_WhenPatientHasAppointments()
+    public async Task Handle_ShouldReturnPaginatedList_WhenPatientHasAppointments()
     {
         // Arrange
         var patientId = Guid.NewGuid();
-        var query = new GetAppointmentsByPatientIdQuery(patientId);
-
+        var query = new GetAppointmentsByPatientIdQuery(patientId, 1, 10);
         var appointments = new List<Appointment>
         {
             CreateAppointment(patientId, Guid.NewGuid()),
@@ -53,18 +33,48 @@ public class GetAppointmentsByPatientIdQueryHandlerTests
         };
 
         _appointmentRepositoryMock
-            .Setup(x => x.GetByPatientIdAsync(patientId))
-            .ReturnsAsync(appointments);
+            .Setup(x =>
+                x.GetByPatientIdPaginatedAsync(patientId, 1, 10, It.IsAny<CancellationToken>())
+            )
+            .ReturnsAsync((appointments, 2));
 
         // Act
         var result = await _sut.Handle(query, CancellationToken.None);
 
         // Assert
-        result.Should().HaveCount(2);
-        result.Should().AllBeOfType<AppointmentDto>();
-        result.Select(x => x.PatientId).Should().AllBeEquivalentTo(patientId);
+        result.Should().NotBeNull();
+        result.TotalCount.Should().Be(2);
+        result.PageNumber.Should().Be(1);
+        result.TotalPages.Should().Be(1);
+        result.Items.Should().HaveCount(2);
+        result.Items.Select(x => x.PatientId).Should().AllBeEquivalentTo(patientId);
+    }
 
-        _appointmentRepositoryMock.Verify(x => x.GetByPatientIdAsync(patientId), Times.Once);
+    [Fact]
+    public async Task Handle_ShouldReturnEmptyPaginatedList_WhenPatientHasNoAppointments()
+    {
+        // Arrange
+        var query = new GetAppointmentsByPatientIdQuery(Guid.NewGuid(), 1, 10);
+
+        _appointmentRepositoryMock
+            .Setup(x =>
+                x.GetByPatientIdPaginatedAsync(
+                    query.PatientId,
+                    1,
+                    10,
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync((new List<Appointment>(), 0));
+
+        // Act
+        var result = await _sut.Handle(query, CancellationToken.None);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Items.Should().BeEmpty();
+        result.TotalCount.Should().Be(0);
+        result.TotalPages.Should().Be(0);
     }
 
     private Appointment CreateAppointment(Guid patientId, Guid doctorId) =>

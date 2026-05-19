@@ -9,13 +9,17 @@ public interface IMedicalRecordRepository
 {
     Task<MedicalRecord?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
-    Task<IReadOnlyList<MedicalRecord>> GetByPatientIdAsync(
+    Task<(IReadOnlyList<MedicalRecord> Items, int TotalCount)> GetByPatientIdPaginatedAsync(
         Guid patientId,
+        int pageNumber,
+        int pageSize,
         CancellationToken cancellationToken = default
     );
 
-    Task<IReadOnlyList<MedicalRecord>> GetByDoctorIdAsync(
+    Task<(IReadOnlyList<MedicalRecord> Items, int TotalCount)> GetByDoctorIdPaginatedAsync(
         Guid doctorId,
+        int pageNumber,
+        int pageSize,
         CancellationToken cancellationToken = default
     );
 

@@ -8,18 +8,32 @@ namespace ClinicFlow.Application.Tests.Appointments.Queries.GetAppointmentsByDat
 public class GetAppointmentsByDateRangeQueryValidatorTests
 {
     private readonly FakeTimeProvider _fakeTime = new();
-    private readonly GetAppointmentsByDateRangeQueryValidator _sut;
+    private readonly GetAppointmentsByDateRangeQueryValidator _sut = new();
 
-    public GetAppointmentsByDateRangeQueryValidatorTests()
+    [Fact]
+    public void Validate_ShouldNotHaveError_WhenQueryIsValid()
     {
-        _sut = new GetAppointmentsByDateRangeQueryValidator();
+        // Arrange
+        var now = _fakeTime.GetUtcNow().UtcDateTime;
+        var query = new GetAppointmentsByDateRangeQuery(now, now.AddDays(7), 1, 10);
+
+        // Act
+        var result = _sut.TestValidate(query);
+
+        // Assert
+        result.ShouldNotHaveAnyValidationErrors();
     }
 
     [Fact]
     public void Validate_ShouldHaveError_WhenStartDateIsEmpty()
     {
         // Arrange
-        var query = new GetAppointmentsByDateRangeQuery(default, _fakeTime.GetUtcNow().UtcDateTime);
+        var query = new GetAppointmentsByDateRangeQuery(
+            default,
+            _fakeTime.GetUtcNow().UtcDateTime,
+            1,
+            10
+        );
 
         // Act
         var result = _sut.TestValidate(query);
@@ -34,7 +48,12 @@ public class GetAppointmentsByDateRangeQueryValidatorTests
     public void Validate_ShouldHaveError_WhenEndDateIsEmpty()
     {
         // Arrange
-        var query = new GetAppointmentsByDateRangeQuery(_fakeTime.GetUtcNow().UtcDateTime, default);
+        var query = new GetAppointmentsByDateRangeQuery(
+            _fakeTime.GetUtcNow().UtcDateTime,
+            default,
+            1,
+            10
+        );
 
         // Act
         var result = _sut.TestValidate(query);
@@ -50,7 +69,7 @@ public class GetAppointmentsByDateRangeQueryValidatorTests
     {
         // Arrange
         var now = _fakeTime.GetUtcNow().UtcDateTime;
-        var query = new GetAppointmentsByDateRangeQuery(now, now.AddDays(-1));
+        var query = new GetAppointmentsByDateRangeQuery(now, now.AddDays(-1), 1, 10);
 
         // Act
         var result = _sut.TestValidate(query);
@@ -62,31 +81,53 @@ public class GetAppointmentsByDateRangeQueryValidatorTests
     }
 
     [Fact]
-    public void Validate_ShouldNotHaveError_WhenQueryIsValid()
-    {
-        // Arrange
-        var now = _fakeTime.GetUtcNow().UtcDateTime;
-        var query = new GetAppointmentsByDateRangeQuery(now, now.AddDays(7));
-
-        // Act
-        var result = _sut.TestValidate(query);
-
-        // Assert
-        result.ShouldNotHaveValidationErrorFor(x => x.StartDate);
-        result.ShouldNotHaveValidationErrorFor(x => x.EndDate);
-    }
-
-    [Fact]
     public void Validate_ShouldNotHaveError_WhenStartDateEqualsEndDate()
     {
         // Arrange
         var now = _fakeTime.GetUtcNow().UtcDateTime;
-        var query = new GetAppointmentsByDateRangeQuery(now, now);
+        var query = new GetAppointmentsByDateRangeQuery(now, now, 1, 10);
 
         // Act
         var result = _sut.TestValidate(query);
 
         // Assert
         result.ShouldNotHaveAnyValidationErrors();
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    public void Validate_ShouldHaveError_WhenPageNumberIsLessThanOne(int pageNumber)
+    {
+        // Arrange
+        var now = _fakeTime.GetUtcNow().UtcDateTime;
+        var query = new GetAppointmentsByDateRangeQuery(now, now.AddDays(7), pageNumber, 10);
+
+        // Act
+        var result = _sut.TestValidate(query);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.PageNumber)
+            .WithErrorMessage(DomainErrors.Validation.InvalidValue);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    [InlineData(101)]
+    public void Validate_ShouldHaveError_WhenPageSizeIsOutOfRange(int pageSize)
+    {
+        // Arrange
+        var now = _fakeTime.GetUtcNow().UtcDateTime;
+        var query = new GetAppointmentsByDateRangeQuery(now, now.AddDays(7), 1, pageSize);
+
+        // Act
+        var result = _sut.TestValidate(query);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.PageSize)
+            .WithErrorMessage(DomainErrors.Validation.InvalidValue);
     }
 }

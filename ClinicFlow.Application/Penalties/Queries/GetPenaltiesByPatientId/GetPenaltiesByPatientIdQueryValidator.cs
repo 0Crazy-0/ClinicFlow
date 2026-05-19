@@ -8,5 +8,11 @@ public class GetPenaltiesByPatientIdQueryValidator : AbstractValidator<GetPenalt
     public GetPenaltiesByPatientIdQueryValidator()
     {
         RuleFor(x => x.PatientId).NotEmpty().WithMessage(DomainErrors.Validation.InvalidValue);
+        RuleFor(x => x.PageNumber)
+            .GreaterThanOrEqualTo(1)
+            .WithMessage(DomainErrors.Validation.InvalidValue);
+        RuleFor(x => x.PageSize)
+            .InclusiveBetween(1, 100)
+            .WithMessage(DomainErrors.Validation.InvalidValue);
     }
 }

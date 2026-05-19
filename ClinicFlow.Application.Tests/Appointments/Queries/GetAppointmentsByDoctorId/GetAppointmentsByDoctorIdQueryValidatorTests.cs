@@ -8,11 +8,24 @@ namespace ClinicFlow.Application.Tests.Appointments.Queries.GetAppointmentsByDoc
 public class GetAppointmentsByDoctorIdQueryValidatorTests
 {
     private readonly FakeTimeProvider _fakeTime = new();
-    private readonly GetAppointmentsByDoctorIdQueryValidator _sut;
+    private readonly GetAppointmentsByDoctorIdQueryValidator _sut = new();
 
-    public GetAppointmentsByDoctorIdQueryValidatorTests()
+    [Fact]
+    public void Validate_ShouldNotHaveError_WhenQueryIsValid()
     {
-        _sut = new GetAppointmentsByDoctorIdQueryValidator();
+        // Arrange
+        var query = new GetAppointmentsByDoctorIdQuery(
+            Guid.NewGuid(),
+            _fakeTime.GetUtcNow().UtcDateTime,
+            1,
+            10
+        );
+
+        // Act
+        var result = _sut.TestValidate(query);
+
+        // Assert
+        result.ShouldNotHaveAnyValidationErrors();
     }
 
     [Fact]
@@ -21,7 +34,9 @@ public class GetAppointmentsByDoctorIdQueryValidatorTests
         // Arrange
         var query = new GetAppointmentsByDoctorIdQuery(
             Guid.Empty,
-            _fakeTime.GetUtcNow().UtcDateTime
+            _fakeTime.GetUtcNow().UtcDateTime,
+            1,
+            10
         );
 
         // Act
@@ -37,7 +52,7 @@ public class GetAppointmentsByDoctorIdQueryValidatorTests
     public void Validate_ShouldHaveError_WhenDateIsEmpty()
     {
         // Arrange
-        var query = new GetAppointmentsByDoctorIdQuery(Guid.NewGuid(), default);
+        var query = new GetAppointmentsByDoctorIdQuery(Guid.NewGuid(), default, 1, 10);
 
         // Act
         var result = _sut.TestValidate(query);
@@ -48,20 +63,48 @@ public class GetAppointmentsByDoctorIdQueryValidatorTests
             .WithErrorMessage(DomainErrors.Validation.ValueRequired);
     }
 
-    [Fact]
-    public void Validate_ShouldNotHaveError_WhenQueryIsValid()
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    public void Validate_ShouldHaveError_WhenPageNumberIsLessThanOne(int pageNumber)
     {
         // Arrange
         var query = new GetAppointmentsByDoctorIdQuery(
             Guid.NewGuid(),
-            _fakeTime.GetUtcNow().UtcDateTime
+            _fakeTime.GetUtcNow().UtcDateTime,
+            pageNumber,
+            10
         );
 
         // Act
         var result = _sut.TestValidate(query);
 
         // Assert
-        result.ShouldNotHaveValidationErrorFor(x => x.DoctorId);
-        result.ShouldNotHaveValidationErrorFor(x => x.Date);
+        result
+            .ShouldHaveValidationErrorFor(x => x.PageNumber)
+            .WithErrorMessage(DomainErrors.Validation.InvalidValue);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    [InlineData(101)]
+    public void Validate_ShouldHaveError_WhenPageSizeIsOutOfRange(int pageSize)
+    {
+        // Arrange
+        var query = new GetAppointmentsByDoctorIdQuery(
+            Guid.NewGuid(),
+            _fakeTime.GetUtcNow().UtcDateTime,
+            1,
+            pageSize
+        );
+
+        // Act
+        var result = _sut.TestValidate(query);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.PageSize)
+            .WithErrorMessage(DomainErrors.Validation.InvalidValue);
     }
 }

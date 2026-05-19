@@ -11,8 +11,10 @@ public interface IDoctorRepository
 
     Task<Doctor?> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
 
-    Task<IReadOnlyList<Doctor>> GetBySpecialtyIdAsync(
+    Task<(IReadOnlyList<Doctor> Items, int TotalCount)> GetBySpecialtyIdPaginatedAsync(
         Guid specialtyId,
+        int pageNumber,
+        int pageSize,
         CancellationToken cancellationToken = default
     );
 

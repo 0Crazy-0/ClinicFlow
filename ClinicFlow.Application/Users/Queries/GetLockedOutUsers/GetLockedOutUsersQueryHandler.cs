@@ -1,3 +1,4 @@
+using ClinicFlow.Application.Common.Models;
 using ClinicFlow.Application.Users.Queries.DTOs;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using MediatR;
@@ -7,21 +8,22 @@ namespace ClinicFlow.Application.Users.Queries.GetLockedOutUsers;
 public sealed class GetLockedOutUsersQueryHandler(
     TimeProvider timeProvider,
     IUserRepository userRepository
-) : IRequestHandler<GetLockedOutUsersQuery, IReadOnlyList<UserDto>>
+) : IRequestHandler<GetLockedOutUsersQuery, PaginatedList<UserDto>>
 {
-    public async Task<IReadOnlyList<UserDto>> Handle(
+    public async Task<PaginatedList<UserDto>> Handle(
         GetLockedOutUsersQuery request,
         CancellationToken cancellationToken
     )
     {
-        var users = await userRepository.GetLockedOutUsersAsync(
+        var (items, totalCount) = await userRepository.GetLockedOutUsersPaginatedAsync(
             timeProvider.GetUtcNow().UtcDateTime,
+            request.PageNumber,
+            request.PageSize,
             cancellationToken
         );
 
-        return
-        [
-            .. users.Select(user => new UserDto(
+        var dtos = items
+            .Select(user => new UserDto(
                 user.Id,
                 user.Email.Value,
                 user.PhoneNumber.Value,
@@ -31,7 +33,9 @@ public sealed class GetLockedOutUsersQueryHandler(
                 user.LastLoginAt,
                 user.FailedLoginAttempts,
                 user.LockoutEnd
-            )),
-        ];
+            ))
+            .ToList();
+
+        return new PaginatedList<UserDto>(dtos, totalCount, request.PageNumber, request.PageSize);
     }
 }
