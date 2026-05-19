@@ -1,5 +1,4 @@
 using ClinicFlow.Application.MedicalRecords.Queries.GetMedicalRecordByAppointmentId;
-using ClinicFlow.Application.Tests.Shared;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Exceptions.Base;
