@@ -24,12 +24,27 @@ public interface IPatientPenaltyRepository
         CancellationToken cancellationToken = default
     );
 
-    Task<IReadOnlyList<PatientPenalty>> GetActiveBlocksAsync(
+    Task<(IReadOnlyList<PatientPenalty> Items, int TotalCount)> GetByPatientIdPaginatedAsync(
+        Guid patientId,
+        int pageNumber,
+        int pageSize,
+        CancellationToken cancellationToken = default
+    );
+
+    Task<(IReadOnlyList<PatientPenalty> Items, int TotalCount)> GetActiveBlocksPaginatedAsync(
         DateTime referenceTime,
+        int pageNumber,
+        int pageSize,
         CancellationToken cancellationToken = default
     );
 
     Task<IReadOnlyList<PatientPenalty>> GetActiveWarningsAsync(
+        CancellationToken cancellationToken = default
+    );
+
+    Task<(IReadOnlyList<PatientPenalty> Items, int TotalCount)> GetActiveWarningsPaginatedAsync(
+        int pageNumber,
+        int pageSize,
         CancellationToken cancellationToken = default
     );
 }

@@ -22,7 +22,7 @@ public class GetActiveBlockedPatientsQueryHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ShouldReturnBlockedPatients_WhenActiveBlocksExist()
+    public async Task Handle_ShouldReturnPaginatedList_WhenActiveBlocksExist()
     {
         // Arrange
         var block1 = PatientPenalty.CreateManualBlock(
@@ -39,19 +39,28 @@ public class GetActiveBlockedPatientsQueryHandlerTests
         );
 
         _penaltyRepositoryMock
-            .Setup(x => x.GetActiveBlocksAsync(It.IsAny<DateTime>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync([block1, block2]);
+            .Setup(x =>
+                x.GetActiveBlocksPaginatedAsync(
+                    It.IsAny<DateTime>(),
+                    1,
+                    10,
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(([block1, block2], 2));
 
-        var query = new GetActiveBlockedPatientsQuery();
+        var query = new GetActiveBlockedPatientsQuery(1, 10);
 
         // Act
         var result = await _sut.Handle(query, CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();
-        result.Should().HaveCount(2);
+        result.TotalCount.Should().Be(2);
+        result.PageNumber.Should().Be(1);
+        result.Items.Should().HaveCount(2);
 
-        var resultList = result.ToList();
+        var resultList = result.Items.ToList();
         resultList[0].Id.Should().Be(block1.Id);
         resultList[0].Type.Should().Be(nameof(PenaltyType.TemporaryBlock));
 
@@ -60,20 +69,29 @@ public class GetActiveBlockedPatientsQueryHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ShouldReturnEmptyList_WhenNoActiveBlocksExist()
+    public async Task Handle_ShouldReturnEmptyPaginatedList_WhenNoActiveBlocksExist()
     {
         // Arrange
         _penaltyRepositoryMock
-            .Setup(x => x.GetActiveBlocksAsync(It.IsAny<DateTime>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync([]);
+            .Setup(x =>
+                x.GetActiveBlocksPaginatedAsync(
+                    It.IsAny<DateTime>(),
+                    1,
+                    10,
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync((new List<PatientPenalty>(), 0));
 
-        var query = new GetActiveBlockedPatientsQuery();
+        var query = new GetActiveBlockedPatientsQuery(1, 10);
 
         // Act
         var result = await _sut.Handle(query, CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();
-        result.Should().BeEmpty();
+        result.Items.Should().BeEmpty();
+        result.TotalCount.Should().Be(0);
+        result.TotalPages.Should().Be(0);
     }
 }

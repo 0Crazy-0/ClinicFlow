@@ -19,7 +19,7 @@ public class GetActiveWarningsQueryHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ShouldReturnWarnings_WhenActiveWarningsExist()
+    public async Task Handle_ShouldReturnPaginatedList_WhenActiveWarningsExist()
     {
         // Arrange
         var warning1 = PatientPenalty.CreateAutomaticWarning(
@@ -34,19 +34,21 @@ public class GetActiveWarningsQueryHandlerTests
         );
 
         _penaltyRepositoryMock
-            .Setup(x => x.GetActiveWarningsAsync(It.IsAny<CancellationToken>()))
-            .ReturnsAsync([warning1, warning2]);
+            .Setup(x => x.GetActiveWarningsPaginatedAsync(1, 10, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(([warning1, warning2], 2));
 
-        var query = new GetActiveWarningsQuery();
+        var query = new GetActiveWarningsQuery(1, 10);
 
         // Act
         var result = await _sut.Handle(query, CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();
-        result.Should().HaveCount(2);
+        result.TotalCount.Should().Be(2);
+        result.PageNumber.Should().Be(1);
+        result.Items.Should().HaveCount(2);
 
-        var resultList = result.ToList();
+        var resultList = result.Items.ToList();
         resultList[0].Id.Should().Be(warning1.Id);
         resultList[0].Type.Should().Be(nameof(PenaltyType.Warning));
 
@@ -55,20 +57,22 @@ public class GetActiveWarningsQueryHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ShouldReturnEmptyList_WhenNoActiveWarningsExist()
+    public async Task Handle_ShouldReturnEmptyPaginatedList_WhenNoActiveWarningsExist()
     {
         // Arrange
         _penaltyRepositoryMock
-            .Setup(x => x.GetActiveWarningsAsync(It.IsAny<CancellationToken>()))
-            .ReturnsAsync([]);
+            .Setup(x => x.GetActiveWarningsPaginatedAsync(1, 10, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((new List<PatientPenalty>(), 0));
 
-        var query = new GetActiveWarningsQuery();
+        var query = new GetActiveWarningsQuery(1, 10);
 
         // Act
         var result = await _sut.Handle(query, CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();
-        result.Should().BeEmpty();
+        result.Items.Should().BeEmpty();
+        result.TotalCount.Should().Be(0);
+        result.TotalPages.Should().Be(0);
     }
 }

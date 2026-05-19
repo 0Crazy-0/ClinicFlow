@@ -21,7 +21,7 @@ public class GetPenaltiesByPatientIdQueryHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ShouldReturnPenalties_WhenPenaltiesExist()
+    public async Task Handle_ShouldReturnPaginatedList_WhenPenaltiesExist()
     {
         // Arrange
         var patientId = Guid.NewGuid();
@@ -34,19 +34,23 @@ public class GetPenaltiesByPatientIdQueryHandlerTests
         );
 
         _penaltyRepositoryMock
-            .Setup(x => x.GetByPatientIdAsync(patientId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync([warning, block]);
+            .Setup(x =>
+                x.GetByPatientIdPaginatedAsync(patientId, 1, 10, It.IsAny<CancellationToken>())
+            )
+            .ReturnsAsync(([warning, block], 2));
 
-        var query = new GetPenaltiesByPatientIdQuery(patientId);
+        var query = new GetPenaltiesByPatientIdQuery(patientId, 1, 10);
 
         // Act
         var result = await _sut.Handle(query, CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();
-        result.Should().HaveCount(2);
+        result.TotalCount.Should().Be(2);
+        result.PageNumber.Should().Be(1);
+        result.Items.Should().HaveCount(2);
 
-        var resultList = result.ToList();
+        var resultList = result.Items.ToList();
         resultList[0].Id.Should().Be(warning.Id);
         resultList[0].PatientId.Should().Be(patientId);
         resultList[0].Type.Should().Be(nameof(PenaltyType.Warning));
@@ -56,22 +60,26 @@ public class GetPenaltiesByPatientIdQueryHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ShouldReturnEmptyList_WhenNoPenaltiesExist()
+    public async Task Handle_ShouldReturnEmptyPaginatedList_WhenNoPenaltiesExist()
     {
         // Arrange
         var patientId = Guid.NewGuid();
 
         _penaltyRepositoryMock
-            .Setup(x => x.GetByPatientIdAsync(patientId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync([]);
+            .Setup(x =>
+                x.GetByPatientIdPaginatedAsync(patientId, 1, 10, It.IsAny<CancellationToken>())
+            )
+            .ReturnsAsync((new List<PatientPenalty>(), 0));
 
-        var query = new GetPenaltiesByPatientIdQuery(patientId);
+        var query = new GetPenaltiesByPatientIdQuery(patientId, 1, 10);
 
         // Act
         var result = await _sut.Handle(query, CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();
-        result.Should().BeEmpty();
+        result.Items.Should().BeEmpty();
+        result.TotalCount.Should().Be(0);
+        result.TotalPages.Should().Be(0);
     }
 }

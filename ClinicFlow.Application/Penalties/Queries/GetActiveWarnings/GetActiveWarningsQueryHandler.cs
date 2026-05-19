@@ -1,3 +1,4 @@
+using ClinicFlow.Application.Common.Models;
 using ClinicFlow.Application.Penalties.Queries.DTOs;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using MediatR;
@@ -5,18 +6,21 @@ using MediatR;
 namespace ClinicFlow.Application.Penalties.Queries.GetActiveWarnings;
 
 public sealed class GetActiveWarningsQueryHandler(IPatientPenaltyRepository penaltyRepository)
-    : IRequestHandler<GetActiveWarningsQuery, IReadOnlyList<PatientPenaltyDto>>
+    : IRequestHandler<GetActiveWarningsQuery, PaginatedList<PatientPenaltyDto>>
 {
-    public async Task<IReadOnlyList<PatientPenaltyDto>> Handle(
+    public async Task<PaginatedList<PatientPenaltyDto>> Handle(
         GetActiveWarningsQuery request,
         CancellationToken cancellationToken
     )
     {
-        var penalties = await penaltyRepository.GetActiveWarningsAsync(cancellationToken);
+        var (items, totalCount) = await penaltyRepository.GetActiveWarningsPaginatedAsync(
+            request.PageNumber,
+            request.PageSize,
+            cancellationToken
+        );
 
-        return
-        [
-            .. penalties.Select(p => new PatientPenaltyDto(
+        var dtos = items
+            .Select(p => new PatientPenaltyDto(
                 p.Id,
                 p.PatientId,
                 p.AppointmentId,
@@ -24,7 +28,14 @@ public sealed class GetActiveWarningsQueryHandler(IPatientPenaltyRepository pena
                 p.Reason,
                 p.BlockedUntil,
                 p.IsRemoved
-            )),
-        ];
+            ))
+            .ToList();
+
+        return new PaginatedList<PatientPenaltyDto>(
+            dtos,
+            totalCount,
+            request.PageNumber,
+            request.PageSize
+        );
     }
 }
