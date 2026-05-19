@@ -1,3 +1,4 @@
+using ClinicFlow.Application.Common.Models;
 using ClinicFlow.Application.Doctors.Queries.DTOs;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using MediatR;
@@ -5,21 +6,22 @@ using MediatR;
 namespace ClinicFlow.Application.Doctors.Queries.GetDoctorsBySpecialtyId;
 
 public sealed class GetDoctorsBySpecialtyIdQueryHandler(IDoctorRepository doctorRepository)
-    : IRequestHandler<GetDoctorsBySpecialtyIdQuery, IReadOnlyList<DoctorDto>>
+    : IRequestHandler<GetDoctorsBySpecialtyIdQuery, PaginatedList<DoctorDto>>
 {
-    public async Task<IReadOnlyList<DoctorDto>> Handle(
+    public async Task<PaginatedList<DoctorDto>> Handle(
         GetDoctorsBySpecialtyIdQuery request,
         CancellationToken cancellationToken
     )
     {
-        var doctors = await doctorRepository.GetBySpecialtyIdAsync(
+        var (items, totalCount) = await doctorRepository.GetBySpecialtyIdPaginatedAsync(
             request.SpecialtyId,
+            request.PageNumber,
+            request.PageSize,
             cancellationToken
         );
 
-        return
-        [
-            .. doctors.Select(doctor => new DoctorDto(
+        var dtos = items
+            .Select(doctor => new DoctorDto(
                 doctor.Id,
                 doctor.UserId,
                 doctor.MedicalSpecialtyId,
@@ -28,7 +30,9 @@ public sealed class GetDoctorsBySpecialtyIdQueryHandler(IDoctorRepository doctor
                 doctor.ConsultationRoom.Number,
                 doctor.ConsultationRoom.Name,
                 doctor.ConsultationRoom.Floor
-            )),
-        ];
+            ))
+            .ToList();
+
+        return new PaginatedList<DoctorDto>(dtos, totalCount, request.PageNumber, request.PageSize);
     }
 }

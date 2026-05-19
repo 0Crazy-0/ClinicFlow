@@ -8,5 +8,11 @@ public class GetDoctorsBySpecialtyIdQueryValidator : AbstractValidator<GetDoctor
     public GetDoctorsBySpecialtyIdQueryValidator()
     {
         RuleFor(x => x.SpecialtyId).NotEmpty().WithMessage(DomainErrors.Validation.InvalidValue);
+        RuleFor(x => x.PageNumber)
+            .GreaterThanOrEqualTo(1)
+            .WithMessage(DomainErrors.Validation.InvalidValue);
+        RuleFor(x => x.PageSize)
+            .InclusiveBetween(1, 100)
+            .WithMessage(DomainErrors.Validation.InvalidValue);
     }
 }
