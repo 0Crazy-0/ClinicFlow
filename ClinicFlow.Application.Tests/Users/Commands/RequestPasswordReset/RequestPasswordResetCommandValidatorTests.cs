@@ -38,4 +38,19 @@ public class RequestPasswordResetCommandValidatorTests
             .ShouldHaveValidationErrorFor(x => x.Email)
             .WithErrorMessage(DomainErrors.Validation.ValueRequired);
     }
+
+    [Fact]
+    public void Validate_ShouldFail_WhenEmailFormatIsInvalid()
+    {
+        // Arrange
+        var command = new RequestPasswordResetCommand("not-an-email");
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.Email)
+            .WithErrorMessage(DomainErrors.Validation.InvalidValue);
+    }
 }

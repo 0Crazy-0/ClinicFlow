@@ -9,6 +9,10 @@ public abstract class RegisterUserCommandValidatorBase<T> : AbstractValidator<T>
     protected RegisterUserCommandValidatorBase()
     {
         RuleFor(x => x.Email).NotEmpty().WithMessage(DomainErrors.Validation.ValueRequired);
+        RuleFor(x => x.Email)
+            .EmailAddress()
+            .When(x => !string.IsNullOrWhiteSpace(x.Email))
+            .WithMessage(DomainErrors.Validation.InvalidValue);
         RuleFor(x => x.Password)
             .NotEmpty()
             .WithMessage(DomainErrors.Validation.ValueRequired)

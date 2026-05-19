@@ -41,6 +41,21 @@ public class RegisterUserCommandValidatorBaseTests
             .WithErrorMessage(DomainErrors.Validation.ValueRequired);
     }
 
+    [Fact]
+    public void Validate_ShouldFail_WhenEmailFormatIsInvalid()
+    {
+        // Arrange
+        var command = new RegisterUserCommand("not-an-email", "password123", "555-1234");
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.Email)
+            .WithErrorMessage(DomainErrors.Validation.InvalidValue);
+    }
+
     [Theory]
     [InlineData(null)]
     [InlineData("")]
