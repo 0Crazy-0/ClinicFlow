@@ -19,59 +19,68 @@ public class GetMedicalRecordsByDoctorIdQueryHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ShouldReturnMedicalRecordDtos_WhenRecordsExistForDoctor()
+    public async Task Handle_ShouldReturnPaginatedList_WhenRecordsExistForDoctor()
     {
         // Arrange
         var doctorId = Guid.NewGuid();
-        var patientId1 = Guid.NewGuid();
-        var patientId2 = Guid.NewGuid();
-        var request = new GetMedicalRecordsByDoctorIdQuery(doctorId);
+        var request = new GetMedicalRecordsByDoctorIdQuery(doctorId, 1, 10);
 
-        var record1 = CreateMedicalRecord(patientId1, doctorId, Guid.NewGuid(), "Headache");
+        var record1 = CreateMedicalRecord(Guid.NewGuid(), doctorId, Guid.NewGuid(), "Headache");
+        var record2 = CreateMedicalRecord(Guid.NewGuid(), doctorId, Guid.NewGuid(), "Fever");
+
         record1.AddClinicalDetail(DynamicClinicalDetail.Create("vital-signs", "{}"));
 
-        var record2 = CreateMedicalRecord(patientId2, doctorId, Guid.NewGuid(), "Fever");
-
         _medicalRecordRepositoryMock
-            .Setup(x => x.GetByDoctorIdAsync(doctorId, CancellationToken.None))
-            .ReturnsAsync([record1, record2]);
+            .Setup(x =>
+                x.GetByDoctorIdPaginatedAsync(doctorId, 1, 10, It.IsAny<CancellationToken>())
+            )
+            .ReturnsAsync(([record1, record2], 2));
 
         // Act
         var result = await _sut.Handle(request, CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();
-        result.Should().HaveCount(2);
+        result.TotalCount.Should().Be(2);
+        result.PageNumber.Should().Be(1);
+        result.Items.Should().HaveCount(2);
 
-        var firstResult = result.First(r => r.Id == record1.Id);
-        firstResult.PatientId.Should().Be(patientId1);
+        var firstResult = result.Items.First(r => r.Id == record1.Id);
         firstResult.DoctorId.Should().Be(doctorId);
         firstResult.ChiefComplaint.Should().Be("Headache");
         firstResult.ClinicalDetails.Should().ContainSingle();
 
-        var secondResult = result.First(r => r.Id == record2.Id);
-        secondResult.PatientId.Should().Be(patientId2);
+        var secondResult = result.Items.First(r => r.Id == record2.Id);
         secondResult.DoctorId.Should().Be(doctorId);
         secondResult.ChiefComplaint.Should().Be("Fever");
         secondResult.ClinicalDetails.Should().BeEmpty();
     }
 
     [Fact]
-    public async Task Handle_ShouldReturnEmptyList_WhenNoRecordsExistForDoctor()
+    public async Task Handle_ShouldReturnEmptyPaginatedList_WhenNoRecordsExistForDoctor()
     {
         // Arrange
-        var request = new GetMedicalRecordsByDoctorIdQuery(Guid.NewGuid());
+        var request = new GetMedicalRecordsByDoctorIdQuery(Guid.NewGuid(), 1, 10);
 
         _medicalRecordRepositoryMock
-            .Setup(x => x.GetByDoctorIdAsync(request.DoctorId, CancellationToken.None))
-            .ReturnsAsync([]);
+            .Setup(x =>
+                x.GetByDoctorIdPaginatedAsync(
+                    request.DoctorId,
+                    1,
+                    10,
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync((new List<MedicalRecord>(), 0));
 
         // Act
         var result = await _sut.Handle(request, CancellationToken.None);
 
         // Assert
         result.Should().NotBeNull();
-        result.Should().BeEmpty();
+        result.Items.Should().BeEmpty();
+        result.TotalCount.Should().Be(0);
+        result.TotalPages.Should().Be(0);
     }
 
     private static MedicalRecord CreateMedicalRecord(

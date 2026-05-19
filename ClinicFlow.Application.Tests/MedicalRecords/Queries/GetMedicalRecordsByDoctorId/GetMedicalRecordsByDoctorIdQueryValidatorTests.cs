@@ -6,18 +6,26 @@ namespace ClinicFlow.Application.Tests.MedicalRecords.Queries.GetMedicalRecordsB
 
 public class GetMedicalRecordsByDoctorIdQueryValidatorTests
 {
-    private readonly GetMedicalRecordsByDoctorIdQueryValidator _sut;
+    private readonly GetMedicalRecordsByDoctorIdQueryValidator _sut = new();
 
-    public GetMedicalRecordsByDoctorIdQueryValidatorTests()
+    [Fact]
+    public void Validate_ShouldNotHaveError_WhenQueryIsValid()
     {
-        _sut = new GetMedicalRecordsByDoctorIdQueryValidator();
+        // Arrange
+        var query = new GetMedicalRecordsByDoctorIdQuery(Guid.NewGuid(), 1, 10);
+
+        // Act
+        var result = _sut.TestValidate(query);
+
+        // Assert
+        result.ShouldNotHaveAnyValidationErrors();
     }
 
     [Fact]
     public void Validate_ShouldHaveError_WhenDoctorIdIsEmpty()
     {
         // Arrange
-        var query = new GetMedicalRecordsByDoctorIdQuery(Guid.Empty);
+        var query = new GetMedicalRecordsByDoctorIdQuery(Guid.Empty, 1, 10);
 
         // Act
         var result = _sut.TestValidate(query);
@@ -28,16 +36,38 @@ public class GetMedicalRecordsByDoctorIdQueryValidatorTests
             .WithErrorMessage(DomainErrors.Validation.InvalidValue);
     }
 
-    [Fact]
-    public void Validate_ShouldNotHaveError_WhenDoctorIdIsValid()
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    public void Validate_ShouldHaveError_WhenPageNumberIsLessThanOne(int pageNumber)
     {
         // Arrange
-        var query = new GetMedicalRecordsByDoctorIdQuery(Guid.NewGuid());
+        var query = new GetMedicalRecordsByDoctorIdQuery(Guid.NewGuid(), pageNumber, 10);
 
         // Act
         var result = _sut.TestValidate(query);
 
         // Assert
-        result.ShouldNotHaveValidationErrorFor(x => x.DoctorId);
+        result
+            .ShouldHaveValidationErrorFor(x => x.PageNumber)
+            .WithErrorMessage(DomainErrors.Validation.InvalidValue);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    [InlineData(101)]
+    public void Validate_ShouldHaveError_WhenPageSizeIsOutOfRange(int pageSize)
+    {
+        // Arrange
+        var query = new GetMedicalRecordsByDoctorIdQuery(Guid.NewGuid(), 1, pageSize);
+
+        // Act
+        var result = _sut.TestValidate(query);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.PageSize)
+            .WithErrorMessage(DomainErrors.Validation.InvalidValue);
     }
 }
