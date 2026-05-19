@@ -9,5 +9,9 @@ public sealed class RequestPasswordResetCommandValidator
     public RequestPasswordResetCommandValidator()
     {
         RuleFor(x => x.Email).NotEmpty().WithMessage(DomainErrors.Validation.ValueRequired);
+        RuleFor(x => x.Email)
+            .EmailAddress()
+            .When(x => !string.IsNullOrWhiteSpace(x.Email))
+            .WithMessage(DomainErrors.Validation.InvalidValue);
     }
 }
