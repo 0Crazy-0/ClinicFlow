@@ -21,8 +21,9 @@ public class GetLockedOutUsersQueryHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ShouldReturnLockedOutUsers_WhenUsersAreLocked()
+    public async Task Handle_ShouldReturnPaginatedList_WhenUsersAreLocked()
     {
+        // Arrange
         var lockedUser = User.Create(
             EmailAddress.Create("locked@clinic.com"),
             "hashedpassword123",
@@ -30,20 +31,27 @@ public class GetLockedOutUsersQueryHandlerTests
             UserRole.Patient
         );
 
-        var users = new List<User> { lockedUser };
-
         _userRepositoryMock
             .Setup(x =>
-                x.GetLockedOutUsersAsync(It.IsAny<DateTime>(), It.IsAny<CancellationToken>())
+                x.GetLockedOutUsersPaginatedAsync(
+                    It.IsAny<DateTime>(),
+                    1,
+                    10,
+                    It.IsAny<CancellationToken>()
+                )
             )
-            .ReturnsAsync(users);
+            .ReturnsAsync((new List<User> { lockedUser }, 1));
 
         // Act
-        var result = await _sut.Handle(new GetLockedOutUsersQuery(), CancellationToken.None);
+        var result = await _sut.Handle(new GetLockedOutUsersQuery(1, 10), CancellationToken.None);
 
         // Assert
-        var dto = result.First();
+        result.Should().NotBeNull();
+        result.TotalCount.Should().Be(1);
+        result.PageNumber.Should().Be(1);
+        result.Items.Should().ContainSingle();
 
+        var dto = result.Items.First();
         dto.Id.Should().Be(lockedUser.Id);
         dto.Email.Should().Be(lockedUser.Email.Value);
         dto.PhoneNumber.Should().Be(lockedUser.PhoneNumber.Value);
@@ -56,20 +64,28 @@ public class GetLockedOutUsersQueryHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ShouldReturnEmptyCollection_WhenNoUsersAreLocked()
+    public async Task Handle_ShouldReturnEmptyPaginatedList_WhenNoUsersAreLocked()
     {
         // Arrange
         _userRepositoryMock
             .Setup(x =>
-                x.GetLockedOutUsersAsync(It.IsAny<DateTime>(), It.IsAny<CancellationToken>())
+                x.GetLockedOutUsersPaginatedAsync(
+                    It.IsAny<DateTime>(),
+                    1,
+                    10,
+                    It.IsAny<CancellationToken>()
+                )
             )
-            .ReturnsAsync([]);
+            .ReturnsAsync((new List<User>(), 0));
 
         // Act
-        var result = await _sut.Handle(new GetLockedOutUsersQuery(), CancellationToken.None);
+        var result = await _sut.Handle(new GetLockedOutUsersQuery(1, 10), CancellationToken.None);
 
         // Assert
-        result.Should().BeEmpty();
+        result.Should().NotBeNull();
+        result.Items.Should().BeEmpty();
+        result.TotalCount.Should().Be(0);
+        result.TotalPages.Should().Be(0);
     }
 
     [Fact]
@@ -81,16 +97,27 @@ public class GetLockedOutUsersQueryHandlerTests
 
         _userRepositoryMock
             .Setup(x =>
-                x.GetLockedOutUsersAsync(It.IsAny<DateTime>(), It.IsAny<CancellationToken>())
+                x.GetLockedOutUsersPaginatedAsync(
+                    It.IsAny<DateTime>(),
+                    1,
+                    10,
+                    It.IsAny<CancellationToken>()
+                )
             )
-            .ReturnsAsync([]);
+            .ReturnsAsync((new List<User>(), 0));
 
         // Act
-        await _sut.Handle(new GetLockedOutUsersQuery(), CancellationToken.None);
+        await _sut.Handle(new GetLockedOutUsersQuery(1, 10), CancellationToken.None);
 
         // Assert
         _userRepositoryMock.Verify(
-            x => x.GetLockedOutUsersAsync(now.UtcDateTime, It.IsAny<CancellationToken>()),
+            x =>
+                x.GetLockedOutUsersPaginatedAsync(
+                    now.UtcDateTime,
+                    1,
+                    10,
+                    It.IsAny<CancellationToken>()
+                ),
             Times.Once
         );
     }
