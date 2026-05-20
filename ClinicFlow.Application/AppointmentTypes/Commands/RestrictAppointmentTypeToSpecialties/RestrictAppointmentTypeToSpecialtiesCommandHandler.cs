@@ -12,6 +12,7 @@ public sealed class RestrictAppointmentTypeToSpecialtiesCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<RestrictAppointmentTypeToSpecialtiesCommand>
 {
+    /// <inheritdoc />
     public async Task Handle(
         RestrictAppointmentTypeToSpecialtiesCommand request,
         CancellationToken cancellationToken

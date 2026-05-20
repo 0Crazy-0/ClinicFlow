@@ -12,6 +12,7 @@ public sealed class SuspendDoctorProfileCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<SuspendDoctorProfileCommand>
 {
+    /// <inheritdoc />
     public async Task Handle(
         SuspendDoctorProfileCommand request,
         CancellationToken cancellationToken

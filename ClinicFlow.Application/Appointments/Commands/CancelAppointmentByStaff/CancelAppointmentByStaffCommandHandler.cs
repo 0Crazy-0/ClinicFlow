@@ -15,6 +15,7 @@ public sealed class CancelAppointmentByStaffCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<CancelAppointmentByStaffCommand>
 {
+    /// <inheritdoc />
     public async Task Handle(
         CancelAppointmentByStaffCommand request,
         CancellationToken cancellationToken

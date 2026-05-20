@@ -13,6 +13,7 @@ public sealed class CheckInAppointmentByStaffCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<CheckInAppointmentByStaffCommand>
 {
+    /// <inheritdoc />
     public async Task Handle(
         CheckInAppointmentByStaffCommand request,
         CancellationToken cancellationToken

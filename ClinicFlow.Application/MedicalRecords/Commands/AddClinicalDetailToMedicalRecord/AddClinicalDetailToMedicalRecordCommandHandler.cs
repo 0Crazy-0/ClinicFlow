@@ -16,6 +16,7 @@ public sealed class AddClinicalDetailToMedicalRecordCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<AddClinicalDetailToMedicalRecordCommand>
 {
+    /// <inheritdoc />
     public async Task Handle(
         AddClinicalDetailToMedicalRecordCommand request,
         CancellationToken cancellationToken

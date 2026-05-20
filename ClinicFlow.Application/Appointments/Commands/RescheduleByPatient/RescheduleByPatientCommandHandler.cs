@@ -12,6 +12,9 @@ using MediatR;
 
 namespace ClinicFlow.Application.Appointments.Commands.RescheduleByPatient;
 
+/// <summary>
+/// Orchestrates rescheduling an appointment initiated by a patient, including penalty checks, doctor slot availability, and conflict checks.
+/// </summary>
 public sealed class RescheduleByPatientCommandHandler(
     IAppointmentRepository appointmentRepository,
     IPatientRepository patientRepository,
@@ -24,6 +27,7 @@ public sealed class RescheduleByPatientCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<RescheduleByPatientCommand>
 {
+    /// <inheritdoc />
     public async Task Handle(
         RescheduleByPatientCommand request,
         CancellationToken cancellationToken

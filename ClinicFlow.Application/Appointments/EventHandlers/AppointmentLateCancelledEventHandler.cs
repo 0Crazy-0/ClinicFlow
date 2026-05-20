@@ -14,6 +14,7 @@ public sealed class AppointmentLateCancelledEventHandler(
     IUnitOfWork unitOfWork
 ) : INotificationHandler<DomainEventNotification<AppointmentLateCancelledEvent>>
 {
+    /// <inheritdoc />
     public async Task Handle(
         DomainEventNotification<AppointmentLateCancelledEvent> notification,
         CancellationToken cancellationToken

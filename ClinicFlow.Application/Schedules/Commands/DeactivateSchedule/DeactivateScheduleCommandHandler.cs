@@ -12,6 +12,7 @@ public sealed class DeactivateScheduleCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<DeactivateScheduleCommand>
 {
+    /// <inheritdoc />
     public async Task Handle(DeactivateScheduleCommand request, CancellationToken cancellationToken)
     {
         var schedule =

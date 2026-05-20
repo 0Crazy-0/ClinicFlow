@@ -12,6 +12,7 @@ public sealed class DeactivateClinicalFormTemplateCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<DeactivateClinicalFormTemplateCommand>
 {
+    /// <inheritdoc />
     public async Task Handle(
         DeactivateClinicalFormTemplateCommand request,
         CancellationToken cancellationToken

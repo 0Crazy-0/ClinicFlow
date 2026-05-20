@@ -11,6 +11,7 @@ public sealed class BlockPatientCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<BlockPatientCommand, Guid>
 {
+    /// <inheritdoc />
     public async Task<Guid> Handle(BlockPatientCommand request, CancellationToken cancellationToken)
     {
         var penalty = PatientPenalty.CreateManualBlock(

@@ -13,6 +13,7 @@ public sealed class RemoveRequiredTemplateFromAppointmentTypeCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<RemoveRequiredTemplateFromAppointmentTypeCommand>
 {
+    /// <inheritdoc />
     public async Task Handle(
         RemoveRequiredTemplateFromAppointmentTypeCommand request,
         CancellationToken cancellationToken

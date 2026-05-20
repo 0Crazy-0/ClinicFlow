@@ -12,6 +12,7 @@ public sealed class UpdateMedicalSpecialtyCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<UpdateMedicalSpecialtyCommand>
 {
+    /// <inheritdoc />
     public async Task Handle(
         UpdateMedicalSpecialtyCommand request,
         CancellationToken cancellationToken

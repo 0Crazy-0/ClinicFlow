@@ -8,6 +8,7 @@ public sealed class GetAllClinicalFormTemplatesQueryHandler(
     IClinicalFormTemplateRepository clinicalFormTemplateRepository
 ) : IRequestHandler<GetAllClinicalFormTemplatesQuery, IReadOnlyList<ClinicalFormTemplateDto>>
 {
+    /// <inheritdoc />
     public async Task<IReadOnlyList<ClinicalFormTemplateDto>> Handle(
         GetAllClinicalFormTemplatesQuery request,
         CancellationToken cancellationToken

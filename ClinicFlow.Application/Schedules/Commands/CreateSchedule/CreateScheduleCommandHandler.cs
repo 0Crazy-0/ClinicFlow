@@ -11,6 +11,7 @@ public sealed class CreateScheduleCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<CreateScheduleCommand, Guid>
 {
+    /// <inheritdoc />
     public async Task<Guid> Handle(
         CreateScheduleCommand request,
         CancellationToken cancellationToken

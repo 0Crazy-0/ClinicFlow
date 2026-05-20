@@ -10,6 +10,7 @@ namespace ClinicFlow.Application.Users.Queries.GetUserById;
 public sealed class GetUserByIdQueryHandler(IUserRepository userRepository)
     : IRequestHandler<GetUserByIdQuery, UserDto>
 {
+    /// <inheritdoc />
     public async Task<UserDto> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
     {
         var user =

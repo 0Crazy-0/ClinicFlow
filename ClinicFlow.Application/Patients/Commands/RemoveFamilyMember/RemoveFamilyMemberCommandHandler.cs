@@ -12,6 +12,7 @@ public sealed class RemoveFamilyMemberCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<RemoveFamilyMemberCommand>
 {
+    /// <inheritdoc />
     public async Task Handle(RemoveFamilyMemberCommand request, CancellationToken cancellationToken)
     {
         var patient =

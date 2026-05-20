@@ -10,6 +10,7 @@ public sealed class GetActiveBlockedPatientsQueryHandler(
     IPatientPenaltyRepository penaltyRepository
 ) : IRequestHandler<GetActiveBlockedPatientsQuery, PaginatedList<PatientPenaltyDto>>
 {
+    /// <inheritdoc />
     public async Task<PaginatedList<PatientPenaltyDto>> Handle(
         GetActiveBlockedPatientsQuery request,
         CancellationToken cancellationToken

@@ -11,6 +11,7 @@ public sealed class GetClinicalDetailByTemplateCodeQueryHandler(
     IMedicalRecordRepository medicalRecordRepository
 ) : IRequestHandler<GetClinicalDetailByTemplateCodeQuery, ClinicalDetailDto?>
 {
+    /// <inheritdoc />
     public async Task<ClinicalDetailDto?> Handle(
         GetClinicalDetailByTemplateCodeQuery request,
         CancellationToken cancellationToken

@@ -12,6 +12,7 @@ public sealed class SendPhoneVerificationCommandHandler(
     IPhoneVerificationService phoneVerificationService
 ) : IRequestHandler<SendPhoneVerificationCommand>
 {
+    /// <inheritdoc />
     public async Task Handle(
         SendPhoneVerificationCommand request,
         CancellationToken cancellationToken

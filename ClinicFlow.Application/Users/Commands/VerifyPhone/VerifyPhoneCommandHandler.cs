@@ -14,6 +14,7 @@ public sealed class VerifyPhoneCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<VerifyPhoneCommand>
 {
+    /// <inheritdoc />
     public async Task Handle(VerifyPhoneCommand request, CancellationToken cancellationToken)
     {
         var user =

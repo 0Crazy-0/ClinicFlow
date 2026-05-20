@@ -15,6 +15,7 @@ public sealed class LoginUserCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<LoginUserCommand, Guid>
 {
+    /// <inheritdoc />
     public async Task<Guid> Handle(LoginUserCommand request, CancellationToken cancellationToken)
     {
         var user =

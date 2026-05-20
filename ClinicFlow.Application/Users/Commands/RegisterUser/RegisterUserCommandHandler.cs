@@ -16,6 +16,7 @@ public sealed class RegisterUserCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<RegisterUserCommand, Guid>
 {
+    /// <inheritdoc />
     public async Task<Guid> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
     {
         if (await userRepository.ExistsByEmailAsync(request.Email, cancellationToken))

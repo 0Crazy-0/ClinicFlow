@@ -13,6 +13,7 @@ public sealed class AddFamilyMemberCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<AddFamilyMemberCommand, Guid>
 {
+    /// <inheritdoc />
     public async Task<Guid> Handle(
         AddFamilyMemberCommand request,
         CancellationToken cancellationToken

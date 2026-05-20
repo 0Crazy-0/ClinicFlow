@@ -18,6 +18,7 @@ public sealed class ReassignAppointmentCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<ReassignAppointmentCommand>
 {
+    /// <inheritdoc />
     public async Task Handle(
         ReassignAppointmentCommand request,
         CancellationToken cancellationToken

@@ -11,6 +11,7 @@ public sealed class GetAppointmentTypeByIdQueryHandler(
     IAppointmentTypeDefinitionRepository appointmentTypeRepository
 ) : IRequestHandler<GetAppointmentTypeByIdQuery, AppointmentTypeDto>
 {
+    /// <inheritdoc />
     public async Task<AppointmentTypeDto> Handle(
         GetAppointmentTypeByIdQuery request,
         CancellationToken cancellationToken

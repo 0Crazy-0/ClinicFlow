@@ -12,6 +12,9 @@ using MediatR;
 
 namespace ClinicFlow.Application.Appointments.Commands.ScheduleByPatient;
 
+/// <summary>
+/// Orchestrates scheduling a new appointment initiated by a patient, including patient relationship validation, penalty checks, and slot availability checks.
+/// </summary>
 public sealed class ScheduleByPatientCommandHandler(
     IPatientPenaltyRepository penaltyRepository,
     IPatientRepository patientRepository,
@@ -24,6 +27,7 @@ public sealed class ScheduleByPatientCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<ScheduleByPatientCommand, Guid>
 {
+    /// <inheritdoc />
     public async Task<Guid> Handle(
         ScheduleByPatientCommand request,
         CancellationToken cancellationToken

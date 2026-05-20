@@ -12,6 +12,7 @@ public sealed class UpdateAppointmentTypeCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<UpdateAppointmentTypeCommand>
 {
+    /// <inheritdoc />
     public async Task Handle(
         UpdateAppointmentTypeCommand request,
         CancellationToken cancellationToken

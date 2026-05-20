@@ -10,6 +10,7 @@ namespace ClinicFlow.Application.Schedules.Queries.GetScheduleById;
 public sealed class GetScheduleByIdQueryHandler(IScheduleRepository scheduleRepository)
     : IRequestHandler<GetScheduleByIdQuery, ScheduleDto>
 {
+    /// <inheritdoc />
     public async Task<ScheduleDto> Handle(
         GetScheduleByIdQuery request,
         CancellationToken cancellationToken

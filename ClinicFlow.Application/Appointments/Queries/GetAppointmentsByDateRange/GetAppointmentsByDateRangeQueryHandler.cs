@@ -9,6 +9,7 @@ public sealed class GetAppointmentsByDateRangeQueryHandler(
     IAppointmentRepository appointmentRepository
 ) : IRequestHandler<GetAppointmentsByDateRangeQuery, PaginatedList<AppointmentDto>>
 {
+    /// <inheritdoc />
     public async Task<PaginatedList<AppointmentDto>> Handle(
         GetAppointmentsByDateRangeQuery request,
         CancellationToken cancellationToken

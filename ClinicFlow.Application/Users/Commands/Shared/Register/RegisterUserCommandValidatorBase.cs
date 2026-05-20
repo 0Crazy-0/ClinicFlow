@@ -3,6 +3,9 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.Users.Commands.Shared.Register;
 
+/// <summary>
+/// Provides base validation rules for commands registering users.
+/// </summary>
 public abstract class RegisterUserCommandValidatorBase<T> : AbstractValidator<T>
     where T : IRegisterUserCommand
 {

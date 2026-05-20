@@ -10,6 +10,7 @@ namespace ClinicFlow.Application.Patients.Queries.GetPatientById;
 public sealed class GetPatientByIdQueryHandler(IPatientRepository patientRepository)
     : IRequestHandler<GetPatientByIdQuery, PatientDto>
 {
+    /// <inheritdoc />
     public async Task<PatientDto> Handle(
         GetPatientByIdQuery request,
         CancellationToken cancellationToken

@@ -13,6 +13,7 @@ public sealed class CreateAppointmentTypeCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<CreateAppointmentTypeCommand, Guid>
 {
+    /// <inheritdoc />
     public async Task<Guid> Handle(
         CreateAppointmentTypeCommand request,
         CancellationToken cancellationToken

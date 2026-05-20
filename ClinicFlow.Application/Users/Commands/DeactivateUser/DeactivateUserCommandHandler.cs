@@ -12,6 +12,7 @@ public sealed class DeactivateUserCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<DeactivateUserCommand>
 {
+    /// <inheritdoc />
     public async Task Handle(DeactivateUserCommand request, CancellationToken cancellationToken)
     {
         var user =

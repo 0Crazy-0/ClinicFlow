@@ -8,6 +8,7 @@ public sealed class GetActiveMedicalSpecialtiesQueryHandler(
     IMedicalSpecialtyRepository medicalSpecialtyRepository
 ) : IRequestHandler<GetActiveMedicalSpecialtiesQuery, IReadOnlyList<MedicalSpecialtyDto>>
 {
+    /// <inheritdoc />
     public async Task<IReadOnlyList<MedicalSpecialtyDto>> Handle(
         GetActiveMedicalSpecialtiesQuery request,
         CancellationToken cancellationToken
