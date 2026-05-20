@@ -1,11 +1,11 @@
 using ClinicFlow.Domain.Common;
 using FluentValidation;
 
-namespace ClinicFlow.Application.Users.Queries.GetPaginatedUsers;
+namespace ClinicFlow.Application.Users.Queries.GetUsers;
 
-public class GetPaginatedUsersQueryValidator : AbstractValidator<GetPaginatedUsersQuery>
+public class GetUsersQueryValidator : AbstractValidator<GetUsersQuery>
 {
-    public GetPaginatedUsersQueryValidator()
+    public GetUsersQueryValidator()
     {
         RuleFor(x => x.PageNumber)
             .GreaterThanOrEqualTo(1)

@@ -3,9 +3,9 @@ using ClinicFlow.Application.Users.Queries.DTOs;
 using ClinicFlow.Domain.Enums;
 using MediatR;
 
-namespace ClinicFlow.Application.Users.Queries.GetPaginatedUsers;
+namespace ClinicFlow.Application.Users.Queries.GetUsers;
 
-public sealed record GetPaginatedUsersQuery(
+public sealed record GetUsersQuery(
     int PageNumber,
     int PageSize,
     UserRole? Role,
