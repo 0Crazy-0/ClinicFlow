@@ -3,14 +3,14 @@ using ClinicFlow.Application.Users.Queries.DTOs;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using MediatR;
 
-namespace ClinicFlow.Application.Users.Queries.GetPaginatedUsers;
+namespace ClinicFlow.Application.Users.Queries.GetUsers;
 
-public sealed class GetPaginatedUsersQueryHandler(IUserRepository userRepository)
-    : IRequestHandler<GetPaginatedUsersQuery, PaginatedList<UserDto>>
+public sealed class GetUsersQueryHandler(IUserRepository userRepository)
+    : IRequestHandler<GetUsersQuery, PaginatedList<UserDto>>
 {
     /// <inheritdoc />
     public async Task<PaginatedList<UserDto>> Handle(
-        GetPaginatedUsersQuery request,
+        GetUsersQuery request,
         CancellationToken cancellationToken
     )
     {

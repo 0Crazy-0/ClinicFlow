@@ -1,4 +1,4 @@
-using ClinicFlow.Application.Users.Queries.GetPaginatedUsers;
+using ClinicFlow.Application.Users.Queries.GetUsers;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Interfaces.Repositories;
@@ -6,16 +6,16 @@ using ClinicFlow.Domain.ValueObjects;
 using FluentAssertions;
 using Moq;
 
-namespace ClinicFlow.Application.Tests.Users.Queries.GetPaginatedUsers;
+namespace ClinicFlow.Application.Tests.Users.Queries.GetUsers;
 
-public class GetPaginatedUsersQueryHandlerTests
+public class GetUsersQueryHandlerTests
 {
     private readonly Mock<IUserRepository> _userRepositoryMock = new();
-    private readonly GetPaginatedUsersQueryHandler _sut;
+    private readonly GetUsersQueryHandler _sut;
 
-    public GetPaginatedUsersQueryHandlerTests()
+    public GetUsersQueryHandlerTests()
     {
-        _sut = new GetPaginatedUsersQueryHandler(_userRepositoryMock.Object);
+        _sut = new GetUsersQueryHandler(_userRepositoryMock.Object);
     }
 
     [Fact]
@@ -28,7 +28,7 @@ public class GetPaginatedUsersQueryHandlerTests
             CreateUser("user2@clinic.com", "222-2222", UserRole.Doctor),
         };
 
-        var query = new GetPaginatedUsersQuery(1, 10, null, null, null);
+        var query = new GetUsersQuery(1, 10, null, null, null);
 
         _userRepositoryMock
             .Setup(x => x.GetPaginatedAsync(1, 10, null, null, null, It.IsAny<CancellationToken>()))
@@ -66,7 +66,7 @@ public class GetPaginatedUsersQueryHandlerTests
             )
             .ReturnsAsync((new List<User>(), 0));
 
-        var query = new GetPaginatedUsersQuery(1, 10, UserRole.Admin, true, null);
+        var query = new GetUsersQuery(1, 10, UserRole.Admin, true, null);
 
         // Act
         var result = await _sut.Handle(query, CancellationToken.None);
@@ -89,7 +89,7 @@ public class GetPaginatedUsersQueryHandlerTests
             .Setup(x => x.GetPaginatedAsync(1, 10, null, null, null, It.IsAny<CancellationToken>()))
             .ReturnsAsync((users, 1));
 
-        var query = new GetPaginatedUsersQuery(1, 10, null, null, null);
+        var query = new GetUsersQuery(1, 10, null, null, null);
 
         // Act
         var result = await _sut.Handle(query, CancellationToken.None);
