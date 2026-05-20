@@ -4,10 +4,14 @@ using ValidationException = ClinicFlow.Application.Exceptions.ValidationExceptio
 
 namespace ClinicFlow.Application.Behaviors;
 
+/// <summary>
+/// Intercepts MediatR requests to run registered FluentValidation rules before executing the handler.
+/// </summary>
 public class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidator<TRequest>> validators)
     : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
 {
+    /// <inheritdoc />
     public async Task<TResponse> Handle(
         TRequest request,
         RequestHandlerDelegate<TResponse> next,
