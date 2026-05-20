@@ -3,6 +3,9 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.Appointments.Commands.Shared.Reschedule;
 
+/// <summary>
+/// Provides base validation rules for commands rescheduling appointments.
+/// </summary>
 public abstract class RescheduleCommandValidatorBase<TCommand> : AbstractValidator<TCommand>
     where TCommand : IRescheduleCommand
 {

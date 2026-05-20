@@ -4,6 +4,9 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.Patients.Commands.Shared.CompletePatient;
 
+/// <summary>
+/// Provides base validation rules for commands completing a patient profile.
+/// </summary>
 public abstract class CompletePatientCommandValidatorBase<TCommand>
     : CreatePatientCommandValidatorBase<TCommand>
     where TCommand : ICompletePatientCommand

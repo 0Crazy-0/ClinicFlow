@@ -3,6 +3,9 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.Appointments.Commands.Shared.Schedule;
 
+/// <summary>
+/// Provides base validation rules for commands scheduling appointments.
+/// </summary>
 public abstract class ScheduleCommandValidatorBase<TCommand> : AbstractValidator<TCommand>
     where TCommand : IScheduleCommand
 {

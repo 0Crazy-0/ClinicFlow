@@ -4,10 +4,14 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.ClinicalFormTemplates.Commands.Shared;
 
+/// <summary>
+/// Provides base validation rules for commands managing clinical form templates.
+/// </summary>
 public abstract class ClinicalFormTemplateCommandValidatorBase<TCommand>
     : AbstractValidator<TCommand>
     where TCommand : IClinicalFormTemplateCommand
 {
+    /// <param name="schemaDefinitionValidator">The schema validator utilized for format checks.</param>
     protected ClinicalFormTemplateCommandValidatorBase(
         IJsonSchemaDefinitionValidator schemaDefinitionValidator
     )

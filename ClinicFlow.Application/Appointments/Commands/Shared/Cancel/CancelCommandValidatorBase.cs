@@ -3,6 +3,9 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.Appointments.Commands.Shared.Cancel;
 
+/// <summary>
+/// Provides base validation rules for commands cancelling appointments.
+/// </summary>
 public abstract class CancelCommandValidatorBase<TCommand> : AbstractValidator<TCommand>
     where TCommand : ICancelCommand
 {
