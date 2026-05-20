@@ -13,6 +13,7 @@ public sealed class RequestPasswordResetCommandHandler(
     IEmailService emailService
 ) : IRequestHandler<RequestPasswordResetCommand>
 {
+    /// <inheritdoc />
     public async Task Handle(
         RequestPasswordResetCommand request,
         CancellationToken cancellationToken

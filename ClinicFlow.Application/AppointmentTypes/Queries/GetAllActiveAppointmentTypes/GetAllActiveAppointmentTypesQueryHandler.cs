@@ -8,6 +8,7 @@ public sealed class GetAllActiveAppointmentTypesQueryHandler(
     IAppointmentTypeDefinitionRepository appointmentTypeRepository
 ) : IRequestHandler<GetAllActiveAppointmentTypesQuery, IReadOnlyList<AppointmentTypeDto>>
 {
+    /// <inheritdoc />
     public async Task<IReadOnlyList<AppointmentTypeDto>> Handle(
         GetAllActiveAppointmentTypesQuery request,
         CancellationToken cancellationToken

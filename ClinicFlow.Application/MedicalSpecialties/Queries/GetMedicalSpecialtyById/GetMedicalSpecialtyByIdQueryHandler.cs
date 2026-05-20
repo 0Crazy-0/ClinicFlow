@@ -11,6 +11,7 @@ public sealed class GetMedicalSpecialtyByIdQueryHandler(
     IMedicalSpecialtyRepository medicalSpecialtyRepository
 ) : IRequestHandler<GetMedicalSpecialtyByIdQuery, MedicalSpecialtyDto>
 {
+    /// <inheritdoc />
     public async Task<MedicalSpecialtyDto> Handle(
         GetMedicalSpecialtyByIdQuery request,
         CancellationToken cancellationToken

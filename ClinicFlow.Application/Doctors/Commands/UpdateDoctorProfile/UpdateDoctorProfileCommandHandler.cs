@@ -13,6 +13,7 @@ public sealed class UpdateDoctorProfileCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<UpdateDoctorProfileCommand>
 {
+    /// <inheritdoc />
     public async Task Handle(
         UpdateDoctorProfileCommand request,
         CancellationToken cancellationToken

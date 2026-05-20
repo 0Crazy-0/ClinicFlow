@@ -9,6 +9,7 @@ public sealed class GetMedicalRecordsByDoctorIdQueryHandler(
     IMedicalRecordRepository medicalRecordRepository
 ) : IRequestHandler<GetMedicalRecordsByDoctorIdQuery, PaginatedList<MedicalRecordDto>>
 {
+    /// <inheritdoc />
     public async Task<PaginatedList<MedicalRecordDto>> Handle(
         GetMedicalRecordsByDoctorIdQuery request,
         CancellationToken cancellationToken

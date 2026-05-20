@@ -12,6 +12,7 @@ public sealed class MarkAppointmentAsNoShowByStaffCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<MarkAppointmentAsNoShowByStaffCommand>
 {
+    /// <inheritdoc />
     public async Task Handle(
         MarkAppointmentAsNoShowByStaffCommand request,
         CancellationToken cancellationToken

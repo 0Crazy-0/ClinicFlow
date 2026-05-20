@@ -6,6 +6,7 @@ namespace ClinicFlow.Application.Users.Queries.CheckEmailUniqueness;
 public sealed class CheckEmailUniquenessQueryHandler(IUserRepository userRepository)
     : IRequestHandler<CheckEmailUniquenessQuery, bool>
 {
+    /// <inheritdoc />
     public async Task<bool> Handle(
         CheckEmailUniquenessQuery request,
         CancellationToken cancellationToken

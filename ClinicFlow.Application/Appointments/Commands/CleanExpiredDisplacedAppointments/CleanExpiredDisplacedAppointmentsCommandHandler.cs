@@ -4,12 +4,16 @@ using MediatR;
 
 namespace ClinicFlow.Application.Appointments.Commands.CleanExpiredDisplacedAppointments;
 
+/// <summary>
+/// Orchestrates identifying and canceling displaced appointments that have expired past their confirmation window.
+/// </summary>
 public sealed class CleanExpiredDisplacedAppointmentsCommandHandler(
     TimeProvider timeProvider,
     IAppointmentRepository appointmentRepository,
     IUnitOfWork unitOfWork
 ) : IRequestHandler<CleanExpiredDisplacedAppointmentsCommand>
 {
+    /// <inheritdoc />
     public async Task Handle(
         CleanExpiredDisplacedAppointmentsCommand request,
         CancellationToken cancellationToken

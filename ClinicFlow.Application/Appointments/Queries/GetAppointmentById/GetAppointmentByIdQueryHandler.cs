@@ -10,6 +10,7 @@ namespace ClinicFlow.Application.Appointments.Queries.GetAppointmentById;
 public sealed class GetAppointmentByIdQueryHandler(IAppointmentRepository appointmentRepository)
     : IRequestHandler<GetAppointmentByIdQuery, AppointmentDto>
 {
+    /// <inheritdoc />
     public async Task<AppointmentDto> Handle(
         GetAppointmentByIdQuery request,
         CancellationToken cancellationToken

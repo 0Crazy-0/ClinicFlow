@@ -11,6 +11,7 @@ public sealed class ClosePatientAccountCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<ClosePatientAccountCommand>
 {
+    /// <inheritdoc />
     public async Task Handle(
         ClosePatientAccountCommand request,
         CancellationToken cancellationToken

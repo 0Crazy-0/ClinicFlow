@@ -22,6 +22,7 @@ public sealed class ScheduleByDoctorCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<ScheduleByDoctorCommand, Guid>
 {
+    /// <inheritdoc />
     public async Task<Guid> Handle(
         ScheduleByDoctorCommand request,
         CancellationToken cancellationToken

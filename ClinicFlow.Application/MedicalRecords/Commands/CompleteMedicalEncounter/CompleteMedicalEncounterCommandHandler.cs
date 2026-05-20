@@ -20,6 +20,7 @@ public sealed class CompleteMedicalEncounterCommandHandler(
     TimeProvider timeProvider
 ) : IRequestHandler<CompleteMedicalEncounterCommand, Guid>
 {
+    /// <inheritdoc />
     public async Task<Guid> Handle(
         CompleteMedicalEncounterCommand request,
         CancellationToken cancellationToken

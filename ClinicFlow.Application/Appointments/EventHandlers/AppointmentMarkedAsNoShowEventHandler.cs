@@ -14,6 +14,7 @@ public sealed class AppointmentMarkedAsNoShowEventHandler(
     IUnitOfWork unitOfWork
 ) : INotificationHandler<DomainEventNotification<AppointmentMarkedAsNoShowEvent>>
 {
+    /// <inheritdoc />
     public async Task Handle(
         DomainEventNotification<AppointmentMarkedAsNoShowEvent> notification,
         CancellationToken cancellationToken

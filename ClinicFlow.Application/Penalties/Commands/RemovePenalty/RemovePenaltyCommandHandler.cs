@@ -12,6 +12,7 @@ public sealed class RemovePenaltyCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<RemovePenaltyCommand>
 {
+    /// <inheritdoc />
     public async Task Handle(RemovePenaltyCommand request, CancellationToken cancellationToken)
     {
         var penalty =

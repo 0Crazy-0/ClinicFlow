@@ -16,6 +16,7 @@ public sealed class ResetPasswordCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<ResetPasswordCommand>
 {
+    /// <inheritdoc />
     public async Task Handle(ResetPasswordCommand request, CancellationToken cancellationToken)
     {
         var userId =

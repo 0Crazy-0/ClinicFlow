@@ -16,6 +16,7 @@ public sealed class RegisterAdminUserCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<RegisterAdminUserCommand, Guid>
 {
+    /// <inheritdoc />
     public async Task<Guid> Handle(
         RegisterAdminUserCommand request,
         CancellationToken cancellationToken

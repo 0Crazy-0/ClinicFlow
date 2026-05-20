@@ -11,6 +11,7 @@ public sealed class GetMedicalRecordByAppointmentIdQueryHandler(
     IMedicalRecordRepository medicalRecordRepository
 ) : IRequestHandler<GetMedicalRecordByAppointmentIdQuery, MedicalRecordDto>
 {
+    /// <inheritdoc />
     public async Task<MedicalRecordDto> Handle(
         GetMedicalRecordByAppointmentIdQuery request,
         CancellationToken cancellationToken

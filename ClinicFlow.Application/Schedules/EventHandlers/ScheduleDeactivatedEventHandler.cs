@@ -13,6 +13,7 @@ public sealed class ScheduleDeactivatedEventHandler(
     IUnitOfWork unitOfWork
 ) : INotificationHandler<DomainEventNotification<ScheduleDeactivatedEvent>>
 {
+    /// <inheritdoc />
     public async Task Handle(
         DomainEventNotification<ScheduleDeactivatedEvent> notification,
         CancellationToken cancellationToken

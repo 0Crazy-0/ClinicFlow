@@ -13,6 +13,7 @@ public sealed class AddRequiredTemplateToAppointmentTypeCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<AddRequiredTemplateToAppointmentTypeCommand>
 {
+    /// <inheritdoc />
     public async Task Handle(
         AddRequiredTemplateToAppointmentTypeCommand request,
         CancellationToken cancellationToken

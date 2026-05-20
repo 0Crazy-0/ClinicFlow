@@ -13,6 +13,7 @@ public sealed class CreatePatientProfileCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<CreatePatientProfileCommand, Guid>
 {
+    /// <inheritdoc />
     public async Task<Guid> Handle(
         CreatePatientProfileCommand request,
         CancellationToken cancellationToken

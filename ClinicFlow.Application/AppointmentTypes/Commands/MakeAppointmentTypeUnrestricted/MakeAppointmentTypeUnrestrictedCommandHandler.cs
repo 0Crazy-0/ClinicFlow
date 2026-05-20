@@ -12,6 +12,7 @@ public sealed class MakeAppointmentTypeUnrestrictedCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<MakeAppointmentTypeUnrestrictedCommand>
 {
+    /// <inheritdoc />
     public async Task Handle(
         MakeAppointmentTypeUnrestrictedCommand request,
         CancellationToken cancellationToken

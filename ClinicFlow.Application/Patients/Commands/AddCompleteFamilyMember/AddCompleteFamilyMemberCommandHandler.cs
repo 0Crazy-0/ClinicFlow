@@ -12,6 +12,7 @@ public sealed class AddCompleteFamilyMemberCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<AddCompleteFamilyMemberCommand, Guid>
 {
+    /// <inheritdoc />
     public async Task<Guid> Handle(
         AddCompleteFamilyMemberCommand request,
         CancellationToken cancellationToken

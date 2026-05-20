@@ -13,6 +13,7 @@ public sealed class MarkAppointmentAsNoShowByDoctorCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<MarkAppointmentAsNoShowByDoctorCommand>
 {
+    /// <inheritdoc />
     public async Task Handle(
         MarkAppointmentAsNoShowByDoctorCommand request,
         CancellationToken cancellationToken

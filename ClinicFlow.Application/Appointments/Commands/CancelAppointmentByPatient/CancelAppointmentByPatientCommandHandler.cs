@@ -20,6 +20,7 @@ public sealed class CancelAppointmentByPatientCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<CancelAppointmentByPatientCommand>
 {
+    /// <inheritdoc />
     public async Task Handle(
         CancelAppointmentByPatientCommand request,
         CancellationToken cancellationToken

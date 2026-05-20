@@ -22,6 +22,7 @@ public sealed class RescheduleByStaffCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<RescheduleByStaffCommand>
 {
+    /// <inheritdoc />
     public async Task Handle(RescheduleByStaffCommand request, CancellationToken cancellationToken)
     {
         var appointment =

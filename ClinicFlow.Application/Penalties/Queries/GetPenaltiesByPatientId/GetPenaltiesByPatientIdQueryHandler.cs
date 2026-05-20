@@ -8,6 +8,7 @@ namespace ClinicFlow.Application.Penalties.Queries.GetPenaltiesByPatientId;
 public sealed class GetPenaltiesByPatientIdQueryHandler(IPatientPenaltyRepository penaltyRepository)
     : IRequestHandler<GetPenaltiesByPatientIdQuery, PaginatedList<PatientPenaltyDto>>
 {
+    /// <inheritdoc />
     public async Task<PaginatedList<PatientPenaltyDto>> Handle(
         GetPenaltiesByPatientIdQuery request,
         CancellationToken cancellationToken

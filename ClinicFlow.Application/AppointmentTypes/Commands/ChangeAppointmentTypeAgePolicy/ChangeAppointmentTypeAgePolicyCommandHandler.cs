@@ -13,6 +13,7 @@ public sealed class ChangeAppointmentTypeAgePolicyCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<ChangeAppointmentTypeAgePolicyCommand>
 {
+    /// <inheritdoc />
     public async Task Handle(
         ChangeAppointmentTypeAgePolicyCommand request,
         CancellationToken cancellationToken

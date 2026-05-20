@@ -9,6 +9,7 @@ public sealed class GetAppointmentsByPatientIdQueryHandler(
     IAppointmentRepository appointmentRepository
 ) : IRequestHandler<GetAppointmentsByPatientIdQuery, PaginatedList<AppointmentDto>>
 {
+    /// <inheritdoc />
     public async Task<PaginatedList<AppointmentDto>> Handle(
         GetAppointmentsByPatientIdQuery request,
         CancellationToken cancellationToken

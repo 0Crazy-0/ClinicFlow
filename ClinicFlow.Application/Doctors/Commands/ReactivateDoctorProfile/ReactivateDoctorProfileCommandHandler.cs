@@ -13,6 +13,7 @@ public sealed class ReactivateDoctorProfileCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<ReactivateDoctorProfileCommand>
 {
+    /// <inheritdoc />
     public async Task Handle(
         ReactivateDoctorProfileCommand request,
         CancellationToken cancellationToken

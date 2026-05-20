@@ -16,6 +16,7 @@ public sealed class RegisterReceptionistUserCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<RegisterReceptionistUserCommand, Guid>
 {
+    /// <inheritdoc />
     public async Task<Guid> Handle(
         RegisterReceptionistUserCommand request,
         CancellationToken cancellationToken

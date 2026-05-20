@@ -11,6 +11,7 @@ public sealed class GetClinicalFormTemplateByIdQueryHandler(
     IClinicalFormTemplateRepository clinicalFormTemplateRepository
 ) : IRequestHandler<GetClinicalFormTemplateByIdQuery, ClinicalFormTemplateDto>
 {
+    /// <inheritdoc />
     public async Task<ClinicalFormTemplateDto> Handle(
         GetClinicalFormTemplateByIdQuery request,
         CancellationToken cancellationToken

@@ -11,6 +11,7 @@ public sealed class DeactivateDoctorSchedulesEventHandler(
     IUnitOfWork unitOfWork
 ) : INotificationHandler<DomainEventNotification<DoctorSuspendedEvent>>
 {
+    /// <inheritdoc />
     public async Task Handle(
         DomainEventNotification<DoctorSuspendedEvent> notification,
         CancellationToken cancellationToken

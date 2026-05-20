@@ -8,6 +8,7 @@ namespace ClinicFlow.Application.Users.Queries.GetPaginatedUsers;
 public sealed class GetPaginatedUsersQueryHandler(IUserRepository userRepository)
     : IRequestHandler<GetPaginatedUsersQuery, PaginatedList<UserDto>>
 {
+    /// <inheritdoc />
     public async Task<PaginatedList<UserDto>> Handle(
         GetPaginatedUsersQuery request,
         CancellationToken cancellationToken

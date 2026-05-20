@@ -11,6 +11,7 @@ public sealed class SetupWeeklyScheduleCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<SetupWeeklyScheduleCommand, IReadOnlyList<Guid>>
 {
+    /// <inheritdoc />
     public async Task<IReadOnlyList<Guid>> Handle(
         SetupWeeklyScheduleCommand request,
         CancellationToken cancellationToken

@@ -10,6 +10,7 @@ public sealed class GetLockedOutUsersQueryHandler(
     IUserRepository userRepository
 ) : IRequestHandler<GetLockedOutUsersQuery, PaginatedList<UserDto>>
 {
+    /// <inheritdoc />
     public async Task<PaginatedList<UserDto>> Handle(
         GetLockedOutUsersQuery request,
         CancellationToken cancellationToken

@@ -8,6 +8,7 @@ namespace ClinicFlow.Application.Doctors.Queries.GetDoctorsBySpecialtyId;
 public sealed class GetDoctorsBySpecialtyIdQueryHandler(IDoctorRepository doctorRepository)
     : IRequestHandler<GetDoctorsBySpecialtyIdQuery, PaginatedList<DoctorDto>>
 {
+    /// <inheritdoc />
     public async Task<PaginatedList<DoctorDto>> Handle(
         GetDoctorsBySpecialtyIdQuery request,
         CancellationToken cancellationToken

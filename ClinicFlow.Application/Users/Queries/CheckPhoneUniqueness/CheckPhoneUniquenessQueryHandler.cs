@@ -6,6 +6,7 @@ namespace ClinicFlow.Application.Users.Queries.CheckPhoneUniqueness;
 public sealed class CheckPhoneUniquenessQueryHandler(IUserRepository userRepository)
     : IRequestHandler<CheckPhoneUniquenessQuery, bool>
 {
+    /// <inheritdoc />
     public async Task<bool> Handle(
         CheckPhoneUniquenessQuery request,
         CancellationToken cancellationToken

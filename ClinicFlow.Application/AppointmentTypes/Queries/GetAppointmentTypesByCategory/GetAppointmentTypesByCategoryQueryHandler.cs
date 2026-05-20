@@ -8,6 +8,7 @@ public sealed class GetAppointmentTypesByCategoryQueryHandler(
     IAppointmentTypeDefinitionRepository appointmentTypeRepository
 ) : IRequestHandler<GetAppointmentTypesByCategoryQuery, IReadOnlyList<AppointmentTypeDto>>
 {
+    /// <inheritdoc />
     public async Task<IReadOnlyList<AppointmentTypeDto>> Handle(
         GetAppointmentTypesByCategoryQuery request,
         CancellationToken cancellationToken

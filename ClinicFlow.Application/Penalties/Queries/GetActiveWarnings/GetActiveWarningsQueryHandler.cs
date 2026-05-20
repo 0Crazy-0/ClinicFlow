@@ -8,6 +8,7 @@ namespace ClinicFlow.Application.Penalties.Queries.GetActiveWarnings;
 public sealed class GetActiveWarningsQueryHandler(IPatientPenaltyRepository penaltyRepository)
     : IRequestHandler<GetActiveWarningsQuery, PaginatedList<PatientPenaltyDto>>
 {
+    /// <inheritdoc />
     public async Task<PaginatedList<PatientPenaltyDto>> Handle(
         GetActiveWarningsQuery request,
         CancellationToken cancellationToken

@@ -13,6 +13,7 @@ public sealed class UpdateScheduleCommandHandler(
     IUnitOfWork unitOfWork
 ) : IRequestHandler<UpdateScheduleCommand, Guid>
 {
+    /// <inheritdoc />
     public async Task<Guid> Handle(
         UpdateScheduleCommand request,
         CancellationToken cancellationToken
