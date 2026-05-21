@@ -1,3 +1,5 @@
+using ClinicFlow.Application.ClinicalFormTemplates.Queries.DTOs;
+
 namespace ClinicFlow.Application.AppointmentTypes.Queries.DTOs;
 
 /// <param name="Category">The category of the appointment (e.g. Consultation, Procedure).</param>
@@ -13,5 +15,8 @@ public sealed record AppointmentTypeDto(
     TimeSpan DurationMinutes,
     int? MinimumAge,
     int? MaximumAge,
-    bool RequiresLegalGuardian
+    bool RequiresLegalGuardian,
+    bool IsUnrestrictedBySpecialty,
+    IReadOnlyCollection<Guid> AllowedSpecialtyIds,
+    IReadOnlyCollection<ClinicalFormTemplateDto> RequiredTemplates
 );

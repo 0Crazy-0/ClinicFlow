@@ -31,6 +31,14 @@ public class GetAppointmentTypeByIdQueryHandlerTests
             TimeSpan.FromMinutes(30)
         );
 
+        var template = ClinicalFormTemplate.Create(
+            "BP_CHECK",
+            "Blood Pressure",
+            "Check blood pressure",
+            """{"type": "object"}"""
+        );
+        entity.AddRequiredTemplate(template);
+
         _repositoryMock
             .Setup(x => x.GetByIdAsync(entity.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(entity);
@@ -44,9 +52,20 @@ public class GetAppointmentTypeByIdQueryHandlerTests
         result.Should().NotBeNull();
         result.Id.Should().Be(entity.Id);
         result.Category.Should().Be(nameof(AppointmentCategory.Checkup));
-        result.Name.Should().Be("General Checkup");
-        result.Description.Should().Be("Routine consultation");
-        result.DurationMinutes.Should().Be(TimeSpan.FromMinutes(30));
+        result.Name.Should().Be(entity.Name);
+        result.Description.Should().Be(entity.Description);
+        result.DurationMinutes.Should().Be(entity.DurationMinutes);
+        result.IsUnrestrictedBySpecialty.Should().Be(entity.IsUnrestrictedBySpecialty);
+        result.AllowedSpecialtyIds.Should().BeEquivalentTo(entity.AllowedSpecialtyIds);
+
+        result.RequiredTemplates.Should().ContainSingle();
+        var mappedTemplate = result.RequiredTemplates.First();
+        mappedTemplate.Id.Should().Be(template.Id);
+        mappedTemplate.Code.Should().Be(template.Code);
+        mappedTemplate.Name.Should().Be(template.Name);
+        mappedTemplate.Description.Should().Be(template.Description);
+        mappedTemplate.JsonSchemaDefinition.Should().Be(template.JsonSchemaDefinition);
+        mappedTemplate.IsDeleted.Should().BeFalse();
     }
 
     [Fact]

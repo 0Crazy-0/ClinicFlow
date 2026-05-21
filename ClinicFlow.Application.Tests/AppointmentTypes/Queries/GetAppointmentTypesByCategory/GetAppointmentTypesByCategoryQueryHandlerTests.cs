@@ -28,6 +28,13 @@ public class GetAppointmentTypesByCategoryQueryHandlerTests
             "Routine",
             TimeSpan.FromMinutes(30)
         );
+        var template = ClinicalFormTemplate.Create(
+            "BP_CHECK",
+            "Blood Pressure",
+            "Check blood pressure",
+            """{"type": "object"}"""
+        );
+        type1.AddRequiredTemplate(template);
 
         _repositoryMock
             .Setup(x =>
@@ -43,6 +50,17 @@ public class GetAppointmentTypesByCategoryQueryHandlerTests
         // Assert
         result.Should().ContainSingle();
         result[0].Category.Should().Be(nameof(AppointmentCategory.Checkup));
+        result[0].IsUnrestrictedBySpecialty.Should().BeTrue();
+        result[0].AllowedSpecialtyIds.Should().BeEmpty();
+        result[0].RequiredTemplates.Should().ContainSingle();
+
+        var mappedTemplate = result[0].RequiredTemplates.First();
+        mappedTemplate.Id.Should().Be(template.Id);
+        mappedTemplate.Code.Should().Be(template.Code);
+        mappedTemplate.Name.Should().Be(template.Name);
+        mappedTemplate.Description.Should().Be(template.Description);
+        mappedTemplate.JsonSchemaDefinition.Should().Be(template.JsonSchemaDefinition);
+        mappedTemplate.IsDeleted.Should().BeFalse();
     }
 
     [Fact]

@@ -1,4 +1,5 @@
 using ClinicFlow.Application.AppointmentTypes.Queries.DTOs;
+using ClinicFlow.Application.ClinicalFormTemplates.Queries.DTOs;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Exceptions.Base;
@@ -36,7 +37,19 @@ public sealed class GetAppointmentTypeByIdQueryHandler(
             appointmentType.DurationMinutes,
             appointmentType.AgePolicy.MinimumAge,
             appointmentType.AgePolicy.MaximumAge,
-            appointmentType.AgePolicy.RequiresLegalGuardian
+            appointmentType.AgePolicy.RequiresLegalGuardian,
+            appointmentType.IsUnrestrictedBySpecialty,
+            appointmentType.AllowedSpecialtyIds,
+            [
+                .. appointmentType.RequiredTemplates.Select(template => new ClinicalFormTemplateDto(
+                    template.Id,
+                    template.Code,
+                    template.Name,
+                    template.Description,
+                    template.JsonSchemaDefinition,
+                    template.IsDeleted
+                )),
+            ]
         );
     }
 }
