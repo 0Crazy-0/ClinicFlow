@@ -41,9 +41,12 @@ public class GetEligibleAppointmentTypesQueryHandlerTests
 
         // Assert
         result.Should().ContainSingle();
-        result[0].Name.Should().Be("Adult Checkup");
+        result[0].Name.Should().Be(adultType.Name);
         result[0].MinimumAge.Should().Be(18);
         result[0].MaximumAge.Should().Be(65);
+        result[0].IsUnrestrictedBySpecialty.Should().BeTrue();
+        result[0].AllowedSpecialtyIds.Should().BeEmpty();
+        result[0].RequiredTemplates.Should().BeEmpty();
     }
 
     [Fact]

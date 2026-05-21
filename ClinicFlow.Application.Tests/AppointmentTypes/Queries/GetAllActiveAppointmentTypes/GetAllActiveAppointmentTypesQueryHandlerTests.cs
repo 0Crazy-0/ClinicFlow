@@ -46,8 +46,14 @@ public class GetAllActiveAppointmentTypesQueryHandlerTests
 
         // Assert
         result.Should().HaveCount(2);
-        result[0].Name.Should().Be("General Checkup");
-        result[1].Name.Should().Be("Follow Up");
+        result[0].Name.Should().Be(type1.Name);
+        result[0].IsUnrestrictedBySpecialty.Should().BeTrue();
+        result[0].AllowedSpecialtyIds.Should().BeEmpty();
+        result[0].RequiredTemplates.Should().BeEmpty();
+        result[1].Name.Should().Be(type2.Name);
+        result[1].IsUnrestrictedBySpecialty.Should().BeTrue();
+        result[1].AllowedSpecialtyIds.Should().BeEmpty();
+        result[1].RequiredTemplates.Should().BeEmpty();
     }
 
     [Fact]

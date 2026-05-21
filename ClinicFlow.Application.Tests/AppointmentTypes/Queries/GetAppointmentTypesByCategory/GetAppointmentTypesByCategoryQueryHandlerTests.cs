@@ -43,6 +43,9 @@ public class GetAppointmentTypesByCategoryQueryHandlerTests
         // Assert
         result.Should().ContainSingle();
         result[0].Category.Should().Be(nameof(AppointmentCategory.Checkup));
+        result[0].IsUnrestrictedBySpecialty.Should().BeTrue();
+        result[0].AllowedSpecialtyIds.Should().BeEmpty();
+        result[0].RequiredTemplates.Should().BeEmpty();
     }
 
     [Fact]
