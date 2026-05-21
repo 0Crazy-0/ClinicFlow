@@ -28,6 +28,14 @@ public class GetAllActiveAppointmentTypesQueryHandlerTests
             "Routine",
             TimeSpan.FromMinutes(30)
         );
+        var template = ClinicalFormTemplate.Create(
+            "BP_CHECK",
+            "Blood Pressure",
+            "Check blood pressure",
+            """{"type": "object"}"""
+        );
+        type1.AddRequiredTemplate(template);
+
         var type2 = AppointmentTypeDefinition.Create(
             AppointmentCategory.FollowUp,
             "Follow Up",
@@ -49,11 +57,19 @@ public class GetAllActiveAppointmentTypesQueryHandlerTests
         result[0].Name.Should().Be(type1.Name);
         result[0].IsUnrestrictedBySpecialty.Should().BeTrue();
         result[0].AllowedSpecialtyIds.Should().BeEmpty();
-        result[0].RequiredTemplates.Should().BeEmpty();
+        result[0].RequiredTemplates.Should().ContainSingle();
         result[1].Name.Should().Be(type2.Name);
         result[1].IsUnrestrictedBySpecialty.Should().BeTrue();
         result[1].AllowedSpecialtyIds.Should().BeEmpty();
         result[1].RequiredTemplates.Should().BeEmpty();
+
+        var mappedTemplate = result[0].RequiredTemplates.First();
+        mappedTemplate.Id.Should().Be(template.Id);
+        mappedTemplate.Code.Should().Be(template.Code);
+        mappedTemplate.Name.Should().Be(template.Name);
+        mappedTemplate.Description.Should().Be(template.Description);
+        mappedTemplate.JsonSchemaDefinition.Should().Be(template.JsonSchemaDefinition);
+        mappedTemplate.IsDeleted.Should().BeFalse();
     }
 
     [Fact]
