@@ -20,7 +20,7 @@ public sealed class UnitOfWork(ApplicationDbContext dbContext, IPublisher publis
     {
         var domainEntities = dbContext
             .ChangeTracker.Entries<BaseEntity>()
-            .Where(x => x.Entity.DomainEvents.Any())
+            .Where(x => x.Entity.DomainEvents.Count > 0)
             .ToList();
 
         var domainEvents = domainEntities.SelectMany(x => x.Entity.DomainEvents).ToList();
