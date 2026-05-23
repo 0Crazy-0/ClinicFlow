@@ -68,14 +68,6 @@ public class GetEligibleAppointmentTypesQueryHandlerTests
     public async Task Handle_ShouldReturnEmptyList_WhenNoTypesMatchAge()
     {
         // Arrange
-        var teenType = AppointmentTypeDefinition.Create(
-            AppointmentCategory.Checkup,
-            "Teen Checkup",
-            "For teens",
-            TimeSpan.FromMinutes(30),
-            AgeEligibilityPolicy.Create(11, 17, false)
-        );
-
         _repositoryMock
             .Setup(x => x.GetEligibleByAgeAsync(10, It.IsAny<CancellationToken>()))
             .ReturnsAsync([]);
