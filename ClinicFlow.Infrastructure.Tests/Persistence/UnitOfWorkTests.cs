@@ -31,6 +31,7 @@ public class UnitOfWorkTests : IDisposable
     public void Dispose()
     {
         _dbContext.Dispose();
+        GC.SuppressFinalize(this);
     }
 
     [Fact]
