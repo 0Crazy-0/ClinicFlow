@@ -320,6 +320,19 @@ Tests that validate string input (null, empty, whitespace) must always be `[Theo
 public void Create_ShouldThrowException_WhenValueIsEmpty(string? value) { ... }
 ```
 
+### JSON String Literals in Tests
+
+When defining JSON strings in tests (e.g., for JSON schema validation or mocking serialized data), always use **C# Raw String Literals** (`"""..."""`). This avoids escaping quotes and improves readability.
+
+```csharp
+// ✅ Good — raw string literal
+var schemaDefinition = """{"type":"object","properties":{"bp":{"type":"string"}}}""";
+var detail = new StubClinicalDetail("VITALS", """{"bp":"120/80"}""");
+
+// ❌ Forbidden — escaped quotes
+var schemaDefinition = "{\"type\":\"object\",\"properties\":{\"bp\":{\"type\":\"string\"}}}";
+```
+
 ### Value Object Tests
 
 For value objects with computed/getter properties, the `// Act` section may be omitted — construction is the act:
