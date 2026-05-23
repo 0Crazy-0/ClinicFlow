@@ -33,7 +33,7 @@ public class CreateClinicalFormTemplateCommandHandlerTests
             "CARDIO_01",
             "Cardiology Form",
             "For cardiac evaluations",
-            """{\"fields\":["heartRate"]}"""
+            """{"fields":["heartRate"]}"""
         );
 
         ClinicalFormTemplate? capturedTemplate = null;
