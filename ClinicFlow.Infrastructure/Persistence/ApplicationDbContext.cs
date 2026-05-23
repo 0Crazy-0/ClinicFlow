@@ -27,22 +27,23 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     {
         base.OnModelCreating(modelBuilder);
 
-        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        foreach (
+            var entityType in modelBuilder
+                .Model.GetEntityTypes()
+                .Where(e => typeof(BaseEntity).IsAssignableFrom(e.ClrType))
+        )
         {
-            if (typeof(BaseEntity).IsAssignableFrom(entityType.ClrType))
-            {
-                modelBuilder.Entity(entityType.ClrType).Ignore(nameof(BaseEntity.DomainEvents));
+            modelBuilder.Entity(entityType.ClrType).Ignore(nameof(BaseEntity.DomainEvents));
 
-                // HasQueryFilter requires a typed lambda (e => e.IsDeleted == false), but the entity type
-                // is only known at runtime, so the expression tree must be built dynamically via Expression API.
-                var parameter = Expression.Parameter(entityType.ClrType, "e");
-                var body = Expression.Equal(
-                    Expression.Property(parameter, nameof(BaseEntity.IsDeleted)),
-                    Expression.Constant(false)
-                );
-                var lambda = Expression.Lambda(body, parameter);
-                modelBuilder.Entity(entityType.ClrType).HasQueryFilter(lambda);
-            }
+            // HasQueryFilter requires a typed lambda (e => e.IsDeleted == false), but the entity type
+            // is only known at runtime, so the expression tree must be built dynamically via Expression API.
+            var parameter = Expression.Parameter(entityType.ClrType, "e");
+            var body = Expression.Equal(
+                Expression.Property(parameter, nameof(BaseEntity.IsDeleted)),
+                Expression.Constant(false)
+            );
+            var lambda = Expression.Lambda(body, parameter);
+            modelBuilder.Entity(entityType.ClrType).HasQueryFilter(lambda);
         }
 
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
