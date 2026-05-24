@@ -58,6 +58,8 @@ public class Patient : BaseEntity
     {
         if (userId == Guid.Empty)
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        if (fullName is null)
+            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
         if (dateOfBirth > referenceTime)
             throw new DomainValidationException(DomainErrors.Validation.ValueCannotBeInFuture);
 
@@ -78,6 +80,8 @@ public class Patient : BaseEntity
         if (relationshipToUser is PatientRelationship.Self)
             throw new DomainValidationException(DomainErrors.Patient.CannotBeSelf);
         if (userId == Guid.Empty)
+            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        if (fullName is null)
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
         if (dateOfBirth > referenceTime)
             throw new DomainValidationException(DomainErrors.Validation.ValueCannotBeInFuture);

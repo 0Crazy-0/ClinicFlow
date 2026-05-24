@@ -82,6 +82,24 @@ public class PatientTests
     }
 
     [Fact]
+    public void Create_ShouldThrowException_WhenFullNameIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            Patient.CreateSelf(
+                Guid.NewGuid(),
+                null!,
+                _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30).Date,
+                _fakeTime.GetUtcNow().UtcDateTime
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
     public void CreateFamilyMember_ShouldCreatePatient_WhenValidParameters()
     {
         // Arrange
@@ -131,6 +149,25 @@ public class PatientTests
             Patient.CreateFamilyMember(
                 Guid.Empty,
                 PersonName.Create("Family Member"),
+                PatientRelationship.Child,
+                _fakeTime.GetUtcNow().UtcDateTime.AddYears(-10).Date,
+                _fakeTime.GetUtcNow().UtcDateTime
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void CreateFamilyMember_ShouldThrowException_WhenFullNameIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            Patient.CreateFamilyMember(
+                Guid.NewGuid(),
+                null!,
                 PatientRelationship.Child,
                 _fakeTime.GetUtcNow().UtcDateTime.AddYears(-10).Date,
                 _fakeTime.GetUtcNow().UtcDateTime
