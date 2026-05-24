@@ -26,9 +26,9 @@ public class AppointmentTypeDefinition : BaseEntity
     /// </summary>
     public bool IsUnrestrictedBySpecialty { get; private set; }
 
-    private readonly HashSet<Guid> _allowedSpecialtyIds = [];
+    private readonly List<Guid> _allowedSpecialtyIds = [];
 
-    public IReadOnlyCollection<Guid> AllowedSpecialtyIds => _allowedSpecialtyIds;
+    public IReadOnlyCollection<Guid> AllowedSpecialtyIds => _allowedSpecialtyIds.AsReadOnly();
 
     private readonly List<ClinicalFormTemplate> _requiredTemplates = [];
 
@@ -128,7 +128,7 @@ public class AppointmentTypeDefinition : BaseEntity
             throw new DomainValidationException(DomainErrors.Validation.DuplicateValues);
 
         _allowedSpecialtyIds.Clear();
-        _allowedSpecialtyIds.UnionWith(specialtyIds);
+        _allowedSpecialtyIds.AddRange(specialtyIds);
 
         IsUnrestrictedBySpecialty = false;
     }
