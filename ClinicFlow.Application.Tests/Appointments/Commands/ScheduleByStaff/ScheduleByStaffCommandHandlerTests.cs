@@ -74,7 +74,7 @@ public class ScheduleByStaffCommandHandlerTests
         );
 
         var doctor = Doctor.Create(
-            Guid.NewGuid(),
+            Guid.NewGuid(), PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("LIC-123"),
             Guid.NewGuid(),
             "Bio",
@@ -174,7 +174,7 @@ public class ScheduleByStaffCommandHandlerTests
         );
 
         var doctor = Doctor.Create(
-            Guid.NewGuid(),
+            Guid.NewGuid(), PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("LIC-123"),
             Guid.NewGuid(),
             "Bio",
@@ -329,7 +329,7 @@ public class ScheduleByStaffCommandHandlerTests
         var targetPatient = CreateTargetPatient(Guid.NewGuid(), _fakeTime.GetUtcNow().UtcDateTime);
 
         var doctor = Doctor.Create(
-            Guid.NewGuid(),
+            Guid.NewGuid(), PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("LIC-123"),
             Guid.NewGuid(),
             "Bio",

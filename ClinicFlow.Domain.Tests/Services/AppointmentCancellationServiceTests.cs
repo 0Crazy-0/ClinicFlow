@@ -683,18 +683,6 @@ public class AppointmentCancellationServiceTests
             return this;
         }
 
-        public AppointmentBuilder WithDoctorId(Guid doctorId)
-        {
-            _doctorId = doctorId;
-            return this;
-        }
-
-        public AppointmentBuilder WithTypeId(Guid typeId)
-        {
-            _typeId = typeId;
-            return this;
-        }
-
         public AppointmentBuilder WithScheduledDateTime(DateTime dt)
         {
             _scheduledDateTime = dt;
@@ -751,6 +739,7 @@ public class AppointmentCancellationServiceTests
     {
         var doctor = Doctor.Create(
             userId,
+            PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("12345"),
             Guid.NewGuid(),
             "555-0000",

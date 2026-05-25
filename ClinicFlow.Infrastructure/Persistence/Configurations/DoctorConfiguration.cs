@@ -11,6 +11,11 @@ public sealed class DoctorConfiguration : IEntityTypeConfiguration<Doctor>
     public void Configure(EntityTypeBuilder<Doctor> builder)
     {
         builder
+            .Property(d => d.FullName)
+            .HasConversion(name => name.FullName, val => PersonName.Create(val))
+            .HasMaxLength(200);
+
+        builder
             .Property(d => d.LicenseNumber)
             .HasConversion(lic => lic.Value, val => MedicalLicenseNumber.Create(val))
             .HasMaxLength(50);

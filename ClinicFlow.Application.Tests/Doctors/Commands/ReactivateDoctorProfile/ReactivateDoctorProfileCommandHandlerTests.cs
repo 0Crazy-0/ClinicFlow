@@ -32,6 +32,7 @@ public class ReactivateDoctorProfileCommandHandlerTests
         // Arrange
         var doctor = Doctor.Create(
             Guid.NewGuid(),
+            PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("12345"),
             Guid.NewGuid(),
             "Old biography",
@@ -59,6 +60,7 @@ public class ReactivateDoctorProfileCommandHandlerTests
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
 
         doctor.IsDeleted.Should().BeFalse();
+        doctor.FullName.Should().Be(doctor.FullName);
         doctor.Biography.Should().Be(command.Biography);
         doctor.ConsultationRoom.Number.Should().Be(command.ConsultationRoomNumber);
         doctor.ConsultationRoom.Name.Should().Be(command.ConsultationRoomName);

@@ -277,6 +277,7 @@ public class CompleteMedicalEncounterCommandHandlerTests
     {
         var doctor = Doctor.Create(
             Guid.NewGuid(),
+            PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("RM-12345"),
             Guid.NewGuid(),
             "Bio",

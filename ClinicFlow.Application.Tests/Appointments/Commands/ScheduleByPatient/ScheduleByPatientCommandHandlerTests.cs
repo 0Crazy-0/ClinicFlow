@@ -79,7 +79,7 @@ public class ScheduleByPatientCommandHandlerTests
         );
 
         var doctor = Doctor.Create(
-            Guid.NewGuid(),
+            Guid.NewGuid(), PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("LIC-123"),
             Guid.NewGuid(),
             "Bio",
@@ -185,7 +185,7 @@ public class ScheduleByPatientCommandHandlerTests
         );
 
         var doctor = Doctor.Create(
-            Guid.NewGuid(),
+            Guid.NewGuid(), PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("LIC-123"),
             Guid.NewGuid(),
             "Bio",
@@ -400,7 +400,7 @@ public class ScheduleByPatientCommandHandlerTests
         );
 
         var doctor = Doctor.Create(
-            Guid.NewGuid(),
+            Guid.NewGuid(), PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("LIC-123"),
             Guid.NewGuid(),
             "Bio",
@@ -469,7 +469,7 @@ public class ScheduleByPatientCommandHandlerTests
         );
 
         var doctor = Doctor.Create(
-            Guid.NewGuid(),
+            Guid.NewGuid(), PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("LIC-123"),
             Guid.NewGuid(),
             "Bio",

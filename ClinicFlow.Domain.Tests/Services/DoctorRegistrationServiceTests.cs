@@ -18,6 +18,7 @@ public class DoctorRegistrationServiceTests
         var args = new DoctorRegistrationArgs
         {
             UserId = Guid.NewGuid(),
+            FullName = PersonName.Create("Test Doctor"),
             LicenseNumber = MedicalLicenseNumber.Create("12345"),
             MedicalSpecialtyId = Guid.NewGuid(),
             Biography = "Cardiologist",
@@ -32,6 +33,7 @@ public class DoctorRegistrationServiceTests
         // Assert
         doctor.Should().NotBeNull();
         doctor.UserId.Should().Be(args.UserId);
+        doctor.FullName.Should().Be(args.FullName);
         doctor.LicenseNumber.Should().Be(args.LicenseNumber);
         doctor.MedicalSpecialtyId.Should().Be(args.MedicalSpecialtyId);
         doctor.Biography.Should().Be(args.Biography);
@@ -44,6 +46,7 @@ public class DoctorRegistrationServiceTests
         // Arrange
         var existingDoctor = Doctor.Create(
             Guid.NewGuid(),
+            PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("12345"),
             Guid.NewGuid(),
             "Old Bio",
@@ -53,6 +56,7 @@ public class DoctorRegistrationServiceTests
         var args = new DoctorRegistrationArgs
         {
             UserId = Guid.NewGuid(),
+            FullName = PersonName.Create("Test Doctor"),
             LicenseNumber = MedicalLicenseNumber.Create("12345"),
             MedicalSpecialtyId = Guid.NewGuid(),
             Biography = "Cardiologist",

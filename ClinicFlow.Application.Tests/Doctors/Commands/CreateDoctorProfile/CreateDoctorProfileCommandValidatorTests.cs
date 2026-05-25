@@ -19,6 +19,8 @@ public class CreateDoctorProfileCommandValidatorTests
         // Arrange
         var command = new CreateDoctorProfileCommand(
             Guid.NewGuid(),
+            "John",
+            "Doe",
             "12345",
             Guid.NewGuid(),
             "Cardiologist with 10 years of experience",
@@ -40,6 +42,8 @@ public class CreateDoctorProfileCommandValidatorTests
         // Arrange
         var command = new CreateDoctorProfileCommand(
             Guid.Empty,
+            "John",
+            "Doe",
             "12345",
             Guid.NewGuid(),
             "Biography",
@@ -57,12 +61,120 @@ public class CreateDoctorProfileCommandValidatorTests
             .WithErrorMessage(DomainErrors.Validation.InvalidValue);
     }
 
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Validate_ShouldHaveError_WhenFirstNameIsEmpty(string? firstName)
+    {
+        // Arrange
+        var command = new CreateDoctorProfileCommand(
+            Guid.NewGuid(),
+            firstName!,
+            "Doe",
+            "12345",
+            Guid.NewGuid(),
+            "Biography",
+            10,
+            "Room A",
+            3
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.FirstName)
+            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenFirstNameIsTooShort()
+    {
+        // Arrange
+        var command = new CreateDoctorProfileCommand(
+            Guid.NewGuid(),
+            "A",
+            "Doe",
+            "12345",
+            Guid.NewGuid(),
+            "Biography",
+            10,
+            "Room A",
+            3
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.FirstName)
+            .WithErrorMessage(DomainErrors.Validation.ValueTooShort);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Validate_ShouldHaveError_WhenLastNameIsEmpty(string? lastName)
+    {
+        // Arrange
+        var command = new CreateDoctorProfileCommand(
+            Guid.NewGuid(),
+            "John",
+            lastName!,
+            "12345",
+            Guid.NewGuid(),
+            "Biography",
+            10,
+            "Room A",
+            3
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.LastName)
+            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenLastNameIsTooShort()
+    {
+        // Arrange
+        var command = new CreateDoctorProfileCommand(
+            Guid.NewGuid(),
+            "John",
+            "A",
+            "12345",
+            Guid.NewGuid(),
+            "Biography",
+            10,
+            "Room A",
+            3
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.LastName)
+            .WithErrorMessage(DomainErrors.Validation.ValueTooShort);
+    }
+
     [Fact]
     public void Validate_ShouldHaveError_WhenLicenseNumberIsEmpty()
     {
         // Arrange
         var command = new CreateDoctorProfileCommand(
             Guid.NewGuid(),
+            "John",
+            "Doe",
             "",
             Guid.NewGuid(),
             "Biography",
@@ -86,6 +198,8 @@ public class CreateDoctorProfileCommandValidatorTests
         // Arrange
         var command = new CreateDoctorProfileCommand(
             Guid.NewGuid(),
+            "John",
+            "Doe",
             "123",
             Guid.NewGuid(),
             "Biography",
@@ -109,6 +223,8 @@ public class CreateDoctorProfileCommandValidatorTests
         // Arrange
         var command = new CreateDoctorProfileCommand(
             Guid.NewGuid(),
+            "John",
+            "Doe",
             "12345",
             Guid.Empty,
             "Biography",
@@ -135,6 +251,8 @@ public class CreateDoctorProfileCommandValidatorTests
         // Arrange
         var command = new CreateDoctorProfileCommand(
             Guid.NewGuid(),
+            "John",
+            "Doe",
             "12345",
             Guid.NewGuid(),
             "Biography",
@@ -161,6 +279,8 @@ public class CreateDoctorProfileCommandValidatorTests
         // Arrange
         var command = new CreateDoctorProfileCommand(
             Guid.NewGuid(),
+            "John",
+            "Doe",
             "12345",
             Guid.NewGuid(),
             "Biography",
@@ -187,6 +307,8 @@ public class CreateDoctorProfileCommandValidatorTests
         // Arrange
         var command = new CreateDoctorProfileCommand(
             Guid.NewGuid(),
+            "John",
+            "Doe",
             "12345",
             Guid.NewGuid(),
             "Biography",
@@ -213,6 +335,8 @@ public class CreateDoctorProfileCommandValidatorTests
         // Arrange
         var command = new CreateDoctorProfileCommand(
             Guid.NewGuid(),
+            "John",
+            "Doe",
             "12345",
             Guid.NewGuid(),
             "Biography",
@@ -239,6 +363,8 @@ public class CreateDoctorProfileCommandValidatorTests
         // Arrange
         var command = new CreateDoctorProfileCommand(
             Guid.NewGuid(),
+            "John",
+            "Doe",
             "12345",
             Guid.NewGuid(),
             "Biography",

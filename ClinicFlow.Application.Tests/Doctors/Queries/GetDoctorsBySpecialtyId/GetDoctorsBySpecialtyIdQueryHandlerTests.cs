@@ -25,6 +25,7 @@ public class GetDoctorsBySpecialtyIdQueryHandlerTests
         var specialtyId = Guid.NewGuid();
         var doctor1 = Doctor.Create(
             Guid.NewGuid(),
+            PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("12345"),
             specialtyId,
             "Cardiologist with 10 years of experience",
@@ -33,6 +34,7 @@ public class GetDoctorsBySpecialtyIdQueryHandlerTests
 
         var doctor2 = Doctor.Create(
             Guid.NewGuid(),
+            PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("67890"),
             specialtyId,
             "Cardiologist specialized in arrhythmias",
@@ -58,8 +60,12 @@ public class GetDoctorsBySpecialtyIdQueryHandlerTests
         result.Items.Should().HaveCount(2);
 
         var resultList = result.Items.ToList();
+        resultList[0].Id.Should().Be(doctor1.Id);
+        resultList[0].FullName.Should().Be(doctor1.FullName.FullName);
         resultList[0].LicenseNumber.Should().Be(doctor1.LicenseNumber.Value);
         resultList[0].MedicalSpecialtyId.Should().Be(specialtyId);
+        resultList[1].Id.Should().Be(doctor2.Id);
+        resultList[1].FullName.Should().Be(doctor2.FullName.FullName);
         resultList[1].LicenseNumber.Should().Be(doctor2.LicenseNumber.Value);
         resultList[1].MedicalSpecialtyId.Should().Be(specialtyId);
     }

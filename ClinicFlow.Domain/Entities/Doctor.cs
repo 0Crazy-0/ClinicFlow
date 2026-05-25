@@ -12,6 +12,8 @@ public class Doctor : BaseEntity
 {
     public Guid UserId { get; init; }
 
+    public PersonName FullName { get; private set; } = null!;
+
     public Guid MedicalSpecialtyId { get; init; }
 
     public MedicalLicenseNumber LicenseNumber { get; private set; } = null!;
@@ -25,6 +27,7 @@ public class Doctor : BaseEntity
 
     private Doctor(
         Guid userId,
+        PersonName fullName,
         MedicalLicenseNumber licenseNumber,
         Guid medicalSpecialtyId,
         string biography,
@@ -32,6 +35,7 @@ public class Doctor : BaseEntity
     )
     {
         UserId = userId;
+        FullName = fullName;
         LicenseNumber = licenseNumber;
         MedicalSpecialtyId = medicalSpecialtyId;
         Biography = biography;
@@ -40,6 +44,7 @@ public class Doctor : BaseEntity
 
     public static Doctor Create(
         Guid userId,
+        PersonName fullName,
         MedicalLicenseNumber licenseNumber,
         Guid medicalSpecialtyId,
         string biography,
@@ -48,10 +53,19 @@ public class Doctor : BaseEntity
     {
         if (userId == Guid.Empty)
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        if (fullName is null)
+            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
         if (medicalSpecialtyId == Guid.Empty)
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
 
-        return new Doctor(userId, licenseNumber, medicalSpecialtyId, biography, consultationRoom);
+        return new Doctor(
+            userId,
+            fullName,
+            licenseNumber,
+            medicalSpecialtyId,
+            biography,
+            consultationRoom
+        );
     }
 
     public void UpdateProfile(string biography, ConsultationRoom consultationRoom)
