@@ -27,6 +27,7 @@ public sealed class GetDoctorByIdQueryHandler(IDoctorRepository doctorRepository
         return new DoctorDto(
             doctor.Id,
             doctor.UserId,
+            doctor.FullName.FullName,
             doctor.MedicalSpecialtyId,
             doctor.LicenseNumber.Value,
             doctor.Biography,

@@ -313,6 +313,7 @@ public class RescheduleByDoctorTests
     {
         var doctor = Doctor.Create(
             userId,
+            PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("12345"),
             Guid.NewGuid(),
             "555-0000",

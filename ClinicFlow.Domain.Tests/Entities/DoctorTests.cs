@@ -14,17 +14,19 @@ public class DoctorTests
     {
         // Arrange
         var userId = Guid.NewGuid();
+        var fullName = PersonName.Create("Test Doctor");
         var licenseNumber = MedicalLicenseNumber.Create("12345");
         var specialtyId = Guid.NewGuid();
         var biography = "Cardiologist with 10 years of experience";
         var room = ConsultationRoom.Create(1, "Cardiology A", 3);
 
         // Act
-        var doctor = Doctor.Create(userId, licenseNumber, specialtyId, biography, room);
+        var doctor = Doctor.Create(userId, fullName, licenseNumber, specialtyId, biography, room);
 
         // Assert
         doctor.Should().NotBeNull();
         doctor.UserId.Should().Be(userId);
+        doctor.FullName.Should().Be(fullName);
         doctor.LicenseNumber.Should().Be(licenseNumber);
         doctor.MedicalSpecialtyId.Should().Be(specialtyId);
         doctor.Biography.Should().Be(biography);
@@ -38,6 +40,7 @@ public class DoctorTests
         var act = () =>
             Doctor.Create(
                 Guid.Empty,
+                PersonName.Create("Test Doctor"),
                 MedicalLicenseNumber.Create("12345"),
                 Guid.NewGuid(),
                 "Biography",
@@ -57,8 +60,29 @@ public class DoctorTests
         var act = () =>
             Doctor.Create(
                 Guid.NewGuid(),
+                PersonName.Create("Test Doctor"),
                 MedicalLicenseNumber.Create("12345"),
                 Guid.Empty,
+                "Biography",
+                ConsultationRoom.Create(1, "Room A", 1)
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void Create_ShouldThrowException_WhenFullNameIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            Doctor.Create(
+                Guid.NewGuid(),
+                null!,
+                MedicalLicenseNumber.Create("12345"),
+                Guid.NewGuid(),
                 "Biography",
                 ConsultationRoom.Create(1, "Room A", 1)
             );
@@ -75,6 +99,7 @@ public class DoctorTests
         // Arrange
         var doctor = Doctor.Create(
             Guid.NewGuid(),
+            PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("12345"),
             Guid.NewGuid(),
             "Original biography",
@@ -158,6 +183,7 @@ public class DoctorTests
     private static Doctor CreateDoctor() =>
         Doctor.Create(
             Guid.NewGuid(),
+            PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("12345"),
             Guid.NewGuid(),
             "Biography",

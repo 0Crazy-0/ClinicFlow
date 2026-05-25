@@ -15,6 +15,7 @@ public static class DoctorRegistrationService
 
         return Doctor.Create(
             args.UserId,
+            args.FullName,
             args.LicenseNumber,
             args.MedicalSpecialtyId,
             args.Biography,

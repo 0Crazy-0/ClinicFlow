@@ -26,6 +26,7 @@ public class GetDoctorByIdQueryHandlerTests
         // Arrange
         var doctor = Doctor.Create(
             Guid.NewGuid(),
+            PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("12345"),
             Guid.NewGuid(),
             "Cardiologist with 10 years of experience",
@@ -43,6 +44,7 @@ public class GetDoctorByIdQueryHandlerTests
         result.Should().NotBeNull();
         result.Id.Should().Be(doctor.Id);
         result.UserId.Should().Be(doctor.UserId);
+        result.FullName.Should().Be(doctor.FullName.FullName);
         result.MedicalSpecialtyId.Should().Be(doctor.MedicalSpecialtyId);
         result.LicenseNumber.Should().Be("12345");
         result.Biography.Should().Be("Cardiologist with 10 years of experience");

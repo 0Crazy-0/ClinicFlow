@@ -50,7 +50,7 @@ public class CancelAppointmentByDoctorCommandHandlerTests
             TimeRange.Create(new TimeSpan(10, 0, 0), new TimeSpan(11, 0, 0))
         );
         var doctor = Doctor.Create(
-            command.InitiatorUserId,
+            command.InitiatorUserId, PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("1234567"),
             Guid.NewGuid(),
             "555-1234",

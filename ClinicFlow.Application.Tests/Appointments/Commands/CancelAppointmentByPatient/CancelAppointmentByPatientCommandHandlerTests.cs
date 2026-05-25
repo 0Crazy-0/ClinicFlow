@@ -355,7 +355,7 @@ public class CancelAppointmentByPatientCommandHandlerTests
 
     private static Doctor CreateDoctor(Guid userId, Guid specialtyId) =>
         Doctor.Create(
-            userId,
+            userId, PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("1234567"),
             specialtyId,
             "555-1234",

@@ -27,6 +27,7 @@ public class GetDoctorByUserIdQueryHandlerTests
         var userId = Guid.NewGuid();
         var doctor = Doctor.Create(
             userId,
+            PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("67890"),
             Guid.NewGuid(),
             "Dermatologist specialized in skin cancer detection",
@@ -44,11 +45,12 @@ public class GetDoctorByUserIdQueryHandlerTests
         result.Should().NotBeNull();
         result.Id.Should().Be(doctor.Id);
         result.UserId.Should().Be(userId);
-        result.LicenseNumber.Should().Be("67890");
-        result.Biography.Should().Be("Dermatologist specialized in skin cancer detection");
-        result.ConsultationRoomNumber.Should().Be(2);
-        result.ConsultationRoomName.Should().Be("Dermatology B");
-        result.ConsultationRoomFloor.Should().Be(5);
+        result.FullName.Should().Be(doctor.FullName.FullName);
+        result.LicenseNumber.Should().Be(doctor.LicenseNumber.Value);
+        result.Biography.Should().Be(doctor.Biography);
+        result.ConsultationRoomNumber.Should().Be(doctor.ConsultationRoom.Number);
+        result.ConsultationRoomName.Should().Be(doctor.ConsultationRoom.Name);
+        result.ConsultationRoomFloor.Should().Be(doctor.ConsultationRoom.Floor);
     }
 
     [Fact]

@@ -43,7 +43,7 @@ public class ReassignAppointmentCommandHandlerTests
         // Arrange
         var appointment = CreateDisplacedAppointment();
         var newDoctor = Doctor.Create(
-            Guid.NewGuid(),
+            Guid.NewGuid(), PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("DOC123"),
             Guid.NewGuid(),
             "Specialist",

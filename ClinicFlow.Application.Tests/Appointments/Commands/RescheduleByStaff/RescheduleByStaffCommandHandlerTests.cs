@@ -272,7 +272,7 @@ public class RescheduleByStaffCommandHandlerTests
 
     private static Doctor CreateDoctor() =>
         Doctor.Create(
-            Guid.NewGuid(),
+            Guid.NewGuid(), PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("1234567"),
             Guid.NewGuid(),
             "555-1234",

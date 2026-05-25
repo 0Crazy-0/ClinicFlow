@@ -33,6 +33,7 @@ public class SuspendDoctorProfileCommandHandlerTests
         // Arrange
         var doctor = Doctor.Create(
             Guid.NewGuid(),
+            PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("12345"),
             Guid.NewGuid(),
             "Biography",
