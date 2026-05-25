@@ -24,10 +24,12 @@ public sealed class CreateDoctorProfileCommandHandler(
             cancellationToken
         );
 
+        var fullName = PersonName.Create($"{request.FirstName} {request.LastName}");
         var context = new DoctorRegistrationContext { ExistingDoctor = existingDoctor };
         var args = new DoctorRegistrationArgs
         {
             UserId = request.UserId,
+            FullName = fullName,
             LicenseNumber = MedicalLicenseNumber.Create(request.LicenseNumber),
             MedicalSpecialtyId = request.MedicalSpecialtyId,
             Biography = request.Biography,
@@ -37,6 +39,7 @@ public sealed class CreateDoctorProfileCommandHandler(
                 request.ConsultationRoomFloor
             ),
         };
+
         var doctor = DoctorRegistrationService.Register(args, context);
 
         await doctorRepository.CreateAsync(doctor, cancellationToken);

@@ -8,6 +8,16 @@ public class CreateDoctorProfileCommandValidator : AbstractValidator<CreateDocto
     public CreateDoctorProfileCommandValidator()
     {
         RuleFor(x => x.UserId).NotEmpty().WithMessage(DomainErrors.Validation.InvalidValue);
+        RuleFor(x => x.FirstName)
+            .NotEmpty()
+            .WithMessage(DomainErrors.Validation.ValueRequired)
+            .MinimumLength(2)
+            .WithMessage(DomainErrors.Validation.ValueTooShort);
+        RuleFor(x => x.LastName)
+            .NotEmpty()
+            .WithMessage(DomainErrors.Validation.ValueRequired)
+            .MinimumLength(2)
+            .WithMessage(DomainErrors.Validation.ValueTooShort);
         RuleFor(x => x.LicenseNumber)
             .NotEmpty()
             .WithMessage(DomainErrors.Validation.ValueRequired)
