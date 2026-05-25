@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ClinicFlow.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260525001109_AddDoctorFullNameToDoctor")]
-    partial class AddDoctorFullNameToDoctor
+    [Migration("20260525012324_SyncSnapshot")]
+    partial class SyncSnapshot
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -208,7 +208,8 @@ namespace ClinicFlow.Infrastructure.Migrations
                     b.Property<string>("FullName")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasColumnType("character varying(200)")
+                        .HasColumnOrder(2);
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");

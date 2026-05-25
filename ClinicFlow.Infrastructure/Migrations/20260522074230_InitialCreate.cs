@@ -144,6 +144,11 @@ namespace ClinicFlow.Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    FullName = table.Column<string>(
+                        type: "character varying(200)",
+                        maxLength: 200,
+                        nullable: false
+                    ),
                     MedicalSpecialtyId = table.Column<Guid>(type: "uuid", nullable: false),
                     LicenseNumber = table.Column<string>(
                         type: "character varying(50)",
