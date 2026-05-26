@@ -4,6 +4,7 @@ namespace ClinicFlow.Domain.Services.Policies;
 /// Domain interface for validating dynamic JSON clinic payloads against metadata schemas.
 /// The implementation of this interface should reside in the Infrastructure layer
 /// to keep the Domain pure from serialization or framework logic.
+/// Note: Expected to validate against the JSON Schema draft-07 specification.
 /// </summary>
 public interface IJsonSchemaValidator
 {
