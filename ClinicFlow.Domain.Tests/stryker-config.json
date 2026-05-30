@@ -1,0 +1,14 @@
+{
+    "stryker-config": {
+        "project": "ClinicFlow.Domain.csproj",
+        "mutate": [
+            "!**/Enums/**",
+            "!**/Interfaces/**",
+            "!**/Events/**",
+            "!**/Properties/**",
+            "!**/Services/Args/**",
+            "!**/Services/Contexts/**",
+            "!**/Common/IDomainEvent.cs"
+        ]
+    }
+}

@@ -1,0 +1,14 @@
+{
+    "stryker-config": {
+        "project": "ClinicFlow.Infrastructure.csproj",
+        "mutate": [
+            "!**/DependencyInjection.cs",
+            "!**/Migrations/**",
+            "!**/Configurations/**",
+            "!**/ApplicationDbContextFactory.cs",
+            "!**/ColumnNames.cs",
+            "!**/Options/**",
+            "!**/Seeding/**"
+        ]
+    }
+}
