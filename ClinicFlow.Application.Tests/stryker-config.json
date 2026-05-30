@@ -1,0 +1,11 @@
+{
+    "stryker-config": {
+        "project": "ClinicFlow.Application.csproj",
+        "mutate": [
+            "!**/DependencyInjection.cs",
+            "!**/DTOs/**",
+            "!**/*Command.cs",
+            "!**/*Query.cs"
+        ]
+    }
+}
