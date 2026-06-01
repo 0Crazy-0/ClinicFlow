@@ -53,7 +53,8 @@ public class Appointment : BaseEntity
         Guid doctorId,
         Guid appointmentTypeId,
         DateTime scheduledDate,
-        TimeRange timeRange
+        TimeRange timeRange,
+        string? patientNotes = null
     )
     {
         PatientId = patientId;
@@ -63,6 +64,7 @@ public class Appointment : BaseEntity
         TimeRange = timeRange;
         Status = AppointmentStatus.Scheduled;
         RescheduleCount = 0;
+        PatientNotes = patientNotes ?? string.Empty;
     }
 
     internal static Appointment Schedule(
@@ -70,7 +72,8 @@ public class Appointment : BaseEntity
         Guid doctorId,
         Guid appointmentTypeId,
         DateTime scheduledDate,
-        TimeRange timeRange
+        TimeRange timeRange,
+        string? patientNotes = null
     )
     {
         if (patientId == Guid.Empty)
@@ -87,12 +90,30 @@ public class Appointment : BaseEntity
             doctorId,
             appointmentTypeId,
             scheduledDate,
-            timeRange
+            timeRange,
+            patientNotes
         );
 
         appointment.AddDomainEvent(new AppointmentScheduledEvent(appointment));
 
         return appointment;
+    }
+
+    internal void Reschedule(DateTime newDate, TimeRange newTimeRange)
+    {
+        if (RescheduleCount >= 1 || Status is not AppointmentStatus.Scheduled)
+            throw new AppointmentReschedulingNotAllowedException(
+                DomainErrors.Appointment.CannotReschedule
+            );
+
+        var previousDate = ScheduledDate;
+        var previousTimeRange = TimeRange;
+
+        ScheduledDate = newDate;
+        TimeRange = newTimeRange;
+        RescheduleCount++;
+
+        AddDomainEvent(new AppointmentRescheduledEvent(this, previousDate, previousTimeRange));
     }
 
     internal void Cancel(Guid cancelledByUserId, string? reason, DateTime cancelledAt)
@@ -113,13 +134,14 @@ public class Appointment : BaseEntity
         AddDomainEvent(new AppointmentLateCancelledEvent(this, cancelledByUserId, reason));
     }
 
-    public void CheckIn(DateTime checkedInAt)
+    public void CheckIn(DateTime checkedInAt, string? receptionistNotes = null)
     {
         if (Status is not AppointmentStatus.Scheduled)
             throw new DomainValidationException(DomainErrors.Appointment.CannotCheckIn);
 
         Status = AppointmentStatus.CheckedIn;
         CheckedInAt = checkedInAt;
+        ReceptionistNotes = receptionistNotes ?? string.Empty;
 
         AddDomainEvent(new AppointmentCheckedInEvent(this, checkedInAt));
     }
@@ -145,23 +167,6 @@ public class Appointment : BaseEntity
         Status = AppointmentStatus.Completed;
 
         AddDomainEvent(new AppointmentCompletedEvent(this, completedAt));
-    }
-
-    internal void Reschedule(DateTime newDate, TimeRange newTimeRange)
-    {
-        if (RescheduleCount >= 1 || Status is not AppointmentStatus.Scheduled)
-            throw new AppointmentReschedulingNotAllowedException(
-                DomainErrors.Appointment.CannotReschedule
-            );
-
-        var previousDate = ScheduledDate;
-        var previousTimeRange = TimeRange;
-
-        ScheduledDate = newDate;
-        TimeRange = newTimeRange;
-        RescheduleCount++;
-
-        AddDomainEvent(new AppointmentRescheduledEvent(this, previousDate, previousTimeRange));
     }
 
     /// <remarks>
@@ -222,6 +227,22 @@ public class Appointment : BaseEntity
             );
 
         MarkAsNoShow();
+    }
+
+    public void UpdatePatientNotes(string? notes)
+    {
+        if (Status is not (AppointmentStatus.Scheduled or AppointmentStatus.RequiresReassignment))
+            throw new DomainValidationException(DomainErrors.Appointment.CannotUpdateNotes);
+
+        PatientNotes = notes ?? string.Empty;
+    }
+
+    public void UpdateReceptionistNotes(string? notes)
+    {
+        if (Status is not AppointmentStatus.CheckedIn)
+            throw new DomainValidationException(DomainErrors.Appointment.CannotUpdateNotes);
+
+        ReceptionistNotes = notes ?? string.Empty;
     }
 
     private void MarkAsNoShow()

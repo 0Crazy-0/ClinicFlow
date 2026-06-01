@@ -11,4 +11,5 @@ public sealed record PatientSchedulingArgs
     public DateTime ScheduledDate { get; init; }
     public required TimeRange TimeRange { get; init; }
     public bool IsInitiatorPhoneVerified { get; init; }
+    public string? PatientNotes { get; init; }
 }

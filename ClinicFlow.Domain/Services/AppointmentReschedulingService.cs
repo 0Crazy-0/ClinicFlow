@@ -1,6 +1,5 @@
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
-using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Appointments;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Exceptions.Scheduling;
@@ -46,20 +45,7 @@ public static class AppointmentReschedulingService
         if (args.TargetPatient.Id != appointment.PatientId)
             throw new DomainValidationException(DomainErrors.Appointment.DataMismatch);
 
-        if (args.TargetPatient.UserId != args.InitiatorPatient.UserId)
-            throw new AppointmentSchedulingUnauthorizedException(
-                DomainErrors.Appointment.UnauthorizedScheduling
-            );
-
-        if (
-            args.InitiatorPatient.RelationshipToUser is not PatientRelationship.Self
-            && args.InitiatorPatient.Id != args.TargetPatient.Id
-        )
-        {
-            throw new AppointmentSchedulingUnauthorizedException(
-                DomainErrors.Appointment.UnauthorizedScheduling
-            );
-        }
+        PatientAccessService.EnsureCanActOnBehalfOf(args.InitiatorPatient, args.TargetPatient);
 
         if (!args.IsInitiatorPhoneVerified)
             throw new AppointmentSchedulingUnauthorizedException(
@@ -83,6 +69,9 @@ public static class AppointmentReschedulingService
             );
 
         appointment.Reschedule(args.NewDate, args.NewTimeRange);
+
+        if (args.NewPatientNotes is not null)
+            appointment.UpdatePatientNotes(args.NewPatientNotes);
     }
 
     public static void RescheduleByDoctor(

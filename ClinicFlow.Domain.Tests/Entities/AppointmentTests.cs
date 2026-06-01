@@ -41,6 +41,7 @@ public class AppointmentTests
         appointment.ScheduledDate.Should().Be(scheduledDate);
         appointment.TimeRange.Should().Be(timeRange);
         appointment.Status.Should().Be(AppointmentStatus.Scheduled);
+        appointment.PatientNotes.Should().BeEmpty();
         appointment.RescheduleCount.Should().Be(0);
         appointment.DomainEvents.OfType<AppointmentScheduledEvent>().Should().ContainSingle();
     }
@@ -102,6 +103,55 @@ public class AppointmentTests
         act.Should()
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
+    public void Schedule_ShouldSetPatientNotes_WhenProvided()
+    {
+        // Arrange
+        var patientId = Guid.NewGuid();
+        var doctorId = Guid.NewGuid();
+        var appointmentTypeId = Guid.NewGuid();
+        var scheduledDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(1);
+        var timeRange = TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(10));
+        var patientNotes = "Test patient notes";
+
+        // Act
+        var appointment = Appointment.Schedule(
+            patientId,
+            doctorId,
+            appointmentTypeId,
+            scheduledDate,
+            timeRange,
+            patientNotes
+        );
+
+        // Assert
+        appointment.PatientNotes.Should().Be(patientNotes);
+    }
+
+    [Fact]
+    public void Schedule_ShouldSetPatientNotesToEmpty_WhenNullProvided()
+    {
+        // Arrange
+        var patientId = Guid.NewGuid();
+        var doctorId = Guid.NewGuid();
+        var appointmentTypeId = Guid.NewGuid();
+        var scheduledDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(1);
+        var timeRange = TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(10));
+
+        // Act
+        var appointment = Appointment.Schedule(
+            patientId,
+            doctorId,
+            appointmentTypeId,
+            scheduledDate,
+            timeRange,
+            null
+        );
+
+        // Assert
+        appointment.PatientNotes.Should().BeEmpty();
     }
 
     [Fact]
@@ -284,7 +334,21 @@ public class AppointmentTests
         // Assert
         appointment.Status.Should().Be(AppointmentStatus.CheckedIn);
         appointment.CheckedInAt.Should().Be(_fakeTime.GetUtcNow().UtcDateTime);
+        appointment.ReceptionistNotes.Should().BeEmpty();
         appointment.DomainEvents.OfType<AppointmentCheckedInEvent>().Should().ContainSingle();
+    }
+
+    [Fact]
+    public void CheckIn_ShouldSetReceptionistNotesToEmpty_WhenNullProvided()
+    {
+        // Arrange
+        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+
+        // Act
+        appointment.CheckIn(_fakeTime.GetUtcNow().UtcDateTime, null);
+
+        // Assert
+        appointment.ReceptionistNotes.Should().BeEmpty();
     }
 
     [Fact]
@@ -301,6 +365,20 @@ public class AppointmentTests
         act.Should()
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.Appointment.CannotCheckIn);
+    }
+
+    [Fact]
+    public void CheckIn_ShouldSetReceptionistNotes_WhenProvided()
+    {
+        // Arrange
+        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var receptionistNotes = "Test receptionist notes";
+
+        // Act
+        appointment.CheckIn(_fakeTime.GetUtcNow().UtcDateTime, receptionistNotes);
+
+        // Assert
+        appointment.ReceptionistNotes.Should().Be(receptionistNotes);
     }
 
     [Fact]
@@ -413,7 +491,6 @@ public class AppointmentTests
     {
         // Arrange
         var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
-        var originalDoctorId = appointment.DoctorId;
         appointment.MarkAsRequiresReassignment();
         appointment.ClearDomainEvents();
 
@@ -526,6 +603,110 @@ public class AppointmentTests
         act.Should()
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.Appointment.CannotCancel);
+    }
+
+    [Fact]
+    public void UpdatePatientNotes_ShouldSucceed_WhenScheduled()
+    {
+        // Arrange
+        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var newNotes = "New patient notes";
+
+        // Act
+        appointment.UpdatePatientNotes(newNotes);
+
+        // Assert
+        appointment.PatientNotes.Should().Be(newNotes);
+    }
+
+    [Fact]
+    public void UpdatePatientNotes_ShouldSucceed_WhenRequiresReassignment()
+    {
+        // Arrange
+        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        appointment.MarkAsRequiresReassignment();
+        var newNotes = "New patient notes";
+
+        // Act
+        appointment.UpdatePatientNotes(newNotes);
+
+        // Assert
+        appointment.PatientNotes.Should().Be(newNotes);
+    }
+
+    [Fact]
+    public void UpdatePatientNotes_ShouldSetNotesToEmpty_WhenNullProvided()
+    {
+        // Arrange
+        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        appointment.UpdatePatientNotes("Initial notes");
+
+        // Act
+        appointment.UpdatePatientNotes(null);
+
+        // Assert
+        appointment.PatientNotes.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void UpdatePatientNotes_ShouldThrowException_WhenInvalidStatus()
+    {
+        // Arrange
+        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        appointment.CheckIn(_fakeTime.GetUtcNow().UtcDateTime);
+
+        // Act
+        var act = () => appointment.UpdatePatientNotes("New notes");
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Appointment.CannotUpdateNotes);
+    }
+
+    [Fact]
+    public void UpdateReceptionistNotes_ShouldSucceed_WhenCheckedIn()
+    {
+        // Arrange
+        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        appointment.CheckIn(_fakeTime.GetUtcNow().UtcDateTime);
+        var newNotes = "New receptionist notes";
+
+        // Act
+        appointment.UpdateReceptionistNotes(newNotes);
+
+        // Assert
+        appointment.ReceptionistNotes.Should().Be(newNotes);
+    }
+
+    [Fact]
+    public void UpdateReceptionistNotes_ShouldSetNotesToEmpty_WhenNullProvided()
+    {
+        // Arrange
+        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        appointment.CheckIn(_fakeTime.GetUtcNow().UtcDateTime);
+        appointment.UpdateReceptionistNotes("Initial notes");
+
+        // Act
+        appointment.UpdateReceptionistNotes(null);
+
+        // Assert
+        appointment.ReceptionistNotes.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void UpdateReceptionistNotes_ShouldThrowException_WhenInvalidStatus()
+    {
+        // Arrange
+        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+
+        // Act
+        var act = () => appointment.UpdateReceptionistNotes("New notes");
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Appointment.CannotUpdateNotes);
     }
 
     private static Appointment CreateAppointment(DateTime scheduledDateTime) =>

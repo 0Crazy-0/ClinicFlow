@@ -51,6 +51,7 @@ public static class DomainErrors
         public const string UnauthorizedSpecialty = "UNAUTHORIZED_SPECIALTY";
         public const string PhoneNotVerified = "PHONE_NOT_VERIFIED";
         public const string CannotReassign = "REASSIGNMENT_NOT_ALLOWED";
+        public const string CannotUpdateNotes = "UPDATE_NOTES_NOT_ALLOWED";
     }
 
     public static class AppointmentType
@@ -95,6 +96,7 @@ public static class DomainErrors
             "CANNOT_CLOSE_ACCOUNT_WITH_PENDING_APPOINTMENTS";
         public const string ActiveProfileAlreadyExists = "PATIENT_ACTIVE_PROFILE_ALREADY_EXISTS";
         public const string UserIdMismatch = "PATIENT_USER_ID_MISMATCH";
+        public const string UnauthorizedAccess = "PATIENT_UNAUTHORIZED_ACCESS";
     }
 
     public static class Doctor

@@ -182,8 +182,8 @@ public class ScheduleByPatientTests
 
         // Assert
         act.Should()
-            .Throw<AppointmentSchedulingUnauthorizedException>()
-            .WithMessage(DomainErrors.Appointment.UnauthorizedScheduling);
+            .Throw<PatientAccessUnauthorizedException>()
+            .WithMessage(DomainErrors.Patient.UnauthorizedAccess);
     }
 
     [Fact]
@@ -236,8 +236,8 @@ public class ScheduleByPatientTests
 
         // Assert
         act.Should()
-            .Throw<AppointmentSchedulingUnauthorizedException>()
-            .WithMessage(DomainErrors.Appointment.UnauthorizedScheduling);
+            .Throw<PatientAccessUnauthorizedException>()
+            .WithMessage(DomainErrors.Patient.UnauthorizedAccess);
     }
 
     [Fact]
