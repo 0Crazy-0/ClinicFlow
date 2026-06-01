@@ -110,6 +110,7 @@ public sealed class ScheduleByPatientCommandHandler(
                 ScheduledDate = request.ScheduledDate,
                 TimeRange = timeRange,
                 IsInitiatorPhoneVerified = user.IsPhoneVerified,
+                PatientNotes = request.PatientNotes,
             },
             new AppointmentSchedulingContext
             {

@@ -119,6 +119,7 @@ public sealed class RescheduleByPatientCommandHandler(
                 NewDate = request.NewDate,
                 NewTimeRange = newTimeRange,
                 IsInitiatorPhoneVerified = user.IsPhoneVerified,
+                NewPatientNotes = request.NewPatientNotes,
             },
             new AppointmentReschedulingContext
             {

@@ -27,7 +27,7 @@ public sealed class CheckInAppointmentByStaffCommandHandler(
                 request.AppointmentId
             );
 
-        appointment.CheckIn(timeProvider.GetUtcNow().UtcDateTime);
+        appointment.CheckIn(timeProvider.GetUtcNow().UtcDateTime, request.ReceptionistNotes);
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }

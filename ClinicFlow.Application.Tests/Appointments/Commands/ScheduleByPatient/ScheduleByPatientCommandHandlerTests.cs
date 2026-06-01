@@ -57,7 +57,8 @@ public class ScheduleByPatientCommandHandlerTests
             Guid.NewGuid(),
             scheduledDate,
             startTime,
-            endTime
+            endTime,
+            "Patient schedule notes"
         );
 
         var targetPatient = CreateTargetPatient(
@@ -79,7 +80,8 @@ public class ScheduleByPatientCommandHandlerTests
         );
 
         var doctor = Doctor.Create(
-            Guid.NewGuid(), PersonName.Create("Test Doctor"),
+            Guid.NewGuid(),
+            PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("LIC-123"),
             Guid.NewGuid(),
             "Bio",
@@ -147,6 +149,7 @@ public class ScheduleByPatientCommandHandlerTests
         capturedAppointment.PatientId.Should().Be(targetPatient.Id);
         capturedAppointment.AppointmentTypeId.Should().Be(appointmentType.Id);
         capturedAppointment.ScheduledDate.Should().Be(scheduledDate);
+        capturedAppointment.PatientNotes.Should().Be(command.PatientNotes);
     }
 
     [Fact]
@@ -185,7 +188,8 @@ public class ScheduleByPatientCommandHandlerTests
         );
 
         var doctor = Doctor.Create(
-            Guid.NewGuid(), PersonName.Create("Test Doctor"),
+            Guid.NewGuid(),
+            PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("LIC-123"),
             Guid.NewGuid(),
             "Bio",
@@ -400,7 +404,8 @@ public class ScheduleByPatientCommandHandlerTests
         );
 
         var doctor = Doctor.Create(
-            Guid.NewGuid(), PersonName.Create("Test Doctor"),
+            Guid.NewGuid(),
+            PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("LIC-123"),
             Guid.NewGuid(),
             "Bio",
@@ -469,7 +474,8 @@ public class ScheduleByPatientCommandHandlerTests
         );
 
         var doctor = Doctor.Create(
-            Guid.NewGuid(), PersonName.Create("Test Doctor"),
+            Guid.NewGuid(),
+            PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("LIC-123"),
             Guid.NewGuid(),
             "Bio",

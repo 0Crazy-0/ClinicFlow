@@ -26,5 +26,8 @@ public abstract class ScheduleCommandValidatorBase<TCommand> : AbstractValidator
         RuleFor(x => x.EndTime)
             .GreaterThan(x => x.StartTime)
             .WithMessage(DomainErrors.Validation.EndTimeMustBeAfterStartTime);
+        RuleFor(x => x.PatientNotes)
+            .MaximumLength(500)
+            .WithMessage(DomainErrors.Validation.ValueTooLong);
     }
 }
