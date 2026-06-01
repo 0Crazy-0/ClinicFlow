@@ -13,4 +13,8 @@ public sealed record ScheduleByStaffCommand(
     TimeSpan EndTime,
     bool HasGuardianConsentVerified,
     bool IsOverbook
-) : IRequest<Guid>, IScheduleCommand;
+) : IRequest<Guid>, IScheduleCommand
+{
+    // this will be removed soon.
+    public string? PatientNotes => null;
+}

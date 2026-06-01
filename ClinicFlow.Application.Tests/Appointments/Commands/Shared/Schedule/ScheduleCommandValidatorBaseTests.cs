@@ -11,7 +11,8 @@ public record DummyScheduleCommand(
     Guid AppointmentTypeId,
     DateTime ScheduledDate,
     TimeSpan StartTime,
-    TimeSpan EndTime
+    TimeSpan EndTime,
+    string? PatientNotes = null
 ) : IScheduleCommand;
 
 public class DummyScheduleCommandValidator(TimeProvider timeProvider)
@@ -149,5 +150,28 @@ public class ScheduleCommandValidatorBaseTests
         result
             .ShouldHaveValidationErrorFor(x => x.EndTime)
             .WithErrorMessage(DomainErrors.Validation.EndTimeMustBeAfterStartTime);
+    }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenPatientNotesAreTooLong()
+    {
+        // Arrange
+        var command = new DummyScheduleCommand(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
+            new TimeSpan(10, 0, 0),
+            new TimeSpan(11, 0, 0),
+            new string('a', 501)
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.PatientNotes)
+            .WithErrorMessage(DomainErrors.Validation.ValueTooLong);
     }
 }

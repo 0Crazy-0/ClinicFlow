@@ -224,8 +224,8 @@ public class RescheduleByPatientTests
 
         // Assert
         act.Should()
-            .Throw<AppointmentSchedulingUnauthorizedException>()
-            .WithMessage(DomainErrors.Appointment.UnauthorizedScheduling);
+            .Throw<PatientAccessUnauthorizedException>()
+            .WithMessage(DomainErrors.Patient.UnauthorizedAccess);
     }
 
     [Fact]
@@ -278,8 +278,8 @@ public class RescheduleByPatientTests
 
         // Assert
         act.Should()
-            .Throw<AppointmentSchedulingUnauthorizedException>()
-            .WithMessage(DomainErrors.Appointment.UnauthorizedScheduling);
+            .Throw<PatientAccessUnauthorizedException>()
+            .WithMessage(DomainErrors.Patient.UnauthorizedAccess);
     }
 
     [Fact]
@@ -480,7 +480,6 @@ public class RescheduleByPatientTests
         );
 
         var appointment = CreateAppointment(target.Id);
-
         var args = new PatientReschedulingArgs
         {
             InitiatorPatient = target,
@@ -508,6 +507,93 @@ public class RescheduleByPatientTests
         appointment.DomainEvents.OfType<AppointmentRescheduledEvent>().Should().ContainSingle();
         appointment.ScheduledDate.Should().Be(args.NewDate);
         appointment.TimeRange.Should().Be(args.NewTimeRange);
+    }
+
+    [Fact]
+    public void RescheduleByPatient_ShouldUpdatePatientNotes_WhenNewPatientNotesIsNotNull()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var target = CreateSelfPatient(
+            Guid.NewGuid(),
+            userId,
+            30,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        var appointment = CreateAppointment(target.Id);
+
+        appointment.UpdatePatientNotes("Original notes");
+
+        var args = new PatientReschedulingArgs
+        {
+            InitiatorPatient = target,
+            TargetPatient = target,
+            NewDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(3).Date,
+            NewTimeRange = CreateTimeRange(10, 11),
+            IsInitiatorPhoneVerified = true,
+            NewPatientNotes = "Rescheduled notes",
+        };
+
+        var context = new AppointmentReschedulingContext
+        {
+            DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek, 9, 17),
+            HasConflict = false,
+        };
+
+        // Act
+        AppointmentReschedulingService.RescheduleByPatient(
+            appointment,
+            args,
+            context,
+            SchedulingClearance.Granted()
+        );
+
+        // Assert
+        appointment.PatientNotes.Should().Be(args.NewPatientNotes);
+    }
+
+    [Fact]
+    public void RescheduleByPatient_ShouldNotUpdatePatientNotes_WhenNewPatientNotesIsNull()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var target = CreateSelfPatient(
+            Guid.NewGuid(),
+            userId,
+            30,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        var appointment = CreateAppointment(target.Id);
+        appointment.UpdatePatientNotes("Original notes");
+
+        var args = new PatientReschedulingArgs
+        {
+            InitiatorPatient = target,
+            TargetPatient = target,
+            NewDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(3).Date,
+            NewTimeRange = CreateTimeRange(10, 11),
+            IsInitiatorPhoneVerified = true,
+            NewPatientNotes = null,
+        };
+
+        var context = new AppointmentReschedulingContext
+        {
+            DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek, 9, 17),
+            HasConflict = false,
+        };
+
+        // Act
+        AppointmentReschedulingService.RescheduleByPatient(
+            appointment,
+            args,
+            context,
+            SchedulingClearance.Granted()
+        );
+
+        // Assert
+        appointment.PatientNotes.Should().Be("Original notes");
     }
 
     private PatientReschedulingArgs CreateValidPatientReschedulingArgs() =>

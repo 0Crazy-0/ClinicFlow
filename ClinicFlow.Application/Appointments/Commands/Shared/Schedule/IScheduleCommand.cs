@@ -22,4 +22,6 @@ public interface IScheduleCommand
     TimeSpan StartTime { get; }
 
     TimeSpan EndTime { get; }
+
+    string? PatientNotes { get; }
 }

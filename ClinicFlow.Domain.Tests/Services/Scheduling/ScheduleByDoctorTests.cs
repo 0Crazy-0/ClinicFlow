@@ -413,7 +413,8 @@ public class ScheduleByDoctorTests
     private static Doctor CreateDoctor(Guid id, Guid userId)
     {
         var doctor = Doctor.Create(
-            userId, PersonName.Create("Test Doctor"),
+            userId,
+            PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("12345"),
             Guid.NewGuid(),
             "555-0000",

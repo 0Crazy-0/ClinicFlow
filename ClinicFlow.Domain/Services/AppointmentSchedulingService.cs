@@ -42,20 +42,7 @@ public static class AppointmentSchedulingService
         if (clearance is null)
             throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
 
-        if (args.TargetPatient.UserId != args.InitiatorPatient.UserId)
-            throw new AppointmentSchedulingUnauthorizedException(
-                DomainErrors.Appointment.UnauthorizedScheduling
-            );
-
-        if (
-            args.InitiatorPatient.RelationshipToUser is not PatientRelationship.Self
-            && args.InitiatorPatient.Id != args.TargetPatient.Id
-        )
-        {
-            throw new AppointmentSchedulingUnauthorizedException(
-                DomainErrors.Appointment.UnauthorizedScheduling
-            );
-        }
+        PatientAccessService.EnsureCanActOnBehalfOf(args.InitiatorPatient, args.TargetPatient);
 
         if (!args.IsInitiatorPhoneVerified)
             throw new AppointmentSchedulingUnauthorizedException(
@@ -93,7 +80,8 @@ public static class AppointmentSchedulingService
             args.DoctorId,
             appointmentType.Id,
             args.ScheduledDate,
-            args.TimeRange
+            args.TimeRange,
+            args.PatientNotes
         );
     }
 

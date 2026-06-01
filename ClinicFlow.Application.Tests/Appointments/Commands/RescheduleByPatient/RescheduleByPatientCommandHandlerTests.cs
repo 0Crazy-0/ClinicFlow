@@ -57,7 +57,8 @@ public class RescheduleByPatientCommandHandlerTests
             Guid.NewGuid(),
             newDate,
             newStartTime,
-            newEndTime
+            newEndTime,
+            "Reschedule notes"
         );
 
         var patientId = Guid.NewGuid();
@@ -128,6 +129,7 @@ public class RescheduleByPatientCommandHandlerTests
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
 
         appointment.ScheduledDate.Should().Be(newDate);
+        appointment.PatientNotes.Should().Be(command.NewPatientNotes);
     }
 
     [Fact]
@@ -391,7 +393,8 @@ public class RescheduleByPatientCommandHandlerTests
 
     private static Doctor CreateDoctor() =>
         Doctor.Create(
-            Guid.NewGuid(), PersonName.Create("Test Doctor"),
+            Guid.NewGuid(),
+            PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("1234567"),
             Guid.NewGuid(),
             "555-1234",

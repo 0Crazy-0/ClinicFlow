@@ -40,4 +40,19 @@ public class CheckInAppointmentByStaffCommandValidatorTests
             .ShouldHaveValidationErrorFor(x => x.AppointmentId)
             .WithErrorMessage(DomainErrors.Validation.InvalidValue);
     }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenReceptionistNotesAreTooLong()
+    {
+        // Arrange
+        var command = new CheckInAppointmentByStaffCommand(Guid.NewGuid(), new string('a', 501));
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.ReceptionistNotes)
+            .WithErrorMessage(DomainErrors.Validation.ValueTooLong);
+    }
 }

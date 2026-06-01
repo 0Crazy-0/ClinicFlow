@@ -5,17 +5,16 @@ using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using MediatR;
 
-namespace ClinicFlow.Application.Appointments.Commands.CheckInAppointmentByStaff;
+namespace ClinicFlow.Application.Appointments.Commands.UpdatePatientNotesByStaff;
 
-public sealed class CheckInAppointmentByStaffCommandHandler(
-    TimeProvider timeProvider,
+public sealed class UpdatePatientNotesByStaffCommandHandler(
     IAppointmentRepository appointmentRepository,
     IUnitOfWork unitOfWork
-) : IRequestHandler<CheckInAppointmentByStaffCommand>
+) : IRequestHandler<UpdatePatientNotesByStaffCommand>
 {
     /// <inheritdoc />
     public async Task Handle(
-        CheckInAppointmentByStaffCommand request,
+        UpdatePatientNotesByStaffCommand request,
         CancellationToken cancellationToken
     )
     {
@@ -27,7 +26,7 @@ public sealed class CheckInAppointmentByStaffCommandHandler(
                 request.AppointmentId
             );
 
-        appointment.CheckIn(timeProvider.GetUtcNow().UtcDateTime, request.ReceptionistNotes);
+        appointment.UpdatePatientNotes(request.Notes);
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
