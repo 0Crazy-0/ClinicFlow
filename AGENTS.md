@@ -14,7 +14,7 @@ The system handles:
 - Patient management, family members, medical profiles, and penalty/blocking systems for non-compliance.
 - Medical records with clinical forms, templates, and JSON schema validation.
 
-**Status:** Under active development. Domain and Application layers are established. Infrastructure and Presentation (API) layers are not yet implemented.
+**Status:** Under active development. Domain, Application, and Infrastructure layers are established. The Presentation (API) layer is not yet implemented.
 
 ---
 
@@ -27,11 +27,12 @@ ClinicFlow.Domain              → Pure domain: entities, value objects, enums, 
 ClinicFlow.Domain.Tests        → Unit tests for the domain layer
 ClinicFlow.Application         → CQRS orchestration: commands, queries, handlers, validators, behaviors
 ClinicFlow.Application.Tests   → Unit tests for the application layer
+ClinicFlow.Infrastructure      → Persistence (EF Core, configurations, migrations, seeding, repository implementations), Unit of Work
+ClinicFlow.Infrastructure.Tests → Unit/integration tests for the infrastructure layer (persistence and seeding)
 ```
 
 **Future layers** (not yet created):
 
-- `ClinicFlow.Infrastructure` — Persistence (EF Core / Dapper), external services
 - `ClinicFlow.API` — ASP.NET Core Web API / Minimal APIs
 
 ### Technology Stack
@@ -521,10 +522,9 @@ This verification ensures the handler completes the full orchestration pipeline:
 2. **Never document test classes** — no XML docs in `*Tests.cs`, `*Fixture.cs`, or any test project file.
 3. **Start `<summary>` with a third-person verb**: "Marks the appointment as...", "Validates the patient's..."
 4. **Do not repeat the member name** in the documentation.
-5. **Use `<exception cref="...">` only for domain exceptions** the caller must handle.
-6. **Use `<inheritdoc/>`** on interface implementations instead of repeating docs.
-7. **Use `<remarks>`** only for non-obvious business constraints or design decisions.
-8. **Always write documentation in English**.
+5. **Use `<inheritdoc/>`** on interface implementations instead of repeating docs.
+6. **Use `<remarks>`** only for non-obvious business constraints or design decisions.
+7. **Always write documentation in English**.
 
 ```csharp
 // ❌ No value added — name says it all
@@ -537,7 +537,6 @@ public string Name { get; set; }
 /// <summary>
 /// Marks the appointment as a no-show. Can only be executed if the appointment is in a confirmed state.
 /// </summary>
-/// <exception cref="DomainException">If the appointment is not in a confirmed state.</exception>
 internal void MarkAsNoShow() { }
 ```
 
