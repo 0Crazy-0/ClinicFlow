@@ -50,11 +50,13 @@ public class PatientPenalty : BaseEntity
 
     internal static PatientPenalty CreateAutomaticWarning(
         Guid patientId,
-        Guid? appointmentId,
+        Guid appointmentId,
         string reason
     )
     {
         if (patientId == Guid.Empty)
+            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        if (appointmentId == Guid.Empty)
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
         if (string.IsNullOrWhiteSpace(reason))
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);

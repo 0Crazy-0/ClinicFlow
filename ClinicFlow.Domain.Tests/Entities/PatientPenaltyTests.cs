@@ -44,6 +44,19 @@ public class PatientPenaltyTests
             .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
+    [Fact]
+    public void CreateAutomaticWarning_ShouldThrowException_WhenAppointmentIdIsEmpty()
+    {
+        // Arrange & Act
+        var act = () =>
+            PatientPenalty.CreateAutomaticWarning(Guid.NewGuid(), Guid.Empty, "No show");
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
     [Theory]
     [InlineData(null)]
     [InlineData("")]
