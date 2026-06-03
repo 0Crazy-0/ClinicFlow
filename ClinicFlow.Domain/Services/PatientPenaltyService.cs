@@ -14,7 +14,7 @@ public static class PatientPenaltyService
     public static IEnumerable<PatientPenalty> ApplyPenalty(
         Guid patientId,
         IReadOnlyList<PatientPenalty> existingPenalties,
-        Guid? appointmentId,
+        Guid appointmentId,
         string reason,
         DateTime referenceTime
     )
