@@ -21,6 +21,11 @@ public class ApplicationDbContextFactory : IDesignTimeDbContextFactory<Applicati
             "Host=localhost;Port=5432;Database=ClinicFlowDb;Username=postgres;Password=postgres"
         );
 
+        optionsBuilder.UseSeeding(
+            (context, _) =>
+                Seeding.DbSeeder.Seed((ApplicationDbContext)context, TimeProvider.System)
+        );
+
         return new ApplicationDbContext(optionsBuilder.Options);
     }
 }
