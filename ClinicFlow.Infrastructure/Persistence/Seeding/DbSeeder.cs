@@ -1,3 +1,4 @@
+using System.Collections.Immutable;
 using Bogus;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
@@ -782,11 +783,8 @@ public static class DbSeeder
 
     private sealed class SeederContext
     {
-        public static readonly IReadOnlySet<string> SpecialtiesToDeactivate = new HashSet<string>
-        {
-            "Orthopedics",
-            "Neurology",
-        };
+        public static readonly ImmutableHashSet<string> SpecialtiesToDeactivate =
+            ImmutableHashSet.Create("Orthopedics", "Neurology");
 
         public const string HashedPassword = "hashed_password_123";
         public Faker Faker { get; } = new();
