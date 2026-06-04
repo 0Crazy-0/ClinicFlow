@@ -27,14 +27,43 @@ public class CancelAppointmentByStaffCommandValidatorTests
     }
 
     [Fact]
-    public void Validate_ShouldHaveError_WhenReasonIsEmpty()
+    public void Validate_ShouldHaveError_WhenAppointmentIdIsEmpty()
     {
         // Arrange
-        var command = new CancelAppointmentByStaffCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            string.Empty
-        );
+        var command = new CancelAppointmentByStaffCommand(Guid.Empty, Guid.NewGuid(), "Reason");
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.AppointmentId)
+            .WithErrorMessage(DomainErrors.Validation.InvalidValue);
+    }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenInitiatorUserIdIsEmpty()
+    {
+        // Arrange
+        var command = new CancelAppointmentByStaffCommand(Guid.NewGuid(), Guid.Empty, "Reason");
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.InitiatorUserId)
+            .WithErrorMessage(DomainErrors.Validation.InvalidValue);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Validate_ShouldHaveError_WhenReasonIsEmpty(string? reason)
+    {
+        // Arrange
+        var command = new CancelAppointmentByStaffCommand(Guid.NewGuid(), Guid.NewGuid(), reason!);
 
         // Act
         var result = _sut.TestValidate(command);
@@ -43,5 +72,25 @@ public class CancelAppointmentByStaffCommandValidatorTests
         result
             .ShouldHaveValidationErrorFor(x => x.Reason)
             .WithErrorMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenReasonExceedsMaximumLength()
+    {
+        // Arrange
+        var longReason = new string('a', 501);
+        var command = new CancelAppointmentByStaffCommand(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            longReason
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.Reason)
+            .WithErrorMessage(DomainErrors.Validation.ValueTooLong);
     }
 }
