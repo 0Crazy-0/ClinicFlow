@@ -35,13 +35,16 @@ public class CreateAppointmentTypeCommandValidatorTests
         result.ShouldNotHaveAnyValidationErrors();
     }
 
-    [Fact]
-    public void Validate_ShouldBeValid_WhenAgeFieldsAreNull()
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Validate_ShouldHaveError_WhenNameIsEmpty(string? name)
     {
         // Arrange
         var command = new CreateAppointmentTypeCommand(
             AppointmentCategory.Checkup,
-            "General Checkup",
+            name!,
             "Routine consultation",
             TimeSpan.FromMinutes(30),
             null,
@@ -53,7 +56,34 @@ public class CreateAppointmentTypeCommandValidatorTests
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldNotHaveAnyValidationErrors();
+        result
+            .ShouldHaveValidationErrorFor(x => x.Name)
+            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-10)]
+    public void Validate_ShouldHaveError_WhenDurationIsZeroOrNegative(int minutes)
+    {
+        // Arrange
+        var command = new CreateAppointmentTypeCommand(
+            AppointmentCategory.Checkup,
+            "Checkup",
+            "Description",
+            TimeSpan.FromMinutes(minutes),
+            null,
+            null,
+            false
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.DurationMinutes)
+            .WithErrorMessage(DomainErrors.Validation.ValueMustBePositive);
     }
 
     [Theory]
@@ -106,5 +136,26 @@ public class CreateAppointmentTypeCommandValidatorTests
         result
             .ShouldHaveValidationErrorFor(x => x.MaximumAge)
             .WithErrorMessage(DomainErrors.Validation.ValueCannotBeNegative);
+    }
+
+    [Fact]
+    public void Validate_ShouldBeValid_WhenAgeFieldsAreNull()
+    {
+        // Arrange
+        var command = new CreateAppointmentTypeCommand(
+            AppointmentCategory.Checkup,
+            "General Checkup",
+            "Routine consultation",
+            TimeSpan.FromMinutes(30),
+            null,
+            null,
+            false
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result.ShouldNotHaveAnyValidationErrors();
     }
 }

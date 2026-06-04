@@ -1,4 +1,3 @@
-using ClinicFlow.Application.AppointmentTypes.Commands.Shared;
 using ClinicFlow.Domain.Enums;
 using MediatR;
 
@@ -10,4 +9,4 @@ public sealed record UpdateAppointmentTypeCommand(
     string Name,
     string Description,
     TimeSpan DurationMinutes
-) : IRequest, IAppointmentTypeCommand;
+) : IRequest;

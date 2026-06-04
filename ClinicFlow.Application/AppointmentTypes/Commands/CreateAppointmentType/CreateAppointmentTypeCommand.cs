@@ -1,4 +1,3 @@
-using ClinicFlow.Application.AppointmentTypes.Commands.Shared;
 using ClinicFlow.Domain.Enums;
 using MediatR;
 
@@ -12,4 +11,4 @@ public sealed record CreateAppointmentTypeCommand(
     int? MinimumAge,
     int? MaximumAge,
     bool RequiresGuardianConsent
-) : IRequest<Guid>, IAppointmentTypeCommand;
+) : IRequest<Guid>;
