@@ -8,27 +8,28 @@ namespace ClinicFlow.Application.Tests.ClinicalFormTemplates.Commands.UpdateClin
 
 public class UpdateClinicalFormTemplateCommandValidatorTests
 {
+    private readonly Mock<IJsonSchemaDefinitionValidator> _schemaValidatorMock;
     private readonly UpdateClinicalFormTemplateCommandValidator _sut;
 
     public UpdateClinicalFormTemplateCommandValidatorTests()
     {
-        var schemaValidatorMock = new Mock<IJsonSchemaDefinitionValidator>();
-        schemaValidatorMock
+        _schemaValidatorMock = new Mock<IJsonSchemaDefinitionValidator>();
+        _schemaValidatorMock
             .Setup(x => x.IsValidSchema(It.IsAny<string>(), out It.Ref<string?>.IsAny))
             .Returns(true);
 
-        _sut = new UpdateClinicalFormTemplateCommandValidator(schemaValidatorMock.Object);
+        _sut = new UpdateClinicalFormTemplateCommandValidator(_schemaValidatorMock.Object);
     }
 
     [Fact]
-    public void Validate_ShouldBeValid_WhenAllPropertiesAreValid()
+    public void Validate_ShouldBeValid_WhenAllPropertiesAreProvidedAndValid()
     {
         // Arrange
         var command = new UpdateClinicalFormTemplateCommand(
             Guid.NewGuid(),
-            "Cardiology Form",
-            "Description",
-            """{"fields":[]}"""
+            "Blood Pressure",
+            "Form description",
+            "{}"
         );
 
         // Act
@@ -44,8 +45,8 @@ public class UpdateClinicalFormTemplateCommandValidatorTests
         // Arrange
         var command = new UpdateClinicalFormTemplateCommand(
             Guid.Empty,
-            "Name",
-            "Description",
+            "Blood Pressure",
+            "Form description",
             "{}"
         );
 
@@ -56,5 +57,95 @@ public class UpdateClinicalFormTemplateCommandValidatorTests
         result
             .ShouldHaveValidationErrorFor(x => x.TemplateId)
             .WithErrorMessage(DomainErrors.Validation.InvalidValue);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Validate_ShouldHaveError_WhenNameIsEmpty(string? name)
+    {
+        // Arrange
+        var command = new UpdateClinicalFormTemplateCommand(
+            Guid.NewGuid(),
+            name!,
+            "Description",
+            "{}"
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.Name)
+            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenNameExceedsMaximumLength()
+    {
+        // Arrange
+        var tooLongName = new string('A', 101);
+        var command = new UpdateClinicalFormTemplateCommand(
+            Guid.NewGuid(),
+            tooLongName,
+            "Description",
+            "{}"
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.Name)
+            .WithErrorMessage(DomainErrors.Validation.ValueTooLong);
+    }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenDescriptionExceedsMaximumLength()
+    {
+        // Arrange
+        var tooLongDescription = new string('B', 501);
+        var command = new UpdateClinicalFormTemplateCommand(
+            Guid.NewGuid(),
+            "Blood Pressure",
+            tooLongDescription,
+            "{}"
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.Description)
+            .WithErrorMessage(DomainErrors.Validation.ValueTooLong);
+    }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenSchemaIsInvalid()
+    {
+        // Arrange
+        string? errorMsg = "Invalid structure";
+        _schemaValidatorMock
+            .Setup(x => x.IsValidSchema(It.IsAny<string>(), out errorMsg))
+            .Returns(false);
+
+        var command = new UpdateClinicalFormTemplateCommand(
+            Guid.NewGuid(),
+            "Blood Pressure",
+            "Desc",
+            "{invalid}"
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.JsonSchemaDefinition)
+            .WithErrorMessage(DomainErrors.Validation.InvalidFormat);
     }
 }
