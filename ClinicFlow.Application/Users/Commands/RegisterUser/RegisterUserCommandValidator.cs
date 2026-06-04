@@ -1,6 +1,22 @@
-using ClinicFlow.Application.Users.Commands.Shared.Register;
+using ClinicFlow.Domain.Common;
+using FluentValidation;
 
 namespace ClinicFlow.Application.Users.Commands.RegisterUser;
 
-public sealed class RegisterUserCommandValidator
-    : RegisterUserCommandValidatorBase<RegisterUserCommand>;
+public sealed class RegisterUserCommandValidator : AbstractValidator<RegisterUserCommand>
+{
+    public RegisterUserCommandValidator()
+    {
+        RuleFor(x => x.Email).NotEmpty().WithMessage(DomainErrors.Validation.ValueRequired);
+        RuleFor(x => x.Email)
+            .EmailAddress()
+            .When(x => !string.IsNullOrWhiteSpace(x.Email))
+            .WithMessage(DomainErrors.Validation.InvalidValue);
+        RuleFor(x => x.Password)
+            .NotEmpty()
+            .WithMessage(DomainErrors.Validation.ValueRequired)
+            .MinimumLength(8)
+            .WithMessage(DomainErrors.Validation.ValueTooShort);
+        RuleFor(x => x.PhoneNumber).NotEmpty().WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+}
