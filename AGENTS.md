@@ -40,16 +40,18 @@ ClinicFlow.Infrastructure.Tests → Unit/integration tests for the infrastructur
 | Layer | Libraries |
 |---|---|
 | **Domain** | Zero external packages. No NuGet dependencies allowed. |
-| **Application** | MediatR 14.0, FluentValidation 12.1, Microsoft.Extensions.DependencyInjection.Abstractions |
-| **Tests (Domain)** | xUnit 2.9, FluentAssertions 8.8, Microsoft.Extensions.TimeProvider.Testing 10.4 |
-| **Tests (Application)** | xUnit 2.9, FluentAssertions 8.8, Moq 4.20, Microsoft.Extensions.TimeProvider.Testing 10.4, FluentValidation.TestHelper |
+| **Application** | MediatR 14.0, FluentValidation 12.1, Microsoft.Extensions.DependencyInjection.Abstractions 10.0 |
+| **Infrastructure** | EF Core 10.0 (Design), Npgsql.EntityFrameworkCore.PostgreSQL 10.0, Microsoft.Extensions.Configuration.Binder 10.0, Bogus 35.6 |
+| **Tests (Domain)** | xUnit 2.9, FluentAssertions 8.8, Moq 4.20, Microsoft.Extensions.TimeProvider.Testing 10.4 |
+| **Tests (Application)** | xUnit 2.9, FluentAssertions 8.8, Moq 4.20, Microsoft.Extensions.TimeProvider.Testing 10.4 |
+| **Tests (Infrastructure)** | xUnit 2.9, FluentAssertions 8.8, Moq 4.20, Microsoft.Extensions.TimeProvider.Testing 10.4, EF Core (Relational, InMemory) 10.0, Respawn 7.0, Testcontainers.PostgreSql 4.12 |
 
 ### Key Dependency Flow
 
 ```
 Domain ← Application ← Infrastructure ← API
    ↑          ↑              ↑
-   └─ Zero    └─ MediatR     └─ EF Core (future)
+   └─ Zero    └─ MediatR     └─ EF Core
      packages   FluentVal
 ```
 
@@ -284,38 +286,3 @@ internal void MarkAsNoShow() { }
 - Never use `DateTime.UtcNow` / `DateTimeOffset.UtcNow` directly — always use `TimeProvider`.
 - Never skip writing tests for new features.
 - Never auto-commit or auto-push.
-
-
----
-
-## Domain Model Reference
-
-### Entities
-
-`Appointment`, `AppointmentTypeDefinition`, `ClinicalFormTemplate`, `Doctor`, `MedicalRecord`, `MedicalSpecialty`, `Patient`, `PatientPenalty`, `Schedule`, `User`
-
-(Sub-entities under `Entities/ClinicalDetails/`: `DynamicClinicalDetail`)
-
-### Value Objects
-
-`AgeEligibilityPolicy`, `BloodType`, `ConsultationRoom`, `EmailAddress`, `EmergencyContact`, `MedicalLicenseNumber`, `PenaltyHistory`, `PersonName`, `PhoneNumber`, `TimeRange`
-
-### Enums
-
-`AppointmentCategory`, `AppointmentStatus`, `BlockDuration`, `PatientRelationship`, `PenaltyType`, `UserRole`
-
-### Domain Events
-
-`AppointmentCancelledEvent`, `AppointmentCheckedInEvent`, `AppointmentCompletedEvent`, `AppointmentLateCancelledEvent`, `AppointmentMarkedAsNoShowEvent`, `AppointmentRescheduledEvent`, `AppointmentScheduledEvent`, `AppointmentStartedEvent`, `MedicalRecordCreatedEvent`, `PatientReactivatedEvent`
-
-### Domain Services & Policies
-
-`AppointmentCancellationService`, `AppointmentReschedulingService`, `AppointmentSchedulingService`, `FamilyMemberRegistrationService`, `MedicalEncounterService`, `MetadataFormValidationPolicy`, `PatientPenaltyService`, `PrimaryProfileRegistrationService`, `WeeklyScheduleSetupService`
-
-### Repository Interfaces
-
-`IAppointmentRepository`, `IAppointmentTypeDefinitionRepository`, `IClinicalFormTemplateRepository`, `IDoctorRepository`, `IMedicalRecordRepository`, `IMedicalSpecialtyRepository`, `IPatientPenaltyRepository`, `IPatientRepository`, `IScheduleRepository`, `IUserRepository`
-
-### External & Infrastructure Interfaces
-
-`IJsonSchemaDefinitionValidator`, `IJsonSchemaValidator`, `IMedicalRecordValidationPolicy`, `IPhoneVerificationService`, `IUnitOfWork`
