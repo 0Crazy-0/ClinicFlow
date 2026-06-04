@@ -53,4 +53,51 @@ public class UpdateAppointmentTypeCommandValidatorTests
             .ShouldHaveValidationErrorFor(x => x.AppointmentTypeId)
             .WithErrorMessage(DomainErrors.Validation.InvalidValue);
     }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Validate_ShouldHaveError_WhenNameIsEmpty(string? name)
+    {
+        // Arrange
+        var command = new UpdateAppointmentTypeCommand(
+            Guid.NewGuid(),
+            AppointmentCategory.Checkup,
+            name!,
+            "Description",
+            TimeSpan.FromMinutes(30)
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.Name)
+            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-10)]
+    public void Validate_ShouldHaveError_WhenDurationIsZeroOrNegative(int minutes)
+    {
+        // Arrange
+        var command = new UpdateAppointmentTypeCommand(
+            Guid.NewGuid(),
+            AppointmentCategory.Checkup,
+            "Checkup",
+            "Description",
+            TimeSpan.FromMinutes(minutes)
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.DurationMinutes)
+            .WithErrorMessage(DomainErrors.Validation.ValueMustBePositive);
+    }
 }

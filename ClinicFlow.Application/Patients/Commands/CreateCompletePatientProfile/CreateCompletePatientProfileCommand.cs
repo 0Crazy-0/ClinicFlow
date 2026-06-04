@@ -1,4 +1,3 @@
-using ClinicFlow.Application.Patients.Commands.Shared.CompletePatient;
 using MediatR;
 
 namespace ClinicFlow.Application.Patients.Commands.CreateCompletePatientProfile;
@@ -13,4 +12,4 @@ public sealed record CreateCompletePatientProfileCommand(
     string ChronicConditions,
     string EmergencyContactName,
     string EmergencyContactPhone
-) : IRequest<Guid>, ICompletePatientCommand;
+) : IRequest<Guid>;

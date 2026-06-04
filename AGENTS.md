@@ -158,7 +158,7 @@ public sealed record CancelAppointmentByDoctorCommand(
     Guid AppointmentId,
     Guid InitiatorUserId,
     string? Reason
-) : IRequest, ICancelCommand;
+) : IRequest;
 ```
 
 - Queries that return data use `IRequest<TResult>`.
@@ -176,15 +176,6 @@ GetPenaltiesByPatientIdQuery(Guid PatientId) → GetPenaltiesByPatientIdQueryVal
 GetActiveBlockedPatientsQuery() → No validator needed ✓
 ```
 
-### Shared Validators
-
-When two or more Commands have **nearly identical or identical input** (e.g., `CancelByDoctor`, `CancelByPatient`, `CancelByStaff`), extract shared validation into:
-
-1. An interface: `ICancelCommand` in `Commands/Shared/Cancel/`
-2. A base validator: `CancelCommandValidatorBase<T>` in `Commands/Shared/Cancel/`
-3. Concrete validators extend the base and add role-specific rules if needed.
-
-The shared base is tested once in `Tests/.../Shared/Cancel/CancelCommandValidatorBaseTests.cs`. Each concrete validator has its own test file that tests **only** the happy path + its specific failure cases — never re-tests shared rules.
 
 ### Handlers
 

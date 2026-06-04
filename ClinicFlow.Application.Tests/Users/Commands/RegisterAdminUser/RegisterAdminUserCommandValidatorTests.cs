@@ -1,22 +1,112 @@
 using ClinicFlow.Application.Users.Commands.RegisterAdminUser;
+using ClinicFlow.Domain.Common;
 using FluentValidation.TestHelper;
 
 namespace ClinicFlow.Application.Tests.Users.Commands.RegisterAdminUser;
 
 public class RegisterAdminUserCommandValidatorTests
 {
-    private readonly RegisterAdminUserCommandValidator _sut = new();
+    private readonly RegisterAdminUserCommandValidator _sut;
+
+    public RegisterAdminUserCommandValidatorTests()
+    {
+        _sut = new RegisterAdminUserCommandValidator();
+    }
 
     [Fact]
-    public void Validate_ShouldPass_WhenValidCommand()
+    public void Validate_ShouldPass_WhenAllFieldsAreValid()
     {
         // Arrange
-        var command = new RegisterAdminUserCommand("admin@clinic.com", "password123", "555-1234");
+        var command = new RegisterAdminUserCommand("test@clinic.com", "password123", "555-1234");
 
         // Act
         var result = _sut.TestValidate(command);
 
         // Assert
         result.ShouldNotHaveAnyValidationErrors();
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Validate_ShouldFail_WhenEmailIsEmpty(string? email)
+    {
+        // Arrange
+        var command = new RegisterAdminUserCommand(email!, "password123", "555-1234");
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.Email)
+            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void Validate_ShouldFail_WhenEmailFormatIsInvalid()
+    {
+        // Arrange
+        var command = new RegisterAdminUserCommand("not-an-email", "password123", "555-1234");
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.Email)
+            .WithErrorMessage(DomainErrors.Validation.InvalidValue);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Validate_ShouldFail_WhenPasswordIsEmpty(string? password)
+    {
+        // Arrange
+        var command = new RegisterAdminUserCommand("test@clinic.com", password!, "555-1234");
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.Password)
+            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void Validate_ShouldFail_WhenPasswordIsTooShort()
+    {
+        // Arrange
+        var command = new RegisterAdminUserCommand("test@clinic.com", "short", "555-1234");
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.Password)
+            .WithErrorMessage(DomainErrors.Validation.ValueTooShort);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Validate_ShouldFail_WhenPhoneNumberIsEmpty(string? phone)
+    {
+        // Arrange
+        var command = new RegisterAdminUserCommand("test@clinic.com", "password123", phone!);
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.PhoneNumber)
+            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
     }
 }

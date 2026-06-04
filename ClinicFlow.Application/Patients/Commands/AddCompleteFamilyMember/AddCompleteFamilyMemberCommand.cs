@@ -1,4 +1,3 @@
-using ClinicFlow.Application.Patients.Commands.Shared.CompletePatient;
 using ClinicFlow.Domain.Enums;
 using MediatR;
 
@@ -15,4 +14,4 @@ public sealed record AddCompleteFamilyMemberCommand(
     string EmergencyContactName,
     string EmergencyContactPhone,
     PatientRelationship Relationship
-) : IRequest<Guid>, ICompletePatientCommand;
+) : IRequest<Guid>;

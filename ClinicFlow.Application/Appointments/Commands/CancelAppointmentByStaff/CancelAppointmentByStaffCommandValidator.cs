@@ -1,14 +1,21 @@
-using ClinicFlow.Application.Appointments.Commands.Shared.Cancel;
 using ClinicFlow.Domain.Common;
 using FluentValidation;
 
 namespace ClinicFlow.Application.Appointments.Commands.CancelAppointmentByStaff;
 
 public class CancelAppointmentByStaffCommandValidator
-    : CancelCommandValidatorBase<CancelAppointmentByStaffCommand>
+    : AbstractValidator<CancelAppointmentByStaffCommand>
 {
     public CancelAppointmentByStaffCommandValidator()
     {
-        RuleFor(x => x.Reason).NotEmpty().WithMessage(DomainErrors.Validation.ValueRequired);
+        RuleFor(x => x.AppointmentId).NotEmpty().WithMessage(DomainErrors.Validation.InvalidValue);
+        RuleFor(x => x.InitiatorUserId)
+            .NotEmpty()
+            .WithMessage(DomainErrors.Validation.InvalidValue);
+        RuleFor(x => x.Reason)
+            .NotEmpty()
+            .WithMessage(DomainErrors.Validation.ValueRequired)
+            .MaximumLength(500)
+            .WithMessage(DomainErrors.Validation.ValueTooLong);
     }
 }

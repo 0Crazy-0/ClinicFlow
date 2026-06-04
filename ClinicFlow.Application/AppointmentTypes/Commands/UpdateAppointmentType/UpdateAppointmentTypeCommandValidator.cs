@@ -1,16 +1,18 @@
-using ClinicFlow.Application.AppointmentTypes.Commands.Shared;
 using ClinicFlow.Domain.Common;
 using FluentValidation;
 
 namespace ClinicFlow.Application.AppointmentTypes.Commands.UpdateAppointmentType;
 
-public class UpdateAppointmentTypeCommandValidator
-    : AppointmentTypeCommandValidatorBase<UpdateAppointmentTypeCommand>
+public class UpdateAppointmentTypeCommandValidator : AbstractValidator<UpdateAppointmentTypeCommand>
 {
     public UpdateAppointmentTypeCommandValidator()
     {
         RuleFor(x => x.AppointmentTypeId)
             .NotEmpty()
             .WithMessage(DomainErrors.Validation.InvalidValue);
+        RuleFor(x => x.Name).NotEmpty().WithMessage(DomainErrors.Validation.ValueRequired);
+        RuleFor(x => x.DurationMinutes)
+            .GreaterThan(TimeSpan.Zero)
+            .WithMessage(DomainErrors.Validation.ValueMustBePositive);
     }
 }
