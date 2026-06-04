@@ -265,27 +265,6 @@ private readonly BlockPatientCommandValidator _sut;
 private readonly CreateCompletePatientProfileCommandHandler _sut;
 ```
 
-### Builder Pattern for Tests
-
-When an object's construction varies significantly across tests, use a private nested `Builder` class:
-
-```csharp
-private class AppointmentBuilder
-{
-    private Guid _patientId = Guid.NewGuid();
-    private Guid _doctorId = Guid.NewGuid();
-    private DateTime _scheduledDateTime;
-
-    public AppointmentBuilder WithPatientId(Guid patientId)
-    {
-        _patientId = patientId;
-        return this;
-    }
-
-    public Appointment Build() =>
-        Appointment.Schedule(_patientId, _doctorId, ...);
-}
-```
 
 ### Reflection for BaseEntity.Id
 
