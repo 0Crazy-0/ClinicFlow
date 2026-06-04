@@ -1,4 +1,3 @@
-using ClinicFlow.Application.Appointments.Commands.Shared.Reschedule;
 using MediatR;
 
 namespace ClinicFlow.Application.Appointments.Commands.RescheduleByPatient;
@@ -10,4 +9,4 @@ public sealed record RescheduleByPatientCommand(
     TimeSpan NewStartTime,
     TimeSpan NewEndTime,
     string? NewPatientNotes = null
-) : IRequest, IRescheduleCommand;
+) : IRequest;
