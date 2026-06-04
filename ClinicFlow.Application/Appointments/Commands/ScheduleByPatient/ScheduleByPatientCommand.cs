@@ -1,4 +1,3 @@
-using ClinicFlow.Application.Appointments.Commands.Shared.Schedule;
 using MediatR;
 
 namespace ClinicFlow.Application.Appointments.Commands.ScheduleByPatient;
@@ -12,4 +11,4 @@ public sealed record ScheduleByPatientCommand(
     TimeSpan StartTime,
     TimeSpan EndTime,
     string? PatientNotes = null
-) : IRequest<Guid>, IScheduleCommand;
+) : IRequest<Guid>;

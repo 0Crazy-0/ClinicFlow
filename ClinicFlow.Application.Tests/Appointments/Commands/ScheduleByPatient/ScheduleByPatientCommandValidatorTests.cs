@@ -26,7 +26,8 @@ public class ScheduleByPatientCommandValidatorTests
             Guid.NewGuid(),
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
             new TimeSpan(10, 0, 0),
-            new TimeSpan(11, 0, 0)
+            new TimeSpan(11, 0, 0),
+            "Notes"
         );
 
         // Act
@@ -37,7 +38,53 @@ public class ScheduleByPatientCommandValidatorTests
     }
 
     [Fact]
-    public void Validate_ShouldHaveValidationError_WhenDoctorIdIsEmpty()
+    public void Validate_ShouldHaveError_WhenInitiatorUserIdIsEmpty()
+    {
+        // Arrange
+        var command = new ScheduleByPatientCommand(
+            Guid.Empty,
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
+            new TimeSpan(10, 0, 0),
+            new TimeSpan(11, 0, 0)
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.InitiatorUserId)
+            .WithErrorMessage(DomainErrors.Validation.InvalidValue);
+    }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenTargetPatientIdIsEmpty()
+    {
+        // Arrange
+        var command = new ScheduleByPatientCommand(
+            Guid.NewGuid(),
+            Guid.Empty,
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
+            new TimeSpan(10, 0, 0),
+            new TimeSpan(11, 0, 0)
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.TargetPatientId)
+            .WithErrorMessage(DomainErrors.Validation.InvalidValue);
+    }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenDoctorIdIsEmpty()
     {
         // Arrange
         var command = new ScheduleByPatientCommand(
@@ -57,5 +104,98 @@ public class ScheduleByPatientCommandValidatorTests
         result
             .ShouldHaveValidationErrorFor(x => x.DoctorId)
             .WithErrorMessage(DomainErrors.Validation.InvalidValue);
+    }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenAppointmentTypeIdIsEmpty()
+    {
+        // Arrange
+        var command = new ScheduleByPatientCommand(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.Empty,
+            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
+            new TimeSpan(10, 0, 0),
+            new TimeSpan(11, 0, 0)
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.AppointmentTypeId)
+            .WithErrorMessage(DomainErrors.Validation.InvalidValue);
+    }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenScheduledDateIsInThePast()
+    {
+        // Arrange
+        var command = new ScheduleByPatientCommand(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            _fakeTime.GetUtcNow().UtcDateTime.AddDays(-1).Date,
+            new TimeSpan(10, 0, 0),
+            new TimeSpan(11, 0, 0)
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.ScheduledDate)
+            .WithErrorMessage(DomainErrors.Validation.ValueMustBeInFuture);
+    }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenStartTimeIsAfterEndTime()
+    {
+        // Arrange
+        var command = new ScheduleByPatientCommand(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
+            new TimeSpan(12, 0, 0),
+            new TimeSpan(11, 0, 0)
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.EndTime)
+            .WithErrorMessage(DomainErrors.Validation.EndTimeMustBeAfterStartTime);
+    }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenPatientNotesAreTooLong()
+    {
+        // Arrange
+        var command = new ScheduleByPatientCommand(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
+            new TimeSpan(10, 0, 0),
+            new TimeSpan(11, 0, 0),
+            new string('a', 501)
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.PatientNotes)
+            .WithErrorMessage(DomainErrors.Validation.ValueTooLong);
     }
 }

@@ -1,4 +1,3 @@
-using ClinicFlow.Application.Appointments.Commands.Shared.Schedule;
 using MediatR;
 
 namespace ClinicFlow.Application.Appointments.Commands.ScheduleByDoctor;
@@ -12,8 +11,4 @@ public sealed record ScheduleByDoctorCommand(
     TimeSpan EndTime,
     bool IsOverbook,
     bool HasGuardianConsentVerified
-) : IRequest<Guid>, IScheduleCommand
-{
-    // this will be removed soon.
-    public string? PatientNotes => null;
-}
+) : IRequest<Guid> { }
