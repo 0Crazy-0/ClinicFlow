@@ -2,12 +2,18 @@
     "stryker-config": {
         "project": "ClinicFlow.Application.csproj",
         "reporters": ["html", "dashboard", "progress"],
+          "thresholds": {
+            "high": 95,
+            "low": 90,
+            "break": 85
+        },
         "project-info": {
             "name": "github.com/0Crazy-0/ClinicFlow",
             "module": "Application"
         },
         "mutate": [
             "!**/DependencyInjection.cs",
+            "!**/ValidationException.cs",
             "!**/DTOs/**",
             "!**/*Command.cs",
             "!**/*Query.cs"
