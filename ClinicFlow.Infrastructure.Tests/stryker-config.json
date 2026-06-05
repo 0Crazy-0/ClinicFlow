@@ -1,6 +1,11 @@
 {
     "stryker-config": {
         "project": "ClinicFlow.Infrastructure.csproj",
+        "reporters": ["html", "dashboard", "github", "progress"],
+        "project-info": {
+            "name": "github.com/0Crazy-0/ClinicFlow",
+            "module": "Infrastructure"
+        },
         "mutate": [
             "!**/DependencyInjection.cs",
             "!**/Migrations/**",
