@@ -1,7 +1,7 @@
 {
     "stryker-config": {
         "project": "ClinicFlow.Application.csproj",
-        "reporters": ["html", "dashboard", "github", "progress"],
+        "reporters": ["html", "dashboard", "progress"],
         "project-info": {
             "name": "github.com/0Crazy-0/ClinicFlow",
             "module": "Application"
