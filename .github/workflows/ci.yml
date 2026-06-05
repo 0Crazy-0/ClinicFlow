@@ -59,8 +59,9 @@ jobs:
       - name: Run Stryker (main — save baseline)
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         env:
-          STRYKER_DASHBOARD_API_KEY: ${{ secrets.STRYKER_DASHBOARD_API_KEY }} # nosonar
+          STRYKER_DASHBOARD_API_KEY: ${{ secrets.STRYKER_DASHBOARD_API_KEY }}
           REPO_NAME: ${{ github.repository }}
+          DOTNET_ROLL_FORWARD: LatestMajor
         run: |
           projects=("ClinicFlow.Domain.Tests" "ClinicFlow.Application.Tests" "ClinicFlow.Infrastructure.Tests")
           for proj in "${projects[@]}"; do
@@ -73,9 +74,11 @@ jobs:
       - name: Run Stryker (PR — baseline compare)
         if: github.event_name == 'pull_request'
         env:
-          STRYKER_DASHBOARD_API_KEY: ${{ secrets.STRYKER_DASHBOARD_API_KEY }} # nosonar
+          STRYKER_DASHBOARD_API_KEY: ${{ secrets.STRYKER_DASHBOARD_API_KEY }}
           PR_BRANCH: ${{ github.head_ref }}
           BASE_BRANCH: ${{ github.base_ref }}
+          DOTNET_ROLL_FORWARD: LatestMajor
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           projects=("ClinicFlow.Domain.Tests" "ClinicFlow.Application.Tests" "ClinicFlow.Infrastructure.Tests")
           for proj in "${projects[@]}"; do
