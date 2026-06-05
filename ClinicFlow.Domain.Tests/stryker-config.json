@@ -2,6 +2,11 @@
     "stryker-config": {
         "project": "ClinicFlow.Domain.csproj",
         "reporters": ["html", "dashboard", "progress"],
+          "thresholds": {
+            "high": 95,
+            "low": 90,
+            "break": 85
+        },
         "project-info": {
             "name": "github.com/0Crazy-0/ClinicFlow",
             "module": "Domain"
