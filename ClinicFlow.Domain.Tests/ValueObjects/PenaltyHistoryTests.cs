@@ -56,14 +56,14 @@ public class PenaltyHistoryTests
         var expiredBlock = PatientPenalty.CreateAutomaticBlock(
             patientId,
             PenaltyReasons.AutomaticBlock,
-            _fakeTime.GetUtcNow().UtcDateTime.AddDays(-1).Date,
-            _fakeTime.GetUtcNow().UtcDateTime.AddDays(-6).Date
+            BlockDuration.Minor,
+            _fakeTime.GetUtcNow().UtcDateTime.AddDays(-6)
         );
 
         var activeBlock = PatientPenalty.CreateAutomaticBlock(
             patientId,
             PenaltyReasons.AutomaticBlock,
-            _fakeTime.GetUtcNow().UtcDateTime.AddDays(10).Date,
+            BlockDuration.Minor,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -82,8 +82,8 @@ public class PenaltyHistoryTests
         var expiredBlock = PatientPenalty.CreateAutomaticBlock(
             patientId,
             PenaltyReasons.AutomaticBlock,
-            _fakeTime.GetUtcNow().UtcDateTime.AddDays(-1).Date,
-            _fakeTime.GetUtcNow().UtcDateTime.AddDays(-6).Date
+            BlockDuration.Minor,
+            _fakeTime.GetUtcNow().UtcDateTime.AddDays(-6)
         );
 
         var history = new PenaltyHistory([expiredBlock]);
@@ -101,7 +101,7 @@ public class PenaltyHistoryTests
         var activeBlock = PatientPenalty.CreateAutomaticBlock(
             patientId,
             PenaltyReasons.AutomaticBlock,
-            _fakeTime.GetUtcNow().UtcDateTime.AddDays(10).Date,
+            BlockDuration.Minor,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -120,7 +120,7 @@ public class PenaltyHistoryTests
         var removedBlock = PatientPenalty.CreateAutomaticBlock(
             patientId,
             PenaltyReasons.AutomaticBlock,
-            _fakeTime.GetUtcNow().UtcDateTime.AddDays(10).Date,
+            BlockDuration.Minor,
             _fakeTime.GetUtcNow().UtcDateTime
         );
         removedBlock.Remove();
@@ -151,8 +151,8 @@ public class PenaltyHistoryTests
             PatientPenalty.CreateAutomaticBlock(
                 patientId,
                 PenaltyReasons.AutomaticBlock,
-                _fakeTime.GetUtcNow().UtcDateTime.AddDays(-1).Date,
-                _fakeTime.GetUtcNow().UtcDateTime.AddDays(-6).Date
+                BlockDuration.Minor,
+                _fakeTime.GetUtcNow().UtcDateTime.AddDays(-6)
             ),
         ]);
 
@@ -170,14 +170,14 @@ public class PenaltyHistoryTests
             PatientPenalty.CreateAutomaticBlock(
                 patientId,
                 PenaltyReasons.AutomaticBlock,
-                _fakeTime.GetUtcNow().UtcDateTime.AddDays(-20).Date,
-                _fakeTime.GetUtcNow().UtcDateTime.AddDays(-25).Date
+                BlockDuration.Minor,
+                _fakeTime.GetUtcNow().UtcDateTime.AddDays(-25)
             ),
             PatientPenalty.CreateAutomaticBlock(
                 patientId,
                 PenaltyReasons.AutomaticBlock,
-                _fakeTime.GetUtcNow().UtcDateTime.AddDays(-1).Date,
-                _fakeTime.GetUtcNow().UtcDateTime.AddDays(-16).Date
+                BlockDuration.Minor,
+                _fakeTime.GetUtcNow().UtcDateTime.AddDays(-6)
             ),
         ]);
 
@@ -195,20 +195,20 @@ public class PenaltyHistoryTests
             PatientPenalty.CreateAutomaticBlock(
                 patientId,
                 PenaltyReasons.AutomaticBlock,
-                _fakeTime.GetUtcNow().UtcDateTime.AddDays(-50).Date,
-                _fakeTime.GetUtcNow().UtcDateTime.AddDays(-55).Date
+                BlockDuration.Minor,
+                _fakeTime.GetUtcNow().UtcDateTime.AddDays(-55)
             ),
             PatientPenalty.CreateAutomaticBlock(
                 patientId,
                 PenaltyReasons.AutomaticBlock,
-                _fakeTime.GetUtcNow().UtcDateTime.AddDays(-30).Date,
-                _fakeTime.GetUtcNow().UtcDateTime.AddDays(-45).Date
+                BlockDuration.Minor,
+                _fakeTime.GetUtcNow().UtcDateTime.AddDays(-35)
             ),
             PatientPenalty.CreateAutomaticBlock(
                 patientId,
                 PenaltyReasons.AutomaticBlock,
-                _fakeTime.GetUtcNow().UtcDateTime.AddDays(-1).Date,
-                _fakeTime.GetUtcNow().UtcDateTime.AddDays(-31).Date
+                BlockDuration.Minor,
+                _fakeTime.GetUtcNow().UtcDateTime.AddDays(-6)
             ),
         ]);
 

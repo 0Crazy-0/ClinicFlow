@@ -80,8 +80,8 @@ public class PatientPenaltyServiceTests
             PatientPenalty.CreateAutomaticBlock(
                 patientId,
                 PenaltyReasons.AutomaticBlock,
-                _fakeTime.GetUtcNow().UtcDateTime.AddDays(-1).Date,
-                _fakeTime.GetUtcNow().UtcDateTime.AddDays(-6).Date
+                BlockDuration.Minor,
+                _fakeTime.GetUtcNow().UtcDateTime.AddDays(-6)
             ),
         };
 
@@ -118,15 +118,15 @@ public class PatientPenaltyServiceTests
             PatientPenalty.CreateAutomaticBlock(
                 patientId,
                 PenaltyReasons.AutomaticBlock,
-                _fakeTime.GetUtcNow().UtcDateTime.AddDays(-20).Date,
-                _fakeTime.GetUtcNow().UtcDateTime.AddDays(-25).Date
+                BlockDuration.Minor,
+                _fakeTime.GetUtcNow().UtcDateTime.AddDays(-25)
             ),
             PatientPenalty.CreateAutomaticWarning(patientId, Guid.NewGuid(), "Warning 3"),
             PatientPenalty.CreateAutomaticBlock(
                 patientId,
                 PenaltyReasons.AutomaticBlock,
-                _fakeTime.GetUtcNow().UtcDateTime.AddDays(-1).Date,
-                _fakeTime.GetUtcNow().UtcDateTime.AddDays(-16).Date
+                BlockDuration.Minor,
+                _fakeTime.GetUtcNow().UtcDateTime.AddDays(-6)
             ),
         };
 
@@ -162,7 +162,7 @@ public class PatientPenaltyServiceTests
             PatientPenalty.CreateAutomaticBlock(
                 patientId,
                 PenaltyReasons.AutomaticBlock,
-                _fakeTime.GetUtcNow().UtcDateTime.AddDays(10).Date,
+                BlockDuration.Minor,
                 _fakeTime.GetUtcNow().UtcDateTime
             ),
         };

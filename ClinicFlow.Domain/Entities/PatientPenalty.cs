@@ -64,10 +64,12 @@ public class PatientPenalty : BaseEntity
         return new PatientPenalty(patientId, appointmentId, PenaltyType.Warning, reason, null);
     }
 
+    // Intentionally duplicates CreateManualBlock to preserve explicit domain intent.
+    // Automatic blocks must be created through a domain service, while manual blocks do not.
     internal static PatientPenalty CreateAutomaticBlock(
         Guid patientId,
         string reason,
-        DateTime blockedUntil,
+        BlockDuration duration,
         DateTime referenceTime
     )
     {
@@ -75,15 +77,15 @@ public class PatientPenalty : BaseEntity
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
         if (string.IsNullOrWhiteSpace(reason))
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-        if (blockedUntil <= referenceTime)
-            throw new DomainValidationException(DomainErrors.Validation.ValueMustBeInFuture);
+        if (!Enum.IsDefined(duration))
+            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
 
         return new PatientPenalty(
             patientId,
             null,
             PenaltyType.TemporaryBlock,
             reason,
-            blockedUntil
+            referenceTime.Date.AddDays((int)duration)
         );
     }
 

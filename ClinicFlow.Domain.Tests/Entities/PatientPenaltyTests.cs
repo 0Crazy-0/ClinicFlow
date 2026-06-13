@@ -79,13 +79,13 @@ public class PatientPenaltyTests
         // Arrange
         var patientId = Guid.NewGuid();
         var reason = "Automatic block due to 3 strikes";
-        var blockedUntil = _fakeTime.GetUtcNow().UtcDateTime.AddDays(30).Date;
+        var blockedUntil = _fakeTime.GetUtcNow().UtcDateTime.Date.AddDays(5);
 
         // Act
         var penalty = PatientPenalty.CreateAutomaticBlock(
             patientId,
             reason,
-            blockedUntil,
+            BlockDuration.Minor,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -106,7 +106,7 @@ public class PatientPenaltyTests
             PatientPenalty.CreateAutomaticBlock(
                 Guid.Empty,
                 "Block reason",
-                _fakeTime.GetUtcNow().UtcDateTime.AddDays(30).Date,
+                BlockDuration.Minor,
                 _fakeTime.GetUtcNow().UtcDateTime
             );
 
@@ -127,7 +127,7 @@ public class PatientPenaltyTests
             PatientPenalty.CreateAutomaticBlock(
                 Guid.NewGuid(),
                 reason!,
-                _fakeTime.GetUtcNow().UtcDateTime.AddDays(30).Date,
+                BlockDuration.Minor,
                 _fakeTime.GetUtcNow().UtcDateTime
             );
 
@@ -138,21 +138,21 @@ public class PatientPenaltyTests
     }
 
     [Fact]
-    public void CreateAutomaticBlock_ShouldThrowException_WhenBlockedUntilIsInThePast()
+    public void CreateAutomaticBlock_ShouldThrowException_WhenDurationIsInvalid()
     {
         // Arrange & Act
         var act = () =>
             PatientPenalty.CreateAutomaticBlock(
                 Guid.NewGuid(),
                 "Block reason",
-                _fakeTime.GetUtcNow().UtcDateTime.AddDays(-1).Date,
+                (BlockDuration)999,
                 _fakeTime.GetUtcNow().UtcDateTime
             );
 
         // Assert
         act.Should()
             .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.Validation.ValueMustBeInFuture);
+            .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Fact]
@@ -162,7 +162,7 @@ public class PatientPenaltyTests
         var penalty = PatientPenalty.CreateAutomaticBlock(
             Guid.NewGuid(),
             "Block reason",
-            _fakeTime.GetUtcNow().UtcDateTime.AddDays(30).Date,
+            BlockDuration.Minor,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -180,7 +180,7 @@ public class PatientPenaltyTests
         var penalty = PatientPenalty.CreateAutomaticBlock(
             Guid.NewGuid(),
             "Block reason",
-            _fakeTime.GetUtcNow().UtcDateTime.AddDays(30).Date,
+            BlockDuration.Minor,
             _fakeTime.GetUtcNow().UtcDateTime
         );
         penalty.Remove();

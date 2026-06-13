@@ -473,8 +473,8 @@ public class PatientTests
             PatientPenalty.CreateAutomaticBlock(
                 patient.Id,
                 "Old Block",
-                _fakeTime.GetUtcNow().UtcDateTime.AddDays(-1).Date,
-                _fakeTime.GetUtcNow().UtcDateTime.AddDays(-2).Date
+                BlockDuration.Minor,
+                _fakeTime.GetUtcNow().UtcDateTime.AddDays(-6)
             ),
         };
 
@@ -490,13 +490,13 @@ public class PatientTests
     {
         // Arrange
         var patient = CreatePatient();
-        var blockedUntil = _fakeTime.GetUtcNow().UtcDateTime.AddDays(10).Date;
+        var blockedUntil = _fakeTime.GetUtcNow().UtcDateTime.Date.AddDays(5);
         var penalties = new List<PatientPenalty>
         {
             PatientPenalty.CreateAutomaticBlock(
                 patient.Id,
                 "Active Block",
-                blockedUntil,
+                BlockDuration.Minor,
                 _fakeTime.GetUtcNow().UtcDateTime
             ),
         };
@@ -519,7 +519,7 @@ public class PatientTests
         var penalty = PatientPenalty.CreateAutomaticBlock(
             patient.Id,
             "Removed Block",
-            _fakeTime.GetUtcNow().UtcDateTime.AddDays(10).Date,
+            BlockDuration.Minor,
             _fakeTime.GetUtcNow().UtcDateTime
         );
         penalty.Remove();

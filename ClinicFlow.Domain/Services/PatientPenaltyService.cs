@@ -33,7 +33,7 @@ public static class PatientPenaltyService
         var block = PatientPenalty.CreateAutomaticBlock(
             patientId,
             PenaltyReasons.AutomaticBlock,
-            referenceTime.Date.AddDays((int)duration),
+            duration,
             referenceTime
         );
 

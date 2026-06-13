@@ -1,5 +1,6 @@
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
+using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Events.Appointments;
 using ClinicFlow.Domain.Exceptions.Appointments;
 using ClinicFlow.Domain.Exceptions.Base;
@@ -354,7 +355,7 @@ public class RescheduleByPatientTests
             PatientPenalty.CreateAutomaticBlock(
                 target.Id,
                 "Reason",
-                _fakeTime.GetUtcNow().UtcDateTime.AddDays(5).Date,
+                BlockDuration.Minor,
                 _fakeTime.GetUtcNow().UtcDateTime
             ),
         };
