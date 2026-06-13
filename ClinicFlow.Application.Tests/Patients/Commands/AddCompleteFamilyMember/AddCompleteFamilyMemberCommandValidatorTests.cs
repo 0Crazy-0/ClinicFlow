@@ -1,6 +1,7 @@
 using ClinicFlow.Application.Patients.Commands.AddCompleteFamilyMember;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Enums;
+using ClinicFlow.Domain.ValueObjects;
 using FluentValidation.TestHelper;
 using Microsoft.Extensions.Time.Testing;
 
@@ -121,6 +122,33 @@ public class AddCompleteFamilyMemberCommandValidatorTests
             .WithErrorMessage(DomainErrors.Validation.ValueTooShort);
     }
 
+    [Fact]
+    public void Validate_ShouldHaveError_WhenFirstNameIsTooLong()
+    {
+        // Arrange
+        var firstName = new string('A', PersonName.MaximumLength + 1);
+        var command = new AddCompleteFamilyMemberCommand(
+            Guid.NewGuid(),
+            firstName,
+            "Doe",
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30),
+            "O+",
+            "Peanut allergy",
+            "Asthma",
+            "Jane Doe",
+            "555-0199",
+            PatientRelationship.Spouse
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.FirstName)
+            .WithErrorMessage(DomainErrors.Validation.ValueTooLong);
+    }
+
     [Theory]
     [InlineData(null)]
     [InlineData("")]
@@ -174,6 +202,33 @@ public class AddCompleteFamilyMemberCommandValidatorTests
         result
             .ShouldHaveValidationErrorFor(x => x.LastName)
             .WithErrorMessage(DomainErrors.Validation.ValueTooShort);
+    }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenLastNameIsTooLong()
+    {
+        // Arrange
+        var lastName = new string('A', PersonName.MaximumLength + 1);
+        var command = new AddCompleteFamilyMemberCommand(
+            Guid.NewGuid(),
+            "John",
+            lastName,
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30),
+            "O+",
+            "Peanut allergy",
+            "Asthma",
+            "Jane Doe",
+            "555-0199",
+            PatientRelationship.Spouse
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.LastName)
+            .WithErrorMessage(DomainErrors.Validation.ValueTooLong);
     }
 
     [Fact]
@@ -260,6 +315,60 @@ public class AddCompleteFamilyMemberCommandValidatorTests
             .WithErrorMessage(DomainErrors.Validation.ValueRequired);
     }
 
+    [Fact]
+    public void Validate_ShouldHaveError_WhenEmergencyContactNameIsTooShort()
+    {
+        // Arrange
+        var emergencyContactName = new string('A', PersonName.MinimumLength - 1);
+        var command = new AddCompleteFamilyMemberCommand(
+            Guid.NewGuid(),
+            "John",
+            "Doe",
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30),
+            "O+",
+            "Peanut allergy",
+            "Asthma",
+            emergencyContactName,
+            "555-0199",
+            PatientRelationship.Spouse
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.EmergencyContactName)
+            .WithErrorMessage(DomainErrors.Validation.ValueTooShort);
+    }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenEmergencyContactNameIsTooLong()
+    {
+        // Arrange
+        var emergencyContactName = new string('A', PersonName.MaximumLength + 1);
+        var command = new AddCompleteFamilyMemberCommand(
+            Guid.NewGuid(),
+            "John",
+            "Doe",
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30),
+            "O+",
+            "Peanut allergy",
+            "Asthma",
+            emergencyContactName,
+            "555-0199",
+            PatientRelationship.Spouse
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.EmergencyContactName)
+            .WithErrorMessage(DomainErrors.Validation.ValueTooLong);
+    }
+
     [Theory]
     [InlineData(null)]
     [InlineData("")]
@@ -287,6 +396,60 @@ public class AddCompleteFamilyMemberCommandValidatorTests
         result
             .ShouldHaveValidationErrorFor(x => x.EmergencyContactPhone)
             .WithErrorMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenEmergencyContactPhoneIsTooShort()
+    {
+        // Arrange
+        var emergencyContactPhone = new string('1', PhoneNumber.MinimumLength - 1);
+        var command = new AddCompleteFamilyMemberCommand(
+            Guid.NewGuid(),
+            "John",
+            "Doe",
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30),
+            "O+",
+            "Peanut allergy",
+            "Asthma",
+            "Jane Doe",
+            emergencyContactPhone,
+            PatientRelationship.Spouse
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.EmergencyContactPhone)
+            .WithErrorMessage(DomainErrors.Validation.ValueTooShort);
+    }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenEmergencyContactPhoneIsTooLong()
+    {
+        // Arrange
+        var emergencyContactPhone = new string('1', PhoneNumber.MaximumLength + 1);
+        var command = new AddCompleteFamilyMemberCommand(
+            Guid.NewGuid(),
+            "John",
+            "Doe",
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30),
+            "O+",
+            "Peanut allergy",
+            "Asthma",
+            "Jane Doe",
+            emergencyContactPhone,
+            PatientRelationship.Spouse
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.EmergencyContactPhone)
+            .WithErrorMessage(DomainErrors.Validation.ValueTooLong);
     }
 
     [Fact]

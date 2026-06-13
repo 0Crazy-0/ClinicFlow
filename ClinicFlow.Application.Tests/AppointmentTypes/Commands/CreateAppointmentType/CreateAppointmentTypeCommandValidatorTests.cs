@@ -1,6 +1,7 @@
 using ClinicFlow.Application.AppointmentTypes.Commands.CreateAppointmentType;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Enums;
+using ClinicFlow.Domain.ValueObjects;
 using FluentValidation.TestHelper;
 
 namespace ClinicFlow.Application.Tests.AppointmentTypes.Commands.CreateAppointmentType;
@@ -136,6 +137,52 @@ public class CreateAppointmentTypeCommandValidatorTests
         result
             .ShouldHaveValidationErrorFor(x => x.MaximumAge)
             .WithErrorMessage(DomainErrors.Validation.ValueCannotBeNegative);
+    }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenMinimumAgeExceedsMaximumAllowedAge()
+    {
+        // Arrange
+        var command = new CreateAppointmentTypeCommand(
+            AppointmentCategory.Checkup,
+            "Checkup",
+            "Description",
+            TimeSpan.FromMinutes(30),
+            AgeEligibilityPolicy.MaximumAllowedAge + 1,
+            null,
+            false
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.MinimumAge)
+            .WithErrorMessage(DomainErrors.Validation.ValueExceedsMaximum);
+    }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenMaximumAgeExceedsMaximumAllowedAge()
+    {
+        // Arrange
+        var command = new CreateAppointmentTypeCommand(
+            AppointmentCategory.Checkup,
+            "Checkup",
+            "Description",
+            TimeSpan.FromMinutes(30),
+            null,
+            AgeEligibilityPolicy.MaximumAllowedAge + 1,
+            false
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.MaximumAge)
+            .WithErrorMessage(DomainErrors.Validation.ValueExceedsMaximum);
     }
 
     [Fact]

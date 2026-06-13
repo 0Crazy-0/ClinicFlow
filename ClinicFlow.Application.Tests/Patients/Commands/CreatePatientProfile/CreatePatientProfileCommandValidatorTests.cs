@@ -1,5 +1,6 @@
 using ClinicFlow.Application.Patients.Commands.CreatePatientProfile;
 using ClinicFlow.Domain.Common;
+using ClinicFlow.Domain.ValueObjects;
 using FluentValidation.TestHelper;
 using Microsoft.Extensions.Time.Testing;
 
@@ -96,6 +97,26 @@ public class CreatePatientProfileCommandValidatorTests
             .WithErrorMessage(DomainErrors.Validation.ValueTooShort);
     }
 
+    [Fact]
+    public void Validate_ShouldHaveError_WhenFirstNameIsTooLong()
+    {
+        // Arrange
+        var command = new CreatePatientProfileCommand(
+            Guid.NewGuid(),
+            new string('A', PersonName.MaximumLength + 1),
+            "Doe",
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.FirstName)
+            .WithErrorMessage(DomainErrors.Validation.ValueTooLong);
+    }
+
     [Theory]
     [InlineData(null)]
     [InlineData("")]
@@ -137,6 +158,26 @@ public class CreatePatientProfileCommandValidatorTests
         result
             .ShouldHaveValidationErrorFor(x => x.LastName)
             .WithErrorMessage(DomainErrors.Validation.ValueTooShort);
+    }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenLastNameIsTooLong()
+    {
+        // Arrange
+        var command = new CreatePatientProfileCommand(
+            Guid.NewGuid(),
+            "John",
+            new string('A', PersonName.MaximumLength + 1),
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.LastName)
+            .WithErrorMessage(DomainErrors.Validation.ValueTooLong);
     }
 
     [Fact]

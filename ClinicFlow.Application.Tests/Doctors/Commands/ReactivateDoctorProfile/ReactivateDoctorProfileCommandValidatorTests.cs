@@ -1,5 +1,6 @@
 using ClinicFlow.Application.Doctors.Commands.ReactivateDoctorProfile;
 using ClinicFlow.Domain.Common;
+using ClinicFlow.Domain.ValueObjects;
 using FluentValidation.TestHelper;
 
 namespace ClinicFlow.Application.Tests.Doctors.Commands.ReactivateDoctorProfile;
@@ -43,7 +44,7 @@ public class ReactivateDoctorProfileCommandValidatorTests
     }
 
     [Theory]
-    [InlineData(0)]
+    [InlineData(ConsultationRoom.MinimumNumber - 1)]
     [InlineData(-1)]
     [InlineData(-100)]
     public void Validate_ShouldFail_WhenConsultationRoomNumberIsZero(int roomNumber)
@@ -67,7 +68,7 @@ public class ReactivateDoctorProfileCommandValidatorTests
     }
 
     [Theory]
-    [InlineData(36)]
+    [InlineData(ConsultationRoom.MaximumNumber + 1)]
     [InlineData(50)]
     [InlineData(100)]
     public void Validate_ShouldFail_WhenConsultationRoomNumberExceedsMaximum(int roomNumber)
@@ -115,10 +116,37 @@ public class ReactivateDoctorProfileCommandValidatorTests
     }
 
     [Fact]
+    public void Validate_ShouldFail_WhenConsultationRoomFloorIsBelowMinimum()
+    {
+        // Arrange
+        var command = new ReactivateDoctorProfileCommand(
+            Guid.NewGuid(),
+            "Bio",
+            1,
+            "Room",
+            ConsultationRoom.MinimumFloor - 1
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.ConsultationRoomFloor)
+            .WithErrorMessage(DomainErrors.Validation.ValueMustBePositive);
+    }
+
+    [Fact]
     public void Validate_ShouldFail_WhenConsultationRoomFloorExceedsMaximum()
     {
         // Arrange
-        var command = new ReactivateDoctorProfileCommand(Guid.NewGuid(), "Bio", 1, "Room", 9);
+        var command = new ReactivateDoctorProfileCommand(
+            Guid.NewGuid(),
+            "Bio",
+            1,
+            "Room",
+            ConsultationRoom.MaximumFloor + 1
+        );
 
         // Act
         var result = _sut.TestValidate(command);

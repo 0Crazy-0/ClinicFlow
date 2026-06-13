@@ -1,6 +1,7 @@
 using ClinicFlow.Application.Patients.Commands.AddFamilyMember;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Enums;
+using ClinicFlow.Domain.ValueObjects;
 using FluentValidation.TestHelper;
 using Microsoft.Extensions.Time.Testing;
 
@@ -101,6 +102,28 @@ public class AddFamilyMemberCommandValidatorTests
             .WithErrorMessage(DomainErrors.Validation.ValueTooShort);
     }
 
+    [Fact]
+    public void Validate_ShouldHaveError_WhenFirstNameIsTooLong()
+    {
+        // Arrange
+        var firstName = new string('A', PersonName.MaximumLength + 1);
+        var command = new AddFamilyMemberCommand(
+            Guid.NewGuid(),
+            firstName,
+            "Doe",
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30),
+            PatientRelationship.Spouse
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.FirstName)
+            .WithErrorMessage(DomainErrors.Validation.ValueTooLong);
+    }
+
     [Theory]
     [InlineData(null)]
     [InlineData("")]
@@ -144,6 +167,28 @@ public class AddFamilyMemberCommandValidatorTests
         result
             .ShouldHaveValidationErrorFor(x => x.LastName)
             .WithErrorMessage(DomainErrors.Validation.ValueTooShort);
+    }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenLastNameIsTooLong()
+    {
+        // Arrange
+        var lastName = new string('A', PersonName.MaximumLength + 1);
+        var command = new AddFamilyMemberCommand(
+            Guid.NewGuid(),
+            "John",
+            lastName,
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30),
+            PatientRelationship.Spouse
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.LastName)
+            .WithErrorMessage(DomainErrors.Validation.ValueTooLong);
     }
 
     [Fact]

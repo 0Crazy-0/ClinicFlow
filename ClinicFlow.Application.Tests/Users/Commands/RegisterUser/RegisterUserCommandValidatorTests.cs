@@ -1,5 +1,6 @@
 using ClinicFlow.Application.Users.Commands.RegisterUser;
 using ClinicFlow.Domain.Common;
+using ClinicFlow.Domain.ValueObjects;
 using FluentValidation.TestHelper;
 
 namespace ClinicFlow.Application.Tests.Users.Commands.RegisterUser;
@@ -59,6 +60,23 @@ public class RegisterUserCommandValidatorTests
             .WithErrorMessage(DomainErrors.Validation.InvalidValue);
     }
 
+    [Fact]
+    public void Validate_ShouldFail_WhenEmailIsTooLong()
+    {
+        // Arrange
+        var domain = "@example.com";
+        var email = new string('a', EmailAddress.MaximumLength - domain.Length + 1) + domain;
+        var command = new RegisterUserCommand(email, "password123", "555-1234");
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.Email)
+            .WithErrorMessage(DomainErrors.Validation.ValueTooLong);
+    }
+
     [Theory]
     [InlineData(null)]
     [InlineData("")]
@@ -108,5 +126,37 @@ public class RegisterUserCommandValidatorTests
         result
             .ShouldHaveValidationErrorFor(x => x.PhoneNumber)
             .WithErrorMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void Validate_ShouldFail_WhenPhoneNumberIsTooShort()
+    {
+        // Arrange
+        var phoneNumber = new string('1', PhoneNumber.MinimumLength - 1);
+        var command = new RegisterUserCommand("test@clinic.com", "password123", phoneNumber);
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.PhoneNumber)
+            .WithErrorMessage(DomainErrors.Validation.ValueTooShort);
+    }
+
+    [Fact]
+    public void Validate_ShouldFail_WhenPhoneNumberIsTooLong()
+    {
+        // Arrange
+        var phoneNumber = new string('1', PhoneNumber.MaximumLength + 1);
+        var command = new RegisterUserCommand("test@clinic.com", "password123", phoneNumber);
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.PhoneNumber)
+            .WithErrorMessage(DomainErrors.Validation.ValueTooLong);
     }
 }

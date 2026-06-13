@@ -1,5 +1,6 @@
 using ClinicFlow.Application.AppointmentTypes.Commands.ChangeAppointmentTypeAgePolicy;
 using ClinicFlow.Domain.Common;
+using ClinicFlow.Domain.ValueObjects;
 using FluentValidation.TestHelper;
 
 namespace ClinicFlow.Application.Tests.AppointmentTypes.Commands.ChangeAppointmentTypeAgePolicy;
@@ -98,5 +99,45 @@ public class ChangeAppointmentTypeAgePolicyCommandValidatorTests
         result
             .ShouldHaveValidationErrorFor(x => x.MaximumAge)
             .WithErrorMessage(DomainErrors.Validation.ValueCannotBeNegative);
+    }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenMinimumAgeExceedsMaximumAllowedAge()
+    {
+        // Arrange
+        var command = new ChangeAppointmentTypeAgePolicyCommand(
+            Guid.NewGuid(),
+            AgeEligibilityPolicy.MaximumAllowedAge + 1,
+            null,
+            false
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.MinimumAge)
+            .WithErrorMessage(DomainErrors.Validation.ValueExceedsMaximum);
+    }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenMaximumAgeExceedsMaximumAllowedAge()
+    {
+        // Arrange
+        var command = new ChangeAppointmentTypeAgePolicyCommand(
+            Guid.NewGuid(),
+            null,
+            AgeEligibilityPolicy.MaximumAllowedAge + 1,
+            false
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.MaximumAge)
+            .WithErrorMessage(DomainErrors.Validation.ValueExceedsMaximum);
     }
 }

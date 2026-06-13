@@ -1,5 +1,6 @@
 using ClinicFlow.Application.Users.Commands.RequestPasswordReset;
 using ClinicFlow.Domain.Common;
+using ClinicFlow.Domain.ValueObjects;
 using FluentValidation.TestHelper;
 
 namespace ClinicFlow.Application.Tests.Users.Commands.RequestPasswordReset;
@@ -52,5 +53,22 @@ public class RequestPasswordResetCommandValidatorTests
         result
             .ShouldHaveValidationErrorFor(x => x.Email)
             .WithErrorMessage(DomainErrors.Validation.InvalidValue);
+    }
+
+    [Fact]
+    public void Validate_ShouldFail_WhenEmailIsTooLong()
+    {
+        // Arrange
+        var domain = "@example.com";
+        var email = new string('a', EmailAddress.MaximumLength - domain.Length + 1) + domain;
+        var command = new RequestPasswordResetCommand(email);
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.Email)
+            .WithErrorMessage(DomainErrors.Validation.ValueTooLong);
     }
 }

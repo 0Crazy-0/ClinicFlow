@@ -1,5 +1,6 @@
 using ClinicFlow.Application.Doctors.Commands.CreateDoctorProfile;
 using ClinicFlow.Domain.Common;
+using ClinicFlow.Domain.ValueObjects;
 using FluentValidation.TestHelper;
 
 namespace ClinicFlow.Application.Tests.Doctors.Commands.CreateDoctorProfile;
@@ -114,6 +115,31 @@ public class CreateDoctorProfileCommandValidatorTests
             .WithErrorMessage(DomainErrors.Validation.ValueTooShort);
     }
 
+    [Fact]
+    public void Validate_ShouldHaveError_WhenFirstNameIsTooLong()
+    {
+        // Arrange
+        var command = new CreateDoctorProfileCommand(
+            Guid.NewGuid(),
+            new string('A', PersonName.MaximumLength + 1),
+            "Doe",
+            "12345",
+            Guid.NewGuid(),
+            "Biography",
+            10,
+            "Room A",
+            3
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.FirstName)
+            .WithErrorMessage(DomainErrors.Validation.ValueTooLong);
+    }
+
     [Theory]
     [InlineData(null)]
     [InlineData("")]
@@ -168,6 +194,31 @@ public class CreateDoctorProfileCommandValidatorTests
     }
 
     [Fact]
+    public void Validate_ShouldHaveError_WhenLastNameIsTooLong()
+    {
+        // Arrange
+        var command = new CreateDoctorProfileCommand(
+            Guid.NewGuid(),
+            "John",
+            new string('A', PersonName.MaximumLength + 1),
+            "12345",
+            Guid.NewGuid(),
+            "Biography",
+            10,
+            "Room A",
+            3
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.LastName)
+            .WithErrorMessage(DomainErrors.Validation.ValueTooLong);
+    }
+
+    [Fact]
     public void Validate_ShouldHaveError_WhenLicenseNumberIsEmpty()
     {
         // Arrange
@@ -218,6 +269,31 @@ public class CreateDoctorProfileCommandValidatorTests
     }
 
     [Fact]
+    public void Validate_ShouldHaveError_WhenLicenseNumberIsTooLong()
+    {
+        // Arrange
+        var command = new CreateDoctorProfileCommand(
+            Guid.NewGuid(),
+            "John",
+            "Doe",
+            new string('A', MedicalLicenseNumber.MaximumLength + 1),
+            Guid.NewGuid(),
+            "Biography",
+            10,
+            "Room A",
+            1
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.LicenseNumber)
+            .WithErrorMessage(DomainErrors.Validation.ValueTooLong);
+    }
+
+    [Fact]
     public void Validate_ShouldHaveError_WhenMedicalSpecialtyIdIsEmpty()
     {
         // Arrange
@@ -243,7 +319,7 @@ public class CreateDoctorProfileCommandValidatorTests
     }
 
     [Theory]
-    [InlineData(0)]
+    [InlineData(ConsultationRoom.MinimumNumber - 1)]
     [InlineData(-1)]
     [InlineData(-100)]
     public void Validate_ShouldHaveError_WhenConsultationRoomNumberIsZeroOrNegative(int roomNumber)
@@ -271,7 +347,7 @@ public class CreateDoctorProfileCommandValidatorTests
     }
 
     [Theory]
-    [InlineData(36)]
+    [InlineData(ConsultationRoom.MaximumNumber + 1)]
     [InlineData(50)]
     [InlineData(100)]
     public void Validate_ShouldHaveError_WhenConsultationRoomNumberExceedsMaximum(int roomNumber)
@@ -327,7 +403,7 @@ public class CreateDoctorProfileCommandValidatorTests
     }
 
     [Theory]
-    [InlineData(0)]
+    [InlineData(ConsultationRoom.MinimumFloor - 1)]
     [InlineData(-1)]
     [InlineData(-100)]
     public void Validate_ShouldHaveError_WhenConsultationRoomFloorIsZeroOrNegative(int floor)
@@ -355,7 +431,7 @@ public class CreateDoctorProfileCommandValidatorTests
     }
 
     [Theory]
-    [InlineData(9)]
+    [InlineData(ConsultationRoom.MaximumFloor + 1)]
     [InlineData(10)]
     [InlineData(100)]
     public void Validate_ShouldHaveError_WhenConsultationRoomFloorExceedsMaximum(int floor)

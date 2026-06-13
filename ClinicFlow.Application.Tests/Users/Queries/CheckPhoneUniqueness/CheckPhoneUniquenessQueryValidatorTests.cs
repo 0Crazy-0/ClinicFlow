@@ -1,5 +1,6 @@
 using ClinicFlow.Application.Users.Queries.CheckPhoneUniqueness;
 using ClinicFlow.Domain.Common;
+using ClinicFlow.Domain.ValueObjects;
 using FluentValidation.TestHelper;
 
 namespace ClinicFlow.Application.Tests.Users.Queries.CheckPhoneUniqueness;
@@ -37,5 +38,21 @@ public class CheckPhoneUniquenessQueryValidatorTests
         result
             .ShouldHaveValidationErrorFor(x => x.PhoneNumber)
             .WithErrorMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenPhoneNumberIsTooLong()
+    {
+        // Arrange
+        var phoneNumber = new string('1', PhoneNumber.MaximumLength + 1);
+        var query = new CheckPhoneUniquenessQuery(phoneNumber);
+
+        // Act
+        var result = _sut.TestValidate(query);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.PhoneNumber)
+            .WithErrorMessage(DomainErrors.Validation.ValueTooLong);
     }
 }
