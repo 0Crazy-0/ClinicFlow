@@ -5,6 +5,9 @@ namespace ClinicFlow.Domain.ValueObjects;
 
 public record PersonName
 {
+    public const int MinimumLength = 2;
+    public const int MaximumLength = 100;
+
     public string FullName { get; }
 
     private PersonName(string fullName)
@@ -19,8 +22,11 @@ public record PersonName
 
         var trimmed = fullName.Trim();
 
-        if (trimmed.Length < 2)
+        if (trimmed.Length < MinimumLength)
             throw new BusinessRuleValidationException(DomainErrors.Validation.ValueTooShort);
+
+        if (trimmed.Length > MaximumLength)
+            throw new BusinessRuleValidationException(DomainErrors.Validation.ValueTooLong);
 
         return new PersonName(trimmed);
     }

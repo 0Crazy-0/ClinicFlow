@@ -8,6 +8,9 @@ namespace ClinicFlow.Domain.ValueObjects;
 /// </summary>
 public record AgeEligibilityPolicy
 {
+    public const int MinimumAllowedAge = 0;
+    public const int MaximumAllowedAge = 120;
+
     private const int LegalAdultAge = 18;
 
     public int? MinimumAge { get; }
@@ -31,6 +34,12 @@ public record AgeEligibilityPolicy
         bool requiresLegalGuardian
     )
     {
+        if (minimumAge < MinimumAllowedAge || maximumAge < MinimumAllowedAge)
+            throw new DomainValidationException(DomainErrors.Validation.ValueCannotBeNegative);
+
+        if (minimumAge > MaximumAllowedAge || maximumAge > MaximumAllowedAge)
+            throw new DomainValidationException(DomainErrors.Validation.ValueExceedsMaximum);
+
         if (minimumAge.HasValue && maximumAge.HasValue && minimumAge.Value > maximumAge.Value)
             throw new DomainValidationException(DomainErrors.AppointmentType.InvalidAgeRange);
 
@@ -39,6 +48,12 @@ public record AgeEligibilityPolicy
 
     public void ValidatePatientEligibility(int patientAgeInYears, bool hasGuardianConsent = false)
     {
+        if (patientAgeInYears < MinimumAllowedAge)
+            throw new DomainValidationException(DomainErrors.Validation.ValueCannotBeNegative);
+
+        if (patientAgeInYears > MaximumAllowedAge)
+            throw new DomainValidationException(DomainErrors.Validation.ValueExceedsMaximum);
+
         if (MinimumAge.HasValue && patientAgeInYears < MinimumAge.Value)
             throw new DomainValidationException(DomainErrors.AppointmentType.MinimumAgeNotMet);
 

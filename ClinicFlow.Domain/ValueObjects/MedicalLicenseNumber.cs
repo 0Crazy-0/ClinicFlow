@@ -5,6 +5,9 @@ namespace ClinicFlow.Domain.ValueObjects;
 
 public record MedicalLicenseNumber
 {
+    public const int MinimumLength = 4;
+    public const int MaximumLength = 15;
+
     public string Value { get; }
 
     private MedicalLicenseNumber(string value)
@@ -19,8 +22,11 @@ public record MedicalLicenseNumber
 
         var trimmed = licenseNumber.Trim();
 
-        if (trimmed.Length < 4)
+        if (trimmed.Length < MinimumLength)
             throw new BusinessRuleValidationException(DomainErrors.Validation.ValueTooShort);
+
+        if (trimmed.Length > MaximumLength)
+            throw new BusinessRuleValidationException(DomainErrors.Validation.ValueTooLong);
 
         return new MedicalLicenseNumber(trimmed);
     }

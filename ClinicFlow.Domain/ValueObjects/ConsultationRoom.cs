@@ -5,6 +5,11 @@ namespace ClinicFlow.Domain.ValueObjects;
 
 public record ConsultationRoom
 {
+    public const int MinimumNumber = 1;
+    public const int MaximumNumber = 35;
+    public const int MinimumFloor = 1;
+    public const int MaximumFloor = 8;
+
     public int Number { get; }
 
     public string Name { get; }
@@ -20,14 +25,20 @@ public record ConsultationRoom
 
     public static ConsultationRoom Create(int number, string name, int floor)
     {
-        if (number <= 0)
+        if (number < MinimumNumber)
             throw new DomainValidationException(DomainErrors.Validation.ValueMustBePositive);
+
+        if (number > MaximumNumber)
+            throw new DomainValidationException(DomainErrors.Validation.ValueExceedsMaximum);
+
+        if (floor < MinimumFloor)
+            throw new DomainValidationException(DomainErrors.Validation.ValueMustBePositive);
+
+        if (floor > MaximumFloor)
+            throw new DomainValidationException(DomainErrors.Validation.ValueExceedsMaximum);
 
         if (string.IsNullOrWhiteSpace(name))
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-
-        if (floor <= 0)
-            throw new DomainValidationException(DomainErrors.Validation.ValueMustBePositive);
 
         return new ConsultationRoom(number, name.Trim(), floor);
     }
