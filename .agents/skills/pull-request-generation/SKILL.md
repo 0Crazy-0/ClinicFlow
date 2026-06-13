@@ -29,7 +29,7 @@ Use the following template:
 - [ ] Style
 
 ## How to test
-<!-- Steps to verify this works as expected -->
+<!-- List the specific test classes that cover these changes, not just "run dotnet test" -->
 
 ## Checklist
 - [ ] Code follows project standards
