@@ -14,12 +14,12 @@ public sealed class UserConfiguration : IEntityTypeConfiguration<User>
         builder
             .Property(u => u.Email)
             .HasConversion(email => email.Value, val => EmailAddress.Create(val))
-            .HasMaxLength(256);
+            .HasMaxLength(EmailAddress.MaximumLength);
 
         builder
             .Property(u => u.PhoneNumber)
             .HasConversion(phone => phone.Value, val => PhoneNumber.Create(val))
-            .HasMaxLength(50);
+            .HasMaxLength(PhoneNumber.MaximumLength);
 
         builder.HasIndex(u => u.Email).IsUnique();
     }
