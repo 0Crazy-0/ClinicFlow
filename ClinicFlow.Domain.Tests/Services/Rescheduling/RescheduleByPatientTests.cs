@@ -1,5 +1,6 @@
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
+using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Events.Appointments;
 using ClinicFlow.Domain.Exceptions.Appointments;
 using ClinicFlow.Domain.Exceptions.Base;
@@ -7,7 +8,6 @@ using ClinicFlow.Domain.Exceptions.Patients;
 using ClinicFlow.Domain.Exceptions.Scheduling;
 using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Args.Rescheduling;
-using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Services.Contexts;
 using ClinicFlow.Domain.Tests.Shared;
 using ClinicFlow.Domain.ValueObjects;
