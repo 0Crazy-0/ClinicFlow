@@ -38,6 +38,47 @@ public class PhoneNumberTests
     }
 
     [Fact]
+    public void Create_ShouldThrowException_WhenValueIsTooLong()
+    {
+        // Arrange
+        var value = new string('1', PhoneNumber.MaximumLength + 1);
+
+        // Act
+        var act = () => PhoneNumber.Create(value);
+
+        // Assert
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueTooLong);
+    }
+
+    [Fact]
+    public void Create_ShouldSucceed_WhenValueLengthEqualsMinimumLength()
+    {
+        // Arrange
+        var value = new string('1', PhoneNumber.MinimumLength);
+
+        // Act
+        var phone = PhoneNumber.Create(value);
+
+        // Assert
+        phone.Value.Should().Be(value);
+    }
+
+    [Fact]
+    public void Create_ShouldSucceed_WhenValueLengthEqualsMaximumLength()
+    {
+        // Arrange
+        var value = "+" + new string('1', PhoneNumber.MaximumLength - 1);
+
+        // Act
+        var phone = PhoneNumber.Create(value);
+
+        // Assert
+        phone.Value.Should().Be(value);
+    }
+
+    [Fact]
     public void Create_ShouldTrimWhitespace()
     {
         // Arrange

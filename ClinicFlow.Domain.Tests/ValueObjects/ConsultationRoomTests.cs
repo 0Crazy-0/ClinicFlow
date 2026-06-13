@@ -24,6 +24,21 @@ public class ConsultationRoomTests
         room.Floor.Should().Be(floor);
     }
 
+    [Fact]
+    public void Create_ShouldCreateConsultationRoom_WhenValuesAreAllowedBoundaries()
+    {
+        // Arrange
+        var room = ConsultationRoom.Create(
+            ConsultationRoom.MaximumNumber,
+            "Cardiology A",
+            ConsultationRoom.MaximumFloor
+        );
+
+        // Assert
+        room.Number.Should().Be(ConsultationRoom.MaximumNumber);
+        room.Floor.Should().Be(ConsultationRoom.MaximumFloor);
+    }
+
     [Theory]
     [InlineData(0)]
     [InlineData(-1)]
@@ -37,6 +52,21 @@ public class ConsultationRoomTests
         act.Should()
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.Validation.ValueMustBePositive);
+    }
+
+    [Theory]
+    [InlineData(36)]
+    [InlineData(50)]
+    [InlineData(100)]
+    public void Create_ShouldThrowException_WhenNumberExceedsMaximum(int number)
+    {
+        // Arrange & Act
+        var act = () => ConsultationRoom.Create(number, "Room A", 1);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueExceedsMaximum);
     }
 
     [Theory]
@@ -67,6 +97,21 @@ public class ConsultationRoomTests
         act.Should()
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.Validation.ValueMustBePositive);
+    }
+
+    [Theory]
+    [InlineData(9)]
+    [InlineData(10)]
+    [InlineData(100)]
+    public void Create_ShouldThrowException_WhenFloorExceedsMaximum(int floor)
+    {
+        // Arrange & Act
+        var act = () => ConsultationRoom.Create(1, "Room A", floor);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueExceedsMaximum);
     }
 
     [Fact]
