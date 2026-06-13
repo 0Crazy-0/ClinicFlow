@@ -407,7 +407,7 @@ public class ScheduleByPatientTests
             PatientPenalty.CreateAutomaticBlock(
                 target.Id,
                 "Reason",
-                _fakeTime.GetUtcNow().UtcDateTime.AddDays(5).Date,
+                BlockDuration.Minor,
                 _fakeTime.GetUtcNow().UtcDateTime
             ),
         };
