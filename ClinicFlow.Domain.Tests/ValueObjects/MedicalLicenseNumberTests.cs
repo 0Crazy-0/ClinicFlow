@@ -38,6 +38,34 @@ public class MedicalLicenseNumberTests
     }
 
     [Fact]
+    public void Create_ShouldThrowException_WhenValueIsTooLong()
+    {
+        // Arrange
+        var value = new string('A', MedicalLicenseNumber.MaximumLength + 1);
+
+        // Act
+        var act = () => MedicalLicenseNumber.Create(value);
+
+        // Assert
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueTooLong);
+    }
+
+    [Fact]
+    public void Create_ShouldSucceed_WhenValueLengthEqualsMaximumLength()
+    {
+        // Arrange
+        var value = new string('A', MedicalLicenseNumber.MaximumLength);
+
+        // Act
+        var license = MedicalLicenseNumber.Create(value);
+
+        // Assert
+        license.Value.Should().Be(value);
+    }
+
+    [Fact]
     public void Create_ShouldTrimWhitespace()
     {
         // Arrange

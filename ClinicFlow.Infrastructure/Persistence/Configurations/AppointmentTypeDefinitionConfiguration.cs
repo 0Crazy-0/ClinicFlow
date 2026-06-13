@@ -1,4 +1,5 @@
 using ClinicFlow.Domain.Entities;
+using ClinicFlow.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -10,6 +11,21 @@ public sealed class AppointmentTypeDefinitionConfiguration
     /// <inheritdoc />
     public void Configure(EntityTypeBuilder<AppointmentTypeDefinition> builder)
     {
+        builder.ToTable(
+            "AppointmentTypes",
+            table =>
+            {
+                table.HasCheckConstraint(
+                    "CK_AppointmentTypes_AgePolicyMinimumAge_Range",
+                    AgeRangeConstraint(ColumnNames.AppointmentTypeDefinition.AgePolicyMinimumAge)
+                );
+                table.HasCheckConstraint(
+                    "CK_AppointmentTypes_AgePolicyMaximumAge_Range",
+                    AgeRangeConstraint(ColumnNames.AppointmentTypeDefinition.AgePolicyMaximumAge)
+                );
+            }
+        );
+
         builder.Property(a => a.Category).HasConversion<string>();
         builder.OwnsOne(
             a => a.AgePolicy,
@@ -44,4 +60,7 @@ public sealed class AppointmentTypeDefinitionConfiguration
             .WithMany()
             .UsingEntity(j => j.ToTable("AppointmentTypeDefinitionRequiredTemplates"));
     }
+
+    private static string AgeRangeConstraint(string col) =>
+        $"\"{col}\" IS NULL OR \"{col}\" BETWEEN {AgeEligibilityPolicy.MinimumAllowedAge} AND {AgeEligibilityPolicy.MaximumAllowedAge}";
 }

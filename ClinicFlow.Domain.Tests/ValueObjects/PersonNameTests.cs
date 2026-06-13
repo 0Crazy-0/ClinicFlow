@@ -35,6 +35,34 @@ public class PersonNameTests
     }
 
     [Fact]
+    public void Create_ShouldThrowException_WhenNameIsTooLong()
+    {
+        // Arrange
+        var value = new string('A', PersonName.MaximumLength + 1);
+
+        // Act
+        var act = () => PersonName.Create(value);
+
+        // Assert
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueTooLong);
+    }
+
+    [Fact]
+    public void Create_ShouldSucceed_WhenNameLengthEqualsMaximumLength()
+    {
+        // Arrange
+        var value = new string('A', PersonName.MaximumLength);
+
+        // Act
+        var name = PersonName.Create(value);
+
+        // Assert
+        name.FullName.Should().Be(value);
+    }
+
+    [Fact]
     public void Create_ShouldTrimWhitespace()
     {
         // Arrange

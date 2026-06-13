@@ -1,5 +1,6 @@
 using ClinicFlow.Application.Patients.Commands.CreateCompletePatientProfile;
 using ClinicFlow.Domain.Common;
+using ClinicFlow.Domain.ValueObjects;
 using FluentValidation.TestHelper;
 using Microsoft.Extensions.Time.Testing;
 
@@ -116,6 +117,31 @@ public class CreateCompletePatientProfileCommandValidatorTests
             .WithErrorMessage(DomainErrors.Validation.ValueTooShort);
     }
 
+    [Fact]
+    public void Validate_ShouldHaveError_WhenFirstNameIsTooLong()
+    {
+        // Arrange
+        var command = new CreateCompletePatientProfileCommand(
+            Guid.NewGuid(),
+            new string('A', PersonName.MaximumLength + 1),
+            "Doe",
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30),
+            "O+",
+            "Peanut allergy",
+            "Asthma",
+            "Jane Doe",
+            "555-0199"
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.FirstName)
+            .WithErrorMessage(DomainErrors.Validation.ValueTooLong);
+    }
+
     [Theory]
     [InlineData(null)]
     [InlineData("")]
@@ -167,6 +193,31 @@ public class CreateCompletePatientProfileCommandValidatorTests
         result
             .ShouldHaveValidationErrorFor(x => x.LastName)
             .WithErrorMessage(DomainErrors.Validation.ValueTooShort);
+    }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenLastNameIsTooLong()
+    {
+        // Arrange
+        var command = new CreateCompletePatientProfileCommand(
+            Guid.NewGuid(),
+            "John",
+            new string('A', PersonName.MaximumLength + 1),
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30),
+            "O+",
+            "Peanut allergy",
+            "Asthma",
+            "Jane Doe",
+            "555-0199"
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.LastName)
+            .WithErrorMessage(DomainErrors.Validation.ValueTooLong);
     }
 
     [Fact]
@@ -250,6 +301,56 @@ public class CreateCompletePatientProfileCommandValidatorTests
             .WithErrorMessage(DomainErrors.Validation.ValueRequired);
     }
 
+    [Fact]
+    public void Validate_ShouldHaveError_WhenEmergencyContactNameIsTooShort()
+    {
+        // Arrange
+        var command = new CreateCompletePatientProfileCommand(
+            Guid.NewGuid(),
+            "John",
+            "Doe",
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30),
+            "O+",
+            "Peanut allergy",
+            "Asthma",
+            new string('A', PersonName.MinimumLength - 1),
+            "555-0199"
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.EmergencyContactName)
+            .WithErrorMessage(DomainErrors.Validation.ValueTooShort);
+    }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenEmergencyContactNameIsTooLong()
+    {
+        // Arrange
+        var command = new CreateCompletePatientProfileCommand(
+            Guid.NewGuid(),
+            "John",
+            "Doe",
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30),
+            "O+",
+            "Peanut allergy",
+            "Asthma",
+            new string('A', PersonName.MaximumLength + 1),
+            "555-0199"
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.EmergencyContactName)
+            .WithErrorMessage(DomainErrors.Validation.ValueTooLong);
+    }
+
     [Theory]
     [InlineData(null)]
     [InlineData("")]
@@ -276,5 +377,55 @@ public class CreateCompletePatientProfileCommandValidatorTests
         result
             .ShouldHaveValidationErrorFor(x => x.EmergencyContactPhone)
             .WithErrorMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenEmergencyContactPhoneIsTooShort()
+    {
+        // Arrange
+        var command = new CreateCompletePatientProfileCommand(
+            Guid.NewGuid(),
+            "John",
+            "Doe",
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30),
+            "O+",
+            "Peanut allergy",
+            "Asthma",
+            "Jane Doe",
+            new string('1', PhoneNumber.MinimumLength - 1)
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.EmergencyContactPhone)
+            .WithErrorMessage(DomainErrors.Validation.ValueTooShort);
+    }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenEmergencyContactPhoneIsTooLong()
+    {
+        // Arrange
+        var command = new CreateCompletePatientProfileCommand(
+            Guid.NewGuid(),
+            "John",
+            "Doe",
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30),
+            "O+",
+            "Peanut allergy",
+            "Asthma",
+            "Jane Doe",
+            new string('1', PhoneNumber.MaximumLength + 1)
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.EmergencyContactPhone)
+            .WithErrorMessage(DomainErrors.Validation.ValueTooLong);
     }
 }

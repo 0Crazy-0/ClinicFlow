@@ -6,6 +6,9 @@ namespace ClinicFlow.Domain.ValueObjects;
 
 public partial record PhoneNumber
 {
+    public const int MinimumLength = 7;
+    public const int MaximumLength = 20;
+
     private const string PhoneRegexPattern = @"^\+?(\d[\d-. ]+)?(\([\d-. ]+\))?[\d-. ]+\d$";
 
     [GeneratedRegex(PhoneRegexPattern)]
@@ -25,7 +28,10 @@ public partial record PhoneNumber
 
         var trimmed = number.Trim();
 
-        if (!PhoneRegex().IsMatch(trimmed) || trimmed.Length < 7)
+        if (trimmed.Length > MaximumLength)
+            throw new BusinessRuleValidationException(DomainErrors.Validation.ValueTooLong);
+
+        if (!PhoneRegex().IsMatch(trimmed) || trimmed.Length < MinimumLength)
             throw new BusinessRuleValidationException(DomainErrors.Validation.InvalidPhoneFormat);
 
         return new PhoneNumber(trimmed);

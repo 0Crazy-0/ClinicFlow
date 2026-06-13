@@ -10,15 +10,38 @@ public sealed class DoctorConfiguration : IEntityTypeConfiguration<Doctor>
     /// <inheritdoc />
     public void Configure(EntityTypeBuilder<Doctor> builder)
     {
+        builder.ToTable(
+            "Doctors",
+            table =>
+            {
+                table.HasCheckConstraint(
+                    "CK_Doctors_ConsultationRoomNumber_Range",
+                    BetweenConstraint(
+                        ColumnNames.Doctor.ConsultationRoomNumber,
+                        ConsultationRoom.MinimumNumber,
+                        ConsultationRoom.MaximumNumber
+                    )
+                );
+                table.HasCheckConstraint(
+                    "CK_Doctors_ConsultationRoomFloor_Range",
+                    BetweenConstraint(
+                        ColumnNames.Doctor.ConsultationRoomFloor,
+                        ConsultationRoom.MinimumFloor,
+                        ConsultationRoom.MaximumFloor
+                    )
+                );
+            }
+        );
+
         builder
             .Property(d => d.FullName)
             .HasConversion(name => name.FullName, val => PersonName.Create(val))
-            .HasMaxLength(200);
+            .HasMaxLength(PersonName.MaximumLength);
 
         builder
             .Property(d => d.LicenseNumber)
             .HasConversion(lic => lic.Value, val => MedicalLicenseNumber.Create(val))
-            .HasMaxLength(50);
+            .HasMaxLength(MedicalLicenseNumber.MaximumLength);
 
         builder.OwnsOne(
             d => d.ConsultationRoom,
@@ -43,4 +66,7 @@ public sealed class DoctorConfiguration : IEntityTypeConfiguration<Doctor>
             .HasForeignKey(d => d.MedicalSpecialtyId)
             .OnDelete(DeleteBehavior.Restrict);
     }
+
+    private static string BetweenConstraint(string col, int min, int max) =>
+        $"\"{col}\" BETWEEN {min} AND {max}";
 }

@@ -1,4 +1,5 @@
 using ClinicFlow.Domain.Common;
+using ClinicFlow.Domain.ValueObjects;
 using FluentValidation;
 
 namespace ClinicFlow.Application.Users.Queries.CheckEmailUniqueness;
@@ -12,5 +13,8 @@ public class CheckEmailUniquenessQueryValidator : AbstractValidator<CheckEmailUn
             .EmailAddress()
             .When(x => !string.IsNullOrWhiteSpace(x.Email))
             .WithMessage(DomainErrors.Validation.InvalidValue);
+        RuleFor(x => x.Email)
+            .MaximumLength(EmailAddress.MaximumLength)
+            .WithMessage(DomainErrors.Validation.ValueTooLong);
     }
 }

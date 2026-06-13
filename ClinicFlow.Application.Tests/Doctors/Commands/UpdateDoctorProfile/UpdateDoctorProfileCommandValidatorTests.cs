@@ -1,5 +1,6 @@
 using ClinicFlow.Application.Doctors.Commands.UpdateDoctorProfile;
 using ClinicFlow.Domain.Common;
+using ClinicFlow.Domain.ValueObjects;
 using FluentValidation.TestHelper;
 
 namespace ClinicFlow.Application.Tests.Doctors.Commands.UpdateDoctorProfile;
@@ -61,7 +62,7 @@ public class UpdateDoctorProfileCommandValidatorTests
     }
 
     [Theory]
-    [InlineData(0)]
+    [InlineData(ConsultationRoom.MinimumNumber - 1)]
     [InlineData(-1)]
     [InlineData(-100)]
     public void Validate_ShouldHaveError_WhenConsultationRoomNumberIsZeroOrNegative(int roomNumber)
@@ -85,7 +86,7 @@ public class UpdateDoctorProfileCommandValidatorTests
     }
 
     [Theory]
-    [InlineData(36)]
+    [InlineData(ConsultationRoom.MaximumNumber + 1)]
     [InlineData(50)]
     [InlineData(100)]
     public void Validate_ShouldHaveError_WhenConsultationRoomNumberExceedsMaximum(int roomNumber)
@@ -127,7 +128,7 @@ public class UpdateDoctorProfileCommandValidatorTests
     }
 
     [Theory]
-    [InlineData(0)]
+    [InlineData(ConsultationRoom.MinimumFloor - 1)]
     [InlineData(-1)]
     [InlineData(-100)]
     public void Validate_ShouldHaveError_WhenConsultationRoomFloorIsZeroOrNegative(int floor)
@@ -151,7 +152,7 @@ public class UpdateDoctorProfileCommandValidatorTests
     }
 
     [Theory]
-    [InlineData(9)]
+    [InlineData(ConsultationRoom.MaximumFloor + 1)]
     [InlineData(10)]
     [InlineData(100)]
     public void Validate_ShouldHaveError_WhenConsultationRoomFloorExceedsMaximum(int floor)

@@ -40,6 +40,36 @@ public class EmailAddressTests
     }
 
     [Fact]
+    public void Create_ShouldThrowException_WhenValueIsTooLong()
+    {
+        // Arrange
+        var domain = "@example.com";
+        var value = new string('a', EmailAddress.MaximumLength - domain.Length + 1) + domain;
+
+        // Act
+        var act = () => EmailAddress.Create(value);
+
+        // Assert
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueTooLong);
+    }
+
+    [Fact]
+    public void Create_ShouldSucceed_WhenValueLengthEqualsMaximumLength()
+    {
+        // Arrange
+        var domain = "@example.com";
+        var value = new string('a', EmailAddress.MaximumLength - domain.Length) + domain;
+
+        // Act
+        var email = EmailAddress.Create(value);
+
+        // Assert
+        email.Value.Should().Be(value);
+    }
+
+    [Fact]
     public void Create_ShouldNormalize_ToLowerInvariant()
     {
         // Arrange

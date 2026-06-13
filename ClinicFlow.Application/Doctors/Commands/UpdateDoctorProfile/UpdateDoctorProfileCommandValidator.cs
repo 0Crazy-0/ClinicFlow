@@ -1,4 +1,5 @@
 using ClinicFlow.Domain.Common;
+using ClinicFlow.Domain.ValueObjects;
 using FluentValidation;
 
 namespace ClinicFlow.Application.Doctors.Commands.UpdateDoctorProfile;
@@ -9,17 +10,17 @@ public class UpdateDoctorProfileCommandValidator : AbstractValidator<UpdateDocto
     {
         RuleFor(x => x.DoctorId).NotEmpty().WithMessage(DomainErrors.Validation.InvalidValue);
         RuleFor(x => x.ConsultationRoomNumber)
-            .GreaterThan(0)
+            .GreaterThanOrEqualTo(ConsultationRoom.MinimumNumber)
             .WithMessage(DomainErrors.Validation.ValueMustBePositive)
-            .LessThanOrEqualTo(35)
+            .LessThanOrEqualTo(ConsultationRoom.MaximumNumber)
             .WithMessage(DomainErrors.Validation.ValueExceedsMaximum);
         RuleFor(x => x.ConsultationRoomName)
             .NotEmpty()
             .WithMessage(DomainErrors.Validation.ValueRequired);
         RuleFor(x => x.ConsultationRoomFloor)
-            .GreaterThan(0)
+            .GreaterThanOrEqualTo(ConsultationRoom.MinimumFloor)
             .WithMessage(DomainErrors.Validation.ValueMustBePositive)
-            .LessThanOrEqualTo(8)
+            .LessThanOrEqualTo(ConsultationRoom.MaximumFloor)
             .WithMessage(DomainErrors.Validation.ValueExceedsMaximum);
     }
 }

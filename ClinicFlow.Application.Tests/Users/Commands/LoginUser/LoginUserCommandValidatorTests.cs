@@ -1,5 +1,6 @@
 using ClinicFlow.Application.Users.Commands.LoginUser;
 using ClinicFlow.Domain.Common;
+using ClinicFlow.Domain.ValueObjects;
 using FluentValidation.TestHelper;
 
 namespace ClinicFlow.Application.Tests.Users.Commands.LoginUser;
@@ -52,6 +53,23 @@ public class LoginUserCommandValidatorTests
         result
             .ShouldHaveValidationErrorFor(x => x.Email)
             .WithErrorMessage(DomainErrors.Validation.InvalidValue);
+    }
+
+    [Fact]
+    public void Validate_ShouldFail_WhenEmailIsTooLong()
+    {
+        // Arrange
+        var domain = "@example.com";
+        var email = new string('a', EmailAddress.MaximumLength - domain.Length + 1) + domain;
+        var command = new LoginUserCommand(email, "password123");
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.Email)
+            .WithErrorMessage(DomainErrors.Validation.ValueTooLong);
     }
 
     [Theory]

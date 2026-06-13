@@ -13,7 +13,7 @@ public sealed class PatientConfiguration : IEntityTypeConfiguration<Patient>
         builder
             .Property(p => p.FullName)
             .HasConversion(name => name.FullName, val => PersonName.Create(val))
-            .HasMaxLength(200);
+            .HasMaxLength(PersonName.MaximumLength);
 
         builder.Property(p => p.RelationshipToUser).HasConversion<string>();
         builder
@@ -28,11 +28,13 @@ public sealed class PatientConfiguration : IEntityTypeConfiguration<Patient>
                 contact
                     .Property(c => c.Name)
                     .HasConversion(name => name.FullName, val => PersonName.Create(val))
-                    .HasColumnName(ColumnNames.Patient.EmergencyContactName);
+                    .HasColumnName(ColumnNames.Patient.EmergencyContactName)
+                    .HasMaxLength(PersonName.MaximumLength);
                 contact
                     .Property(c => c.PhoneNumber)
                     .HasConversion(phone => phone.Value, val => PhoneNumber.Create(val))
-                    .HasColumnName(ColumnNames.Patient.EmergencyContactPhone);
+                    .HasColumnName(ColumnNames.Patient.EmergencyContactPhone)
+                    .HasMaxLength(PhoneNumber.MaximumLength);
             }
         );
 
