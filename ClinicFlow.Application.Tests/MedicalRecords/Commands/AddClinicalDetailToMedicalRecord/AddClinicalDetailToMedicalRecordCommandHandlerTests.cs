@@ -1,3 +1,4 @@
+using AwesomeAssertions;
 using ClinicFlow.Application.MedicalRecords.Commands.AddClinicalDetailToMedicalRecord;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
@@ -6,7 +7,6 @@ using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Policies;
-using FluentAssertions;
 using Moq;
 
 namespace ClinicFlow.Application.Tests.MedicalRecords.Commands.AddClinicalDetailToMedicalRecord;

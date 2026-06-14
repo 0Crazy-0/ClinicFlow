@@ -1,3 +1,4 @@
+using AwesomeAssertions;
 using ClinicFlow.Application.MedicalRecords.Commands.CompleteMedicalEncounter;
 using ClinicFlow.Application.Tests.Shared;
 using ClinicFlow.Domain.Common;
@@ -9,7 +10,6 @@ using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Policies;
 using ClinicFlow.Domain.ValueObjects;
-using FluentAssertions;
 using Microsoft.Extensions.Time.Testing;
 using Moq;
 

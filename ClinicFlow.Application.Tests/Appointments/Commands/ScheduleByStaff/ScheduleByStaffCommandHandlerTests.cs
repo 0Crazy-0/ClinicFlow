@@ -1,3 +1,4 @@
+using AwesomeAssertions;
 using ClinicFlow.Application.Appointments.Commands.ScheduleByStaff;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
@@ -7,7 +8,6 @@ using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.Interfaces.Services;
 using ClinicFlow.Domain.ValueObjects;
-using FluentAssertions;
 using Microsoft.Extensions.Time.Testing;
 using Moq;
 
@@ -74,7 +74,8 @@ public class ScheduleByStaffCommandHandlerTests
         );
 
         var doctor = Doctor.Create(
-            Guid.NewGuid(), PersonName.Create("Test Doctor"),
+            Guid.NewGuid(),
+            PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("LIC-123"),
             Guid.NewGuid(),
             "Bio",
@@ -174,7 +175,8 @@ public class ScheduleByStaffCommandHandlerTests
         );
 
         var doctor = Doctor.Create(
-            Guid.NewGuid(), PersonName.Create("Test Doctor"),
+            Guid.NewGuid(),
+            PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("LIC-123"),
             Guid.NewGuid(),
             "Bio",
@@ -329,7 +331,8 @@ public class ScheduleByStaffCommandHandlerTests
         var targetPatient = CreateTargetPatient(Guid.NewGuid(), _fakeTime.GetUtcNow().UtcDateTime);
 
         var doctor = Doctor.Create(
-            Guid.NewGuid(), PersonName.Create("Test Doctor"),
+            Guid.NewGuid(),
+            PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("LIC-123"),
             Guid.NewGuid(),
             "Bio",

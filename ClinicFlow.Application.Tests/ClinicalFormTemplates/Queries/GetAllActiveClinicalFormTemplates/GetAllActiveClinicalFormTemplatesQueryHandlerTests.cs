@@ -1,7 +1,7 @@
+using AwesomeAssertions;
 using ClinicFlow.Application.ClinicalFormTemplates.Queries.GetAllActiveClinicalFormTemplates;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Interfaces.Repositories;
-using FluentAssertions;
 using Moq;
 
 namespace ClinicFlow.Application.Tests.ClinicalFormTemplates.Queries.GetAllActiveClinicalFormTemplates;

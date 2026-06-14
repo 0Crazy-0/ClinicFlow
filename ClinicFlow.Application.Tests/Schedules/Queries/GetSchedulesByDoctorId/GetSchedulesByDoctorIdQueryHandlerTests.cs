@@ -1,8 +1,8 @@
+using AwesomeAssertions;
 using ClinicFlow.Application.Schedules.Queries.GetSchedulesByDoctorId;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.ValueObjects;
-using FluentAssertions;
 using Moq;
 
 namespace ClinicFlow.Application.Tests.Schedules.Queries.GetSchedulesByDoctorId;

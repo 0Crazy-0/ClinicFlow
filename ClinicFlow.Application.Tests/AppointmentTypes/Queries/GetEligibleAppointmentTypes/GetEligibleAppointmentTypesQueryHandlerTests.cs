@@ -1,9 +1,9 @@
+using AwesomeAssertions;
 using ClinicFlow.Application.AppointmentTypes.Queries.GetEligibleAppointmentTypes;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.ValueObjects;
-using FluentAssertions;
 using Moq;
 
 namespace ClinicFlow.Application.Tests.AppointmentTypes.Queries.GetEligibleAppointmentTypes;

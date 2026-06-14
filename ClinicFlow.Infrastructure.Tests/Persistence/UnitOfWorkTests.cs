@@ -1,10 +1,10 @@
+using AwesomeAssertions;
 using ClinicFlow.Application.Common.Models;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.ValueObjects;
 using ClinicFlow.Infrastructure.Persistence;
-using FluentAssertions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Moq;

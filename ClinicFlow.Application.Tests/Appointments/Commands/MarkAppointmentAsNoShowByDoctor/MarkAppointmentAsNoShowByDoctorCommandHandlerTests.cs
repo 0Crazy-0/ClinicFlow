@@ -1,3 +1,4 @@
+using AwesomeAssertions;
 using ClinicFlow.Application.Appointments.Commands.MarkAppointmentAsNoShowByDoctor;
 using ClinicFlow.Application.Tests.Shared;
 using ClinicFlow.Domain.Common;
@@ -7,7 +8,6 @@ using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.ValueObjects;
-using FluentAssertions;
 using Microsoft.Extensions.Time.Testing;
 using Moq;
 
@@ -42,7 +42,8 @@ public class MarkAppointmentAsNoShowByDoctorCommandHandlerTests
         var doctorId = Guid.NewGuid();
         var appointment = CreateAppointment(doctorId);
         var doctor = Doctor.Create(
-            command.InitiatorUserId, PersonName.Create("Test Doctor"),
+            command.InitiatorUserId,
+            PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("12345"),
             Guid.NewGuid(),
             "Room 1",

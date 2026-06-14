@@ -1,8 +1,8 @@
+using AwesomeAssertions;
 using ClinicFlow.Application.Doctors.Commands.CreateDoctorProfile;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
-using FluentAssertions;
 using Moq;
 
 namespace ClinicFlow.Application.Tests.Doctors.Commands.CreateDoctorProfile;

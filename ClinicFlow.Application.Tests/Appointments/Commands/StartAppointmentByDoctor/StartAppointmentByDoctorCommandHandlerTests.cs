@@ -1,3 +1,4 @@
+using AwesomeAssertions;
 using ClinicFlow.Application.Appointments.Commands.StartAppointmentByDoctor;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
@@ -6,7 +7,6 @@ using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.ValueObjects;
-using FluentAssertions;
 using Microsoft.Extensions.Time.Testing;
 using Moq;
 
@@ -37,7 +37,8 @@ public class StartAppointmentByDoctorCommandHandlerTests
         var initiatorUserId = Guid.NewGuid();
         var command = new StartAppointmentByDoctorCommand(Guid.NewGuid(), initiatorUserId);
         var doctor = Doctor.Create(
-            initiatorUserId, PersonName.Create("Test Doctor"),
+            initiatorUserId,
+            PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("12345"),
             Guid.NewGuid(),
             "555-0000",

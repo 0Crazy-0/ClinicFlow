@@ -1,8 +1,8 @@
+using AwesomeAssertions;
 using ClinicFlow.Application.Penalties.Queries.GetActiveWarnings;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Interfaces.Repositories;
-using FluentAssertions;
 using Moq;
 
 namespace ClinicFlow.Application.Tests.Penalties.Queries.GetActiveWarnings;

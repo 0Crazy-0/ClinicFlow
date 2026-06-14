@@ -1,10 +1,10 @@
+using AwesomeAssertions;
 using ClinicFlow.Application.MedicalRecords.Queries.GetMedicalRecordById;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Entities.ClinicalDetails;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces.Repositories;
-using FluentAssertions;
 using Moq;
 
 namespace ClinicFlow.Application.Tests.MedicalRecords.Queries.GetMedicalRecordById;

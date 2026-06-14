@@ -1,3 +1,4 @@
+using AwesomeAssertions;
 using ClinicFlow.Application.Appointments.Commands.ReassignAppointment;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
@@ -7,7 +8,6 @@ using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.ValueObjects;
-using FluentAssertions;
 using Microsoft.Extensions.Time.Testing;
 using Moq;
 
@@ -43,7 +43,8 @@ public class ReassignAppointmentCommandHandlerTests
         // Arrange
         var appointment = CreateDisplacedAppointment();
         var newDoctor = Doctor.Create(
-            Guid.NewGuid(), PersonName.Create("Test Doctor"),
+            Guid.NewGuid(),
+            PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("DOC123"),
             Guid.NewGuid(),
             "Specialist",

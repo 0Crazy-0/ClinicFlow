@@ -1,8 +1,8 @@
+using AwesomeAssertions;
 using ClinicFlow.Application.Penalties.Queries.GetPenaltiesByPatientId;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Interfaces.Repositories;
-using FluentAssertions;
 using Microsoft.Extensions.Time.Testing;
 using Moq;
 

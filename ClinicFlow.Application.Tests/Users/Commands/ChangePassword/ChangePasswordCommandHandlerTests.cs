@@ -1,3 +1,4 @@
+using AwesomeAssertions;
 using ClinicFlow.Application.Users.Commands.ChangePassword;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
@@ -7,7 +8,6 @@ using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.Interfaces.Services;
 using ClinicFlow.Domain.ValueObjects;
-using FluentAssertions;
 using Moq;
 
 namespace ClinicFlow.Application.Tests.Users.Commands.ChangePassword;

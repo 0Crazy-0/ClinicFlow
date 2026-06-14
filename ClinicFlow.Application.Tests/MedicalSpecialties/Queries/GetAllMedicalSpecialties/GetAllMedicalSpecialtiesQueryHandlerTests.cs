@@ -1,7 +1,7 @@
+using AwesomeAssertions;
 using ClinicFlow.Application.MedicalSpecialties.Queries.GetAllMedicalSpecialties;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Interfaces.Repositories;
-using FluentAssertions;
 using Moq;
 
 namespace ClinicFlow.Application.Tests.MedicalSpecialties.Queries.GetAllMedicalSpecialties;
