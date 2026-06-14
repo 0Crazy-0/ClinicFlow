@@ -30,7 +30,6 @@ public class GetUserByIdQueryHandlerTests
             PhoneNumber.Create("555-1234"),
             UserRole.Patient
         );
-        ;
 
         _userRepositoryMock
             .Setup(x => x.GetByIdAsync(user.Id, It.IsAny<CancellationToken>()))
