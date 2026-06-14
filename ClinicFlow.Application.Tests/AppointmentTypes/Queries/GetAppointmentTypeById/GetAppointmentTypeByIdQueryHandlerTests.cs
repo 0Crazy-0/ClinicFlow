@@ -1,10 +1,10 @@
+using AwesomeAssertions;
 using ClinicFlow.Application.AppointmentTypes.Queries.GetAppointmentTypeById;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces.Repositories;
-using FluentAssertions;
 using Moq;
 
 namespace ClinicFlow.Application.Tests.AppointmentTypes.Queries.GetAppointmentTypeById;

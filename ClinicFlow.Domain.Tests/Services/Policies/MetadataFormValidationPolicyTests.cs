@@ -1,9 +1,9 @@
+using AwesomeAssertions;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Entities.ClinicalDetails;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Services.Policies;
-using FluentAssertions;
 using Moq;
 
 namespace ClinicFlow.Domain.Tests.Services.Policies;

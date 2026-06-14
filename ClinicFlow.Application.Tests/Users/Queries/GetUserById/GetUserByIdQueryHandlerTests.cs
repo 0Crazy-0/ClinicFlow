@@ -1,3 +1,4 @@
+using AwesomeAssertions;
 using ClinicFlow.Application.Users.Queries.GetUserById;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
@@ -5,7 +6,6 @@ using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.ValueObjects;
-using FluentAssertions;
 using Moq;
 
 namespace ClinicFlow.Application.Tests.Users.Queries.GetUserById;

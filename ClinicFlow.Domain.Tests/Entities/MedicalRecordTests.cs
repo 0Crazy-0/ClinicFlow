@@ -1,8 +1,8 @@
+using AwesomeAssertions;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Entities.ClinicalDetails;
 using ClinicFlow.Domain.Exceptions.Base;
-using FluentAssertions;
 
 namespace ClinicFlow.Domain.Tests.Entities;
 

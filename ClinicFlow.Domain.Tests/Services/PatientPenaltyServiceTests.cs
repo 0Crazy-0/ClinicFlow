@@ -1,8 +1,8 @@
+using AwesomeAssertions;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Services;
-using FluentAssertions;
 using Microsoft.Extensions.Time.Testing;
 
 namespace ClinicFlow.Domain.Tests.Services;

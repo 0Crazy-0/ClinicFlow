@@ -1,8 +1,8 @@
+using AwesomeAssertions;
 using ClinicFlow.Application.MedicalRecords.Queries.GetMedicalRecordsByDoctorId;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Entities.ClinicalDetails;
 using ClinicFlow.Domain.Interfaces.Repositories;
-using FluentAssertions;
 using Moq;
 
 namespace ClinicFlow.Application.Tests.MedicalRecords.Queries.GetMedicalRecordsByDoctorId;

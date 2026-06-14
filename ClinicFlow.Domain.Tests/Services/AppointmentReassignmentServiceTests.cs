@@ -1,3 +1,4 @@
+using AwesomeAssertions;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Events.Appointments;
@@ -8,7 +9,6 @@ using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Args.Reassignment;
 using ClinicFlow.Domain.Services.Contexts;
 using ClinicFlow.Domain.ValueObjects;
-using FluentAssertions;
 using Microsoft.Extensions.Time.Testing;
 
 namespace ClinicFlow.Domain.Tests.Services;

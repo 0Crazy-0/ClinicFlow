@@ -1,3 +1,4 @@
+using AwesomeAssertions;
 using ClinicFlow.Application.Appointments.Commands.RescheduleByPatient;
 using ClinicFlow.Application.Tests.Shared;
 using ClinicFlow.Domain.Common;
@@ -8,7 +9,6 @@ using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.Interfaces.Services;
 using ClinicFlow.Domain.ValueObjects;
-using FluentAssertions;
 using Microsoft.Extensions.Time.Testing;
 using Moq;
 

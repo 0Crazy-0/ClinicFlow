@@ -1,3 +1,4 @@
+using AwesomeAssertions;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
@@ -5,7 +6,6 @@ using ClinicFlow.Domain.Events.Patients;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Exceptions.Patients;
 using ClinicFlow.Domain.ValueObjects;
-using FluentAssertions;
 using Microsoft.Extensions.Time.Testing;
 
 namespace ClinicFlow.Domain.Tests.Entities;

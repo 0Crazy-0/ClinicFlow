@@ -1,3 +1,4 @@
+using AwesomeAssertions;
 using ClinicFlow.Application.Appointments.Commands.CancelAppointmentByDoctor;
 using ClinicFlow.Application.Tests.Shared;
 using ClinicFlow.Domain.Common;
@@ -7,7 +8,6 @@ using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.ValueObjects;
-using FluentAssertions;
 using Microsoft.Extensions.Time.Testing;
 using Moq;
 
@@ -50,7 +50,8 @@ public class CancelAppointmentByDoctorCommandHandlerTests
             TimeRange.Create(new TimeSpan(10, 0, 0), new TimeSpan(11, 0, 0))
         );
         var doctor = Doctor.Create(
-            command.InitiatorUserId, PersonName.Create("Test Doctor"),
+            command.InitiatorUserId,
+            PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("1234567"),
             Guid.NewGuid(),
             "555-1234",

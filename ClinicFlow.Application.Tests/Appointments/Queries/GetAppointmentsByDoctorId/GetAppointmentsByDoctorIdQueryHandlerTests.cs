@@ -1,8 +1,8 @@
+using AwesomeAssertions;
 using ClinicFlow.Application.Appointments.Queries.GetAppointmentsByDoctorId;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.ValueObjects;
-using FluentAssertions;
 using Microsoft.Extensions.Time.Testing;
 using Moq;
 

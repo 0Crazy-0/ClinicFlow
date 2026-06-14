@@ -1,7 +1,7 @@
+using AwesomeAssertions;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Exceptions.Scheduling;
 using ClinicFlow.Domain.ValueObjects;
-using FluentAssertions;
 
 namespace ClinicFlow.Domain.Tests.ValueObjects;
 

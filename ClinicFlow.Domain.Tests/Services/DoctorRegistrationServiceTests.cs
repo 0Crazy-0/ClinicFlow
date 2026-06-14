@@ -1,3 +1,4 @@
+using AwesomeAssertions;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Exceptions.Base;
@@ -5,7 +6,6 @@ using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Args.Registration;
 using ClinicFlow.Domain.Services.Contexts;
 using ClinicFlow.Domain.ValueObjects;
-using FluentAssertions;
 
 namespace ClinicFlow.Domain.Tests.Services;
 

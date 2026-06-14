@@ -1,6 +1,6 @@
+using AwesomeAssertions;
 using ClinicFlow.Application.Schedules.Commands.SetupWeeklySchedule;
 using ClinicFlow.Domain.Common;
-using FluentAssertions;
 using FluentValidation.TestHelper;
 
 namespace ClinicFlow.Application.Tests.Schedules.Commands.SetupWeeklySchedule;

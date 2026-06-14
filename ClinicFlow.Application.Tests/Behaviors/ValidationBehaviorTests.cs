@@ -1,5 +1,5 @@
+using AwesomeAssertions;
 using ClinicFlow.Application.Behaviors;
-using FluentAssertions;
 using FluentValidation;
 using FluentValidation.Results;
 using MediatR;

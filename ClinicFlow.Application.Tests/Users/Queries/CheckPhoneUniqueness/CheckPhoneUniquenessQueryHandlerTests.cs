@@ -1,6 +1,6 @@
+using AwesomeAssertions;
 using ClinicFlow.Application.Users.Queries.CheckPhoneUniqueness;
 using ClinicFlow.Domain.Interfaces.Repositories;
-using FluentAssertions;
 using Moq;
 
 namespace ClinicFlow.Application.Tests.Users.Queries.CheckPhoneUniqueness;

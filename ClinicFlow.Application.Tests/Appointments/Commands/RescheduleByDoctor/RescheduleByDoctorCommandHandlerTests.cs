@@ -1,3 +1,4 @@
+using AwesomeAssertions;
 using ClinicFlow.Application.Appointments.Commands.RescheduleByDoctor;
 using ClinicFlow.Application.Tests.Shared;
 using ClinicFlow.Domain.Common;
@@ -8,7 +9,6 @@ using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.Interfaces.Services;
 using ClinicFlow.Domain.ValueObjects;
-using FluentAssertions;
 using Microsoft.Extensions.Time.Testing;
 using Moq;
 
@@ -276,7 +276,8 @@ public class RescheduleByDoctorCommandHandlerTests
     private static Doctor CreateDoctor(Guid id, Guid userId)
     {
         var doctor = Doctor.Create(
-            userId, PersonName.Create("Test Doctor"),
+            userId,
+            PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("1234567"),
             Guid.NewGuid(),
             "555-1234",

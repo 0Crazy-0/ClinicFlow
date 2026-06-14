@@ -1,3 +1,4 @@
+using AwesomeAssertions;
 using ClinicFlow.Application.Schedules.Commands.CreateSchedule;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
@@ -5,7 +6,6 @@ using ClinicFlow.Domain.Exceptions.Scheduling;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.ValueObjects;
-using FluentAssertions;
 using Moq;
 
 namespace ClinicFlow.Application.Tests.Schedules.Commands.CreateSchedule;
