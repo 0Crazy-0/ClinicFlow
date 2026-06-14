@@ -11,7 +11,7 @@
 - [ ] Style
 
 ## How to test
-<!-- List the specific test classes that cover these changes, not just "run dotnet test" -->
+<!-- Steps to verify this works as expected -->
 
 ## Checklist
 - [ ] Code follows project standards
