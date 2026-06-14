@@ -3,7 +3,8 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.Appointments.Commands.RescheduleByPatient;
 
-public class RescheduleByPatientCommandValidator : AbstractValidator<RescheduleByPatientCommand>
+public sealed class RescheduleByPatientCommandValidator
+    : AbstractValidator<RescheduleByPatientCommand>
 {
     public RescheduleByPatientCommandValidator(TimeProvider timeProvider)
     {

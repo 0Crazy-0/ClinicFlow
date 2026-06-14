@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.MedicalRecords.Commands.CompleteMedicalEncounter;
 
-public class CompleteMedicalEncounterCommandValidator
+public sealed class CompleteMedicalEncounterCommandValidator
     : AbstractValidator<CompleteMedicalEncounterCommand>
 {
     public CompleteMedicalEncounterCommandValidator()

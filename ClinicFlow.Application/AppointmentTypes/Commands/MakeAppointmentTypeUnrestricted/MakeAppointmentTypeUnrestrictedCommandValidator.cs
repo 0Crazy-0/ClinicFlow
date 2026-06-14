@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.AppointmentTypes.Commands.MakeAppointmentTypeUnrestricted;
 
-public class MakeAppointmentTypeUnrestrictedCommandValidator
+public sealed class MakeAppointmentTypeUnrestrictedCommandValidator
     : AbstractValidator<MakeAppointmentTypeUnrestrictedCommand>
 {
     public MakeAppointmentTypeUnrestrictedCommandValidator()

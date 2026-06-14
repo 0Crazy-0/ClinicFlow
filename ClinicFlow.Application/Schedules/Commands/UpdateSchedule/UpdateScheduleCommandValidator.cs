@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.Schedules.Commands.UpdateSchedule;
 
-public class UpdateScheduleCommandValidator : AbstractValidator<UpdateScheduleCommand>
+public sealed class UpdateScheduleCommandValidator : AbstractValidator<UpdateScheduleCommand>
 {
     public UpdateScheduleCommandValidator()
     {

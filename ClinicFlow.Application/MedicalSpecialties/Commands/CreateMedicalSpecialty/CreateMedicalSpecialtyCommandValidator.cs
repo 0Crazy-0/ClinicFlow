@@ -4,7 +4,7 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.MedicalSpecialties.Commands.CreateMedicalSpecialty;
 
-public class CreateMedicalSpecialtyCommandValidator
+public sealed class CreateMedicalSpecialtyCommandValidator
     : AbstractValidator<CreateMedicalSpecialtyCommand>
 {
     public CreateMedicalSpecialtyCommandValidator()

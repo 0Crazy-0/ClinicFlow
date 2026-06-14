@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.Penalties.Commands.BlockPatient;
 
-public class BlockPatientCommandValidator : AbstractValidator<BlockPatientCommand>
+public sealed class BlockPatientCommandValidator : AbstractValidator<BlockPatientCommand>
 {
     public BlockPatientCommandValidator()
     {

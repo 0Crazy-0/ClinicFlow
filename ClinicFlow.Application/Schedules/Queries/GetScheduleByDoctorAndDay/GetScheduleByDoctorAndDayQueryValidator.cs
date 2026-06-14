@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.Schedules.Queries.GetScheduleByDoctorAndDay;
 
-public class GetScheduleByDoctorAndDayQueryValidator
+public sealed class GetScheduleByDoctorAndDayQueryValidator
     : AbstractValidator<GetScheduleByDoctorAndDayQuery>
 {
     public GetScheduleByDoctorAndDayQueryValidator()

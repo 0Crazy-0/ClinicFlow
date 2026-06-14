@@ -3,7 +3,8 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.Penalties.Queries.GetPenaltiesByPatientId;
 
-public class GetPenaltiesByPatientIdQueryValidator : AbstractValidator<GetPenaltiesByPatientIdQuery>
+public sealed class GetPenaltiesByPatientIdQueryValidator
+    : AbstractValidator<GetPenaltiesByPatientIdQuery>
 {
     public GetPenaltiesByPatientIdQueryValidator()
     {

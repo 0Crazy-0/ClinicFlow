@@ -4,7 +4,7 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.Doctors.Commands.ReactivateDoctorProfile;
 
-public class ReactivateDoctorProfileCommandValidator
+public sealed class ReactivateDoctorProfileCommandValidator
     : AbstractValidator<ReactivateDoctorProfileCommand>
 {
     public ReactivateDoctorProfileCommandValidator()

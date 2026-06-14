@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.Appointments.Commands.CheckInAppointmentByStaff;
 
-public class CheckInAppointmentByStaffCommandValidator
+public sealed class CheckInAppointmentByStaffCommandValidator
     : AbstractValidator<CheckInAppointmentByStaffCommand>
 {
     public CheckInAppointmentByStaffCommandValidator()

@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.Users.Queries.GetLockedOutUsers;
 
-public class GetLockedOutUsersQueryValidator : AbstractValidator<GetLockedOutUsersQuery>
+public sealed class GetLockedOutUsersQueryValidator : AbstractValidator<GetLockedOutUsersQuery>
 {
     public GetLockedOutUsersQueryValidator()
     {

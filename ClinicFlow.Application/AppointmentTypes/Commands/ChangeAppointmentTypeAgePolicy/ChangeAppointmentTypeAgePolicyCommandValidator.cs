@@ -4,7 +4,7 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.AppointmentTypes.Commands.ChangeAppointmentTypeAgePolicy;
 
-public class ChangeAppointmentTypeAgePolicyCommandValidator
+public sealed class ChangeAppointmentTypeAgePolicyCommandValidator
     : AbstractValidator<ChangeAppointmentTypeAgePolicyCommand>
 {
     public ChangeAppointmentTypeAgePolicyCommandValidator()

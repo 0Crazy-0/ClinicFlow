@@ -4,7 +4,7 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.ClinicalFormTemplates.Commands.UpdateClinicalFormTemplate;
 
-public class UpdateClinicalFormTemplateCommandValidator
+public sealed class UpdateClinicalFormTemplateCommandValidator
     : AbstractValidator<UpdateClinicalFormTemplateCommand>
 {
     public UpdateClinicalFormTemplateCommandValidator(

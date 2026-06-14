@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.Appointments.Queries.GetAppointmentsByDateRange;
 
-public class GetAppointmentsByDateRangeQueryValidator
+public sealed class GetAppointmentsByDateRangeQueryValidator
     : AbstractValidator<GetAppointmentsByDateRangeQuery>
 {
     public GetAppointmentsByDateRangeQueryValidator()

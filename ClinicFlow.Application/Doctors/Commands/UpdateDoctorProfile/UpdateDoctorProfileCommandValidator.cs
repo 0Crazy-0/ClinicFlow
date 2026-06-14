@@ -4,7 +4,8 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.Doctors.Commands.UpdateDoctorProfile;
 
-public class UpdateDoctorProfileCommandValidator : AbstractValidator<UpdateDoctorProfileCommand>
+public sealed class UpdateDoctorProfileCommandValidator
+    : AbstractValidator<UpdateDoctorProfileCommand>
 {
     public UpdateDoctorProfileCommandValidator()
     {

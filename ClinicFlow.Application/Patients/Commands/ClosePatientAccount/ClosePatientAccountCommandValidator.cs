@@ -3,7 +3,8 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.Patients.Commands.ClosePatientAccount;
 
-public class ClosePatientAccountCommandValidator : AbstractValidator<ClosePatientAccountCommand>
+public sealed class ClosePatientAccountCommandValidator
+    : AbstractValidator<ClosePatientAccountCommand>
 {
     public ClosePatientAccountCommandValidator()
     {

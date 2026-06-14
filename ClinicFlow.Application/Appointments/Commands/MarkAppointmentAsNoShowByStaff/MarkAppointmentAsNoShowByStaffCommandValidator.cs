@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.Appointments.Commands.MarkAppointmentAsNoShowByStaff;
 
-public class MarkAppointmentAsNoShowByStaffCommandValidator
+public sealed class MarkAppointmentAsNoShowByStaffCommandValidator
     : AbstractValidator<MarkAppointmentAsNoShowByStaffCommand>
 {
     public MarkAppointmentAsNoShowByStaffCommandValidator()

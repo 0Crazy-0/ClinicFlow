@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.AppointmentTypes.Commands.AddRequiredTemplateToAppointmentType;
 
-public class AddRequiredTemplateToAppointmentTypeCommandValidator
+public sealed class AddRequiredTemplateToAppointmentTypeCommandValidator
     : AbstractValidator<AddRequiredTemplateToAppointmentTypeCommand>
 {
     public AddRequiredTemplateToAppointmentTypeCommandValidator()

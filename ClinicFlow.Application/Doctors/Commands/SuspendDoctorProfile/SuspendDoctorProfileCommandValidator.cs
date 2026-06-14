@@ -3,7 +3,8 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.Doctors.Commands.SuspendDoctorProfile;
 
-public class SuspendDoctorProfileCommandValidator : AbstractValidator<SuspendDoctorProfileCommand>
+public sealed class SuspendDoctorProfileCommandValidator
+    : AbstractValidator<SuspendDoctorProfileCommand>
 {
     public SuspendDoctorProfileCommandValidator()
     {

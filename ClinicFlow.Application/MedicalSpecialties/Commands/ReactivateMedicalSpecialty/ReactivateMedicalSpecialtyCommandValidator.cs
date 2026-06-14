@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.MedicalSpecialties.Commands.ReactivateMedicalSpecialty;
 
-public class ReactivateMedicalSpecialtyCommandValidator
+public sealed class ReactivateMedicalSpecialtyCommandValidator
     : AbstractValidator<ReactivateMedicalSpecialtyCommand>
 {
     public ReactivateMedicalSpecialtyCommandValidator()

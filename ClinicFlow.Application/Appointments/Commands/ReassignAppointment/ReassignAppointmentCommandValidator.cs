@@ -3,7 +3,8 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.Appointments.Commands.ReassignAppointment;
 
-public class ReassignAppointmentCommandValidator : AbstractValidator<ReassignAppointmentCommand>
+public sealed class ReassignAppointmentCommandValidator
+    : AbstractValidator<ReassignAppointmentCommand>
 {
     public ReassignAppointmentCommandValidator(TimeProvider timeProvider)
     {

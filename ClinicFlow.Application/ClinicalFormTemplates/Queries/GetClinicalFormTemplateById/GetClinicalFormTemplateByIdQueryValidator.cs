@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.ClinicalFormTemplates.Queries.GetClinicalFormTemplateById;
 
-public class GetClinicalFormTemplateByIdQueryValidator
+public sealed class GetClinicalFormTemplateByIdQueryValidator
     : AbstractValidator<GetClinicalFormTemplateByIdQuery>
 {
     public GetClinicalFormTemplateByIdQueryValidator()

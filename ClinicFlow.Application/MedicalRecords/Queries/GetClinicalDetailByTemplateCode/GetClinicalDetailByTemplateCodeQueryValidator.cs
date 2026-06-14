@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.MedicalRecords.Queries.GetClinicalDetailByTemplateCode;
 
-public class GetClinicalDetailByTemplateCodeQueryValidator
+public sealed class GetClinicalDetailByTemplateCodeQueryValidator
     : AbstractValidator<GetClinicalDetailByTemplateCodeQuery>
 {
     public GetClinicalDetailByTemplateCodeQueryValidator()

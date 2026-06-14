@@ -4,7 +4,7 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.Patients.Commands.AddCompleteFamilyMember;
 
-public class AddCompleteFamilyMemberCommandValidator
+public sealed class AddCompleteFamilyMemberCommandValidator
     : AbstractValidator<AddCompleteFamilyMemberCommand>
 {
     public AddCompleteFamilyMemberCommandValidator(TimeProvider timeProvider)
