@@ -4,7 +4,8 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.Users.Queries.CheckPhoneUniqueness;
 
-public class CheckPhoneUniquenessQueryValidator : AbstractValidator<CheckPhoneUniquenessQuery>
+public sealed class CheckPhoneUniquenessQueryValidator
+    : AbstractValidator<CheckPhoneUniquenessQuery>
 {
     public CheckPhoneUniquenessQueryValidator()
     {

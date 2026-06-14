@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.Appointments.Commands.UpdatePatientNotesByPatient;
 
-public class UpdatePatientNotesByPatientCommandValidator
+public sealed class UpdatePatientNotesByPatientCommandValidator
     : AbstractValidator<UpdatePatientNotesByPatientCommand>
 {
     public UpdatePatientNotesByPatientCommandValidator()

@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.MedicalRecords.Queries.GetMedicalRecordByAppointmentId;
 
-public class GetMedicalRecordByAppointmentIdQueryValidator
+public sealed class GetMedicalRecordByAppointmentIdQueryValidator
     : AbstractValidator<GetMedicalRecordByAppointmentIdQuery>
 {
     public GetMedicalRecordByAppointmentIdQueryValidator()

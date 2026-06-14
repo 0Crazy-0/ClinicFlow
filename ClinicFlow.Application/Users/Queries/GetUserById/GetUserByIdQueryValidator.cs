@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.Users.Queries.GetUserById;
 
-public class GetUserByIdQueryValidator : AbstractValidator<GetUserByIdQuery>
+public sealed class GetUserByIdQueryValidator : AbstractValidator<GetUserByIdQuery>
 {
     public GetUserByIdQueryValidator()
     {

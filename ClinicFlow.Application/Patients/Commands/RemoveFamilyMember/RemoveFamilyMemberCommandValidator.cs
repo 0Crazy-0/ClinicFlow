@@ -3,7 +3,8 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.Patients.Commands.RemoveFamilyMember;
 
-public class RemoveFamilyMemberCommandValidator : AbstractValidator<RemoveFamilyMemberCommand>
+public sealed class RemoveFamilyMemberCommandValidator
+    : AbstractValidator<RemoveFamilyMemberCommand>
 {
     public RemoveFamilyMemberCommandValidator()
     {

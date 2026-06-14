@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.ClinicalFormTemplates.Commands.DeactivateClinicalFormTemplate;
 
-public class DeactivateClinicalFormTemplateCommandValidator
+public sealed class DeactivateClinicalFormTemplateCommandValidator
     : AbstractValidator<DeactivateClinicalFormTemplateCommand>
 {
     public DeactivateClinicalFormTemplateCommandValidator()

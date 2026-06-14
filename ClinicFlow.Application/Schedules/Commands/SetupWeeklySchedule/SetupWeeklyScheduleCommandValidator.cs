@@ -3,7 +3,8 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.Schedules.Commands.SetupWeeklySchedule;
 
-public class SetupWeeklyScheduleCommandValidator : AbstractValidator<SetupWeeklyScheduleCommand>
+public sealed class SetupWeeklyScheduleCommandValidator
+    : AbstractValidator<SetupWeeklyScheduleCommand>
 {
     public SetupWeeklyScheduleCommandValidator()
     {

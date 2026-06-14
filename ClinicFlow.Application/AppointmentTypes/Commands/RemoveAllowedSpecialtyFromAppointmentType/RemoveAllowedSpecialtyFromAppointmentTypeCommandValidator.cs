@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.AppointmentTypes.Commands.RemoveAllowedSpecialtyFromAppointmentType;
 
-public class RemoveAllowedSpecialtyFromAppointmentTypeCommandValidator
+public sealed class RemoveAllowedSpecialtyFromAppointmentTypeCommandValidator
     : AbstractValidator<RemoveAllowedSpecialtyFromAppointmentTypeCommand>
 {
     public RemoveAllowedSpecialtyFromAppointmentTypeCommandValidator()

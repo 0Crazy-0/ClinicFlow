@@ -3,7 +3,8 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.Schedules.Commands.DeactivateSchedule;
 
-public class DeactivateScheduleCommandValidator : AbstractValidator<DeactivateScheduleCommand>
+public sealed class DeactivateScheduleCommandValidator
+    : AbstractValidator<DeactivateScheduleCommand>
 {
     public DeactivateScheduleCommandValidator()
     {

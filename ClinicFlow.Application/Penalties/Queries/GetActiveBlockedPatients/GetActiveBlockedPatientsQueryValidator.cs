@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.Penalties.Queries.GetActiveBlockedPatients;
 
-public class GetActiveBlockedPatientsQueryValidator
+public sealed class GetActiveBlockedPatientsQueryValidator
     : AbstractValidator<GetActiveBlockedPatientsQuery>
 {
     public GetActiveBlockedPatientsQueryValidator()

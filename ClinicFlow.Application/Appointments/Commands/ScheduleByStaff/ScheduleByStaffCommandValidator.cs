@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.Appointments.Commands.ScheduleByStaff;
 
-public class ScheduleByStaffCommandValidator : AbstractValidator<ScheduleByStaffCommand>
+public sealed class ScheduleByStaffCommandValidator : AbstractValidator<ScheduleByStaffCommand>
 {
     public ScheduleByStaffCommandValidator(TimeProvider timeProvider)
     {

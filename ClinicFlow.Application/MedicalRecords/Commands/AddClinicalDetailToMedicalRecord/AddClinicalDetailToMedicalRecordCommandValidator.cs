@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.MedicalRecords.Commands.AddClinicalDetailToMedicalRecord;
 
-public class AddClinicalDetailToMedicalRecordCommandValidator
+public sealed class AddClinicalDetailToMedicalRecordCommandValidator
     : AbstractValidator<AddClinicalDetailToMedicalRecordCommand>
 {
     public AddClinicalDetailToMedicalRecordCommandValidator()

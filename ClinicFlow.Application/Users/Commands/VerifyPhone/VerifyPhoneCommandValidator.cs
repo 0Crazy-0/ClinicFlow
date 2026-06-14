@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.Users.Commands.VerifyPhone;
 
-public class VerifyPhoneCommandValidator : AbstractValidator<VerifyPhoneCommand>
+public sealed class VerifyPhoneCommandValidator : AbstractValidator<VerifyPhoneCommand>
 {
     public VerifyPhoneCommandValidator()
     {

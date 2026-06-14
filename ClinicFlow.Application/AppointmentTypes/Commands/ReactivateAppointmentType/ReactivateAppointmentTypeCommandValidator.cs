@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.AppointmentTypes.Commands.ReactivateAppointmentType;
 
-public class ReactivateAppointmentTypeCommandValidator
+public sealed class ReactivateAppointmentTypeCommandValidator
     : AbstractValidator<ReactivateAppointmentTypeCommand>
 {
     public ReactivateAppointmentTypeCommandValidator()

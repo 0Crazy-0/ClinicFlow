@@ -4,7 +4,8 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.Users.Queries.CheckEmailUniqueness;
 
-public class CheckEmailUniquenessQueryValidator : AbstractValidator<CheckEmailUniquenessQuery>
+public sealed class CheckEmailUniquenessQueryValidator
+    : AbstractValidator<CheckEmailUniquenessQuery>
 {
     public CheckEmailUniquenessQueryValidator()
     {

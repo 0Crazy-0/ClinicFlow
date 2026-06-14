@@ -4,7 +4,8 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.AppointmentTypes.Commands.CreateAppointmentType;
 
-public class CreateAppointmentTypeCommandValidator : AbstractValidator<CreateAppointmentTypeCommand>
+public sealed class CreateAppointmentTypeCommandValidator
+    : AbstractValidator<CreateAppointmentTypeCommand>
 {
     public CreateAppointmentTypeCommandValidator()
     {

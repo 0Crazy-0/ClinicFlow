@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.Penalties.Queries.GetActiveWarnings;
 
-public class GetActiveWarningsQueryValidator : AbstractValidator<GetActiveWarningsQuery>
+public sealed class GetActiveWarningsQueryValidator : AbstractValidator<GetActiveWarningsQuery>
 {
     public GetActiveWarningsQueryValidator()
     {

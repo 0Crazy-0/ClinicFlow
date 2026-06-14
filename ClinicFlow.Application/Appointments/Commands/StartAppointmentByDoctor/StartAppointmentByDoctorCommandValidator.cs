@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.Appointments.Commands.StartAppointmentByDoctor;
 
-public class StartAppointmentByDoctorCommandValidator
+public sealed class StartAppointmentByDoctorCommandValidator
     : AbstractValidator<StartAppointmentByDoctorCommand>
 {
     public StartAppointmentByDoctorCommandValidator()

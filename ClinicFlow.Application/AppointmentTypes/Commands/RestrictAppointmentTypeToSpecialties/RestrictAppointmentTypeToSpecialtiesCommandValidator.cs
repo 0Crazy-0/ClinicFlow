@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.AppointmentTypes.Commands.RestrictAppointmentTypeToSpecialties;
 
-public class RestrictAppointmentTypeToSpecialtiesCommandValidator
+public sealed class RestrictAppointmentTypeToSpecialtiesCommandValidator
     : AbstractValidator<RestrictAppointmentTypeToSpecialtiesCommand>
 {
     public RestrictAppointmentTypeToSpecialtiesCommandValidator()

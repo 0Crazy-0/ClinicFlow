@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.MedicalSpecialties.Commands.DeactivateMedicalSpecialty;
 
-public class DeactivateMedicalSpecialtyCommandValidator
+public sealed class DeactivateMedicalSpecialtyCommandValidator
     : AbstractValidator<DeactivateMedicalSpecialtyCommand>
 {
     public DeactivateMedicalSpecialtyCommandValidator()

@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.Appointments.Commands.CancelAppointmentByDoctor;
 
-public class CancelAppointmentByDoctorCommandValidator
+public sealed class CancelAppointmentByDoctorCommandValidator
     : AbstractValidator<CancelAppointmentByDoctorCommand>
 {
     public CancelAppointmentByDoctorCommandValidator()

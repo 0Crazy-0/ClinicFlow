@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.AppointmentTypes.Commands.RemoveRequiredTemplateFromAppointmentType;
 
-public class RemoveRequiredTemplateFromAppointmentTypeCommandValidator
+public sealed class RemoveRequiredTemplateFromAppointmentTypeCommandValidator
     : AbstractValidator<RemoveRequiredTemplateFromAppointmentTypeCommand>
 {
     public RemoveRequiredTemplateFromAppointmentTypeCommandValidator()

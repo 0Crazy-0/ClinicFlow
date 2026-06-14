@@ -3,7 +3,8 @@ using FluentValidation;
 
 namespace ClinicFlow.Application.AppointmentTypes.Commands.UpdateAppointmentType;
 
-public class UpdateAppointmentTypeCommandValidator : AbstractValidator<UpdateAppointmentTypeCommand>
+public sealed class UpdateAppointmentTypeCommandValidator
+    : AbstractValidator<UpdateAppointmentTypeCommand>
 {
     public UpdateAppointmentTypeCommandValidator()
     {
