@@ -1,3 +1,4 @@
+using System.Globalization;
 using AwesomeAssertions;
 using ClinicFlow.Application.Common.Models;
 using ClinicFlow.Application.Schedules.EventHandlers;
@@ -38,7 +39,9 @@ public class ScheduleDeactivatedEventHandlerTests
     public async Task Handle_ShouldMarkAppointmentsAsRequiresReassignment_WhenNoReplacementScheduleExists()
     {
         // Arrange
-        _fakeTime.SetUtcNow(DateTimeOffset.Parse("2024-01-01T00:00:00Z")); // Monday
+        _fakeTime.SetUtcNow(
+            DateTimeOffset.Parse("2024-01-01T00:00:00Z", CultureInfo.InvariantCulture)
+        ); // Monday
 
         var doctorId = Guid.NewGuid();
         var nextMondayDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(7).Date;

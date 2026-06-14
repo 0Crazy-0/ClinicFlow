@@ -1,3 +1,4 @@
+using System.Globalization;
 using AwesomeAssertions;
 using ClinicFlow.Application.Users.Queries.GetLockedOutUsers;
 using ClinicFlow.Domain.Entities;
@@ -92,7 +93,8 @@ public class GetLockedOutUsersQueryHandlerTests
     public async Task Handle_ShouldPassCorrectReferenceTimeToRepository()
     {
         // Arrange
-        var now = DateTimeOffset.Parse("2026-01-15T08:30:00Z");
+        var now = DateTimeOffset.Parse("2026-01-15T08:30:00Z", CultureInfo.InvariantCulture);
+
         _fakeTime.SetUtcNow(now);
 
         _userRepositoryMock
