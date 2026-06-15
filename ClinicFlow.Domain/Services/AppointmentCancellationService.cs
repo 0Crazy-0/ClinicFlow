@@ -52,7 +52,7 @@ public static class AppointmentCancellationService
 
         if (
             context.Specialty.IsCancellationAllowed(
-                appointment.ScheduledDate.Add(appointment.TimeRange.Start),
+                appointment.ScheduledDate.Add(appointment.TimeRange.Start - TimeOnly.MinValue),
                 args.CancelledAt
             )
         )

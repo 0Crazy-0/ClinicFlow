@@ -8,7 +8,7 @@ public sealed record ScheduleByPatientCommand(
     Guid DoctorId,
     Guid AppointmentTypeId,
     DateTime ScheduledDate,
-    TimeSpan StartTime,
-    TimeSpan EndTime,
+    TimeOnly StartTime,
+    TimeOnly EndTime,
     string? PatientNotes = null
 ) : IRequest<Guid>;

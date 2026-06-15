@@ -92,20 +92,18 @@ public class DbSeederTests(DbSeederFixture fixture) : IClassFixture<DbSeederFixt
 
         schedules.Should().HaveCount(175);
 
-        var morningStart = TimeSpan.FromHours(7);
-        var afternoonStart = TimeSpan.FromHours(13);
-        var fullStart = TimeSpan.FromHours(7);
-        var fullEnd = TimeSpan.FromHours(16);
+        var morningStart = new TimeOnly(7, 0);
+        var afternoonStart = new TimeOnly(13, 0);
+        var fullStart = new TimeOnly(7, 0);
+        var fullEnd = new TimeOnly(16, 0);
 
         schedules
-            .Count(s =>
-                s.TimeRange.Start == morningStart && s.TimeRange.End == TimeSpan.FromHours(13)
-            )
+            .Count(s => s.TimeRange.Start == morningStart && s.TimeRange.End == new TimeOnly(13, 0))
             .Should()
             .Be(21);
         schedules
             .Count(s =>
-                s.TimeRange.Start == afternoonStart && s.TimeRange.End == TimeSpan.FromHours(19)
+                s.TimeRange.Start == afternoonStart && s.TimeRange.End == new TimeOnly(19, 0)
             )
             .Should()
             .Be(19);
@@ -240,7 +238,7 @@ public class DbSeederTests(DbSeederFixture fixture) : IClassFixture<DbSeederFixt
             {
                 s.DoctorId.Should().NotBeEmpty();
                 s.TimeRange.Should().NotBeNull();
-                s.TimeRange.Start.Should().BeLessThan(s.TimeRange.End);
+                s.TimeRange.Start.Should().BeBefore(s.TimeRange.End);
             });
 
         var inactiveCount = schedules.Count(s => !s.IsActive);
@@ -412,9 +410,8 @@ public class DbSeederTests(DbSeederFixture fixture) : IClassFixture<DbSeederFixt
 
                 doctorSchedule.Should().NotBeNull();
 
-                appt.TimeRange.Start.Should()
-                    .BeGreaterThanOrEqualTo(doctorSchedule.TimeRange.Start);
-                appt.TimeRange.End.Should().BeLessThanOrEqualTo(doctorSchedule.TimeRange.End);
+                appt.TimeRange.Start.Should().BeOnOrAfter(doctorSchedule.TimeRange.Start);
+                appt.TimeRange.End.Should().BeOnOrBefore(doctorSchedule.TimeRange.End);
             });
     }
 

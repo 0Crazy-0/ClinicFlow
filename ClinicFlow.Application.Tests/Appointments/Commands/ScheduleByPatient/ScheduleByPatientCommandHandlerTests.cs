@@ -48,8 +48,8 @@ public class ScheduleByPatientCommandHandlerTests
     {
         // Arrange
         var scheduledDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date;
-        var startTime = new TimeSpan(10, 0, 0);
-        var endTime = new TimeSpan(11, 0, 0);
+        var startTime = new TimeOnly(10, 0);
+        var endTime = new TimeOnly(11, 0);
         var command = new ScheduleByPatientCommand(
             Guid.NewGuid(),
             Guid.NewGuid(),
@@ -157,8 +157,8 @@ public class ScheduleByPatientCommandHandlerTests
     {
         // Arrange
         var scheduledDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date;
-        var startTime = new TimeSpan(10, 0, 0);
-        var endTime = new TimeSpan(11, 0, 0);
+        var startTime = new TimeOnly(10, 0);
+        var endTime = new TimeOnly(11, 0);
         var command = new ScheduleByPatientCommand(
             Guid.NewGuid(),
             Guid.NewGuid(),
@@ -263,8 +263,8 @@ public class ScheduleByPatientCommandHandlerTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
-            new TimeSpan(10, 0, 0),
-            new TimeSpan(11, 0, 0)
+            new TimeOnly(10, 0),
+            new TimeOnly(11, 0)
         );
         _patientRepositoryMock
             .Setup(r => r.GetByIdAsync(command.TargetPatientId, It.IsAny<CancellationToken>()))
@@ -296,8 +296,8 @@ public class ScheduleByPatientCommandHandlerTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
-            new TimeSpan(10, 0, 0),
-            new TimeSpan(11, 0, 0)
+            new TimeOnly(10, 0),
+            new TimeOnly(11, 0)
         );
 
         var targetPatient = CreateTargetPatient(
@@ -347,8 +347,8 @@ public class ScheduleByPatientCommandHandlerTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
-            new TimeSpan(10, 0, 0),
-            new TimeSpan(11, 0, 0)
+            new TimeOnly(10, 0),
+            new TimeOnly(11, 0)
         );
 
         var targetPatient = CreateTargetPatient(
@@ -390,8 +390,8 @@ public class ScheduleByPatientCommandHandlerTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
-            new TimeSpan(10, 0, 0),
-            new TimeSpan(11, 0, 0)
+            new TimeOnly(10, 0),
+            new TimeOnly(11, 0)
         );
 
         var targetPatient = CreateTargetPatient(
@@ -460,8 +460,8 @@ public class ScheduleByPatientCommandHandlerTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
-            new TimeSpan(10, 0, 0),
-            new TimeSpan(11, 0, 0)
+            new TimeOnly(10, 0),
+            new TimeOnly(11, 0)
         );
 
         var targetPatient = CreateTargetPatient(

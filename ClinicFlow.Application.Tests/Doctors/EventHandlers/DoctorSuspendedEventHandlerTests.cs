@@ -95,6 +95,6 @@ public class DoctorSuspendedEventHandlerTests
             doctorId,
             Guid.NewGuid(),
             scheduledDate.Date,
-            TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(10))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
 }

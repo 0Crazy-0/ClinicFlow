@@ -47,7 +47,7 @@ public class CancelAppointmentByDoctorCommandHandlerTests
             doctorId,
             Guid.NewGuid(),
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(2).Date,
-            TimeRange.Create(new TimeSpan(10, 0, 0), new TimeSpan(11, 0, 0))
+            TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0))
         );
         var doctor = Doctor.Create(
             command.InitiatorUserId,
@@ -116,7 +116,7 @@ public class CancelAppointmentByDoctorCommandHandlerTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(2).Date,
-            TimeRange.Create(new TimeSpan(10, 0, 0), new TimeSpan(11, 0, 0))
+            TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0))
         );
 
         _appointmentRepositoryMock

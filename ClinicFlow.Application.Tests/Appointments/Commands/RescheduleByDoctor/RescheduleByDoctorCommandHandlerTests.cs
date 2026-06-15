@@ -45,8 +45,8 @@ public class RescheduleByDoctorCommandHandlerTests
     {
         // Arrange
         var newDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date;
-        var newStartTime = new TimeSpan(10, 0, 0);
-        var newEndTime = new TimeSpan(11, 0, 0);
+        var newStartTime = new TimeOnly(10, 0);
+        var newEndTime = new TimeOnly(11, 0);
         var command = new RescheduleByDoctorCommand(
             Guid.NewGuid(),
             Guid.NewGuid(),
@@ -124,8 +124,8 @@ public class RescheduleByDoctorCommandHandlerTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
-            new TimeSpan(10, 0, 0),
-            new TimeSpan(11, 0, 0),
+            new TimeOnly(10, 0),
+            new TimeOnly(11, 0),
             false
         );
 
@@ -153,8 +153,8 @@ public class RescheduleByDoctorCommandHandlerTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
-            new TimeSpan(10, 0, 0),
-            new TimeSpan(11, 0, 0),
+            new TimeOnly(10, 0),
+            new TimeOnly(11, 0),
             false
         );
 
@@ -187,8 +187,8 @@ public class RescheduleByDoctorCommandHandlerTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
-            new TimeSpan(10, 0, 0),
-            new TimeSpan(11, 0, 0),
+            new TimeOnly(10, 0),
+            new TimeOnly(11, 0),
             false
         );
 
@@ -226,8 +226,8 @@ public class RescheduleByDoctorCommandHandlerTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
-            new TimeSpan(10, 0, 0),
-            new TimeSpan(11, 0, 0),
+            new TimeOnly(10, 0),
+            new TimeOnly(11, 0),
             false
         );
 
@@ -270,7 +270,7 @@ public class RescheduleByDoctorCommandHandlerTests
             doctorId,
             typeId,
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
-            TimeRange.Create(new TimeSpan(10, 0, 0), new TimeSpan(11, 0, 0))
+            TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0))
         );
 
     private static Doctor CreateDoctor(Guid id, Guid userId)
@@ -287,15 +287,11 @@ public class RescheduleByDoctorCommandHandlerTests
         return doctor;
     }
 
-    private Patient CreatePatient()
-    {
-        var patient = Patient.CreateSelf(
+    private Patient CreatePatient() =>
+        Patient.CreateSelf(
             Guid.NewGuid(),
             PersonName.Create("Test"),
             _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30),
             _fakeTime.GetUtcNow().UtcDateTime
         );
-
-        return patient;
-    }
 }

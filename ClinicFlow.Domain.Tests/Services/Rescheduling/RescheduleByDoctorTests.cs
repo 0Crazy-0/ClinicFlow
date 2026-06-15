@@ -300,7 +300,7 @@ public class RescheduleByDoctorTests
         };
 
     private static TimeRange CreateTimeRange(int startHour, int endHour) =>
-        TimeRange.Create(TimeSpan.FromHours(startHour), TimeSpan.FromHours(endHour));
+        TimeRange.Create(new TimeOnly(startHour, 0), new TimeOnly(endHour, 0));
 
     private static Schedule CreateSchedule(
         Guid doctorId,
@@ -333,12 +333,11 @@ public class RescheduleByDoctorTests
             Guid.NewGuid(),
             appointmentDate,
             TimeRange.Create(
-                appointmentDate.TimeOfDay,
-                appointmentDate.TimeOfDay.Add(TimeSpan.FromHours(1))
+                TimeOnly.FromDateTime(appointmentDate),
+                TimeOnly.FromDateTime(appointmentDate.AddHours(1))
             )
         );
 
-        // Clear construction events for test isolation
         appointment.ClearDomainEvents();
 
         return appointment;

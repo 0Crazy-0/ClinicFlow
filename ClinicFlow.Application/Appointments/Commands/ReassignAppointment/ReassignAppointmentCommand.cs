@@ -6,6 +6,6 @@ public sealed record ReassignAppointmentCommand(
     Guid AppointmentId,
     Guid NewDoctorId,
     DateTime NewDate,
-    TimeSpan NewStartTime,
-    TimeSpan NewEndTime
+    TimeOnly NewStartTime,
+    TimeOnly NewEndTime
 ) : IRequest;

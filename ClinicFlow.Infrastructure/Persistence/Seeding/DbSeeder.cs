@@ -532,18 +532,18 @@ public static class DbSeeder
     {
         var faker = new Faker();
         var schedules = new List<Schedule>();
-        var shiftPool = new (TimeSpan Start, TimeSpan End)[]
+        var shiftPool = new (TimeOnly Start, TimeOnly End)[]
         {
-            (new TimeSpan(6, 0, 0), new TimeSpan(12, 0, 0)),
-            (new TimeSpan(7, 0, 0), new TimeSpan(13, 0, 0)),
-            (new TimeSpan(7, 0, 0), new TimeSpan(16, 0, 0)),
-            (new TimeSpan(8, 0, 0), new TimeSpan(14, 0, 0)),
-            (new TimeSpan(8, 0, 0), new TimeSpan(17, 0, 0)),
-            (new TimeSpan(9, 0, 0), new TimeSpan(15, 0, 0)),
-            (new TimeSpan(12, 0, 0), new TimeSpan(18, 0, 0)),
-            (new TimeSpan(13, 0, 0), new TimeSpan(19, 0, 0)),
-            (new TimeSpan(14, 0, 0), new TimeSpan(20, 0, 0)),
-            (new TimeSpan(15, 0, 0), new TimeSpan(21, 0, 0)),
+            (new TimeOnly(6, 0), new TimeOnly(12, 0)),
+            (new TimeOnly(7, 0), new TimeOnly(13, 0)),
+            (new TimeOnly(7, 0), new TimeOnly(16, 0)),
+            (new TimeOnly(8, 0), new TimeOnly(14, 0)),
+            (new TimeOnly(8, 0), new TimeOnly(17, 0)),
+            (new TimeOnly(9, 0), new TimeOnly(15, 0)),
+            (new TimeOnly(12, 0), new TimeOnly(18, 0)),
+            (new TimeOnly(13, 0), new TimeOnly(19, 0)),
+            (new TimeOnly(14, 0), new TimeOnly(20, 0)),
+            (new TimeOnly(15, 0), new TimeOnly(21, 0)),
         };
 
         var weekdays = new[]

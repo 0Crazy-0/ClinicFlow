@@ -72,7 +72,7 @@ public class AppointmentGenerator(AppointmentSeedingArgs args, DateTime baseDate
             );
         }
 
-        var actionTime = apptDate.Add(timeRange.Start).AddMinutes(-10);
+        var actionTime = apptDate.Add(timeRange.Start - TimeOnly.MinValue).AddMinutes(-10);
         string? receptionistNotes = status
             is AppointmentStatus.Completed
                 or AppointmentStatus.CheckedIn
@@ -150,15 +150,15 @@ public class AppointmentGenerator(AppointmentSeedingArgs args, DateTime baseDate
         int index
     )
     {
-        var scheduleStart = schedule.TimeRange.Start.Hours;
-        var scheduleEnd = schedule.TimeRange.End.Hours;
+        var scheduleStart = schedule.TimeRange.Start.Hour;
+        var scheduleEnd = schedule.TimeRange.End.Hour;
         var durationHours = (int)Math.Ceiling(apptType.DurationMinutes.TotalHours);
         var maxStart = Math.Max(scheduleStart, scheduleEnd - durationHours);
         var startHour = Math.Min(scheduleStart + (index % 4), maxStart);
 
         return TimeRange.Create(
-            TimeSpan.FromHours(startHour),
-            TimeSpan.FromHours(startHour) + apptType.DurationMinutes
+            new TimeOnly(startHour, 0),
+            new TimeOnly(startHour, 0).Add(apptType.DurationMinutes)
         );
     }
 

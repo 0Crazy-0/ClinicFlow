@@ -100,6 +100,6 @@ public class GetAppointmentsByDateRangeQueryHandlerTests
             doctorId,
             Guid.NewGuid(),
             scheduledDate,
-            TimeRange.Create(new TimeSpan(9, 0, 0), new TimeSpan(10, 0, 0))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
 }

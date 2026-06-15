@@ -33,13 +33,9 @@ public class SetupWeeklyScheduleCommandHandlerTests
         var command = new SetupWeeklyScheduleCommand(
             doctorId,
             [
-                new ScheduleSlot(DayOfWeek.Monday, TimeSpan.FromHours(8), TimeSpan.FromHours(13)),
-                new ScheduleSlot(
-                    DayOfWeek.Wednesday,
-                    TimeSpan.FromHours(8),
-                    TimeSpan.FromHours(13)
-                ),
-                new ScheduleSlot(DayOfWeek.Friday, TimeSpan.FromHours(14), TimeSpan.FromHours(18)),
+                new ScheduleSlot(DayOfWeek.Monday, new TimeOnly(8, 0), new TimeOnly(13, 0)),
+                new ScheduleSlot(DayOfWeek.Wednesday, new TimeOnly(8, 0), new TimeOnly(13, 0)),
+                new ScheduleSlot(DayOfWeek.Friday, new TimeOnly(14, 0), new TimeOnly(18, 0)),
             ]
         );
 
@@ -79,13 +75,9 @@ public class SetupWeeklyScheduleCommandHandlerTests
         var command = new SetupWeeklyScheduleCommand(
             doctorId,
             [
-                new ScheduleSlot(DayOfWeek.Monday, TimeSpan.FromHours(8), TimeSpan.FromHours(13)),
-                new ScheduleSlot(
-                    DayOfWeek.Wednesday,
-                    TimeSpan.FromHours(8),
-                    TimeSpan.FromHours(13)
-                ),
-                new ScheduleSlot(DayOfWeek.Friday, TimeSpan.FromHours(14), TimeSpan.FromHours(18)),
+                new ScheduleSlot(DayOfWeek.Monday, new TimeOnly(8, 0), new TimeOnly(13, 0)),
+                new ScheduleSlot(DayOfWeek.Wednesday, new TimeOnly(8, 0), new TimeOnly(13, 0)),
+                new ScheduleSlot(DayOfWeek.Friday, new TimeOnly(14, 0), new TimeOnly(18, 0)),
             ]
         );
 
@@ -116,19 +108,15 @@ public class SetupWeeklyScheduleCommandHandlerTests
         var command = new SetupWeeklyScheduleCommand(
             doctorId,
             [
-                new ScheduleSlot(DayOfWeek.Monday, TimeSpan.FromHours(8), TimeSpan.FromHours(13)),
-                new ScheduleSlot(
-                    DayOfWeek.Wednesday,
-                    TimeSpan.FromHours(8),
-                    TimeSpan.FromHours(13)
-                ),
+                new ScheduleSlot(DayOfWeek.Monday, new TimeOnly(8, 0), new TimeOnly(13, 0)),
+                new ScheduleSlot(DayOfWeek.Wednesday, new TimeOnly(8, 0), new TimeOnly(13, 0)),
             ]
         );
 
         var existingSchedule = Schedule.Create(
             doctorId,
             DayOfWeek.Monday,
-            TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(17))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(17, 0))
         );
 
         _scheduleRepositoryMock

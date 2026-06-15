@@ -43,8 +43,8 @@ public class AppointmentLateCancelledEventHandlerTests
             Guid.NewGuid(),
             _fakeTime.GetUtcNow().UtcDateTime.Date,
             TimeRange.Create(
-                _fakeTime.GetUtcNow().UtcDateTime.TimeOfDay,
-                _fakeTime.GetUtcNow().UtcDateTime.TimeOfDay.Add(TimeSpan.FromHours(1))
+                TimeOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime),
+                TimeOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddHours(1))
             )
         );
 
@@ -101,8 +101,8 @@ public class AppointmentLateCancelledEventHandlerTests
             Guid.NewGuid(),
             _fakeTime.GetUtcNow().UtcDateTime.Date,
             TimeRange.Create(
-                _fakeTime.GetUtcNow().UtcDateTime.TimeOfDay,
-                _fakeTime.GetUtcNow().UtcDateTime.TimeOfDay.Add(TimeSpan.FromHours(1))
+                TimeOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime),
+                TimeOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddHours(1))
             )
         );
 

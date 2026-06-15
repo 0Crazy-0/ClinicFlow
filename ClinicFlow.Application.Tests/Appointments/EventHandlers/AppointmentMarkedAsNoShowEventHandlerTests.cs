@@ -104,8 +104,8 @@ public class AppointmentMarkedAsNoShowEventHandlerTests
             Guid.NewGuid(),
             scheduledDateTime.Date,
             TimeRange.Create(
-                scheduledDateTime.TimeOfDay,
-                scheduledDateTime.TimeOfDay.Add(TimeSpan.FromHours(1))
+                TimeOnly.FromDateTime(scheduledDateTime),
+                TimeOnly.FromDateTime(scheduledDateTime.AddHours(1))
             )
         );
     }

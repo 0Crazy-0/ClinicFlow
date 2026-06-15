@@ -44,8 +44,8 @@ public class ScheduleByDoctorCommandHandlerTests
     {
         // Arrange
         var scheduledDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date;
-        var startTime = new TimeSpan(10, 0, 0);
-        var endTime = new TimeSpan(11, 0, 0);
+        var startTime = new TimeOnly(10, 0);
+        var endTime = new TimeOnly(11, 0);
         var command = new ScheduleByDoctorCommand(
             Guid.NewGuid(),
             Guid.NewGuid(),
@@ -133,8 +133,8 @@ public class ScheduleByDoctorCommandHandlerTests
     {
         // Arrange
         var scheduledDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date;
-        var startTime = new TimeSpan(10, 0, 0);
-        var endTime = new TimeSpan(11, 0, 0);
+        var startTime = new TimeOnly(10, 0);
+        var endTime = new TimeOnly(11, 0);
         var command = new ScheduleByDoctorCommand(
             Guid.NewGuid(),
             Guid.NewGuid(),
@@ -220,8 +220,8 @@ public class ScheduleByDoctorCommandHandlerTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
-            new TimeSpan(10, 0, 0),
-            new TimeSpan(11, 0, 0),
+            new TimeOnly(10, 0),
+            new TimeOnly(11, 0),
             false,
             false
         );
@@ -254,8 +254,8 @@ public class ScheduleByDoctorCommandHandlerTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
-            new TimeSpan(10, 0, 0),
-            new TimeSpan(11, 0, 0),
+            new TimeOnly(10, 0),
+            new TimeOnly(11, 0),
             false,
             false
         );
@@ -295,8 +295,8 @@ public class ScheduleByDoctorCommandHandlerTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
-            new TimeSpan(10, 0, 0),
-            new TimeSpan(11, 0, 0),
+            new TimeOnly(10, 0),
+            new TimeOnly(11, 0),
             false,
             false
         );

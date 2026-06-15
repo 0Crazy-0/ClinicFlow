@@ -26,12 +26,12 @@ public class GetSchedulesByDoctorIdQueryHandlerTests
         var schedule1 = Schedule.Create(
             doctorId,
             DayOfWeek.Monday,
-            TimeRange.Create(TimeSpan.FromHours(8), TimeSpan.FromHours(13))
+            TimeRange.Create(new TimeOnly(8, 0), new TimeOnly(13, 0))
         );
         var schedule2 = Schedule.Create(
             doctorId,
             DayOfWeek.Wednesday,
-            TimeRange.Create(TimeSpan.FromHours(14), TimeSpan.FromHours(18))
+            TimeRange.Create(new TimeOnly(14, 0), new TimeOnly(18, 0))
         );
 
         _scheduleRepositoryMock
@@ -50,13 +50,13 @@ public class GetSchedulesByDoctorIdQueryHandlerTests
         var resultList = result.ToList();
         resultList[0].DoctorId.Should().Be(doctorId);
         resultList[0].DayOfWeek.Should().Be(DayOfWeek.Monday);
-        resultList[0].StartTime.Should().Be(TimeSpan.FromHours(8));
-        resultList[0].EndTime.Should().Be(TimeSpan.FromHours(13));
+        resultList[0].StartTime.Should().Be(new TimeOnly(8, 0));
+        resultList[0].EndTime.Should().Be(new TimeOnly(13, 0));
         resultList[0].IsActive.Should().BeTrue();
 
         resultList[1].DayOfWeek.Should().Be(DayOfWeek.Wednesday);
-        resultList[1].StartTime.Should().Be(TimeSpan.FromHours(14));
-        resultList[1].EndTime.Should().Be(TimeSpan.FromHours(18));
+        resultList[1].StartTime.Should().Be(new TimeOnly(14, 0));
+        resultList[1].EndTime.Should().Be(new TimeOnly(18, 0));
     }
 
     [Fact]

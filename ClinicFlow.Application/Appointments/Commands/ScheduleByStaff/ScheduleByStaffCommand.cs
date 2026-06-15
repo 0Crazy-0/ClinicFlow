@@ -8,8 +8,8 @@ public sealed record ScheduleByStaffCommand(
     Guid DoctorId,
     Guid AppointmentTypeId,
     DateTime ScheduledDate,
-    TimeSpan StartTime,
-    TimeSpan EndTime,
+    TimeOnly StartTime,
+    TimeOnly EndTime,
     bool HasGuardianConsentVerified,
     bool IsOverbook
 ) : IRequest<Guid> { }

@@ -8,8 +8,8 @@ public sealed record AppointmentDto(
     Guid DoctorId,
     Guid AppointmentTypeId,
     DateTime ScheduledDate,
-    TimeSpan StartTime,
-    TimeSpan EndTime,
+    TimeOnly StartTime,
+    TimeOnly EndTime,
     AppointmentStatus Status,
     string PatientNotes,
     string ReceptionistNotes

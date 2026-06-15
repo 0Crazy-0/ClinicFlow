@@ -27,7 +27,7 @@ public class GetScheduleByDoctorAndDayQueryHandlerTests
         var schedule = Schedule.Create(
             doctorId,
             dayOfWeek,
-            TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(14))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(14, 0))
         );
 
         _scheduleRepositoryMock
@@ -45,8 +45,8 @@ public class GetScheduleByDoctorAndDayQueryHandlerTests
         result.Should().NotBeNull();
         result!.DoctorId.Should().Be(doctorId);
         result.DayOfWeek.Should().Be(DayOfWeek.Tuesday);
-        result.StartTime.Should().Be(TimeSpan.FromHours(9));
-        result.EndTime.Should().Be(TimeSpan.FromHours(14));
+        result.StartTime.Should().Be(new TimeOnly(9, 0));
+        result.EndTime.Should().Be(new TimeOnly(14, 0));
         result.IsActive.Should().BeTrue();
 
         _scheduleRepositoryMock.Verify(

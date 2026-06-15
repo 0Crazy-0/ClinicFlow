@@ -5,19 +5,19 @@ namespace ClinicFlow.Domain.ValueObjects;
 
 public record TimeRange
 {
-    public TimeSpan Start { get; }
+    public TimeOnly Start { get; }
 
-    public TimeSpan End { get; }
+    public TimeOnly End { get; }
 
     public TimeSpan Duration => End - Start;
 
-    private TimeRange(TimeSpan start, TimeSpan end)
+    private TimeRange(TimeOnly start, TimeOnly end)
     {
         Start = start;
         End = end;
     }
 
-    public static TimeRange Create(TimeSpan start, TimeSpan end)
+    public static TimeRange Create(TimeOnly start, TimeOnly end)
     {
         if (start >= end)
             throw new InvalidTimeRangeException(DomainErrors.Schedule.InvalidTimeRange);

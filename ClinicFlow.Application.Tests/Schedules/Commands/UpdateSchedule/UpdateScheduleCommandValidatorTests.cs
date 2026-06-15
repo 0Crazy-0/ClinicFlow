@@ -20,8 +20,8 @@ public class UpdateScheduleCommandValidatorTests
         var command = new UpdateScheduleCommand(
             Guid.NewGuid(),
             DayOfWeek.Monday,
-            TimeSpan.FromHours(10),
-            TimeSpan.FromHours(14)
+            new TimeOnly(10, 0),
+            new TimeOnly(14, 0)
         );
 
         // Act
@@ -38,8 +38,8 @@ public class UpdateScheduleCommandValidatorTests
         var command = new UpdateScheduleCommand(
             Guid.Empty,
             DayOfWeek.Monday,
-            TimeSpan.FromHours(10),
-            TimeSpan.FromHours(14)
+            new TimeOnly(10, 0),
+            new TimeOnly(14, 0)
         );
 
         // Act
@@ -58,8 +58,8 @@ public class UpdateScheduleCommandValidatorTests
         var command = new UpdateScheduleCommand(
             Guid.NewGuid(),
             (DayOfWeek)999,
-            TimeSpan.FromHours(10),
-            TimeSpan.FromHours(14)
+            new TimeOnly(10, 0),
+            new TimeOnly(14, 0)
         );
 
         // Act
@@ -78,8 +78,8 @@ public class UpdateScheduleCommandValidatorTests
         var command = new UpdateScheduleCommand(
             Guid.NewGuid(),
             DayOfWeek.Monday,
-            TimeSpan.FromHours(17),
-            TimeSpan.FromHours(9)
+            new TimeOnly(17, 0),
+            new TimeOnly(9, 0)
         );
 
         // Act
@@ -98,8 +98,8 @@ public class UpdateScheduleCommandValidatorTests
         var command = new UpdateScheduleCommand(
             Guid.NewGuid(),
             DayOfWeek.Monday,
-            TimeSpan.FromHours(9),
-            TimeSpan.FromHours(9)
+            new TimeOnly(9, 0),
+            new TimeOnly(9, 0)
         );
 
         // Act

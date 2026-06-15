@@ -72,7 +72,7 @@ public static class AppointmentSchedulingService
             throw new AppointmentConflictException(
                 DomainErrors.Appointment.Conflict,
                 args.DoctorId,
-                args.ScheduledDate.Add(args.TimeRange.Start)
+                args.ScheduledDate.Add(args.TimeRange.Start - TimeOnly.MinValue)
             );
 
         return Appointment.Schedule(
@@ -124,7 +124,7 @@ public static class AppointmentSchedulingService
                 throw new AppointmentConflictException(
                     DomainErrors.Appointment.Conflict,
                     args.InitiatorDoctor.Id,
-                    args.ScheduledDate.Add(args.TimeRange.Start)
+                    args.ScheduledDate.Add(args.TimeRange.Start - TimeOnly.MinValue)
                 );
         }
 
@@ -173,7 +173,7 @@ public static class AppointmentSchedulingService
                 throw new AppointmentConflictException(
                     DomainErrors.Appointment.Conflict,
                     args.DoctorId,
-                    args.ScheduledDate.Add(args.TimeRange.Start)
+                    args.ScheduledDate.Add(args.TimeRange.Start - TimeOnly.MinValue)
                 );
         }
 

@@ -6,7 +6,7 @@ public sealed record RescheduleByDoctorCommand(
     Guid InitiatorUserId,
     Guid AppointmentId,
     DateTime NewDate,
-    TimeSpan NewStartTime,
-    TimeSpan NewEndTime,
+    TimeOnly NewStartTime,
+    TimeOnly NewEndTime,
     bool IsOverbook
 ) : IRequest;

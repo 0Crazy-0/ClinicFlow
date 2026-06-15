@@ -4,7 +4,7 @@ public sealed record ScheduleDto(
     Guid Id,
     Guid DoctorId,
     DayOfWeek DayOfWeek,
-    TimeSpan StartTime,
-    TimeSpan EndTime,
+    TimeOnly StartTime,
+    TimeOnly EndTime,
     bool IsActive
 );

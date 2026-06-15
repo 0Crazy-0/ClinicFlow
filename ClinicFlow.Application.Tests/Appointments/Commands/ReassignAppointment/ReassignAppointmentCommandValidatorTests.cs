@@ -23,8 +23,8 @@ public class ReassignAppointmentCommandValidatorTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
-            TimeSpan.FromHours(9),
-            TimeSpan.FromHours(10)
+            new TimeOnly(9, 0),
+            new TimeOnly(10, 0)
         );
 
         // Act
@@ -42,8 +42,8 @@ public class ReassignAppointmentCommandValidatorTests
             Guid.Empty,
             Guid.NewGuid(),
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
-            TimeSpan.FromHours(9),
-            TimeSpan.FromHours(10)
+            new TimeOnly(9, 0),
+            new TimeOnly(10, 0)
         );
 
         // Act
@@ -63,8 +63,8 @@ public class ReassignAppointmentCommandValidatorTests
             Guid.NewGuid(),
             Guid.Empty,
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
-            TimeSpan.FromHours(9),
-            TimeSpan.FromHours(10)
+            new TimeOnly(9, 0),
+            new TimeOnly(10, 0)
         );
 
         // Act
@@ -84,8 +84,8 @@ public class ReassignAppointmentCommandValidatorTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(-1).Date,
-            TimeSpan.FromHours(9),
-            TimeSpan.FromHours(10)
+            new TimeOnly(9, 0),
+            new TimeOnly(10, 0)
         );
 
         // Act
@@ -105,8 +105,8 @@ public class ReassignAppointmentCommandValidatorTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
-            TimeSpan.FromHours(10),
-            TimeSpan.FromHours(9)
+            new TimeOnly(10, 0),
+            new TimeOnly(9, 0)
         );
 
         // Act

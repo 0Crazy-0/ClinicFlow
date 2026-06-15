@@ -25,8 +25,8 @@ public class ScheduleByPatientCommandValidatorTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
-            new TimeSpan(10, 0, 0),
-            new TimeSpan(11, 0, 0),
+            new TimeOnly(10, 0),
+            new TimeOnly(11, 0),
             "Notes"
         );
 
@@ -47,8 +47,8 @@ public class ScheduleByPatientCommandValidatorTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
-            new TimeSpan(10, 0, 0),
-            new TimeSpan(11, 0, 0)
+            new TimeOnly(10, 0),
+            new TimeOnly(11, 0)
         );
 
         // Act
@@ -70,8 +70,8 @@ public class ScheduleByPatientCommandValidatorTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
-            new TimeSpan(10, 0, 0),
-            new TimeSpan(11, 0, 0)
+            new TimeOnly(10, 0),
+            new TimeOnly(11, 0)
         );
 
         // Act
@@ -93,8 +93,8 @@ public class ScheduleByPatientCommandValidatorTests
             Guid.Empty,
             Guid.NewGuid(),
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
-            new TimeSpan(10, 0, 0),
-            new TimeSpan(11, 0, 0)
+            new TimeOnly(10, 0),
+            new TimeOnly(11, 0)
         );
 
         // Act
@@ -116,8 +116,8 @@ public class ScheduleByPatientCommandValidatorTests
             Guid.NewGuid(),
             Guid.Empty,
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
-            new TimeSpan(10, 0, 0),
-            new TimeSpan(11, 0, 0)
+            new TimeOnly(10, 0),
+            new TimeOnly(11, 0)
         );
 
         // Act
@@ -139,8 +139,8 @@ public class ScheduleByPatientCommandValidatorTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(-1).Date,
-            new TimeSpan(10, 0, 0),
-            new TimeSpan(11, 0, 0)
+            new TimeOnly(10, 0),
+            new TimeOnly(11, 0)
         );
 
         // Act
@@ -162,8 +162,8 @@ public class ScheduleByPatientCommandValidatorTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
-            new TimeSpan(12, 0, 0),
-            new TimeSpan(11, 0, 0)
+            new TimeOnly(12, 0),
+            new TimeOnly(11, 0)
         );
 
         // Act
@@ -185,8 +185,8 @@ public class ScheduleByPatientCommandValidatorTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
-            new TimeSpan(10, 0, 0),
-            new TimeSpan(11, 0, 0),
+            new TimeOnly(10, 0),
+            new TimeOnly(11, 0),
             new string('a', 501)
         );
 

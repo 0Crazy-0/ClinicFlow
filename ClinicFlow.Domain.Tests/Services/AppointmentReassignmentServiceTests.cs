@@ -232,7 +232,7 @@ public class AppointmentReassignmentServiceTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             scheduledDate,
-            TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(10))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
 
         appointment.MarkAsRequiresReassignment();
@@ -242,7 +242,7 @@ public class AppointmentReassignmentServiceTests
     }
 
     private static TimeRange CreateTimeRange(int startHour, int endHour) =>
-        TimeRange.Create(TimeSpan.FromHours(startHour), TimeSpan.FromHours(endHour));
+        TimeRange.Create(new TimeOnly(startHour, 0), new TimeOnly(endHour, 0));
 
     private static Schedule CreateSchedule(
         Guid doctorId,

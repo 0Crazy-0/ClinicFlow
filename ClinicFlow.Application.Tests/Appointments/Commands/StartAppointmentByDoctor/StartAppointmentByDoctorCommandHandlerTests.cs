@@ -50,7 +50,7 @@ public class StartAppointmentByDoctorCommandHandlerTests
             doctor.Id,
             Guid.NewGuid(),
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
-            TimeRange.Create(new TimeSpan(10, 0, 0), new TimeSpan(11, 0, 0))
+            TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0))
         );
 
         appointment.CheckIn(_fakeTime.GetUtcNow().UtcDateTime);
@@ -103,7 +103,7 @@ public class StartAppointmentByDoctorCommandHandlerTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
-            TimeRange.Create(new TimeSpan(10, 0, 0), new TimeSpan(11, 0, 0))
+            TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0))
         );
 
         _appointmentRepositoryMock
