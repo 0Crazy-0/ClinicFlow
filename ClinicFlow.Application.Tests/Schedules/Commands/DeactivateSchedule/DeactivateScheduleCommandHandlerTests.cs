@@ -33,7 +33,7 @@ public class DeactivateScheduleCommandHandlerTests
         var schedule = Schedule.Create(
             Guid.NewGuid(),
             DayOfWeek.Monday,
-            TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(17))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(17, 0))
         );
 
         _scheduleRepositoryMock

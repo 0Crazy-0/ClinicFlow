@@ -394,7 +394,7 @@ public class ScheduleByStaffTests
         };
 
     private static TimeRange CreateTimeRange(int startHour, int endHour) =>
-        TimeRange.Create(TimeSpan.FromHours(startHour), TimeSpan.FromHours(endHour));
+        TimeRange.Create(new TimeOnly(startHour, 0), new TimeOnly(endHour, 0));
 
     private static Schedule CreateSchedule(
         Guid doctorId,

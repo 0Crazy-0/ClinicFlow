@@ -18,9 +18,9 @@ public class WeeklyScheduleSetupServiceTests
 
         var slots = new List<WeeklyScheduleSlot>
         {
-            new(DayOfWeek.Monday, TimeSpan.FromHours(8), TimeSpan.FromHours(13)),
-            new(DayOfWeek.Wednesday, TimeSpan.FromHours(8), TimeSpan.FromHours(13)),
-            new(DayOfWeek.Friday, TimeSpan.FromHours(14), TimeSpan.FromHours(18)),
+            new(DayOfWeek.Monday, new TimeOnly(8, 0), new TimeOnly(13, 0)),
+            new(DayOfWeek.Wednesday, new TimeOnly(8, 0), new TimeOnly(13, 0)),
+            new(DayOfWeek.Friday, new TimeOnly(14, 0), new TimeOnly(18, 0)),
         };
 
         // Act
@@ -32,13 +32,13 @@ public class WeeklyScheduleSetupServiceTests
         result.Should().AllSatisfy(s => s.IsActive.Should().BeTrue());
 
         result[0].DayOfWeek.Should().Be(DayOfWeek.Monday);
-        result[0].TimeRange.Start.Should().Be(TimeSpan.FromHours(8));
-        result[0].TimeRange.End.Should().Be(TimeSpan.FromHours(13));
+        result[0].TimeRange.Start.Should().Be(new TimeOnly(8, 0));
+        result[0].TimeRange.End.Should().Be(new TimeOnly(13, 0));
 
         result[1].DayOfWeek.Should().Be(DayOfWeek.Wednesday);
         result[2].DayOfWeek.Should().Be(DayOfWeek.Friday);
-        result[2].TimeRange.Start.Should().Be(TimeSpan.FromHours(14));
-        result[2].TimeRange.End.Should().Be(TimeSpan.FromHours(18));
+        result[2].TimeRange.Start.Should().Be(new TimeOnly(14, 0));
+        result[2].TimeRange.End.Should().Be(new TimeOnly(18, 0));
     }
 
     [Fact]
@@ -51,14 +51,14 @@ public class WeeklyScheduleSetupServiceTests
             Schedule.Create(
                 doctorId,
                 DayOfWeek.Monday,
-                TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(17))
+                TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(17, 0))
             ),
         };
 
         var slots = new List<WeeklyScheduleSlot>
         {
-            new(DayOfWeek.Monday, TimeSpan.FromHours(8), TimeSpan.FromHours(13)),
-            new(DayOfWeek.Wednesday, TimeSpan.FromHours(8), TimeSpan.FromHours(13)),
+            new(DayOfWeek.Monday, new TimeOnly(8, 0), new TimeOnly(13, 0)),
+            new(DayOfWeek.Wednesday, new TimeOnly(8, 0), new TimeOnly(13, 0)),
         };
 
         // Act
@@ -81,7 +81,7 @@ public class WeeklyScheduleSetupServiceTests
         var inactiveSchedule = Schedule.Create(
             doctorId,
             DayOfWeek.Monday,
-            TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(17))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(17, 0))
         );
         inactiveSchedule.Deactivate();
 
@@ -89,7 +89,7 @@ public class WeeklyScheduleSetupServiceTests
 
         var slots = new List<WeeklyScheduleSlot>
         {
-            new(DayOfWeek.Monday, TimeSpan.FromHours(9), TimeSpan.FromHours(17)),
+            new(DayOfWeek.Monday, new TimeOnly(9, 0), new TimeOnly(17, 0)),
         };
 
         // Act

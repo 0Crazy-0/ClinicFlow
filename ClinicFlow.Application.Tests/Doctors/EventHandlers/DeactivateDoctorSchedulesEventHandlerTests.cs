@@ -35,13 +35,13 @@ public class DeactivateDoctorSchedulesEventHandlerTests
         var activeSchedule1 = Schedule.Create(
             doctorId,
             DayOfWeek.Monday,
-            TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(17))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(17, 0))
         );
 
         var activeSchedule2 = Schedule.Create(
             doctorId,
             DayOfWeek.Tuesday,
-            TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(17))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(17, 0))
         );
 
         _scheduleRepositoryMock

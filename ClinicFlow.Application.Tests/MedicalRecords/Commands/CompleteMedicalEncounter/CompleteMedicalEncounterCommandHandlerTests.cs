@@ -300,7 +300,7 @@ public class CompleteMedicalEncounterCommandHandlerTests
             doctorId,
             appointmentTypeId,
             dt.AddDays(1).Date,
-            TimeRange.Create(new TimeSpan(9, 0, 0), new TimeSpan(10, 0, 0))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
         appointment.SetId(id);
         appointment.CheckIn(dt);

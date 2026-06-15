@@ -25,8 +25,8 @@ public class ScheduleByStaffCommandValidatorTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
-            new TimeSpan(10, 0, 0),
-            new TimeSpan(11, 0, 0),
+            new TimeOnly(10, 0),
+            new TimeOnly(11, 0),
             false,
             false
         );
@@ -48,8 +48,8 @@ public class ScheduleByStaffCommandValidatorTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
-            new TimeSpan(10, 0, 0),
-            new TimeSpan(11, 0, 0),
+            new TimeOnly(10, 0),
+            new TimeOnly(11, 0),
             false,
             false
         );
@@ -73,8 +73,8 @@ public class ScheduleByStaffCommandValidatorTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
-            new TimeSpan(10, 0, 0),
-            new TimeSpan(11, 0, 0),
+            new TimeOnly(10, 0),
+            new TimeOnly(11, 0),
             false,
             false
         );
@@ -98,8 +98,8 @@ public class ScheduleByStaffCommandValidatorTests
             Guid.Empty,
             Guid.NewGuid(),
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
-            new TimeSpan(10, 0, 0),
-            new TimeSpan(11, 0, 0),
+            new TimeOnly(10, 0),
+            new TimeOnly(11, 0),
             false,
             false
         );
@@ -123,8 +123,8 @@ public class ScheduleByStaffCommandValidatorTests
             Guid.NewGuid(),
             Guid.Empty,
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
-            new TimeSpan(10, 0, 0),
-            new TimeSpan(11, 0, 0),
+            new TimeOnly(10, 0),
+            new TimeOnly(11, 0),
             false,
             false
         );
@@ -148,8 +148,8 @@ public class ScheduleByStaffCommandValidatorTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(-1).Date,
-            new TimeSpan(10, 0, 0),
-            new TimeSpan(11, 0, 0),
+            new TimeOnly(10, 0),
+            new TimeOnly(11, 0),
             false,
             false
         );
@@ -173,8 +173,8 @@ public class ScheduleByStaffCommandValidatorTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
-            new TimeSpan(12, 0, 0),
-            new TimeSpan(11, 0, 0),
+            new TimeOnly(12, 0),
+            new TimeOnly(11, 0),
             false,
             false
         );

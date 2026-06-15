@@ -33,8 +33,8 @@ public class CreateScheduleCommandHandlerTests
         var command = new CreateScheduleCommand(
             Guid.NewGuid(),
             DayOfWeek.Monday,
-            TimeSpan.FromHours(9),
-            TimeSpan.FromHours(17)
+            new TimeOnly(9, 0),
+            new TimeOnly(17, 0)
         );
 
         _scheduleRepositoryMock
@@ -66,8 +66,8 @@ public class CreateScheduleCommandHandlerTests
         var command = new CreateScheduleCommand(
             Guid.NewGuid(),
             DayOfWeek.Monday,
-            TimeSpan.FromHours(9),
-            TimeSpan.FromHours(17)
+            new TimeOnly(9, 0),
+            new TimeOnly(17, 0)
         );
 
         _scheduleRepositoryMock
@@ -93,14 +93,14 @@ public class CreateScheduleCommandHandlerTests
         var command = new CreateScheduleCommand(
             doctorId,
             DayOfWeek.Monday,
-            TimeSpan.FromHours(9),
-            TimeSpan.FromHours(17)
+            new TimeOnly(9, 0),
+            new TimeOnly(17, 0)
         );
 
         var existingSchedule = Schedule.Create(
             doctorId,
             DayOfWeek.Monday,
-            TimeRange.Create(TimeSpan.FromHours(8), TimeSpan.FromHours(13))
+            TimeRange.Create(new TimeOnly(8, 0), new TimeOnly(13, 0))
         );
 
         _scheduleRepositoryMock

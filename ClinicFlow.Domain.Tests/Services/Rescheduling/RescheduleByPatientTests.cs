@@ -617,7 +617,7 @@ public class RescheduleByPatientTests
         };
 
     private static TimeRange CreateTimeRange(int startHour, int endHour) =>
-        TimeRange.Create(TimeSpan.FromHours(startHour), TimeSpan.FromHours(endHour));
+        TimeRange.Create(new TimeOnly(startHour, 0), new TimeOnly(endHour, 0));
 
     private static Schedule CreateSchedule(
         Guid doctorId,
@@ -653,8 +653,8 @@ public class RescheduleByPatientTests
             Guid.NewGuid(),
             scheduledDateTime.Date,
             TimeRange.Create(
-                scheduledDateTime.TimeOfDay,
-                scheduledDateTime.TimeOfDay.Add(TimeSpan.FromHours(1))
+                TimeOnly.FromDateTime(scheduledDateTime),
+                TimeOnly.FromDateTime(scheduledDateTime.AddHours(1))
             )
         );
 

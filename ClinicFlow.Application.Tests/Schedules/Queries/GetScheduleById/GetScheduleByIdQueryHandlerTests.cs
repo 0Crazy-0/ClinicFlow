@@ -30,7 +30,7 @@ public class GetScheduleByIdQueryHandlerTests
         var schedule = Schedule.Create(
             doctorId,
             DayOfWeek.Monday,
-            TimeRange.Create(TimeSpan.FromHours(8), TimeSpan.FromHours(13))
+            TimeRange.Create(new TimeOnly(8, 0), new TimeOnly(13, 0))
         );
         schedule.SetId(scheduleId);
 
@@ -48,8 +48,8 @@ public class GetScheduleByIdQueryHandlerTests
         result.Id.Should().Be(scheduleId);
         result.DoctorId.Should().Be(doctorId);
         result.DayOfWeek.Should().Be(DayOfWeek.Monday);
-        result.StartTime.Should().Be(TimeSpan.FromHours(8));
-        result.EndTime.Should().Be(TimeSpan.FromHours(13));
+        result.StartTime.Should().Be(new TimeOnly(8, 0));
+        result.EndTime.Should().Be(new TimeOnly(13, 0));
         result.IsActive.Should().BeTrue();
 
         _scheduleRepositoryMock.Verify(

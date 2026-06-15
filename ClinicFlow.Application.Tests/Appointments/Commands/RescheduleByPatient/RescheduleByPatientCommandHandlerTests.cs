@@ -49,8 +49,8 @@ public class RescheduleByPatientCommandHandlerTests
     {
         // Arrange
         var newDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date;
-        var newStartTime = new TimeSpan(10, 0, 0);
-        var newEndTime = new TimeSpan(11, 0, 0);
+        var newStartTime = new TimeOnly(10, 0);
+        var newEndTime = new TimeOnly(11, 0);
 
         var command = new RescheduleByPatientCommand(
             Guid.NewGuid(),
@@ -140,8 +140,8 @@ public class RescheduleByPatientCommandHandlerTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
-            new TimeSpan(10, 0, 0),
-            new TimeSpan(11, 0, 0)
+            new TimeOnly(10, 0),
+            new TimeOnly(11, 0)
         );
 
         _appointmentRepositoryMock
@@ -168,8 +168,8 @@ public class RescheduleByPatientCommandHandlerTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
-            new TimeSpan(10, 0, 0),
-            new TimeSpan(11, 0, 0)
+            new TimeOnly(10, 0),
+            new TimeOnly(11, 0)
         );
 
         var appointment = CreateAppointment(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
@@ -201,8 +201,8 @@ public class RescheduleByPatientCommandHandlerTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
-            new TimeSpan(10, 0, 0),
-            new TimeSpan(11, 0, 0)
+            new TimeOnly(10, 0),
+            new TimeOnly(11, 0)
         );
 
         var appointment = CreateAppointment(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
@@ -241,8 +241,8 @@ public class RescheduleByPatientCommandHandlerTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
-            new TimeSpan(10, 0, 0),
-            new TimeSpan(11, 0, 0)
+            new TimeOnly(10, 0),
+            new TimeOnly(11, 0)
         );
 
         var appointment = CreateAppointment(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
@@ -284,8 +284,8 @@ public class RescheduleByPatientCommandHandlerTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
-            new TimeSpan(10, 0, 0),
-            new TimeSpan(11, 0, 0)
+            new TimeOnly(10, 0),
+            new TimeOnly(11, 0)
         );
 
         var appointment = CreateAppointment(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
@@ -332,8 +332,8 @@ public class RescheduleByPatientCommandHandlerTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
-            new TimeSpan(10, 0, 0),
-            new TimeSpan(11, 0, 0)
+            new TimeOnly(10, 0),
+            new TimeOnly(11, 0)
         );
 
         var appointment = CreateAppointment(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
@@ -407,7 +407,7 @@ public class RescheduleByPatientCommandHandlerTests
             doctorId,
             typeId,
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
-            TimeRange.Create(new TimeSpan(10, 0, 0), new TimeSpan(11, 0, 0))
+            TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0))
         );
 
     private Patient CreatePatient(Guid id, Guid userId)

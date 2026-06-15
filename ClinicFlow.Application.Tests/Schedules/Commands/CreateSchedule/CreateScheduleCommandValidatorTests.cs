@@ -20,8 +20,8 @@ public class CreateScheduleCommandValidatorTests
         var command = new CreateScheduleCommand(
             Guid.NewGuid(),
             DayOfWeek.Monday,
-            TimeSpan.FromHours(9),
-            TimeSpan.FromHours(17)
+            new TimeOnly(9, 0),
+            new TimeOnly(17, 0)
         );
 
         // Act
@@ -38,8 +38,8 @@ public class CreateScheduleCommandValidatorTests
         var command = new CreateScheduleCommand(
             Guid.Empty,
             DayOfWeek.Monday,
-            TimeSpan.FromHours(9),
-            TimeSpan.FromHours(17)
+            new TimeOnly(9, 0),
+            new TimeOnly(17, 0)
         );
 
         // Act
@@ -58,8 +58,8 @@ public class CreateScheduleCommandValidatorTests
         var command = new CreateScheduleCommand(
             Guid.NewGuid(),
             (DayOfWeek)99,
-            TimeSpan.FromHours(9),
-            TimeSpan.FromHours(17)
+            new TimeOnly(9, 0),
+            new TimeOnly(17, 0)
         );
 
         // Act
@@ -78,8 +78,8 @@ public class CreateScheduleCommandValidatorTests
         var command = new CreateScheduleCommand(
             Guid.NewGuid(),
             DayOfWeek.Monday,
-            TimeSpan.FromHours(17),
-            TimeSpan.FromHours(9)
+            new TimeOnly(17, 0),
+            new TimeOnly(9, 0)
         );
 
         // Act
@@ -98,8 +98,8 @@ public class CreateScheduleCommandValidatorTests
         var command = new CreateScheduleCommand(
             Guid.NewGuid(),
             DayOfWeek.Monday,
-            TimeSpan.FromHours(9),
-            TimeSpan.FromHours(9)
+            new TimeOnly(9, 0),
+            new TimeOnly(9, 0)
         );
 
         // Act

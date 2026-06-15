@@ -34,14 +34,14 @@ public class UpdateScheduleCommandHandlerTests
         var existingSchedule = Schedule.Create(
             doctorId,
             DayOfWeek.Monday,
-            TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(17))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(17, 0))
         );
 
         var command = new UpdateScheduleCommand(
             doctorId,
             DayOfWeek.Monday,
-            TimeSpan.FromHours(10),
-            TimeSpan.FromHours(14)
+            new TimeOnly(10, 0),
+            new TimeOnly(14, 0)
         );
 
         _scheduleRepositoryMock
@@ -77,14 +77,14 @@ public class UpdateScheduleCommandHandlerTests
         var existingSchedule = Schedule.Create(
             doctorId,
             DayOfWeek.Monday,
-            TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(17))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(17, 0))
         );
 
         var command = new UpdateScheduleCommand(
             doctorId,
             DayOfWeek.Monday,
-            TimeSpan.FromHours(10),
-            TimeSpan.FromHours(14)
+            new TimeOnly(10, 0),
+            new TimeOnly(14, 0)
         );
 
         _scheduleRepositoryMock
@@ -116,8 +116,8 @@ public class UpdateScheduleCommandHandlerTests
         var command = new UpdateScheduleCommand(
             doctorId,
             DayOfWeek.Monday,
-            TimeSpan.FromHours(10),
-            TimeSpan.FromHours(14)
+            new TimeOnly(10, 0),
+            new TimeOnly(14, 0)
         );
 
         _scheduleRepositoryMock

@@ -21,12 +21,8 @@ public class SetupWeeklyScheduleCommandValidatorTests
         var command = new SetupWeeklyScheduleCommand(
             Guid.NewGuid(),
             [
-                new ScheduleSlot(DayOfWeek.Monday, TimeSpan.FromHours(8), TimeSpan.FromHours(13)),
-                new ScheduleSlot(
-                    DayOfWeek.Wednesday,
-                    TimeSpan.FromHours(14),
-                    TimeSpan.FromHours(18)
-                ),
+                new ScheduleSlot(DayOfWeek.Monday, new TimeOnly(8, 0), new TimeOnly(13, 0)),
+                new ScheduleSlot(DayOfWeek.Wednesday, new TimeOnly(14, 0), new TimeOnly(18, 0)),
             ]
         );
 
@@ -43,7 +39,7 @@ public class SetupWeeklyScheduleCommandValidatorTests
         // Arrange
         var command = new SetupWeeklyScheduleCommand(
             Guid.Empty,
-            [new ScheduleSlot(DayOfWeek.Monday, TimeSpan.FromHours(8), TimeSpan.FromHours(13))]
+            [new ScheduleSlot(DayOfWeek.Monday, new TimeOnly(8, 0), new TimeOnly(13, 0))]
         );
 
         // Act
@@ -76,7 +72,7 @@ public class SetupWeeklyScheduleCommandValidatorTests
         // Arrange
         var command = new SetupWeeklyScheduleCommand(
             Guid.NewGuid(),
-            [new ScheduleSlot((DayOfWeek)99, TimeSpan.FromHours(8), TimeSpan.FromHours(13))]
+            [new ScheduleSlot((DayOfWeek)99, new TimeOnly(8, 0), new TimeOnly(13, 0))]
         );
 
         // Act
@@ -96,7 +92,7 @@ public class SetupWeeklyScheduleCommandValidatorTests
         // Arrange
         var command = new SetupWeeklyScheduleCommand(
             Guid.NewGuid(),
-            [new ScheduleSlot(DayOfWeek.Monday, TimeSpan.FromHours(17), TimeSpan.FromHours(8))]
+            [new ScheduleSlot(DayOfWeek.Monday, new TimeOnly(17, 0), new TimeOnly(8, 0))]
         );
 
         // Act

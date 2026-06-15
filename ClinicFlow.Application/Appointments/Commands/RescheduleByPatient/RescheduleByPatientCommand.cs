@@ -6,7 +6,7 @@ public sealed record RescheduleByPatientCommand(
     Guid InitiatorUserId,
     Guid AppointmentId,
     DateTime NewDate,
-    TimeSpan NewStartTime,
-    TimeSpan NewEndTime,
+    TimeOnly NewStartTime,
+    TimeOnly NewEndTime,
     string? NewPatientNotes = null
 ) : IRequest;

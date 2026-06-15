@@ -16,7 +16,7 @@ public class ScheduleTests
         // Arrange
         var doctorId = Guid.NewGuid();
         var dayOfWeek = DayOfWeek.Monday;
-        var timeRange = TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(17));
+        var timeRange = TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(17, 0));
 
         // Act
         var schedule = Schedule.Create(doctorId, dayOfWeek, timeRange);
@@ -57,7 +57,10 @@ public class ScheduleTests
             Schedule.Create(
                 Guid.Parse(doctorIdStr),
                 dayOfWeek,
-                TimeRange.Create(TimeSpan.FromHours(startHour), TimeSpan.FromHours(endHour))
+                TimeRange.Create(
+                    TimeOnly.FromTimeSpan(TimeSpan.FromHours(startHour)),
+                    TimeOnly.FromTimeSpan(TimeSpan.FromHours(endHour))
+                )
             );
 
         // Assert
@@ -96,15 +99,18 @@ public class ScheduleTests
         var schedule = Schedule.Create(
             Guid.NewGuid(),
             DayOfWeek.Monday,
-            TimeRange.Create(TimeSpan.FromHours(scheduleStart), TimeSpan.FromHours(scheduleEnd))
+            TimeRange.Create(
+                TimeOnly.FromTimeSpan(TimeSpan.FromHours(scheduleStart)),
+                TimeOnly.FromTimeSpan(TimeSpan.FromHours(scheduleEnd))
+            )
         );
 
         // Act & Assert
         schedule
             .CoversTimeRange(
                 TimeRange.Create(
-                    TimeSpan.FromHours(requestedStart),
-                    TimeSpan.FromHours(requestedEnd)
+                    TimeOnly.FromTimeSpan(TimeSpan.FromHours(requestedStart)),
+                    TimeOnly.FromTimeSpan(TimeSpan.FromHours(requestedEnd))
                 )
             )
             .Should()
@@ -172,7 +178,7 @@ public class ScheduleTests
 
         // Assert
         schedule
-            .CoversTimeRange(TimeRange.Create(TimeSpan.FromHours(10), TimeSpan.FromHours(12)))
+            .CoversTimeRange(TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(12, 0)))
             .Should()
             .BeFalse();
     }
@@ -249,7 +255,7 @@ public class ScheduleTests
             Schedule.Create(
                 _doctorId,
                 DayOfWeek.Monday,
-                TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(17))
+                TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(17, 0))
             );
     }
 }

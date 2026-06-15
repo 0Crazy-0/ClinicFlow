@@ -50,7 +50,7 @@ public class ScheduleDeactivatedEventHandlerTests
             doctorId,
             Guid.NewGuid(),
             nextMondayDate,
-            TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(10))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
 
         _appointmentRepositoryMock
@@ -94,7 +94,7 @@ public class ScheduleDeactivatedEventHandlerTests
             doctorId,
             Guid.NewGuid(),
             mondayDate,
-            TimeRange.Create(TimeSpan.FromHours(15), TimeSpan.FromHours(16))
+            TimeRange.Create(new TimeOnly(15, 0), new TimeOnly(16, 0))
         );
 
         _appointmentRepositoryMock
@@ -110,7 +110,7 @@ public class ScheduleDeactivatedEventHandlerTests
         var newSchedule = Schedule.Create(
             doctorId,
             DayOfWeek.Monday,
-            TimeRange.Create(TimeSpan.FromHours(10), TimeSpan.FromHours(14))
+            TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(14, 0))
         );
 
         _scheduleRepositoryMock
@@ -144,7 +144,7 @@ public class ScheduleDeactivatedEventHandlerTests
             doctorId,
             Guid.NewGuid(),
             mondayDate,
-            TimeRange.Create(TimeSpan.FromHours(10), TimeSpan.FromHours(11))
+            TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0))
         );
 
         _appointmentRepositoryMock
@@ -160,7 +160,7 @@ public class ScheduleDeactivatedEventHandlerTests
         var newSchedule = Schedule.Create(
             doctorId,
             DayOfWeek.Monday,
-            TimeRange.Create(TimeSpan.FromHours(10), TimeSpan.FromHours(14))
+            TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(14, 0))
         );
 
         _scheduleRepositoryMock
@@ -185,7 +185,9 @@ public class ScheduleDeactivatedEventHandlerTests
     public async Task Handle_ShouldNotMarkAppointment_WhenAppointmentIsOnDifferentDayOfWeek()
     {
         // Arrange
-        _fakeTime.SetUtcNow(DateTimeOffset.Parse("2024-01-01T00:00:00Z")); // Monday
+        _fakeTime.SetUtcNow(
+            DateTimeOffset.Parse("2024-01-01T00:00:00Z", CultureInfo.InvariantCulture)
+        ); // Monday
 
         var doctorId = Guid.NewGuid();
         var tuesdayDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date;
@@ -194,7 +196,7 @@ public class ScheduleDeactivatedEventHandlerTests
             doctorId,
             Guid.NewGuid(),
             tuesdayDate,
-            TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(10))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
 
         _appointmentRepositoryMock

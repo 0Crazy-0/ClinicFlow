@@ -56,14 +56,14 @@ public class ReassignAppointmentCommandHandlerTests
             appointment.Id,
             newDoctor.Id,
             newDate,
-            TimeSpan.FromHours(10),
-            TimeSpan.FromHours(11)
+            new TimeOnly(10, 0),
+            new TimeOnly(11, 0)
         );
 
         var shedule = Schedule.Create(
             newDoctor.Id,
             newDate.DayOfWeek,
-            TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(17))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(17, 0))
         );
 
         _appointmentRepositoryMock
@@ -115,8 +115,8 @@ public class ReassignAppointmentCommandHandlerTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             DateTime.UtcNow.AddDays(1),
-            TimeSpan.FromHours(10),
-            TimeSpan.FromHours(11)
+            new TimeOnly(10, 0),
+            new TimeOnly(11, 0)
         );
 
         _appointmentRepositoryMock
@@ -144,8 +144,8 @@ public class ReassignAppointmentCommandHandlerTests
             appointment.Id,
             Guid.NewGuid(),
             DateTime.UtcNow.AddDays(1),
-            TimeSpan.FromHours(10),
-            TimeSpan.FromHours(11)
+            new TimeOnly(10, 0),
+            new TimeOnly(11, 0)
         );
 
         _appointmentRepositoryMock
@@ -176,7 +176,7 @@ public class ReassignAppointmentCommandHandlerTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             scheduledDate,
-            TimeRange.Create(TimeSpan.FromHours(9), TimeSpan.FromHours(10))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
 
         appointment.MarkAsRequiresReassignment();
