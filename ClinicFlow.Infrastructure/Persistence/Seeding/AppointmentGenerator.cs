@@ -72,7 +72,8 @@ public class AppointmentGenerator(AppointmentSeedingArgs args, DateTime baseDate
             );
         }
 
-        var actionTime = apptDate.Add(timeRange.Start - TimeOnly.MinValue).AddMinutes(-10);
+        var actionTime = apptDate.ToDateTime(timeRange.Start, DateTimeKind.Utc).AddMinutes(-10);
+
         string? receptionistNotes = status
             is AppointmentStatus.Completed
                 or AppointmentStatus.CheckedIn
@@ -169,7 +170,7 @@ public class AppointmentGenerator(AppointmentSeedingArgs args, DateTime baseDate
         return baseDate.AddDays(daysUntilTarget is 0 ? 7 : daysUntilTarget);
     }
 
-    private static DateTime ResolveAppointmentDate(
+    private static DateOnly ResolveAppointmentDate(
         Schedule schedule,
         AppointmentStatus status,
         int index,
@@ -177,6 +178,7 @@ public class AppointmentGenerator(AppointmentSeedingArgs args, DateTime baseDate
     )
     {
         var date = GetNextWeekday(baseDate, schedule.DayOfWeek);
+        var dateOnly = DateOnly.FromDateTime(date);
 
         bool isPast =
             status
@@ -188,12 +190,12 @@ public class AppointmentGenerator(AppointmentSeedingArgs args, DateTime baseDate
         if (isPast)
         {
             var weeksBack = (index * 17 % 26) + 1;
-            return date.AddDays(-7 * weeksBack);
+            return dateOnly.AddDays(-7 * weeksBack);
         }
 
         var weeksAhead = (index * 3 % 4) + 1;
 
-        return date.AddDays(7 * weeksAhead);
+        return dateOnly.AddDays(7 * weeksAhead);
     }
 
     private static void TransitionAppointmentToStatus(

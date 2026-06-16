@@ -12,15 +12,15 @@ public interface IAppointmentRepository
 
     Task<(IReadOnlyList<Appointment> Items, int TotalCount)> GetByDoctorIdPaginatedAsync(
         Guid doctorId,
-        DateTime date,
+        DateOnly date,
         int pageNumber,
         int pageSize,
         CancellationToken cancellationToken = default
     );
 
     Task<(IReadOnlyList<Appointment> Items, int TotalCount)> GetByDateRangePaginatedAsync(
-        DateTime startDate,
-        DateTime endDate,
+        DateOnly startDate,
+        DateOnly endDate,
         int pageNumber,
         int pageSize,
         CancellationToken cancellationToken = default
@@ -51,14 +51,14 @@ public interface IAppointmentRepository
     /// </summary>
     Task<bool> HasConflictAsync(
         Guid doctorId,
-        DateTime scheduledDate,
+        DateOnly scheduledDate,
         TimeRange timeRange,
         CancellationToken cancellationToken = default
     );
 
     Task<IReadOnlyList<Appointment>> GetFutureScheduledByDoctorIdAsync(
         Guid doctorId,
-        DateTime referenceDate,
+        DateOnly referenceDate,
         CancellationToken cancellationToken = default
     );
 

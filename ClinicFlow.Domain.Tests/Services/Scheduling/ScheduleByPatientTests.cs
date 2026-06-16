@@ -160,7 +160,7 @@ public class ScheduleByPatientTests
             InitiatorPatient = initiator,
             TargetPatient = target,
             DoctorId = Guid.NewGuid(),
-            ScheduledDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
+            ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange = CreateTimeRange(10, 11),
             IsInitiatorPhoneVerified = true,
         };
@@ -214,7 +214,7 @@ public class ScheduleByPatientTests
             InitiatorPatient = initiator,
             TargetPatient = target,
             DoctorId = Guid.NewGuid(),
-            ScheduledDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
+            ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange = CreateTimeRange(10, 11),
             IsInitiatorPhoneVerified = true,
         };
@@ -263,7 +263,7 @@ public class ScheduleByPatientTests
             InitiatorPatient = familyMember,
             TargetPatient = familyMember,
             DoctorId = Guid.NewGuid(),
-            ScheduledDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
+            ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange = CreateTimeRange(10, 11),
             IsInitiatorPhoneVerified = true,
         };
@@ -307,7 +307,7 @@ public class ScheduleByPatientTests
             InitiatorPatient = target,
             TargetPatient = target,
             DoctorId = Guid.NewGuid(),
-            ScheduledDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
+            ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange = CreateTimeRange(10, 11),
             IsInitiatorPhoneVerified = false,
         };
@@ -353,7 +353,7 @@ public class ScheduleByPatientTests
             InitiatorPatient = incompletePatient,
             TargetPatient = incompletePatient,
             DoctorId = Guid.NewGuid(),
-            ScheduledDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
+            ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange = CreateTimeRange(10, 11),
             IsInitiatorPhoneVerified = true,
         };
@@ -397,7 +397,7 @@ public class ScheduleByPatientTests
             InitiatorPatient = target,
             TargetPatient = target,
             DoctorId = Guid.NewGuid(),
-            ScheduledDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
+            ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange = CreateTimeRange(10, 11),
             IsInitiatorPhoneVerified = true,
         };
@@ -457,7 +457,7 @@ public class ScheduleByPatientTests
             InitiatorPatient = target,
             TargetPatient = target,
             DoctorId = Guid.NewGuid(),
-            ScheduledDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
+            ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange = CreateTimeRange(10, 11),
             IsInitiatorPhoneVerified = true,
         };
@@ -501,14 +501,14 @@ public class ScheduleByPatientTests
             InitiatorPatient = target,
             TargetPatient = target,
             DoctorId = Guid.NewGuid(),
-            ScheduledDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
-            TimeRange = CreateTimeRange(18, 19), // 6pm - 7pm
+            ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
+            TimeRange = CreateTimeRange(18, 19),
             IsInitiatorPhoneVerified = true,
         };
 
         var context = new AppointmentSchedulingContext
         {
-            DoctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek, 9, 17), // 9am - 5pm
+            DoctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek, 9, 17),
             HasConflict = false,
         };
 
@@ -545,14 +545,14 @@ public class ScheduleByPatientTests
             InitiatorPatient = target,
             TargetPatient = target,
             DoctorId = Guid.NewGuid(),
-            ScheduledDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
-            TimeRange = CreateTimeRange(10, 11), // 10am - 11am
+            ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
+            TimeRange = CreateTimeRange(10, 11),
             IsInitiatorPhoneVerified = true,
         };
 
         var context = new AppointmentSchedulingContext
         {
-            DoctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek, 9, 17), // 9am - 5pm
+            DoctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek, 9, 17),
             HasConflict = true,
         };
 
@@ -589,7 +589,7 @@ public class ScheduleByPatientTests
             InitiatorPatient = target,
             TargetPatient = target,
             DoctorId = Guid.NewGuid(),
-            ScheduledDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
+            ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange = CreateTimeRange(10, 11),
             IsInitiatorPhoneVerified = true,
         };

@@ -51,7 +51,7 @@ public class ReassignAppointmentCommandHandlerTests
             ConsultationRoom.Create(1, "Room A", 1)
         );
 
-        var newDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(3).Date;
+        var newDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3));
         var command = new ReassignAppointmentCommand(
             appointment.Id,
             newDoctor.Id,
@@ -114,7 +114,7 @@ public class ReassignAppointmentCommandHandlerTests
         var command = new ReassignAppointmentCommand(
             Guid.NewGuid(),
             Guid.NewGuid(),
-            DateTime.UtcNow.AddDays(1),
+            DateOnly.FromDateTime(DateTime.UtcNow).AddDays(1),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0)
         );
@@ -143,7 +143,7 @@ public class ReassignAppointmentCommandHandlerTests
         var command = new ReassignAppointmentCommand(
             appointment.Id,
             Guid.NewGuid(),
-            DateTime.UtcNow.AddDays(1),
+            DateOnly.FromDateTime(DateTime.UtcNow).AddDays(1),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0)
         );
@@ -170,12 +170,11 @@ public class ReassignAppointmentCommandHandlerTests
 
     private Appointment CreateDisplacedAppointment()
     {
-        var scheduledDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(2).Date;
         var appointment = Appointment.Schedule(
             Guid.NewGuid(),
             Guid.NewGuid(),
             Guid.NewGuid(),
-            scheduledDate,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2)),
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
 

@@ -7,7 +7,7 @@ public sealed record AppointmentDto(
     Guid PatientId,
     Guid DoctorId,
     Guid AppointmentTypeId,
-    DateTime ScheduledDate,
+    DateOnly ScheduledDate,
     TimeOnly StartTime,
     TimeOnly EndTime,
     AppointmentStatus Status,

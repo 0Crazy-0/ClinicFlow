@@ -155,12 +155,12 @@ public class Patient : BaseEntity
             throw new IncompleteProfileException(DomainErrors.Patient.ProfileIncomplete);
     }
 
-    public int GetAge(DateTime referenceTime)
+    public int GetAge(DateOnly referenceDate)
     {
-        var today = referenceTime.Date;
-        var age = today.Year - DateOfBirth.Year;
+        var age = referenceDate.Year - DateOfBirth.Year;
+        var dobOnly = DateOnly.FromDateTime(DateOfBirth);
 
-        if (DateOfBirth.AddYears(age) > today)
+        if (dobOnly.AddYears(age) > referenceDate)
             age--;
 
         return age;
@@ -168,7 +168,7 @@ public class Patient : BaseEntity
 
     internal static void EnsureNotBlocked(
         IReadOnlyList<PatientPenalty> penalties,
-        DateTime referenceTime
+        DateOnly referenceDate
     )
     {
         var activePenalties = penalties
@@ -176,14 +176,15 @@ public class Patient : BaseEntity
                 !p.IsRemoved
                 && p.Type is PenaltyType.TemporaryBlock
                 && p.BlockedUntil.HasValue
-                && p.BlockedUntil > referenceTime
+                && DateOnly.FromDateTime(p.BlockedUntil.Value) > referenceDate
             )
             .ToList();
 
         if (activePenalties.Count > 0)
             throw new PatientBlockedException(
                 DomainErrors.Patient.Blocked,
-                activePenalties.Max(p => p.BlockedUntil) ?? referenceTime
+                activePenalties.Max(p => p.BlockedUntil)
+                    ?? referenceDate.ToDateTime(TimeOnly.MinValue)
             );
     }
 }

@@ -22,7 +22,7 @@ public class RescheduleByStaffCommandValidatorTests
         var command = new RescheduleByStaffCommand(
             Guid.NewGuid(),
             Guid.NewGuid(),
-            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0),
             false
@@ -42,7 +42,7 @@ public class RescheduleByStaffCommandValidatorTests
         var command = new RescheduleByStaffCommand(
             Guid.Empty,
             Guid.NewGuid(),
-            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0),
             false
@@ -64,7 +64,7 @@ public class RescheduleByStaffCommandValidatorTests
         var command = new RescheduleByStaffCommand(
             Guid.NewGuid(),
             Guid.Empty,
-            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0),
             false
@@ -86,7 +86,7 @@ public class RescheduleByStaffCommandValidatorTests
         var command = new RescheduleByStaffCommand(
             Guid.NewGuid(),
             Guid.NewGuid(),
-            _fakeTime.GetUtcNow().UtcDateTime.AddDays(-1).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(-1)),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0),
             false
@@ -108,7 +108,7 @@ public class RescheduleByStaffCommandValidatorTests
         var command = new RescheduleByStaffCommand(
             Guid.NewGuid(),
             Guid.NewGuid(),
-            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(12, 0),
             new TimeOnly(11, 0),
             false

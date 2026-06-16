@@ -95,18 +95,12 @@ public class AppointmentMarkedAsNoShowEventHandlerTests
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
-    private static Appointment CreateAppointment(DateTime referenceTime)
-    {
-        var scheduledDateTime = referenceTime.AddDays(1);
-        return Appointment.Schedule(
+    private static Appointment CreateAppointment(DateTime referenceTime) =>
+        Appointment.Schedule(
             Guid.NewGuid(),
             Guid.NewGuid(),
             Guid.NewGuid(),
-            scheduledDateTime.Date,
-            TimeRange.Create(
-                TimeOnly.FromDateTime(scheduledDateTime),
-                TimeOnly.FromDateTime(scheduledDateTime.AddHours(1))
-            )
+            DateOnly.FromDateTime(referenceTime.AddDays(1)),
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
-    }
 }

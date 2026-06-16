@@ -16,7 +16,7 @@ public class GetAppointmentsByDoctorIdQueryValidatorTests
         // Arrange
         var query = new GetAppointmentsByDoctorIdQuery(
             Guid.NewGuid(),
-            _fakeTime.GetUtcNow().UtcDateTime,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime),
             1,
             10
         );
@@ -34,7 +34,7 @@ public class GetAppointmentsByDoctorIdQueryValidatorTests
         // Arrange
         var query = new GetAppointmentsByDoctorIdQuery(
             Guid.Empty,
-            _fakeTime.GetUtcNow().UtcDateTime,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime),
             1,
             10
         );
@@ -71,7 +71,7 @@ public class GetAppointmentsByDoctorIdQueryValidatorTests
         // Arrange
         var query = new GetAppointmentsByDoctorIdQuery(
             Guid.NewGuid(),
-            _fakeTime.GetUtcNow().UtcDateTime,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime),
             pageNumber,
             10
         );
@@ -94,7 +94,7 @@ public class GetAppointmentsByDoctorIdQueryValidatorTests
         // Arrange
         var query = new GetAppointmentsByDoctorIdQuery(
             Guid.NewGuid(),
-            _fakeTime.GetUtcNow().UtcDateTime,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime),
             1,
             pageSize
         );

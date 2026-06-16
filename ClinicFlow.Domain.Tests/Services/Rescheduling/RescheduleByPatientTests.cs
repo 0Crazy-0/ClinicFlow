@@ -154,7 +154,7 @@ public class RescheduleByPatientTests
         {
             InitiatorPatient = target,
             TargetPatient = target,
-            NewDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(3).Date,
+            NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
             NewTimeRange = CreateTimeRange(10, 11),
             IsInitiatorPhoneVerified = true,
         };
@@ -203,7 +203,7 @@ public class RescheduleByPatientTests
         {
             InitiatorPatient = initiator,
             TargetPatient = target,
-            NewDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(3).Date,
+            NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
             NewTimeRange = CreateTimeRange(10, 11),
             IsInitiatorPhoneVerified = true,
         };
@@ -238,7 +238,7 @@ public class RescheduleByPatientTests
         var initiator = Patient.CreateFamilyMember(
             userId,
             PersonName.Create("Child"),
-            Enums.PatientRelationship.Child,
+            PatientRelationship.Child,
             _fakeTime.GetUtcNow().UtcDateTime.AddYears(-10),
             _fakeTime.GetUtcNow().UtcDateTime
         );
@@ -257,7 +257,7 @@ public class RescheduleByPatientTests
         {
             InitiatorPatient = initiator,
             TargetPatient = target,
-            NewDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(3).Date,
+            NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
             NewTimeRange = CreateTimeRange(10, 11),
             IsInitiatorPhoneVerified = true,
         };
@@ -301,7 +301,7 @@ public class RescheduleByPatientTests
         {
             InitiatorPatient = target,
             TargetPatient = target,
-            NewDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(3).Date,
+            NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
             NewTimeRange = CreateTimeRange(10, 11),
             IsInitiatorPhoneVerified = false,
         };
@@ -345,7 +345,7 @@ public class RescheduleByPatientTests
         {
             InitiatorPatient = target,
             TargetPatient = target,
-            NewDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(3).Date,
+            NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
             NewTimeRange = CreateTimeRange(10, 11),
             IsInitiatorPhoneVerified = true,
         };
@@ -398,14 +398,14 @@ public class RescheduleByPatientTests
         {
             InitiatorPatient = target,
             TargetPatient = target,
-            NewDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(3).Date,
-            NewTimeRange = CreateTimeRange(18, 19), // 6pm - 7pm
+            NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
+            NewTimeRange = CreateTimeRange(18, 19),
             IsInitiatorPhoneVerified = true,
         };
 
         var context = new AppointmentReschedulingContext
         {
-            DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek, 9, 17), // 9am - 5pm
+            DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek, 9, 17),
             HasConflict = false,
         };
 
@@ -442,7 +442,7 @@ public class RescheduleByPatientTests
         {
             InitiatorPatient = target,
             TargetPatient = target,
-            NewDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(3).Date,
+            NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
             NewTimeRange = CreateTimeRange(10, 11),
             IsInitiatorPhoneVerified = true,
         };
@@ -485,7 +485,7 @@ public class RescheduleByPatientTests
         {
             InitiatorPatient = target,
             TargetPatient = target,
-            NewDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(3).Date,
+            NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
             NewTimeRange = CreateTimeRange(10, 11),
             IsInitiatorPhoneVerified = true,
         };
@@ -530,7 +530,7 @@ public class RescheduleByPatientTests
         {
             InitiatorPatient = target,
             TargetPatient = target,
-            NewDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(3).Date,
+            NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
             NewTimeRange = CreateTimeRange(10, 11),
             IsInitiatorPhoneVerified = true,
             NewPatientNotes = "Rescheduled notes",
@@ -573,7 +573,7 @@ public class RescheduleByPatientTests
         {
             InitiatorPatient = target,
             TargetPatient = target,
-            NewDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(3).Date,
+            NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
             NewTimeRange = CreateTimeRange(10, 11),
             IsInitiatorPhoneVerified = true,
             NewPatientNotes = null,
@@ -645,17 +645,12 @@ public class RescheduleByPatientTests
 
     private Appointment CreateAppointment(Guid patientId)
     {
-        var scheduledDateTime = _fakeTime.GetUtcNow().UtcDateTime.AddDays(2).Date;
-
         var appointment = Appointment.Schedule(
             patientId,
             Guid.NewGuid(),
             Guid.NewGuid(),
-            scheduledDateTime.Date,
-            TimeRange.Create(
-                TimeOnly.FromDateTime(scheduledDateTime),
-                TimeOnly.FromDateTime(scheduledDateTime.AddHours(1))
-            )
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2)),
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
 
         // Clear construction events for test isolation

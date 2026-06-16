@@ -77,7 +77,7 @@ public class GetAppointmentByIdQueryHandlerTests
             patientId,
             doctorId,
             Guid.NewGuid(),
-            _fakeTime.GetUtcNow().UtcDateTime.Date.AddDays(1),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
         appointment.SetId(id);

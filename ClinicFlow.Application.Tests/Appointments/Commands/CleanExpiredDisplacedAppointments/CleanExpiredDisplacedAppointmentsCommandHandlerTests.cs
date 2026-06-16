@@ -84,7 +84,7 @@ public class CleanExpiredDisplacedAppointmentsCommandHandlerTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             Guid.NewGuid(),
-            scheduledDate.Date,
+            DateOnly.FromDateTime(scheduledDate),
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
 

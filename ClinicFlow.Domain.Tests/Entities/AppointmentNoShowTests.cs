@@ -90,7 +90,7 @@ public class AppointmentNoShowTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             Guid.NewGuid(),
-            scheduledDateTime.Date,
+            DateOnly.FromDateTime(scheduledDateTime),
             TimeRange.Create(
                 TimeOnly.FromDateTime(scheduledDateTime),
                 TimeOnly.FromDateTime(scheduledDateTime.AddHours(1))

@@ -49,7 +49,7 @@ public class StartAppointmentByDoctorCommandHandlerTests
             Guid.NewGuid(),
             doctor.Id,
             Guid.NewGuid(),
-            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0))
         );
 
@@ -102,7 +102,7 @@ public class StartAppointmentByDoctorCommandHandlerTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             Guid.NewGuid(),
-            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0))
         );
 

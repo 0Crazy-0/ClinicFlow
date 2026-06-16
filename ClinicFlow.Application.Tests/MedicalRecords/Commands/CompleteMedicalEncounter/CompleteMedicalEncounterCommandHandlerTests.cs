@@ -299,7 +299,7 @@ public class CompleteMedicalEncounterCommandHandlerTests
             patientId,
             doctorId,
             appointmentTypeId,
-            dt.AddDays(1).Date,
+            DateOnly.FromDateTime(dt.AddDays(1)),
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
         appointment.SetId(id);

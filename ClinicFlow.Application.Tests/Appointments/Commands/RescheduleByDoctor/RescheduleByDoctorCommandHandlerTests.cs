@@ -44,7 +44,7 @@ public class RescheduleByDoctorCommandHandlerTests
     public async Task Handle_ShouldSucceed_WhenValidRequest()
     {
         // Arrange
-        var newDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date;
+        var newDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
         var newStartTime = new TimeOnly(10, 0);
         var newEndTime = new TimeOnly(11, 0);
         var command = new RescheduleByDoctorCommand(
@@ -123,7 +123,7 @@ public class RescheduleByDoctorCommandHandlerTests
         var command = new RescheduleByDoctorCommand(
             Guid.NewGuid(),
             Guid.NewGuid(),
-            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0),
             false
@@ -152,7 +152,7 @@ public class RescheduleByDoctorCommandHandlerTests
         var command = new RescheduleByDoctorCommand(
             Guid.NewGuid(),
             Guid.NewGuid(),
-            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0),
             false
@@ -186,7 +186,7 @@ public class RescheduleByDoctorCommandHandlerTests
         var command = new RescheduleByDoctorCommand(
             Guid.NewGuid(),
             Guid.NewGuid(),
-            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0),
             false
@@ -225,7 +225,7 @@ public class RescheduleByDoctorCommandHandlerTests
         var command = new RescheduleByDoctorCommand(
             Guid.NewGuid(),
             Guid.NewGuid(),
-            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0),
             false
@@ -269,7 +269,7 @@ public class RescheduleByDoctorCommandHandlerTests
             patientId,
             doctorId,
             typeId,
-            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0))
         );
 

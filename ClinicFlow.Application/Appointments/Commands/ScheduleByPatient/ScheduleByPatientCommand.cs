@@ -7,7 +7,7 @@ public sealed record ScheduleByPatientCommand(
     Guid TargetPatientId,
     Guid DoctorId,
     Guid AppointmentTypeId,
-    DateTime ScheduledDate,
+    DateOnly ScheduledDate,
     TimeOnly StartTime,
     TimeOnly EndTime,
     string? PatientNotes = null

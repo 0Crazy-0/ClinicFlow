@@ -65,7 +65,7 @@ public static class AppointmentReschedulingService
             throw new AppointmentConflictException(
                 DomainErrors.Appointment.Conflict,
                 appointment.DoctorId,
-                args.NewDate.Add(args.NewTimeRange.Start - TimeOnly.MinValue)
+                args.NewDate.ToDateTime(args.NewTimeRange.Start)
             );
 
         appointment.Reschedule(args.NewDate, args.NewTimeRange);
@@ -108,7 +108,7 @@ public static class AppointmentReschedulingService
                 throw new AppointmentConflictException(
                     DomainErrors.Appointment.Conflict,
                     appointment.DoctorId,
-                    args.NewDate.Add(args.NewTimeRange.Start - TimeOnly.MinValue)
+                    args.NewDate.ToDateTime(args.NewTimeRange.Start)
                 );
         }
 
@@ -144,7 +144,7 @@ public static class AppointmentReschedulingService
                 throw new AppointmentConflictException(
                     DomainErrors.Appointment.Conflict,
                     appointment.DoctorId,
-                    args.NewDate.Add(args.NewTimeRange.Start - TimeOnly.MinValue)
+                    args.NewDate.ToDateTime(args.NewTimeRange.Start)
                 );
         }
 
@@ -154,7 +154,7 @@ public static class AppointmentReschedulingService
     private static void EnsureDoctorIsAvailable(
         Schedule? schedule,
         Guid doctorId,
-        DateTime scheduledDate,
+        DateOnly scheduledDate,
         TimeRange timeRange
     )
     {

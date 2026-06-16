@@ -432,14 +432,15 @@ public class PatientTests
         );
 
         // Act & Assert
-        patient.GetAge(referenceTime).Should().Be(yearsAgo);
+        patient.GetAge(DateOnly.FromDateTime(referenceTime)).Should().Be(yearsAgo);
     }
 
     [Fact]
     public void EnsureNotBlocked_ShouldNotThrow_WhenNoPenalties()
     {
         // Arrange & Act
-        var act = () => Patient.EnsureNotBlocked([], _fakeTime.GetUtcNow().UtcDateTime);
+        var act = () =>
+            Patient.EnsureNotBlocked([], DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime));
 
         // Assert
         act.Should().NotThrow();
@@ -457,7 +458,11 @@ public class PatientTests
         };
 
         // Act
-        var act = () => Patient.EnsureNotBlocked(penalties, _fakeTime.GetUtcNow().UtcDateTime);
+        var act = () =>
+            Patient.EnsureNotBlocked(
+                penalties,
+                DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime)
+            );
 
         // Assert
         act.Should().NotThrow();
@@ -479,7 +484,11 @@ public class PatientTests
         };
 
         // Act
-        var act = () => Patient.EnsureNotBlocked(penalties, _fakeTime.GetUtcNow().UtcDateTime);
+        var act = () =>
+            Patient.EnsureNotBlocked(
+                penalties,
+                DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime)
+            );
 
         // Assert
         act.Should().NotThrow();
@@ -490,7 +499,7 @@ public class PatientTests
     {
         // Arrange
         var patient = CreatePatient();
-        var blockedUntil = _fakeTime.GetUtcNow().UtcDateTime.Date.AddDays(5);
+        var blockedUntil = _fakeTime.GetUtcNow().UtcDateTime.AddDays(5).Date;
         var penalties = new List<PatientPenalty>
         {
             PatientPenalty.CreateAutomaticBlock(
@@ -502,7 +511,11 @@ public class PatientTests
         };
 
         // Act
-        var act = () => Patient.EnsureNotBlocked(penalties, _fakeTime.GetUtcNow().UtcDateTime);
+        var act = () =>
+            Patient.EnsureNotBlocked(
+                penalties,
+                DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime)
+            );
 
         // Assert
         act.Should()
@@ -527,7 +540,11 @@ public class PatientTests
         var penalties = new List<PatientPenalty> { penalty };
 
         // Act
-        var act = () => Patient.EnsureNotBlocked(penalties, _fakeTime.GetUtcNow().UtcDateTime);
+        var act = () =>
+            Patient.EnsureNotBlocked(
+                penalties,
+                DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime)
+            );
 
         // Assert
         act.Should().NotThrow();

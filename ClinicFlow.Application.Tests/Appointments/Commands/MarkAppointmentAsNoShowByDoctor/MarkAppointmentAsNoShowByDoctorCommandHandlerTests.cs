@@ -118,16 +118,12 @@ public class MarkAppointmentAsNoShowByDoctorCommandHandlerTests
 
     private Appointment CreateAppointment(Guid doctorId)
     {
-        var targetDateTime = _fakeTime.GetUtcNow().UtcDateTime.AddDays(-1);
         return Appointment.Schedule(
             Guid.NewGuid(),
             doctorId,
             Guid.NewGuid(),
-            targetDateTime.Date,
-            TimeRange.Create(
-                TimeOnly.FromDateTime(targetDateTime),
-                TimeOnly.FromDateTime(targetDateTime.AddHours(1))
-            )
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(-1)),
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
     }
 }

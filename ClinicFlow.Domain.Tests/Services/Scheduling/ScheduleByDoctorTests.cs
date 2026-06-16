@@ -160,7 +160,7 @@ public class ScheduleByDoctorTests
         {
             InitiatorDoctor = doctor,
             TargetPatient = target,
-            ScheduledDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
+            ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange = CreateTimeRange(10, 11),
             IsOverbook = false,
             HasGuardianConsentVerified = false,
@@ -209,7 +209,7 @@ public class ScheduleByDoctorTests
         {
             InitiatorDoctor = doctor,
             TargetPatient = target,
-            ScheduledDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
+            ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange = CreateTimeRange(18, 19),
             IsOverbook = true,
         };
@@ -246,14 +246,14 @@ public class ScheduleByDoctorTests
         {
             InitiatorDoctor = doctor,
             TargetPatient = target,
-            ScheduledDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
-            TimeRange = CreateTimeRange(18, 19), // 6pm - 7pm
+            ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
+            TimeRange = CreateTimeRange(18, 19),
             IsOverbook = false,
         };
 
         var context = new AppointmentSchedulingContext
         {
-            DoctorSchedule = CreateSchedule(doctor.Id, args.ScheduledDate.DayOfWeek, 9, 17), // 9am - 5pm
+            DoctorSchedule = CreateSchedule(doctor.Id, args.ScheduledDate.DayOfWeek, 9, 17),
             HasConflict = false,
         };
 
@@ -289,7 +289,7 @@ public class ScheduleByDoctorTests
         {
             InitiatorDoctor = doctor,
             TargetPatient = target,
-            ScheduledDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
+            ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange = CreateTimeRange(10, 11),
             IsOverbook = false,
         };
@@ -332,7 +332,7 @@ public class ScheduleByDoctorTests
         {
             InitiatorDoctor = doctor,
             TargetPatient = target,
-            ScheduledDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
+            ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange = CreateTimeRange(10, 11),
             IsOverbook = false,
         };

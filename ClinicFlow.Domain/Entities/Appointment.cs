@@ -22,7 +22,7 @@ public class Appointment : BaseEntity
 
     public Guid AppointmentTypeId { get; init; }
 
-    public DateTime ScheduledDate { get; private set; }
+    public DateOnly ScheduledDate { get; private set; }
 
     public TimeRange TimeRange { get; private set; }
 
@@ -52,7 +52,7 @@ public class Appointment : BaseEntity
         Guid patientId,
         Guid doctorId,
         Guid appointmentTypeId,
-        DateTime scheduledDate,
+        DateOnly scheduledDate,
         TimeRange timeRange,
         string? patientNotes = null
     )
@@ -60,7 +60,7 @@ public class Appointment : BaseEntity
         PatientId = patientId;
         DoctorId = doctorId;
         AppointmentTypeId = appointmentTypeId;
-        ScheduledDate = scheduledDate.Date;
+        ScheduledDate = scheduledDate;
         TimeRange = timeRange;
         Status = AppointmentStatus.Scheduled;
         RescheduleCount = 0;
@@ -71,7 +71,7 @@ public class Appointment : BaseEntity
         Guid patientId,
         Guid doctorId,
         Guid appointmentTypeId,
-        DateTime scheduledDate,
+        DateOnly scheduledDate,
         TimeRange timeRange,
         string? patientNotes = null
     )
@@ -99,7 +99,7 @@ public class Appointment : BaseEntity
         return appointment;
     }
 
-    internal void Reschedule(DateTime newDate, TimeRange newTimeRange)
+    internal void Reschedule(DateOnly newDate, TimeRange newTimeRange)
     {
         if (RescheduleCount >= 1 || Status is not AppointmentStatus.Scheduled)
             throw new AppointmentReschedulingNotAllowedException(
@@ -182,7 +182,7 @@ public class Appointment : BaseEntity
         Status = AppointmentStatus.RequiresReassignment;
     }
 
-    internal void Reassign(Guid newDoctorId, DateTime newDate, TimeRange newTimeRange)
+    internal void Reassign(Guid newDoctorId, DateOnly newDate, TimeRange newTimeRange)
     {
         if (newTimeRange is null)
             throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);

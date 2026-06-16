@@ -25,7 +25,7 @@ public class GetAppointmentsByDoctorIdQueryHandlerTests
     {
         // Arrange
         var doctorId = Guid.NewGuid();
-        var date = _fakeTime.GetUtcNow().UtcDateTime.Date;
+        var date = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
         var query = new GetAppointmentsByDoctorIdQuery(doctorId, date, 1, 10);
         var appointments = new List<Appointment>
         {
@@ -57,7 +57,7 @@ public class GetAppointmentsByDoctorIdQueryHandlerTests
         // Arrange
         var query = new GetAppointmentsByDoctorIdQuery(
             Guid.NewGuid(),
-            _fakeTime.GetUtcNow().UtcDateTime.Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime),
             1,
             10
         );
@@ -87,7 +87,7 @@ public class GetAppointmentsByDoctorIdQueryHandlerTests
     private static Appointment CreateAppointment(
         Guid patientId,
         Guid doctorId,
-        DateTime scheduledDate
+        DateOnly scheduledDate
     ) =>
         Appointment.Schedule(
             patientId,

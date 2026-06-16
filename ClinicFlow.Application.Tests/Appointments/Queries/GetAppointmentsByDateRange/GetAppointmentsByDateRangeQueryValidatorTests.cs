@@ -14,7 +14,7 @@ public class GetAppointmentsByDateRangeQueryValidatorTests
     public void Validate_ShouldNotHaveError_WhenQueryIsValid()
     {
         // Arrange
-        var now = _fakeTime.GetUtcNow().UtcDateTime;
+        var now = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
         var query = new GetAppointmentsByDateRangeQuery(now, now.AddDays(7), 1, 10);
 
         // Act
@@ -30,7 +30,7 @@ public class GetAppointmentsByDateRangeQueryValidatorTests
         // Arrange
         var query = new GetAppointmentsByDateRangeQuery(
             default,
-            _fakeTime.GetUtcNow().UtcDateTime,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime),
             1,
             10
         );
@@ -49,7 +49,7 @@ public class GetAppointmentsByDateRangeQueryValidatorTests
     {
         // Arrange
         var query = new GetAppointmentsByDateRangeQuery(
-            _fakeTime.GetUtcNow().UtcDateTime,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime),
             default,
             1,
             10
@@ -68,7 +68,7 @@ public class GetAppointmentsByDateRangeQueryValidatorTests
     public void Validate_ShouldHaveError_WhenEndDateIsBeforeStartDate()
     {
         // Arrange
-        var now = _fakeTime.GetUtcNow().UtcDateTime;
+        var now = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
         var query = new GetAppointmentsByDateRangeQuery(now, now.AddDays(-1), 1, 10);
 
         // Act
@@ -84,7 +84,7 @@ public class GetAppointmentsByDateRangeQueryValidatorTests
     public void Validate_ShouldNotHaveError_WhenStartDateEqualsEndDate()
     {
         // Arrange
-        var now = _fakeTime.GetUtcNow().UtcDateTime;
+        var now = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
         var query = new GetAppointmentsByDateRangeQuery(now, now, 1, 10);
 
         // Act
@@ -100,7 +100,7 @@ public class GetAppointmentsByDateRangeQueryValidatorTests
     public void Validate_ShouldHaveError_WhenPageNumberIsLessThanOne(int pageNumber)
     {
         // Arrange
-        var now = _fakeTime.GetUtcNow().UtcDateTime;
+        var now = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
         var query = new GetAppointmentsByDateRangeQuery(now, now.AddDays(7), pageNumber, 10);
 
         // Act
@@ -119,7 +119,7 @@ public class GetAppointmentsByDateRangeQueryValidatorTests
     public void Validate_ShouldHaveError_WhenPageSizeIsOutOfRange(int pageSize)
     {
         // Arrange
-        var now = _fakeTime.GetUtcNow().UtcDateTime;
+        var now = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
         var query = new GetAppointmentsByDateRangeQuery(now, now.AddDays(7), 1, pageSize);
 
         // Act

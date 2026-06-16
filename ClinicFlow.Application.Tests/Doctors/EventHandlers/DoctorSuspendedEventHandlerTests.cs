@@ -36,7 +36,7 @@ public class DoctorSuspendedEventHandlerTests
     {
         // Arrange
         var doctorId = Guid.NewGuid();
-        var referenceDate = _fakeTime.GetUtcNow().UtcDateTime.Date;
+        var referenceDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
         var appointment1 = CreateScheduledAppointment(doctorId, referenceDate.AddDays(1));
         var appointment2 = CreateScheduledAppointment(doctorId, referenceDate.AddDays(5));
 
@@ -44,7 +44,7 @@ public class DoctorSuspendedEventHandlerTests
             .Setup(x =>
                 x.GetFutureScheduledByDoctorIdAsync(
                     doctorId,
-                    It.IsAny<DateTime>(),
+                    It.IsAny<DateOnly>(),
                     It.IsAny<CancellationToken>()
                 )
             )
@@ -73,7 +73,7 @@ public class DoctorSuspendedEventHandlerTests
             .Setup(x =>
                 x.GetFutureScheduledByDoctorIdAsync(
                     doctorId,
-                    It.IsAny<DateTime>(),
+                    It.IsAny<DateOnly>(),
                     It.IsAny<CancellationToken>()
                 )
             )
@@ -89,12 +89,12 @@ public class DoctorSuspendedEventHandlerTests
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
-    private static Appointment CreateScheduledAppointment(Guid doctorId, DateTime scheduledDate) =>
+    private static Appointment CreateScheduledAppointment(Guid doctorId, DateOnly scheduledDate) =>
         Appointment.Schedule(
             Guid.NewGuid(),
             doctorId,
             Guid.NewGuid(),
-            scheduledDate.Date,
+            scheduledDate,
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
 }
