@@ -158,7 +158,7 @@ public class AppointmentTests
     public void Cancel_ShouldSetStatusToCancelled()
     {
         // Arrange
-        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2));
+        var appointment = CreateAppointment();
         var userId = Guid.NewGuid();
 
         // Act
@@ -182,7 +182,7 @@ public class AppointmentTests
     public void Cancel_ShouldThrowException_WhenAlreadyCancelled()
     {
         // Arrange
-        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2));
+        var appointment = CreateAppointment();
         var userId = Guid.NewGuid();
 
         appointment.Cancel(
@@ -210,7 +210,7 @@ public class AppointmentTests
     public void Cancel_ShouldThrowException_WhenAlreadyLateCancelled()
     {
         // Arrange
-        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2));
+        var appointment = CreateAppointment();
         var userId = Guid.NewGuid();
 
         appointment.CancelLate(
@@ -238,7 +238,7 @@ public class AppointmentTests
     public void CancelLate_ShouldSetStatusToLateCancellation()
     {
         // Arrange
-        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2));
+        var appointment = CreateAppointment();
         var userId = Guid.NewGuid();
 
         // Act
@@ -262,7 +262,7 @@ public class AppointmentTests
     public void CancelLate_ShouldThrowException_WhenAlreadyCancelled()
     {
         // Arrange
-        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2));
+        var appointment = CreateAppointment();
         var userId = Guid.NewGuid();
 
         appointment.Cancel(
@@ -290,7 +290,7 @@ public class AppointmentTests
     public void CancelLate_ShouldThrowException_WhenAlreadyLateCancelled()
     {
         // Arrange
-        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2));
+        var appointment = CreateAppointment();
         var userId = Guid.NewGuid();
 
         appointment.CancelLate(
@@ -318,7 +318,7 @@ public class AppointmentTests
     public void Reschedule_ShouldUpdateDateAndTime_WhenValid()
     {
         // Arrange
-        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var appointment = CreateAppointment();
         var newDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2));
         var newTimeRange = TimeRange.Create(new TimeOnly(14, 0), new TimeOnly(15, 0));
 
@@ -334,9 +334,10 @@ public class AppointmentTests
     public void Reschedule_ShouldThrowException_WhenAlreadyRescheduled()
     {
         // Arrange
-        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var appointment = CreateAppointment();
         var newDate1 = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2));
         var newTimeRange1 = TimeRange.Create(new TimeOnly(14, 0), new TimeOnly(15, 0));
+
         appointment.Reschedule(newDate1, newTimeRange1);
 
         var newDate2 = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3));
@@ -355,7 +356,8 @@ public class AppointmentTests
     public void Reschedule_ShouldThrowException_WhenStatusIsNotScheduled()
     {
         // Arrange
-        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var appointment = CreateAppointment();
+
         appointment.Cancel(
             Guid.NewGuid(),
             "Reason",
@@ -378,7 +380,7 @@ public class AppointmentTests
     public void CheckIn_ShouldSetStatusToCheckedIn_WhenStatusIsScheduled()
     {
         // Arrange
-        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var appointment = CreateAppointment();
 
         // Act
         appointment.CheckIn(DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime));
@@ -396,7 +398,7 @@ public class AppointmentTests
     public void CheckIn_ShouldSetReceptionistNotesToEmpty_WhenNullProvided()
     {
         // Arrange
-        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var appointment = CreateAppointment();
 
         // Act
         appointment.CheckIn(DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime), null);
@@ -409,7 +411,8 @@ public class AppointmentTests
     public void CheckIn_ShouldThrowException_WhenStatusIsNotScheduled()
     {
         // Arrange
-        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var appointment = CreateAppointment();
+
         appointment.Cancel(
             Guid.NewGuid(),
             "Reason",
@@ -430,7 +433,7 @@ public class AppointmentTests
     public void CheckIn_ShouldSetReceptionistNotes_WhenProvided()
     {
         // Arrange
-        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var appointment = CreateAppointment();
         var receptionistNotes = "Test receptionist notes";
 
         // Act
@@ -447,7 +450,8 @@ public class AppointmentTests
     public void Start_ShouldSetStatusToInProgress_WhenValid()
     {
         // Arrange
-        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var appointment = CreateAppointment();
+
         appointment.CheckIn(DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime));
 
         // Act
@@ -462,7 +466,8 @@ public class AppointmentTests
     public void Start_ShouldThrowException_WhenDoctorIdDiffers()
     {
         // Arrange
-        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var appointment = CreateAppointment();
+
         appointment.CheckIn(DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime));
 
         // Act
@@ -478,7 +483,7 @@ public class AppointmentTests
     public void Start_ShouldThrowException_WhenStatusIsNotCheckedIn()
     {
         // Arrange
-        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var appointment = CreateAppointment();
 
         // Act
         var act = () => appointment.Start(appointment.DoctorId, _fakeTime.GetUtcNow().UtcDateTime);
@@ -493,7 +498,8 @@ public class AppointmentTests
     public void Complete_ShouldSetStatusToCompleted_WhenStatusIsInProgress()
     {
         // Arrange
-        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var appointment = CreateAppointment();
+
         appointment.CheckIn(DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime));
         appointment.Start(appointment.DoctorId, _fakeTime.GetUtcNow().UtcDateTime);
 
@@ -509,7 +515,7 @@ public class AppointmentTests
     public void Complete_ShouldThrowException_WhenStatusIsNotInProgress()
     {
         // Arrange
-        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var appointment = CreateAppointment();
 
         // Act
         var act = () => appointment.Complete(_fakeTime.GetUtcNow().UtcDateTime);
@@ -524,7 +530,7 @@ public class AppointmentTests
     public void MarkAsRequiresReassignment_ShouldSetStatus_WhenScheduled()
     {
         // Arrange
-        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var appointment = CreateAppointment();
 
         // Act
         appointment.MarkAsRequiresReassignment();
@@ -537,7 +543,7 @@ public class AppointmentTests
     public void MarkAsRequiresReassignment_ShouldThrowException_WhenNotScheduled()
     {
         // Arrange
-        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var appointment = CreateAppointment();
         appointment.Cancel(
             Guid.NewGuid(),
             "Reason",
@@ -556,7 +562,8 @@ public class AppointmentTests
     public void Reassign_ShouldUpdateDoctorAndScheduleAndEmitEvent_WhenValid()
     {
         // Arrange
-        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var appointment = CreateAppointment();
+
         appointment.MarkAsRequiresReassignment();
         appointment.ClearDomainEvents();
 
@@ -579,7 +586,8 @@ public class AppointmentTests
     public void Reassign_ShouldThrowException_WhenNewTimeRangeIsNull()
     {
         // Arrange
-        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var appointment = CreateAppointment();
+
         appointment.MarkAsRequiresReassignment();
 
         // Act
@@ -600,7 +608,8 @@ public class AppointmentTests
     public void Reassign_ShouldThrowException_WhenNewDoctorIdIsEmpty()
     {
         // Arrange
-        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var appointment = CreateAppointment();
+
         appointment.MarkAsRequiresReassignment();
 
         // Act
@@ -621,7 +630,7 @@ public class AppointmentTests
     public void Reassign_ShouldThrowException_WhenNotInRequiresReassignment()
     {
         // Arrange
-        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var appointment = CreateAppointment();
 
         // Act
         var act = () =>
@@ -641,7 +650,8 @@ public class AppointmentTests
     public void CancelDueToSystemTimeout_ShouldCancelAndEmitEvent_WhenRequiresReassignment()
     {
         // Arrange
-        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var appointment = CreateAppointment();
+
         appointment.MarkAsRequiresReassignment();
         var cancelledAt = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
 
@@ -660,7 +670,7 @@ public class AppointmentTests
     public void CancelDueToSystemTimeout_ShouldThrowException_WhenNotInRequiresReassignment()
     {
         // Arrange
-        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var appointment = CreateAppointment();
 
         // Act
         var act = () =>
@@ -678,7 +688,7 @@ public class AppointmentTests
     public void UpdatePatientNotes_ShouldSucceed_WhenScheduled()
     {
         // Arrange
-        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var appointment = CreateAppointment();
         var newNotes = "New patient notes";
 
         // Act
@@ -692,8 +702,9 @@ public class AppointmentTests
     public void UpdatePatientNotes_ShouldSucceed_WhenRequiresReassignment()
     {
         // Arrange
-        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var appointment = CreateAppointment();
         appointment.MarkAsRequiresReassignment();
+
         var newNotes = "New patient notes";
 
         // Act
@@ -707,7 +718,8 @@ public class AppointmentTests
     public void UpdatePatientNotes_ShouldSetNotesToEmpty_WhenNullProvided()
     {
         // Arrange
-        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var appointment = CreateAppointment();
+
         appointment.UpdatePatientNotes("Initial notes");
 
         // Act
@@ -721,7 +733,8 @@ public class AppointmentTests
     public void UpdatePatientNotes_ShouldThrowException_WhenInvalidStatus()
     {
         // Arrange
-        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var appointment = CreateAppointment();
+
         appointment.CheckIn(DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime));
 
         // Act
@@ -737,7 +750,7 @@ public class AppointmentTests
     public void UpdateReceptionistNotes_ShouldSucceed_WhenCheckedIn()
     {
         // Arrange
-        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var appointment = CreateAppointment();
         appointment.CheckIn(DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime));
         var newNotes = "New receptionist notes";
 
@@ -752,7 +765,7 @@ public class AppointmentTests
     public void UpdateReceptionistNotes_ShouldSetNotesToEmpty_WhenNullProvided()
     {
         // Arrange
-        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var appointment = CreateAppointment();
         appointment.CheckIn(DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime));
         appointment.UpdateReceptionistNotes("Initial notes");
 
@@ -767,7 +780,7 @@ public class AppointmentTests
     public void UpdateReceptionistNotes_ShouldThrowException_WhenInvalidStatus()
     {
         // Arrange
-        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var appointment = CreateAppointment();
 
         // Act
         var act = () => appointment.UpdateReceptionistNotes("New notes");
@@ -778,15 +791,12 @@ public class AppointmentTests
             .WithMessage(DomainErrors.Appointment.CannotUpdateNotes);
     }
 
-    private static Appointment CreateAppointment(DateTime scheduledDateTime) =>
+    private Appointment CreateAppointment() =>
         Appointment.Schedule(
             Guid.NewGuid(),
             Guid.NewGuid(),
             Guid.NewGuid(),
-            DateOnly.FromDateTime(scheduledDateTime),
-            TimeRange.Create(
-                TimeOnly.FromDateTime(scheduledDateTime),
-                TimeOnly.FromDateTime(scheduledDateTime.AddHours(1))
-            )
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2)),
+            TimeRange.Create(new TimeOnly(9), new TimeOnly(10))
         );
 }

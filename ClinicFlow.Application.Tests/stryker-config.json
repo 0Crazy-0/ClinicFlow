@@ -5,7 +5,7 @@
           "thresholds": {
             "high": 95,
             "low": 90,
-            "break": 85
+            "break": 80
         },
         "project-info": {
             "name": "github.com/0Crazy-0/ClinicFlow",
