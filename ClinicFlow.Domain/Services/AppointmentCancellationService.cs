@@ -48,7 +48,10 @@ public static class AppointmentCancellationService
             );
 
         if (context.Category is AppointmentCategory.Emergency)
-            ValidateEmergencyCancellation(args.TargetPatient, args.CancelledAt);
+            ValidateEmergencyCancellation(
+                args.TargetPatient,
+                DateOnly.FromDateTime(args.CancelledAt)
+            );
 
         if (
             context.Specialty.IsCancellationAllowed(
@@ -57,11 +60,19 @@ public static class AppointmentCancellationService
             )
         )
         {
-            appointment.Cancel(args.InitiatorUserId, args.Reason, args.CancelledAt);
+            appointment.Cancel(
+                args.InitiatorUserId,
+                args.Reason,
+                DateOnly.FromDateTime(args.CancelledAt)
+            );
         }
         else
         {
-            appointment.CancelLate(args.InitiatorUserId, args.Reason, args.CancelledAt);
+            appointment.CancelLate(
+                args.InitiatorUserId,
+                args.Reason,
+                DateOnly.FromDateTime(args.CancelledAt)
+            );
         }
     }
 
@@ -75,7 +86,11 @@ public static class AppointmentCancellationService
                 DomainErrors.Appointment.UnauthorizedCancellation
             );
 
-        appointment.Cancel(args.InitiatorUserId, args.Reason, args.CancelledAt);
+        appointment.Cancel(
+            args.InitiatorUserId,
+            args.Reason,
+            DateOnly.FromDateTime(args.CancelledAt)
+        );
     }
 
     public static void CancelByStaff(Appointment appointment, StaffCancellationArgs args)
@@ -88,7 +103,11 @@ public static class AppointmentCancellationService
                 DomainErrors.Appointment.MissingCancellationReason
             );
 
-        appointment.Cancel(args.InitiatorUserId, args.Reason, args.CancelledAt);
+        appointment.Cancel(
+            args.InitiatorUserId,
+            args.Reason,
+            DateOnly.FromDateTime(args.CancelledAt)
+        );
     }
 
     /// <summary>
@@ -97,14 +116,14 @@ public static class AppointmentCancellationService
     /// <remarks>
     /// Emergency appointments can only be cancelled by the patients themselves or by a parent if the patient is under 18.
     /// </remarks>
-    private static void ValidateEmergencyCancellation(Patient patient, DateTime referenceTime)
+    private static void ValidateEmergencyCancellation(Patient patient, DateOnly referenceDate)
     {
         if (patient.RelationshipToUser is PatientRelationship.Self)
             return;
 
         if (
             patient.RelationshipToUser is PatientRelationship.Child
-            && patient.GetAge(DateOnly.FromDateTime(referenceTime)) < 18
+            && patient.GetAge(referenceDate) < 18
         )
             return;
 

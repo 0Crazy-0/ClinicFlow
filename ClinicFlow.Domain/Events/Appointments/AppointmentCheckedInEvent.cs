@@ -3,5 +3,5 @@ using ClinicFlow.Domain.Entities;
 
 namespace ClinicFlow.Domain.Events.Appointments;
 
-public sealed record AppointmentCheckedInEvent(Appointment Appointment, DateTime CheckedInAt)
+public sealed record AppointmentCheckedInEvent(Appointment Appointment, DateOnly CheckedInAt)
     : IDomainEvent;
