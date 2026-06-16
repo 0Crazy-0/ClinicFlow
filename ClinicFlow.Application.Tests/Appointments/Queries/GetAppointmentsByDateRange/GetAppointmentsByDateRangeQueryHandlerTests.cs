@@ -29,8 +29,8 @@ public class GetAppointmentsByDateRangeQueryHandlerTests
         var query = new GetAppointmentsByDateRangeQuery(startDate, endDate, 1, 10);
         var appointments = new List<Appointment>
         {
-            CreateAppointment(Guid.NewGuid(), Guid.NewGuid(), startDate.AddDays(1)),
-            CreateAppointment(Guid.NewGuid(), Guid.NewGuid(), startDate.AddDays(3)),
+            CreateAppointment(startDate.AddDays(1)),
+            CreateAppointment(startDate.AddDays(3)),
         };
 
         _appointmentRepositoryMock
@@ -90,14 +90,10 @@ public class GetAppointmentsByDateRangeQueryHandlerTests
         result.TotalPages.Should().Be(0);
     }
 
-    private static Appointment CreateAppointment(
-        Guid patientId,
-        Guid doctorId,
-        DateOnly scheduledDate
-    ) =>
+    private static Appointment CreateAppointment(DateOnly scheduledDate) =>
         Appointment.Schedule(
-            patientId,
-            doctorId,
+            Guid.NewGuid(),
+            Guid.NewGuid(),
             Guid.NewGuid(),
             scheduledDate,
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))

@@ -57,7 +57,7 @@ public class ScheduleByDoctorCommandHandlerTests
             false
         );
 
-        var doctor = CreateDoctor(command.InitiatorUserId, Guid.NewGuid());
+        var doctor = CreateDoctor(command.InitiatorUserId);
         var targetPatient = CreateTargetPatient(command.TargetPatientId);
         var appointmentType = AppointmentTypeDefinition.Create(
             AppointmentCategory.FollowUp,
@@ -146,7 +146,7 @@ public class ScheduleByDoctorCommandHandlerTests
             false
         );
 
-        var doctor = CreateDoctor(command.InitiatorUserId, Guid.NewGuid());
+        var doctor = CreateDoctor(command.InitiatorUserId);
         var targetPatient = CreateTargetPatient(command.TargetPatientId);
         var appointmentType = AppointmentTypeDefinition.Create(
             AppointmentCategory.FollowUp,
@@ -260,7 +260,7 @@ public class ScheduleByDoctorCommandHandlerTests
             false
         );
 
-        var doctor = CreateDoctor(command.InitiatorUserId, Guid.NewGuid());
+        var doctor = CreateDoctor(command.InitiatorUserId);
 
         _doctorRepositoryMock
             .Setup(r => r.GetByUserIdAsync(command.InitiatorUserId, It.IsAny<CancellationToken>()))
@@ -301,7 +301,7 @@ public class ScheduleByDoctorCommandHandlerTests
             false
         );
 
-        var doctor = CreateDoctor(command.InitiatorUserId, Guid.NewGuid());
+        var doctor = CreateDoctor(command.InitiatorUserId);
         var targetPatient = CreateTargetPatient(command.TargetPatientId);
 
         _doctorRepositoryMock
@@ -332,12 +332,12 @@ public class ScheduleByDoctorCommandHandlerTests
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
-    private static Doctor CreateDoctor(Guid userId, Guid specialtyId) =>
+    private static Doctor CreateDoctor(Guid userId) =>
         Doctor.Create(
             userId,
             PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("1234567"),
-            specialtyId,
+            Guid.NewGuid(),
             "555-1234",
             ConsultationRoom.Create(1, "Room A", 1)
         );

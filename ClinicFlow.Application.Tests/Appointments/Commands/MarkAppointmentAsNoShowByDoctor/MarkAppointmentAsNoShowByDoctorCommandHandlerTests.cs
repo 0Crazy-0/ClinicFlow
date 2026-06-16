@@ -116,14 +116,12 @@ public class MarkAppointmentAsNoShowByDoctorCommandHandlerTests
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
-    private Appointment CreateAppointment(Guid doctorId)
-    {
-        return Appointment.Schedule(
+    private Appointment CreateAppointment(Guid doctorId) =>
+        Appointment.Schedule(
             Guid.NewGuid(),
             doctorId,
             Guid.NewGuid(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(-1)),
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
-    }
 }

@@ -58,7 +58,7 @@ public class ScheduleByStaffCommandHandlerTests
             false
         );
 
-        var targetPatient = CreateTargetPatient(Guid.NewGuid(), _fakeTime.GetUtcNow().UtcDateTime);
+        var targetPatient = CreateTargetPatient();
         var appointmentType = AppointmentTypeDefinition.Create(
             AppointmentCategory.Checkup,
             "Checkup",
@@ -159,7 +159,7 @@ public class ScheduleByStaffCommandHandlerTests
             false
         );
 
-        var targetPatient = CreateTargetPatient(Guid.NewGuid(), _fakeTime.GetUtcNow().UtcDateTime);
+        var targetPatient = CreateTargetPatient();
         var appointmentType = AppointmentTypeDefinition.Create(
             AppointmentCategory.Checkup,
             "Checkup",
@@ -286,7 +286,7 @@ public class ScheduleByStaffCommandHandlerTests
             false
         );
 
-        var targetPatient = CreateTargetPatient(Guid.NewGuid(), _fakeTime.GetUtcNow().UtcDateTime);
+        var targetPatient = CreateTargetPatient();
 
         _patientRepositoryMock
             .Setup(r => r.GetByIdAsync(command.TargetPatientId, It.IsAny<CancellationToken>()))
@@ -328,8 +328,7 @@ public class ScheduleByStaffCommandHandlerTests
             false
         );
 
-        var targetPatient = CreateTargetPatient(Guid.NewGuid(), _fakeTime.GetUtcNow().UtcDateTime);
-
+        var targetPatient = CreateTargetPatient();
         var doctor = Doctor.Create(
             Guid.NewGuid(),
             PersonName.Create("Test Doctor"),
@@ -367,13 +366,13 @@ public class ScheduleByStaffCommandHandlerTests
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
-    private static Patient CreateTargetPatient(Guid userId, DateTime referenceTime)
+    private Patient CreateTargetPatient()
     {
         var patient = Patient.CreateSelf(
-            userId,
+            Guid.NewGuid(),
             PersonName.Create("Test Patient"),
-            referenceTime.AddYears(-30).Date,
-            referenceTime
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30).Date,
+            _fakeTime.GetUtcNow().UtcDateTime
         );
 
         patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
