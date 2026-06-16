@@ -53,8 +53,6 @@ public static class AppointmentCancellationService
                 DateOnly.FromDateTime(args.CancelledAt)
             );
 
-        var cancelledAtDate = DateOnly.FromDateTime(args.CancelledAt);
-
         if (
             context.Specialty.IsCancellationAllowed(
                 appointment.ScheduledDate.ToDateTime(appointment.TimeRange.Start),
