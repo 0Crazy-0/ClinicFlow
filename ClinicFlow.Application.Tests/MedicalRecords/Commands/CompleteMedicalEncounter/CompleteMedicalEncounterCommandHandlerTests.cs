@@ -66,13 +66,8 @@ public class CompleteMedicalEncounterCommandHandlerTests
         );
 
         var doctor = CreateDoctor(doctorId);
-        var appointment = CreateAppointment(
-            appointmentId,
-            appointmentTypeId,
-            patientId,
-            doctorId,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
+        var appointment = CreateAppointment(appointmentId, appointmentTypeId, patientId, doctorId);
+
         var appointmentType = AppointmentTypeDefinition.Create(
             AppointmentCategory.Checkup,
             "Checkup",
@@ -123,13 +118,8 @@ public class CompleteMedicalEncounterCommandHandlerTests
         );
 
         var doctor = CreateDoctor(doctorId);
-        var appointment = CreateAppointment(
-            appointmentId,
-            appointmentTypeId,
-            patientId,
-            doctorId,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
+        var appointment = CreateAppointment(appointmentId, appointmentTypeId, patientId, doctorId);
+
         var appointmentType = AppointmentTypeDefinition.Create(
             AppointmentCategory.Checkup,
             "Checkup",
@@ -241,13 +231,7 @@ public class CompleteMedicalEncounterCommandHandlerTests
         );
 
         var doctor = CreateDoctor(doctorId);
-        var appointment = CreateAppointment(
-            appointmentId,
-            appointmentTypeId,
-            patientId,
-            doctorId,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
+        var appointment = CreateAppointment(appointmentId, appointmentTypeId, patientId, doctorId);
 
         _doctorRepositoryMock.Setup(x => x.GetByIdAsync(doctorId)).ReturnsAsync(doctor);
         _appointmentRepositoryMock
@@ -287,24 +271,25 @@ public class CompleteMedicalEncounterCommandHandlerTests
         return doctor;
     }
 
-    private static Appointment CreateAppointment(
+    private Appointment CreateAppointment(
         Guid id,
         Guid appointmentTypeId,
         Guid patientId,
-        Guid doctorId,
-        DateTime dt
+        Guid doctorId
     )
     {
+        var referenceDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(1);
         var appointment = Appointment.Schedule(
             patientId,
             doctorId,
             appointmentTypeId,
-            DateOnly.FromDateTime(dt.AddDays(1)),
+            DateOnly.FromDateTime(referenceDate.AddDays(1)),
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
+
         appointment.SetId(id);
-        appointment.CheckIn(DateOnly.FromDateTime(dt));
-        appointment.Start(doctorId, dt);
+        appointment.CheckIn(DateOnly.FromDateTime(referenceDate));
+        appointment.Start(doctorId, referenceDate);
 
         return appointment;
     }
