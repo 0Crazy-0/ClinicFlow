@@ -31,9 +31,15 @@ public class GetAppointmentByIdQueryHandlerTests
         var patientId = Guid.NewGuid();
         var doctorId = Guid.NewGuid();
         var query = new GetAppointmentByIdQuery(appointmentId);
+        var appointment = Appointment.Schedule(
+            patientId,
+            doctorId,
+            Guid.NewGuid(),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+        );
 
-        var appointment = CreateAppointment(appointmentId, patientId, doctorId);
-
+        appointment.SetId(appointmentId);
         _appointmentRepositoryMock
             .Setup(x => x.GetByIdAsync(appointmentId))
             .ReturnsAsync(appointment);
@@ -69,18 +75,5 @@ public class GetAppointmentByIdQueryHandlerTests
             .ThrowAsync<EntityNotFoundException>()
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(Appointment));
-    }
-
-    private Appointment CreateAppointment(Guid id, Guid patientId, Guid doctorId)
-    {
-        var appointment = Appointment.Schedule(
-            patientId,
-            doctorId,
-            Guid.NewGuid(),
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
-            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
-        );
-        appointment.SetId(id);
-        return appointment;
     }
 }

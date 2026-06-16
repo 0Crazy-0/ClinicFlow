@@ -61,10 +61,7 @@ public class ScheduleByPatientCommandHandlerTests
             "Patient schedule notes"
         );
 
-        var targetPatient = CreateTargetPatient(
-            command.InitiatorUserId,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
+        var targetPatient = CreateTargetPatient(command.InitiatorUserId);
         var appointmentType = AppointmentTypeDefinition.Create(
             AppointmentCategory.Checkup,
             "Checkup",
@@ -169,10 +166,7 @@ public class ScheduleByPatientCommandHandlerTests
             endTime
         );
 
-        var targetPatient = CreateTargetPatient(
-            command.InitiatorUserId,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
+        var targetPatient = CreateTargetPatient(command.InitiatorUserId);
         var appointmentType = AppointmentTypeDefinition.Create(
             AppointmentCategory.Checkup,
             "Checkup",
@@ -300,14 +294,8 @@ public class ScheduleByPatientCommandHandlerTests
             new TimeOnly(11, 0)
         );
 
-        var targetPatient = CreateTargetPatient(
-            command.TargetPatientId,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
-        var initiatorPatient = CreateTargetPatient(
-            command.InitiatorUserId,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
+        var targetPatient = CreateTargetPatient(command.TargetPatientId);
+        var initiatorPatient = CreateTargetPatient(command.InitiatorUserId);
 
         _patientRepositoryMock
             .Setup(r => r.GetByIdAsync(command.TargetPatientId, It.IsAny<CancellationToken>()))
@@ -351,10 +339,7 @@ public class ScheduleByPatientCommandHandlerTests
             new TimeOnly(11, 0)
         );
 
-        var targetPatient = CreateTargetPatient(
-            command.TargetPatientId,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
+        var targetPatient = CreateTargetPatient(command.TargetPatientId);
 
         _patientRepositoryMock
             .Setup(r => r.GetByIdAsync(command.TargetPatientId, It.IsAny<CancellationToken>()))
@@ -394,15 +379,8 @@ public class ScheduleByPatientCommandHandlerTests
             new TimeOnly(11, 0)
         );
 
-        var targetPatient = CreateTargetPatient(
-            command.TargetPatientId,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
-        var initiatorPatient = CreateTargetPatient(
-            command.InitiatorUserId,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
-
+        var targetPatient = CreateTargetPatient(command.TargetPatientId);
+        var initiatorPatient = CreateTargetPatient(command.InitiatorUserId);
         var doctor = Doctor.Create(
             Guid.NewGuid(),
             PersonName.Create("Test Doctor"),
@@ -464,14 +442,8 @@ public class ScheduleByPatientCommandHandlerTests
             new TimeOnly(11, 0)
         );
 
-        var targetPatient = CreateTargetPatient(
-            command.TargetPatientId,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
-        var initiatorPatient = CreateTargetPatient(
-            command.InitiatorUserId,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
+        var targetPatient = CreateTargetPatient(command.TargetPatientId);
+        var initiatorPatient = CreateTargetPatient(command.InitiatorUserId);
 
         var doctor = Doctor.Create(
             Guid.NewGuid(),
@@ -514,13 +486,13 @@ public class ScheduleByPatientCommandHandlerTests
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
-    private static Patient CreateTargetPatient(Guid userId, DateTime referenceTime)
+    private Patient CreateTargetPatient(Guid userId)
     {
         var patient = Patient.CreateSelf(
             userId,
             PersonName.Create("Test Patient"),
-            referenceTime.AddYears(-30).Date,
-            referenceTime
+            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30).Date,
+            _fakeTime.GetUtcNow().UtcDateTime
         );
 
         patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");

@@ -29,8 +29,8 @@ public class GetAppointmentsByDoctorIdQueryHandlerTests
         var query = new GetAppointmentsByDoctorIdQuery(doctorId, date, 1, 10);
         var appointments = new List<Appointment>
         {
-            CreateAppointment(Guid.NewGuid(), doctorId, date),
-            CreateAppointment(Guid.NewGuid(), doctorId, date),
+            CreateAppointment(doctorId, date),
+            CreateAppointment(doctorId, date),
         };
 
         _appointmentRepositoryMock
@@ -84,13 +84,9 @@ public class GetAppointmentsByDoctorIdQueryHandlerTests
         result.TotalPages.Should().Be(0);
     }
 
-    private static Appointment CreateAppointment(
-        Guid patientId,
-        Guid doctorId,
-        DateOnly scheduledDate
-    ) =>
+    private static Appointment CreateAppointment(Guid doctorId, DateOnly scheduledDate) =>
         Appointment.Schedule(
-            patientId,
+            Guid.NewGuid(),
             doctorId,
             Guid.NewGuid(),
             scheduledDate,
