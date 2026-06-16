@@ -43,7 +43,7 @@ public class ScheduleByDoctorCommandHandlerTests
     public async Task Handle_ShouldCreateAppointment_WhenValidRequest()
     {
         // Arrange
-        var scheduledDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date;
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
         var startTime = new TimeOnly(10, 0);
         var endTime = new TimeOnly(11, 0);
         var command = new ScheduleByDoctorCommand(
@@ -132,7 +132,7 @@ public class ScheduleByDoctorCommandHandlerTests
     public async Task Handle_ShouldCallRepositoryCreateAndSaveChanges_WhenValidRequest()
     {
         // Arrange
-        var scheduledDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date;
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
         var startTime = new TimeOnly(10, 0);
         var endTime = new TimeOnly(11, 0);
         var command = new ScheduleByDoctorCommand(
@@ -219,7 +219,7 @@ public class ScheduleByDoctorCommandHandlerTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             Guid.NewGuid(),
-            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0),
             false,
@@ -253,7 +253,7 @@ public class ScheduleByDoctorCommandHandlerTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             Guid.NewGuid(),
-            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0),
             false,
@@ -294,7 +294,7 @@ public class ScheduleByDoctorCommandHandlerTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             Guid.NewGuid(),
-            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0),
             false,

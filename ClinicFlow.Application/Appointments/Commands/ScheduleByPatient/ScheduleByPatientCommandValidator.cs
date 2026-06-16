@@ -18,7 +18,7 @@ public sealed class ScheduleByPatientCommandValidator : AbstractValidator<Schedu
             .NotEmpty()
             .WithMessage(DomainErrors.Validation.InvalidValue);
         RuleFor(x => x.ScheduledDate)
-            .GreaterThanOrEqualTo(_ => timeProvider.GetUtcNow().UtcDateTime.Date)
+            .GreaterThanOrEqualTo(_ => DateOnly.FromDateTime(timeProvider.GetUtcNow().UtcDateTime))
             .WithMessage(DomainErrors.Validation.ValueMustBeInFuture);
         RuleFor(x => x.EndTime)
             .GreaterThan(x => x.StartTime)

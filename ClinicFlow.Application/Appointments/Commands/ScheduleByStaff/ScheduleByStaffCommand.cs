@@ -7,7 +7,7 @@ public sealed record ScheduleByStaffCommand(
     Guid TargetPatientId,
     Guid DoctorId,
     Guid AppointmentTypeId,
-    DateTime ScheduledDate,
+    DateOnly ScheduledDate,
     TimeOnly StartTime,
     TimeOnly EndTime,
     bool HasGuardianConsentVerified,

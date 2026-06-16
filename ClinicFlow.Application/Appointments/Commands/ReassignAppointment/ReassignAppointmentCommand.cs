@@ -5,7 +5,7 @@ namespace ClinicFlow.Application.Appointments.Commands.ReassignAppointment;
 public sealed record ReassignAppointmentCommand(
     Guid AppointmentId,
     Guid NewDoctorId,
-    DateTime NewDate,
+    DateOnly NewDate,
     TimeOnly NewStartTime,
     TimeOnly NewEndTime
 ) : IRequest;

@@ -12,7 +12,7 @@ public sealed class RescheduleByStaffCommandValidator : AbstractValidator<Resche
             .WithMessage(DomainErrors.Validation.InvalidValue);
         RuleFor(x => x.AppointmentId).NotEmpty().WithMessage(DomainErrors.Validation.InvalidValue);
         RuleFor(x => x.NewDate)
-            .GreaterThanOrEqualTo(_ => timeProvider.GetUtcNow().UtcDateTime.Date)
+            .GreaterThanOrEqualTo(_ => DateOnly.FromDateTime(timeProvider.GetUtcNow().UtcDateTime))
             .WithMessage(DomainErrors.Validation.ValueMustBeInFuture);
         RuleFor(x => x.NewEndTime)
             .GreaterThan(x => x.NewStartTime)

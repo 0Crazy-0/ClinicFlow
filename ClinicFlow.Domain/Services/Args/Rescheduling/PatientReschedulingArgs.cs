@@ -7,7 +7,7 @@ public sealed record PatientReschedulingArgs
 {
     public required Patient TargetPatient { get; init; }
     public required Patient InitiatorPatient { get; init; }
-    public DateTime NewDate { get; init; }
+    public DateOnly NewDate { get; init; }
     public required TimeRange NewTimeRange { get; init; }
     public bool IsInitiatorPhoneVerified { get; init; }
     public string? NewPatientNotes { get; init; }

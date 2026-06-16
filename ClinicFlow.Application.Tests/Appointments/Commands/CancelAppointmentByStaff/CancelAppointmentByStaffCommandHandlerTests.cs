@@ -42,7 +42,7 @@ public class CancelAppointmentByStaffCommandHandlerTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             Guid.NewGuid(),
-            _fakeTime.GetUtcNow().UtcDateTime.AddDays(2).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2)),
             TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0))
         );
 

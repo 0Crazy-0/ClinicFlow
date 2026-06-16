@@ -60,7 +60,7 @@ public class BlockPatientCommandHandlerTests
         capturedPenalty.Type.Should().Be(PenaltyType.TemporaryBlock);
         capturedPenalty
             .BlockedUntil.Should()
-            .Be(_fakeTime.GetUtcNow().UtcDateTime.Date.AddDays(expectedDays));
+            .Be(_fakeTime.GetUtcNow().UtcDateTime.AddDays(expectedDays).Date);
         capturedPenalty.IsRemoved.Should().BeFalse();
     }
 

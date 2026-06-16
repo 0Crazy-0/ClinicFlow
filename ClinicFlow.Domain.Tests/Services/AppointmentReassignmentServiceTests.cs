@@ -23,7 +23,7 @@ public class AppointmentReassignmentServiceTests
         // Arrange
         var appointment = CreateDisplacedAppointment();
         var newDoctorId = Guid.NewGuid();
-        var newDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(3).Date;
+        var newDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3));
         var newTimeRange = CreateTimeRange(10, 11);
 
         // Act
@@ -59,7 +59,7 @@ public class AppointmentReassignmentServiceTests
                 new AppointmentReassignmentArgs
                 {
                     NewDoctorId = Guid.NewGuid(),
-                    NewDate = DateTime.UtcNow.AddDays(1),
+                    NewDate = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(1),
                     NewTimeRange = CreateTimeRange(10, 11),
                 },
                 new AppointmentReassignmentContext()
@@ -81,7 +81,7 @@ public class AppointmentReassignmentServiceTests
                 new AppointmentReassignmentArgs
                 {
                     NewDoctorId = Guid.NewGuid(),
-                    NewDate = DateTime.UtcNow.AddDays(1).Date,
+                    NewDate = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(1),
                     NewTimeRange = CreateTimeRange(10, 11),
                 },
                 null!
@@ -120,7 +120,7 @@ public class AppointmentReassignmentServiceTests
                 new AppointmentReassignmentArgs
                 {
                     NewDoctorId = Guid.NewGuid(),
-                    NewDate = DateTime.UtcNow.AddDays(1),
+                    NewDate = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(1),
                     NewTimeRange = null!,
                 },
                 new AppointmentReassignmentContext()
@@ -138,7 +138,7 @@ public class AppointmentReassignmentServiceTests
         // Arrange
         var appointment = CreateDisplacedAppointment();
         var newDoctorId = Guid.NewGuid();
-        var newDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(3).Date;
+        var newDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3));
 
         // Act
         var act = () =>
@@ -165,7 +165,7 @@ public class AppointmentReassignmentServiceTests
         // Arrange
         var appointment = CreateDisplacedAppointment();
         var newDoctorId = Guid.NewGuid();
-        var newDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(3).Date;
+        var newDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3));
 
         // Act
         var act = () =>
@@ -196,7 +196,7 @@ public class AppointmentReassignmentServiceTests
         // Arrange
         var appointment = CreateDisplacedAppointment();
         var newDoctorId = Guid.NewGuid();
-        var newDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(3).Date;
+        var newDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3));
 
         var context = new AppointmentReassignmentContext
         {
@@ -225,13 +225,11 @@ public class AppointmentReassignmentServiceTests
 
     private Appointment CreateDisplacedAppointment()
     {
-        var scheduledDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(2).Date;
-
         var appointment = Appointment.Schedule(
             Guid.NewGuid(),
             Guid.NewGuid(),
             Guid.NewGuid(),
-            scheduledDate,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2)),
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
 

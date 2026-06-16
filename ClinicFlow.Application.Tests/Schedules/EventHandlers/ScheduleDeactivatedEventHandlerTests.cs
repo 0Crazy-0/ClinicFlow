@@ -44,7 +44,7 @@ public class ScheduleDeactivatedEventHandlerTests
         ); // Monday
 
         var doctorId = Guid.NewGuid();
-        var nextMondayDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(7).Date;
+        var nextMondayDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(7));
         var appointment = Appointment.Schedule(
             Guid.NewGuid(),
             doctorId,
@@ -57,7 +57,7 @@ public class ScheduleDeactivatedEventHandlerTests
             .Setup(x =>
                 x.GetFutureScheduledByDoctorIdAsync(
                     doctorId,
-                    It.IsAny<DateTime>(),
+                    It.IsAny<DateOnly>(),
                     It.IsAny<CancellationToken>()
                 )
             )
@@ -88,7 +88,7 @@ public class ScheduleDeactivatedEventHandlerTests
         _fakeTime.SetUtcNow(DateTimeOffset.Parse("2024-01-01T00:00:00Z")); // Monday
 
         var doctorId = Guid.NewGuid();
-        var mondayDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(7).Date;
+        var mondayDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(7));
         var appointmentOutside = Appointment.Schedule(
             Guid.NewGuid(),
             doctorId,
@@ -101,7 +101,7 @@ public class ScheduleDeactivatedEventHandlerTests
             .Setup(x =>
                 x.GetFutureScheduledByDoctorIdAsync(
                     doctorId,
-                    It.IsAny<DateTime>(),
+                    It.IsAny<DateOnly>(),
                     It.IsAny<CancellationToken>()
                 )
             )
@@ -138,7 +138,7 @@ public class ScheduleDeactivatedEventHandlerTests
         _fakeTime.SetUtcNow(DateTimeOffset.Parse("2024-01-01T00:00:00Z")); // Monday
 
         var doctorId = Guid.NewGuid();
-        var mondayDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(7).Date;
+        var mondayDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(7));
         var appointmentInside = Appointment.Schedule(
             Guid.NewGuid(),
             doctorId,
@@ -151,7 +151,7 @@ public class ScheduleDeactivatedEventHandlerTests
             .Setup(x =>
                 x.GetFutureScheduledByDoctorIdAsync(
                     doctorId,
-                    It.IsAny<DateTime>(),
+                    It.IsAny<DateOnly>(),
                     It.IsAny<CancellationToken>()
                 )
             )
@@ -190,7 +190,7 @@ public class ScheduleDeactivatedEventHandlerTests
         ); // Monday
 
         var doctorId = Guid.NewGuid();
-        var tuesdayDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date;
+        var tuesdayDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
         var tuesdayAppointment = Appointment.Schedule(
             Guid.NewGuid(),
             doctorId,
@@ -203,7 +203,7 @@ public class ScheduleDeactivatedEventHandlerTests
             .Setup(x =>
                 x.GetFutureScheduledByDoctorIdAsync(
                     doctorId,
-                    It.IsAny<DateTime>(),
+                    It.IsAny<DateOnly>(),
                     It.IsAny<CancellationToken>()
                 )
             )
@@ -237,7 +237,7 @@ public class ScheduleDeactivatedEventHandlerTests
             .Setup(x =>
                 x.GetFutureScheduledByDoctorIdAsync(
                     doctorId,
-                    It.IsAny<DateTime>(),
+                    It.IsAny<DateOnly>(),
                     It.IsAny<CancellationToken>()
                 )
             )

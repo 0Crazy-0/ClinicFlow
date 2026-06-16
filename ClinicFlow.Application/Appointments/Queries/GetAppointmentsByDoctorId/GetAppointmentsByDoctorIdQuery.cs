@@ -6,7 +6,7 @@ namespace ClinicFlow.Application.Appointments.Queries.GetAppointmentsByDoctorId;
 
 public sealed record GetAppointmentsByDoctorIdQuery(
     Guid DoctorId,
-    DateTime Date,
+    DateOnly Date,
     int PageNumber,
     int PageSize
 ) : IRequest<PaginatedList<AppointmentDto>>;

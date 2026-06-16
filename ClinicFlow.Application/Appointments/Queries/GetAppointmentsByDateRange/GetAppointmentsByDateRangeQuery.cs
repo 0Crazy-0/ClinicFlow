@@ -5,8 +5,8 @@ using MediatR;
 namespace ClinicFlow.Application.Appointments.Queries.GetAppointmentsByDateRange;
 
 public sealed record GetAppointmentsByDateRangeQuery(
-    DateTime StartDate,
-    DateTime EndDate,
+    DateOnly StartDate,
+    DateOnly EndDate,
     int PageNumber,
     int PageSize
 ) : IRequest<PaginatedList<AppointmentDto>>;

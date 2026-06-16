@@ -665,7 +665,7 @@ public static class DbSeeder
                     patientPenalties.AsReadOnly(),
                     appt.Id,
                     reason,
-                    appt.ScheduledDate
+                    appt.ScheduledDate.ToDateTime(TimeOnly.MinValue, DateTimeKind.Utc)
                 );
 
                 patientPenalties.AddRange(newPenalties);

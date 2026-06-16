@@ -100,7 +100,7 @@ public class RescheduleByStaffTests
 
         var args = new StaffReschedulingArgs
         {
-            NewDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(3).Date,
+            NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
             NewTimeRange = CreateTimeRange(18, 19),
             IsOverbook = true,
         };
@@ -129,7 +129,7 @@ public class RescheduleByStaffTests
 
         var args = new StaffReschedulingArgs
         {
-            NewDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(3).Date,
+            NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
             NewTimeRange = CreateTimeRange(18, 19),
             IsOverbook = false,
         };
@@ -163,7 +163,7 @@ public class RescheduleByStaffTests
 
         var args = new StaffReschedulingArgs
         {
-            NewDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(3).Date,
+            NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
             NewTimeRange = CreateTimeRange(10, 11),
             IsOverbook = false,
         };
@@ -197,7 +197,7 @@ public class RescheduleByStaffTests
 
         var args = new StaffReschedulingArgs
         {
-            NewDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(3).Date,
+            NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
             NewTimeRange = CreateTimeRange(10, 11),
             IsOverbook = false,
         };
@@ -237,17 +237,12 @@ public class RescheduleByStaffTests
 
     private Appointment CreateAppointment()
     {
-        var scheduledDateTime = _fakeTime.GetUtcNow().UtcDateTime.AddDays(2).Date;
-
         var appointment = Appointment.Schedule(
             Guid.NewGuid(),
             Guid.NewGuid(),
             Guid.NewGuid(),
-            scheduledDateTime.Date,
-            TimeRange.Create(
-                TimeOnly.FromDateTime(scheduledDateTime),
-                TimeOnly.FromDateTime(scheduledDateTime.AddHours(1))
-            )
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2)),
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
 
         appointment.ClearDomainEvents();

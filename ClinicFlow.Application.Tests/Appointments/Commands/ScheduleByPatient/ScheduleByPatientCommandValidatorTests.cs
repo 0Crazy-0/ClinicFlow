@@ -24,7 +24,7 @@ public class ScheduleByPatientCommandValidatorTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             Guid.NewGuid(),
-            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0),
             "Notes"
@@ -46,7 +46,7 @@ public class ScheduleByPatientCommandValidatorTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             Guid.NewGuid(),
-            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0)
         );
@@ -69,7 +69,7 @@ public class ScheduleByPatientCommandValidatorTests
             Guid.Empty,
             Guid.NewGuid(),
             Guid.NewGuid(),
-            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0)
         );
@@ -92,7 +92,7 @@ public class ScheduleByPatientCommandValidatorTests
             Guid.NewGuid(),
             Guid.Empty,
             Guid.NewGuid(),
-            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0)
         );
@@ -115,7 +115,7 @@ public class ScheduleByPatientCommandValidatorTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             Guid.Empty,
-            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0)
         );
@@ -138,7 +138,7 @@ public class ScheduleByPatientCommandValidatorTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             Guid.NewGuid(),
-            _fakeTime.GetUtcNow().UtcDateTime.AddDays(-1).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(-1)),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0)
         );
@@ -161,7 +161,7 @@ public class ScheduleByPatientCommandValidatorTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             Guid.NewGuid(),
-            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(12, 0),
             new TimeOnly(11, 0)
         );
@@ -184,7 +184,7 @@ public class ScheduleByPatientCommandValidatorTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             Guid.NewGuid(),
-            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0),
             new string('a', 501)

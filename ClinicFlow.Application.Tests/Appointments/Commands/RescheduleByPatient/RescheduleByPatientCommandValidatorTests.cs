@@ -22,7 +22,7 @@ public class RescheduleByPatientCommandValidatorTests
         var command = new RescheduleByPatientCommand(
             Guid.NewGuid(),
             Guid.NewGuid(),
-            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0)
         );
@@ -41,7 +41,7 @@ public class RescheduleByPatientCommandValidatorTests
         var command = new RescheduleByPatientCommand(
             Guid.Empty,
             Guid.NewGuid(),
-            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0)
         );
@@ -62,7 +62,7 @@ public class RescheduleByPatientCommandValidatorTests
         var command = new RescheduleByPatientCommand(
             Guid.NewGuid(),
             Guid.Empty,
-            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0)
         );
@@ -83,7 +83,7 @@ public class RescheduleByPatientCommandValidatorTests
         var command = new RescheduleByPatientCommand(
             Guid.NewGuid(),
             Guid.NewGuid(),
-            _fakeTime.GetUtcNow().UtcDateTime.AddDays(-1).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(-1)),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0)
         );
@@ -104,7 +104,7 @@ public class RescheduleByPatientCommandValidatorTests
         var command = new RescheduleByPatientCommand(
             Guid.NewGuid(),
             Guid.NewGuid(),
-            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(12, 0),
             new TimeOnly(11, 0)
         );
@@ -125,7 +125,7 @@ public class RescheduleByPatientCommandValidatorTests
         var command = new RescheduleByPatientCommand(
             Guid.NewGuid(),
             Guid.NewGuid(),
-            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0),
             new string('a', 501)

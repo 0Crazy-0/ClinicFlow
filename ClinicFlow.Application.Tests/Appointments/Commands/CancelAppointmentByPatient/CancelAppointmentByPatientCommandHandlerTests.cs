@@ -329,7 +329,7 @@ public class CancelAppointmentByPatientCommandHandlerTests
             patientId,
             doctorId,
             typeId,
-            referenceTime.AddDays(2).Date,
+            DateOnly.FromDateTime(referenceTime.AddDays(2)),
             TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0))
         );
 

@@ -24,7 +24,7 @@ public class GetAppointmentsByDateRangeQueryHandlerTests
     public async Task Handle_ShouldReturnPaginatedList_WhenAppointmentsExistInDateRange()
     {
         // Arrange
-        var startDate = _fakeTime.GetUtcNow().UtcDateTime.Date;
+        var startDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
         var endDate = startDate.AddDays(7);
         var query = new GetAppointmentsByDateRangeQuery(startDate, endDate, 1, 10);
         var appointments = new List<Appointment>
@@ -64,7 +64,7 @@ public class GetAppointmentsByDateRangeQueryHandlerTests
     public async Task Handle_ShouldReturnEmptyPaginatedList_WhenNoAppointmentsInDateRange()
     {
         // Arrange
-        var startDate = _fakeTime.GetUtcNow().UtcDateTime.Date;
+        var startDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
         var endDate = startDate.AddDays(7);
         var query = new GetAppointmentsByDateRangeQuery(startDate, endDate, 1, 10);
 
@@ -93,7 +93,7 @@ public class GetAppointmentsByDateRangeQueryHandlerTests
     private static Appointment CreateAppointment(
         Guid patientId,
         Guid doctorId,
-        DateTime scheduledDate
+        DateOnly scheduledDate
     ) =>
         Appointment.Schedule(
             patientId,

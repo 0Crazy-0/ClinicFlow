@@ -52,7 +52,7 @@ public static class AppointmentCancellationService
 
         if (
             context.Specialty.IsCancellationAllowed(
-                appointment.ScheduledDate.Add(appointment.TimeRange.Start - TimeOnly.MinValue),
+                appointment.ScheduledDate.ToDateTime(appointment.TimeRange.Start),
                 args.CancelledAt
             )
         )
@@ -104,7 +104,7 @@ public static class AppointmentCancellationService
 
         if (
             patient.RelationshipToUser is PatientRelationship.Child
-            && patient.GetAge(referenceTime) < 18
+            && patient.GetAge(DateOnly.FromDateTime(referenceTime)) < 18
         )
             return;
 

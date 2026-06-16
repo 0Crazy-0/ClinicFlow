@@ -653,7 +653,7 @@ public class AppointmentCancellationServiceTests
             Guid.NewGuid(),
             Guid.NewGuid(),
             Guid.NewGuid(),
-            scheduledDateTime.Date,
+            DateOnly.FromDateTime(scheduledDateTime),
             TimeRange.Create(
                 TimeOnly.FromDateTime(scheduledDateTime),
                 TimeOnly.FromDateTime(scheduledDateTime.AddMinutes(30))
@@ -665,7 +665,7 @@ public class AppointmentCancellationServiceTests
             patientId,
             Guid.NewGuid(),
             Guid.NewGuid(),
-            scheduledDateTime.Date,
+            DateOnly.FromDateTime(scheduledDateTime),
             TimeRange.Create(
                 TimeOnly.FromDateTime(scheduledDateTime),
                 TimeOnly.FromDateTime(scheduledDateTime.AddMinutes(30))

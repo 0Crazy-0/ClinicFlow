@@ -41,11 +41,8 @@ public class AppointmentLateCancelledEventHandlerTests
             patientId,
             Guid.NewGuid(),
             Guid.NewGuid(),
-            _fakeTime.GetUtcNow().UtcDateTime.Date,
-            TimeRange.Create(
-                TimeOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime),
-                TimeOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddHours(1))
-            )
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime),
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
 
         appointment.CancelLate(
@@ -99,11 +96,8 @@ public class AppointmentLateCancelledEventHandlerTests
             patientId,
             Guid.NewGuid(),
             Guid.NewGuid(),
-            _fakeTime.GetUtcNow().UtcDateTime.Date,
-            TimeRange.Create(
-                TimeOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime),
-                TimeOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddHours(1))
-            )
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime),
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
 
         appointment.CancelLate(

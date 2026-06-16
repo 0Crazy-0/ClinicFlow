@@ -6,6 +6,6 @@ namespace ClinicFlow.Domain.Events.Appointments;
 
 public sealed record AppointmentRescheduledEvent(
     Appointment Appointment,
-    DateTime PreviousDate,
+    DateOnly PreviousDate,
     TimeRange PreviousTimeRange
 ) : IDomainEvent;

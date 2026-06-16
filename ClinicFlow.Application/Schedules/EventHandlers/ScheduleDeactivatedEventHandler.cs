@@ -20,8 +20,7 @@ public sealed class ScheduleDeactivatedEventHandler(
     )
     {
         var domainEvent = notification.DomainEvent;
-        var referenceDate = timeProvider.GetUtcNow().UtcDateTime.Date;
-
+        var referenceDate = DateOnly.FromDateTime(timeProvider.GetUtcNow().UtcDateTime);
         var futureAppointments = await appointmentRepository.GetFutureScheduledByDoctorIdAsync(
             domainEvent.DoctorId,
             referenceDate,

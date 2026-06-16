@@ -35,16 +35,12 @@ public class MarkAppointmentAsNoShowByStaffCommandHandlerTests
     {
         // Arrange
         var command = new MarkAppointmentAsNoShowByStaffCommand(Guid.NewGuid());
-        var scheduledDateTime = _fakeTime.GetUtcNow().UtcDateTime.AddDays(-1);
         var appointment = Appointment.Schedule(
             Guid.NewGuid(),
             Guid.NewGuid(),
             Guid.NewGuid(),
-            scheduledDateTime.Date,
-            TimeRange.Create(
-                TimeOnly.FromDateTime(scheduledDateTime),
-                TimeOnly.FromDateTime(scheduledDateTime.AddHours(1))
-            )
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(-1)),
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
 
         _appointmentRepositoryMock

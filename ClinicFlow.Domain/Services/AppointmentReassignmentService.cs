@@ -44,7 +44,7 @@ public static class AppointmentReassignmentService
             throw new AppointmentConflictException(
                 DomainErrors.Appointment.Conflict,
                 args.NewDoctorId,
-                args.NewDate.Add(args.NewTimeRange.Start - TimeOnly.MinValue)
+                args.NewDate.ToDateTime(args.NewTimeRange.Start)
             );
 
         appointment.Reassign(args.NewDoctorId, args.NewDate, args.NewTimeRange);
