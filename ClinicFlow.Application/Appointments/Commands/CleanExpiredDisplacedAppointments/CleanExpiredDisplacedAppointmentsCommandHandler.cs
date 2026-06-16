@@ -26,7 +26,7 @@ public sealed class CleanExpiredDisplacedAppointmentsCommandHandler(
         );
 
         foreach (var appointment in expiredAppointments)
-            appointment.CancelDueToSystemTimeout(now);
+            appointment.CancelDueToSystemTimeout(DateOnly.FromDateTime(now));
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }

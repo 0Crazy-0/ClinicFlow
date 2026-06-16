@@ -211,7 +211,7 @@ public class AppointmentGenerator(AppointmentSeedingArgs args, DateTime baseDate
         switch (status)
         {
             case AppointmentStatus.Completed:
-                appointment.CheckIn(actionTime, receptionistNotes);
+                appointment.CheckIn(DateOnly.FromDateTime(actionTime), receptionistNotes);
                 appointment.Start(doctorId, actionTime.AddMinutes(5));
                 appointment.Complete(actionTime.AddMinutes(35));
                 break;
@@ -220,18 +220,28 @@ public class AppointmentGenerator(AppointmentSeedingArgs args, DateTime baseDate
                 if (index % 5 is 0) // 20% of cancelled appointments are system timeouts
                 {
                     appointment.MarkAsRequiresReassignment();
-                    appointment.CancelDueToSystemTimeout(actionTime.AddDays(-1));
+                    appointment.CancelDueToSystemTimeout(
+                        DateOnly.FromDateTime(actionTime.AddDays(-1))
+                    );
                 }
                 else
                 {
                     var reason = GetCancellationReason(index);
-                    appointment.Cancel(patientUserId, reason, actionTime.AddDays(-2));
+                    appointment.Cancel(
+                        patientUserId,
+                        reason,
+                        DateOnly.FromDateTime(actionTime.AddDays(-2))
+                    );
                 }
                 break;
 
             case AppointmentStatus.LateCancellation:
                 var lateReason = GetLateCancellationReason(index);
-                appointment.CancelLate(patientUserId, lateReason, actionTime.AddMinutes(-30));
+                appointment.CancelLate(
+                    patientUserId,
+                    lateReason,
+                    DateOnly.FromDateTime(actionTime.AddMinutes(-30))
+                );
                 break;
 
             case AppointmentStatus.NoShow:
@@ -239,11 +249,11 @@ public class AppointmentGenerator(AppointmentSeedingArgs args, DateTime baseDate
                 break;
 
             case AppointmentStatus.CheckedIn:
-                appointment.CheckIn(actionTime, receptionistNotes);
+                appointment.CheckIn(DateOnly.FromDateTime(actionTime), receptionistNotes);
                 break;
 
             case AppointmentStatus.InProgress:
-                appointment.CheckIn(actionTime, receptionistNotes);
+                appointment.CheckIn(DateOnly.FromDateTime(actionTime), receptionistNotes);
                 appointment.Start(doctorId, actionTime.AddMinutes(5));
                 break;
         }

@@ -52,7 +52,9 @@ public class CheckInAppointmentByStaffCommandHandlerTests
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
 
         appointment.Status.Should().Be(AppointmentStatus.CheckedIn);
-        appointment.CheckedInAt.Should().Be(_fakeTime.GetUtcNow().UtcDateTime);
+        appointment
+            .CheckedInAt.Should()
+            .Be(DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime));
     }
 
     [Fact]

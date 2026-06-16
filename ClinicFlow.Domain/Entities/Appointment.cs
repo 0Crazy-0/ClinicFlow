@@ -32,9 +32,9 @@ public class Appointment : BaseEntity
 
     public string ReceptionistNotes { get; private set; } = string.Empty;
 
-    public DateTime? CheckedInAt { get; private set; }
+    public DateOnly? CheckedInAt { get; private set; }
 
-    public DateTime? CancelledAt { get; private set; }
+    public DateOnly? CancelledAt { get; private set; }
 
     public string? CancellationReason { get; private set; }
 
@@ -116,7 +116,7 @@ public class Appointment : BaseEntity
         AddDomainEvent(new AppointmentRescheduledEvent(this, previousDate, previousTimeRange));
     }
 
-    internal void Cancel(Guid cancelledByUserId, string? reason, DateTime cancelledAt)
+    internal void Cancel(Guid cancelledByUserId, string? reason, DateOnly cancelledAt)
     {
         EnsureCancellable();
 
@@ -125,7 +125,7 @@ public class Appointment : BaseEntity
         AddDomainEvent(new AppointmentCancelledEvent(this, cancelledByUserId, reason));
     }
 
-    internal void CancelLate(Guid cancelledByUserId, string? reason, DateTime cancelledAt)
+    internal void CancelLate(Guid cancelledByUserId, string? reason, DateOnly cancelledAt)
     {
         EnsureCancellable();
 
@@ -134,7 +134,7 @@ public class Appointment : BaseEntity
         AddDomainEvent(new AppointmentLateCancelledEvent(this, cancelledByUserId, reason));
     }
 
-    public void CheckIn(DateTime checkedInAt, string? receptionistNotes = null)
+    public void CheckIn(DateOnly checkedInAt, string? receptionistNotes = null)
     {
         if (Status is not AppointmentStatus.Scheduled)
             throw new DomainValidationException(DomainErrors.Appointment.CannotCheckIn);
@@ -207,7 +207,7 @@ public class Appointment : BaseEntity
     /// Cancels a displaced appointment that was never reassigned before its scheduled time.
     /// No patient penalty is applied since the cancellation is due to clinic inaction.
     /// </remarks>
-    public void CancelDueToSystemTimeout(DateTime cancelledAt)
+    public void CancelDueToSystemTimeout(DateOnly cancelledAt)
     {
         if (Status is not AppointmentStatus.RequiresReassignment)
             throw new DomainValidationException(DomainErrors.Appointment.CannotCancel);
@@ -264,7 +264,7 @@ public class Appointment : BaseEntity
             );
     }
 
-    private void ApplyCancellation(Guid? cancelledByUserId, string? reason, DateTime cancelledAt)
+    private void ApplyCancellation(Guid? cancelledByUserId, string? reason, DateOnly cancelledAt)
     {
         CancelledAt = cancelledAt;
         CancelledByUserId = cancelledByUserId;

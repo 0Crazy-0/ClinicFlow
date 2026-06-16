@@ -441,9 +441,9 @@ public class MedicalEncounterServiceTests
             DateOnly.FromDateTime(dt.AddDays(1)),
             TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0))
         );
-        appointment.SetId(id);
 
-        appointment.CheckIn(dt);
+        appointment.SetId(id);
+        appointment.CheckIn(DateOnly.FromDateTime(dt));
         appointment.Start(appointment.DoctorId, dt);
 
         return appointment;
