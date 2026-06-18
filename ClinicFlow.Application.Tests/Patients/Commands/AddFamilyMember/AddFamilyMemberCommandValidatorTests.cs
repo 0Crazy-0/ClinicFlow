@@ -25,7 +25,7 @@ public class AddFamilyMemberCommandValidatorTests
             Guid.NewGuid(),
             "John",
             "Doe",
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             PatientRelationship.Spouse
         );
 
@@ -44,7 +44,7 @@ public class AddFamilyMemberCommandValidatorTests
             Guid.Empty,
             "John",
             "Doe",
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             PatientRelationship.Spouse
         );
 
@@ -68,7 +68,7 @@ public class AddFamilyMemberCommandValidatorTests
             Guid.NewGuid(),
             firstName!,
             "Doe",
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             PatientRelationship.Spouse
         );
 
@@ -89,7 +89,7 @@ public class AddFamilyMemberCommandValidatorTests
             Guid.NewGuid(),
             "J",
             "Doe",
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             PatientRelationship.Spouse
         );
 
@@ -111,7 +111,7 @@ public class AddFamilyMemberCommandValidatorTests
             Guid.NewGuid(),
             firstName,
             "Doe",
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             PatientRelationship.Spouse
         );
 
@@ -135,7 +135,7 @@ public class AddFamilyMemberCommandValidatorTests
             Guid.NewGuid(),
             "John",
             lastName!,
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             PatientRelationship.Spouse
         );
 
@@ -156,7 +156,7 @@ public class AddFamilyMemberCommandValidatorTests
             Guid.NewGuid(),
             "John",
             "D",
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             PatientRelationship.Spouse
         );
 
@@ -178,7 +178,7 @@ public class AddFamilyMemberCommandValidatorTests
             Guid.NewGuid(),
             "John",
             lastName,
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             PatientRelationship.Spouse
         );
 
@@ -199,7 +199,7 @@ public class AddFamilyMemberCommandValidatorTests
             Guid.NewGuid(),
             "John",
             "Doe",
-            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             PatientRelationship.Spouse
         );
 
@@ -220,7 +220,7 @@ public class AddFamilyMemberCommandValidatorTests
             Guid.NewGuid(),
             "John",
             "Doe",
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             (PatientRelationship)999
         );
 
@@ -241,7 +241,7 @@ public class AddFamilyMemberCommandValidatorTests
             Guid.NewGuid(),
             "John",
             "Doe",
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             PatientRelationship.Self
         );
 

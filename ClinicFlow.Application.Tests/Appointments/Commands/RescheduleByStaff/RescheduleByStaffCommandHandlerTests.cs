@@ -57,7 +57,14 @@ public class RescheduleByStaffCommandHandlerTests
 
         var doctorId = Guid.NewGuid();
         var patientId = Guid.NewGuid();
-        var appointment = CreateAppointment(patientId, doctorId, Guid.NewGuid());
+        var appointment = Appointment.Schedule(
+            patientId,
+            doctorId,
+            Guid.NewGuid(),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
+            TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0))
+        );
+
         var schedule = Schedule.Create(
             doctorId,
             newDate.DayOfWeek,
@@ -158,7 +165,7 @@ public class RescheduleByStaffCommandHandlerTests
             false
         );
 
-        var appointment = CreateAppointment(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
+        var appointment = CreateAppointment();
 
         _appointmentRepositoryMock
             .Setup(r => r.GetByIdAsync(command.AppointmentId, It.IsAny<CancellationToken>()))
@@ -192,7 +199,7 @@ public class RescheduleByStaffCommandHandlerTests
             false
         );
 
-        var appointment = CreateAppointment(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
+        var appointment = CreateAppointment();
         var targetPatient = CreatePatient();
 
         _appointmentRepositoryMock
@@ -230,7 +237,7 @@ public class RescheduleByStaffCommandHandlerTests
             false
         );
 
-        var appointment = CreateAppointment(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
+        var appointment = CreateAppointment();
         var targetPatient = CreatePatient();
         var doctor = CreateDoctor();
 
@@ -261,11 +268,11 @@ public class RescheduleByStaffCommandHandlerTests
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
-    private Appointment CreateAppointment(Guid patientId, Guid doctorId, Guid typeId) =>
+    private Appointment CreateAppointment() =>
         Appointment.Schedule(
-            patientId,
-            doctorId,
-            typeId,
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0))
         );
@@ -284,7 +291,7 @@ public class RescheduleByStaffCommandHandlerTests
         Patient.CreateSelf(
             Guid.NewGuid(),
             PersonName.Create("Test"),
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
 }

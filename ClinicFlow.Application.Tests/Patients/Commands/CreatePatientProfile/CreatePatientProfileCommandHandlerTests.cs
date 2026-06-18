@@ -37,7 +37,7 @@ public class CreatePatientProfileCommandHandlerTests
             Guid.NewGuid(),
             "John",
             "Doe",
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30).Date
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30))
         );
 
         _patientRepositoryMock
@@ -78,7 +78,7 @@ public class CreatePatientProfileCommandHandlerTests
             Guid.NewGuid(),
             "John",
             "Doe",
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30).Date
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30))
         );
 
         var deletedPatient = Patient.CreateSelf(
@@ -123,7 +123,7 @@ public class CreatePatientProfileCommandHandlerTests
             Guid.NewGuid(),
             "John",
             "Doe",
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30).Date
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30))
         );
 
         _patientRepositoryMock

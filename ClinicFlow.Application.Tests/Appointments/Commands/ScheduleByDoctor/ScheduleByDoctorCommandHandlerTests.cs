@@ -346,7 +346,7 @@ public class ScheduleByDoctorCommandHandlerTests
         Patient.CreateSelf(
             userId,
             PersonName.Create("Test"),
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
 }

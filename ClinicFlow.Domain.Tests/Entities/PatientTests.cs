@@ -19,7 +19,7 @@ public class PatientTests
     {
         // Arrange
         var userId = Guid.NewGuid();
-        var dateOfBirth = _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30).Date;
+        var dateOfBirth = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30));
         var bloodType = BloodType.Create("O+");
         var allergies = "Penicillin";
         var chronicConditions = "None";
@@ -53,7 +53,7 @@ public class PatientTests
             Patient.CreateSelf(
                 Guid.NewGuid(),
                 PersonName.Create("John Doe"),
-                _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
+                DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
                 _fakeTime.GetUtcNow().UtcDateTime
             );
 
@@ -71,7 +71,7 @@ public class PatientTests
             Patient.CreateSelf(
                 Guid.Empty,
                 PersonName.Create("John Doe"),
-                _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30).Date,
+                DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
                 _fakeTime.GetUtcNow().UtcDateTime
             );
 
@@ -89,7 +89,7 @@ public class PatientTests
             Patient.CreateSelf(
                 Guid.NewGuid(),
                 null!,
-                _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30).Date,
+                DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
                 _fakeTime.GetUtcNow().UtcDateTime
             );
 
@@ -104,7 +104,7 @@ public class PatientTests
     {
         // Arrange
         var userId = Guid.NewGuid();
-        var dateOfBirth = _fakeTime.GetUtcNow().UtcDateTime.AddYears(-10).Date;
+        var dateOfBirth = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10));
 
         // Act
         var patient = Patient.CreateFamilyMember(
@@ -131,7 +131,7 @@ public class PatientTests
                 Guid.NewGuid(),
                 PersonName.Create("Family Member"),
                 PatientRelationship.Self,
-                _fakeTime.GetUtcNow().UtcDateTime.AddYears(-10).Date,
+                DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10)),
                 _fakeTime.GetUtcNow().UtcDateTime
             );
 
@@ -150,7 +150,7 @@ public class PatientTests
                 Guid.Empty,
                 PersonName.Create("Family Member"),
                 PatientRelationship.Child,
-                _fakeTime.GetUtcNow().UtcDateTime.AddYears(-10).Date,
+                DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10)),
                 _fakeTime.GetUtcNow().UtcDateTime
             );
 
@@ -169,7 +169,7 @@ public class PatientTests
                 Guid.NewGuid(),
                 null!,
                 PatientRelationship.Child,
-                _fakeTime.GetUtcNow().UtcDateTime.AddYears(-10).Date,
+                DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10)),
                 _fakeTime.GetUtcNow().UtcDateTime
             );
 
@@ -188,7 +188,7 @@ public class PatientTests
                 Guid.NewGuid(),
                 PersonName.Create("Family Member"),
                 PatientRelationship.Child,
-                _fakeTime.GetUtcNow().UtcDateTime.AddDays(1).Date,
+                DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
                 _fakeTime.GetUtcNow().UtcDateTime
             );
 
@@ -368,7 +368,7 @@ public class PatientTests
         var patient = Patient.CreateSelf(
             Guid.NewGuid(),
             PersonName.Create("John Doe"),
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
         patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
@@ -385,7 +385,7 @@ public class PatientTests
         var patient = Patient.CreateSelf(
             Guid.NewGuid(),
             PersonName.Create("John Doe"),
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -404,7 +404,7 @@ public class PatientTests
         var patient = Patient.CreateSelf(
             Guid.NewGuid(),
             PersonName.Create("John Doe"),
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
         var bloodType = BloodType.Create("A-");
@@ -427,7 +427,7 @@ public class PatientTests
         var patient = Patient.CreateSelf(
             Guid.NewGuid(),
             PersonName.Create("John Doe"),
-            referenceTime.AddYears(-yearsAgo).Date,
+            DateOnly.FromDateTime(referenceTime.AddYears(-yearsAgo)),
             referenceTime
         );
 
@@ -555,7 +555,7 @@ public class PatientTests
         var patient = Patient.CreateSelf(
             Guid.NewGuid(),
             PersonName.Create("John Doe"),
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
         patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
@@ -568,7 +568,7 @@ public class PatientTests
             userId,
             PersonName.Create("Family Member"),
             PatientRelationship.Child,
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-10).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
 }

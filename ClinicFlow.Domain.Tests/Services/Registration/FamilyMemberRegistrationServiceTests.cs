@@ -36,7 +36,7 @@ public class FamilyMemberRegistrationServiceTests
     public void Register_ShouldThrowAlreadyExists_WhenActiveProfileExists()
     {
         // Arrange
-        var existingProfile = CreateActivePatient(PatientRelationship.Sibling, Guid.NewGuid());
+        var existingProfile = CreateActivePatient(Guid.NewGuid());
         var args = CreateArgs(PatientRelationship.Sibling, existingProfile.UserId);
 
         // Act
@@ -52,13 +52,13 @@ public class FamilyMemberRegistrationServiceTests
     public void Register_ShouldThrowUserIdMismatch_WhenUserIdsDoNotMatch()
     {
         // Arrange
-        var existingProfile = CreateDeletedPatient(PatientRelationship.Sibling, Guid.NewGuid());
+        var existingProfile = CreateDeletedPatient(Guid.NewGuid());
         var args = new FamilyMemberRegistrationArgs
         {
             UserId = Guid.NewGuid(),
             FullName = PersonName.Create("Test Patient"),
             Relationship = PatientRelationship.Sibling,
-            DateOfBirth = _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30).Date,
+            DateOfBirth = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             ReferenceTime = _fakeTime.GetUtcNow().UtcDateTime,
         };
 
@@ -75,7 +75,7 @@ public class FamilyMemberRegistrationServiceTests
     public void Register_ShouldReactivateProfile_WhenDeletedProfileExists()
     {
         // Arrange
-        var deletedProfile = CreateDeletedPatient(PatientRelationship.Sibling, Guid.NewGuid());
+        var deletedProfile = CreateDeletedPatient(Guid.NewGuid());
         var args = CreateArgs(PatientRelationship.Other, deletedProfile.UserId);
 
         // Act
@@ -91,7 +91,7 @@ public class FamilyMemberRegistrationServiceTests
     public void Register_ShouldEmitReactivatedEvent_WhenDeletedProfileExists()
     {
         // Arrange
-        var deletedProfile = CreateDeletedPatient(PatientRelationship.Sibling, Guid.NewGuid());
+        var deletedProfile = CreateDeletedPatient(Guid.NewGuid());
         var args = CreateArgs(PatientRelationship.Other, deletedProfile.UserId);
 
         // Act
@@ -110,23 +110,25 @@ public class FamilyMemberRegistrationServiceTests
             UserId = userId,
             FullName = PersonName.Create("Test Patient"),
             Relationship = relationship,
-            DateOfBirth = _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30).Date,
+            DateOfBirth = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             ReferenceTime = _fakeTime.GetUtcNow().UtcDateTime,
         };
 
-    private Patient CreateActivePatient(PatientRelationship relationship, Guid userId) =>
+    private Patient CreateActivePatient(Guid userId) =>
         Patient.CreateFamilyMember(
             userId,
             PersonName.Create("Test Patient"),
-            relationship,
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30).Date,
+            PatientRelationship.Sibling,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
-    private Patient CreateDeletedPatient(PatientRelationship relationship, Guid userId)
+    private Patient CreateDeletedPatient(Guid userId)
     {
-        var patient = CreateActivePatient(relationship, userId);
+        var patient = CreateActivePatient(userId);
+
         patient.RemoveFamilyMember(userId);
+
         return patient;
     }
 }

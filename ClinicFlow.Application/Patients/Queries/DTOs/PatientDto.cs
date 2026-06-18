@@ -10,7 +10,7 @@ public sealed record PatientDto(
     Guid UserId,
     string FullName,
     PatientRelationship RelationshipToUser,
-    DateTime DateOfBirth,
+    DateOnly DateOfBirth,
     string? BloodType,
     string? Allergies,
     string? ChronicConditions,

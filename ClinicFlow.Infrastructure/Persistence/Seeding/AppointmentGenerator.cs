@@ -125,10 +125,10 @@ public class AppointmentGenerator(AppointmentSeedingArgs args, DateTime baseDate
             : _activePatients[index % _activePatients.Count];
     }
 
-    private bool IsAgeEligible(DateTime dateOfBirth, AgeEligibilityPolicy agePolicy)
+    private bool IsAgeEligible(DateOnly dateOfBirth, AgeEligibilityPolicy agePolicy)
     {
         int age = baseDate.Year - dateOfBirth.Year;
-        if (dateOfBirth.Date > baseDate.AddYears(-age))
+        if (dateOfBirth > DateOnly.FromDateTime(baseDate).AddYears(-age))
             age--;
 
         bool minMet = !agePolicy.MinimumAge.HasValue || age >= agePolicy.MinimumAge.Value;

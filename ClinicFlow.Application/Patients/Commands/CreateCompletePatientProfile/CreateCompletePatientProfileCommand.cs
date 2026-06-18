@@ -6,7 +6,7 @@ public sealed record CreateCompletePatientProfileCommand(
     Guid UserId,
     string FirstName,
     string LastName,
-    DateTime DateOfBirth,
+    DateOnly DateOfBirth,
     string BloodType,
     string Allergies,
     string ChronicConditions,

@@ -491,7 +491,7 @@ public class ScheduleByPatientCommandHandlerTests
         var patient = Patient.CreateSelf(
             userId,
             PersonName.Create("Test Patient"),
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -509,7 +509,9 @@ public class ScheduleByPatientCommandHandlerTests
             PhoneNumber.Create("555-1234"),
             UserRole.Patient
         );
+
         user.MarkPhoneAsVerified(true);
+
         return user;
     }
 }

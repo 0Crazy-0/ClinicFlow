@@ -24,7 +24,7 @@ public class CreatePatientProfileCommandValidatorTests
             Guid.NewGuid(),
             "John",
             "Doe",
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30))
         );
 
         // Act
@@ -42,7 +42,7 @@ public class CreatePatientProfileCommandValidatorTests
             Guid.Empty,
             "John",
             "Doe",
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30))
         );
 
         // Act
@@ -65,7 +65,7 @@ public class CreatePatientProfileCommandValidatorTests
             Guid.NewGuid(),
             firstName!,
             "Doe",
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30))
         );
 
         // Act
@@ -85,7 +85,7 @@ public class CreatePatientProfileCommandValidatorTests
             Guid.NewGuid(),
             "J",
             "Doe",
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30))
         );
 
         // Act
@@ -105,7 +105,7 @@ public class CreatePatientProfileCommandValidatorTests
             Guid.NewGuid(),
             new string('A', PersonName.MaximumLength + 1),
             "Doe",
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30))
         );
 
         // Act
@@ -128,7 +128,7 @@ public class CreatePatientProfileCommandValidatorTests
             Guid.NewGuid(),
             "John",
             lastName!,
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30))
         );
 
         // Act
@@ -148,7 +148,7 @@ public class CreatePatientProfileCommandValidatorTests
             Guid.NewGuid(),
             "John",
             "D",
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30))
         );
 
         // Act
@@ -168,7 +168,7 @@ public class CreatePatientProfileCommandValidatorTests
             Guid.NewGuid(),
             "John",
             new string('A', PersonName.MaximumLength + 1),
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30))
         );
 
         // Act
@@ -188,7 +188,7 @@ public class CreatePatientProfileCommandValidatorTests
             Guid.NewGuid(),
             "John",
             "Doe",
-            _fakeTime.GetUtcNow().UtcDateTime.AddDays(1)
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1))
         );
 
         // Act

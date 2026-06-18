@@ -20,7 +20,7 @@ public interface IPatientRepository
     Task<Patient?> GetIncludingDeletedByNameAndDobAsync(
         Guid userId,
         PersonName fullName,
-        DateTime dateOfBirth,
+        DateOnly dateOfBirth,
         CancellationToken cancellationToken = default
     );
 

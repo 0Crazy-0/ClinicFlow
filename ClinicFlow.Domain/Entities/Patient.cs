@@ -19,7 +19,7 @@ public class Patient : BaseEntity
 
     public PatientRelationship RelationshipToUser { get; private set; }
 
-    public DateTime DateOfBirth { get; private set; }
+    public DateOnly DateOfBirth { get; private set; }
 
     public BloodType BloodType { get; private set; } = null!;
 
@@ -36,7 +36,7 @@ public class Patient : BaseEntity
         Guid userId,
         PersonName fullName,
         PatientRelationship relationshipToUser,
-        DateTime dateOfBirth
+        DateOnly dateOfBirth
     )
         : this()
     {
@@ -52,7 +52,7 @@ public class Patient : BaseEntity
     public static Patient CreateSelf(
         Guid userId,
         PersonName fullName,
-        DateTime dateOfBirth,
+        DateOnly dateOfBirth,
         DateTime referenceTime
     )
     {
@@ -60,7 +60,7 @@ public class Patient : BaseEntity
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
         if (fullName is null)
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-        if (dateOfBirth > referenceTime)
+        if (dateOfBirth > DateOnly.FromDateTime(referenceTime))
             throw new DomainValidationException(DomainErrors.Validation.ValueCannotBeInFuture);
 
         return new Patient(userId, fullName, PatientRelationship.Self, dateOfBirth);
@@ -73,7 +73,7 @@ public class Patient : BaseEntity
         Guid userId,
         PersonName fullName,
         PatientRelationship relationshipToUser,
-        DateTime dateOfBirth,
+        DateOnly dateOfBirth,
         DateTime referenceTime
     )
     {
@@ -83,7 +83,7 @@ public class Patient : BaseEntity
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
         if (fullName is null)
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-        if (dateOfBirth > referenceTime)
+        if (dateOfBirth > DateOnly.FromDateTime(referenceTime))
             throw new DomainValidationException(DomainErrors.Validation.ValueCannotBeInFuture);
 
         return new Patient(userId, fullName, relationshipToUser, dateOfBirth);
@@ -158,9 +158,8 @@ public class Patient : BaseEntity
     public int GetAge(DateOnly referenceDate)
     {
         var age = referenceDate.Year - DateOfBirth.Year;
-        var dobOnly = DateOnly.FromDateTime(DateOfBirth);
 
-        if (dobOnly.AddYears(age) > referenceDate)
+        if (DateOfBirth.AddYears(age) > referenceDate)
             age--;
 
         return age;

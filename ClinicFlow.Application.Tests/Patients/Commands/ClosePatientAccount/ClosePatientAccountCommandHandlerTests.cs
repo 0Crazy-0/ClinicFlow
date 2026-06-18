@@ -43,7 +43,7 @@ public class ClosePatientAccountCommandHandlerTests
         var primaryPatient = Patient.CreateSelf(
             userId,
             PersonName.Create("Primary User"),
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -51,7 +51,7 @@ public class ClosePatientAccountCommandHandlerTests
             userId,
             PersonName.Create("Child User"),
             PatientRelationship.Child,
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-5).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-5)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -85,7 +85,7 @@ public class ClosePatientAccountCommandHandlerTests
         var primaryPatient = Patient.CreateSelf(
             userId,
             PersonName.Create("Primary User"),
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -118,7 +118,7 @@ public class ClosePatientAccountCommandHandlerTests
         var primaryPatient = Patient.CreateSelf(
             userId,
             PersonName.Create("Primary User"),
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
 

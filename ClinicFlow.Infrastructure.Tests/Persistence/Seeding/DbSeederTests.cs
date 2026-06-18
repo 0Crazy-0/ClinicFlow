@@ -197,7 +197,9 @@ public class DbSeederTests(DbSeederFixture fixture) : IClassFixture<DbSeederFixt
                 p.EmergencyContact.Should().NotBeNull();
                 p.EmergencyContact.Name.Should().NotBeNull();
                 p.EmergencyContact.PhoneNumber.Should().NotBeNull();
-                p.DateOfBirth.Should().BeBefore(_fakeTime.GetUtcNow().UtcDateTime);
+                p.DateOfBirth.ToDateTime(TimeOnly.MinValue)
+                    .Should()
+                    .BeBefore(_fakeTime.GetUtcNow().UtcDateTime);
             });
     }
 

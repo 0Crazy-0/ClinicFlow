@@ -44,7 +44,7 @@ public class RescheduleByPatientTests
         // Arrange & Act
         var act = () =>
             AppointmentReschedulingService.RescheduleByPatient(
-                CreateAppointment(Guid.NewGuid()),
+                CreateAppointment(),
                 null!,
                 new AppointmentReschedulingContext(),
                 SchedulingClearance.Granted()
@@ -62,7 +62,7 @@ public class RescheduleByPatientTests
         // Arrange & Act
         var act = () =>
             AppointmentReschedulingService.RescheduleByPatient(
-                CreateAppointment(Guid.NewGuid()),
+                CreateAppointment(),
                 CreateValidPatientReschedulingArgs() with
                 {
                     TargetPatient = null!,
@@ -83,7 +83,7 @@ public class RescheduleByPatientTests
         // Arrange & Act
         var act = () =>
             AppointmentReschedulingService.RescheduleByPatient(
-                CreateAppointment(Guid.NewGuid()),
+                CreateAppointment(),
                 CreateValidPatientReschedulingArgs() with
                 {
                     InitiatorPatient = null!,
@@ -104,7 +104,7 @@ public class RescheduleByPatientTests
         // Arrange & Act
         var act = () =>
             AppointmentReschedulingService.RescheduleByPatient(
-                CreateAppointment(Guid.NewGuid()),
+                CreateAppointment(),
                 CreateValidPatientReschedulingArgs() with
                 {
                     NewTimeRange = null!,
@@ -125,7 +125,7 @@ public class RescheduleByPatientTests
         // Arrange & Act
         var act = () =>
             AppointmentReschedulingService.RescheduleByPatient(
-                CreateAppointment(Guid.NewGuid()),
+                CreateAppointment(),
                 CreateValidPatientReschedulingArgs(),
                 new AppointmentReschedulingContext(),
                 null!
@@ -141,15 +141,8 @@ public class RescheduleByPatientTests
     public void RescheduleByPatient_ShouldThrowValidationException_WhenTargetMismatch()
     {
         // Arrange
-        var appointment = CreateAppointment(Guid.NewGuid());
-
-        var target = CreateSelfPatient(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            30,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
-
+        var appointment = CreateAppointment();
+        var target = CreateSelfPatient(Guid.NewGuid(), Guid.NewGuid(), 30);
         var args = new PatientReschedulingArgs
         {
             InitiatorPatient = target,
@@ -184,21 +177,9 @@ public class RescheduleByPatientTests
     public void RescheduleByPatient_ShouldThrowUnauthorized_WhenUserIdMismatches()
     {
         // Arrange
-        var target = CreateSelfPatient(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            30,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
-        var initiator = CreateSelfPatient(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            30,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
-
+        var target = CreateSelfPatient(Guid.NewGuid(), Guid.NewGuid(), 30);
+        var initiator = CreateSelfPatient(Guid.NewGuid(), Guid.NewGuid(), 30);
         var appointment = CreateAppointment(target.Id);
-
         var args = new PatientReschedulingArgs
         {
             InitiatorPatient = initiator,
@@ -234,25 +215,18 @@ public class RescheduleByPatientTests
     {
         // same UserId but different Patient.Id → must still throw Unauthorized
         var userId = Guid.NewGuid();
-
         var initiator = Patient.CreateFamilyMember(
             userId,
             PersonName.Create("Child"),
             PatientRelationship.Child,
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-10),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
+
         initiator.SetId(Guid.NewGuid());
 
-        var target = CreateSelfPatient(
-            Guid.NewGuid(),
-            userId,
-            30,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
-
+        var target = CreateSelfPatient(Guid.NewGuid(), userId, 30);
         var appointment = CreateAppointment(target.Id);
-
         var args = new PatientReschedulingArgs
         {
             InitiatorPatient = initiator,
@@ -288,15 +262,8 @@ public class RescheduleByPatientTests
     {
         // Arrange
         var userId = Guid.NewGuid();
-        var target = CreateSelfPatient(
-            Guid.NewGuid(),
-            userId,
-            30,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
-
+        var target = CreateSelfPatient(Guid.NewGuid(), userId, 30);
         var appointment = CreateAppointment(target.Id);
-
         var args = new PatientReschedulingArgs
         {
             InitiatorPatient = target,
@@ -332,15 +299,8 @@ public class RescheduleByPatientTests
     {
         // Arrange
         var userId = Guid.NewGuid();
-        var target = CreateSelfPatient(
-            Guid.NewGuid(),
-            userId,
-            30,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
-
+        var target = CreateSelfPatient(Guid.NewGuid(), userId, 30);
         var appointment = CreateAppointment(target.Id);
-
         var args = new PatientReschedulingArgs
         {
             InitiatorPatient = target,
@@ -385,15 +345,8 @@ public class RescheduleByPatientTests
     {
         // Arrange
         var userId = Guid.NewGuid();
-        var target = CreateSelfPatient(
-            Guid.NewGuid(),
-            userId,
-            30,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
-
+        var target = CreateSelfPatient(Guid.NewGuid(), userId, 30);
         var appointment = CreateAppointment(target.Id);
-
         var args = new PatientReschedulingArgs
         {
             InitiatorPatient = target,
@@ -429,15 +382,8 @@ public class RescheduleByPatientTests
     {
         // Arrange
         var userId = Guid.NewGuid();
-        var target = CreateSelfPatient(
-            Guid.NewGuid(),
-            userId,
-            30,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
-
+        var target = CreateSelfPatient(Guid.NewGuid(), userId, 30);
         var appointment = CreateAppointment(target.Id);
-
         var args = new PatientReschedulingArgs
         {
             InitiatorPatient = target,
@@ -473,13 +419,7 @@ public class RescheduleByPatientTests
     {
         // Arrange
         var userId = Guid.NewGuid();
-        var target = CreateSelfPatient(
-            Guid.NewGuid(),
-            userId,
-            30,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
-
+        var target = CreateSelfPatient(Guid.NewGuid(), userId, 30);
         var appointment = CreateAppointment(target.Id);
         var args = new PatientReschedulingArgs
         {
@@ -515,13 +455,7 @@ public class RescheduleByPatientTests
     {
         // Arrange
         var userId = Guid.NewGuid();
-        var target = CreateSelfPatient(
-            Guid.NewGuid(),
-            userId,
-            30,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
-
+        var target = CreateSelfPatient(Guid.NewGuid(), userId, 30);
         var appointment = CreateAppointment(target.Id);
 
         appointment.UpdatePatientNotes("Original notes");
@@ -559,14 +493,9 @@ public class RescheduleByPatientTests
     {
         // Arrange
         var userId = Guid.NewGuid();
-        var target = CreateSelfPatient(
-            Guid.NewGuid(),
-            userId,
-            30,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
-
+        var target = CreateSelfPatient(Guid.NewGuid(), userId, 30);
         var appointment = CreateAppointment(target.Id);
+
         appointment.UpdatePatientNotes("Original notes");
 
         var args = new PatientReschedulingArgs
@@ -600,18 +529,8 @@ public class RescheduleByPatientTests
     private PatientReschedulingArgs CreateValidPatientReschedulingArgs() =>
         new()
         {
-            TargetPatient = CreateSelfPatient(
-                Guid.NewGuid(),
-                Guid.NewGuid(),
-                30,
-                _fakeTime.GetUtcNow().UtcDateTime
-            ),
-            InitiatorPatient = CreateSelfPatient(
-                Guid.NewGuid(),
-                Guid.NewGuid(),
-                30,
-                _fakeTime.GetUtcNow().UtcDateTime
-            ),
+            TargetPatient = CreateSelfPatient(Guid.NewGuid(), Guid.NewGuid(), 30),
+            InitiatorPatient = CreateSelfPatient(Guid.NewGuid(), Guid.NewGuid(), 30),
             NewTimeRange = CreateTimeRange(10, 11),
             IsInitiatorPhoneVerified = true,
         };
@@ -626,14 +545,14 @@ public class RescheduleByPatientTests
         int endHour
     ) => Schedule.Create(doctorId, dayOfWeek, CreateTimeRange(startHour, endHour));
 
-    private static Patient CreateSelfPatient(Guid id, Guid userId, int age, DateTime referenceTime)
+    private Patient CreateSelfPatient(Guid id, Guid userId, int age)
     {
-        var dateOfBirth = referenceTime.AddYears(-age);
+        var dateOfBirth = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-age));
         var patient = Patient.CreateSelf(
             userId,
             PersonName.Create("Test"),
             dateOfBirth,
-            referenceTime
+            _fakeTime.GetUtcNow().UtcDateTime
         );
 
         patient.SetId(id);
@@ -653,7 +572,21 @@ public class RescheduleByPatientTests
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
 
-        // Clear construction events for test isolation
+        appointment.ClearDomainEvents();
+
+        return appointment;
+    }
+
+    private Appointment CreateAppointment()
+    {
+        var appointment = Appointment.Schedule(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2)),
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+        );
+
         appointment.ClearDomainEvents();
 
         return appointment;

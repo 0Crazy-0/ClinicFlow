@@ -25,7 +25,7 @@ public sealed class AddCompleteFamilyMemberCommandValidator
             .MaximumLength(PersonName.MaximumLength)
             .WithMessage(DomainErrors.Validation.ValueTooLong);
         RuleFor(x => x.DateOfBirth)
-            .LessThanOrEqualTo(_ => timeProvider.GetUtcNow().UtcDateTime.Date)
+            .LessThanOrEqualTo(_ => DateOnly.FromDateTime(timeProvider.GetUtcNow().UtcDateTime))
             .WithMessage(DomainErrors.Validation.ValueCannotBeInFuture);
         RuleFor(x => x.BloodType).NotEmpty().WithMessage(DomainErrors.Validation.ValueRequired);
         RuleFor(x => x.EmergencyContactName)
