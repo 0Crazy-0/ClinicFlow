@@ -39,7 +39,7 @@ public class PrimaryProfileRegistrationServiceTests
         var existingProfile = Patient.CreateSelf(
             Guid.NewGuid(),
             PersonName.Create("Test Patient"),
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
         var args = CreateArgs(existingProfile.UserId);
@@ -57,12 +57,12 @@ public class PrimaryProfileRegistrationServiceTests
     public void Register_ShouldThrowUserIdMismatch_WhenUserIdsDoNotMatch()
     {
         // Arrange
-        var existingProfile = CreateDeletedPatient(Guid.NewGuid());
+        var existingProfile = CreateDeletedPatient();
         var args = new PrimaryProfileRegistrationArgs
         {
             UserId = Guid.NewGuid(),
             FullName = PersonName.Create("Test Patient"),
-            DateOfBirth = _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30).Date,
+            DateOfBirth = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             ReferenceTime = _fakeTime.GetUtcNow().UtcDateTime,
         };
 
@@ -79,7 +79,7 @@ public class PrimaryProfileRegistrationServiceTests
     public void Register_ShouldReactivateProfile_WhenDeletedProfileExists()
     {
         // Arrange
-        var deletedProfile = CreateDeletedPatient(Guid.NewGuid());
+        var deletedProfile = CreateDeletedPatient();
         var args = CreateArgs(deletedProfile.UserId);
 
         // Act
@@ -95,7 +95,7 @@ public class PrimaryProfileRegistrationServiceTests
     public void Register_ShouldEmitReactivatedEvent_WhenDeletedProfileExists()
     {
         // Arrange
-        var deletedProfile = CreateDeletedPatient(Guid.NewGuid());
+        var deletedProfile = CreateDeletedPatient();
         var args = CreateArgs(deletedProfile.UserId);
 
         // Act
@@ -110,16 +110,16 @@ public class PrimaryProfileRegistrationServiceTests
         {
             UserId = userId,
             FullName = PersonName.Create("Test Patient"),
-            DateOfBirth = _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30).Date,
+            DateOfBirth = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             ReferenceTime = _fakeTime.GetUtcNow().UtcDateTime,
         };
 
-    private Patient CreateDeletedPatient(Guid userId)
+    private Patient CreateDeletedPatient()
     {
         var patient = Patient.CreateSelf(
-            userId,
+            Guid.NewGuid(),
             PersonName.Create("Test Patient"),
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
         patient.CloseAccount(false);

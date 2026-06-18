@@ -25,7 +25,7 @@ public sealed class CreatePatientProfileCommandValidator
             .MaximumLength(PersonName.MaximumLength)
             .WithMessage(DomainErrors.Validation.ValueTooLong);
         RuleFor(x => x.DateOfBirth)
-            .LessThanOrEqualTo(_ => timeProvider.GetUtcNow().UtcDateTime.Date)
+            .LessThanOrEqualTo(_ => DateOnly.FromDateTime(timeProvider.GetUtcNow().UtcDateTime))
             .WithMessage(DomainErrors.Validation.ValueCannotBeInFuture);
     }
 }

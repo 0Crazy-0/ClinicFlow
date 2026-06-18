@@ -6,5 +6,5 @@ public sealed record CreatePatientProfileCommand(
     Guid UserId,
     string FirstName,
     string LastName,
-    DateTime DateOfBirth
+    DateOnly DateOfBirth
 ) : IRequest<Guid>;

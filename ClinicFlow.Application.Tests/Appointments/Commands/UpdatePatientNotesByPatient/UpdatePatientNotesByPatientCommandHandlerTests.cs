@@ -159,7 +159,7 @@ public class UpdatePatientNotesByPatientCommandHandlerTests
         Patient.CreateSelf(
             userId,
             PersonName.Create("Test Patient"),
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
 

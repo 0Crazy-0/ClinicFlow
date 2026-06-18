@@ -387,7 +387,9 @@ public class RescheduleByPatientCommandHandlerTests
             PhoneNumber.Create("555-1234"),
             UserRole.Patient
         );
+
         user.MarkPhoneAsVerified(true);
+
         return user;
     }
 
@@ -415,10 +417,12 @@ public class RescheduleByPatientCommandHandlerTests
         var patient = Patient.CreateSelf(
             userId,
             PersonName.Create("Test"),
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
+
         patient.SetId(id);
+
         return patient;
     }
 }

@@ -399,7 +399,7 @@ public class ScheduleByDoctorTests
         var patient = Patient.CreateSelf(
             userId,
             PersonName.Create("Test"),
-            referenceTime.AddYears(-age),
+            DateOnly.FromDateTime(referenceTime.AddYears(-age)),
             referenceTime
         );
 

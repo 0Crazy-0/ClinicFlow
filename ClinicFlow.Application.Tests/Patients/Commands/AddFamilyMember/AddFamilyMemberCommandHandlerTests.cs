@@ -37,7 +37,7 @@ public class AddFamilyMemberCommandHandlerTests
             Guid.NewGuid(),
             "Child",
             "Doe",
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-5).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-5)),
             PatientRelationship.Child
         );
 
@@ -77,7 +77,7 @@ public class AddFamilyMemberCommandHandlerTests
             Guid.NewGuid(),
             "Child",
             "Doe",
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-5).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-5)),
             PatientRelationship.Child
         );
 
@@ -125,7 +125,7 @@ public class AddFamilyMemberCommandHandlerTests
             Guid.NewGuid(),
             "Child",
             "Doe",
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-5).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-5)),
             PatientRelationship.Child
         );
 

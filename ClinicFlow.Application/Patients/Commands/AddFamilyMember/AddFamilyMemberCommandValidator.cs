@@ -25,7 +25,7 @@ public sealed class AddFamilyMemberCommandValidator : AbstractValidator<AddFamil
             .MaximumLength(PersonName.MaximumLength)
             .WithMessage(DomainErrors.Validation.ValueTooLong);
         RuleFor(x => x.DateOfBirth)
-            .LessThanOrEqualTo(_ => timeProvider.GetUtcNow().UtcDateTime.Date)
+            .LessThanOrEqualTo(_ => DateOnly.FromDateTime(timeProvider.GetUtcNow().UtcDateTime))
             .WithMessage(DomainErrors.Validation.ValueCannotBeInFuture);
         RuleFor(x => x.Relationship)
             .IsInEnum()

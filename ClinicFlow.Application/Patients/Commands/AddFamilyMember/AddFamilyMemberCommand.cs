@@ -7,6 +7,6 @@ public sealed record AddFamilyMemberCommand(
     Guid UserId,
     string FirstName,
     string LastName,
-    DateTime DateOfBirth,
+    DateOnly DateOfBirth,
     PatientRelationship Relationship
 ) : IRequest<Guid>;

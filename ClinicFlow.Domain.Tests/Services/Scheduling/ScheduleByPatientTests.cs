@@ -197,7 +197,7 @@ public class ScheduleByPatientTests
             userId,
             PersonName.Create("Child"),
             PatientRelationship.Child,
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-10),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
         initiator.SetId(Guid.NewGuid());
@@ -251,7 +251,7 @@ public class ScheduleByPatientTests
             userId,
             PersonName.Create("Spouse"),
             PatientRelationship.Spouse,
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
         familyMember.SetId(Guid.NewGuid());
@@ -343,7 +343,7 @@ public class ScheduleByPatientTests
         var incompletePatient = Patient.CreateSelf(
             userId,
             PersonName.Create("Test"),
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
         incompletePatient.SetId(Guid.NewGuid());
@@ -661,7 +661,7 @@ public class ScheduleByPatientTests
         var patient = Patient.CreateSelf(
             userId,
             PersonName.Create("Test"),
-            referenceTime.AddYears(-age),
+            DateOnly.FromDateTime(referenceTime.AddYears(-age)),
             referenceTime
         );
 

@@ -125,7 +125,7 @@ public class ScheduleByStaffTests
         var incompletePatient = Patient.CreateSelf(
             Guid.NewGuid(),
             PersonName.Create("Test"),
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
         incompletePatient.SetId(Guid.NewGuid());
@@ -417,7 +417,7 @@ public class ScheduleByStaffTests
         var patient = Patient.CreateSelf(
             userId,
             PersonName.Create("Test"),
-            referenceTime.AddYears(-age),
+            DateOnly.FromDateTime(referenceTime.AddYears(-age)),
             referenceTime
         );
 

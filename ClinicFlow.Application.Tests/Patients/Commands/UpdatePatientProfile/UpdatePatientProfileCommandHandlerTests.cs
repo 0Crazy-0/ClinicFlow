@@ -44,7 +44,7 @@ public class UpdatePatientProfileCommandHandlerTests
         var patient = Patient.CreateSelf(
             command.PatientId,
             PersonName.Create("John Doe"),
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
 

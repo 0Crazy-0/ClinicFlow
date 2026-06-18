@@ -30,7 +30,7 @@ public class GetPatientsByUserIdQueryHandlerTests
         var patient1 = Patient.CreateSelf(
             userId,
             PersonName.Create("John Doe"),
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
         patient1.UpdateMedicalProfile(BloodType.Create("A+"), "None", "None");
@@ -40,7 +40,7 @@ public class GetPatientsByUserIdQueryHandlerTests
             userId,
             PersonName.Create("Child Doe"),
             PatientRelationship.Child,
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-5).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-5)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
         patient2.UpdateMedicalProfile(BloodType.Create("A+"), "None", "None");
@@ -83,14 +83,14 @@ public class GetPatientsByUserIdQueryHandlerTests
         var patient1 = Patient.CreateSelf(
             userId,
             PersonName.Create("John Doe"),
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
         var patient2 = Patient.CreateFamilyMember(
             userId,
             PersonName.Create("Child Doe"),
             PatientRelationship.Child,
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-5).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-5)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
 

@@ -425,7 +425,7 @@ public static class DbSeeder
             var patient = Patient.CreateSelf(
                 pUser.Id,
                 PersonName.Create(faker.Name.FullName()),
-                faker.Date.Past(21, refTime.AddYears(-18)),
+                DateOnly.FromDateTime(faker.Date.Past(21, refTime.AddYears(-18))),
                 refTime
             );
             patient.UpdateMedicalProfile(
@@ -449,7 +449,7 @@ public static class DbSeeder
             var patient = Patient.CreateSelf(
                 pUser.Id,
                 PersonName.Create(faker.Name.FullName()),
-                faker.Date.Past(40, refTime.AddYears(-40)),
+                DateOnly.FromDateTime(faker.Date.Past(40, refTime.AddYears(-40))),
                 refTime
             );
             patient.UpdateMedicalProfile(
@@ -494,7 +494,7 @@ public static class DbSeeder
                 pUser.Id,
                 PersonName.Create(faker.Name.FullName()),
                 relationship,
-                faker.Date.Past(age, refTime.AddYears(-age)),
+                DateOnly.FromDateTime(faker.Date.Past(age, refTime.AddYears(-age))),
                 refTime
             );
             patient.UpdateMedicalProfile(

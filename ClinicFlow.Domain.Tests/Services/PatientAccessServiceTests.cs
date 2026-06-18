@@ -111,7 +111,7 @@ public class PatientAccessServiceTests
         Patient.CreateSelf(
             userId,
             PersonName.Create("Test"),
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-age).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-age)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -120,7 +120,7 @@ public class PatientAccessServiceTests
             userId,
             PersonName.Create("Family"),
             relationship,
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-age).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-age)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
 }

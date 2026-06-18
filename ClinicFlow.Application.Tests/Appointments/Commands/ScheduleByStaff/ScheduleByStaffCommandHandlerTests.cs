@@ -371,7 +371,7 @@ public class ScheduleByStaffCommandHandlerTests
         var patient = Patient.CreateSelf(
             Guid.NewGuid(),
             PersonName.Create("Test Patient"),
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
 

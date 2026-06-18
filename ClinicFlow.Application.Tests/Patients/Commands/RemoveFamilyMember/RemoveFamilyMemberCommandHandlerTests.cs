@@ -40,7 +40,7 @@ public class RemoveFamilyMemberCommandHandlerTests
             command.UserId,
             PersonName.Create("Family Member"),
             PatientRelationship.Child,
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-10).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -66,7 +66,7 @@ public class RemoveFamilyMemberCommandHandlerTests
         var primaryPatient = Patient.CreateSelf(
             command.UserId,
             PersonName.Create("Primary User"),
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -118,7 +118,7 @@ public class RemoveFamilyMemberCommandHandlerTests
             patientUserId,
             PersonName.Create("Family Member"),
             PatientRelationship.Child,
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-10).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
 

@@ -30,7 +30,7 @@ public class GetPatientByIdQueryHandlerTests
         var patient = Patient.CreateSelf(
             Guid.NewGuid(),
             PersonName.Create("John Doe"),
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
         patient.UpdateMedicalProfile(BloodType.Create("A+"), "None", "None");
@@ -62,7 +62,7 @@ public class GetPatientByIdQueryHandlerTests
         var patient = Patient.CreateSelf(
             Guid.NewGuid(),
             PersonName.Create("John Doe"),
-            _fakeTime.GetUtcNow().UtcDateTime.AddYears(-30).Date,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
         var patientId = patient.Id;
