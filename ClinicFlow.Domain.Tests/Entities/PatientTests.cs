@@ -100,6 +100,26 @@ public class PatientTests
     }
 
     [Fact]
+    public void CreateSelf_ShouldNotThrowException_WhenDateOfBirthIsEqualToReferenceTimeDate()
+    {
+        // Arrange
+        var referenceTime = _fakeTime.GetUtcNow().UtcDateTime;
+        var dateOfBirth = DateOnly.FromDateTime(referenceTime);
+
+        // Act
+        var act = () =>
+            Patient.CreateSelf(
+                Guid.NewGuid(),
+                PersonName.Create("John Doe"),
+                dateOfBirth,
+                referenceTime
+            );
+
+        // Assert
+        act.Should().NotThrow();
+    }
+
+    [Fact]
     public void CreateFamilyMember_ShouldCreatePatient_WhenValidParameters()
     {
         // Arrange
@@ -196,6 +216,27 @@ public class PatientTests
         act.Should()
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.Validation.ValueCannotBeInFuture);
+    }
+
+    [Fact]
+    public void CreateFamilyMember_ShouldNotThrowException_WhenDateOfBirthIsEqualToReferenceTimeDate()
+    {
+        // Arrange
+        var referenceTime = _fakeTime.GetUtcNow().UtcDateTime;
+        var dateOfBirth = DateOnly.FromDateTime(referenceTime);
+
+        // Act
+        var act = () =>
+            Patient.CreateFamilyMember(
+                Guid.NewGuid(),
+                PersonName.Create("Family Member"),
+                PatientRelationship.Child,
+                dateOfBirth,
+                referenceTime
+            );
+
+        // Assert
+        act.Should().NotThrow();
     }
 
     [Fact]
@@ -398,6 +439,46 @@ public class PatientTests
     }
 
     [Fact]
+    public void EnsureCompleteProfile_ShouldThrowIncompleteProfileException_WhenBloodTypeIsNullAndEmergencyContactHasValue()
+    {
+        // Arrange
+        var patient = Patient.CreateSelf(
+            Guid.NewGuid(),
+            PersonName.Create("John Doe"),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+        patient.UpdateEmergencyContact(EmergencyContact.Create("Mom", "555-5555"));
+
+        // Act & Assert
+        patient
+            .Invoking(p => p.EnsureCompleteProfile())
+            .Should()
+            .Throw<IncompleteProfileException>()
+            .WithMessage(DomainErrors.Patient.ProfileIncomplete);
+    }
+
+    [Fact]
+    public void EnsureCompleteProfile_ShouldThrowIncompleteProfileException_WhenBloodTypeHasValueAndEmergencyContactIsNull()
+    {
+        // Arrange
+        var patient = Patient.CreateSelf(
+            Guid.NewGuid(),
+            PersonName.Create("John Doe"),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+        patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
+
+        // Act & Assert
+        patient
+            .Invoking(p => p.EnsureCompleteProfile())
+            .Should()
+            .Throw<IncompleteProfileException>()
+            .WithMessage(DomainErrors.Patient.ProfileIncomplete);
+    }
+
+    [Fact]
     public void UpdateMedicalProfile_ShouldSetEmptyString_WhenNullStringsAreProvided()
     {
         // Arrange
@@ -433,6 +514,28 @@ public class PatientTests
 
         // Act & Assert
         patient.GetAge(DateOnly.FromDateTime(referenceTime)).Should().Be(yearsAgo);
+    }
+
+    [Fact]
+    public void GetAge_ShouldReturnOriginalAgeWithoutAddingOne_WhenBirthdayHasNotOccurredInReferenceYear()
+    {
+        // Arrange
+        var dayBeforeBirthday = new DateTimeOffset(2026, 6, 19, 0, 0, 0, TimeSpan.Zero);
+
+        _fakeTime.SetUtcNow(dayBeforeBirthday);
+
+        var patient = Patient.CreateSelf(
+            Guid.NewGuid(),
+            PersonName.Create("John Doe"),
+            new DateOnly(2000, 6, 20),
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        // Act
+        var age = patient.GetAge(DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime));
+
+        // Assert
+        age.Should().Be(25);
     }
 
     [Fact]
@@ -548,6 +651,62 @@ public class PatientTests
 
         // Assert
         act.Should().NotThrow();
+    }
+
+    [Fact]
+    public void EnsureNotBlocked_ShouldNotThrow_WhenBlockExpiresExactlyOnReferenceDate()
+    {
+        // Arrange
+        var patient = CreatePatient();
+        var penalty = PatientPenalty.CreateAutomaticBlock(
+            patient.Id,
+            "Block Expires Today",
+            BlockDuration.Minor,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        var referenceDate = DateOnly.FromDateTime(penalty.BlockedUntil!.Value);
+        var penalties = new List<PatientPenalty> { penalty };
+
+        // Act
+        var act = () => Patient.EnsureNotBlocked(penalties, referenceDate);
+
+        // Assert
+        act.Should().NotThrow();
+    }
+
+    [Fact]
+    public void EnsureNotBlocked_ShouldThrowPatientBlockedExceptionWithFurthestDate_WhenMultipleActiveBlocksExistWithDifferentExpirationDates()
+    {
+        // Arrange
+        var patient = CreatePatient();
+        var referenceTime = _fakeTime.GetUtcNow().UtcDateTime;
+        var penaltyMinor = PatientPenalty.CreateAutomaticBlock(
+            patient.Id,
+            "Minor Block",
+            BlockDuration.Minor,
+            referenceTime
+        );
+
+        var penaltySevere = PatientPenalty.CreateAutomaticBlock(
+            patient.Id,
+            "Severe Block",
+            BlockDuration.Severe,
+            referenceTime
+        );
+
+        var penalties = new List<PatientPenalty> { penaltyMinor, penaltySevere };
+        var referenceDate = DateOnly.FromDateTime(referenceTime);
+        var expectedFurthestBlockedUntil = penaltySevere.BlockedUntil!.Value;
+
+        // Act
+        var act = () => Patient.EnsureNotBlocked(penalties, referenceDate);
+
+        // Assert
+        act.Should()
+            .Throw<PatientBlockedException>()
+            .WithMessage(DomainErrors.Patient.Blocked)
+            .Where(e => e.BlockedUntil == expectedFurthestBlockedUntil);
     }
 
     private Patient CreatePatient()
