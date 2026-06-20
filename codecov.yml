@@ -26,10 +26,10 @@ flags:
       - src/ClinicFlow.Application/
 
 ignore:
-  - "**/Migrations/**/*"
+  - "**/Migrations"
   - "**/*.Designer.cs"
   - "tests/**/*"
-
+  
 comment:
   layout: "reach,diff,flags,tree"
   behavior: default
