@@ -26,7 +26,7 @@ flags:
       - src/ClinicFlow.Application/
 
 ignore:
-  - "**/Migrations"
+  - "**/Migrations/**"
   - "**/*.Designer.cs"
   - "tests/**/*"
   
