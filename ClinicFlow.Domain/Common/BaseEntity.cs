@@ -6,12 +6,6 @@ namespace ClinicFlow.Domain.Common;
 public abstract class BaseEntity
 {
     public Guid Id { get; private set; }
-
-    /// <summary>
-    /// Indicates whether the entity has been soft-deleted.
-    /// </summary>
-    public bool IsDeleted { get; private set; }
-
     private readonly IList<IDomainEvent> _domainEvents = [];
 
     /// <summary>
@@ -22,7 +16,6 @@ public abstract class BaseEntity
     protected BaseEntity()
     {
         Id = Guid.NewGuid();
-        IsDeleted = false;
     }
 
     /// <summary>
@@ -34,14 +27,4 @@ public abstract class BaseEntity
     /// Removes all pending domain events.
     /// </summary>
     public void ClearDomainEvents() => _domainEvents.Clear();
-
-    /// <summary>
-    /// Marks the entity as soft-deleted and updates the modification timestamp.
-    /// </summary>
-    protected void MarkAsDeleted() => IsDeleted = true;
-
-    /// <summary>
-    /// Reverts a soft-deleted entity back to active state.
-    /// </summary>
-    protected void UndoDeletion() => IsDeleted = false;
 }
