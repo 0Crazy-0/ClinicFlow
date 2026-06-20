@@ -8,7 +8,7 @@ namespace ClinicFlow.Domain.Entities;
 /// <summary>
 /// Defines a type of appointment with its name, description, and expected duration.
 /// </summary>
-public class AppointmentTypeDefinition : BaseEntity
+public class AppointmentTypeDefinition : SoftDeletableEntity
 {
     public AppointmentCategory Category { get; private set; }
 

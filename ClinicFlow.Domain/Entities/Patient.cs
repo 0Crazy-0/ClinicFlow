@@ -11,7 +11,7 @@ namespace ClinicFlow.Domain.Entities;
 /// Represents a patient registered in the clinic, linked to a user account.
 /// Contains medical profile data and booking-eligibility rules.
 /// </summary>
-public class Patient : BaseEntity
+public class Patient : SoftDeletableEntity
 {
     public Guid UserId { get; init; }
 

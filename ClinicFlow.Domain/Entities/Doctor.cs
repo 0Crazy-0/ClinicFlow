@@ -8,7 +8,7 @@ namespace ClinicFlow.Domain.Entities;
 /// <summary>
 /// Represents a physician registered in the clinic, linked to a user account and medical specialty.
 /// </summary>
-public class Doctor : BaseEntity
+public class Doctor : SoftDeletableEntity
 {
     public Guid UserId { get; init; }
 

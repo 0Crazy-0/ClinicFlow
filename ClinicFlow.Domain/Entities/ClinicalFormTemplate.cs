@@ -6,7 +6,7 @@ namespace ClinicFlow.Domain.Entities;
 /// <summary>
 /// Defines a dynamic clinical form template that specifies the required data schema for an appointment.
 /// </summary>
-public class ClinicalFormTemplate : BaseEntity
+public class ClinicalFormTemplate : SoftDeletableEntity
 {
     /// <summary>
     /// Immutable natural key that external systems and the frontend use to
