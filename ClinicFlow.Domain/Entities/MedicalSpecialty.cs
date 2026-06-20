@@ -11,7 +11,7 @@ namespace ClinicFlow.Domain.Entities;
 /// Cancellation policies and penalty-free windows in this domain are strictly tied to the specialty
 /// rather than global clinic rules.
 /// </remarks>
-public class MedicalSpecialty : BaseEntity
+public class MedicalSpecialty : SoftDeletableEntity
 {
     public string Name { get; private set; } = string.Empty;
 
