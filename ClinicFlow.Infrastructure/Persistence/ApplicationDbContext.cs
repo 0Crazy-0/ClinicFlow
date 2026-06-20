@@ -35,12 +35,20 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         )
         {
             modelBuilder.Entity(clrType).Ignore(nameof(BaseEntity.DomainEvents));
+        }
 
+        foreach (
+            var clrType in modelBuilder
+                .Model.GetEntityTypes()
+                .Where(e => typeof(SoftDeletableEntity).IsAssignableFrom(e.ClrType))
+                .Select(e => e.ClrType)
+        )
+        {
             // HasQueryFilter requires a typed lambda (e => e.IsDeleted == false), but the entity type
             // is only known at runtime, so the expression tree must be built dynamically via Expression API.
             var parameter = Expression.Parameter(clrType, "e");
             var body = Expression.Equal(
-                Expression.Property(parameter, nameof(BaseEntity.IsDeleted)),
+                Expression.Property(parameter, nameof(SoftDeletableEntity.IsDeleted)),
                 Expression.Constant(false)
             );
             var lambda = Expression.Lambda(body, parameter);
