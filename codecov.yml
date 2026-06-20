@@ -29,6 +29,7 @@ ignore:
   - "**/Migrations/**"
   - "**/*.Designer.cs"
   - "tests/**/*"
+  - "**/Events/**"
   
 comment:
   layout: "reach,diff,flags,tree"
