@@ -16,7 +16,7 @@ public class AppointmentTypeDefinition : BaseEntity
 
     public string Description { get; private set; } = string.Empty;
 
-    public TimeSpan DurationMinutes { get; private set; }
+    public EncounterDuration Duration { get; private set; }
 
     public AgeEligibilityPolicy AgePolicy { get; private set; }
 
@@ -42,13 +42,14 @@ public class AppointmentTypeDefinition : BaseEntity
     private AppointmentTypeDefinition()
     {
         AgePolicy = null!;
+        Duration = null!;
     }
 
     private AppointmentTypeDefinition(
         AppointmentCategory category,
         string name,
         string description,
-        TimeSpan durationMinutes,
+        EncounterDuration duration,
         AgeEligibilityPolicy agePolicy,
         bool isUnrestrictedBySpecialty
     )
@@ -56,7 +57,7 @@ public class AppointmentTypeDefinition : BaseEntity
         Category = category;
         Name = name;
         Description = description;
-        DurationMinutes = durationMinutes;
+        Duration = duration;
         AgePolicy = agePolicy;
         IsUnrestrictedBySpecialty = isUnrestrictedBySpecialty;
     }
@@ -65,20 +66,20 @@ public class AppointmentTypeDefinition : BaseEntity
         AppointmentCategory category,
         string name,
         string description,
-        TimeSpan durationMinutes,
+        EncounterDuration duration,
         AgeEligibilityPolicy? agePolicy = null
     )
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-        if (durationMinutes <= TimeSpan.Zero)
-            throw new DomainValidationException(DomainErrors.Validation.ValueMustBePositive);
+        if (duration is null)
+            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
 
         return new AppointmentTypeDefinition(
             category,
             name,
             description,
-            durationMinutes,
+            duration,
             agePolicy ?? AgeEligibilityPolicy.NoRestriction,
             true
         );
@@ -88,18 +89,18 @@ public class AppointmentTypeDefinition : BaseEntity
         AppointmentCategory category,
         string name,
         string description,
-        TimeSpan durationMinutes
+        EncounterDuration duration
     )
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-        if (durationMinutes <= TimeSpan.Zero)
-            throw new DomainValidationException(DomainErrors.Validation.ValueMustBePositive);
+        if (duration is null)
+            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
 
         Category = category;
         Name = name;
         Description = description;
-        DurationMinutes = durationMinutes;
+        Duration = duration;
     }
 
     public void MakeUnrestricted()

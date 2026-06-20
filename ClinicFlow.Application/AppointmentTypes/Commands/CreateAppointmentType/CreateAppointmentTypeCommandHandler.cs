@@ -34,7 +34,7 @@ public sealed class CreateAppointmentTypeCommandHandler(
             request.Category,
             request.Name,
             request.Description,
-            request.DurationMinutes,
+            EncounterDuration.FromMinutes(request.DurationMinutes),
             agePolicy
         );
 

@@ -17,7 +17,7 @@ public class AppointmentTypeDefinitionTests
         var category = AppointmentCategory.Checkup;
         var name = "General Checkup";
         var description = "Routine consultation";
-        var duration = TimeSpan.FromMinutes(30);
+        var duration = EncounterDuration.FromMinutes(30);
 
         // Act
         var result = AppointmentTypeDefinition.Create(category, name, description, duration);
@@ -27,7 +27,7 @@ public class AppointmentTypeDefinitionTests
         result.Category.Should().Be(category);
         result.Name.Should().Be(name);
         result.Description.Should().Be(description);
-        result.DurationMinutes.Should().Be(duration);
+        result.Duration.Should().Be(duration);
     }
 
     [Theory]
@@ -42,7 +42,7 @@ public class AppointmentTypeDefinitionTests
                 AppointmentCategory.Checkup,
                 name!,
                 "Description",
-                TimeSpan.FromMinutes(30)
+                EncounterDuration.FromMinutes(30)
             );
 
         // Assert
@@ -51,9 +51,8 @@ public class AppointmentTypeDefinitionTests
             .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
-    [Theory]
-    [MemberData(nameof(InvalidDurations))]
-    public void Create_ShouldThrowException_WhenDurationIsZeroOrNegative(TimeSpan duration)
+    [Fact]
+    public void Create_ShouldThrowException_WhenDurationIsNull()
     {
         // Arrange & Act
         var act = () =>
@@ -61,13 +60,13 @@ public class AppointmentTypeDefinitionTests
                 AppointmentCategory.Checkup,
                 "Checkup",
                 "Description",
-                duration
+                null!
             );
 
         // Assert
         act.Should()
             .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.Validation.ValueMustBePositive);
+            .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Fact]
@@ -197,7 +196,7 @@ public class AppointmentTypeDefinitionTests
             AppointmentCategory.Checkup,
             "Checkup",
             "Description",
-            TimeSpan.FromMinutes(30),
+            EncounterDuration.FromMinutes(30),
             AgeEligibilityPolicy.Create(18, 65, false)
         );
 
@@ -216,7 +215,7 @@ public class AppointmentTypeDefinitionTests
             AppointmentCategory.Checkup,
             "Checkup",
             "Description",
-            TimeSpan.FromMinutes(30),
+            EncounterDuration.FromMinutes(30),
             AgeEligibilityPolicy.Create(18, null, false)
         );
 
@@ -237,7 +236,7 @@ public class AppointmentTypeDefinitionTests
         var newCategory = AppointmentCategory.FollowUp;
         var newName = "Updated Name";
         var newDescription = "Updated Description";
-        var newDuration = TimeSpan.FromMinutes(60);
+        var newDuration = EncounterDuration.FromMinutes(60);
 
         // Act
         appointmentType.UpdateDetails(newCategory, newName, newDescription, newDuration);
@@ -246,7 +245,7 @@ public class AppointmentTypeDefinitionTests
         appointmentType.Category.Should().Be(newCategory);
         appointmentType.Name.Should().Be(newName);
         appointmentType.Description.Should().Be(newDescription);
-        appointmentType.DurationMinutes.Should().Be(newDuration);
+        appointmentType.Duration.Should().Be(newDuration);
     }
 
     [Theory]
@@ -264,7 +263,7 @@ public class AppointmentTypeDefinitionTests
                 AppointmentCategory.Checkup,
                 name!,
                 "Description",
-                TimeSpan.FromMinutes(30)
+                EncounterDuration.FromMinutes(30)
             );
 
         // Assert
@@ -273,9 +272,8 @@ public class AppointmentTypeDefinitionTests
             .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
-    [Theory]
-    [MemberData(nameof(InvalidDurations))]
-    public void UpdateDetails_ShouldThrowException_WhenDurationIsZeroOrNegative(TimeSpan duration)
+    [Fact]
+    public void UpdateDetails_ShouldThrowException_WhenDurationIsNull()
     {
         // Arrange
         var appointmentType = CreateAppointmentTypeDefinition();
@@ -286,13 +284,13 @@ public class AppointmentTypeDefinitionTests
                 AppointmentCategory.Checkup,
                 "Valid Name",
                 "Description",
-                duration
+                null!
             );
 
         // Assert
         act.Should()
             .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.Validation.ValueMustBePositive);
+            .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Fact]
@@ -317,7 +315,7 @@ public class AppointmentTypeDefinitionTests
             AppointmentCategory.Checkup,
             "Checkup",
             "Description",
-            TimeSpan.FromMinutes(30),
+            EncounterDuration.FromMinutes(30),
             AgeEligibilityPolicy.Create(18, 65, false)
         );
 
@@ -648,9 +646,6 @@ public class AppointmentTypeDefinitionTests
             AppointmentCategory.Checkup,
             "Checkup",
             "Description",
-            TimeSpan.FromMinutes(30)
+            EncounterDuration.FromMinutes(30)
         );
-
-    public static TheoryData<TimeSpan> InvalidDurations =>
-        [TimeSpan.Zero, TimeSpan.FromMinutes(-10)];
 }

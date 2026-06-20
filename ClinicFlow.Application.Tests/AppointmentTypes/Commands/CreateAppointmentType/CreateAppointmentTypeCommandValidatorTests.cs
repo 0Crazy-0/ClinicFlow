@@ -23,7 +23,7 @@ public class CreateAppointmentTypeCommandValidatorTests
             AppointmentCategory.Checkup,
             "General Checkup",
             "Routine consultation",
-            TimeSpan.FromMinutes(30),
+            30,
             18,
             65,
             false
@@ -47,7 +47,7 @@ public class CreateAppointmentTypeCommandValidatorTests
             AppointmentCategory.Checkup,
             name!,
             "Routine consultation",
-            TimeSpan.FromMinutes(30),
+            30,
             null,
             null,
             false
@@ -65,14 +65,17 @@ public class CreateAppointmentTypeCommandValidatorTests
     [Theory]
     [InlineData(0)]
     [InlineData(-10)]
-    public void Validate_ShouldHaveError_WhenDurationIsZeroOrNegative(int minutes)
+    [InlineData(8)]
+    [InlineData(95)]
+    [InlineData(12)]
+    public void Validate_ShouldHaveError_WhenDurationIsInvalid(int minutes)
     {
         // Arrange
         var command = new CreateAppointmentTypeCommand(
             AppointmentCategory.Checkup,
             "Checkup",
             "Description",
-            TimeSpan.FromMinutes(minutes),
+            minutes,
             null,
             null,
             false
@@ -84,7 +87,7 @@ public class CreateAppointmentTypeCommandValidatorTests
         // Assert
         result
             .ShouldHaveValidationErrorFor(x => x.DurationMinutes)
-            .WithErrorMessage(DomainErrors.Validation.ValueMustBePositive);
+            .WithErrorMessage(DomainErrors.MedicalSpecialty.InvalidEncounterDuration);
     }
 
     [Theory]
@@ -98,7 +101,7 @@ public class CreateAppointmentTypeCommandValidatorTests
             AppointmentCategory.Checkup,
             "Checkup",
             "Description",
-            TimeSpan.FromMinutes(30),
+            30,
             minimumAge,
             null,
             false
@@ -124,7 +127,7 @@ public class CreateAppointmentTypeCommandValidatorTests
             AppointmentCategory.Checkup,
             "Checkup",
             "Description",
-            TimeSpan.FromMinutes(30),
+            30,
             null,
             maximumAge,
             false
@@ -147,7 +150,7 @@ public class CreateAppointmentTypeCommandValidatorTests
             AppointmentCategory.Checkup,
             "Checkup",
             "Description",
-            TimeSpan.FromMinutes(30),
+            30,
             AgeEligibilityPolicy.MaximumAllowedAge + 1,
             null,
             false
@@ -170,7 +173,7 @@ public class CreateAppointmentTypeCommandValidatorTests
             AppointmentCategory.Checkup,
             "Checkup",
             "Description",
-            TimeSpan.FromMinutes(30),
+            30,
             null,
             AgeEligibilityPolicy.MaximumAllowedAge + 1,
             false
@@ -193,7 +196,7 @@ public class CreateAppointmentTypeCommandValidatorTests
             AppointmentCategory.Checkup,
             "General Checkup",
             "Routine consultation",
-            TimeSpan.FromMinutes(30),
+            30,
             null,
             null,
             false

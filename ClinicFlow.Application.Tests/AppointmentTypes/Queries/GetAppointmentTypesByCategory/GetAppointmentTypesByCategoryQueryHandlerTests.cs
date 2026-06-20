@@ -3,6 +3,7 @@ using ClinicFlow.Application.AppointmentTypes.Queries.GetAppointmentTypesByCateg
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Interfaces.Repositories;
+using ClinicFlow.Domain.ValueObjects;
 using Moq;
 
 namespace ClinicFlow.Application.Tests.AppointmentTypes.Queries.GetAppointmentTypesByCategory;
@@ -26,7 +27,7 @@ public class GetAppointmentTypesByCategoryQueryHandlerTests
             AppointmentCategory.Checkup,
             "General Checkup",
             "Routine",
-            TimeSpan.FromMinutes(30)
+            EncounterDuration.FromMinutes(30)
         );
         var template = ClinicalFormTemplate.Create(
             "BP_CHECK",

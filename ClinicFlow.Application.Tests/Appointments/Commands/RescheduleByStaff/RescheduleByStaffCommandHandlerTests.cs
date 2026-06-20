@@ -77,7 +77,7 @@ public class RescheduleByStaffCommandHandlerTests
             AppointmentCategory.Checkup,
             "Checkup",
             "Desc",
-            TimeSpan.FromMinutes(30),
+            EncounterDuration.FromMinutes(30),
             null
         );
 

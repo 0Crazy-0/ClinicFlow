@@ -27,6 +27,10 @@ public sealed class AppointmentTypeDefinitionConfiguration
         );
 
         builder.Property(a => a.Category).HasConversion<string>();
+        builder
+            .Property(a => a.Duration)
+            .HasConversion(dur => dur.Minutes, val => EncounterDuration.FromMinutes(val));
+
         builder.OwnsOne(
             a => a.AgePolicy,
             policy =>

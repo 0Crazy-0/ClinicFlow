@@ -6,6 +6,7 @@ using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
+using ClinicFlow.Domain.ValueObjects;
 using Moq;
 
 namespace ClinicFlow.Application.Tests.AppointmentTypes.Commands.UpdateAppointmentType;
@@ -35,14 +36,14 @@ public class UpdateAppointmentTypeCommandHandlerTests
             AppointmentCategory.FollowUp,
             "Updated Checkup",
             "Updated description",
-            TimeSpan.FromMinutes(45)
+            45
         );
 
         var existingEntity = AppointmentTypeDefinition.Create(
             AppointmentCategory.Checkup,
             "Original Checkup",
             "Original description",
-            TimeSpan.FromMinutes(30)
+            EncounterDuration.FromMinutes(30)
         );
 
         _appointmentTypeRepositoryMock
@@ -58,7 +59,7 @@ public class UpdateAppointmentTypeCommandHandlerTests
         existingEntity.Category.Should().Be(command.Category);
         existingEntity.Name.Should().Be(command.Name);
         existingEntity.Description.Should().Be(command.Description);
-        existingEntity.DurationMinutes.Should().Be(command.DurationMinutes);
+        existingEntity.Duration.Minutes.Should().Be(command.DurationMinutes);
     }
 
     [Fact]
@@ -70,7 +71,7 @@ public class UpdateAppointmentTypeCommandHandlerTests
             AppointmentCategory.Checkup,
             "Checkup",
             "Description",
-            TimeSpan.FromMinutes(30)
+            30
         );
 
         _appointmentTypeRepositoryMock
@@ -98,14 +99,14 @@ public class UpdateAppointmentTypeCommandHandlerTests
             AppointmentCategory.Checkup,
             "Existing Name",
             "Description",
-            TimeSpan.FromMinutes(30)
+            30
         );
 
         var existingEntity = AppointmentTypeDefinition.Create(
             AppointmentCategory.Checkup,
             "Original Name",
             "Original description",
-            TimeSpan.FromMinutes(30)
+            EncounterDuration.FromMinutes(30)
         );
 
         _appointmentTypeRepositoryMock

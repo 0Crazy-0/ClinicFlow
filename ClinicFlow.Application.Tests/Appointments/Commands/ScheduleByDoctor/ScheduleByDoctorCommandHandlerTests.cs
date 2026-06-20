@@ -63,7 +63,7 @@ public class ScheduleByDoctorCommandHandlerTests
             AppointmentCategory.FollowUp,
             "FollowUp",
             "Follow up visit",
-            TimeSpan.FromMinutes(30),
+            EncounterDuration.FromMinutes(30),
             AgeEligibilityPolicy.Create(0, 100, false)
         );
 
@@ -152,7 +152,7 @@ public class ScheduleByDoctorCommandHandlerTests
             AppointmentCategory.FollowUp,
             "FollowUp",
             "Follow up visit",
-            TimeSpan.FromMinutes(30),
+            EncounterDuration.FromMinutes(30),
             AgeEligibilityPolicy.Create(0, 100, false)
         );
 

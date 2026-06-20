@@ -153,13 +153,14 @@ public class AppointmentGenerator(AppointmentSeedingArgs args, DateTime baseDate
     {
         var scheduleStart = schedule.TimeRange.Start.Hour;
         var scheduleEnd = schedule.TimeRange.End.Hour;
-        var durationHours = (int)Math.Ceiling(apptType.DurationMinutes.TotalHours);
+        var durationTimeSpan = TimeSpan.FromMinutes(apptType.Duration.Minutes);
+        var durationHours = (int)Math.Ceiling(durationTimeSpan.TotalHours);
         var maxStart = Math.Max(scheduleStart, scheduleEnd - durationHours);
         var startHour = Math.Min(scheduleStart + (index % 4), maxStart);
 
         return TimeRange.Create(
             new TimeOnly(startHour, 0),
-            new TimeOnly(startHour, 0).Add(apptType.DurationMinutes)
+            new TimeOnly(startHour, 0).Add(durationTimeSpan)
         );
     }
 

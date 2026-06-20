@@ -6,6 +6,7 @@ using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
+using ClinicFlow.Domain.ValueObjects;
 using Moq;
 
 namespace ClinicFlow.Application.Tests.AppointmentTypes.Commands.MakeAppointmentTypeUnrestricted;
@@ -31,12 +32,11 @@ public class MakeAppointmentTypeUnrestrictedCommandHandlerTests
     {
         // Arrange
         var command = new MakeAppointmentTypeUnrestrictedCommand(Guid.NewGuid());
-
         var appointmentType = AppointmentTypeDefinition.Create(
             AppointmentCategory.Checkup,
             "Checkup",
             "Description",
-            TimeSpan.FromMinutes(30)
+            EncounterDuration.FromMinutes(30)
         );
 
         appointmentType.RestrictToSpecialties([Guid.NewGuid()]);
@@ -51,6 +51,7 @@ public class MakeAppointmentTypeUnrestrictedCommandHandlerTests
         // Assert
         appointmentType.IsUnrestrictedBySpecialty.Should().BeTrue();
         appointmentType.AllowedSpecialtyIds.Should().BeEmpty();
+
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 

@@ -63,7 +63,7 @@ public class ScheduleByStaffCommandHandlerTests
             AppointmentCategory.Checkup,
             "Checkup",
             "Desc",
-            TimeSpan.FromMinutes(30),
+            EncounterDuration.FromMinutes(30),
             AgeEligibilityPolicy.Create(0, 100, false)
         );
 
@@ -164,7 +164,7 @@ public class ScheduleByStaffCommandHandlerTests
             AppointmentCategory.Checkup,
             "Checkup",
             "Desc",
-            TimeSpan.FromMinutes(30),
+            EncounterDuration.FromMinutes(30),
             AgeEligibilityPolicy.Create(0, 100, false)
         );
 

@@ -3,6 +3,7 @@ using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
+using ClinicFlow.Domain.ValueObjects;
 using MediatR;
 
 namespace ClinicFlow.Application.AppointmentTypes.Commands.UpdateAppointmentType;
@@ -44,7 +45,7 @@ public sealed class UpdateAppointmentTypeCommandHandler(
             request.Category,
             request.Name,
             request.Description,
-            request.DurationMinutes
+            EncounterDuration.FromMinutes(request.DurationMinutes)
         );
 
         await unitOfWork.SaveChangesAsync(cancellationToken);

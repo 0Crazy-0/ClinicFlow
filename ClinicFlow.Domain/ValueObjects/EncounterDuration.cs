@@ -4,7 +4,7 @@ using ClinicFlow.Domain.Exceptions.Base;
 namespace ClinicFlow.Domain.ValueObjects;
 
 /// <summary>
-/// Represents the typical duration of a medical encounter for a specialty.
+/// Represents the duration of a medical encounter, expressed in standardized scheduling blocks
 /// </summary>
 /// <remarks>
 /// Only increments of 5 minutes are allowed to ensure standardized scheduling blocks.

@@ -23,7 +23,7 @@ public class UpdateAppointmentTypeCommandValidatorTests
             AppointmentCategory.Checkup,
             "General Checkup",
             "Routine consultation",
-            TimeSpan.FromMinutes(30)
+            30
         );
 
         // Act
@@ -42,7 +42,7 @@ public class UpdateAppointmentTypeCommandValidatorTests
             AppointmentCategory.Checkup,
             "Checkup",
             "Description",
-            TimeSpan.FromMinutes(30)
+            30
         );
 
         // Act
@@ -66,7 +66,7 @@ public class UpdateAppointmentTypeCommandValidatorTests
             AppointmentCategory.Checkup,
             name!,
             "Description",
-            TimeSpan.FromMinutes(30)
+            30
         );
 
         // Act
@@ -81,7 +81,10 @@ public class UpdateAppointmentTypeCommandValidatorTests
     [Theory]
     [InlineData(0)]
     [InlineData(-10)]
-    public void Validate_ShouldHaveError_WhenDurationIsZeroOrNegative(int minutes)
+    [InlineData(8)]
+    [InlineData(95)]
+    [InlineData(12)]
+    public void Validate_ShouldHaveError_WhenDurationIsInvalid(int minutes)
     {
         // Arrange
         var command = new UpdateAppointmentTypeCommand(
@@ -89,7 +92,7 @@ public class UpdateAppointmentTypeCommandValidatorTests
             AppointmentCategory.Checkup,
             "Checkup",
             "Description",
-            TimeSpan.FromMinutes(minutes)
+            minutes
         );
 
         // Act
@@ -98,6 +101,6 @@ public class UpdateAppointmentTypeCommandValidatorTests
         // Assert
         result
             .ShouldHaveValidationErrorFor(x => x.DurationMinutes)
-            .WithErrorMessage(DomainErrors.Validation.ValueMustBePositive);
+            .WithErrorMessage(DomainErrors.MedicalSpecialty.InvalidEncounterDuration);
     }
 }

@@ -17,6 +17,11 @@ public class MedicalSpecialty : BaseEntity
 
     public string Description { get; private set; } = string.Empty;
 
+    /// <remarks>
+    /// Reference value for statistics and reporting, and a suggested default when
+    /// defining new appointment types. Does not drive scheduling directly — the
+    /// operative duration is <see cref="AppointmentTypeDefinition.Duration"/>.
+    /// </remarks>
     public EncounterDuration TypicalDuration { get; private set; }
 
     public CancellationLimit CancellationPolicy { get; private set; }
