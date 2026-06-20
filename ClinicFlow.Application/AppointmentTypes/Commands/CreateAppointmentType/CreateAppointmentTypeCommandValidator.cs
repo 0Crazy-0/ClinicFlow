@@ -11,8 +11,8 @@ public sealed class CreateAppointmentTypeCommandValidator
     {
         RuleFor(x => x.Name).NotEmpty().WithMessage(DomainErrors.Validation.ValueRequired);
         RuleFor(x => x.DurationMinutes)
-            .GreaterThan(TimeSpan.Zero)
-            .WithMessage(DomainErrors.Validation.ValueMustBePositive);
+            .Must(EncounterDuration.IsValid)
+            .WithMessage(DomainErrors.MedicalSpecialty.InvalidEncounterDuration);
         RuleFor(x => x.MinimumAge)
             .GreaterThanOrEqualTo(AgeEligibilityPolicy.MinimumAllowedAge)
             .When(x => x.MinimumAge.HasValue)

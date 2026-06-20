@@ -1,4 +1,5 @@
 using ClinicFlow.Domain.Common;
+using ClinicFlow.Domain.ValueObjects;
 using FluentValidation;
 
 namespace ClinicFlow.Application.AppointmentTypes.Commands.UpdateAppointmentType;
@@ -13,7 +14,7 @@ public sealed class UpdateAppointmentTypeCommandValidator
             .WithMessage(DomainErrors.Validation.InvalidValue);
         RuleFor(x => x.Name).NotEmpty().WithMessage(DomainErrors.Validation.ValueRequired);
         RuleFor(x => x.DurationMinutes)
-            .GreaterThan(TimeSpan.Zero)
-            .WithMessage(DomainErrors.Validation.ValueMustBePositive);
+            .Must(EncounterDuration.IsValid)
+            .WithMessage(DomainErrors.MedicalSpecialty.InvalidEncounterDuration);
     }
 }

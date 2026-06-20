@@ -3,6 +3,7 @@ using ClinicFlow.Application.AppointmentTypes.Queries.GetAllActiveAppointmentTyp
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Interfaces.Repositories;
+using ClinicFlow.Domain.ValueObjects;
 using Moq;
 
 namespace ClinicFlow.Application.Tests.AppointmentTypes.Queries.GetAllActiveAppointmentTypes;
@@ -26,7 +27,7 @@ public class GetAllActiveAppointmentTypesQueryHandlerTests
             AppointmentCategory.Checkup,
             "General Checkup",
             "Routine",
-            TimeSpan.FromMinutes(30)
+            EncounterDuration.FromMinutes(30)
         );
         var template = ClinicalFormTemplate.Create(
             "BP_CHECK",
@@ -40,7 +41,7 @@ public class GetAllActiveAppointmentTypesQueryHandlerTests
             AppointmentCategory.FollowUp,
             "Follow Up",
             "Return visit",
-            TimeSpan.FromMinutes(20)
+            EncounterDuration.FromMinutes(20)
         );
 
         _repositoryMock

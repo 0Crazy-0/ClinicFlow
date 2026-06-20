@@ -27,7 +27,7 @@ public sealed class GetAppointmentTypesByCategoryQueryHandler(
                 appointmentType.Category.ToString(),
                 appointmentType.Name,
                 appointmentType.Description,
-                appointmentType.DurationMinutes,
+                appointmentType.Duration.Minutes,
                 appointmentType.AgePolicy.MinimumAge,
                 appointmentType.AgePolicy.MaximumAge,
                 appointmentType.AgePolicy.RequiresLegalGuardian,

@@ -72,7 +72,7 @@ public class CompleteMedicalEncounterCommandHandlerTests
             AppointmentCategory.Checkup,
             "Checkup",
             "Desc",
-            TimeSpan.FromMinutes(30),
+            EncounterDuration.FromMinutes(30),
             AgeEligibilityPolicy.Create(0, 100, false)
         );
 
@@ -124,7 +124,7 @@ public class CompleteMedicalEncounterCommandHandlerTests
             AppointmentCategory.Checkup,
             "Checkup",
             "Desc",
-            TimeSpan.FromMinutes(30),
+            EncounterDuration.FromMinutes(30),
             AgeEligibilityPolicy.Create(0, 100, false)
         );
 

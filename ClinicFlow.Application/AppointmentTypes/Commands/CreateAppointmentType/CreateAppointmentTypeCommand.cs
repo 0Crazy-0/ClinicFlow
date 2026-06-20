@@ -7,7 +7,7 @@ public sealed record CreateAppointmentTypeCommand(
     AppointmentCategory Category,
     string Name,
     string Description,
-    TimeSpan DurationMinutes,
+    int DurationMinutes,
     int? MinimumAge,
     int? MaximumAge,
     bool RequiresGuardianConsent

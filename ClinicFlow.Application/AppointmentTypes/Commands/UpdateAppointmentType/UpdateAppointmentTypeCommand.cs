@@ -8,5 +8,5 @@ public sealed record UpdateAppointmentTypeCommand(
     AppointmentCategory Category,
     string Name,
     string Description,
-    TimeSpan DurationMinutes
+    int DurationMinutes
 ) : IRequest;

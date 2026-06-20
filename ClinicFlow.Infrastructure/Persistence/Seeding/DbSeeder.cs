@@ -170,7 +170,7 @@ public static class DbSeeder
                 data.Category,
                 data.Name,
                 data.Desc,
-                TimeSpan.FromMinutes(data.Duration),
+                EncounterDuration.FromMinutes(data.Duration),
                 data.AgePolicy
             );
 

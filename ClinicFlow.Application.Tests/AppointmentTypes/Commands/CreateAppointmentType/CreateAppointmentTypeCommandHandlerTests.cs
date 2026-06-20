@@ -34,7 +34,7 @@ public class CreateAppointmentTypeCommandHandlerTests
             AppointmentCategory.Checkup,
             "General Checkup",
             "Routine consultation",
-            TimeSpan.FromMinutes(30),
+            30,
             18,
             65,
             false
@@ -58,7 +58,7 @@ public class CreateAppointmentTypeCommandHandlerTests
         capturedEntity.Category.Should().Be(command.Category);
         capturedEntity.Name.Should().Be(command.Name);
         capturedEntity.Description.Should().Be(command.Description);
-        capturedEntity.DurationMinutes.Should().Be(command.DurationMinutes);
+        capturedEntity.Duration.Minutes.Should().Be(command.DurationMinutes);
     }
 
     [Fact]
@@ -69,7 +69,7 @@ public class CreateAppointmentTypeCommandHandlerTests
             AppointmentCategory.Checkup,
             "General Checkup",
             "Routine consultation",
-            TimeSpan.FromMinutes(30),
+            30,
             null,
             null,
             false
@@ -101,7 +101,7 @@ public class CreateAppointmentTypeCommandHandlerTests
             AppointmentCategory.Checkup,
             "General Checkup",
             "Routine consultation",
-            TimeSpan.FromMinutes(30),
+            30,
             null,
             null,
             false

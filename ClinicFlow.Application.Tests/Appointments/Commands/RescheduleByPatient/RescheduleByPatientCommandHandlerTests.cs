@@ -64,7 +64,14 @@ public class RescheduleByPatientCommandHandlerTests
         var patientId = Guid.NewGuid();
         var doctorId = Guid.NewGuid();
         var typeId = Guid.NewGuid();
-        var appointment = CreateAppointment(patientId, doctorId, typeId);
+        var appointment = Appointment.Schedule(
+            patientId,
+            doctorId,
+            typeId,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
+            TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0))
+        );
+
         var targetPatient = CreatePatient(patientId, command.InitiatorUserId);
         var schedule = Schedule.Create(
             doctorId,
@@ -78,7 +85,7 @@ public class RescheduleByPatientCommandHandlerTests
             AppointmentCategory.Checkup,
             "Checkup",
             "Desc",
-            TimeSpan.FromMinutes(30),
+            EncounterDuration.FromMinutes(30),
             null
         );
 
@@ -172,7 +179,7 @@ public class RescheduleByPatientCommandHandlerTests
             new TimeOnly(11, 0)
         );
 
-        var appointment = CreateAppointment(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
+        var appointment = CreateAppointment();
 
         _appointmentRepositoryMock
             .Setup(r => r.GetByIdAsync(command.AppointmentId, It.IsAny<CancellationToken>()))
@@ -205,8 +212,7 @@ public class RescheduleByPatientCommandHandlerTests
             new TimeOnly(11, 0)
         );
 
-        var appointment = CreateAppointment(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
-
+        var appointment = CreateAppointment();
         var targetPatient = CreatePatient(appointment.PatientId, Guid.NewGuid());
 
         _appointmentRepositoryMock
@@ -245,7 +251,7 @@ public class RescheduleByPatientCommandHandlerTests
             new TimeOnly(11, 0)
         );
 
-        var appointment = CreateAppointment(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
+        var appointment = CreateAppointment();
         var targetPatient = CreatePatient(appointment.PatientId, command.InitiatorUserId);
 
         _appointmentRepositoryMock
@@ -288,7 +294,7 @@ public class RescheduleByPatientCommandHandlerTests
             new TimeOnly(11, 0)
         );
 
-        var appointment = CreateAppointment(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
+        var appointment = CreateAppointment();
         var targetPatient = CreatePatient(appointment.PatientId, command.InitiatorUserId);
         var doctor = CreateDoctor();
 
@@ -336,7 +342,7 @@ public class RescheduleByPatientCommandHandlerTests
             new TimeOnly(11, 0)
         );
 
-        var appointment = CreateAppointment(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
+        var appointment = CreateAppointment();
         var targetPatient = CreatePatient(appointment.PatientId, command.InitiatorUserId);
         var doctor = CreateDoctor();
         var user = CreateVerifiedUser();
@@ -403,11 +409,11 @@ public class RescheduleByPatientCommandHandlerTests
             ConsultationRoom.Create(1, "Room A", 1)
         );
 
-    private Appointment CreateAppointment(Guid patientId, Guid doctorId, Guid typeId) =>
+    private Appointment CreateAppointment() =>
         Appointment.Schedule(
-            patientId,
-            doctorId,
-            typeId,
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            Guid.NewGuid(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0))
         );

@@ -301,7 +301,7 @@ public class CancelAppointmentByPatientCommandHandlerTests
             AppointmentCategory.Checkup,
             "Checkup",
             "Desc",
-            TimeSpan.FromMinutes(30)
+            EncounterDuration.FromMinutes(30)
         );
 
     private static Doctor CreateDoctor(Guid userId, Guid specialtyId) =>

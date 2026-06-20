@@ -27,7 +27,7 @@ public class GetEligibleAppointmentTypesQueryHandlerTests
             AppointmentCategory.Checkup,
             "Adult Checkup",
             "For adults",
-            TimeSpan.FromMinutes(30),
+            EncounterDuration.FromMinutes(30),
             AgeEligibilityPolicy.Create(18, 65, false)
         );
         var template = ClinicalFormTemplate.Create(

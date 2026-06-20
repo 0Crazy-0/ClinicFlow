@@ -72,7 +72,7 @@ public class RescheduleByDoctorCommandHandlerTests
             AppointmentCategory.Checkup,
             "Checkup",
             "Desc",
-            TimeSpan.FromMinutes(30),
+            EncounterDuration.FromMinutes(30),
             null
         );
 
@@ -283,7 +283,9 @@ public class RescheduleByDoctorCommandHandlerTests
             "555-1234",
             ConsultationRoom.Create(1, "Room A", 1)
         );
+
         doctor.SetId(id);
+
         return doctor;
     }
 

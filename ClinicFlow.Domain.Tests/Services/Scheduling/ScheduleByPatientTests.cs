@@ -10,7 +10,6 @@ using ClinicFlow.Domain.Exceptions.Scheduling;
 using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Args.Scheduling;
 using ClinicFlow.Domain.Services.Contexts;
-using ClinicFlow.Domain.Tests.Shared;
 using ClinicFlow.Domain.ValueObjects;
 using Microsoft.Extensions.Time.Testing;
 
@@ -142,32 +141,21 @@ public class ScheduleByPatientTests
     {
         // Arrange
         var appointmentType = CreateAppointmentType();
-        var initiator = CreateSelfPatient(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            30,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
-        var target = CreateSelfPatient(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            30,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
-
+        var initiator = CreateSelfPatient();
+        var target = CreateSelfPatient();
         var args = new PatientSchedulingArgs
         {
             InitiatorPatient = initiator,
             TargetPatient = target,
             DoctorId = Guid.NewGuid(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
-            TimeRange = CreateTimeRange(10, 11),
+            TimeRange = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
         };
 
         var context = new AppointmentSchedulingContext
         {
-            DoctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek, 9, 17),
+            DoctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek),
             HasConflict = false,
         };
 
@@ -192,7 +180,6 @@ public class ScheduleByPatientTests
         // Arrange — family member tries to schedule for a different patient → should be unauthorized
         var userId = Guid.NewGuid();
         var appointmentType = CreateAppointmentType();
-
         var initiator = Patient.CreateFamilyMember(
             userId,
             PersonName.Create("Child"),
@@ -200,28 +187,21 @@ public class ScheduleByPatientTests
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
-        initiator.SetId(Guid.NewGuid());
 
-        var target = CreateSelfPatient(
-            Guid.NewGuid(),
-            userId,
-            30,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
-
+        var target = CreateSelfPatient();
         var args = new PatientSchedulingArgs
         {
             InitiatorPatient = initiator,
             TargetPatient = target,
             DoctorId = Guid.NewGuid(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
-            TimeRange = CreateTimeRange(10, 11),
+            TimeRange = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
         };
 
         var context = new AppointmentSchedulingContext
         {
-            DoctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek, 9, 17),
+            DoctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek),
             HasConflict = false,
         };
 
@@ -254,7 +234,7 @@ public class ScheduleByPatientTests
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
-        familyMember.SetId(Guid.NewGuid());
+
         familyMember.UpdateMedicalProfile(BloodType.Create("A+"), "", "");
         familyMember.UpdateEmergencyContact(EmergencyContact.Create("Name", "1234567890"));
 
@@ -264,13 +244,13 @@ public class ScheduleByPatientTests
             TargetPatient = familyMember,
             DoctorId = Guid.NewGuid(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
-            TimeRange = CreateTimeRange(10, 11),
+            TimeRange = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
         };
 
         var context = new AppointmentSchedulingContext
         {
-            DoctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek, 9, 17),
+            DoctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek),
             HasConflict = false,
         };
 
@@ -293,28 +273,21 @@ public class ScheduleByPatientTests
     public void ScheduleByPatient_ShouldThrowUnauthorized_WhenPhoneIsNotVerified()
     {
         // Arrange
-        var userId = Guid.NewGuid();
         var appointmentType = CreateAppointmentType();
-        var target = CreateSelfPatient(
-            Guid.NewGuid(),
-            userId,
-            30,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
-
+        var target = CreateSelfPatient();
         var args = new PatientSchedulingArgs
         {
             InitiatorPatient = target,
             TargetPatient = target,
             DoctorId = Guid.NewGuid(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
-            TimeRange = CreateTimeRange(10, 11),
+            TimeRange = CreateTimeRange(),
             IsInitiatorPhoneVerified = false,
         };
 
         var context = new AppointmentSchedulingContext
         {
-            DoctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek, 9, 17),
+            DoctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek),
             HasConflict = false,
         };
 
@@ -339,14 +312,12 @@ public class ScheduleByPatientTests
         // Arrange
         var userId = Guid.NewGuid();
         var appointmentType = CreateAppointmentType();
-
         var incompletePatient = Patient.CreateSelf(
             userId,
             PersonName.Create("Test"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
-        incompletePatient.SetId(Guid.NewGuid());
 
         var args = new PatientSchedulingArgs
         {
@@ -354,13 +325,13 @@ public class ScheduleByPatientTests
             TargetPatient = incompletePatient,
             DoctorId = Guid.NewGuid(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
-            TimeRange = CreateTimeRange(10, 11),
+            TimeRange = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
         };
 
         var context = new AppointmentSchedulingContext
         {
-            DoctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek, 9, 17),
+            DoctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek),
             HasConflict = false,
         };
 
@@ -383,22 +354,15 @@ public class ScheduleByPatientTests
     public void ScheduleByPatient_ShouldThrowPatientBlockedException_WhenHasPenalties()
     {
         // Arrange
-        var userId = Guid.NewGuid();
         var appointmentType = CreateAppointmentType();
-        var target = CreateSelfPatient(
-            Guid.NewGuid(),
-            userId,
-            30,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
-
+        var target = CreateSelfPatient();
         var args = new PatientSchedulingArgs
         {
             InitiatorPatient = target,
             TargetPatient = target,
             DoctorId = Guid.NewGuid(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
-            TimeRange = CreateTimeRange(10, 11),
+            TimeRange = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
         };
 
@@ -415,7 +379,7 @@ public class ScheduleByPatientTests
         var context = new AppointmentSchedulingContext
         {
             Penalties = penalties,
-            DoctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek, 9, 17),
+            DoctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek),
             HasConflict = false,
         };
 
@@ -436,21 +400,23 @@ public class ScheduleByPatientTests
     public void ScheduleByPatient_ShouldThrowDomainValidationException_WhenTooYoung()
     {
         // Arrange
-        var userId = Guid.NewGuid();
         var appointmentType = AppointmentTypeDefinition.Create(
             AppointmentCategory.Checkup,
             "Checkup",
             "Description",
-            TimeSpan.FromMinutes(30),
+            EncounterDuration.FromMinutes(30),
             AgeEligibilityPolicy.Create(18, null, false)
         );
 
-        var target = CreateSelfPatient(
+        var target = Patient.CreateSelf(
             Guid.NewGuid(),
-            userId,
-            15,
+            PersonName.Create("Test"),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-15)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
+
+        target.UpdateMedicalProfile(BloodType.Create("A+"), "", "");
+        target.UpdateEmergencyContact(EmergencyContact.Create("Name", "1234567890"));
 
         var args = new PatientSchedulingArgs
         {
@@ -458,13 +424,13 @@ public class ScheduleByPatientTests
             TargetPatient = target,
             DoctorId = Guid.NewGuid(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
-            TimeRange = CreateTimeRange(10, 11),
+            TimeRange = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
         };
 
         var context = new AppointmentSchedulingContext
         {
-            DoctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek, 9, 17),
+            DoctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek),
             HasConflict = false,
         };
 
@@ -487,28 +453,21 @@ public class ScheduleByPatientTests
     public void ScheduleByPatient_ShouldThrowDoctorNotAvailableException_WhenNotAvailable()
     {
         // Arrange
-        var userId = Guid.NewGuid();
         var appointmentType = CreateAppointmentType();
-        var target = CreateSelfPatient(
-            Guid.NewGuid(),
-            userId,
-            30,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
-
+        var target = CreateSelfPatient();
         var args = new PatientSchedulingArgs
         {
             InitiatorPatient = target,
             TargetPatient = target,
             DoctorId = Guid.NewGuid(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
-            TimeRange = CreateTimeRange(18, 19),
+            TimeRange = TimeRange.Create(new TimeOnly(18, 0), new TimeOnly(19, 0)),
             IsInitiatorPhoneVerified = true,
         };
 
         var context = new AppointmentSchedulingContext
         {
-            DoctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek, 9, 17),
+            DoctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek),
             HasConflict = false,
         };
 
@@ -531,28 +490,21 @@ public class ScheduleByPatientTests
     public void ScheduleByPatient_ShouldThrowAppointmentConflictException_WhenConflict()
     {
         // Arrange
-        var userId = Guid.NewGuid();
         var appointmentType = CreateAppointmentType();
-        var target = CreateSelfPatient(
-            Guid.NewGuid(),
-            userId,
-            30,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
-
+        var target = CreateSelfPatient();
         var args = new PatientSchedulingArgs
         {
             InitiatorPatient = target,
             TargetPatient = target,
             DoctorId = Guid.NewGuid(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
-            TimeRange = CreateTimeRange(10, 11),
+            TimeRange = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
         };
 
         var context = new AppointmentSchedulingContext
         {
-            DoctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek, 9, 17),
+            DoctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek),
             HasConflict = true,
         };
 
@@ -575,28 +527,21 @@ public class ScheduleByPatientTests
     public void ScheduleByPatient_ShouldSucceed_WhenAllConditionsMet()
     {
         // Arrange
-        var userId = Guid.NewGuid();
         var appointmentType = CreateAppointmentType();
-        var target = CreateSelfPatient(
-            Guid.NewGuid(),
-            userId,
-            30,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
-
+        var target = CreateSelfPatient();
         var args = new PatientSchedulingArgs
         {
             InitiatorPatient = target,
             TargetPatient = target,
             DoctorId = Guid.NewGuid(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
-            TimeRange = CreateTimeRange(10, 11),
+            TimeRange = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
         };
 
         var context = new AppointmentSchedulingContext
         {
-            DoctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek, 9, 17),
+            DoctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek),
             HasConflict = false,
         };
 
@@ -621,51 +566,40 @@ public class ScheduleByPatientTests
     private PatientSchedulingArgs CreateValidPatientSchedulingArgs() =>
         new()
         {
-            TargetPatient = CreateSelfPatient(
-                Guid.NewGuid(),
-                Guid.NewGuid(),
-                30,
-                _fakeTime.GetUtcNow().UtcDateTime
-            ),
-            InitiatorPatient = CreateSelfPatient(
-                Guid.NewGuid(),
-                Guid.NewGuid(),
-                30,
-                _fakeTime.GetUtcNow().UtcDateTime
-            ),
-            TimeRange = CreateTimeRange(10, 11),
+            TargetPatient = CreateSelfPatient(),
+            InitiatorPatient = CreateSelfPatient(),
+            TimeRange = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
         };
 
-    private static TimeRange CreateTimeRange(int startHour, int endHour) =>
-        TimeRange.Create(new TimeOnly(startHour, 0), new TimeOnly(endHour, 0));
+    private static TimeRange CreateTimeRange() =>
+        TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0));
 
-    private static Schedule CreateSchedule(
-        Guid doctorId,
-        DayOfWeek dayOfWeek,
-        int startHour,
-        int endHour
-    ) => Schedule.Create(doctorId, dayOfWeek, CreateTimeRange(startHour, endHour));
+    private static Schedule CreateSchedule(Guid doctorId, DayOfWeek dayOfWeek) =>
+        Schedule.Create(
+            doctorId,
+            dayOfWeek,
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(17, 0))
+        );
 
     private static AppointmentTypeDefinition CreateAppointmentType() =>
         AppointmentTypeDefinition.Create(
             AppointmentCategory.Checkup,
             "Checkup",
             "Description",
-            TimeSpan.FromMinutes(30),
+            EncounterDuration.FromMinutes(30),
             null
         );
 
-    private static Patient CreateSelfPatient(Guid id, Guid userId, int age, DateTime referenceTime)
+    private Patient CreateSelfPatient()
     {
         var patient = Patient.CreateSelf(
-            userId,
+            Guid.NewGuid(),
             PersonName.Create("Test"),
-            DateOnly.FromDateTime(referenceTime.AddYears(-age)),
-            referenceTime
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            _fakeTime.GetUtcNow().UtcDateTime
         );
 
-        patient.SetId(id);
         patient.UpdateMedicalProfile(BloodType.Create("A+"), "", "");
         patient.UpdateEmergencyContact(EmergencyContact.Create("Name", "1234567890"));
 

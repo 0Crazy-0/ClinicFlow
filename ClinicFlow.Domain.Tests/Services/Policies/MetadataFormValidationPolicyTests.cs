@@ -4,6 +4,7 @@ using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Entities.ClinicalDetails;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Services.Policies;
+using ClinicFlow.Domain.ValueObjects;
 using Moq;
 
 namespace ClinicFlow.Domain.Tests.Services.Policies;
@@ -130,7 +131,7 @@ public class MetadataFormValidationPolicyTests
     public void Validate_ShouldSkipSchemaValidation_WhenSchemaDefinitionIsWhitespace()
     {
         // Arrange
-        var template = CreateTemplateWithSchema("VITALS", "Vitals", "   ");
+        var template = ClinicalFormTemplate.Create("VITALS", "Vitals", "Description", "   ");
         var appointmentType = CreateAppointmentTypeWithTemplates(template);
         var detail = DynamicClinicalDetail.Create("VITALS", """{"bp":"120/80"}""");
         var details = new List<IClinicalDetailRecord> { detail };
@@ -289,7 +290,7 @@ public class MetadataFormValidationPolicyTests
             Enums.AppointmentCategory.Checkup,
             "General Checkup",
             "Standard checkup",
-            TimeSpan.FromMinutes(30)
+            EncounterDuration.FromMinutes(30)
         );
 
         foreach (var template in templates)
@@ -297,10 +298,4 @@ public class MetadataFormValidationPolicyTests
 
         return appointmentType;
     }
-
-    private static ClinicalFormTemplate CreateTemplateWithSchema(
-        string code,
-        string name,
-        string schemaDefinition
-    ) => ClinicalFormTemplate.Create(code, name, "Description", schemaDefinition);
 }

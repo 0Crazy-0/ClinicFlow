@@ -6,6 +6,7 @@ using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
+using ClinicFlow.Domain.ValueObjects;
 using Moq;
 
 namespace ClinicFlow.Application.Tests.AppointmentTypes.Commands.ReactivateAppointmentType;
@@ -34,7 +35,7 @@ public class ReactivateAppointmentTypeCommandHandlerTests
             AppointmentCategory.Checkup,
             "General Checkup",
             "Routine consultation",
-            TimeSpan.FromMinutes(30)
+            EncounterDuration.FromMinutes(30)
         );
         appointmentType.Deactivate();
 
@@ -92,7 +93,7 @@ public class ReactivateAppointmentTypeCommandHandlerTests
             AppointmentCategory.Checkup,
             "General Checkup",
             "Routine consultation",
-            TimeSpan.FromMinutes(30)
+            EncounterDuration.FromMinutes(30)
         );
         appointmentType.Deactivate();
 

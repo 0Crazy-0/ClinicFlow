@@ -73,7 +73,7 @@ public class MedicalEncounterServiceTests
     public void InitiateMedicalRecord_ShouldReturnMedicalRecord_WhenAppointmentIsInProgress()
     {
         // Arrange
-        var appointment = CreateAppointment(Guid.NewGuid(), _fakeTime.GetUtcNow().UtcDateTime);
+        var appointment = CreateAppointment(Guid.NewGuid());
         var chiefComplaint = "Headache";
 
         // Act
@@ -103,7 +103,7 @@ public class MedicalEncounterServiceTests
     public void ValidateAndCompleteRecord_ShouldThrowDomainValidationException_WhenContextIsNull()
     {
         // Arrange
-        var record = CreateMedicalRecord(Guid.NewGuid(), Guid.NewGuid());
+        var record = CreateMedicalRecord();
 
         // Act
         var act = () => _sut.ValidateAndCompleteRecord(record, null!);
@@ -118,7 +118,7 @@ public class MedicalEncounterServiceTests
     public void ValidateAndCompleteRecord_ShouldThrowDomainValidationException_WhenExpectedDoctorIsNull()
     {
         // Arrange
-        var record = CreateMedicalRecord(Guid.NewGuid(), Guid.NewGuid());
+        var record = CreateMedicalRecord();
 
         // Act
         var act = () =>
@@ -140,7 +140,7 @@ public class MedicalEncounterServiceTests
     public void ValidateAndCompleteRecord_ShouldThrowDomainValidationException_WhenAppointmentIsNull()
     {
         // Arrange
-        var record = CreateMedicalRecord(Guid.NewGuid(), Guid.NewGuid());
+        var record = CreateMedicalRecord();
 
         // Act
         var act = () =>
@@ -162,7 +162,7 @@ public class MedicalEncounterServiceTests
     public void ValidateAndCompleteRecord_ShouldThrowDomainValidationException_WhenAppointmentTypeDefinitionIsNull()
     {
         // Arrange
-        var record = CreateMedicalRecord(Guid.NewGuid(), Guid.NewGuid());
+        var record = CreateMedicalRecord();
 
         // Act
         var act = () =>
@@ -187,12 +187,11 @@ public class MedicalEncounterServiceTests
         var expectedDoctorId = Guid.NewGuid();
         var actualDoctorId = Guid.NewGuid();
         var appointmentId = Guid.NewGuid();
-
         var record = CreateMedicalRecord(actualDoctorId, appointmentId);
         var context = new MedicalEncounterContext
         {
             ExpectedDoctor = CreateDoctor(expectedDoctorId),
-            Appointment = CreateAppointment(appointmentId, _fakeTime.GetUtcNow().UtcDateTime),
+            Appointment = CreateAppointment(appointmentId),
             AppointmentTypeDefinition = CreateAppointmentType(),
             CompletedAt = _fakeTime.GetUtcNow().UtcDateTime,
         };
@@ -213,15 +212,11 @@ public class MedicalEncounterServiceTests
         var doctorId = Guid.NewGuid();
         var expectedAppointmentId = Guid.NewGuid();
         var actualAppointmentId = Guid.NewGuid();
-
         var record = CreateMedicalRecord(doctorId, actualAppointmentId);
         var context = new MedicalEncounterContext
         {
             ExpectedDoctor = CreateDoctor(doctorId),
-            Appointment = CreateAppointment(
-                expectedAppointmentId,
-                _fakeTime.GetUtcNow().UtcDateTime
-            ),
+            Appointment = CreateAppointment(expectedAppointmentId),
             AppointmentTypeDefinition = CreateAppointmentType(),
             CompletedAt = _fakeTime.GetUtcNow().UtcDateTime,
         };
@@ -241,7 +236,6 @@ public class MedicalEncounterServiceTests
         // Arrange
         var doctorId = Guid.NewGuid();
         var appointmentId = Guid.NewGuid();
-
         var record = CreateMedicalRecord(doctorId, appointmentId);
         var appointmentType = CreateAppointmentType();
         var detailMock1 = new TestClinicalDetail1();
@@ -251,7 +245,7 @@ public class MedicalEncounterServiceTests
         var context = new MedicalEncounterContext
         {
             ExpectedDoctor = CreateDoctor(doctorId),
-            Appointment = CreateAppointment(appointmentId, _fakeTime.GetUtcNow().UtcDateTime),
+            Appointment = CreateAppointment(appointmentId),
             AppointmentTypeDefinition = appointmentType,
             CompletedAt = _fakeTime.GetUtcNow().UtcDateTime,
             ProvidedDetails = providedDetails,
@@ -281,7 +275,7 @@ public class MedicalEncounterServiceTests
     [Fact]
     public void AppendClinicalDetail_ShouldThrowDomainValidationException_WhenDetailIsNull()
     {
-        var record = CreateMedicalRecord(Guid.NewGuid(), Guid.NewGuid());
+        var record = CreateMedicalRecord();
         var act = () => _sut.AppendClinicalDetail(record, null!, CreateFormTemplate());
         act.Should()
             .Throw<DomainValidationException>()
@@ -291,7 +285,7 @@ public class MedicalEncounterServiceTests
     [Fact]
     public void AppendClinicalDetail_ShouldThrowDomainValidationException_WhenTemplateIsNull()
     {
-        var record = CreateMedicalRecord(Guid.NewGuid(), Guid.NewGuid());
+        var record = CreateMedicalRecord();
         var act = () => _sut.AppendClinicalDetail(record, new TestClinicalDetail1(), null!);
         act.Should()
             .Throw<DomainValidationException>()
@@ -301,7 +295,7 @@ public class MedicalEncounterServiceTests
     [Fact]
     public void AppendClinicalDetail_ShouldThrowBusinessRuleValidationException_WhenTemplateCodeMismatch()
     {
-        var record = CreateMedicalRecord(Guid.NewGuid(), Guid.NewGuid());
+        var record = CreateMedicalRecord();
         var detail = new TestClinicalDetail1();
         var template = CreateFormTemplate("DifferentCode");
 
@@ -320,7 +314,7 @@ public class MedicalEncounterServiceTests
         string? payload
     )
     {
-        var record = CreateMedicalRecord(Guid.NewGuid(), Guid.NewGuid());
+        var record = CreateMedicalRecord();
         var template = CreateFormTemplate("Test1");
 
         var mockDetail = new Mock<IClinicalDetailRecord>();
@@ -337,7 +331,7 @@ public class MedicalEncounterServiceTests
     [Fact]
     public void AppendClinicalDetail_ShouldThrowBusinessRuleValidationException_WhenPayloadIsInvalidSchema()
     {
-        var record = CreateMedicalRecord(Guid.NewGuid(), Guid.NewGuid());
+        var record = CreateMedicalRecord();
 
         var mockDetail = new Mock<IClinicalDetailRecord>();
         mockDetail.Setup(d => d.TemplateCode).Returns("Test1");
@@ -366,9 +360,9 @@ public class MedicalEncounterServiceTests
     [Fact]
     public void AppendClinicalDetail_ShouldAddDetail_WhenValidAndSchemaMatches()
     {
-        var record = CreateMedicalRecord(Guid.NewGuid(), Guid.NewGuid());
-
+        var record = CreateMedicalRecord();
         var mockDetail = new Mock<IClinicalDetailRecord>();
+
         mockDetail.Setup(d => d.TemplateCode).Returns("Test1");
         mockDetail.Setup(d => d.JsonDataPayload).Returns("""{"valid": "data"}""");
 
@@ -406,17 +400,16 @@ public class MedicalEncounterServiceTests
         new()
         {
             ExpectedDoctor = CreateDoctor(Guid.NewGuid()),
-            Appointment = CreateAppointment(Guid.NewGuid(), _fakeTime.GetUtcNow().UtcDateTime),
+            Appointment = CreateAppointment(Guid.NewGuid()),
             AppointmentTypeDefinition = CreateAppointmentType(),
             CompletedAt = _fakeTime.GetUtcNow().UtcDateTime,
         };
 
-    private static MedicalRecord CreateMedicalRecord(Guid doctorId, Guid appointmentId)
-    {
-        var record = MedicalRecord.Create(Guid.NewGuid(), doctorId, appointmentId, "Headache");
-        record.SetId(Guid.NewGuid());
-        return record;
-    }
+    private static MedicalRecord CreateMedicalRecord(Guid doctorId, Guid appointmentId) =>
+        MedicalRecord.Create(Guid.NewGuid(), doctorId, appointmentId, "Headache");
+
+    private static MedicalRecord CreateMedicalRecord() =>
+        MedicalRecord.Create(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "Headache");
 
     private static Doctor CreateDoctor(Guid id)
     {
@@ -432,42 +425,33 @@ public class MedicalEncounterServiceTests
         return doctor;
     }
 
-    private static Appointment CreateAppointment(Guid id, DateTime dt)
+    private Appointment CreateAppointment(Guid id)
     {
         var appointment = Appointment.Schedule(
             Guid.NewGuid(),
             Guid.NewGuid(),
             Guid.NewGuid(),
-            DateOnly.FromDateTime(dt.AddDays(1)),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0))
         );
 
         appointment.SetId(id);
-        appointment.CheckIn(DateOnly.FromDateTime(dt));
-        appointment.Start(appointment.DoctorId, dt);
+        appointment.CheckIn(DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime));
+        appointment.Start(appointment.DoctorId, _fakeTime.GetUtcNow().UtcDateTime);
 
         return appointment;
     }
 
-    private static AppointmentTypeDefinition CreateAppointmentType()
-    {
-        var type = AppointmentTypeDefinition.Create(
+    private static AppointmentTypeDefinition CreateAppointmentType() =>
+        AppointmentTypeDefinition.Create(
             Enums.AppointmentCategory.Checkup,
             "Checkup",
             "Desc",
-            TimeSpan.FromMinutes(30)
+            EncounterDuration.FromMinutes(30)
         );
-        type.SetId(Guid.NewGuid());
-        return type;
-    }
 
     private static ClinicalFormTemplate CreateFormTemplate(
         string code = "Test1",
         string jsonSchema = "{}"
-    )
-    {
-        var template = ClinicalFormTemplate.Create(code, "Test Form", "Desc", jsonSchema);
-        template.SetId(Guid.NewGuid());
-        return template;
-    }
+    ) => ClinicalFormTemplate.Create(code, "Test Form", "Desc", jsonSchema);
 }

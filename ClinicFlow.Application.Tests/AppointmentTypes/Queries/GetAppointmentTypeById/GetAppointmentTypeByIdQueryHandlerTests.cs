@@ -5,6 +5,7 @@ using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces.Repositories;
+using ClinicFlow.Domain.ValueObjects;
 using Moq;
 
 namespace ClinicFlow.Application.Tests.AppointmentTypes.Queries.GetAppointmentTypeById;
@@ -28,7 +29,7 @@ public class GetAppointmentTypeByIdQueryHandlerTests
             AppointmentCategory.Checkup,
             "General Checkup",
             "Routine consultation",
-            TimeSpan.FromMinutes(30)
+            EncounterDuration.FromMinutes(30)
         );
 
         var template = ClinicalFormTemplate.Create(
@@ -54,7 +55,7 @@ public class GetAppointmentTypeByIdQueryHandlerTests
         result.Category.Should().Be(nameof(AppointmentCategory.Checkup));
         result.Name.Should().Be(entity.Name);
         result.Description.Should().Be(entity.Description);
-        result.DurationMinutes.Should().Be(entity.DurationMinutes);
+        result.DurationMinutes.Should().Be(entity.Duration.Minutes);
         result.IsUnrestrictedBySpecialty.Should().Be(entity.IsUnrestrictedBySpecialty);
         result.AllowedSpecialtyIds.Should().BeEquivalentTo(entity.AllowedSpecialtyIds);
 
