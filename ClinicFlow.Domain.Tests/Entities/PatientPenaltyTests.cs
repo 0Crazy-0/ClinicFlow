@@ -79,7 +79,7 @@ public class PatientPenaltyTests
         // Arrange
         var patientId = Guid.NewGuid();
         var reason = "Automatic block due to 3 strikes";
-        var blockedUntil = _fakeTime.GetUtcNow().UtcDateTime.Date.AddDays(5);
+        var blockedUntil = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime).AddDays(5);
 
         // Act
         var penalty = PatientPenalty.CreateAutomaticBlock(
@@ -216,7 +216,9 @@ public class PatientPenaltyTests
         penalty.AppointmentId.Should().BeNull();
         penalty.Type.Should().Be(PenaltyType.TemporaryBlock);
         penalty.Reason.Should().Be(reason);
-        penalty.BlockedUntil.Should().Be(referenceTime.AddDays(expectedDays));
+        penalty
+            .BlockedUntil.Should()
+            .Be(DateOnly.FromDateTime(referenceTime).AddDays(expectedDays));
         penalty.IsRemoved.Should().BeFalse();
     }
 

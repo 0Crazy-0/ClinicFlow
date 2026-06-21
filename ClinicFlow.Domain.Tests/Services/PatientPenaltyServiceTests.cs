@@ -65,7 +65,11 @@ public class PatientPenaltyServiceTests
         block.Reason.Should().Be(PenaltyReasons.AutomaticBlock);
         block
             .BlockedUntil.Should()
-            .Be(_fakeTime.GetUtcNow().UtcDateTime.Date.AddDays((int)BlockDuration.Minor));
+            .Be(
+                DateOnly
+                    .FromDateTime(_fakeTime.GetUtcNow().UtcDateTime)
+                    .AddDays((int)BlockDuration.Minor)
+            );
     }
 
     [Fact]
@@ -103,7 +107,11 @@ public class PatientPenaltyServiceTests
         var block = result.Single(p => p.Type == PenaltyType.TemporaryBlock);
         block
             .BlockedUntil.Should()
-            .Be(_fakeTime.GetUtcNow().UtcDateTime.Date.AddDays((int)BlockDuration.Moderate));
+            .Be(
+                DateOnly
+                    .FromDateTime(_fakeTime.GetUtcNow().UtcDateTime)
+                    .AddDays((int)BlockDuration.Moderate)
+            );
     }
 
     [Fact]
@@ -148,7 +156,11 @@ public class PatientPenaltyServiceTests
         var block = result.Single(p => p.Type == PenaltyType.TemporaryBlock);
         block
             .BlockedUntil.Should()
-            .Be(_fakeTime.GetUtcNow().UtcDateTime.Date.AddDays((int)BlockDuration.Severe));
+            .Be(
+                DateOnly
+                    .FromDateTime(_fakeTime.GetUtcNow().UtcDateTime)
+                    .AddDays((int)BlockDuration.Severe)
+            );
     }
 
     [Fact]

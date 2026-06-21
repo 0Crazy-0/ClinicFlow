@@ -20,7 +20,7 @@ public class PatientPenalty : BaseEntity
     /// <remarks>
     /// Only has a value when the penalty <see cref="Type"/> is a <see cref="PenaltyType.TemporaryBlock"/>.
     /// </remarks>
-    public DateTime? BlockedUntil { get; private set; }
+    public DateOnly? BlockedUntil { get; private set; }
 
     /// <summary>
     /// Indicates whether this penalty has been manually removed by staff.
@@ -38,7 +38,7 @@ public class PatientPenalty : BaseEntity
         Guid? appointmentId,
         PenaltyType type,
         string reason,
-        DateTime? blockedUntil
+        DateOnly? blockedUntil
     )
     {
         PatientId = patientId;
@@ -85,7 +85,7 @@ public class PatientPenalty : BaseEntity
             null,
             PenaltyType.TemporaryBlock,
             reason,
-            referenceTime.Date.AddDays((int)duration)
+            DateOnly.FromDateTime(referenceTime).AddDays((int)duration)
         );
     }
 
@@ -108,7 +108,7 @@ public class PatientPenalty : BaseEntity
             null,
             PenaltyType.TemporaryBlock,
             reason,
-            referenceTime.Date.AddDays((int)duration)
+            DateOnly.FromDateTime(referenceTime).AddDays((int)duration)
         );
     }
 

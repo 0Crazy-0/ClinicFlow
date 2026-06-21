@@ -32,7 +32,7 @@ public interface IPatientPenaltyRepository
     );
 
     Task<(IReadOnlyList<PatientPenalty> Items, int TotalCount)> GetActiveBlocksPaginatedAsync(
-        DateTime referenceTime,
+        DateOnly referenceDate,
         int pageNumber,
         int pageSize,
         CancellationToken cancellationToken = default
