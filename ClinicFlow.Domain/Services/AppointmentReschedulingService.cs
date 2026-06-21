@@ -52,7 +52,7 @@ public static class AppointmentReschedulingService
                 DomainErrors.Appointment.PhoneNotVerified
             );
 
-        Patient.EnsureNotBlocked(context.Penalties, args.NewDate);
+        new PenaltyHistory(context.Penalties).EnsureNotBlocked(args.NewDate);
 
         EnsureDoctorIsAvailable(
             context.DoctorSchedule,

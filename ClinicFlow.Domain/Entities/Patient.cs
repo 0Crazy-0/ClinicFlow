@@ -164,25 +164,4 @@ public class Patient : SoftDeletableEntity
 
         return age;
     }
-
-    internal static void EnsureNotBlocked(
-        IReadOnlyList<PatientPenalty> penalties,
-        DateOnly referenceDate
-    )
-    {
-        var activePenalties = penalties
-            .Where(p =>
-                !p.IsRemoved
-                && p.Type is PenaltyType.TemporaryBlock
-                && p.BlockedUntil.HasValue
-                && p.BlockedUntil.Value > referenceDate
-            )
-            .ToList();
-
-        if (activePenalties.Count > 0)
-            throw new PatientBlockedException(
-                DomainErrors.Patient.Blocked,
-                activePenalties.Max(p => p.BlockedUntil) ?? referenceDate
-            );
-    }
 }
