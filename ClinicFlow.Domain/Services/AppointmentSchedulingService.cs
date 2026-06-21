@@ -50,7 +50,8 @@ public static class AppointmentSchedulingService
             );
 
         args.TargetPatient.EnsureCompleteProfile();
-        Patient.EnsureNotBlocked(context.Penalties, args.ScheduledDate);
+
+        new PenaltyHistory(context.Penalties).EnsureNotBlocked(args.ScheduledDate);
 
         bool isGuardianScheduling =
             args.InitiatorPatient.RelationshipToUser is PatientRelationship.Self

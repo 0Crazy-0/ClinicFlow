@@ -1,5 +1,7 @@
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
+using ClinicFlow.Domain.Exceptions.Patients;
 
 namespace ClinicFlow.Domain.ValueObjects;
 
@@ -43,5 +45,25 @@ public record PenaltyHistory
         var escalationLevel = Math.Min(TotalHistoricalBlocks, EscalationLadder.Length - 1);
 
         return EscalationLadder[escalationLevel];
+    }
+
+    public void EnsureNotBlocked(DateOnly referenceDate)
+    {
+        var activePenalties = _penalties
+            .Where(p =>
+                !p.IsRemoved
+                && p.Type is PenaltyType.TemporaryBlock
+                && p.BlockedUntil.HasValue
+                && p.BlockedUntil.Value > referenceDate
+            )
+            .ToList();
+
+        if (activePenalties.Count > 0)
+        {
+            throw new PatientBlockedException(
+                DomainErrors.Patient.Blocked,
+                activePenalties.Max(p => p.BlockedUntil) ?? referenceDate
+            );
+        }
     }
 }
