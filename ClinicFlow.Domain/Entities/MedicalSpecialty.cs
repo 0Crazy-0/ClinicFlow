@@ -26,7 +26,7 @@ public class MedicalSpecialty : BaseEntity
 
     public CancellationLimit CancellationPolicy { get; private set; }
 
-    // EF Core
+    // EF Core constructor
     private MedicalSpecialty()
     {
         TypicalDuration = null!;
