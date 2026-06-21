@@ -20,10 +20,10 @@ coverage:
 flags:
   domain:
     paths:
-      - src/ClinicFlow.Domain/
+      - ClinicFlow.Domain/
   application:
     paths:
-      - src/ClinicFlow.Application/
+      - ClinicFlow.Application/
 
 ignore:
   - "**/Migrations/**"
