@@ -43,10 +43,7 @@ public class Appointment : BaseEntity
     public int RescheduleCount { get; private set; }
 
     // EF Core constructor
-    private Appointment()
-    {
-        TimeRange = null!;
-    }
+    private Appointment() => TimeRange = null!;
 
     private Appointment(
         Guid patientId,

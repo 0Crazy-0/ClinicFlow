@@ -19,10 +19,7 @@ public record BloodType
         "O-",
     ];
 
-    private BloodType(string value)
-    {
-        Value = value;
-    }
+    private BloodType(string value) => Value = value;
 
     internal static BloodType Create(string bloodType)
     {

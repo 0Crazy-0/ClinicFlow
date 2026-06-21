@@ -10,10 +10,7 @@ public record PersonName
 
     public string FullName { get; }
 
-    private PersonName(string fullName)
-    {
-        FullName = fullName;
-    }
+    private PersonName(string fullName) => FullName = fullName;
 
     public static PersonName Create(string fullName)
     {

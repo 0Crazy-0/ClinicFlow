@@ -10,10 +10,7 @@ public record MedicalLicenseNumber
 
     public string Value { get; }
 
-    private MedicalLicenseNumber(string value)
-    {
-        Value = value;
-    }
+    private MedicalLicenseNumber(string value) => Value = value;
 
     internal static MedicalLicenseNumber Create(string licenseNumber)
     {

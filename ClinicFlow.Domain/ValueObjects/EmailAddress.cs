@@ -15,10 +15,7 @@ public partial record EmailAddress
 
     public string Value { get; }
 
-    private EmailAddress(string value)
-    {
-        Value = value;
-    }
+    private EmailAddress(string value) => Value = value;
 
     internal static EmailAddress Create(string email)
     {
