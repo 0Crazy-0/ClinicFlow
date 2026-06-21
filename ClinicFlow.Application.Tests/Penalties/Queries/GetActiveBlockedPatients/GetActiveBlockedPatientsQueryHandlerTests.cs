@@ -41,7 +41,7 @@ public class GetActiveBlockedPatientsQueryHandlerTests
         _penaltyRepositoryMock
             .Setup(x =>
                 x.GetActiveBlocksPaginatedAsync(
-                    It.IsAny<DateTime>(),
+                    It.IsAny<DateOnly>(),
                     1,
                     10,
                     It.IsAny<CancellationToken>()
@@ -75,7 +75,7 @@ public class GetActiveBlockedPatientsQueryHandlerTests
         _penaltyRepositoryMock
             .Setup(x =>
                 x.GetActiveBlocksPaginatedAsync(
-                    It.IsAny<DateTime>(),
+                    It.IsAny<DateOnly>(),
                     1,
                     10,
                     It.IsAny<CancellationToken>()

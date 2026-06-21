@@ -17,7 +17,7 @@ public sealed class GetActiveBlockedPatientsQueryHandler(
     )
     {
         var (items, totalCount) = await penaltyRepository.GetActiveBlocksPaginatedAsync(
-            timeProvider.GetUtcNow().UtcDateTime,
+            DateOnly.FromDateTime(timeProvider.GetUtcNow().UtcDateTime),
             request.PageNumber,
             request.PageSize,
             cancellationToken

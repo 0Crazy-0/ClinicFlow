@@ -89,7 +89,10 @@ public class PenaltyHistoryTests
         var history = new PenaltyHistory([expiredBlock]);
 
         // Assert
-        history.IsCurrentlyBlocked(_fakeTime.GetUtcNow().UtcDateTime).Should().BeFalse();
+        history
+            .IsCurrentlyBlocked(DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime))
+            .Should()
+            .BeFalse();
     }
 
     [Fact]
@@ -108,7 +111,10 @@ public class PenaltyHistoryTests
         var history = new PenaltyHistory([activeBlock]);
 
         // Assert
-        history.IsCurrentlyBlocked(_fakeTime.GetUtcNow().UtcDateTime).Should().BeTrue();
+        history
+            .IsCurrentlyBlocked(DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime))
+            .Should()
+            .BeTrue();
     }
 
     [Fact]
@@ -128,7 +134,10 @@ public class PenaltyHistoryTests
         var history = new PenaltyHistory([removedBlock]);
 
         // Assert
-        history.IsCurrentlyBlocked(_fakeTime.GetUtcNow().UtcDateTime).Should().BeFalse();
+        history
+            .IsCurrentlyBlocked(DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime))
+            .Should()
+            .BeFalse();
     }
 
     [Fact]

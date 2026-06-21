@@ -27,12 +27,12 @@ public record PenaltyHistory
     /// </summary>
     public int TotalHistoricalBlocks => _penalties.Count(p => p.Type is PenaltyType.TemporaryBlock);
 
-    public bool IsCurrentlyBlocked(DateTime referenceTime) =>
+    public bool IsCurrentlyBlocked(DateOnly referenceDate) =>
         _penalties.Any(p =>
             !p.IsRemoved
             && p.Type is PenaltyType.TemporaryBlock
             && p.BlockedUntil.HasValue
-            && p.BlockedUntil.Value > referenceTime
+            && p.BlockedUntil.Value > referenceDate
         );
 
     /// <summary>

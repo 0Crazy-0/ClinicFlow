@@ -602,7 +602,7 @@ public class PatientTests
     {
         // Arrange
         var patient = CreatePatient();
-        var blockedUntil = _fakeTime.GetUtcNow().UtcDateTime.AddDays(5).Date;
+        var blockedUntil = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime).AddDays(5);
         var penalties = new List<PatientPenalty>
         {
             PatientPenalty.CreateAutomaticBlock(
@@ -665,7 +665,7 @@ public class PatientTests
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
-        var referenceDate = DateOnly.FromDateTime(penalty.BlockedUntil!.Value);
+        var referenceDate = penalty.BlockedUntil!.Value;
         var penalties = new List<PatientPenalty> { penalty };
 
         // Act
@@ -719,6 +719,7 @@ public class PatientTests
         );
         patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
         patient.UpdateEmergencyContact(EmergencyContact.Create("Mom", "555-5555"));
+
         return patient;
     }
 

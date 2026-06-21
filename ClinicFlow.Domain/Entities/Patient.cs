@@ -175,15 +175,14 @@ public class Patient : BaseEntity
                 !p.IsRemoved
                 && p.Type is PenaltyType.TemporaryBlock
                 && p.BlockedUntil.HasValue
-                && DateOnly.FromDateTime(p.BlockedUntil.Value) > referenceDate
+                && p.BlockedUntil.Value > referenceDate
             )
             .ToList();
 
         if (activePenalties.Count > 0)
             throw new PatientBlockedException(
                 DomainErrors.Patient.Blocked,
-                activePenalties.Max(p => p.BlockedUntil)
-                    ?? referenceDate.ToDateTime(TimeOnly.MinValue)
+                activePenalties.Max(p => p.BlockedUntil) ?? referenceDate
             );
     }
 }

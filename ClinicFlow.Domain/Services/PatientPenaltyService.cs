@@ -25,7 +25,10 @@ public static class PatientPenaltyService
         var warning = PatientPenalty.CreateAutomaticWarning(patientId, appointmentId, reason);
         penaltiesToApply.Add(warning);
 
-        if (!history.HasPriorWarnings || history.IsCurrentlyBlocked(referenceTime))
+        if (
+            !history.HasPriorWarnings
+            || history.IsCurrentlyBlocked(DateOnly.FromDateTime(referenceTime))
+        )
             return penaltiesToApply;
 
         var duration = history.DetermineNextBlockDuration();
