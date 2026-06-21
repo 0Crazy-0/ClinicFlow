@@ -17,10 +17,7 @@ public sealed record EncounterDuration
 
     public int Minutes { get; }
 
-    private EncounterDuration(int minutes)
-    {
-        Minutes = minutes;
-    }
+    private EncounterDuration(int minutes) => Minutes = minutes;
 
     public static bool IsValid(int minutes) =>
         minutes >= MinMinutes && minutes <= MaxMinutes && minutes % IncrementMinutes is 0;

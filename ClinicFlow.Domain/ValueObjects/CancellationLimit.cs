@@ -22,10 +22,7 @@ public record CancellationLimit
 
     public int Hours { get; }
 
-    private CancellationLimit(int hours)
-    {
-        Hours = hours;
-    }
+    private CancellationLimit(int hours) => Hours = hours;
 
     public static CancellationLimit FromHours(int hours)
     {

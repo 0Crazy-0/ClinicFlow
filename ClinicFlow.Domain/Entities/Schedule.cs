@@ -20,10 +20,7 @@ public class Schedule : BaseEntity
     public bool IsActive { get; private set; }
 
     // EF Core constructor
-    private Schedule()
-    {
-        TimeRange = null!;
-    }
+    private Schedule() => TimeRange = null!;
 
     private Schedule(Guid doctorId, DayOfWeek dayOfWeek, TimeRange timeRange)
     {
