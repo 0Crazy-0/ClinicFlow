@@ -204,7 +204,10 @@ public static class DbSeeder
         var users = new List<User>();
         var doctorUsers = new List<User>();
         var patientUsers = new List<User>();
-        var refTime = timeProvider.GetUtcNow().UtcDateTime;
+        var refTime = DateTime.SpecifyKind(
+            timeProvider.GetUtcNow().UtcDateTime,
+            DateTimeKind.Unspecified
+        );
 
         // Admins (3)
         var adminLoginOffsets = new (int Days, int Hours)[] { (1, 3), (4, 11), (2, 17) };
@@ -717,8 +720,11 @@ public static class DbSeeder
                 refTime.AddDays(-profile.DaysAgoLastLogin.Value).AddHours(-(index % 24))
             );
 
+        var failedLoginBase = refTime
+            .AddHours(-profile.FailedLoginHoursAgo)
+            .AddHours(-(index % 48));
         for (int f = 0; f < profile.FailedLoginAttempts; f++)
-            user.RecordFailedLogin(refTime.AddHours(-(profile.FailedLoginAttempts - f)));
+            user.RecordFailedLogin(failedLoginBase.AddMinutes(-(profile.FailedLoginAttempts - f)));
     }
 
     private static string ResolveChiefComplaint(
@@ -746,39 +752,40 @@ public static class DbSeeder
 
     private static readonly UserVariantProfile[] _doctorVariantCycle =
     [
-        new(true, 0, 1),
-        new(true, 0, 3),
-        new(false, 0, 5),
-        new(true, 0, 2),
-        new(true, 0, null),
-        new(true, 0, 7),
-        new(false, 0, 10),
-        new(true, 0, 4),
+        new(true, 0, 1, 0),
+        new(true, 0, 3, 0),
+        new(false, 0, 5, 0),
+        new(true, 0, 2, 0),
+        new(true, 0, null, 0),
+        new(true, 0, 7, 0),
+        new(false, 0, 10, 0),
+        new(true, 0, 4, 0),
     ];
 
     private readonly record struct UserVariantProfile(
         bool IsPhoneVerified,
         int FailedLoginAttempts,
-        int? DaysAgoLastLogin
+        int? DaysAgoLastLogin,
+        int FailedLoginHoursAgo
     );
 
     private static readonly UserVariantProfile[] _variantCycle =
     [
-        new(true, 0, null),
-        new(true, 0, 3),
-        new(true, 1, 5),
-        new(true, 3, 7),
-        new(true, 5, null),
-        new(false, 0, null),
-        new(true, 0, 1),
-        new(true, 2, 10),
-        new(true, 0, 2),
-        new(true, 5, 4),
-        new(true, 0, 15),
-        new(false, 1, 6),
-        new(true, 0, 8),
-        new(true, 4, 12),
-        new(true, 0, 9),
+        new(true, 0, null, 0),
+        new(true, 0, 3, 0),
+        new(true, 1, 5, 2),
+        new(true, 3, 7, 6),
+        new(true, 5, null, 0), // LockoutEnd ≈ refTime + 15min (active lockout)
+        new(false, 0, null, 0),
+        new(true, 0, 1, 0),
+        new(true, 2, 10, 12),
+        new(true, 0, 2, 0),
+        new(true, 5, 4, 48), // LockoutEnd ≈ refTime - 48h + 15min (expired lockout)
+        new(true, 0, 15, 0),
+        new(false, 1, 6, 3),
+        new(true, 0, 8, 0),
+        new(true, 4, 12, 24),
+        new(true, 0, 9, 0),
     ];
 
     private sealed class SeederContext

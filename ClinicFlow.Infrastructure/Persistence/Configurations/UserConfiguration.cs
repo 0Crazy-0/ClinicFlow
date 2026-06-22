@@ -21,6 +21,8 @@ public sealed class UserConfiguration : IEntityTypeConfiguration<User>
             .HasConversion(phone => phone.Value, val => PhoneNumber.Create(val))
             .HasMaxLength(PhoneNumber.MaximumLength);
 
+        builder.Property(u => u.LastLoginAt).HasColumnType("timestamp without time zone");
+        builder.Property(u => u.LockoutEnd).HasColumnType("timestamp without time zone");
         builder.HasIndex(u => u.Email).IsUnique();
     }
 }
