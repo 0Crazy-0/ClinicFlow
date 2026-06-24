@@ -40,7 +40,7 @@ public interface IAppointmentTypeDefinitionRepository
         CancellationToken cancellationToken = default
     );
 
-    Task<AppointmentTypeDefinition> CreateAsync(
+    Task CreateAsync(
         AppointmentTypeDefinition appointmentType,
         CancellationToken cancellationToken = default
     );

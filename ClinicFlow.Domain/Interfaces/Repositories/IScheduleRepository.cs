@@ -25,7 +25,7 @@ public interface IScheduleRepository
         CancellationToken cancellationToken = default
     );
 
-    Task<Schedule> CreateAsync(Schedule schedule, CancellationToken cancellationToken = default);
+    Task CreateAsync(Schedule schedule, CancellationToken cancellationToken = default);
 
     Task CreateRangeAsync(
         IReadOnlyList<Schedule> schedules,

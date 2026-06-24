@@ -18,7 +18,7 @@ public interface IDoctorRepository
         CancellationToken cancellationToken = default
     );
 
-    Task<Doctor> CreateAsync(Doctor doctor, CancellationToken cancellationToken = default);
+    Task CreateAsync(Doctor doctor, CancellationToken cancellationToken = default);
 
     Task<bool> HasActiveBySpecialtyIdAsync(
         Guid specialtyId,

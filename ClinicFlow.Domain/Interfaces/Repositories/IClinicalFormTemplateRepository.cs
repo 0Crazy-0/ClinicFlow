@@ -37,8 +37,5 @@ public interface IClinicalFormTemplateRepository
         CancellationToken cancellationToken = default
     );
 
-    Task<ClinicalFormTemplate> CreateAsync(
-        ClinicalFormTemplate template,
-        CancellationToken cancellationToken = default
-    );
+    Task CreateAsync(ClinicalFormTemplate template, CancellationToken cancellationToken = default);
 }
