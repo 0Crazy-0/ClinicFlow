@@ -56,7 +56,7 @@ public class CreateClinicalFormTemplateCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ShouldCreateTemplateAndSaveChanges_WhenValidCommand()
+    public async Task Handle_ShouldCallRepositoryCreateAndSaveChanges_WhenValidCommand()
     {
         // Arrange
         var command = new CreateClinicalFormTemplateCommand(
@@ -65,12 +65,6 @@ public class CreateClinicalFormTemplateCommandHandlerTests
             "Description",
             "{}"
         );
-
-        _repositoryMock
-            .Setup(x =>
-                x.CreateAsync(It.IsAny<ClinicalFormTemplate>(), It.IsAny<CancellationToken>())
-            )
-            .ReturnsAsync((ClinicalFormTemplate t, CancellationToken _) => t);
 
         // Act
         await _sut.Handle(command, CancellationToken.None);

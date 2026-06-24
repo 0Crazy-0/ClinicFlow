@@ -47,8 +47,7 @@ public class CreateCompletePatientProfileCommandHandlerTests
         Patient? capturedPatient = null;
         _patientRepositoryMock
             .Setup(x => x.CreateAsync(It.IsAny<Patient>(), It.IsAny<CancellationToken>()))
-            .Callback<Patient, CancellationToken>((p, _) => capturedPatient = p)
-            .ReturnsAsync((Patient p, CancellationToken _) => p);
+            .Callback<Patient, CancellationToken>((p, _) => capturedPatient = p);
 
         // Act
         var result = await _sut.Handle(command, CancellationToken.None);

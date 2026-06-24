@@ -75,11 +75,9 @@ public class CreateAppointmentTypeCommandHandlerTests
             false
         );
 
-        _appointmentTypeRepositoryMock
-            .Setup(x =>
-                x.CreateAsync(It.IsAny<AppointmentTypeDefinition>(), It.IsAny<CancellationToken>())
-            )
-            .ReturnsAsync((AppointmentTypeDefinition entity, CancellationToken _) => entity);
+        _appointmentTypeRepositoryMock.Setup(x =>
+            x.CreateAsync(It.IsAny<AppointmentTypeDefinition>(), It.IsAny<CancellationToken>())
+        );
 
         // Act
         await _sut.Handle(command, CancellationToken.None);

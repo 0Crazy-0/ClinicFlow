@@ -28,8 +28,5 @@ public interface IMedicalRecordRepository
         CancellationToken cancellationToken = default
     );
 
-    Task<MedicalRecord> CreateAsync(
-        MedicalRecord medicalRecord,
-        CancellationToken cancellationToken = default
-    );
+    Task CreateAsync(MedicalRecord medicalRecord, CancellationToken cancellationToken = default);
 }

@@ -30,8 +30,5 @@ public interface IMedicalSpecialtyRepository
         CancellationToken cancellationToken = default
     );
 
-    Task<MedicalSpecialty> CreateAsync(
-        MedicalSpecialty specialty,
-        CancellationToken cancellationToken = default
-    );
+    Task CreateAsync(MedicalSpecialty specialty, CancellationToken cancellationToken = default);
 }

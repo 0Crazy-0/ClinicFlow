@@ -9,10 +9,7 @@ public interface IPatientPenaltyRepository
 {
     Task<PatientPenalty?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
-    Task<PatientPenalty> CreateAsync(
-        PatientPenalty penalty,
-        CancellationToken cancellationToken = default
-    );
+    Task CreateAsync(PatientPenalty penalty, CancellationToken cancellationToken = default);
 
     Task CreateRangeAsync(
         IEnumerable<PatientPenalty> penalties,
