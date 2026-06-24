@@ -93,10 +93,6 @@ public class UpdateScheduleCommandHandlerTests
             )
             .ReturnsAsync(existingSchedule);
 
-        _scheduleRepositoryMock
-            .Setup(x => x.CreateAsync(It.IsAny<Schedule>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Schedule s, CancellationToken _) => s);
-
         // Act
         await _sut.Handle(command, CancellationToken.None);
 

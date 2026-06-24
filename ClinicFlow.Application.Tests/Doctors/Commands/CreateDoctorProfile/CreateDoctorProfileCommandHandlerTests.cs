@@ -94,10 +94,6 @@ public class CreateDoctorProfileCommandHandlerTests
             )
             .ReturnsAsync((Doctor?)null);
 
-        _doctorRepositoryMock
-            .Setup(x => x.CreateAsync(It.IsAny<Doctor>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Doctor d, CancellationToken _) => d);
-
         // Act
         await _sut.Handle(command, CancellationToken.None);
 

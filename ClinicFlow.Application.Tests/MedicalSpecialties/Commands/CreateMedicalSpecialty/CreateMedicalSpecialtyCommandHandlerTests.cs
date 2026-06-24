@@ -54,10 +54,6 @@ public class CreateMedicalSpecialtyCommandHandlerTests
         // Arrange
         var command = new CreateMedicalSpecialtyCommand("Cardiology", "Heart specialty", 30, 24);
 
-        _medicalSpecialtyRepositoryMock
-            .Setup(x => x.CreateAsync(It.IsAny<MedicalSpecialty>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((MedicalSpecialty s, CancellationToken _) => s);
-
         // Act
         await _sut.Handle(command, CancellationToken.None);
 

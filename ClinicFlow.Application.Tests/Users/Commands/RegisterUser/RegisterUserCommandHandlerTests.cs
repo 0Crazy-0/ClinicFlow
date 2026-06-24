@@ -69,10 +69,6 @@ public class RegisterUserCommandHandlerTests
 
         _passwordHasherServiceMock.Setup(x => x.Hash(command.Password)).Returns("hashed_password");
 
-        _userRepositoryMock
-            .Setup(x => x.CreateAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((User u, CancellationToken _) => u);
-
         // Act
         await _sut.Handle(command, CancellationToken.None);
 
@@ -98,15 +94,14 @@ public class RegisterUserCommandHandlerTests
         var act = () => _sut.Handle(command, CancellationToken.None);
 
         // Assert
+        await act.Should()
+            .ThrowAsync<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.User.EmailAlreadyExists);
 
         _userRepositoryMock.Verify(
             x => x.CreateAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()),
             Times.Never
         );
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
-
-        await act.Should()
-            .ThrowAsync<BusinessRuleValidationException>()
-            .WithMessage(DomainErrors.User.EmailAlreadyExists);
     }
 }
