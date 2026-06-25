@@ -16,7 +16,7 @@ public class DbSeederFixture : IAsyncLifetime
     public DbConnection DbConnection { get; private set; } = null!;
     public Respawner Respawner { get; private set; } = null!;
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         await _dbContainer.StartAsync();
 
@@ -39,7 +39,7 @@ public class DbSeederFixture : IAsyncLifetime
         );
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await Context.DisposeAsync();
         await _dbContainer.StopAsync();

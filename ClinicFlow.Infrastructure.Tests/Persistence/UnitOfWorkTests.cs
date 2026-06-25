@@ -58,7 +58,7 @@ public class UnitOfWorkTests : IDisposable
 
         var dbUser = await _dbContext
             .Users.AsNoTracking()
-            .FirstOrDefaultAsync(u => u.Id == user.Id);
+            .FirstOrDefaultAsync(u => u.Id == user.Id, TestContext.Current.CancellationToken);
 
         dbUser.Should().NotBeNull();
         dbUser.Email.Should().Be(email);

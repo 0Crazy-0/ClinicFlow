@@ -11,14 +11,17 @@ using Microsoft.Extensions.Time.Testing;
 
 namespace ClinicFlow.Infrastructure.Tests.Persistence.Seeding;
 
-[Collection("PostgresTests")]
 public class DbSeederTests(DbSeederFixture fixture) : IAsyncLifetime
 {
     private readonly FakeTimeProvider _fakeTime = new(DateTimeOffset.UtcNow);
 
-    public async Task InitializeAsync() => await fixture.Respawner.ResetAsync(fixture.DbConnection);
+    public async ValueTask InitializeAsync()
+    {
+        await fixture.Respawner.ResetAsync(fixture.DbConnection);
+        fixture.Context.ChangeTracker.Clear();
+    }
 
-    public Task DisposeAsync() => Task.CompletedTask;
+    public ValueTask DisposeAsync() => ValueTask.CompletedTask;
 
     private ApplicationDbContext Context => fixture.Context;
     private FakeTimeProvider FakeTime => _fakeTime;
@@ -27,7 +30,7 @@ public class DbSeederTests(DbSeederFixture fixture) : IAsyncLifetime
     public async Task SeedAsync_ShouldPopulateDatabaseWithCorrectCountsAndDistributions()
     {
         // Arrange & Act
-        await DbSeeder.SeedAsync(Context, FakeTime, CancellationToken.None);
+        await DbSeeder.SeedAsync(Context, FakeTime, TestContext.Current.CancellationToken);
 
         // Assert
         // 1. Specialties
@@ -38,12 +41,16 @@ public class DbSeederTests(DbSeederFixture fixture) : IAsyncLifetime
 
         // 3. Appointment Type Definitions
         Context.AppointmentTypes.IgnoreQueryFilters().Should().HaveCount(32);
-        (await Context.AppointmentTypes.IgnoreQueryFilters().CountAsync(a => a.IsDeleted))
+        (
+            await Context
+                .AppointmentTypes.IgnoreQueryFilters()
+                .CountAsync(a => a.IsDeleted, TestContext.Current.CancellationToken)
+        )
             .Should()
             .Be(2);
 
         // 4. Users
-        var users = await Context.Users.ToListAsync();
+        var users = await Context.Users.ToListAsync(TestContext.Current.CancellationToken);
 
         users.Should().HaveCount(166);
         users.Count(u => u.Role is UserRole.Admin).Should().Be(3);
@@ -73,13 +80,17 @@ public class DbSeederTests(DbSeederFixture fixture) : IAsyncLifetime
         users.Count(u => !u.LockoutEnd.HasValue).Should().BeGreaterThan(0);
 
         // 5. Doctors
-        var doctors = await Context.Doctors.IgnoreQueryFilters().ToListAsync();
+        var doctors = await Context
+            .Doctors.IgnoreQueryFilters()
+            .ToListAsync(TestContext.Current.CancellationToken);
 
         doctors.Should().HaveCount(35);
         doctors.Count(d => d.IsDeleted).Should().Be(3);
 
         // 6. Patients
-        var patients = await Context.Patients.IgnoreQueryFilters().ToListAsync();
+        var patients = await Context
+            .Patients.IgnoreQueryFilters()
+            .ToListAsync(TestContext.Current.CancellationToken);
 
         patients.Should().HaveCount(200);
         patients.Count(p => p.RelationshipToUser is PatientRelationship.Self).Should().Be(120);
@@ -90,7 +101,7 @@ public class DbSeederTests(DbSeederFixture fixture) : IAsyncLifetime
         patients.Count(p => p.RelationshipToUser is PatientRelationship.Other).Should().Be(10);
 
         // 7. Schedules
-        var schedules = await Context.Schedules.ToListAsync();
+        var schedules = await Context.Schedules.ToListAsync(TestContext.Current.CancellationToken);
 
         schedules.Should().HaveCount(175);
 
@@ -115,7 +126,9 @@ public class DbSeederTests(DbSeederFixture fixture) : IAsyncLifetime
             .Be(27);
 
         // 8. Appointments
-        var appointments = await Context.Appointments.ToListAsync();
+        var appointments = await Context.Appointments.ToListAsync(
+            TestContext.Current.CancellationToken
+        );
 
         appointments.Should().HaveCount(500);
         appointments.Count(a => a.Status is AppointmentStatus.Completed).Should().Be(250);
@@ -154,7 +167,9 @@ public class DbSeederTests(DbSeederFixture fixture) : IAsyncLifetime
         Context.MedicalRecords.Should().HaveCount(250);
 
         // 10. Penalties
-        var penalties = await Context.PatientPenalties.ToListAsync();
+        var penalties = await Context.PatientPenalties.ToListAsync(
+            TestContext.Current.CancellationToken
+        );
 
         penalties.Count(p => p.Type is PenaltyType.Warning).Should().Be(85);
         penalties.Count(p => p.Type is PenaltyType.TemporaryBlock).Should().Be(5);
@@ -165,10 +180,12 @@ public class DbSeederTests(DbSeederFixture fixture) : IAsyncLifetime
     public async Task SeedAsync_ShouldDeactivateSpecialtiesWithoutActiveDoctors()
     {
         // Arrange & Act
-        await DbSeeder.SeedAsync(Context, _fakeTime, CancellationToken.None);
+        await DbSeeder.SeedAsync(Context, _fakeTime, TestContext.Current.CancellationToken);
 
         // Assert
-        var specialties = await Context.MedicalSpecialties.IgnoreQueryFilters().ToListAsync();
+        var specialties = await Context
+            .MedicalSpecialties.IgnoreQueryFilters()
+            .ToListAsync(TestContext.Current.CancellationToken);
 
         var inactiveSpecialties = specialties.Where(s => s.IsDeleted).ToList();
 
@@ -184,10 +201,12 @@ public class DbSeederTests(DbSeederFixture fixture) : IAsyncLifetime
     public async Task SeedAsync_ShouldCorrectlySoftDeleteClosedOrRemovedPatients()
     {
         // Arrange & Act
-        await DbSeeder.SeedAsync(Context, _fakeTime, CancellationToken.None);
+        await DbSeeder.SeedAsync(Context, _fakeTime, TestContext.Current.CancellationToken);
 
         // Assert
-        var allPatients = await Context.Patients.IgnoreQueryFilters().ToListAsync();
+        var allPatients = await Context
+            .Patients.IgnoreQueryFilters()
+            .ToListAsync(TestContext.Current.CancellationToken);
 
         allPatients.Count(p => p.IsDeleted).Should().Be(13); // 5 closed self accounts + 8 removed family members
         allPatients.Count(p => !p.IsDeleted).Should().Be(187);
@@ -209,10 +228,12 @@ public class DbSeederTests(DbSeederFixture fixture) : IAsyncLifetime
     public async Task SeedAsync_ShouldDeactivateSpecifiedAppointmentTypes()
     {
         // Arrange & Act
-        await DbSeeder.SeedAsync(Context, _fakeTime, CancellationToken.None);
+        await DbSeeder.SeedAsync(Context, _fakeTime, TestContext.Current.CancellationToken);
 
         // Assert
-        var appointmentTypes = await Context.AppointmentTypes.IgnoreQueryFilters().ToListAsync();
+        var appointmentTypes = await Context
+            .AppointmentTypes.IgnoreQueryFilters()
+            .ToListAsync(TestContext.Current.CancellationToken);
         var deactivatedTypes = appointmentTypes.Where(a => a.IsDeleted).ToList();
 
         deactivatedTypes.Should().HaveCount(2);
@@ -230,10 +251,10 @@ public class DbSeederTests(DbSeederFixture fixture) : IAsyncLifetime
     public async Task SeedAsync_ShouldGenerateValidSchedulesForDoctors()
     {
         // Arrange & Act
-        await DbSeeder.SeedAsync(Context, _fakeTime, CancellationToken.None);
+        await DbSeeder.SeedAsync(Context, _fakeTime, TestContext.Current.CancellationToken);
 
         // Assert
-        var schedules = await Context.Schedules.ToListAsync();
+        var schedules = await Context.Schedules.ToListAsync(TestContext.Current.CancellationToken);
 
         schedules.Should().HaveCount(175);
         schedules
@@ -254,10 +275,12 @@ public class DbSeederTests(DbSeederFixture fixture) : IAsyncLifetime
     public async Task SeedAsync_ShouldCorrectlyTransitionAppointmentsToTargetStatuses()
     {
         //Arrange & Act
-        await DbSeeder.SeedAsync(Context, _fakeTime, CancellationToken.None);
+        await DbSeeder.SeedAsync(Context, _fakeTime, TestContext.Current.CancellationToken);
 
         // Assert
-        var appointments = await Context.Appointments.ToListAsync();
+        var appointments = await Context.Appointments.ToListAsync(
+            TestContext.Current.CancellationToken
+        );
         var completed = appointments.Where(a => a.Status is AppointmentStatus.Completed).ToList();
         completed.Should().HaveCount(250);
         completed
@@ -341,11 +364,15 @@ public class DbSeederTests(DbSeederFixture fixture) : IAsyncLifetime
     public async Task SeedAsync_ShouldStructurePatientPenaltiesDeterministically()
     {
         // Act
-        await DbSeeder.SeedAsync(Context, _fakeTime, CancellationToken.None);
+        await DbSeeder.SeedAsync(Context, _fakeTime, TestContext.Current.CancellationToken);
 
         // Assert
-        var penalties = await Context.PatientPenalties.ToListAsync();
-        var appointments = await Context.Appointments.ToListAsync();
+        var penalties = await Context.PatientPenalties.ToListAsync(
+            TestContext.Current.CancellationToken
+        );
+        var appointments = await Context.Appointments.ToListAsync(
+            TestContext.Current.CancellationToken
+        );
 
         penalties.Should().HaveCount(90);
 
@@ -398,11 +425,14 @@ public class DbSeederTests(DbSeederFixture fixture) : IAsyncLifetime
     public async Task SeedAsync_ShouldGenerateAppointmentsWithinDoctorSchedules()
     {
         // Arrange & Act
-        await DbSeeder.SeedAsync(Context, _fakeTime, CancellationToken.None);
+        await DbSeeder.SeedAsync(Context, _fakeTime, TestContext.Current.CancellationToken);
 
         // Assert
-        var appointments = await Context.Appointments.ToListAsync();
-        var schedules = await Context.Schedules.ToListAsync();
+        var appointments = await Context.Appointments.ToListAsync(
+            TestContext.Current.CancellationToken
+        );
+
+        var schedules = await Context.Schedules.ToListAsync(TestContext.Current.CancellationToken);
 
         appointments
             .Should()
