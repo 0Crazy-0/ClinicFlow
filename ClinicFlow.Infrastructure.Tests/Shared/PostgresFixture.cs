@@ -6,7 +6,7 @@ using Testcontainers.PostgreSql;
 
 namespace ClinicFlow.Infrastructure.Tests.Shared;
 
-public class DbSeederFixture : IAsyncLifetime
+public class PostgresFixture : IAsyncLifetime
 {
     private readonly PostgreSqlContainer _dbContainer = new PostgreSqlBuilder(
         "postgres:17-alpine"

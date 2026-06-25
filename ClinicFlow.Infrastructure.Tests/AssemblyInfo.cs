@@ -7,4 +7,4 @@ using ClinicFlow.Infrastructure.Tests.Shared;
 // Registers a single shared PostgreSQL Testcontainer fixture for the entire test assembly.
 // All test classes receive the same DbSeederFixture instance via constructor injection,
 // avoiding the overhead of spinning up multiple containers per test class.
-[assembly: AssemblyFixture(typeof(DbSeederFixture))]
+[assembly: AssemblyFixture(typeof(PostgresFixture))]

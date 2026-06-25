@@ -11,7 +11,7 @@ using Microsoft.Extensions.Time.Testing;
 
 namespace ClinicFlow.Infrastructure.Tests.Persistence.Seeding;
 
-public class DbSeederTests(DbSeederFixture fixture) : IAsyncLifetime
+public class DbSeederTests(PostgresFixture fixture) : IAsyncLifetime
 {
     private readonly FakeTimeProvider _fakeTime = new(DateTimeOffset.UtcNow);
 
