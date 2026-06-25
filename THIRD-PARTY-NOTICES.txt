@@ -113,17 +113,17 @@ THIRD-PARTY COMPONENTS
     - License: MIT
     - Copyright: Copyright (c) 2019 - 2026 Andre Hofmeister and other authors
 
-18. xunit (v2.9.3)
-    - Authors: jnewkirk, bradwilson
+18. xunit.v3 (v3.2.2)
+    - Authors: xunit
     - Project: https://github.com/xunit/xunit
     - License: Apache-2.0
-    - Copyright: Copyright (C) .NET Foundation
+    - Copyright: Copyright (c) .NET Foundation and Contributors
 
 19. xunit.runner.visualstudio (v3.1.5)
-    - Authors: jnewkirk, bradwilson
+    - Authors: xunit
     - Project: https://github.com/xunit/xunit
     - License: Apache-2.0
-    - Copyright: Copyright (C) .NET Foundation
+    - Copyright: Copyright (c) .NET Foundation and Contributors
 
 
 ================================================================================
