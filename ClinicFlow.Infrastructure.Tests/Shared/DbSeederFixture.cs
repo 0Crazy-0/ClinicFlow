@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Respawn;
 using Testcontainers.PostgreSql;
 
-namespace ClinicFlow.Infrastructure.Tests.Persistence.Seeding;
+namespace ClinicFlow.Infrastructure.Tests.Shared;
 
 public class DbSeederFixture : IAsyncLifetime
 {

@@ -5,12 +5,14 @@ using ClinicFlow.Domain.Enums;
 using ClinicFlow.Infrastructure.Persistence;
 using ClinicFlow.Infrastructure.Persistence.Seeding;
 using ClinicFlow.Infrastructure.Persistence.Seeding.Data;
+using ClinicFlow.Infrastructure.Tests.Shared;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Time.Testing;
 
 namespace ClinicFlow.Infrastructure.Tests.Persistence.Seeding;
 
-public class DbSeederTests(DbSeederFixture fixture) : IClassFixture<DbSeederFixture>, IAsyncLifetime
+[Collection("PostgresTests")]
+public class DbSeederTests(DbSeederFixture fixture) : IAsyncLifetime
 {
     private readonly FakeTimeProvider _fakeTime = new(DateTimeOffset.UtcNow);
 
