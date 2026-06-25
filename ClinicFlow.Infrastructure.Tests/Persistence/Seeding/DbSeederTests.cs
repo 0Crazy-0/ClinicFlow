@@ -21,7 +21,11 @@ public class DbSeederTests(DbSeederFixture fixture) : IAsyncLifetime
         fixture.Context.ChangeTracker.Clear();
     }
 
-    public ValueTask DisposeAsync() => ValueTask.CompletedTask;
+    public ValueTask DisposeAsync()
+    {
+        GC.SuppressFinalize(this);
+        return ValueTask.CompletedTask;
+    }
 
     private ApplicationDbContext Context => fixture.Context;
     private FakeTimeProvider FakeTime => _fakeTime;

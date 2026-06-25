@@ -41,6 +41,7 @@ public class DbSeederFixture : IAsyncLifetime
 
     public async ValueTask DisposeAsync()
     {
+        GC.SuppressFinalize(this);
         await Context.DisposeAsync();
         await _dbContainer.StopAsync();
         await _dbContainer.DisposeAsync();
