@@ -30,8 +30,14 @@ public class UnitOfWorkTests : IDisposable
 
     public void Dispose()
     {
-        _dbContext.Dispose();
+        Dispose(true);
         GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
+            _dbContext.Dispose();
     }
 
     [Fact]
@@ -178,8 +184,5 @@ public class UnitOfWorkTests : IDisposable
         );
     }
 
-    private class TestDomainEvent : IDomainEvent
-    {
-        public Guid EventId = Guid.NewGuid();
-    }
+    private class TestDomainEvent : IDomainEvent { }
 }
