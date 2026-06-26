@@ -72,5 +72,11 @@ public class SendPhoneVerificationCommandHandlerTests
             .ThrowAsync<EntityNotFoundException>()
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(User));
+
+        _phoneVerificationServiceMock.Verify(
+            x =>
+                x.SendVerificationCodeAsync(It.IsAny<PhoneNumber>(), It.IsAny<CancellationToken>()),
+            Times.Never
+        );
     }
 }
