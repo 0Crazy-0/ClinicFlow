@@ -73,5 +73,10 @@ public class GetUserByIdQueryHandlerTests
             .ThrowAsync<EntityNotFoundException>()
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(User));
+
+        _userRepositoryMock.Verify(
+            x => x.GetByIdAsync(userId, It.IsAny<CancellationToken>()),
+            Times.Once
+        );
     }
 }

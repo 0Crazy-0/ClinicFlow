@@ -29,9 +29,9 @@ public class GetMedicalRecordByIdQueryHandlerTests
         var doctorId = Guid.NewGuid();
         var appointmentId = Guid.NewGuid();
         var request = new GetMedicalRecordByIdQuery(id);
-
-        var record = CreateMedicalRecord(patientId, doctorId, appointmentId, "Headache");
+        var record = MedicalRecord.Create(patientId, doctorId, appointmentId, "Headache");
         var clinicalDetail = DynamicClinicalDetail.Create("vital-signs", "{}");
+
         record.AddClinicalDetail(clinicalDetail);
 
         _medicalRecordRepositoryMock
@@ -47,9 +47,9 @@ public class GetMedicalRecordByIdQueryHandlerTests
         result.PatientId.Should().Be(patientId);
         result.DoctorId.Should().Be(doctorId);
         result.AppointmentId.Should().Be(appointmentId);
-        result.ChiefComplaint.Should().Be("Headache");
+        result.ChiefComplaint.Should().Be(record.ChiefComplaint);
         result.ClinicalDetails.Should().ContainSingle();
-        result.ClinicalDetails[0].TemplateCode.Should().Be("vital-signs");
+        result.ClinicalDetails[0].TemplateCode.Should().Be(clinicalDetail.TemplateCode);
     }
 
     [Fact]
@@ -70,12 +70,10 @@ public class GetMedicalRecordByIdQueryHandlerTests
             .ThrowAsync<EntityNotFoundException>()
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(MedicalRecord));
-    }
 
-    private static MedicalRecord CreateMedicalRecord(
-        Guid patientId,
-        Guid doctorId,
-        Guid appointmentId,
-        string chiefComplaint
-    ) => MedicalRecord.Create(patientId, doctorId, appointmentId, chiefComplaint);
+        _medicalRecordRepositoryMock.Verify(
+            x => x.GetByIdAsync(request.Id, It.IsAny<CancellationToken>()),
+            Times.Once
+        );
+    }
 }

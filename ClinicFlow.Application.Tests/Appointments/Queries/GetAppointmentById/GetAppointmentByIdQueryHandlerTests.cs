@@ -78,5 +78,10 @@ public class GetAppointmentByIdQueryHandlerTests
             .ThrowAsync<EntityNotFoundException>()
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(Appointment));
+
+        _appointmentRepositoryMock.Verify(
+            x => x.GetByIdAsync(query.AppointmentId, It.IsAny<CancellationToken>()),
+            Times.Once
+        );
     }
 }

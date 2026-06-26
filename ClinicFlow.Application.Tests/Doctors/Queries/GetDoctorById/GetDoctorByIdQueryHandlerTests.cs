@@ -49,10 +49,10 @@ public class GetDoctorByIdQueryHandlerTests
         result.UserId.Should().Be(doctor.UserId);
         result.FullName.Should().Be(doctor.FullName.FullName);
         result.MedicalSpecialtyId.Should().Be(doctor.MedicalSpecialtyId);
-        result.LicenseNumber.Should().Be("12345");
-        result.Biography.Should().Be("Cardiologist with 10 years of experience");
+        result.LicenseNumber.Should().Be(doctor.LicenseNumber.Value);
+        result.Biography.Should().Be(doctor.Biography);
         result.ConsultationRoomNumber.Should().Be(1);
-        result.ConsultationRoomName.Should().Be("Cardiology A");
+        result.ConsultationRoomName.Should().Be(doctor.ConsultationRoom.Name);
         result.ConsultationRoomFloor.Should().Be(3);
     }
 
@@ -77,5 +77,10 @@ public class GetDoctorByIdQueryHandlerTests
             .ThrowAsync<EntityNotFoundException>()
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(Doctor));
+
+        _doctorRepositoryMock.Verify(
+            x => x.GetByIdAsync(doctorId, It.IsAny<CancellationToken>()),
+            Times.Once
+        );
     }
 }

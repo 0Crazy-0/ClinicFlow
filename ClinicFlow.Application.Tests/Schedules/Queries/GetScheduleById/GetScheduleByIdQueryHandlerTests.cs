@@ -76,5 +76,10 @@ public class GetScheduleByIdQueryHandlerTests
             .ThrowAsync<EntityNotFoundException>()
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(Schedule));
+
+        _scheduleRepositoryMock.Verify(
+            x => x.GetByIdAsync(query.ScheduleId, It.IsAny<CancellationToken>()),
+            Times.Once
+        );
     }
 }
