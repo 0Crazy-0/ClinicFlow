@@ -51,7 +51,7 @@ public class GetPatientByIdQueryHandlerTests
         result.Id.Should().Be(patientId);
         result.FullName.Should().Be(patient.FullName.FullName);
         result.BloodType.Should().Be(patient.BloodType.Value);
-        result.EmergencyContactName.Should().Be("Jae");
+        result.EmergencyContactName.Should().Be("Jane");
         result.EmergencyContactPhone.Should().Be("555-1234");
     }
 
