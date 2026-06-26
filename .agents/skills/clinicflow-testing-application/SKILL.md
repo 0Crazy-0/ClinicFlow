@@ -147,3 +147,41 @@ appointmentType.IsDeleted.Should().BeFalse();
 ```
 
 This verification ensures the handler completes the full orchestration pipeline: fetch → delegate to domain → persist.
+
+## Query Handler Verification
+
+For query handlers, verify repository read methods in both happy and unhappy path tests:
+
+**Happy path** — verify the read method was called exactly once:
+
+```csharp
+// Assert
+_repositoryMock.Verify(
+    x => x.GetByIdAsync(query.Id, It.IsAny<CancellationToken>()),
+    Times.Once
+);
+```
+
+**Unhappy path (Exception)** — verify the read method was called exactly once to attempt fetching the entity, and verify that any other subsequent repository or service methods were never called:
+
+```csharp
+// Assert
+await act.Should()
+    .ThrowAsync<EntityNotFoundException>()
+    .WithMessage(DomainErrors.General.NotFound);
+
+_repositoryMock.Verify(
+    x => x.GetByIdAsync(query.Id, It.IsAny<CancellationToken>()),
+    Times.Once
+);
+
+// If there are other repository or service dependencies:
+_otherRepositoryMock.Verify(
+    x => x.SomeMethodAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()),
+    Times.Never
+);
+```
+
+This ensures complete consistency across command and query tests, verifying that execution terminates early and cleanly on failures.
+
+> **Note:** Query handlers must never call `SaveChangesAsync`. If one does, that's a design smell — the handler belongs on the command side. No `SaveChangesAsync` verification is needed here precisely because it should never appear in a query handler.

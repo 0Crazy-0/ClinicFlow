@@ -77,5 +77,10 @@ public class GetDoctorByUserIdQueryHandlerTests
             .ThrowAsync<EntityNotFoundException>()
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(Doctor));
+
+        _doctorRepositoryMock.Verify(
+            x => x.GetByUserIdAsync(userId, It.IsAny<CancellationToken>()),
+            Times.Once
+        );
     }
 }

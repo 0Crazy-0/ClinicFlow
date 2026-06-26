@@ -67,5 +67,7 @@ public class GetMedicalSpecialtyByIdQueryHandlerTests
             .ThrowAsync<EntityNotFoundException>()
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(MedicalSpecialty));
+
+        _repositoryMock.Verify(x => x.GetByIdAsync(id, It.IsAny<CancellationToken>()), Times.Once);
     }
 }

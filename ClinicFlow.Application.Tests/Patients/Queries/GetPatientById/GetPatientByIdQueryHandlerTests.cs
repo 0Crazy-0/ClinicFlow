@@ -49,8 +49,8 @@ public class GetPatientByIdQueryHandlerTests
         // Assert
         result.Should().NotBeNull();
         result.Id.Should().Be(patientId);
-        result.FullName.Should().Be("John Doe");
-        result.BloodType.Should().Be("A+");
+        result.FullName.Should().Be(patient.FullName.FullName);
+        result.BloodType.Should().Be(patient.BloodType.Value);
         result.EmergencyContactName.Should().Be("Jane");
         result.EmergencyContactPhone.Should().Be("555-1234");
     }
@@ -79,7 +79,7 @@ public class GetPatientByIdQueryHandlerTests
         // Assert
         result.Should().NotBeNull();
         result.Id.Should().Be(patientId);
-        result.FullName.Should().Be("John Doe");
+        result.FullName.Should().Be(patient.FullName.FullName);
         result.BloodType.Should().BeNull();
         result.Allergies.Should().Be(string.Empty);
         result.ChronicConditions.Should().Be(string.Empty);
@@ -106,5 +106,10 @@ public class GetPatientByIdQueryHandlerTests
             .ThrowAsync<EntityNotFoundException>()
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(Patient));
+
+        _patientRepositoryMock.Verify(
+            x => x.GetByIdAsync(patientId, It.IsAny<CancellationToken>()),
+            Times.Once
+        );
     }
 }

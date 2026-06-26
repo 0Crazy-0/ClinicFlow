@@ -66,5 +66,10 @@ public class GetClinicalFormTemplateByCodeQueryHandlerTests
             .ThrowAsync<EntityNotFoundException>()
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(ClinicalFormTemplate));
+
+        _repositoryMock.Verify(
+            x => x.GetByCodeAsync("NONEXISTENT", It.IsAny<CancellationToken>()),
+            Times.Once
+        );
     }
 }
