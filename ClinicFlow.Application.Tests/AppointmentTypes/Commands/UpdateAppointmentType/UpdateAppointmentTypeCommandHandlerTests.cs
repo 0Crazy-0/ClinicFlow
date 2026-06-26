@@ -51,7 +51,7 @@ public class UpdateAppointmentTypeCommandHandlerTests
             .ReturnsAsync(existingEntity);
 
         // Act
-        await _sut.Handle(command, CancellationToken.None);
+        await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
@@ -79,7 +79,7 @@ public class UpdateAppointmentTypeCommandHandlerTests
             .ReturnsAsync((AppointmentTypeDefinition?)null);
 
         // Act
-        var act = async () => await _sut.Handle(command, CancellationToken.None);
+        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         var exceptionAssertion = await act.Should()
@@ -124,7 +124,7 @@ public class UpdateAppointmentTypeCommandHandlerTests
             .ReturnsAsync(true);
 
         // Act
-        var act = async () => await _sut.Handle(command, CancellationToken.None);
+        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         await act.Should()

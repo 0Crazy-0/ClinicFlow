@@ -52,7 +52,7 @@ public class DeactivateDoctorSchedulesEventHandlerTests
         var notification = new DomainEventNotification<DoctorSuspendedEvent>(domainEvent);
 
         // Act
-        await _sut.Handle(notification, CancellationToken.None);
+        await _sut.Handle(notification, TestContext.Current.CancellationToken);
 
         // Assert
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
@@ -75,7 +75,7 @@ public class DeactivateDoctorSchedulesEventHandlerTests
         var notification = new DomainEventNotification<DoctorSuspendedEvent>(domainEvent);
 
         // Act
-        await _sut.Handle(notification, CancellationToken.None);
+        await _sut.Handle(notification, TestContext.Current.CancellationToken);
 
         // Assert
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);

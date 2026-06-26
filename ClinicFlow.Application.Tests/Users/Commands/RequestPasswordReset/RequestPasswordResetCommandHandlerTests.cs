@@ -46,7 +46,7 @@ public class RequestPasswordResetCommandHandlerTests
             .ReturnsAsync("reset-token");
 
         // Act
-        await _sut.Handle(ValidCommand, CancellationToken.None);
+        await _sut.Handle(ValidCommand, TestContext.Current.CancellationToken);
 
         // Assert
         _tokenServiceMock.Verify(
@@ -73,7 +73,7 @@ public class RequestPasswordResetCommandHandlerTests
             .ReturnsAsync((User?)null);
 
         // Act
-        await _sut.Handle(ValidCommand, CancellationToken.None);
+        await _sut.Handle(ValidCommand, TestContext.Current.CancellationToken);
 
         // Assert
         _tokenServiceMock.Verify(

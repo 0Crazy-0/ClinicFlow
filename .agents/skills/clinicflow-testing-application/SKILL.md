@@ -18,7 +18,7 @@ _patientRepositoryMock
     .Callback<Patient, CancellationToken>((p, _) => capturedPatient = p);
 
 // Act
-var result = await _sut.Handle(command, CancellationToken.None);
+var result = await _sut.Handle(command, TestContext.Current.CancellationToken);
 
 // Assert
 capturedPatient.Should().NotBeNull();
@@ -72,7 +72,7 @@ public async Task Handle_ShouldCreateEntity_WhenValidCommand()
         .Callback<Entity, CancellationToken>((e, _) => capturedEntity = e);
 
     // Act
-    var result = await _sut.Handle(command, CancellationToken.None);
+    var result = await _sut.Handle(command, TestContext.Current.CancellationToken);
 
     // Assert
     result.Should().NotBeEmpty();
@@ -94,7 +94,7 @@ public async Task Handle_ShouldCallRepositoryCreateAndSaveChanges_WhenValidComma
         .ReturnsAsync((Entity e, CancellationToken _) => e);
 
     // Act
-    await _sut.Handle(command, CancellationToken.None);
+    await _sut.Handle(command, TestContext.Current.CancellationToken);
 
     // Assert
     _repositoryMock.Verify(

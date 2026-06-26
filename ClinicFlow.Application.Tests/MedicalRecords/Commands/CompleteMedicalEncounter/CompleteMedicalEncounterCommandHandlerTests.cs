@@ -76,12 +76,14 @@ public class CompleteMedicalEncounterCommandHandlerTests
             AgeEligibilityPolicy.Create(0, 100, false)
         );
 
-        _doctorRepositoryMock.Setup(x => x.GetByIdAsync(doctorId)).ReturnsAsync(doctor);
+        _doctorRepositoryMock
+            .Setup(x => x.GetByIdAsync(doctorId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(doctor);
         _appointmentRepositoryMock
-            .Setup(x => x.GetByIdAsync(appointmentId))
+            .Setup(x => x.GetByIdAsync(appointmentId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(appointment);
         _appointmentTypeRepositoryMock
-            .Setup(x => x.GetByIdAsync(appointmentTypeId))
+            .Setup(x => x.GetByIdAsync(appointmentTypeId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(appointmentType);
 
         MedicalRecord? capturedRecord = null;
@@ -90,7 +92,7 @@ public class CompleteMedicalEncounterCommandHandlerTests
             .Callback<MedicalRecord, CancellationToken>((r, _) => capturedRecord = r);
 
         // Act
-        var result = await _sut.Handle(command, CancellationToken.None);
+        var result = await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().NotBeEmpty();
@@ -128,16 +130,18 @@ public class CompleteMedicalEncounterCommandHandlerTests
             AgeEligibilityPolicy.Create(0, 100, false)
         );
 
-        _doctorRepositoryMock.Setup(x => x.GetByIdAsync(doctorId)).ReturnsAsync(doctor);
+        _doctorRepositoryMock
+            .Setup(x => x.GetByIdAsync(doctorId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(doctor);
         _appointmentRepositoryMock
-            .Setup(x => x.GetByIdAsync(appointmentId))
+            .Setup(x => x.GetByIdAsync(appointmentId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(appointment);
         _appointmentTypeRepositoryMock
-            .Setup(x => x.GetByIdAsync(appointmentTypeId))
+            .Setup(x => x.GetByIdAsync(appointmentTypeId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(appointmentType);
 
         // Act
-        await _sut.Handle(command, CancellationToken.None);
+        await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         _medicalRecordRepositoryMock.Verify(
@@ -160,11 +164,11 @@ public class CompleteMedicalEncounterCommandHandlerTests
         );
 
         _doctorRepositoryMock
-            .Setup(x => x.GetByIdAsync(command.DoctorId))
+            .Setup(x => x.GetByIdAsync(command.DoctorId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((Doctor?)null);
 
         // Act
-        var act = async () => await _sut.Handle(command, CancellationToken.None);
+        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         var exceptionAssertion = await act.Should()
@@ -193,13 +197,15 @@ public class CompleteMedicalEncounterCommandHandlerTests
         );
 
         var doctor = CreateDoctor(doctorId);
-        _doctorRepositoryMock.Setup(x => x.GetByIdAsync(doctorId)).ReturnsAsync(doctor);
+        _doctorRepositoryMock
+            .Setup(x => x.GetByIdAsync(doctorId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(doctor);
         _appointmentRepositoryMock
-            .Setup(x => x.GetByIdAsync(command.AppointmentId))
+            .Setup(x => x.GetByIdAsync(command.AppointmentId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((Appointment?)null);
 
         // Act
-        var act = async () => await _sut.Handle(command, CancellationToken.None);
+        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         var exceptionAssertion = await act.Should()
@@ -233,16 +239,18 @@ public class CompleteMedicalEncounterCommandHandlerTests
         var doctor = CreateDoctor(doctorId);
         var appointment = CreateAppointment(appointmentId, appointmentTypeId, patientId, doctorId);
 
-        _doctorRepositoryMock.Setup(x => x.GetByIdAsync(doctorId)).ReturnsAsync(doctor);
+        _doctorRepositoryMock
+            .Setup(x => x.GetByIdAsync(doctorId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(doctor);
         _appointmentRepositoryMock
-            .Setup(x => x.GetByIdAsync(appointmentId))
+            .Setup(x => x.GetByIdAsync(appointmentId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(appointment);
         _appointmentTypeRepositoryMock
-            .Setup(x => x.GetByIdAsync(appointmentTypeId))
+            .Setup(x => x.GetByIdAsync(appointmentTypeId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((AppointmentTypeDefinition?)null);
 
         // Act
-        var act = async () => await _sut.Handle(command, CancellationToken.None);
+        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         var exceptionAssertion = await act.Should()
@@ -267,7 +275,9 @@ public class CompleteMedicalEncounterCommandHandlerTests
             "Bio",
             ConsultationRoom.Create(1, "Room A", 1)
         );
+
         doctor.SetId(id);
+
         return doctor;
     }
 

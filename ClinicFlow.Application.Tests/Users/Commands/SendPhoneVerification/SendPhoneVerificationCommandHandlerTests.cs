@@ -45,7 +45,7 @@ public class SendPhoneVerificationCommandHandlerTests
             .ReturnsAsync(user);
 
         // Act
-        await _sut.Handle(command, CancellationToken.None);
+        await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         _phoneVerificationServiceMock.Verify(
@@ -65,7 +65,7 @@ public class SendPhoneVerificationCommandHandlerTests
             .ReturnsAsync((User?)null);
 
         // Act
-        var act = async () => await _sut.Handle(command, CancellationToken.None);
+        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         var exceptionAssertion = await act.Should()

@@ -43,7 +43,7 @@ public class DeactivateScheduleCommandHandlerTests
         var command = new DeactivateScheduleCommand(schedule.Id);
 
         // Act
-        await _sut.Handle(command, CancellationToken.None);
+        await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         schedule.IsActive.Should().BeFalse();
@@ -63,7 +63,7 @@ public class DeactivateScheduleCommandHandlerTests
         var command = new DeactivateScheduleCommand(scheduleId);
 
         // Act
-        var act = async () => await _sut.Handle(command, CancellationToken.None);
+        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         var exceptionAssertion = await act.Should()

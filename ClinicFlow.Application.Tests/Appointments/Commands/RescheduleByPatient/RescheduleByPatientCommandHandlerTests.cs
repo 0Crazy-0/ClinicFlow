@@ -130,7 +130,7 @@ public class RescheduleByPatientCommandHandlerTests
             .ReturnsAsync(user);
 
         // Act
-        await _sut.Handle(command, CancellationToken.None);
+        await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
@@ -156,7 +156,7 @@ public class RescheduleByPatientCommandHandlerTests
             .ReturnsAsync((Appointment?)null);
 
         // Act
-        var act = async () => await _sut.Handle(command, CancellationToken.None);
+        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         var exceptionAssertion = await act.Should()
@@ -189,7 +189,7 @@ public class RescheduleByPatientCommandHandlerTests
             .ReturnsAsync((Patient?)null);
 
         // Act
-        var act = async () => await _sut.Handle(command, CancellationToken.None);
+        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         var exceptionAssertion = await act.Should()
@@ -228,7 +228,7 @@ public class RescheduleByPatientCommandHandlerTests
             .ReturnsAsync((Patient?)null);
 
         // Act
-        var act = async () => await _sut.Handle(command, CancellationToken.None);
+        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         var exceptionAssertion = await act.Should()
@@ -271,7 +271,7 @@ public class RescheduleByPatientCommandHandlerTests
             .ReturnsAsync((Doctor?)null);
 
         // Act
-        var act = async () => await _sut.Handle(command, CancellationToken.None);
+        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         var exceptionAssertion = await act.Should()
@@ -319,7 +319,7 @@ public class RescheduleByPatientCommandHandlerTests
             .ReturnsAsync((User?)null);
 
         // Act
-        var act = async () => await _sut.Handle(command, CancellationToken.None);
+        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         var exceptionAssertion = await act.Should()
@@ -374,7 +374,7 @@ public class RescheduleByPatientCommandHandlerTests
             .ReturnsAsync((AppointmentTypeDefinition?)null);
 
         // Act
-        var act = async () => await _sut.Handle(command, CancellationToken.None);
+        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         var exceptionAssertion = await act.Should()

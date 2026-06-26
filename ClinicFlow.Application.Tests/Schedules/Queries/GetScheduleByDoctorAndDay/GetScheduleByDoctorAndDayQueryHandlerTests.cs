@@ -39,7 +39,7 @@ public class GetScheduleByDoctorAndDayQueryHandlerTests
         var query = new GetScheduleByDoctorAndDayQuery(doctorId, dayOfWeek);
 
         // Act
-        var result = await _sut.Handle(query, CancellationToken.None);
+        var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -71,7 +71,7 @@ public class GetScheduleByDoctorAndDayQueryHandlerTests
         var query = new GetScheduleByDoctorAndDayQuery(doctorId, dayOfWeek);
 
         // Act
-        var result = await _sut.Handle(query, CancellationToken.None);
+        var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().BeNull();

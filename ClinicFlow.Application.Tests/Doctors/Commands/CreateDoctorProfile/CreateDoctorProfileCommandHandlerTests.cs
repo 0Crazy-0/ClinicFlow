@@ -54,7 +54,7 @@ public class CreateDoctorProfileCommandHandlerTests
             .Callback<Doctor, CancellationToken>((d, _) => capturedDoctor = d);
 
         // Act
-        var result = await _sut.Handle(command, CancellationToken.None);
+        var result = await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().NotBeEmpty();
@@ -95,7 +95,7 @@ public class CreateDoctorProfileCommandHandlerTests
             .ReturnsAsync((Doctor?)null);
 
         // Act
-        await _sut.Handle(command, CancellationToken.None);
+        await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         _doctorRepositoryMock.Verify(

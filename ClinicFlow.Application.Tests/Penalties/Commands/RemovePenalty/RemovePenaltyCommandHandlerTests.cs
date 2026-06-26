@@ -47,7 +47,7 @@ public class RemovePenaltyCommandHandlerTests
         var command = new RemovePenaltyCommand(penalty.Id);
 
         // Act
-        await _sut.Handle(command, CancellationToken.None);
+        await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         penalty.IsRemoved.Should().BeTrue();
@@ -67,7 +67,7 @@ public class RemovePenaltyCommandHandlerTests
         var command = new RemovePenaltyCommand(penaltyId);
 
         // Act
-        var act = async () => await _sut.Handle(command, CancellationToken.None);
+        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         var exceptionAssertion = await act.Should()

@@ -46,7 +46,7 @@ public class GetAppointmentTypesByCategoryQueryHandlerTests
         var query = new GetAppointmentTypesByCategoryQuery(AppointmentCategory.Checkup);
 
         // Act
-        var result = await _sut.Handle(query, CancellationToken.None);
+        var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().ContainSingle();
@@ -77,7 +77,7 @@ public class GetAppointmentTypesByCategoryQueryHandlerTests
         var query = new GetAppointmentTypesByCategoryQuery(AppointmentCategory.Emergency);
 
         // Act
-        var result = await _sut.Handle(query, CancellationToken.None);
+        var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().NotBeNull();

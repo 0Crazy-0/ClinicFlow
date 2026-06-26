@@ -37,7 +37,7 @@ public class GetMedicalRecordsByDoctorIdQueryHandlerTests
             .ReturnsAsync(([record1, record2], 2));
 
         // Act
-        var result = await _sut.Handle(request, CancellationToken.None);
+        var result = await _sut.Handle(request, TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -74,7 +74,7 @@ public class GetMedicalRecordsByDoctorIdQueryHandlerTests
             .ReturnsAsync((new List<MedicalRecord>(), 0));
 
         // Act
-        var result = await _sut.Handle(request, CancellationToken.None);
+        var result = await _sut.Handle(request, TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().NotBeNull();

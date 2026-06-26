@@ -76,7 +76,7 @@ public class AppointmentLateCancelledEventHandlerTests
             );
 
         // Act
-        await _sut.Handle(notification, CancellationToken.None);
+        await _sut.Handle(notification, TestContext.Current.CancellationToken);
 
         // Assert
         var penalty = capturedPenalties.Should().ContainSingle().Subject;
@@ -119,7 +119,7 @@ public class AppointmentLateCancelledEventHandlerTests
             .ReturnsAsync([]);
 
         // Act
-        await _sut.Handle(notification, CancellationToken.None);
+        await _sut.Handle(notification, TestContext.Current.CancellationToken);
 
         // Assert
         _penaltyRepositoryMock.Verify(

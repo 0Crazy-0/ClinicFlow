@@ -50,7 +50,7 @@ public class BlockPatientCommandHandlerTests
             .Callback<PatientPenalty, CancellationToken>((p, _) => capturedPenalty = p);
 
         // Act
-        var result = await _sut.Handle(command, CancellationToken.None);
+        var result = await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().NotBeEmpty();
@@ -75,7 +75,7 @@ public class BlockPatientCommandHandlerTests
         );
 
         // Act
-        await _sut.Handle(command, CancellationToken.None);
+        await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         _penaltyRepositoryMock.Verify(

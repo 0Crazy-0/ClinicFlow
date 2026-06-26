@@ -44,7 +44,7 @@ public class CreateClinicalFormTemplateCommandHandlerTests
             .Callback<ClinicalFormTemplate, CancellationToken>((t, _) => capturedTemplate = t);
 
         // Act
-        var result = await _sut.Handle(command, CancellationToken.None);
+        var result = await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().NotBeEmpty();
@@ -67,7 +67,7 @@ public class CreateClinicalFormTemplateCommandHandlerTests
         );
 
         // Act
-        await _sut.Handle(command, CancellationToken.None);
+        await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         _repositoryMock.Verify(
@@ -93,7 +93,7 @@ public class CreateClinicalFormTemplateCommandHandlerTests
             .ReturnsAsync(true);
 
         // Act
-        var act = async () => await _sut.Handle(command, CancellationToken.None);
+        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         await act.Should()
@@ -123,7 +123,7 @@ public class CreateClinicalFormTemplateCommandHandlerTests
             .ReturnsAsync(true);
 
         // Act
-        var act = async () => await _sut.Handle(command, CancellationToken.None);
+        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         await act.Should()

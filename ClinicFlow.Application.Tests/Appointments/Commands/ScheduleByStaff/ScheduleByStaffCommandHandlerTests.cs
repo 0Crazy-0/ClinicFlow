@@ -129,7 +129,7 @@ public class ScheduleByStaffCommandHandlerTests
             .Callback<Appointment, CancellationToken>((a, _) => capturedAppointment = a);
 
         // Act
-        var result = await _sut.Handle(command, CancellationToken.None);
+        var result = await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().NotBeEmpty();
@@ -225,7 +225,7 @@ public class ScheduleByStaffCommandHandlerTests
             .Returns(SchedulingClearance.Granted());
 
         // Act
-        await _sut.Handle(command, CancellationToken.None);
+        await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         _appointmentRepositoryMock.Verify(
@@ -255,7 +255,7 @@ public class ScheduleByStaffCommandHandlerTests
             .ReturnsAsync((Patient?)null);
 
         // Act
-        var act = async () => await _sut.Handle(command, CancellationToken.None);
+        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         var exceptionAssertion = await act.Should()
@@ -297,7 +297,7 @@ public class ScheduleByStaffCommandHandlerTests
             .ReturnsAsync((Doctor?)null);
 
         // Act
-        var act = async () => await _sut.Handle(command, CancellationToken.None);
+        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         var exceptionAssertion = await act.Should()
@@ -351,7 +351,7 @@ public class ScheduleByStaffCommandHandlerTests
             .ReturnsAsync((AppointmentTypeDefinition?)null);
 
         // Act
-        var act = async () => await _sut.Handle(command, CancellationToken.None);
+        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         var exceptionAssertion = await act.Should()

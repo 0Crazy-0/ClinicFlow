@@ -44,7 +44,7 @@ public class GetEligibleAppointmentTypesQueryHandlerTests
 
         var query = new GetEligibleAppointmentTypesQuery(30);
         // Act
-        var result = await _sut.Handle(query, CancellationToken.None);
+        var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().ContainSingle();
@@ -75,7 +75,7 @@ public class GetEligibleAppointmentTypesQueryHandlerTests
         var query = new GetEligibleAppointmentTypesQuery(10);
 
         // Act
-        var result = await _sut.Handle(query, CancellationToken.None);
+        var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().NotBeNull();

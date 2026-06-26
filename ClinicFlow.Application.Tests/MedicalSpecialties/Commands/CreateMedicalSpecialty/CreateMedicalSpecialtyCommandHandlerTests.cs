@@ -37,7 +37,7 @@ public class CreateMedicalSpecialtyCommandHandlerTests
             .Callback<MedicalSpecialty, CancellationToken>((s, _) => capturedSpecialty = s);
 
         // Act
-        var result = await _sut.Handle(command, CancellationToken.None);
+        var result = await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().NotBeEmpty();
@@ -55,7 +55,7 @@ public class CreateMedicalSpecialtyCommandHandlerTests
         var command = new CreateMedicalSpecialtyCommand("Cardiology", "Heart specialty", 30, 24);
 
         // Act
-        await _sut.Handle(command, CancellationToken.None);
+        await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         _medicalSpecialtyRepositoryMock.Verify(
@@ -76,7 +76,7 @@ public class CreateMedicalSpecialtyCommandHandlerTests
             .ReturnsAsync(true);
 
         // Act
-        var act = async () => await _sut.Handle(command, CancellationToken.None);
+        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         await act.Should()

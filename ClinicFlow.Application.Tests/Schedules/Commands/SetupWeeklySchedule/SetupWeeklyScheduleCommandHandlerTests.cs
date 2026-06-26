@@ -54,7 +54,7 @@ public class SetupWeeklyScheduleCommandHandlerTests
             .Callback<IReadOnlyList<Schedule>, CancellationToken>((s, _) => capturedSchedules = s);
 
         // Act
-        var result = await _sut.Handle(command, CancellationToken.None);
+        var result = await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().HaveCount(3);
@@ -86,7 +86,7 @@ public class SetupWeeklyScheduleCommandHandlerTests
             .ReturnsAsync([]);
 
         // Act
-        await _sut.Handle(command, CancellationToken.None);
+        await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         _scheduleRepositoryMock.Verify(
@@ -124,7 +124,7 @@ public class SetupWeeklyScheduleCommandHandlerTests
             .ReturnsAsync([existingSchedule]);
 
         // Act
-        var act = async () => await _sut.Handle(command, CancellationToken.None);
+        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         await act.Should().ThrowAsync<ScheduleAlreadyExistsException>();

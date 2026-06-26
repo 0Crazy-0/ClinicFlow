@@ -21,7 +21,7 @@ public class LogoutUserCommandHandlerTests
         var command = new LogoutUserCommand(Guid.NewGuid());
 
         // Act
-        await _sut.Handle(command, CancellationToken.None);
+        await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         _refreshTokenServiceMock.Verify(

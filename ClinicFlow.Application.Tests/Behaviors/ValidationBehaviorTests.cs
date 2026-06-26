@@ -27,11 +27,15 @@ public class ValidationBehaviorTests
         nextDelegateMock.Setup(next => next()).ReturnsAsync(expectedResponse);
 
         // Act
-        var result = await _sut.Handle(request, nextDelegateMock.Object, CancellationToken.None);
+        var result = await _sut.Handle(
+            request,
+            nextDelegateMock.Object,
+            TestContext.Current.CancellationToken
+        );
 
         // Assert
         result.Should().Be(expectedResponse);
-        nextDelegateMock.Verify(next => next(), Times.Once);
+        nextDelegateMock.Verify(next => next(It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -56,11 +60,15 @@ public class ValidationBehaviorTests
         nextDelegateMock.Setup(next => next()).ReturnsAsync(expectedResponse);
 
         // Act
-        var result = await _sut.Handle(request, nextDelegateMock.Object, CancellationToken.None);
+        var result = await _sut.Handle(
+            request,
+            nextDelegateMock.Object,
+            TestContext.Current.CancellationToken
+        );
 
         // Assert
         result.Should().Be(expectedResponse);
-        nextDelegateMock.Verify(next => next(), Times.Once);
+        nextDelegateMock.Verify(next => next(It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -85,12 +93,16 @@ public class ValidationBehaviorTests
 
         // Act
         var act = async () =>
-            await _sut.Handle(request, nextDelegateMock.Object, CancellationToken.None);
+            await _sut.Handle(
+                request,
+                nextDelegateMock.Object,
+                TestContext.Current.CancellationToken
+            );
 
         // Assert
         var exception = await act.Should().ThrowAsync<ValidationException>();
         exception.Which.Errors.Should().ContainKey("Value");
         exception.Which.Errors["Value"].Should().Contain("Value is invalid");
-        nextDelegateMock.Verify(next => next(), Times.Never);
+        nextDelegateMock.Verify(next => next(It.IsAny<CancellationToken>()), Times.Never);
     }
 }

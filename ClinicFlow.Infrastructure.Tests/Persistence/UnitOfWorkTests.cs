@@ -51,7 +51,7 @@ public class UnitOfWorkTests : IDisposable
         _dbContext.Users.Add(user);
 
         // Act
-        var result = await _sut.SaveChangesAsync(CancellationToken.None);
+        var result = await _sut.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().BeGreaterThan(0);
@@ -84,7 +84,7 @@ public class UnitOfWorkTests : IDisposable
         _dbContext.Users.Add(user);
 
         // Act
-        await _sut.SaveChangesAsync(CancellationToken.None);
+        await _sut.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Assert
         _publisherMock.Verify(
@@ -118,7 +118,7 @@ public class UnitOfWorkTests : IDisposable
         _dbContext.Users.Add(user);
 
         // Act
-        await _sut.SaveChangesAsync(CancellationToken.None);
+        await _sut.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Assert
         user.DomainEvents.Should().BeEmpty();
@@ -138,7 +138,7 @@ public class UnitOfWorkTests : IDisposable
         _dbContext.Users.Add(user);
 
         // Act
-        await _sut.SaveChangesAsync(CancellationToken.None);
+        await _sut.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Assert
         _publisherMock.Verify(

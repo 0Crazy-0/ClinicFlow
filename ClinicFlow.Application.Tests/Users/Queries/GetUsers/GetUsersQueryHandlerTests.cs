@@ -35,7 +35,7 @@ public class GetUsersQueryHandlerTests
             .ReturnsAsync((users, 2));
 
         // Act
-        var result = await _sut.Handle(query, CancellationToken.None);
+        var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -69,7 +69,7 @@ public class GetUsersQueryHandlerTests
         var query = new GetUsersQuery(1, 10, UserRole.Admin, true, null);
 
         // Act
-        var result = await _sut.Handle(query, CancellationToken.None);
+        var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -92,7 +92,7 @@ public class GetUsersQueryHandlerTests
         var query = new GetUsersQuery(1, 10, null, null, null);
 
         // Act
-        var result = await _sut.Handle(query, CancellationToken.None);
+        var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
         var dto = result.Items.First();

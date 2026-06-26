@@ -42,7 +42,7 @@ public class DeactivateClinicalFormTemplateCommandHandlerTests
             .ReturnsAsync(template);
 
         // Act
-        await _sut.Handle(command, CancellationToken.None);
+        await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         template.IsDeleted.Should().BeTrue();
@@ -60,7 +60,7 @@ public class DeactivateClinicalFormTemplateCommandHandlerTests
             .ReturnsAsync((ClinicalFormTemplate?)null);
 
         // Act
-        var act = () => _sut.Handle(command, CancellationToken.None);
+        var act = () => _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         var exceptionAssertion = await act.Should()

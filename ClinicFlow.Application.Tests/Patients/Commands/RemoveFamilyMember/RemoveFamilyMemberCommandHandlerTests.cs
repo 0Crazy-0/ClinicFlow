@@ -49,7 +49,7 @@ public class RemoveFamilyMemberCommandHandlerTests
             .ReturnsAsync(familyMember);
 
         // Act
-        await _sut.Handle(command, CancellationToken.None);
+        await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         familyMember.IsDeleted.Should().BeTrue();
@@ -75,7 +75,7 @@ public class RemoveFamilyMemberCommandHandlerTests
             .ReturnsAsync(primaryPatient);
 
         // Act
-        var act = async () => await _sut.Handle(command, CancellationToken.None);
+        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         await act.Should()
@@ -96,7 +96,7 @@ public class RemoveFamilyMemberCommandHandlerTests
             .ReturnsAsync((Patient?)null);
 
         // Act
-        var act = async () => await _sut.Handle(command, CancellationToken.None);
+        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         var exceptionAssertion = await act.Should()
@@ -127,7 +127,7 @@ public class RemoveFamilyMemberCommandHandlerTests
             .ReturnsAsync(familyMember);
 
         // Act
-        var act = async () => await _sut.Handle(command, CancellationToken.None);
+        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         await act.Should()

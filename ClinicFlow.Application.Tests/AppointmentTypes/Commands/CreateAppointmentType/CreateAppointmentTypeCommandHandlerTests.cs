@@ -50,7 +50,7 @@ public class CreateAppointmentTypeCommandHandlerTests
             );
 
         // Act
-        var result = await _sut.Handle(command, CancellationToken.None);
+        var result = await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().NotBeEmpty();
@@ -76,7 +76,7 @@ public class CreateAppointmentTypeCommandHandlerTests
         );
 
         // Act
-        await _sut.Handle(command, CancellationToken.None);
+        await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         _appointmentTypeRepositoryMock.Verify(
@@ -106,7 +106,7 @@ public class CreateAppointmentTypeCommandHandlerTests
             .ReturnsAsync(true);
 
         // Act
-        var act = async () => await _sut.Handle(command, CancellationToken.None);
+        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         await act.Should()

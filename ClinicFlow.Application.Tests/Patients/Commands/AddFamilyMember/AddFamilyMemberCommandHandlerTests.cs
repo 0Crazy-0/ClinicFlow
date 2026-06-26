@@ -58,7 +58,7 @@ public class AddFamilyMemberCommandHandlerTests
             .Callback<Patient, CancellationToken>((p, _) => capturedPatient = p);
 
         // Act
-        var result = await _sut.Handle(command, CancellationToken.None);
+        var result = await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().NotBeEmpty();
@@ -103,7 +103,7 @@ public class AddFamilyMemberCommandHandlerTests
             .ReturnsAsync(deletedMember);
 
         // Act
-        var result = await _sut.Handle(command, CancellationToken.None);
+        var result = await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         _patientRepositoryMock.Verify(
@@ -141,7 +141,7 @@ public class AddFamilyMemberCommandHandlerTests
             .ReturnsAsync((Patient?)null);
 
         // Act
-        await _sut.Handle(command, CancellationToken.None);
+        await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         _patientRepositoryMock.Verify(

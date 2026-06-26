@@ -45,7 +45,7 @@ public class DeactivateAppointmentTypeCommandHandlerTests
             .ReturnsAsync(appointmentType);
 
         // Act
-        await _sut.Handle(command, CancellationToken.None);
+        await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         appointmentType.IsDeleted.Should().BeTrue();
@@ -63,7 +63,7 @@ public class DeactivateAppointmentTypeCommandHandlerTests
             .ReturnsAsync((AppointmentTypeDefinition?)null);
 
         // Act
-        var act = () => _sut.Handle(command, CancellationToken.None);
+        var act = () => _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         var exceptionAssertion = await act.Should()

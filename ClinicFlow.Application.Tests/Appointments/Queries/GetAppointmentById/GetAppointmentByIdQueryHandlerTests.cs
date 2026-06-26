@@ -41,11 +41,11 @@ public class GetAppointmentByIdQueryHandlerTests
 
         appointment.SetId(appointmentId);
         _appointmentRepositoryMock
-            .Setup(x => x.GetByIdAsync(appointmentId))
+            .Setup(x => x.GetByIdAsync(appointmentId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(appointment);
 
         // Act
-        var result = await _sut.Handle(query, CancellationToken.None);
+        var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -54,7 +54,10 @@ public class GetAppointmentByIdQueryHandlerTests
         result.DoctorId.Should().Be(doctorId);
         result.AppointmentTypeId.Should().Be(appointment.AppointmentTypeId);
 
-        _appointmentRepositoryMock.Verify(x => x.GetByIdAsync(appointmentId), Times.Once);
+        _appointmentRepositoryMock.Verify(
+            x => x.GetByIdAsync(appointmentId, It.IsAny<CancellationToken>()),
+            Times.Once
+        );
     }
 
     [Fact]
@@ -64,11 +67,11 @@ public class GetAppointmentByIdQueryHandlerTests
         var query = new GetAppointmentByIdQuery(Guid.NewGuid());
 
         _appointmentRepositoryMock
-            .Setup(x => x.GetByIdAsync(query.AppointmentId))
+            .Setup(x => x.GetByIdAsync(query.AppointmentId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((Appointment?)null);
 
         // Act
-        var act = async () => await _sut.Handle(query, CancellationToken.None);
+        var act = async () => await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
         var exceptionAssertion = await act.Should()

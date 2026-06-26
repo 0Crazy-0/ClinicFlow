@@ -38,7 +38,10 @@ public class GetDoctorByIdQueryHandlerTests
             .ReturnsAsync(doctor);
 
         // Act
-        var result = await _sut.Handle(new GetDoctorByIdQuery(doctor.Id), CancellationToken.None);
+        var result = await _sut.Handle(
+            new GetDoctorByIdQuery(doctor.Id),
+            TestContext.Current.CancellationToken
+        );
 
         // Assert
         result.Should().NotBeNull();
@@ -64,7 +67,10 @@ public class GetDoctorByIdQueryHandlerTests
 
         // Act
         var act = async () =>
-            await _sut.Handle(new GetDoctorByIdQuery(doctorId), CancellationToken.None);
+            await _sut.Handle(
+                new GetDoctorByIdQuery(doctorId),
+                TestContext.Current.CancellationToken
+            );
 
         // Assert
         var exceptionAssertion = await act.Should()

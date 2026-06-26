@@ -24,7 +24,7 @@ public class GetMedicalRecordByAppointmentIdQueryHandlerTests
     {
         // Arrange
         var appointmentId = Guid.NewGuid();
-        var expectedRecord = CreateMedicalRecord(
+        var expectedRecord = MedicalRecord.Create(
             Guid.NewGuid(),
             Guid.NewGuid(),
             appointmentId,
@@ -32,13 +32,15 @@ public class GetMedicalRecordByAppointmentIdQueryHandlerTests
         );
 
         _medicalRecordRepositoryMock
-            .Setup(x => x.GetByAppointmentIdAsync(appointmentId, CancellationToken.None))
+            .Setup(x =>
+                x.GetByAppointmentIdAsync(appointmentId, TestContext.Current.CancellationToken)
+            )
             .ReturnsAsync(expectedRecord);
 
         var query = new GetMedicalRecordByAppointmentIdQuery(appointmentId);
 
         // Act
-        var result = await _sut.Handle(query, CancellationToken.None);
+        var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -49,7 +51,7 @@ public class GetMedicalRecordByAppointmentIdQueryHandlerTests
         result.ChiefComplaint.Should().Be(expectedRecord.ChiefComplaint);
 
         _medicalRecordRepositoryMock.Verify(
-            x => x.GetByAppointmentIdAsync(appointmentId, CancellationToken.None),
+            x => x.GetByAppointmentIdAsync(appointmentId, TestContext.Current.CancellationToken),
             Times.Once
         );
     }
@@ -61,13 +63,15 @@ public class GetMedicalRecordByAppointmentIdQueryHandlerTests
         var appointmentId = Guid.NewGuid();
 
         _medicalRecordRepositoryMock
-            .Setup(x => x.GetByAppointmentIdAsync(appointmentId, CancellationToken.None))
+            .Setup(x =>
+                x.GetByAppointmentIdAsync(appointmentId, TestContext.Current.CancellationToken)
+            )
             .ReturnsAsync((MedicalRecord?)null);
 
         var query = new GetMedicalRecordByAppointmentIdQuery(appointmentId);
 
         // Act
-        var act = async () => await _sut.Handle(query, CancellationToken.None);
+        var act = async () => await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
         var exceptionAssertion = await act.Should()
@@ -76,15 +80,8 @@ public class GetMedicalRecordByAppointmentIdQueryHandlerTests
         exceptionAssertion.Which.EntityName.Should().Be(nameof(MedicalRecord));
 
         _medicalRecordRepositoryMock.Verify(
-            x => x.GetByAppointmentIdAsync(appointmentId, CancellationToken.None),
+            x => x.GetByAppointmentIdAsync(appointmentId, TestContext.Current.CancellationToken),
             Times.Once
         );
     }
-
-    private static MedicalRecord CreateMedicalRecord(
-        Guid patientId,
-        Guid doctorId,
-        Guid appointmentId,
-        string chiefComplaint
-    ) => MedicalRecord.Create(patientId, doctorId, appointmentId, chiefComplaint);
 }
