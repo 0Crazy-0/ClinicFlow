@@ -1,5 +1,6 @@
 {
     "stryker-config": {
+        "test-runner": "mtp",
         "project": "ClinicFlow.Application.csproj",
         "reporters": ["html", "dashboard", "progress"],
           "thresholds": {
