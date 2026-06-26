@@ -52,7 +52,7 @@ public class VerifyPhoneCommandHandlerTests
             .ReturnsAsync(true);
 
         // Act
-        await _sut.Handle(command, CancellationToken.None);
+        await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         user.IsPhoneVerified.Should().BeTrue();
@@ -83,7 +83,7 @@ public class VerifyPhoneCommandHandlerTests
             .ReturnsAsync(false);
 
         // Act
-        var act = async () => await _sut.Handle(command, CancellationToken.None);
+        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         await act.Should()
@@ -105,7 +105,7 @@ public class VerifyPhoneCommandHandlerTests
             .ReturnsAsync((User?)null);
 
         // Act
-        var act = async () => await _sut.Handle(command, CancellationToken.None);
+        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         var exceptionAssertion = await act.Should()

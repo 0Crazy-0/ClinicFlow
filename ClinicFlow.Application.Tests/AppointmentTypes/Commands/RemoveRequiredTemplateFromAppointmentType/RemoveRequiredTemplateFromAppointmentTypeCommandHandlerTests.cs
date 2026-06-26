@@ -64,7 +64,7 @@ public class RemoveRequiredTemplateFromAppointmentTypeCommandHandlerTests
             .ReturnsAsync(template);
 
         // Act
-        await _sut.Handle(command, CancellationToken.None);
+        await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         appointmentType.RequiredTemplates.Should().BeEmpty();
@@ -85,7 +85,7 @@ public class RemoveRequiredTemplateFromAppointmentTypeCommandHandlerTests
             .ReturnsAsync((AppointmentTypeDefinition?)null);
 
         // Act
-        var act = async () => await _sut.Handle(command, CancellationToken.None);
+        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         var exceptionAssertion = await act.Should()
@@ -121,7 +121,7 @@ public class RemoveRequiredTemplateFromAppointmentTypeCommandHandlerTests
             .ReturnsAsync((ClinicalFormTemplate?)null);
 
         // Act
-        var act = async () => await _sut.Handle(command, CancellationToken.None);
+        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         var exceptionAssertion = await act.Should()

@@ -41,7 +41,7 @@ public class ReactivateMedicalSpecialtyCommandHandlerTests
             .ReturnsAsync(specialty);
 
         // Act
-        await _sut.Handle(command, CancellationToken.None);
+        await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         specialty.IsDeleted.Should().BeFalse();
@@ -61,7 +61,7 @@ public class ReactivateMedicalSpecialtyCommandHandlerTests
             .ReturnsAsync((MedicalSpecialty?)null);
 
         // Act
-        var act = () => _sut.Handle(command, CancellationToken.None);
+        var act = () => _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         var exceptionAssertion = await act.Should()

@@ -47,7 +47,7 @@ public class LoginUserCommandHandlerTests
             .Returns(true);
 
         // Act
-        var result = await _sut.Handle(comamand, CancellationToken.None);
+        var result = await _sut.Handle(comamand, TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().Be(user.Id);
@@ -69,7 +69,7 @@ public class LoginUserCommandHandlerTests
             .Returns(true);
 
         // Act
-        await _sut.Handle(comamand, CancellationToken.None);
+        await _sut.Handle(comamand, TestContext.Current.CancellationToken);
 
         // Assert
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
@@ -86,7 +86,7 @@ public class LoginUserCommandHandlerTests
             .ReturnsAsync((User?)null);
 
         // Act
-        var act = () => _sut.Handle(comamand, CancellationToken.None);
+        var act = () => _sut.Handle(comamand, TestContext.Current.CancellationToken);
 
         // Assert
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
@@ -112,7 +112,7 @@ public class LoginUserCommandHandlerTests
             .Returns(false);
 
         // Act
-        var act = () => _sut.Handle(command, CancellationToken.None);
+        var act = () => _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         await act.Should()

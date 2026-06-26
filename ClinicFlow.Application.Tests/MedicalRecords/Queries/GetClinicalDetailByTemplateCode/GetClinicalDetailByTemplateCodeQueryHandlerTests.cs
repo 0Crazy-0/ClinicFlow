@@ -29,13 +29,13 @@ public class GetClinicalDetailByTemplateCodeQueryHandlerTests
         record.AddClinicalDetail(detail);
 
         _medicalRecordRepositoryMock
-            .Setup(x => x.GetByIdAsync(record.Id, CancellationToken.None))
+            .Setup(x => x.GetByIdAsync(record.Id, TestContext.Current.CancellationToken))
             .ReturnsAsync(record);
 
         var query = new GetClinicalDetailByTemplateCodeQuery(record.Id, "VITALS");
 
         // Act
-        var result = await _sut.Handle(query, CancellationToken.None);
+        var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -43,7 +43,7 @@ public class GetClinicalDetailByTemplateCodeQueryHandlerTests
         result.JsonDataPayload.Should().Be("""{"bp":"120/80"}""");
 
         _medicalRecordRepositoryMock.Verify(
-            x => x.GetByIdAsync(record.Id, CancellationToken.None),
+            x => x.GetByIdAsync(record.Id, TestContext.Current.CancellationToken),
             Times.Once
         );
     }
@@ -55,19 +55,19 @@ public class GetClinicalDetailByTemplateCodeQueryHandlerTests
         var record = CreateMedicalRecord();
 
         _medicalRecordRepositoryMock
-            .Setup(x => x.GetByIdAsync(record.Id, CancellationToken.None))
+            .Setup(x => x.GetByIdAsync(record.Id, TestContext.Current.CancellationToken))
             .ReturnsAsync(record);
 
         var query = new GetClinicalDetailByTemplateCodeQuery(record.Id, "NON_EXISTENT");
 
         // Act
-        var result = await _sut.Handle(query, CancellationToken.None);
+        var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().BeNull();
 
         _medicalRecordRepositoryMock.Verify(
-            x => x.GetByIdAsync(record.Id, CancellationToken.None),
+            x => x.GetByIdAsync(record.Id, TestContext.Current.CancellationToken),
             Times.Once
         );
     }
@@ -79,13 +79,13 @@ public class GetClinicalDetailByTemplateCodeQueryHandlerTests
         var medicalRecordId = Guid.NewGuid();
 
         _medicalRecordRepositoryMock
-            .Setup(x => x.GetByIdAsync(medicalRecordId, CancellationToken.None))
+            .Setup(x => x.GetByIdAsync(medicalRecordId, TestContext.Current.CancellationToken))
             .ReturnsAsync((MedicalRecord?)null);
 
         var query = new GetClinicalDetailByTemplateCodeQuery(medicalRecordId, "VITALS");
 
         // Act
-        var act = async () => await _sut.Handle(query, CancellationToken.None);
+        var act = async () => await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
         var exceptionAssertion = await act.Should()
@@ -94,7 +94,7 @@ public class GetClinicalDetailByTemplateCodeQueryHandlerTests
         exceptionAssertion.Which.EntityName.Should().Be(nameof(MedicalRecord));
 
         _medicalRecordRepositoryMock.Verify(
-            x => x.GetByIdAsync(medicalRecordId, CancellationToken.None),
+            x => x.GetByIdAsync(medicalRecordId, TestContext.Current.CancellationToken),
             Times.Once
         );
     }

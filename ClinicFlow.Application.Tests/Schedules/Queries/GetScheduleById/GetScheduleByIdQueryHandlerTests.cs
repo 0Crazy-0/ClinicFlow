@@ -41,7 +41,7 @@ public class GetScheduleByIdQueryHandlerTests
         var query = new GetScheduleByIdQuery(scheduleId);
 
         // Act
-        var result = await _sut.Handle(query, CancellationToken.None);
+        var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -69,7 +69,7 @@ public class GetScheduleByIdQueryHandlerTests
             .ReturnsAsync((Schedule?)null);
 
         // Act
-        var act = async () => await _sut.Handle(query, CancellationToken.None);
+        var act = async () => await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
         var exceptionAssertion = await act.Should()

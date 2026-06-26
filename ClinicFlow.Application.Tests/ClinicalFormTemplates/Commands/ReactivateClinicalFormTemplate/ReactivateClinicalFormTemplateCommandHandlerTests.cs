@@ -46,7 +46,7 @@ public class ReactivateClinicalFormTemplateCommandHandlerTests
             .ReturnsAsync(template);
 
         // Act
-        await _sut.Handle(command, CancellationToken.None);
+        await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         template.IsDeleted.Should().BeFalse();
@@ -66,7 +66,7 @@ public class ReactivateClinicalFormTemplateCommandHandlerTests
             .ReturnsAsync((ClinicalFormTemplate?)null);
 
         // Act
-        var act = () => _sut.Handle(command, CancellationToken.None);
+        var act = () => _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         var exceptionAssertion = await act.Should()
@@ -102,7 +102,7 @@ public class ReactivateClinicalFormTemplateCommandHandlerTests
             .ReturnsAsync(true);
 
         // Act
-        var act = async () => await _sut.Handle(command, CancellationToken.None);
+        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         await act.Should()
@@ -137,7 +137,7 @@ public class ReactivateClinicalFormTemplateCommandHandlerTests
             .ReturnsAsync(true);
 
         // Act
-        var act = async () => await _sut.Handle(command, CancellationToken.None);
+        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         await act.Should()

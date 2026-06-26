@@ -36,7 +36,10 @@ public class GetUserByIdQueryHandlerTests
             .ReturnsAsync(user);
 
         // Act
-        var result = await _sut.Handle(new GetUserByIdQuery(user.Id), CancellationToken.None);
+        var result = await _sut.Handle(
+            new GetUserByIdQuery(user.Id),
+            TestContext.Current.CancellationToken
+        );
 
         // Assert
         result.Should().NotBeNull();
@@ -63,7 +66,7 @@ public class GetUserByIdQueryHandlerTests
 
         // Act
         var act = async () =>
-            await _sut.Handle(new GetUserByIdQuery(userId), CancellationToken.None);
+            await _sut.Handle(new GetUserByIdQuery(userId), TestContext.Current.CancellationToken);
 
         // Assert
         var exceptionAssertion = await act.Should()

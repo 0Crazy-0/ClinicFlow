@@ -51,7 +51,7 @@ public class GetAllActiveAppointmentTypesQueryHandlerTests
         var query = new GetAllActiveAppointmentTypesQuery();
 
         // Act
-        var result = await _sut.Handle(query, CancellationToken.None);
+        var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().HaveCount(2);
@@ -84,7 +84,7 @@ public class GetAllActiveAppointmentTypesQueryHandlerTests
         // Act
         var result = await _sut.Handle(
             new GetAllActiveAppointmentTypesQuery(),
-            CancellationToken.None
+            TestContext.Current.CancellationToken
         );
 
         // Assert

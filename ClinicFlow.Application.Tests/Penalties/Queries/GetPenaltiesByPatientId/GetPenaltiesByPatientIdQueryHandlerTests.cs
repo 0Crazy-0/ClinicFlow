@@ -42,7 +42,7 @@ public class GetPenaltiesByPatientIdQueryHandlerTests
         var query = new GetPenaltiesByPatientIdQuery(patientId, 1, 10);
 
         // Act
-        var result = await _sut.Handle(query, CancellationToken.None);
+        var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -74,7 +74,7 @@ public class GetPenaltiesByPatientIdQueryHandlerTests
         var query = new GetPenaltiesByPatientIdQuery(patientId, 1, 10);
 
         // Act
-        var result = await _sut.Handle(query, CancellationToken.None);
+        var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().NotBeNull();

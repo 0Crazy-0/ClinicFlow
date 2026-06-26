@@ -34,7 +34,7 @@ public class DeactivateUserCommandHandlerTests
             .ReturnsAsync(user);
 
         // Act
-        await _sut.Handle(command, CancellationToken.None);
+        await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
@@ -53,7 +53,7 @@ public class DeactivateUserCommandHandlerTests
             .ReturnsAsync((User?)null);
 
         // Act
-        var act = () => _sut.Handle(command, CancellationToken.None);
+        var act = () => _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         var exceptionAssertion = await act.Should()
@@ -78,7 +78,7 @@ public class DeactivateUserCommandHandlerTests
             .ReturnsAsync(user);
 
         // Act
-        var act = () => _sut.Handle(command, CancellationToken.None);
+        var act = () => _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);

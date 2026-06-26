@@ -52,7 +52,7 @@ public class RemoveAllowedSpecialtyFromAppointmentTypeCommandHandlerTests
             .ReturnsAsync(appointmentType);
 
         // Act
-        await _sut.Handle(command, CancellationToken.None);
+        await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         appointmentType.AllowedSpecialtyIds.Should().NotContain(specialtyToRemove);
@@ -78,7 +78,7 @@ public class RemoveAllowedSpecialtyFromAppointmentTypeCommandHandlerTests
             .ReturnsAsync((AppointmentTypeDefinition?)null);
 
         // Act
-        var act = async () => await _sut.Handle(command, CancellationToken.None);
+        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         var exceptionAssertion = await act.Should()

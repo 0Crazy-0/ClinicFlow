@@ -35,11 +35,11 @@ public class GetMedicalRecordByIdQueryHandlerTests
         record.AddClinicalDetail(clinicalDetail);
 
         _medicalRecordRepositoryMock
-            .Setup(x => x.GetByIdAsync(id, CancellationToken.None))
+            .Setup(x => x.GetByIdAsync(id, TestContext.Current.CancellationToken))
             .ReturnsAsync(record);
 
         // Act
-        var result = await _sut.Handle(request, CancellationToken.None);
+        var result = await _sut.Handle(request, TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -59,11 +59,11 @@ public class GetMedicalRecordByIdQueryHandlerTests
         var request = new GetMedicalRecordByIdQuery(Guid.NewGuid());
 
         _medicalRecordRepositoryMock
-            .Setup(x => x.GetByIdAsync(request.Id, CancellationToken.None))
+            .Setup(x => x.GetByIdAsync(request.Id, TestContext.Current.CancellationToken))
             .ReturnsAsync((MedicalRecord?)null);
 
         // Act
-        var act = async () => await _sut.Handle(request, CancellationToken.None);
+        var act = async () => await _sut.Handle(request, TestContext.Current.CancellationToken);
 
         // Assert
         var exceptionAssertion = await act.Should()

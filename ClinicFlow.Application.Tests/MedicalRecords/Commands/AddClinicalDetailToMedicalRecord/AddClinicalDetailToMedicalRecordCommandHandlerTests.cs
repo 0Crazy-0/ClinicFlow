@@ -49,15 +49,15 @@ public class AddClinicalDetailToMedicalRecordCommandHandlerTests
             """{"glucose": 90}"""
         );
 
-        var record = CreateMedicalRecord(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "Checkup");
+        var record = CreateMedicalRecord();
         var template = ClinicalFormTemplate.Create("lab-results", "Test Form", "Description", "{}");
 
         _medicalRecordRepositoryMock
-            .Setup(x => x.GetByIdAsync(medicalRecordId, CancellationToken.None))
+            .Setup(x => x.GetByIdAsync(medicalRecordId, TestContext.Current.CancellationToken))
             .ReturnsAsync(record);
 
         _templateRepositoryMock
-            .Setup(x => x.GetByCodeAsync(template.Code, CancellationToken.None))
+            .Setup(x => x.GetByCodeAsync(template.Code, TestContext.Current.CancellationToken))
             .ReturnsAsync(template);
 
         string? errorMessage = null;
@@ -66,7 +66,7 @@ public class AddClinicalDetailToMedicalRecordCommandHandlerTests
             .Returns(true);
 
         // Act
-        await _sut.Handle(request, CancellationToken.None);
+        await _sut.Handle(request, TestContext.Current.CancellationToken);
 
         // Assert
         record
@@ -75,7 +75,10 @@ public class AddClinicalDetailToMedicalRecordCommandHandlerTests
                 d.TemplateCode == "lab-results" && d.JsonDataPayload == """{"glucose": 90}"""
             );
 
-        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(CancellationToken.None), Times.Once);
+        _unitOfWorkMock.Verify(
+            x => x.SaveChangesAsync(TestContext.Current.CancellationToken),
+            Times.Once
+        );
     }
 
     [Fact]
@@ -90,11 +93,11 @@ public class AddClinicalDetailToMedicalRecordCommandHandlerTests
         );
 
         _medicalRecordRepositoryMock
-            .Setup(x => x.GetByIdAsync(medicalRecordId, CancellationToken.None))
+            .Setup(x => x.GetByIdAsync(medicalRecordId, TestContext.Current.CancellationToken))
             .ReturnsAsync((MedicalRecord?)null);
 
         // Act
-        var act = async () => await _sut.Handle(request, CancellationToken.None);
+        var act = async () => await _sut.Handle(request, TestContext.Current.CancellationToken);
 
         // Assert
         var exceptionAssertion = await act.Should()
@@ -119,18 +122,21 @@ public class AddClinicalDetailToMedicalRecordCommandHandlerTests
             "invalid-code",
             "{}"
         );
-        var record = CreateMedicalRecord(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "Checkup");
+
+        var record = CreateMedicalRecord();
 
         _medicalRecordRepositoryMock
-            .Setup(x => x.GetByIdAsync(medicalRecordId, CancellationToken.None))
+            .Setup(x => x.GetByIdAsync(medicalRecordId, TestContext.Current.CancellationToken))
             .ReturnsAsync(record);
 
         _templateRepositoryMock
-            .Setup(x => x.GetByCodeAsync(request.TemplateCode, CancellationToken.None))
+            .Setup(x =>
+                x.GetByCodeAsync(request.TemplateCode, TestContext.Current.CancellationToken)
+            )
             .ReturnsAsync((ClinicalFormTemplate?)null);
 
         // Act
-        var act = async () => await _sut.Handle(request, CancellationToken.None);
+        var act = async () => await _sut.Handle(request, TestContext.Current.CancellationToken);
 
         // Assert
         var exceptionAssertion = await act.Should()
@@ -141,10 +147,6 @@ public class AddClinicalDetailToMedicalRecordCommandHandlerTests
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
-    private static MedicalRecord CreateMedicalRecord(
-        Guid patientId,
-        Guid doctorId,
-        Guid appointmentId,
-        string chiefComplaint
-    ) => MedicalRecord.Create(patientId, doctorId, appointmentId, chiefComplaint);
+    private static MedicalRecord CreateMedicalRecord() =>
+        MedicalRecord.Create(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "Checkup");
 }

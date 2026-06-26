@@ -47,7 +47,10 @@ public class CleanExpiredDisplacedAppointmentsCommandHandlerTests
             .ReturnsAsync([appointment1, appointment2]);
 
         // Act
-        await _sut.Handle(new CleanExpiredDisplacedAppointmentsCommand(), CancellationToken.None);
+        await _sut.Handle(
+            new CleanExpiredDisplacedAppointmentsCommand(),
+            TestContext.Current.CancellationToken
+        );
 
         // Assert
         appointment1.Status.Should().Be(AppointmentStatus.Cancelled);
@@ -72,7 +75,10 @@ public class CleanExpiredDisplacedAppointmentsCommandHandlerTests
             .ReturnsAsync([]);
 
         // Act
-        await _sut.Handle(new CleanExpiredDisplacedAppointmentsCommand(), CancellationToken.None);
+        await _sut.Handle(
+            new CleanExpiredDisplacedAppointmentsCommand(),
+            TestContext.Current.CancellationToken
+        );
 
         // Assert
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);

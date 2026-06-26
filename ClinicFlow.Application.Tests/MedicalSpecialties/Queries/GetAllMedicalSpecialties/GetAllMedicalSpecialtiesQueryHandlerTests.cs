@@ -32,7 +32,7 @@ public class GetAllMedicalSpecialtiesQueryHandlerTests
         var query = new GetAllMedicalSpecialtiesQuery();
 
         // Act
-        var result = await _sut.Handle(query, CancellationToken.None);
+        var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().HaveCount(2);
@@ -49,7 +49,10 @@ public class GetAllMedicalSpecialtiesQueryHandlerTests
             .ReturnsAsync([]);
 
         // Act
-        var result = await _sut.Handle(new GetAllMedicalSpecialtiesQuery(), CancellationToken.None);
+        var result = await _sut.Handle(
+            new GetAllMedicalSpecialtiesQuery(),
+            TestContext.Current.CancellationToken
+        );
 
         // Assert
         result.Should().NotBeNull();

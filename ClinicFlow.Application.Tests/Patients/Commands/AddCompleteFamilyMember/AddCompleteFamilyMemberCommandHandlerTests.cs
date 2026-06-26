@@ -52,7 +52,7 @@ public class AddCompleteFamilyMemberCommandHandlerTests
             .Callback<Patient, CancellationToken>((p, _) => capturedPatient = p);
 
         // Act
-        var result = await _sut.Handle(command, CancellationToken.None);
+        var result = await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().NotBeEmpty();
@@ -89,7 +89,7 @@ public class AddCompleteFamilyMemberCommandHandlerTests
         );
 
         // Act
-        await _sut.Handle(command, CancellationToken.None);
+        await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         _patientRepositoryMock.Verify(
@@ -117,7 +117,7 @@ public class AddCompleteFamilyMemberCommandHandlerTests
         );
 
         // Act
-        var act = async () => await _sut.Handle(command, CancellationToken.None);
+        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         await act.Should().ThrowAsync<DomainValidationException>();

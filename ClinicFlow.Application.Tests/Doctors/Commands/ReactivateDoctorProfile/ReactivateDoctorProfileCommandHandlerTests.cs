@@ -54,7 +54,7 @@ public class ReactivateDoctorProfileCommandHandlerTests
             .ReturnsAsync(doctor);
 
         // Act
-        await _sut.Handle(command, CancellationToken.None);
+        await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
@@ -78,7 +78,7 @@ public class ReactivateDoctorProfileCommandHandlerTests
             .ReturnsAsync((Doctor?)null);
 
         // Act
-        var act = () => _sut.Handle(command, CancellationToken.None);
+        var act = () => _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         var exceptionAssertion = await act.Should()

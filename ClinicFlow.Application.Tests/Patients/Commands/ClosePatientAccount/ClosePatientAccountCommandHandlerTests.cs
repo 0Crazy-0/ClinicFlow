@@ -66,7 +66,7 @@ public class ClosePatientAccountCommandHandlerTests
             .ReturnsAsync(false);
 
         // Act
-        await _sut.Handle(command, CancellationToken.None);
+        await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         primaryPatient.IsDeleted.Should().BeTrue();
@@ -100,7 +100,7 @@ public class ClosePatientAccountCommandHandlerTests
             .ReturnsAsync(false);
 
         // Act
-        await _sut.Handle(command, CancellationToken.None);
+        await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         primaryPatient.IsDeleted.Should().BeTrue();
@@ -133,7 +133,7 @@ public class ClosePatientAccountCommandHandlerTests
             .ReturnsAsync(true);
 
         // Act
-        var act = async () => await _sut.Handle(command, CancellationToken.None);
+        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         await act.Should()

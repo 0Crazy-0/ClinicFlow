@@ -41,7 +41,7 @@ public class GetAllActiveClinicalFormTemplatesQueryHandlerTests
         var query = new GetAllActiveClinicalFormTemplatesQuery();
 
         // Act
-        var result = await _sut.Handle(query, CancellationToken.None);
+        var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().HaveCount(2);
@@ -60,7 +60,7 @@ public class GetAllActiveClinicalFormTemplatesQueryHandlerTests
         // Act
         var result = await _sut.Handle(
             new GetAllActiveClinicalFormTemplatesQuery(),
-            CancellationToken.None
+            TestContext.Current.CancellationToken
         );
 
         // Assert

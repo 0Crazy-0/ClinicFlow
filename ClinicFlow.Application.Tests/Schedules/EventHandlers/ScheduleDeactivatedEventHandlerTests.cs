@@ -73,7 +73,7 @@ public class ScheduleDeactivatedEventHandlerTests
         var notification = new DomainEventNotification<ScheduleDeactivatedEvent>(domainEvent);
 
         // Act
-        await _sut.Handle(notification, CancellationToken.None);
+        await _sut.Handle(notification, TestContext.Current.CancellationToken);
 
         // Assert
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
@@ -123,7 +123,7 @@ public class ScheduleDeactivatedEventHandlerTests
         var notification = new DomainEventNotification<ScheduleDeactivatedEvent>(domainEvent);
 
         // Act
-        await _sut.Handle(notification, CancellationToken.None);
+        await _sut.Handle(notification, TestContext.Current.CancellationToken);
 
         // Assert
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
@@ -173,7 +173,7 @@ public class ScheduleDeactivatedEventHandlerTests
         var notification = new DomainEventNotification<ScheduleDeactivatedEvent>(domainEvent);
 
         // Act
-        await _sut.Handle(notification, CancellationToken.None);
+        await _sut.Handle(notification, TestContext.Current.CancellationToken);
 
         // Assert
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
@@ -219,7 +219,7 @@ public class ScheduleDeactivatedEventHandlerTests
         var notification = new DomainEventNotification<ScheduleDeactivatedEvent>(domainEvent);
 
         // Act
-        await _sut.Handle(notification, CancellationToken.None);
+        await _sut.Handle(notification, TestContext.Current.CancellationToken);
 
         // Assert
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
@@ -247,7 +247,7 @@ public class ScheduleDeactivatedEventHandlerTests
         var notification = new DomainEventNotification<ScheduleDeactivatedEvent>(domainEvent);
 
         // Act
-        await _sut.Handle(notification, CancellationToken.None);
+        await _sut.Handle(notification, TestContext.Current.CancellationToken);
 
         // Assert
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);

@@ -57,7 +57,7 @@ public class AppointmentMarkedAsNoShowEventHandlerTests
             );
 
         // Act
-        await _sut.Handle(notification, CancellationToken.None);
+        await _sut.Handle(notification, TestContext.Current.CancellationToken);
 
         // Assert
         var penalty = capturedPenalties.Should().ContainSingle().Subject;
@@ -81,7 +81,7 @@ public class AppointmentMarkedAsNoShowEventHandlerTests
             .ReturnsAsync([]);
 
         // Act
-        await _sut.Handle(notification, CancellationToken.None);
+        await _sut.Handle(notification, TestContext.Current.CancellationToken);
 
         // Assert
         _patientPenaltyRepositoryMock.Verify(

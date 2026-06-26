@@ -37,7 +37,7 @@ public class GetClinicalFormTemplateByCodeQueryHandlerTests
         var query = new GetClinicalFormTemplateByCodeQuery(template.Code);
 
         // Act
-        var result = await _sut.Handle(query, CancellationToken.None);
+        var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -59,7 +59,7 @@ public class GetClinicalFormTemplateByCodeQueryHandlerTests
         var query = new GetClinicalFormTemplateByCodeQuery("NONEXISTENT");
 
         // Act
-        var act = async () => await _sut.Handle(query, CancellationToken.None);
+        var act = async () => await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
         var exceptionAssertion = await act.Should()

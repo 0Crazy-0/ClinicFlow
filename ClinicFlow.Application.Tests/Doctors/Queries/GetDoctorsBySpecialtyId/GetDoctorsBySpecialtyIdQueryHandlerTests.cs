@@ -50,7 +50,7 @@ public class GetDoctorsBySpecialtyIdQueryHandlerTests
         // Act
         var result = await _sut.Handle(
             new GetDoctorsBySpecialtyIdQuery(specialtyId, 1, 10),
-            CancellationToken.None
+            TestContext.Current.CancellationToken
         );
 
         // Assert
@@ -85,7 +85,7 @@ public class GetDoctorsBySpecialtyIdQueryHandlerTests
         // Act
         var result = await _sut.Handle(
             new GetDoctorsBySpecialtyIdQuery(specialtyId, 1, 10),
-            CancellationToken.None
+            TestContext.Current.CancellationToken
         );
 
         // Assert

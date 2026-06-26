@@ -45,7 +45,7 @@ public class RegisterDoctorUserCommandHandlerTests
             .Callback<User, CancellationToken>((u, _) => capturedUser = u);
 
         // Act
-        var result = await _sut.Handle(command, CancellationToken.None);
+        var result = await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().NotBeEmpty();
@@ -70,7 +70,7 @@ public class RegisterDoctorUserCommandHandlerTests
         _passwordHasherServiceMock.Setup(x => x.Hash(command.Password)).Returns("hashed_password");
 
         // Act
-        await _sut.Handle(command, CancellationToken.None);
+        await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         _userRepositoryMock.Verify(
@@ -91,7 +91,7 @@ public class RegisterDoctorUserCommandHandlerTests
             .ReturnsAsync(true);
 
         // Act
-        var act = () => _sut.Handle(command, CancellationToken.None);
+        var act = () => _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         await act.Should()

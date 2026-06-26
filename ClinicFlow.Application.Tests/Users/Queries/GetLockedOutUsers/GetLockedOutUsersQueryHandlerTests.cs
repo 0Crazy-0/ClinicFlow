@@ -44,7 +44,10 @@ public class GetLockedOutUsersQueryHandlerTests
             .ReturnsAsync((new List<User> { lockedUser }, 1));
 
         // Act
-        var result = await _sut.Handle(new GetLockedOutUsersQuery(1, 10), CancellationToken.None);
+        var result = await _sut.Handle(
+            new GetLockedOutUsersQuery(1, 10),
+            TestContext.Current.CancellationToken
+        );
 
         // Assert
         result.Should().NotBeNull();
@@ -80,7 +83,10 @@ public class GetLockedOutUsersQueryHandlerTests
             .ReturnsAsync((new List<User>(), 0));
 
         // Act
-        var result = await _sut.Handle(new GetLockedOutUsersQuery(1, 10), CancellationToken.None);
+        var result = await _sut.Handle(
+            new GetLockedOutUsersQuery(1, 10),
+            TestContext.Current.CancellationToken
+        );
 
         // Assert
         result.Should().NotBeNull();
@@ -109,7 +115,7 @@ public class GetLockedOutUsersQueryHandlerTests
             .ReturnsAsync((new List<User>(), 0));
 
         // Act
-        await _sut.Handle(new GetLockedOutUsersQuery(1, 10), CancellationToken.None);
+        await _sut.Handle(new GetLockedOutUsersQuery(1, 10), TestContext.Current.CancellationToken);
 
         // Assert
         _userRepositoryMock.Verify(
