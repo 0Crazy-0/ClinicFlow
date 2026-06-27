@@ -1,6 +1,7 @@
 {
     "stryker-config": {
         "project": "ClinicFlow.Infrastructure.csproj",
+        "test-runner": "mtp",
         "reporters": ["html", "dashboard", "progress"],
         "project-info": {
             "name": "github.com/0Crazy-0/ClinicFlow",
