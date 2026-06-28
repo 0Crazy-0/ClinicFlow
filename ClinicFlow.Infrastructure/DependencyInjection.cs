@@ -1,6 +1,8 @@
 using ClinicFlow.Domain.Interfaces;
+using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Infrastructure.Persistence;
 using ClinicFlow.Infrastructure.Persistence.Options;
+using ClinicFlow.Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -41,6 +43,7 @@ public static class DependencyInjection
         });
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 
         return services;
     }
