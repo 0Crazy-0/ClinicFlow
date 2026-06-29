@@ -6,7 +6,6 @@ using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Args.Reassignment;
-using ClinicFlow.Domain.Services.Contexts;
 using ClinicFlow.Domain.ValueObjects;
 using MediatR;
 
@@ -42,11 +41,18 @@ public sealed class ReassignAppointmentCommandHandler(
             );
 
         var newTimeRange = TimeRange.Create(request.NewStartTime, request.NewEndTime);
-        var newDoctorSchedule = await scheduleRepository.GetByDoctorAndDayAsync(
-            newDoctor.Id,
-            request.NewDate.DayOfWeek,
-            cancellationToken
-        );
+
+        var newDoctorSchedule =
+            await scheduleRepository.GetByDoctorAndDayAsync(
+                newDoctor.Id,
+                request.NewDate.DayOfWeek,
+                cancellationToken
+            )
+            ?? throw new EntityNotFoundException(
+                DomainErrors.General.NotFound,
+                nameof(Schedule),
+                newDoctor.Id
+            );
 
         if (
             await appointmentRepository.HasConflictAsync(
@@ -72,7 +78,7 @@ public sealed class ReassignAppointmentCommandHandler(
                 NewDate = request.NewDate,
                 NewTimeRange = newTimeRange,
             },
-            new AppointmentReassignmentContext { NewDoctorSchedule = newDoctorSchedule }
+            newDoctorSchedule
         );
 
         await unitOfWork.SaveChangesAsync(cancellationToken);

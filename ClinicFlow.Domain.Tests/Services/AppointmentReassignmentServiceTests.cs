@@ -6,7 +6,6 @@ using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Exceptions.Scheduling;
 using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Args.Reassignment;
-using ClinicFlow.Domain.Services.Contexts;
 using ClinicFlow.Domain.ValueObjects;
 using Microsoft.Extensions.Time.Testing;
 
@@ -34,10 +33,7 @@ public class AppointmentReassignmentServiceTests
                 NewDate = newDate,
                 NewTimeRange = newTimeRange,
             },
-            new AppointmentReassignmentContext
-            {
-                NewDoctorSchedule = CreateSchedule(newDoctorId, newDate.DayOfWeek, 9, 17),
-            }
+            CreateSchedule(newDoctorId, newDate.DayOfWeek, 9, 17)
         );
 
         // Assert
@@ -60,7 +56,7 @@ public class AppointmentReassignmentServiceTests
                     NewDate = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(1),
                     NewTimeRange = CreateTimeRange(10, 11),
                 },
-                new AppointmentReassignmentContext()
+                CreateSchedule(Guid.NewGuid(), DayOfWeek.Monday, 9, 17)
             );
 
         // Assert
@@ -70,7 +66,7 @@ public class AppointmentReassignmentServiceTests
     }
 
     [Fact]
-    public void Reassign_ShouldThrowDomainValidationException_WhenContextIsNull()
+    public void Reassign_ShouldThrowDomainValidationException_WhenScheduleIsNull()
     {
         // Arrange & Act
         var act = () =>
@@ -99,7 +95,7 @@ public class AppointmentReassignmentServiceTests
             AppointmentReassignmentService.Reassign(
                 CreateDisplacedAppointment(),
                 null!,
-                new AppointmentReassignmentContext()
+                CreateSchedule(Guid.NewGuid(), DayOfWeek.Monday, 9, 17)
             );
 
         // Assert
@@ -121,40 +117,13 @@ public class AppointmentReassignmentServiceTests
                     NewDate = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(1),
                     NewTimeRange = null!,
                 },
-                new AppointmentReassignmentContext()
+                CreateSchedule(Guid.NewGuid(), DayOfWeek.Monday, 9, 17)
             );
 
         // Assert
         act.Should()
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.General.RequiredFieldNull);
-    }
-
-    [Fact]
-    public void Reassign_ShouldThrowDoctorNotAvailableException_WhenScheduleIsNull()
-    {
-        // Arrange
-        var appointment = CreateDisplacedAppointment();
-        var newDoctorId = Guid.NewGuid();
-        var newDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3));
-
-        // Act
-        var act = () =>
-            AppointmentReassignmentService.Reassign(
-                appointment,
-                new AppointmentReassignmentArgs
-                {
-                    NewDoctorId = newDoctorId,
-                    NewDate = newDate,
-                    NewTimeRange = CreateTimeRange(10, 11),
-                },
-                new AppointmentReassignmentContext { NewDoctorSchedule = null }
-            );
-
-        // Assert
-        act.Should()
-            .Throw<DoctorNotAvailableException>()
-            .WithMessage(DomainErrors.Schedule.DoctorNotAvailable);
     }
 
     [Fact]
@@ -175,10 +144,7 @@ public class AppointmentReassignmentServiceTests
                     NewDate = newDate,
                     NewTimeRange = CreateTimeRange(18, 19),
                 },
-                new AppointmentReassignmentContext
-                {
-                    NewDoctorSchedule = CreateSchedule(newDoctorId, newDate.DayOfWeek, 9, 17),
-                }
+                CreateSchedule(newDoctorId, newDate.DayOfWeek, 9, 17)
             );
 
         // Assert
