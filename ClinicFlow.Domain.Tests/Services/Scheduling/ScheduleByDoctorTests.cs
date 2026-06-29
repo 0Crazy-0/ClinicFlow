@@ -7,7 +7,6 @@ using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Exceptions.Scheduling;
 using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Args.Scheduling;
-using ClinicFlow.Domain.Services.Contexts;
 using ClinicFlow.Domain.ValueObjects;
 using Microsoft.Extensions.Time.Testing;
 
@@ -25,7 +24,7 @@ public class ScheduleByDoctorTests
             AppointmentSchedulingService.ScheduleByDoctor(
                 null!,
                 CreateValidDoctorSchedulingArgs(),
-                new AppointmentSchedulingContext(),
+                CreateSchedule(Guid.NewGuid(), DayOfWeek.Monday),
                 SchedulingClearance.Granted()
             );
 
@@ -43,7 +42,7 @@ public class ScheduleByDoctorTests
             AppointmentSchedulingService.ScheduleByDoctor(
                 CreateAppointmentType(AppointmentCategory.Checkup),
                 null!,
-                new AppointmentSchedulingContext(),
+                CreateSchedule(Guid.NewGuid(), DayOfWeek.Monday),
                 SchedulingClearance.Granted()
             );
 
@@ -64,7 +63,7 @@ public class ScheduleByDoctorTests
                 {
                     InitiatorDoctor = null!,
                 },
-                new AppointmentSchedulingContext(),
+                CreateSchedule(Guid.NewGuid(), DayOfWeek.Monday),
                 SchedulingClearance.Granted()
             );
 
@@ -85,7 +84,7 @@ public class ScheduleByDoctorTests
                 {
                     TargetPatient = null!,
                 },
-                new AppointmentSchedulingContext(),
+                CreateSchedule(Guid.NewGuid(), DayOfWeek.Monday),
                 SchedulingClearance.Granted()
             );
 
@@ -106,7 +105,7 @@ public class ScheduleByDoctorTests
                 {
                     TimeRange = null!,
                 },
-                new AppointmentSchedulingContext(),
+                CreateSchedule(Guid.NewGuid(), DayOfWeek.Monday),
                 SchedulingClearance.Granted()
             );
 
@@ -124,7 +123,7 @@ public class ScheduleByDoctorTests
             AppointmentSchedulingService.ScheduleByDoctor(
                 CreateAppointmentType(AppointmentCategory.Checkup),
                 CreateValidDoctorSchedulingArgs(),
-                new AppointmentSchedulingContext(),
+                CreateSchedule(Guid.NewGuid(), DayOfWeek.Monday),
                 null!
             );
 
@@ -164,17 +163,14 @@ public class ScheduleByDoctorTests
             HasGuardianConsentVerified = false,
         };
 
-        var context = new AppointmentSchedulingContext
-        {
-            DoctorSchedule = CreateSchedule(args.InitiatorDoctor.Id, args.ScheduledDate.DayOfWeek),
-        };
+        var doctorSchedule = CreateSchedule(args.InitiatorDoctor.Id, args.ScheduledDate.DayOfWeek);
 
         // Act
         var act = () =>
             AppointmentSchedulingService.ScheduleByDoctor(
                 appointmentType,
                 args,
-                context,
+                doctorSchedule,
                 SchedulingClearance.Granted()
             );
 
@@ -200,13 +196,13 @@ public class ScheduleByDoctorTests
             IsOverbook = true,
         };
 
-        var context = new AppointmentSchedulingContext { };
+        var doctorSchedule = CreateSchedule(doctor.Id, args.ScheduledDate.DayOfWeek);
 
         // Act
         var appointment = AppointmentSchedulingService.ScheduleByDoctor(
             appointmentType,
             args,
-            context,
+            doctorSchedule,
             SchedulingClearance.Granted()
         );
 
@@ -231,17 +227,14 @@ public class ScheduleByDoctorTests
             IsOverbook = false,
         };
 
-        var context = new AppointmentSchedulingContext
-        {
-            DoctorSchedule = CreateSchedule(doctor.Id, args.ScheduledDate.DayOfWeek),
-        };
+        var doctorSchedule = CreateSchedule(doctor.Id, args.ScheduledDate.DayOfWeek);
 
         // Act
         var act = () =>
             AppointmentSchedulingService.ScheduleByDoctor(
                 appointmentType,
                 args,
-                context,
+                doctorSchedule,
                 SchedulingClearance.Granted()
             );
 
@@ -267,16 +260,13 @@ public class ScheduleByDoctorTests
             IsOverbook = false,
         };
 
-        var context = new AppointmentSchedulingContext
-        {
-            DoctorSchedule = CreateSchedule(doctor.Id, args.ScheduledDate.DayOfWeek),
-        };
+        var doctorSchedule = CreateSchedule(doctor.Id, args.ScheduledDate.DayOfWeek);
 
         // Act
         var appointment = AppointmentSchedulingService.ScheduleByDoctor(
             appointmentType,
             args,
-            context,
+            doctorSchedule,
             SchedulingClearance.Granted()
         );
 

@@ -24,7 +24,7 @@ public static class AppointmentSchedulingService
     public static Appointment ScheduleByPatient(
         AppointmentTypeDefinition appointmentType,
         PatientSchedulingArgs args,
-        AppointmentSchedulingContext context,
+        PatientSchedulingContext context,
         SchedulingClearance clearance
     )
     {
@@ -82,7 +82,7 @@ public static class AppointmentSchedulingService
     public static Appointment ScheduleByDoctor(
         AppointmentTypeDefinition appointmentType,
         DoctorSchedulingArgs args,
-        AppointmentSchedulingContext context,
+        Schedule doctorSchedule,
         SchedulingClearance clearance
     )
     {
@@ -107,7 +107,7 @@ public static class AppointmentSchedulingService
 
         if (!args.IsOverbook)
             EnsureDoctorIsAvailable(
-                context.DoctorSchedule,
+                doctorSchedule,
                 args.InitiatorDoctor.Id,
                 args.ScheduledDate,
                 args.TimeRange
@@ -125,7 +125,7 @@ public static class AppointmentSchedulingService
     public static Appointment ScheduleByStaff(
         AppointmentTypeDefinition appointmentType,
         StaffSchedulingArgs args,
-        AppointmentSchedulingContext context,
+        Schedule doctorSchedule,
         SchedulingClearance clearance
     )
     {
@@ -147,7 +147,7 @@ public static class AppointmentSchedulingService
 
         if (!args.IsOverbook)
             EnsureDoctorIsAvailable(
-                context.DoctorSchedule,
+                doctorSchedule,
                 args.DoctorId,
                 args.ScheduledDate,
                 args.TimeRange
@@ -163,13 +163,13 @@ public static class AppointmentSchedulingService
     }
 
     private static void EnsureDoctorIsAvailable(
-        Schedule? schedule,
+        Schedule schedule,
         Guid doctorId,
         DateOnly scheduledDate,
         TimeRange timeRange
     )
     {
-        if (schedule is null || !schedule.CoversTimeRange(timeRange))
+        if (!schedule.CoversTimeRange(timeRange))
             throw new DoctorNotAvailableException(
                 DomainErrors.Schedule.DoctorNotAvailable,
                 doctorId,

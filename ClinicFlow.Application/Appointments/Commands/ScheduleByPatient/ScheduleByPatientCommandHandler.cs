@@ -83,11 +83,17 @@ public sealed class ScheduleByPatientCommandHandler(
         );
         var timeRange = TimeRange.Create(request.StartTime, request.EndTime);
 
-        var doctorSchedule = await scheduleRepository.GetByDoctorAndDayAsync(
-            request.DoctorId,
-            request.ScheduledDate.DayOfWeek,
-            cancellationToken
-        );
+        var doctorSchedule =
+            await scheduleRepository.GetByDoctorAndDayAsync(
+                request.DoctorId,
+                request.ScheduledDate.DayOfWeek,
+                cancellationToken
+            )
+            ?? throw new EntityNotFoundException(
+                DomainErrors.General.NotFound,
+                nameof(Schedule),
+                request.DoctorId
+            );
 
         if (
             await appointmentRepository.HasConflictAsync(
@@ -123,11 +129,7 @@ public sealed class ScheduleByPatientCommandHandler(
                 IsInitiatorPhoneVerified = user.IsPhoneVerified,
                 PatientNotes = request.PatientNotes,
             },
-            new AppointmentSchedulingContext
-            {
-                Penalties = penalties,
-                DoctorSchedule = doctorSchedule,
-            },
+            new PatientSchedulingContext { Penalties = penalties, DoctorSchedule = doctorSchedule },
             clearance
         );
 

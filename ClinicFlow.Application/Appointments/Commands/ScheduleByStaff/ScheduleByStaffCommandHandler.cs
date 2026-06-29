@@ -7,7 +7,6 @@ using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.Interfaces.Services;
 using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Args.Scheduling;
-using ClinicFlow.Domain.Services.Contexts;
 using ClinicFlow.Domain.ValueObjects;
 using MediatR;
 
@@ -58,11 +57,17 @@ public sealed class ScheduleByStaffCommandHandler(
 
         var timeRange = TimeRange.Create(request.StartTime, request.EndTime);
 
-        var doctorSchedule = await scheduleRepository.GetByDoctorAndDayAsync(
-            request.DoctorId,
-            request.ScheduledDate.DayOfWeek,
-            cancellationToken
-        );
+        var doctorSchedule =
+            await scheduleRepository.GetByDoctorAndDayAsync(
+                request.DoctorId,
+                request.ScheduledDate.DayOfWeek,
+                cancellationToken
+            )
+            ?? throw new EntityNotFoundException(
+                DomainErrors.General.NotFound,
+                nameof(Schedule),
+                request.DoctorId
+            );
 
         if (
             !request.IsOverbook
@@ -99,7 +104,7 @@ public sealed class ScheduleByStaffCommandHandler(
                 HasGuardianConsentVerified = request.HasGuardianConsentVerified,
                 IsOverbook = request.IsOverbook,
             },
-            new AppointmentSchedulingContext { Penalties = [], DoctorSchedule = doctorSchedule },
+            doctorSchedule,
             clearance
         );
 

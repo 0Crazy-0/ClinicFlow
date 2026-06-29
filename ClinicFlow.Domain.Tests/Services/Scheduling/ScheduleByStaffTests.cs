@@ -8,7 +8,6 @@ using ClinicFlow.Domain.Exceptions.Patients;
 using ClinicFlow.Domain.Exceptions.Scheduling;
 using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Args.Scheduling;
-using ClinicFlow.Domain.Services.Contexts;
 using ClinicFlow.Domain.ValueObjects;
 using Microsoft.Extensions.Time.Testing;
 
@@ -26,7 +25,7 @@ public class ScheduleByStaffTests
             AppointmentSchedulingService.ScheduleByStaff(
                 null!,
                 CreateValidStaffSchedulingArgs(),
-                new AppointmentSchedulingContext(),
+                CreateSchedule(Guid.NewGuid(), DayOfWeek.Monday),
                 SchedulingClearance.Granted()
             );
 
@@ -44,7 +43,7 @@ public class ScheduleByStaffTests
             AppointmentSchedulingService.ScheduleByStaff(
                 CreateAppointmentType(),
                 null!,
-                new AppointmentSchedulingContext(),
+                CreateSchedule(Guid.NewGuid(), DayOfWeek.Monday),
                 SchedulingClearance.Granted()
             );
 
@@ -65,7 +64,7 @@ public class ScheduleByStaffTests
                 {
                     TargetPatient = null!,
                 },
-                new AppointmentSchedulingContext(),
+                CreateSchedule(Guid.NewGuid(), DayOfWeek.Monday),
                 SchedulingClearance.Granted()
             );
 
@@ -86,7 +85,7 @@ public class ScheduleByStaffTests
                 {
                     TimeRange = null!,
                 },
-                new AppointmentSchedulingContext(),
+                CreateSchedule(Guid.NewGuid(), DayOfWeek.Monday),
                 SchedulingClearance.Granted()
             );
 
@@ -104,7 +103,7 @@ public class ScheduleByStaffTests
             AppointmentSchedulingService.ScheduleByStaff(
                 CreateAppointmentType(),
                 CreateValidStaffSchedulingArgs(),
-                new AppointmentSchedulingContext(),
+                CreateSchedule(Guid.NewGuid(), DayOfWeek.Monday),
                 null!
             );
 
@@ -136,17 +135,14 @@ public class ScheduleByStaffTests
             HasGuardianConsentVerified = false,
         };
 
-        var context = new AppointmentSchedulingContext
-        {
-            DoctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek),
-        };
+        var doctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek);
 
         // Act
         var act = () =>
             AppointmentSchedulingService.ScheduleByStaff(
                 appointmentType,
                 args,
-                context,
+                doctorSchedule,
                 SchedulingClearance.Granted()
             );
 
@@ -188,17 +184,14 @@ public class ScheduleByStaffTests
             HasGuardianConsentVerified = false,
         };
 
-        var context = new AppointmentSchedulingContext
-        {
-            DoctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek),
-        };
+        var doctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek);
 
         // Act
         var act = () =>
             AppointmentSchedulingService.ScheduleByStaff(
                 appointmentType,
                 args,
-                context,
+                doctorSchedule,
                 SchedulingClearance.Granted()
             );
 
@@ -224,13 +217,13 @@ public class ScheduleByStaffTests
             HasGuardianConsentVerified = false,
         };
 
-        var context = new AppointmentSchedulingContext { };
+        var doctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek);
 
         // Act
         var appointment = AppointmentSchedulingService.ScheduleByStaff(
             appointmentType,
             args,
-            context,
+            doctorSchedule,
             SchedulingClearance.Granted()
         );
 
@@ -256,17 +249,14 @@ public class ScheduleByStaffTests
             HasGuardianConsentVerified = false,
         };
 
-        var context = new AppointmentSchedulingContext
-        {
-            DoctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek),
-        };
+        var doctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek);
 
         // Act
         var act = () =>
             AppointmentSchedulingService.ScheduleByStaff(
                 appointmentType,
                 args,
-                context,
+                doctorSchedule,
                 SchedulingClearance.Granted()
             );
 
@@ -292,16 +282,13 @@ public class ScheduleByStaffTests
             HasGuardianConsentVerified = false,
         };
 
-        var context = new AppointmentSchedulingContext
-        {
-            DoctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek),
-        };
+        var doctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek);
 
         // Act
         var appointment = AppointmentSchedulingService.ScheduleByStaff(
             appointmentType,
             args,
-            context,
+            doctorSchedule,
             SchedulingClearance.Granted()
         );
 
