@@ -1,5 +1,6 @@
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
+using ClinicFlow.Domain.Exceptions.Appointments;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
@@ -68,12 +69,22 @@ public sealed class RescheduleByDoctorCommandHandler(
             cancellationToken
         );
 
-        var hasConflict = await appointmentRepository.HasConflictAsync(
-            appointment.DoctorId,
-            request.NewDate,
-            newTimeRange,
-            cancellationToken
-        );
+        if (
+            !request.IsOverbook
+            && await appointmentRepository.HasConflictAsync(
+                appointment.DoctorId,
+                request.NewDate,
+                newTimeRange,
+                cancellationToken
+            )
+        )
+        {
+            throw new AppointmentConflictException(
+                DomainErrors.Appointment.Conflict,
+                appointment.DoctorId,
+                request.NewDate.ToDateTime(newTimeRange.Start)
+            );
+        }
 
         var clearance = regionalSchedulingService.EnforceSchedulingRegulations(
             initiatorDoctor,
@@ -90,12 +101,7 @@ public sealed class RescheduleByDoctorCommandHandler(
                 NewTimeRange = newTimeRange,
                 IsOverbook = request.IsOverbook,
             },
-            new AppointmentReschedulingContext
-            {
-                Penalties = [],
-                DoctorSchedule = doctorSchedule,
-                HasConflict = hasConflict,
-            },
+            new AppointmentReschedulingContext { Penalties = [], DoctorSchedule = doctorSchedule },
             clearance
         );
 

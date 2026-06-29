@@ -1,5 +1,6 @@
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
+using ClinicFlow.Domain.Exceptions.Appointments;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
@@ -47,12 +48,21 @@ public sealed class ReassignAppointmentCommandHandler(
             cancellationToken
         );
 
-        var hasConflict = await appointmentRepository.HasConflictAsync(
-            newDoctor.Id,
-            request.NewDate,
-            newTimeRange,
-            cancellationToken
-        );
+        if (
+            await appointmentRepository.HasConflictAsync(
+                newDoctor.Id,
+                request.NewDate,
+                newTimeRange,
+                cancellationToken
+            )
+        )
+        {
+            throw new AppointmentConflictException(
+                DomainErrors.Appointment.Conflict,
+                newDoctor.Id,
+                request.NewDate.ToDateTime(newTimeRange.Start)
+            );
+        }
 
         AppointmentReassignmentService.Reassign(
             appointment,
@@ -62,11 +72,7 @@ public sealed class ReassignAppointmentCommandHandler(
                 NewDate = request.NewDate,
                 NewTimeRange = newTimeRange,
             },
-            new AppointmentReassignmentContext
-            {
-                NewDoctorSchedule = newDoctorSchedule,
-                HasConflict = hasConflict,
-            }
+            new AppointmentReassignmentContext { NewDoctorSchedule = newDoctorSchedule }
         );
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
