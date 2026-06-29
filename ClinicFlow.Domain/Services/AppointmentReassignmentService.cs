@@ -3,7 +3,6 @@ using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Exceptions.Scheduling;
 using ClinicFlow.Domain.Services.Args.Reassignment;
-using ClinicFlow.Domain.Services.Contexts;
 
 namespace ClinicFlow.Domain.Services;
 
@@ -17,22 +16,19 @@ public static class AppointmentReassignmentService
     public static void Reassign(
         Appointment appointment,
         AppointmentReassignmentArgs args,
-        AppointmentReassignmentContext context
+        Schedule newDoctorSchedule
     )
     {
         if (appointment is null)
             throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
 
-        if (context is null)
+        if (newDoctorSchedule is null)
             throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
 
         if (args is null || args.NewTimeRange is null)
             throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
 
-        if (
-            context.NewDoctorSchedule is null
-            || !context.NewDoctorSchedule.CoversTimeRange(args.NewTimeRange)
-        )
+        if (!newDoctorSchedule.CoversTimeRange(args.NewTimeRange))
             throw new DoctorNotAvailableException(
                 DomainErrors.Schedule.DoctorNotAvailable,
                 args.NewDoctorId,
