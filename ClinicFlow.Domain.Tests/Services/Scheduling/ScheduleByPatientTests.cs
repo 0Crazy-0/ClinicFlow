@@ -156,7 +156,6 @@ public class ScheduleByPatientTests
         var context = new AppointmentSchedulingContext
         {
             DoctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek),
-            HasConflict = false,
         };
 
         // Act
@@ -202,7 +201,6 @@ public class ScheduleByPatientTests
         var context = new AppointmentSchedulingContext
         {
             DoctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek),
-            HasConflict = false,
         };
 
         // Act
@@ -251,7 +249,6 @@ public class ScheduleByPatientTests
         var context = new AppointmentSchedulingContext
         {
             DoctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek),
-            HasConflict = false,
         };
 
         // Act
@@ -288,7 +285,6 @@ public class ScheduleByPatientTests
         var context = new AppointmentSchedulingContext
         {
             DoctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek),
-            HasConflict = false,
         };
 
         // Act
@@ -332,7 +328,6 @@ public class ScheduleByPatientTests
         var context = new AppointmentSchedulingContext
         {
             DoctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek),
-            HasConflict = false,
         };
 
         // Act
@@ -380,7 +375,6 @@ public class ScheduleByPatientTests
         {
             Penalties = penalties,
             DoctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek),
-            HasConflict = false,
         };
 
         // Act
@@ -431,7 +425,6 @@ public class ScheduleByPatientTests
         var context = new AppointmentSchedulingContext
         {
             DoctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek),
-            HasConflict = false,
         };
 
         // Act
@@ -468,7 +461,6 @@ public class ScheduleByPatientTests
         var context = new AppointmentSchedulingContext
         {
             DoctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek),
-            HasConflict = false,
         };
 
         // Act
@@ -484,43 +476,6 @@ public class ScheduleByPatientTests
         act.Should()
             .Throw<DoctorNotAvailableException>()
             .WithMessage(DomainErrors.Schedule.DoctorNotAvailable);
-    }
-
-    [Fact]
-    public void ScheduleByPatient_ShouldThrowAppointmentConflictException_WhenConflict()
-    {
-        // Arrange
-        var appointmentType = CreateAppointmentType();
-        var target = CreateSelfPatient();
-        var args = new PatientSchedulingArgs
-        {
-            InitiatorPatient = target,
-            TargetPatient = target,
-            DoctorId = Guid.NewGuid(),
-            ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
-            TimeRange = CreateTimeRange(),
-            IsInitiatorPhoneVerified = true,
-        };
-
-        var context = new AppointmentSchedulingContext
-        {
-            DoctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek),
-            HasConflict = true,
-        };
-
-        // Act
-        var act = () =>
-            AppointmentSchedulingService.ScheduleByPatient(
-                appointmentType,
-                args,
-                context,
-                SchedulingClearance.Granted()
-            );
-
-        // Assert
-        act.Should()
-            .Throw<AppointmentConflictException>()
-            .WithMessage(DomainErrors.Appointment.Conflict);
     }
 
     [Fact]
@@ -542,7 +497,6 @@ public class ScheduleByPatientTests
         var context = new AppointmentSchedulingContext
         {
             DoctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek),
-            HasConflict = false,
         };
 
         // Act

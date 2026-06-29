@@ -3,7 +3,6 @@ using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Events.Appointments;
-using ClinicFlow.Domain.Exceptions.Appointments;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Exceptions.Patients;
 using ClinicFlow.Domain.Exceptions.Scheduling;
@@ -140,7 +139,6 @@ public class ScheduleByStaffTests
         var context = new AppointmentSchedulingContext
         {
             DoctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek),
-            HasConflict = false,
         };
 
         // Act
@@ -193,7 +191,6 @@ public class ScheduleByStaffTests
         var context = new AppointmentSchedulingContext
         {
             DoctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek),
-            HasConflict = false,
         };
 
         // Act
@@ -227,7 +224,7 @@ public class ScheduleByStaffTests
             HasGuardianConsentVerified = false,
         };
 
-        var context = new AppointmentSchedulingContext { HasConflict = true };
+        var context = new AppointmentSchedulingContext { };
 
         // Act
         var appointment = AppointmentSchedulingService.ScheduleByStaff(
@@ -262,7 +259,6 @@ public class ScheduleByStaffTests
         var context = new AppointmentSchedulingContext
         {
             DoctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek),
-            HasConflict = false,
         };
 
         // Act
@@ -278,43 +274,6 @@ public class ScheduleByStaffTests
         act.Should()
             .Throw<DoctorNotAvailableException>()
             .WithMessage(DomainErrors.Schedule.DoctorNotAvailable);
-    }
-
-    [Fact]
-    public void ScheduleByStaff_ShouldEnforceConflict_WhenNotOverbook()
-    {
-        // Arrange
-        var appointmentType = CreateAppointmentType();
-        var target = CreateSelfPatient();
-        var args = new StaffSchedulingArgs
-        {
-            TargetPatient = target,
-            DoctorId = Guid.NewGuid(),
-            ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
-            TimeRange = CreateTimeRange(),
-            IsOverbook = false,
-            HasGuardianConsentVerified = false,
-        };
-
-        var context = new AppointmentSchedulingContext
-        {
-            DoctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek),
-            HasConflict = true,
-        };
-
-        // Act
-        var act = () =>
-            AppointmentSchedulingService.ScheduleByStaff(
-                appointmentType,
-                args,
-                context,
-                SchedulingClearance.Granted()
-            );
-
-        // Assert
-        act.Should()
-            .Throw<AppointmentConflictException>()
-            .WithMessage(DomainErrors.Appointment.Conflict);
     }
 
     [Fact]
@@ -336,7 +295,6 @@ public class ScheduleByStaffTests
         var context = new AppointmentSchedulingContext
         {
             DoctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek),
-            HasConflict = false,
         };
 
         // Act

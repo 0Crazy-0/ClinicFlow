@@ -131,7 +131,6 @@ public class RescheduleByDoctorTests
         var context = new AppointmentReschedulingContext
         {
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek, 9, 17),
-            HasConflict = false,
         };
 
         // Act
@@ -165,7 +164,7 @@ public class RescheduleByDoctorTests
             IsOverbook = true,
         };
 
-        var context = new AppointmentReschedulingContext { HasConflict = true };
+        var context = new AppointmentReschedulingContext { };
 
         // Act
         AppointmentReschedulingService.RescheduleByDoctor(
@@ -200,7 +199,6 @@ public class RescheduleByDoctorTests
         var context = new AppointmentReschedulingContext
         {
             DoctorSchedule = CreateSchedule(doctorId, args.NewDate.DayOfWeek, 9, 17), // 9am - 5pm
-            HasConflict = false,
         };
 
         // Act
@@ -216,43 +214,6 @@ public class RescheduleByDoctorTests
         act.Should()
             .Throw<DoctorNotAvailableException>()
             .WithMessage(DomainErrors.Schedule.DoctorNotAvailable);
-    }
-
-    [Fact]
-    public void RescheduleByDoctor_ShouldThrowConflict_WhenNotOverbookAndHasConflict()
-    {
-        // Arrange
-        var doctorId = Guid.NewGuid();
-        var appointment = CreateAppointment(doctorId);
-        var doctor = CreateDoctor(doctorId, Guid.NewGuid());
-
-        var args = new DoctorReschedulingArgs
-        {
-            InitiatorDoctor = doctor,
-            NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
-            NewTimeRange = CreateTimeRange(10, 11),
-            IsOverbook = false,
-        };
-
-        var context = new AppointmentReschedulingContext
-        {
-            DoctorSchedule = CreateSchedule(doctorId, args.NewDate.DayOfWeek, 9, 17),
-            HasConflict = true,
-        };
-
-        // Act
-        var act = () =>
-            AppointmentReschedulingService.RescheduleByDoctor(
-                appointment,
-                args,
-                context,
-                SchedulingClearance.Granted()
-            );
-
-        // Assert
-        act.Should()
-            .Throw<AppointmentConflictException>()
-            .WithMessage(DomainErrors.Appointment.Conflict);
     }
 
     [Fact]
@@ -274,7 +235,6 @@ public class RescheduleByDoctorTests
         var context = new AppointmentReschedulingContext
         {
             DoctorSchedule = CreateSchedule(doctorId, args.NewDate.DayOfWeek, 9, 17),
-            HasConflict = false,
         };
 
         // Act
