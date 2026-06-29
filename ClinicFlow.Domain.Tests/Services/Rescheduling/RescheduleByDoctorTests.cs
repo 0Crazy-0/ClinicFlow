@@ -7,7 +7,6 @@ using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Exceptions.Scheduling;
 using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Args.Rescheduling;
-using ClinicFlow.Domain.Services.Contexts;
 using ClinicFlow.Domain.Tests.Shared;
 using ClinicFlow.Domain.ValueObjects;
 using Microsoft.Extensions.Time.Testing;
@@ -26,7 +25,7 @@ public class RescheduleByDoctorTests
             AppointmentReschedulingService.RescheduleByDoctor(
                 null!,
                 CreateValidDoctorReschedulingArgs(),
-                new AppointmentReschedulingContext(),
+                CreateSchedule(Guid.NewGuid(), DayOfWeek.Monday, 9, 17),
                 SchedulingClearance.Granted()
             );
 
@@ -44,7 +43,7 @@ public class RescheduleByDoctorTests
             AppointmentReschedulingService.RescheduleByDoctor(
                 CreateAppointment(Guid.NewGuid()),
                 null!,
-                new AppointmentReschedulingContext(),
+                CreateSchedule(Guid.NewGuid(), DayOfWeek.Monday, 9, 17),
                 SchedulingClearance.Granted()
             );
 
@@ -65,7 +64,7 @@ public class RescheduleByDoctorTests
                 {
                     InitiatorDoctor = null!,
                 },
-                new AppointmentReschedulingContext(),
+                CreateSchedule(Guid.NewGuid(), DayOfWeek.Monday, 9, 17),
                 SchedulingClearance.Granted()
             );
 
@@ -86,7 +85,7 @@ public class RescheduleByDoctorTests
                 {
                     NewTimeRange = null!,
                 },
-                new AppointmentReschedulingContext(),
+                CreateSchedule(Guid.NewGuid(), DayOfWeek.Monday, 9, 17),
                 SchedulingClearance.Granted()
             );
 
@@ -104,7 +103,7 @@ public class RescheduleByDoctorTests
             AppointmentReschedulingService.RescheduleByDoctor(
                 CreateAppointment(Guid.NewGuid()),
                 CreateValidDoctorReschedulingArgs(),
-                new AppointmentReschedulingContext(),
+                CreateSchedule(Guid.NewGuid(), DayOfWeek.Monday, 9, 17),
                 null!
             );
 
@@ -128,17 +127,14 @@ public class RescheduleByDoctorTests
             IsOverbook = false,
         };
 
-        var context = new AppointmentReschedulingContext
-        {
-            DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek, 9, 17),
-        };
+        var doctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek, 9, 17);
 
         // Act
         var act = () =>
             AppointmentReschedulingService.RescheduleByDoctor(
                 appointment,
                 args,
-                context,
+                doctorSchedule,
                 SchedulingClearance.Granted()
             );
 
@@ -164,13 +160,13 @@ public class RescheduleByDoctorTests
             IsOverbook = true,
         };
 
-        var context = new AppointmentReschedulingContext { };
+        var doctorSchedule = CreateSchedule(doctorId, args.NewDate.DayOfWeek, 9, 17);
 
         // Act
         AppointmentReschedulingService.RescheduleByDoctor(
             appointment,
             args,
-            context,
+            doctorSchedule,
             SchedulingClearance.Granted()
         );
 
@@ -196,17 +192,14 @@ public class RescheduleByDoctorTests
             IsOverbook = false,
         };
 
-        var context = new AppointmentReschedulingContext
-        {
-            DoctorSchedule = CreateSchedule(doctorId, args.NewDate.DayOfWeek, 9, 17), // 9am - 5pm
-        };
+        var doctorSchedule = CreateSchedule(doctorId, args.NewDate.DayOfWeek, 9, 17);
 
         // Act
         var act = () =>
             AppointmentReschedulingService.RescheduleByDoctor(
                 appointment,
                 args,
-                context,
+                doctorSchedule,
                 SchedulingClearance.Granted()
             );
 
@@ -232,16 +225,13 @@ public class RescheduleByDoctorTests
             IsOverbook = false,
         };
 
-        var context = new AppointmentReschedulingContext
-        {
-            DoctorSchedule = CreateSchedule(doctorId, args.NewDate.DayOfWeek, 9, 17),
-        };
+        var doctorSchedule = CreateSchedule(doctorId, args.NewDate.DayOfWeek, 9, 17);
 
         // Act
         AppointmentReschedulingService.RescheduleByDoctor(
             appointment,
             args,
-            context,
+            doctorSchedule,
             SchedulingClearance.Granted()
         );
 

@@ -24,7 +24,7 @@ public static class AppointmentReschedulingService
     public static void RescheduleByPatient(
         Appointment appointment,
         PatientReschedulingArgs args,
-        AppointmentReschedulingContext context,
+        PatientReschedulingContext context,
         SchedulingClearance clearance
     )
     {
@@ -70,7 +70,7 @@ public static class AppointmentReschedulingService
     public static void RescheduleByDoctor(
         Appointment appointment,
         DoctorReschedulingArgs args,
-        AppointmentReschedulingContext context,
+        Schedule doctorSchedule,
         SchedulingClearance clearance
     )
     {
@@ -90,7 +90,7 @@ public static class AppointmentReschedulingService
 
         if (!args.IsOverbook)
             EnsureDoctorIsAvailable(
-                context.DoctorSchedule,
+                doctorSchedule,
                 appointment.DoctorId,
                 args.NewDate,
                 args.NewTimeRange
@@ -102,7 +102,7 @@ public static class AppointmentReschedulingService
     public static void RescheduleByStaff(
         Appointment appointment,
         StaffReschedulingArgs args,
-        AppointmentReschedulingContext context,
+        Schedule doctorSchedule,
         SchedulingClearance clearance
     )
     {
@@ -117,7 +117,7 @@ public static class AppointmentReschedulingService
 
         if (!args.IsOverbook)
             EnsureDoctorIsAvailable(
-                context.DoctorSchedule,
+                doctorSchedule,
                 appointment.DoctorId,
                 args.NewDate,
                 args.NewTimeRange
@@ -127,13 +127,13 @@ public static class AppointmentReschedulingService
     }
 
     private static void EnsureDoctorIsAvailable(
-        Schedule? schedule,
+        Schedule schedule,
         Guid doctorId,
         DateOnly scheduledDate,
         TimeRange timeRange
     )
     {
-        if (schedule is null || !schedule.CoversTimeRange(timeRange))
+        if (!schedule.CoversTimeRange(timeRange))
             throw new DoctorNotAvailableException(
                 DomainErrors.Schedule.DoctorNotAvailable,
                 doctorId,

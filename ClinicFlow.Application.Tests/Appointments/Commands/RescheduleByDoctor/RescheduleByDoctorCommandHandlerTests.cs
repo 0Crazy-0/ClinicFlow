@@ -315,6 +315,22 @@ public class RescheduleByDoctorCommandHandlerTests
             )
             .ReturnsAsync(true);
 
+        _scheduleRepositoryMock
+            .Setup(r =>
+                r.GetByDoctorAndDayAsync(
+                    doctorId,
+                    command.NewDate.DayOfWeek,
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(
+                Schedule.Create(
+                    doctorId,
+                    command.NewDate.DayOfWeek,
+                    TimeRange.Create(command.NewStartTime, command.NewEndTime)
+                )
+            );
+
         // Act
         var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
 
@@ -322,6 +338,68 @@ public class RescheduleByDoctorCommandHandlerTests
         await act.Should()
             .ThrowAsync<AppointmentConflictException>()
             .WithMessage(DomainErrors.Appointment.Conflict);
+
+        _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldThrowEntityNotFoundException_WhenScheduleNotFound()
+    {
+        // Arrange
+        var command = new RescheduleByDoctorCommand(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
+            new TimeOnly(10, 0),
+            new TimeOnly(11, 0),
+            false
+        );
+
+        var patientId = Guid.NewGuid();
+        var doctorId = Guid.NewGuid();
+        var typeId = Guid.NewGuid();
+        var appointment = CreateAppointment(patientId, doctorId, typeId);
+
+        var doctor = CreateDoctor(doctorId, command.InitiatorUserId);
+        var targetPatient = CreatePatient();
+        var appointmentType = AppointmentTypeDefinition.Create(
+            AppointmentCategory.Checkup,
+            "Checkup",
+            "Desc",
+            EncounterDuration.FromMinutes(30),
+            null
+        );
+
+        _appointmentRepositoryMock
+            .Setup(r => r.GetByIdAsync(command.AppointmentId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(appointment);
+        _doctorRepositoryMock
+            .Setup(r => r.GetByUserIdAsync(command.InitiatorUserId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(doctor);
+        _patientRepositoryMock
+            .Setup(r => r.GetByIdAsync(patientId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(targetPatient);
+        _appointmentTypeRepositoryMock
+            .Setup(r => r.GetByIdAsync(typeId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(appointmentType);
+        _scheduleRepositoryMock
+            .Setup(r =>
+                r.GetByDoctorAndDayAsync(
+                    doctorId,
+                    command.NewDate.DayOfWeek,
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync((Schedule?)null);
+
+        // Act
+        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
+
+        // Assert
+        var exceptionAssertion = await act.Should()
+            .ThrowAsync<EntityNotFoundException>()
+            .WithMessage(DomainErrors.General.NotFound);
+        exceptionAssertion.Which.EntityName.Should().Be(nameof(Schedule));
 
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
