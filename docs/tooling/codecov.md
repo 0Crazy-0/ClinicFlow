@@ -26,6 +26,7 @@ Certain file patterns are globally ignored by Codecov because they do not contai
 - **Designer files (`**/*.Designer.cs`):** Automatically generated UI or resource code.
 - **Tests (`tests/**/*`):** The test projects themselves.
 - **Domain Events (`**/Events/**`):** Simple data-carrying records representing events, which have no business logic and are verified indirectly through the entities that raise them.
+- **Dependency Injection Registrations (`ClinicFlow.Infrastructure/DependencyInjection.cs`, `ClinicFlow.Application/DependencyInjection.cs`):** Boilerplate wiring files that register dependencies in the service container and contain no business logic.
 
 ---
 

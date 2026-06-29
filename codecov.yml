@@ -30,6 +30,8 @@ ignore:
   - "**/*.Designer.cs"
   - "tests/**/*"
   - "**/Events/**"
+  - "ClinicFlow.Infrastructure/DependencyInjection.cs"
+  - "ClinicFlow.Application/DependencyInjection.cs"
   
 comment:
   layout: "reach,diff,flags,tree"
