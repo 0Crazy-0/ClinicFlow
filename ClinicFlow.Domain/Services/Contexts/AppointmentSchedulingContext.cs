@@ -9,5 +9,4 @@ public sealed record class AppointmentSchedulingContext
 {
     public IReadOnlyList<PatientPenalty> Penalties { get; init; } = [];
     public Schedule? DoctorSchedule { get; init; }
-    public bool HasConflict { get; init; }
 }

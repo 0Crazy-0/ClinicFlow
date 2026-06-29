@@ -2,7 +2,6 @@ using AwesomeAssertions;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Events.Appointments;
-using ClinicFlow.Domain.Exceptions.Appointments;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Exceptions.Scheduling;
 using ClinicFlow.Domain.Services;
@@ -105,7 +104,7 @@ public class RescheduleByStaffTests
             IsOverbook = true,
         };
 
-        var context = new AppointmentReschedulingContext { HasConflict = true };
+        var context = new AppointmentReschedulingContext { };
 
         // Act
         AppointmentReschedulingService.RescheduleByStaff(
@@ -137,7 +136,6 @@ public class RescheduleByStaffTests
         var context = new AppointmentReschedulingContext
         {
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek, 9, 17),
-            HasConflict = false,
         };
 
         // Act
@@ -156,40 +154,6 @@ public class RescheduleByStaffTests
     }
 
     [Fact]
-    public void RescheduleByStaff_ShouldThrowConflict_WhenNotOverbookAndHasConflict()
-    {
-        // Arrange
-        var appointment = CreateAppointment();
-
-        var args = new StaffReschedulingArgs
-        {
-            NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
-            NewTimeRange = CreateTimeRange(10, 11),
-            IsOverbook = false,
-        };
-
-        var context = new AppointmentReschedulingContext
-        {
-            DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek, 9, 17),
-            HasConflict = true,
-        };
-
-        // Act
-        var act = () =>
-            AppointmentReschedulingService.RescheduleByStaff(
-                appointment,
-                args,
-                context,
-                SchedulingClearance.Granted()
-            );
-
-        // Assert
-        act.Should()
-            .Throw<AppointmentConflictException>()
-            .WithMessage(DomainErrors.Appointment.Conflict);
-    }
-
-    [Fact]
     public void RescheduleByStaff_ShouldSucceed_WhenValid()
     {
         // Arrange
@@ -205,7 +169,6 @@ public class RescheduleByStaffTests
         var context = new AppointmentReschedulingContext
         {
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek, 9, 17),
-            HasConflict = false,
         };
 
         // Act

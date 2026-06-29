@@ -1,6 +1,5 @@
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
-using ClinicFlow.Domain.Exceptions.Appointments;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Exceptions.Scheduling;
 using ClinicFlow.Domain.Services.Args.Reassignment;
@@ -38,13 +37,6 @@ public static class AppointmentReassignmentService
                 DomainErrors.Schedule.DoctorNotAvailable,
                 args.NewDoctorId,
                 args.NewDate.DayOfWeek
-            );
-
-        if (context.HasConflict)
-            throw new AppointmentConflictException(
-                DomainErrors.Appointment.Conflict,
-                args.NewDoctorId,
-                args.NewDate.ToDateTime(args.NewTimeRange.Start)
             );
 
         appointment.Reassign(args.NewDoctorId, args.NewDate, args.NewTimeRange);

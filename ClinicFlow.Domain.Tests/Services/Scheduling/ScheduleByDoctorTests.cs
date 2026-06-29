@@ -3,7 +3,6 @@ using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Events.Appointments;
-using ClinicFlow.Domain.Exceptions.Appointments;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Exceptions.Scheduling;
 using ClinicFlow.Domain.Services;
@@ -168,7 +167,6 @@ public class ScheduleByDoctorTests
         var context = new AppointmentSchedulingContext
         {
             DoctorSchedule = CreateSchedule(args.InitiatorDoctor.Id, args.ScheduledDate.DayOfWeek),
-            HasConflict = false,
         };
 
         // Act
@@ -202,7 +200,7 @@ public class ScheduleByDoctorTests
             IsOverbook = true,
         };
 
-        var context = new AppointmentSchedulingContext { HasConflict = true };
+        var context = new AppointmentSchedulingContext { };
 
         // Act
         var appointment = AppointmentSchedulingService.ScheduleByDoctor(
@@ -236,7 +234,6 @@ public class ScheduleByDoctorTests
         var context = new AppointmentSchedulingContext
         {
             DoctorSchedule = CreateSchedule(doctor.Id, args.ScheduledDate.DayOfWeek),
-            HasConflict = false,
         };
 
         // Act
@@ -252,43 +249,6 @@ public class ScheduleByDoctorTests
         act.Should()
             .Throw<DoctorNotAvailableException>()
             .WithMessage(DomainErrors.Schedule.DoctorNotAvailable);
-    }
-
-    [Fact]
-    public void ScheduleByDoctor_ShouldEnforceConflict_WhenNotOverbook()
-    {
-        // Arrange
-        var appointmentType = CreateAppointmentType(AppointmentCategory.FollowUp);
-        var doctor = CreateDoctor();
-        var target = CreateSelfPatient();
-        var args = new DoctorSchedulingArgs
-        {
-            InitiatorDoctor = doctor,
-            TargetPatient = target,
-            ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
-            TimeRange = CreateTimeRange(),
-            IsOverbook = false,
-        };
-
-        var context = new AppointmentSchedulingContext
-        {
-            DoctorSchedule = CreateSchedule(doctor.Id, args.ScheduledDate.DayOfWeek),
-            HasConflict = true,
-        };
-
-        // Act
-        var act = () =>
-            AppointmentSchedulingService.ScheduleByDoctor(
-                appointmentType,
-                args,
-                context,
-                SchedulingClearance.Granted()
-            );
-
-        // Assert
-        act.Should()
-            .Throw<AppointmentConflictException>()
-            .WithMessage(DomainErrors.Appointment.Conflict);
     }
 
     [Fact]
@@ -310,7 +270,6 @@ public class ScheduleByDoctorTests
         var context = new AppointmentSchedulingContext
         {
             DoctorSchedule = CreateSchedule(doctor.Id, args.ScheduledDate.DayOfWeek),
-            HasConflict = false,
         };
 
         // Act

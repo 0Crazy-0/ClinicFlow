@@ -4,6 +4,7 @@ using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Events.Appointments;
+using ClinicFlow.Domain.Exceptions.Appointments;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
@@ -164,6 +165,57 @@ public class ReassignAppointmentCommandHandlerTests
             .ThrowAsync<EntityNotFoundException>()
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(Doctor));
+
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldThrowAppointmentConflictException_WhenConflictExists()
+    {
+        // Arrange
+        var appointment = CreateDisplacedAppointment();
+        var newDoctor = Doctor.Create(
+            Guid.NewGuid(),
+            PersonName.Create("Test Doctor"),
+            MedicalLicenseNumber.Create("DOC123"),
+            Guid.NewGuid(),
+            "Specialist",
+            ConsultationRoom.Create(1, "Room A", 1)
+        );
+
+        var newDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3));
+        var command = new ReassignAppointmentCommand(
+            appointment.Id,
+            newDoctor.Id,
+            newDate,
+            new TimeOnly(10, 0),
+            new TimeOnly(11, 0)
+        );
+
+        _appointmentRepositoryMock
+            .Setup(x => x.GetByIdAsync(command.AppointmentId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(appointment);
+        _doctorRepositoryMock
+            .Setup(x => x.GetByIdAsync(command.NewDoctorId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(newDoctor);
+        _appointmentRepositoryMock
+            .Setup(x =>
+                x.HasConflictAsync(
+                    newDoctor.Id,
+                    newDate,
+                    It.IsAny<TimeRange>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(true);
+
+        // Act
+        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
+
+        // Assert
+        await act.Should()
+            .ThrowAsync<AppointmentConflictException>()
+            .WithMessage(DomainErrors.Appointment.Conflict);
 
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }

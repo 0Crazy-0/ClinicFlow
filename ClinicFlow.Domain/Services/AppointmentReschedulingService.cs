@@ -61,13 +61,6 @@ public static class AppointmentReschedulingService
             args.NewTimeRange
         );
 
-        if (context.HasConflict)
-            throw new AppointmentConflictException(
-                DomainErrors.Appointment.Conflict,
-                appointment.DoctorId,
-                args.NewDate.ToDateTime(args.NewTimeRange.Start)
-            );
-
         appointment.Reschedule(args.NewDate, args.NewTimeRange);
 
         if (args.NewPatientNotes is not null)
@@ -96,21 +89,12 @@ public static class AppointmentReschedulingService
             );
 
         if (!args.IsOverbook)
-        {
             EnsureDoctorIsAvailable(
                 context.DoctorSchedule,
                 appointment.DoctorId,
                 args.NewDate,
                 args.NewTimeRange
             );
-
-            if (context.HasConflict)
-                throw new AppointmentConflictException(
-                    DomainErrors.Appointment.Conflict,
-                    appointment.DoctorId,
-                    args.NewDate.ToDateTime(args.NewTimeRange.Start)
-                );
-        }
 
         appointment.Reschedule(args.NewDate, args.NewTimeRange);
     }
@@ -132,21 +116,12 @@ public static class AppointmentReschedulingService
             throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
 
         if (!args.IsOverbook)
-        {
             EnsureDoctorIsAvailable(
                 context.DoctorSchedule,
                 appointment.DoctorId,
                 args.NewDate,
                 args.NewTimeRange
             );
-
-            if (context.HasConflict)
-                throw new AppointmentConflictException(
-                    DomainErrors.Appointment.Conflict,
-                    appointment.DoctorId,
-                    args.NewDate.ToDateTime(args.NewTimeRange.Start)
-                );
-        }
 
         appointment.Reschedule(args.NewDate, args.NewTimeRange);
     }

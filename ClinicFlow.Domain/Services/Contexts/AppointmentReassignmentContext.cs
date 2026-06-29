@@ -8,5 +8,4 @@ namespace ClinicFlow.Domain.Services.Contexts;
 public sealed record class AppointmentReassignmentContext
 {
     public Schedule? NewDoctorSchedule { get; init; }
-    public bool HasConflict { get; init; }
 }

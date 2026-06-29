@@ -2,7 +2,6 @@ using AwesomeAssertions;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Events.Appointments;
-using ClinicFlow.Domain.Exceptions.Appointments;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Exceptions.Scheduling;
 using ClinicFlow.Domain.Services;
@@ -38,7 +37,6 @@ public class AppointmentReassignmentServiceTests
             new AppointmentReassignmentContext
             {
                 NewDoctorSchedule = CreateSchedule(newDoctorId, newDate.DayOfWeek, 9, 17),
-                HasConflict = false,
             }
         );
 
@@ -150,7 +148,7 @@ public class AppointmentReassignmentServiceTests
                     NewDate = newDate,
                     NewTimeRange = CreateTimeRange(10, 11),
                 },
-                new AppointmentReassignmentContext { NewDoctorSchedule = null, HasConflict = false }
+                new AppointmentReassignmentContext { NewDoctorSchedule = null }
             );
 
         // Assert
@@ -180,7 +178,6 @@ public class AppointmentReassignmentServiceTests
                 new AppointmentReassignmentContext
                 {
                     NewDoctorSchedule = CreateSchedule(newDoctorId, newDate.DayOfWeek, 9, 17),
-                    HasConflict = false,
                 }
             );
 
@@ -188,39 +185,6 @@ public class AppointmentReassignmentServiceTests
         act.Should()
             .Throw<DoctorNotAvailableException>()
             .WithMessage(DomainErrors.Schedule.DoctorNotAvailable);
-    }
-
-    [Fact]
-    public void Reassign_ShouldThrowConflictException_WhenHasConflict()
-    {
-        // Arrange
-        var appointment = CreateDisplacedAppointment();
-        var newDoctorId = Guid.NewGuid();
-        var newDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3));
-
-        var context = new AppointmentReassignmentContext
-        {
-            NewDoctorSchedule = CreateSchedule(newDoctorId, newDate.DayOfWeek, 9, 17),
-            HasConflict = true,
-        };
-
-        // Act
-        var act = () =>
-            AppointmentReassignmentService.Reassign(
-                appointment,
-                new AppointmentReassignmentArgs
-                {
-                    NewDoctorId = newDoctorId,
-                    NewDate = newDate,
-                    NewTimeRange = CreateTimeRange(10, 11),
-                },
-                context
-            );
-
-        // Assert
-        act.Should()
-            .Throw<AppointmentConflictException>()
-            .WithMessage(DomainErrors.Appointment.Conflict);
     }
 
     private Appointment CreateDisplacedAppointment()

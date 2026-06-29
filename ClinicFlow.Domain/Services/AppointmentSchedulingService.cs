@@ -69,13 +69,6 @@ public static class AppointmentSchedulingService
             args.TimeRange
         );
 
-        if (context.HasConflict)
-            throw new AppointmentConflictException(
-                DomainErrors.Appointment.Conflict,
-                args.DoctorId,
-                args.ScheduledDate.ToDateTime(args.TimeRange.Start)
-            );
-
         return Appointment.Schedule(
             args.TargetPatient.Id,
             args.DoctorId,
@@ -113,21 +106,12 @@ public static class AppointmentSchedulingService
         );
 
         if (!args.IsOverbook)
-        {
             EnsureDoctorIsAvailable(
                 context.DoctorSchedule,
                 args.InitiatorDoctor.Id,
                 args.ScheduledDate,
                 args.TimeRange
             );
-
-            if (context.HasConflict)
-                throw new AppointmentConflictException(
-                    DomainErrors.Appointment.Conflict,
-                    args.InitiatorDoctor.Id,
-                    args.ScheduledDate.ToDateTime(args.TimeRange.Start)
-                );
-        }
 
         return Appointment.Schedule(
             args.TargetPatient.Id,
@@ -162,21 +146,12 @@ public static class AppointmentSchedulingService
         );
 
         if (!args.IsOverbook)
-        {
             EnsureDoctorIsAvailable(
                 context.DoctorSchedule,
                 args.DoctorId,
                 args.ScheduledDate,
                 args.TimeRange
             );
-
-            if (context.HasConflict)
-                throw new AppointmentConflictException(
-                    DomainErrors.Appointment.Conflict,
-                    args.DoctorId,
-                    args.ScheduledDate.ToDateTime(args.TimeRange.Start)
-                );
-        }
 
         return Appointment.Schedule(
             args.TargetPatient.Id,
