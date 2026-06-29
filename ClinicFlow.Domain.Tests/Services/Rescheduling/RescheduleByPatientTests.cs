@@ -28,7 +28,10 @@ public class RescheduleByPatientTests
             AppointmentReschedulingService.RescheduleByPatient(
                 null!,
                 CreateValidPatientReschedulingArgs(),
-                new AppointmentReschedulingContext(),
+                new PatientReschedulingContext
+                {
+                    DoctorSchedule = CreateSchedule(Guid.NewGuid(), DayOfWeek.Monday, 9, 17),
+                },
                 SchedulingClearance.Granted()
             );
 
@@ -46,7 +49,10 @@ public class RescheduleByPatientTests
             AppointmentReschedulingService.RescheduleByPatient(
                 CreateAppointment(),
                 null!,
-                new AppointmentReschedulingContext(),
+                new PatientReschedulingContext
+                {
+                    DoctorSchedule = CreateSchedule(Guid.NewGuid(), DayOfWeek.Monday, 9, 17),
+                },
                 SchedulingClearance.Granted()
             );
 
@@ -67,7 +73,10 @@ public class RescheduleByPatientTests
                 {
                     TargetPatient = null!,
                 },
-                new AppointmentReschedulingContext(),
+                new PatientReschedulingContext
+                {
+                    DoctorSchedule = CreateSchedule(Guid.NewGuid(), DayOfWeek.Monday, 9, 17),
+                },
                 SchedulingClearance.Granted()
             );
 
@@ -88,7 +97,10 @@ public class RescheduleByPatientTests
                 {
                     InitiatorPatient = null!,
                 },
-                new AppointmentReschedulingContext(),
+                new PatientReschedulingContext
+                {
+                    DoctorSchedule = CreateSchedule(Guid.NewGuid(), DayOfWeek.Monday, 9, 17),
+                },
                 SchedulingClearance.Granted()
             );
 
@@ -109,7 +121,10 @@ public class RescheduleByPatientTests
                 {
                     NewTimeRange = null!,
                 },
-                new AppointmentReschedulingContext(),
+                new PatientReschedulingContext
+                {
+                    DoctorSchedule = CreateSchedule(Guid.NewGuid(), DayOfWeek.Monday, 9, 17),
+                },
                 SchedulingClearance.Granted()
             );
 
@@ -127,7 +142,10 @@ public class RescheduleByPatientTests
             AppointmentReschedulingService.RescheduleByPatient(
                 CreateAppointment(),
                 CreateValidPatientReschedulingArgs(),
-                new AppointmentReschedulingContext(),
+                new PatientReschedulingContext
+                {
+                    DoctorSchedule = CreateSchedule(Guid.NewGuid(), DayOfWeek.Monday, 9, 17),
+                },
                 null!
             );
 
@@ -152,7 +170,7 @@ public class RescheduleByPatientTests
             IsInitiatorPhoneVerified = true,
         };
 
-        var context = new AppointmentReschedulingContext
+        var context = new PatientReschedulingContext
         {
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek, 9, 17),
         };
@@ -188,7 +206,7 @@ public class RescheduleByPatientTests
             IsInitiatorPhoneVerified = true,
         };
 
-        var context = new AppointmentReschedulingContext
+        var context = new PatientReschedulingContext
         {
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek, 9, 17),
         };
@@ -234,7 +252,7 @@ public class RescheduleByPatientTests
             IsInitiatorPhoneVerified = true,
         };
 
-        var context = new AppointmentReschedulingContext
+        var context = new PatientReschedulingContext
         {
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek, 9, 17),
         };
@@ -270,7 +288,7 @@ public class RescheduleByPatientTests
             IsInitiatorPhoneVerified = false,
         };
 
-        var context = new AppointmentReschedulingContext
+        var context = new PatientReschedulingContext
         {
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek, 9, 17),
         };
@@ -316,7 +334,7 @@ public class RescheduleByPatientTests
             ),
         };
 
-        var context = new AppointmentReschedulingContext
+        var context = new PatientReschedulingContext
         {
             Penalties = penalties,
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek, 9, 17),
@@ -351,7 +369,7 @@ public class RescheduleByPatientTests
             IsInitiatorPhoneVerified = true,
         };
 
-        var context = new AppointmentReschedulingContext
+        var context = new PatientReschedulingContext
         {
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek, 9, 17),
         };
@@ -387,7 +405,7 @@ public class RescheduleByPatientTests
             IsInitiatorPhoneVerified = true,
         };
 
-        var context = new AppointmentReschedulingContext
+        var context = new PatientReschedulingContext
         {
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek, 9, 17),
         };
@@ -426,7 +444,7 @@ public class RescheduleByPatientTests
             NewPatientNotes = "Rescheduled notes",
         };
 
-        var context = new AppointmentReschedulingContext
+        var context = new PatientReschedulingContext
         {
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek, 9, 17),
         };
@@ -463,7 +481,7 @@ public class RescheduleByPatientTests
             NewPatientNotes = null,
         };
 
-        var context = new AppointmentReschedulingContext
+        var context = new PatientReschedulingContext
         {
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek, 9, 17),
         };

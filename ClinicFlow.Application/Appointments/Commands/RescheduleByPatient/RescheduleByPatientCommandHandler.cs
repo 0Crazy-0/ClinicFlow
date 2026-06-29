@@ -92,11 +92,17 @@ public sealed class RescheduleByPatientCommandHandler(
 
         var newTimeRange = TimeRange.Create(request.NewStartTime, request.NewEndTime);
 
-        var doctorSchedule = await scheduleRepository.GetByDoctorAndDayAsync(
-            appointment.DoctorId,
-            request.NewDate.DayOfWeek,
-            cancellationToken
-        );
+        var doctorSchedule =
+            await scheduleRepository.GetByDoctorAndDayAsync(
+                appointment.DoctorId,
+                request.NewDate.DayOfWeek,
+                cancellationToken
+            )
+            ?? throw new EntityNotFoundException(
+                DomainErrors.General.NotFound,
+                nameof(Schedule),
+                appointment.DoctorId
+            );
 
         if (
             await appointmentRepository.HasConflictAsync(
@@ -131,7 +137,7 @@ public sealed class RescheduleByPatientCommandHandler(
                 IsInitiatorPhoneVerified = user.IsPhoneVerified,
                 NewPatientNotes = request.NewPatientNotes,
             },
-            new AppointmentReschedulingContext
+            new PatientReschedulingContext
             {
                 Penalties = penalties,
                 DoctorSchedule = doctorSchedule,
