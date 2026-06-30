@@ -52,6 +52,24 @@ public class RescheduleByStaffTests
     }
 
     [Fact]
+    public void RescheduleByStaff_ShouldThrowDomainValidationException_WhenDoctorScheduleIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentReschedulingService.RescheduleByStaff(
+                CreateAppointment(),
+                CreateValidStaffReschedulingArgs(),
+                null!,
+                SchedulingClearance.Granted()
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
     public void RescheduleByStaff_ShouldThrowDomainValidationException_WhenNewTimeRangeIsNull()
     {
         // Arrange & Act
