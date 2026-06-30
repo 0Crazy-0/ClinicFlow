@@ -44,6 +44,10 @@ public static class DependencyInjection
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+        services.AddScoped<
+            IAppointmentTypeDefinitionRepository,
+            AppointmentTypeDefinitionRepository
+        >();
 
         return services;
     }
