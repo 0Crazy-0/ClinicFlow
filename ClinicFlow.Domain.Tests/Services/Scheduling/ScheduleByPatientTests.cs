@@ -62,6 +62,24 @@ public class ScheduleByPatientTests
     }
 
     [Fact]
+    public void ScheduleByPatient_ShouldThrowDomainValidationException_WhenContextIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentSchedulingService.ScheduleByPatient(
+                CreateAppointmentType(),
+                CreateValidPatientSchedulingArgs(),
+                null!,
+                SchedulingClearance.Granted()
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
     public void ScheduleByPatient_ShouldThrowDomainValidationException_WhenTargetPatientIsNull()
     {
         // Arrange & Act

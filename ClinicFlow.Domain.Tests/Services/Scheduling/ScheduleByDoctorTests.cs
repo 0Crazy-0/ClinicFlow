@@ -53,6 +53,24 @@ public class ScheduleByDoctorTests
     }
 
     [Fact]
+    public void ScheduleByDoctor_ShouldThrowDomainValidationException_WhenDoctorScheduleIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentSchedulingService.ScheduleByDoctor(
+                CreateAppointmentType(AppointmentCategory.Checkup),
+                CreateValidDoctorSchedulingArgs(),
+                null!,
+                SchedulingClearance.Granted()
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
     public void ScheduleByDoctor_ShouldThrowDomainValidationException_WhenInitiatorDoctorIsNull()
     {
         // Arrange & Act

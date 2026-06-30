@@ -39,6 +39,9 @@ public static class AppointmentReschedulingService
         )
             throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
 
+        if (context is null)
+            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+
         if (clearance is null)
             throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
 
@@ -80,6 +83,9 @@ public static class AppointmentReschedulingService
         if (args is null || args.InitiatorDoctor is null || args.NewTimeRange is null)
             throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
 
+        if (doctorSchedule is null)
+            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+
         if (clearance is null)
             throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
 
@@ -110,6 +116,9 @@ public static class AppointmentReschedulingService
             throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
 
         if (args is null || args.NewTimeRange is null)
+            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+
+        if (doctorSchedule is null)
             throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
 
         if (clearance is null)

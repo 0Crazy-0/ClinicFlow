@@ -63,6 +63,24 @@ public class RescheduleByPatientTests
     }
 
     [Fact]
+    public void RescheduleByPatient_ShouldThrowDomainValidationException_WhenContextIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentReschedulingService.RescheduleByPatient(
+                CreateAppointment(),
+                CreateValidPatientReschedulingArgs(),
+                null!,
+                SchedulingClearance.Granted()
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
     public void RescheduleByPatient_ShouldThrowDomainValidationException_WhenTargetPatientIsNull()
     {
         // Arrange & Act
