@@ -35,17 +35,11 @@ public interface IAppointmentRepository
 
     Task CreateAsync(Appointment appointment, CancellationToken cancellationToken = default);
 
-    /// <summary>
-    /// Checks whether any patient under the specified user account has active future appointments.
-    /// </summary>
     Task<bool> HasActiveAppointmentsForUserAsync(
         Guid userId,
         CancellationToken cancellationToken = default
     );
 
-    /// <summary>
-    /// Checks whether a scheduling conflict exists for the specified doctor, date, and time range.
-    /// </summary>
     Task<bool> HasConflictAsync(
         Guid doctorId,
         DateOnly scheduledDate,
