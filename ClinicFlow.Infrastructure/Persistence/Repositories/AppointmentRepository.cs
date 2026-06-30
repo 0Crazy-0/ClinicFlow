@@ -16,10 +16,7 @@ public sealed class AppointmentRepository(ApplicationDbContext dbContext, TimePr
     public async Task<Appointment?> GetByIdAsync(
         Guid id,
         CancellationToken cancellationToken = default
-    ) =>
-        await dbContext
-            .Appointments.AsNoTracking()
-            .FirstOrDefaultAsync(a => a.Id == id, cancellationToken);
+    ) => await dbContext.Appointments.FirstOrDefaultAsync(a => a.Id == id, cancellationToken);
 
     /// <inheritdoc />
     public async Task<(
@@ -157,8 +154,7 @@ public sealed class AppointmentRepository(ApplicationDbContext dbContext, TimePr
         CancellationToken cancellationToken = default
     ) =>
         await dbContext
-            .Appointments.AsNoTracking()
-            .Where(a =>
+            .Appointments.Where(a =>
                 a.DoctorId == doctorId
                 && a.ScheduledDate >= referenceDate
                 && a.Status == AppointmentStatus.Scheduled
@@ -175,8 +171,7 @@ public sealed class AppointmentRepository(ApplicationDbContext dbContext, TimePr
         var referenceTimeOnly = TimeOnly.FromDateTime(referenceTime);
 
         return await dbContext
-            .Appointments.AsNoTracking()
-            .Where(a =>
+            .Appointments.Where(a =>
                 a.Status == AppointmentStatus.RequiresReassignment
                 && (
                     a.ScheduledDate < referenceDate
