@@ -12,24 +12,21 @@ namespace ClinicFlow.Infrastructure.Tests.Persistence.Repositories;
 
 public class AppointmentRepositoryTests : IAsyncLifetime
 {
-    private readonly PostgresFixture fixture;
-    private readonly FakeTimeProvider _fakeTime;
+    private readonly PostgresFixture _fixture;
+    private readonly FakeTimeProvider _fakeTime = new();
     private readonly AppointmentRepository _sut;
 
     public AppointmentRepositoryTests(PostgresFixture fixture)
     {
-        this.fixture = fixture;
-
-        _fakeTime = new FakeTimeProvider(DateTimeOffset.UtcNow);
-
+        _fixture = fixture;
         _sut = new AppointmentRepository(fixture.Context, _fakeTime);
     }
 
     public async ValueTask InitializeAsync()
     {
-        await fixture.Respawner.ResetAsync(fixture.DbConnection);
+        await _fixture.Respawner.ResetAsync(_fixture.DbConnection);
 
-        fixture.Context.ChangeTracker.Clear();
+        _fixture.Context.ChangeTracker.Clear();
     }
 
     public ValueTask DisposeAsync()
@@ -39,7 +36,7 @@ public class AppointmentRepositoryTests : IAsyncLifetime
         return ValueTask.CompletedTask;
     }
 
-    private ApplicationDbContext Context => fixture.Context;
+    private ApplicationDbContext Context => _fixture.Context;
 
     [Fact]
     public async Task GetByIdAsync_ShouldReturnAppointment_WhenExists()
