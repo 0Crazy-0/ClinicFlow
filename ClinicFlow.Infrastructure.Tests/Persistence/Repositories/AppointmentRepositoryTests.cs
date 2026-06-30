@@ -15,6 +15,7 @@ public class AppointmentRepositoryTests : IAsyncLifetime
     private readonly PostgresFixture _fixture;
     private readonly FakeTimeProvider _fakeTime = new();
     private readonly AppointmentRepository _sut;
+    private ApplicationDbContext Context => _fixture.Context;
 
     public AppointmentRepositoryTests(PostgresFixture fixture)
     {
@@ -35,8 +36,6 @@ public class AppointmentRepositoryTests : IAsyncLifetime
 
         return ValueTask.CompletedTask;
     }
-
-    private ApplicationDbContext Context => _fixture.Context;
 
     [Fact]
     public async Task GetByIdAsync_ShouldReturnAppointment_WhenExists()
