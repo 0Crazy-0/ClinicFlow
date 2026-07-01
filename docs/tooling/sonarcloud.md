@@ -61,6 +61,7 @@ These patterns are excluded from coverage analysis because they do not contain t
 - **`ApplicationDbContextFactory.cs`:** Design-time factory used exclusively for EF Core CLI migrations.
 - **`ApplicationDbContext.cs`:** DbContext configuration with no testable business logic.
 - **EF Core Configurations (`**/Configurations/**`):** Fluent API entity configurations.
+- **Dependency Injection ([DependencyInjection.cs](../../ClinicFlow.Application/DependencyInjection.cs) / [DependencyInjection.cs](../../ClinicFlow.Infrastructure/DependencyInjection.cs)):** Service registration files for DI container (pure registration boilerplate, no testable business logic).
 
 ### Duplication Exclusions (`sonar.cpd.exclusions`)
 
