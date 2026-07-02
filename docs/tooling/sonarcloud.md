@@ -175,3 +175,15 @@ Additionally, the following SonarCloud-specific scenario may cause legitimate Qu
 
 #### Duplication on New CQRS Handlers
 New query or command handlers that follow established patterns may trigger the duplication threshold (≤ 3%). If the structural similarity is a natural consequence of the CQRS pattern and not actual copy-pasted business logic, the handler should be added to the duplication exclusions list.
+
+---
+
+## Rejected Changes & Closed PRs
+
+### Adding `sonar-project.properties` (PR [#242](https://github.com/0Crazy-0/ClinicFlow/pull/242))
+**Issue:** An attempt to add a local `sonar-project.properties` file. As detailed in [No sonar-project.properties File](#1-no-sonar-projectproperties-file), this file is incompatible with the .NET scanner and causes CI to fail immediately.
+**Resolution:** PR closed. No exclusion or workaround applies — the file must not exist in the repository.
+
+### Parameter Renaming in Interface Implementations (Rule S927) (PR [#191](https://github.com/0Crazy-0/ClinicFlow/pull/191))
+**Issue:** Renaming parameters in implemented methods (e.g., `cancellationToken` → `ct` in MediatR handlers) violates rule S927, which requires implementation parameter names to match the interface declaration.
+**Resolution:** PR closed. Cosmetic renames that violate S927 are not accepted, and the rule is not suppressed for stylistic changes.
