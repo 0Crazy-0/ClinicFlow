@@ -48,6 +48,7 @@ public static class DependencyInjection
             IAppointmentTypeDefinitionRepository,
             AppointmentTypeDefinitionRepository
         >();
+        services.AddScoped<IClinicalFormTemplateRepository, ClinicalFormTemplateRepository>();
 
         return services;
     }
