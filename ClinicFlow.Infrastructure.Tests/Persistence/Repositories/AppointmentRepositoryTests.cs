@@ -132,7 +132,7 @@ public class AppointmentRepositoryTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task GetByDoctorIdPaginatedAsync_ShouldNotReturnAppointments_FromOtherDoctorsOnSameDate()
+    public async Task GetByDoctorIdPaginatedAsync_ShouldReturnOnlyAppointmentsForRequestedDoctor()
     {
         // Arrange
         var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
