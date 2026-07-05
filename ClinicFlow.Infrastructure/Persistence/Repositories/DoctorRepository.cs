@@ -10,19 +10,16 @@ namespace ClinicFlow.Infrastructure.Persistence.Repositories;
 /// </summary>
 public sealed class DoctorRepository(ApplicationDbContext dbContext) : IDoctorRepository
 {
-    /// <inheritdoc />
     public async Task<Doctor?> GetByIdAsync(
         Guid id,
         CancellationToken cancellationToken = default
     ) => await dbContext.Doctors.FirstOrDefaultAsync(d => d.Id == id, cancellationToken);
 
-    /// <inheritdoc />
     public async Task<Doctor?> GetByUserIdAsync(
         Guid userId,
         CancellationToken cancellationToken = default
     ) => await dbContext.Doctors.FirstOrDefaultAsync(d => d.UserId == userId, cancellationToken);
 
-    /// <inheritdoc />
     public async Task<(IReadOnlyList<Doctor> Items, int TotalCount)> GetBySpecialtyIdPaginatedAsync(
         Guid specialtyId,
         int pageNumber,
@@ -45,11 +42,9 @@ public sealed class DoctorRepository(ApplicationDbContext dbContext) : IDoctorRe
         return (items, totalCount);
     }
 
-    /// <inheritdoc />
     public async Task CreateAsync(Doctor doctor, CancellationToken cancellationToken = default) =>
         await dbContext.Doctors.AddAsync(doctor, cancellationToken);
 
-    /// <inheritdoc />
     public async Task<bool> HasActiveBySpecialtyIdAsync(
         Guid specialtyId,
         CancellationToken cancellationToken = default
@@ -59,7 +54,6 @@ public sealed class DoctorRepository(ApplicationDbContext dbContext) : IDoctorRe
             cancellationToken
         );
 
-    /// <inheritdoc />
     public async Task<Doctor?> GetIncludingDeletedByLicenseNumberAsync(
         string licenseNumber,
         CancellationToken cancellationToken = default

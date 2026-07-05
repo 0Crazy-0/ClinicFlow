@@ -12,13 +12,11 @@ namespace ClinicFlow.Infrastructure.Persistence.Repositories;
 public sealed class AppointmentRepository(ApplicationDbContext dbContext, TimeProvider timeProvider)
     : IAppointmentRepository
 {
-    /// <inheritdoc />
     public async Task<Appointment?> GetByIdAsync(
         Guid id,
         CancellationToken cancellationToken = default
     ) => await dbContext.Appointments.FirstOrDefaultAsync(a => a.Id == id, cancellationToken);
 
-    /// <inheritdoc />
     public async Task<(IReadOnlyList<Appointment> Items, int TotalCount)> GetByDoctorIdAndDateAsync(
         Guid doctorId,
         DateOnly date,
@@ -41,7 +39,6 @@ public sealed class AppointmentRepository(ApplicationDbContext dbContext, TimePr
         return (items, totalCount);
     }
 
-    /// <inheritdoc />
     public async Task<(
         IReadOnlyList<Appointment> Items,
         int TotalCount
@@ -68,7 +65,6 @@ public sealed class AppointmentRepository(ApplicationDbContext dbContext, TimePr
         return (items, totalCount);
     }
 
-    /// <inheritdoc />
     public async Task<(
         IReadOnlyList<Appointment> Items,
         int TotalCount
@@ -91,13 +87,11 @@ public sealed class AppointmentRepository(ApplicationDbContext dbContext, TimePr
         return (items, totalCount);
     }
 
-    /// <inheritdoc />
     public async Task CreateAsync(
         Appointment appointment,
         CancellationToken cancellationToken = default
     ) => await dbContext.Appointments.AddAsync(appointment, cancellationToken);
 
-    /// <inheritdoc />
     public async Task<bool> HasActiveAppointmentsForUserAsync(
         Guid userId,
         CancellationToken cancellationToken = default
@@ -125,7 +119,6 @@ public sealed class AppointmentRepository(ApplicationDbContext dbContext, TimePr
         );
     }
 
-    /// <inheritdoc />
     public async Task<bool> HasConflictAsync(
         Guid doctorId,
         DateOnly scheduledDate,
@@ -144,7 +137,6 @@ public sealed class AppointmentRepository(ApplicationDbContext dbContext, TimePr
             cancellationToken
         );
 
-    /// <inheritdoc />
     public async Task<IReadOnlyList<Appointment>> GetFutureScheduledByDoctorIdAsync(
         Guid doctorId,
         DateOnly referenceDate,
