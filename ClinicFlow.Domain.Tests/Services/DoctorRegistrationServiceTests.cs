@@ -4,7 +4,6 @@ using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Args.Registration;
-using ClinicFlow.Domain.Services.Contexts;
 using ClinicFlow.Domain.ValueObjects;
 
 namespace ClinicFlow.Domain.Tests.Services;
@@ -25,10 +24,8 @@ public class DoctorRegistrationServiceTests
             ConsultationRoom = ConsultationRoom.Create(1, "Room A", 1),
         };
 
-        var context = new DoctorRegistrationContext { ExistingDoctor = null };
-
         // Act
-        var doctor = DoctorRegistrationService.Register(args, context);
+        var doctor = DoctorRegistrationService.Register(args, null);
 
         // Assert
         doctor.Should().NotBeNull();
@@ -63,10 +60,8 @@ public class DoctorRegistrationServiceTests
             ConsultationRoom = ConsultationRoom.Create(1, "Room A", 1),
         };
 
-        var context = new DoctorRegistrationContext { ExistingDoctor = existingDoctor };
-
         // Act
-        var act = () => DoctorRegistrationService.Register(args, context);
+        var act = () => DoctorRegistrationService.Register(args, existingDoctor);
 
         // Assert
         act.Should()
