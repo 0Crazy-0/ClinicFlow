@@ -35,7 +35,7 @@ public class GetAppointmentsByDoctorIdQueryHandlerTests
 
         _appointmentRepositoryMock
             .Setup(x =>
-                x.GetByDoctorIdPaginatedAsync(doctorId, date, 1, 10, It.IsAny<CancellationToken>())
+                x.GetByDoctorIdAndDateAsync(doctorId, date, 1, 10, It.IsAny<CancellationToken>())
             )
             .ReturnsAsync((appointments, 2));
 
@@ -64,7 +64,7 @@ public class GetAppointmentsByDoctorIdQueryHandlerTests
 
         _appointmentRepositoryMock
             .Setup(x =>
-                x.GetByDoctorIdPaginatedAsync(
+                x.GetByDoctorIdAndDateAsync(
                     query.DoctorId,
                     query.Date,
                     1,

@@ -15,7 +15,7 @@ public sealed class GetAppointmentsByDoctorIdQueryHandler(
         CancellationToken cancellationToken
     )
     {
-        var (items, totalCount) = await appointmentRepository.GetByDoctorIdPaginatedAsync(
+        var (items, totalCount) = await appointmentRepository.GetByDoctorIdAndDateAsync(
             request.DoctorId,
             request.Date,
             request.PageNumber,

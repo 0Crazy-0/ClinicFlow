@@ -19,10 +19,7 @@ public sealed class AppointmentRepository(ApplicationDbContext dbContext, TimePr
     ) => await dbContext.Appointments.FirstOrDefaultAsync(a => a.Id == id, cancellationToken);
 
     /// <inheritdoc />
-    public async Task<(
-        IReadOnlyList<Appointment> Items,
-        int TotalCount
-    )> GetByDoctorIdPaginatedAsync(
+    public async Task<(IReadOnlyList<Appointment> Items, int TotalCount)> GetByDoctorIdAndDateAsync(
         Guid doctorId,
         DateOnly date,
         int pageNumber,

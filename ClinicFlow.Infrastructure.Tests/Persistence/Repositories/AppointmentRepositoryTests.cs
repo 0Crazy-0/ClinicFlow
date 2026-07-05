@@ -80,7 +80,7 @@ public class AppointmentRepositoryTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task GetByDoctorIdPaginatedAsync_ShouldReturnPaginatedAppointments_ForDoctorOnSpecificDate()
+    public async Task GetByDoctorIdAndDateAsync_ShouldReturnPaginatedAppointments_ForDoctorOnSpecificDate()
     {
         // Arrange
         var (doctor, patient, apptType) = await SeedCommonEntitiesAsync();
@@ -115,7 +115,7 @@ public class AppointmentRepositoryTests : IAsyncLifetime
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Act
-        var (items, totalCount) = await _sut.GetByDoctorIdPaginatedAsync(
+        var (items, totalCount) = await _sut.GetByDoctorIdAndDateAsync(
             doctor.Id,
             scheduledDate,
             pageNumber: 1,
@@ -132,7 +132,7 @@ public class AppointmentRepositoryTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task GetByDoctorIdPaginatedAsync_ShouldReturnOnlyAppointmentsForRequestedDoctor()
+    public async Task GetByDoctorIdAndDateAsync_ShouldReturnOnlyAppointmentsForRequestedDoctor()
     {
         // Arrange
         var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
@@ -152,7 +152,7 @@ public class AppointmentRepositoryTests : IAsyncLifetime
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Act
-        var (items, totalCount) = await _sut.GetByDoctorIdPaginatedAsync(
+        var (items, totalCount) = await _sut.GetByDoctorIdAndDateAsync(
             doctor1.Id,
             scheduledDate,
             pageNumber: 1,
@@ -168,7 +168,7 @@ public class AppointmentRepositoryTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task GetByDoctorIdPaginatedAsync_ShouldReturnSecondPage_ForDoctorOnSpecificDate()
+    public async Task GetByDoctorIdAndDateAsync_ShouldReturnSecondPage_ForDoctorOnSpecificDate()
     {
         // Arrange
         var (doctor, patient, apptType) = await SeedCommonEntitiesAsync();
@@ -203,7 +203,7 @@ public class AppointmentRepositoryTests : IAsyncLifetime
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Act
-        var (items, totalCount) = await _sut.GetByDoctorIdPaginatedAsync(
+        var (items, totalCount) = await _sut.GetByDoctorIdAndDateAsync(
             doctor.Id,
             scheduledDate,
             pageNumber: 2,
