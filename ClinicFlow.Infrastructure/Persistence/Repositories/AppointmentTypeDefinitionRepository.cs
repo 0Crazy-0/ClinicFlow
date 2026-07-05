@@ -11,7 +11,6 @@ namespace ClinicFlow.Infrastructure.Persistence.Repositories;
 public sealed class AppointmentTypeDefinitionRepository(ApplicationDbContext dbContext)
     : IAppointmentTypeDefinitionRepository
 {
-    /// <inheritdoc />
     public async Task<AppointmentTypeDefinition?> GetByIdAsync(
         Guid id,
         CancellationToken cancellationToken = default
@@ -20,7 +19,6 @@ public sealed class AppointmentTypeDefinitionRepository(ApplicationDbContext dbC
             .AppointmentTypes.Include(a => a.RequiredTemplates)
             .FirstOrDefaultAsync(a => a.Id == id, cancellationToken);
 
-    /// <inheritdoc />
     public async Task<IReadOnlyList<AppointmentTypeDefinition>> GetAllActiveAsync(
         CancellationToken cancellationToken = default
     ) =>
@@ -29,7 +27,6 @@ public sealed class AppointmentTypeDefinitionRepository(ApplicationDbContext dbC
             .Include(a => a.RequiredTemplates)
             .ToListAsync(cancellationToken);
 
-    /// <inheritdoc />
     public async Task<IReadOnlyList<AppointmentTypeDefinition>> GetByCategoryAsync(
         AppointmentCategory category,
         CancellationToken cancellationToken = default
@@ -40,7 +37,6 @@ public sealed class AppointmentTypeDefinitionRepository(ApplicationDbContext dbC
             .Where(a => a.Category == category)
             .ToListAsync(cancellationToken);
 
-    /// <inheritdoc />
     public async Task<IReadOnlyList<AppointmentTypeDefinition>> GetEligibleByAgeAsync(
         int patientAgeInYears,
         CancellationToken cancellationToken = default
@@ -54,13 +50,11 @@ public sealed class AppointmentTypeDefinitionRepository(ApplicationDbContext dbC
             )
             .ToListAsync(cancellationToken);
 
-    /// <inheritdoc />
     public async Task<bool> ExistsByNameAsync(
         string name,
         CancellationToken cancellationToken = default
     ) => await dbContext.AppointmentTypes.AnyAsync(a => a.Name == name, cancellationToken);
 
-    /// <inheritdoc />
     public async Task<AppointmentTypeDefinition?> GetByIdIncludingDeletedAsync(
         Guid id,
         CancellationToken cancellationToken = default
@@ -70,7 +64,6 @@ public sealed class AppointmentTypeDefinitionRepository(ApplicationDbContext dbC
             .Include(a => a.RequiredTemplates)
             .FirstOrDefaultAsync(a => a.Id == id, cancellationToken);
 
-    /// <inheritdoc />
     public async Task<bool> ExistsByNameExcludingAsync(
         string name,
         Guid excludeId,
@@ -81,7 +74,6 @@ public sealed class AppointmentTypeDefinitionRepository(ApplicationDbContext dbC
             cancellationToken
         );
 
-    /// <inheritdoc />
     public async Task CreateAsync(
         AppointmentTypeDefinition appointmentType,
         CancellationToken cancellationToken = default

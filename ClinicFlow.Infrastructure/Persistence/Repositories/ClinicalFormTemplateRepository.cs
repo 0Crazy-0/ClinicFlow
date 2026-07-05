@@ -10,7 +10,6 @@ namespace ClinicFlow.Infrastructure.Persistence.Repositories;
 public sealed class ClinicalFormTemplateRepository(ApplicationDbContext dbContext)
     : IClinicalFormTemplateRepository
 {
-    /// <inheritdoc />
     public async Task<ClinicalFormTemplate?> GetByIdAsync(
         Guid id,
         CancellationToken cancellationToken = default
@@ -20,7 +19,6 @@ public sealed class ClinicalFormTemplateRepository(ApplicationDbContext dbContex
             cancellationToken
         );
 
-    /// <inheritdoc />
     public async Task<ClinicalFormTemplate?> GetByCodeAsync(
         string templateCode,
         CancellationToken cancellationToken = default
@@ -30,19 +28,16 @@ public sealed class ClinicalFormTemplateRepository(ApplicationDbContext dbContex
             cancellationToken
         );
 
-    /// <inheritdoc />
     public async Task<bool> ExistsByCodeAsync(
         string code,
         CancellationToken cancellationToken = default
     ) => await dbContext.ClinicalFormTemplates.AnyAsync(c => c.Code == code, cancellationToken);
 
-    /// <inheritdoc />
     public async Task<bool> ExistsByNameAsync(
         string name,
         CancellationToken cancellationToken = default
     ) => await dbContext.ClinicalFormTemplates.AnyAsync(c => c.Name == name, cancellationToken);
 
-    /// <inheritdoc />
     public async Task<ClinicalFormTemplate?> GetByIdIncludingDeletedAsync(
         Guid id,
         CancellationToken cancellationToken = default
@@ -51,7 +46,6 @@ public sealed class ClinicalFormTemplateRepository(ApplicationDbContext dbContex
             .ClinicalFormTemplates.IgnoreQueryFilters()
             .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
 
-    /// <inheritdoc />
     public async Task<bool> ExistsByNameExcludingAsync(
         string name,
         Guid excludeId,
@@ -62,12 +56,10 @@ public sealed class ClinicalFormTemplateRepository(ApplicationDbContext dbContex
             cancellationToken
         );
 
-    /// <inheritdoc />
     public async Task<IReadOnlyList<ClinicalFormTemplate>> GetAllActiveAsync(
         CancellationToken cancellationToken = default
     ) => await dbContext.ClinicalFormTemplates.AsNoTracking().ToListAsync(cancellationToken);
 
-    /// <inheritdoc />
     public async Task<IReadOnlyList<ClinicalFormTemplate>> GetAllIncludingDeletedAsync(
         CancellationToken cancellationToken = default
     ) =>
@@ -76,7 +68,6 @@ public sealed class ClinicalFormTemplateRepository(ApplicationDbContext dbContex
             .AsNoTracking()
             .ToListAsync(cancellationToken);
 
-    /// <inheritdoc />
     public async Task CreateAsync(
         ClinicalFormTemplate template,
         CancellationToken cancellationToken = default
