@@ -10,7 +10,7 @@ public interface IAppointmentRepository
 {
     Task<Appointment?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
-    Task<(IReadOnlyList<Appointment> Items, int TotalCount)> GetByDoctorIdPaginatedAsync(
+    Task<(IReadOnlyList<Appointment> Items, int TotalCount)> GetByDoctorIdAndDateAsync(
         Guid doctorId,
         DateOnly date,
         int pageNumber,
