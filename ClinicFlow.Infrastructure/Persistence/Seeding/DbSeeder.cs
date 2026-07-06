@@ -2,7 +2,6 @@ using System.Collections.Immutable;
 using Bogus;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
-using ClinicFlow.Domain.Entities.ClinicalDetails;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.ValueObjects;

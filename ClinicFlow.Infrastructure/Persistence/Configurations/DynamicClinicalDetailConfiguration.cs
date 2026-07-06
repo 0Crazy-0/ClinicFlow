@@ -1,4 +1,4 @@
-using ClinicFlow.Domain.Entities.ClinicalDetails;
+using ClinicFlow.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

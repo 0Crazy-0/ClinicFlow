@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -18,7 +17,8 @@ namespace ClinicFlow.Infrastructure.Migrations
                 nullable: true,
                 oldClrType: typeof(DateTime),
                 oldType: "timestamp with time zone",
-                oldNullable: true);
+                oldNullable: true
+            );
         }
 
         /// <inheritdoc />
@@ -31,7 +31,8 @@ namespace ClinicFlow.Infrastructure.Migrations
                 nullable: true,
                 oldClrType: typeof(DateOnly),
                 oldType: "date",
-                oldNullable: true);
+                oldNullable: true
+            );
         }
     }
 }

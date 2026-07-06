@@ -1,5 +1,4 @@
 using ClinicFlow.Domain.Common;
-using ClinicFlow.Domain.Entities.ClinicalDetails;
 using ClinicFlow.Domain.Exceptions.Base;
 
 namespace ClinicFlow.Domain.Entities;
@@ -21,12 +20,12 @@ public class MedicalRecord : BaseEntity
     /// </summary>
     public string ChiefComplaint { get; private set; } = string.Empty;
 
-    private readonly List<IClinicalDetailRecord> _clinicalDetails = [];
+    private readonly List<DynamicClinicalDetail> _clinicalDetails = [];
 
     /// <summary>
     /// A structured collection of clinical details (e.g., Cardiology flags, Dental odontograms, etc.) collected during the encounter.
     /// </summary>
-    public IReadOnlyCollection<IClinicalDetailRecord> ClinicalDetails =>
+    public IReadOnlyCollection<DynamicClinicalDetail> ClinicalDetails =>
         _clinicalDetails.AsReadOnly();
 
     // EF Core constructor
@@ -61,7 +60,7 @@ public class MedicalRecord : BaseEntity
         return record;
     }
 
-    internal void AddClinicalDetail(IClinicalDetailRecord detail)
+    internal void AddClinicalDetail(DynamicClinicalDetail detail)
     {
         if (detail is null)
             throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);

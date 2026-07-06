@@ -1,5 +1,4 @@
 using ClinicFlow.Domain.Entities;
-using ClinicFlow.Domain.Entities.ClinicalDetails;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -11,7 +10,12 @@ public sealed class MedicalRecordConfiguration : IEntityTypeConfiguration<Medica
     public void Configure(EntityTypeBuilder<MedicalRecord> builder)
     {
         builder
-            .HasMany<DynamicClinicalDetail>("_clinicalDetails")
+            .Navigation(m => m.ClinicalDetails)
+            .HasField("_clinicalDetails")
+            .UsePropertyAccessMode(PropertyAccessMode.Field);
+
+        builder
+            .HasMany(m => m.ClinicalDetails)
             .WithOne()
             .HasForeignKey("MedicalRecordId")
             .OnDelete(DeleteBehavior.Cascade);

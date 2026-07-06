@@ -1,5 +1,4 @@
 using ClinicFlow.Domain.Entities;
-using ClinicFlow.Domain.Entities.ClinicalDetails;
 
 namespace ClinicFlow.Domain.Services.Contexts;
 
@@ -11,6 +10,6 @@ public sealed record class MedicalEncounterContext
     public required Doctor ExpectedDoctor { get; init; }
     public required Appointment Appointment { get; init; }
     public required AppointmentTypeDefinition AppointmentTypeDefinition { get; init; }
-    public IReadOnlyList<IClinicalDetailRecord> ProvidedDetails { get; init; } = [];
+    public IReadOnlyList<DynamicClinicalDetail> ProvidedDetails { get; init; } = [];
     public required DateTime CompletedAt { get; init; }
 }

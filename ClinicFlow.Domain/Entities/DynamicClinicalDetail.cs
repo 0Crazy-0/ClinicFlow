@@ -1,11 +1,11 @@
 using ClinicFlow.Domain.Common;
 
-namespace ClinicFlow.Domain.Entities.ClinicalDetails;
+namespace ClinicFlow.Domain.Entities;
 
 /// <summary>
 /// A dynamic clinical detail record that stores data for any template type as a JSON payload.
 /// </summary>
-public class DynamicClinicalDetail : BaseEntity, IClinicalDetailRecord
+public class DynamicClinicalDetail : BaseEntity
 {
     public string TemplateCode { get; private set; } = string.Empty;
     public string JsonDataPayload { get; private set; } = string.Empty;

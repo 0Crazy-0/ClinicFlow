@@ -2,7 +2,6 @@ using AwesomeAssertions;
 using ClinicFlow.Application.MedicalRecords.Queries.GetClinicalDetailByTemplateCode;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
-using ClinicFlow.Domain.Entities.ClinicalDetails;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using Moq;
@@ -25,7 +24,7 @@ public class GetClinicalDetailByTemplateCodeQueryHandlerTests
     {
         // Arrange
         var record = CreateMedicalRecord();
-        var detail = new StubClinicalDetail("VITALS", """{"bp":"120/80"}""");
+        var detail = DynamicClinicalDetail.Create("VITALS", """{"bp":"120/80"}""");
         record.AddClinicalDetail(detail);
 
         _medicalRecordRepositoryMock
@@ -101,11 +100,4 @@ public class GetClinicalDetailByTemplateCodeQueryHandlerTests
 
     private static MedicalRecord CreateMedicalRecord() =>
         MedicalRecord.Create(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "General checkup");
-
-    private class StubClinicalDetail(string templateCode, string jsonDataPayload)
-        : IClinicalDetailRecord
-    {
-        public string TemplateCode => templateCode;
-        public string JsonDataPayload => jsonDataPayload;
-    }
 }

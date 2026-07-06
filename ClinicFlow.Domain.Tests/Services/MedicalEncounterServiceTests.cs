@@ -1,7 +1,6 @@
 using AwesomeAssertions;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
-using ClinicFlow.Domain.Entities.ClinicalDetails;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Contexts;
@@ -238,9 +237,9 @@ public class MedicalEncounterServiceTests
         var appointmentId = Guid.NewGuid();
         var record = CreateMedicalRecord(doctorId, appointmentId);
         var appointmentType = CreateAppointmentType();
-        var detailMock1 = new TestClinicalDetail1();
-        var detailMock2 = new TestClinicalDetail2();
-        var providedDetails = new List<IClinicalDetailRecord> { detailMock1, detailMock2 };
+        var detail1 = DynamicClinicalDetail.Create("Test1", "{}");
+        var detail2 = DynamicClinicalDetail.Create("Test2", "{}");
+        var providedDetails = new List<DynamicClinicalDetail> { detail1, detail2 };
 
         var context = new MedicalEncounterContext
         {
@@ -259,14 +258,18 @@ public class MedicalEncounterServiceTests
         _mockPolicy2.Verify(p => p.Validate(appointmentType, providedDetails), Times.Once);
 
         record.ClinicalDetails.Should().HaveCount(2);
-        record.ClinicalDetails.Should().Contain(detailMock1).And.Contain(detailMock2);
+        record.ClinicalDetails.Should().Contain(detail1).And.Contain(detail2);
     }
 
     [Fact]
     public void AppendClinicalDetail_ShouldThrowDomainValidationException_WhenRecordIsNull()
     {
         var act = () =>
-            _sut.AppendClinicalDetail(null!, new TestClinicalDetail1(), CreateFormTemplate());
+            _sut.AppendClinicalDetail(
+                null!,
+                DynamicClinicalDetail.Create("Test1", "{}"),
+                CreateFormTemplate()
+            );
         act.Should()
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.General.RequiredFieldNull);
@@ -286,7 +289,8 @@ public class MedicalEncounterServiceTests
     public void AppendClinicalDetail_ShouldThrowDomainValidationException_WhenTemplateIsNull()
     {
         var record = CreateMedicalRecord();
-        var act = () => _sut.AppendClinicalDetail(record, new TestClinicalDetail1(), null!);
+        var act = () =>
+            _sut.AppendClinicalDetail(record, DynamicClinicalDetail.Create("Test1", "{}"), null!);
         act.Should()
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.General.RequiredFieldNull);
@@ -296,7 +300,7 @@ public class MedicalEncounterServiceTests
     public void AppendClinicalDetail_ShouldThrowBusinessRuleValidationException_WhenTemplateCodeMismatch()
     {
         var record = CreateMedicalRecord();
-        var detail = new TestClinicalDetail1();
+        var detail = DynamicClinicalDetail.Create("Test1", "{}");
         var template = CreateFormTemplate("DifferentCode");
 
         var act = () => _sut.AppendClinicalDetail(record, detail, template);
@@ -317,11 +321,9 @@ public class MedicalEncounterServiceTests
         var record = CreateMedicalRecord();
         var template = CreateFormTemplate("Test1");
 
-        var mockDetail = new Mock<IClinicalDetailRecord>();
-        mockDetail.Setup(d => d.TemplateCode).Returns("Test1");
-        mockDetail.Setup(d => d.JsonDataPayload).Returns(payload!);
+        var detail = DynamicClinicalDetail.Create("Test1", payload!);
 
-        var act = () => _sut.AppendClinicalDetail(record, mockDetail.Object, template);
+        var act = () => _sut.AppendClinicalDetail(record, detail, template);
 
         act.Should()
             .Throw<BusinessRuleValidationException>()
@@ -332,11 +334,7 @@ public class MedicalEncounterServiceTests
     public void AppendClinicalDetail_ShouldThrowBusinessRuleValidationException_WhenPayloadIsInvalidSchema()
     {
         var record = CreateMedicalRecord();
-
-        var mockDetail = new Mock<IClinicalDetailRecord>();
-        mockDetail.Setup(d => d.TemplateCode).Returns("Test1");
-        mockDetail.Setup(d => d.JsonDataPayload).Returns("""{"invalid": "data"}""");
-
+        var detail = DynamicClinicalDetail.Create("Test1", """{"invalid": "data"}""");
         var template = CreateFormTemplate("Test1", """{"type": "object"}""");
 
         string errorMessage = "Schema validation failed";
@@ -350,7 +348,7 @@ public class MedicalEncounterServiceTests
             )
             .Returns(false);
 
-        var act = () => _sut.AppendClinicalDetail(record, mockDetail.Object, template);
+        var act = () => _sut.AppendClinicalDetail(record, detail, template);
 
         act.Should()
             .Throw<BusinessRuleValidationException>()
@@ -361,11 +359,7 @@ public class MedicalEncounterServiceTests
     public void AppendClinicalDetail_ShouldAddDetail_WhenValidAndSchemaMatches()
     {
         var record = CreateMedicalRecord();
-        var mockDetail = new Mock<IClinicalDetailRecord>();
-
-        mockDetail.Setup(d => d.TemplateCode).Returns("Test1");
-        mockDetail.Setup(d => d.JsonDataPayload).Returns("""{"valid": "data"}""");
-
+        var detail = DynamicClinicalDetail.Create("Test1", """{"valid": "data"}""");
         var template = CreateFormTemplate("Test1", """{"type": "object"}""");
 
         string? errorMessage = null;
@@ -379,21 +373,9 @@ public class MedicalEncounterServiceTests
             )
             .Returns(true);
 
-        _sut.AppendClinicalDetail(record, mockDetail.Object, template);
+        _sut.AppendClinicalDetail(record, detail, template);
 
-        record.ClinicalDetails.Should().Contain(mockDetail.Object);
-    }
-
-    private class TestClinicalDetail1 : IClinicalDetailRecord
-    {
-        public string TemplateCode => "Test1";
-        public string JsonDataPayload => string.Empty;
-    }
-
-    private class TestClinicalDetail2 : IClinicalDetailRecord
-    {
-        public string TemplateCode => "Test2";
-        public string JsonDataPayload => string.Empty;
+        record.ClinicalDetails.Should().Contain(detail);
     }
 
     private MedicalEncounterContext CreateValidContext() =>

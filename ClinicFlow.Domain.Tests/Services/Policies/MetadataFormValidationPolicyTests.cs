@@ -1,7 +1,6 @@
 using AwesomeAssertions;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
-using ClinicFlow.Domain.Entities.ClinicalDetails;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Services.Policies;
 using ClinicFlow.Domain.ValueObjects;
@@ -71,31 +70,13 @@ public class MetadataFormValidationPolicyTests
     }
 
     [Fact]
-    public void Validate_ShouldThrowBusinessRuleValidationException_WhenDetailIsNotDynamicClinicalDetail()
-    {
-        // Arrange
-        var template = ClinicalFormTemplate.Create("VITALS", "Vitals", "Vital signs", "{}");
-        var appointmentType = CreateAppointmentTypeWithTemplates(template);
-        var nonDynamicDetail = new StubClinicalDetailRecord("VITALS");
-        var details = new List<IClinicalDetailRecord> { nonDynamicDetail };
-
-        // Act
-        var act = () => _sut.Validate(appointmentType, details);
-
-        // Assert
-        act.Should()
-            .Throw<BusinessRuleValidationException>()
-            .WithMessage(DomainErrors.MedicalEncounter.MissingPayload);
-    }
-
-    [Fact]
     public void Validate_ShouldThrowBusinessRuleValidationException_WhenJsonDataPayloadIsEmpty()
     {
         // Arrange
         var template = ClinicalFormTemplate.Create("VITALS", "Vitals", "Vital signs", "{}");
         var appointmentType = CreateAppointmentTypeWithTemplates(template);
         var detail = DynamicClinicalDetail.Create("VITALS", "   ");
-        var details = new List<IClinicalDetailRecord> { detail };
+        var details = new List<DynamicClinicalDetail> { detail };
 
         // Act
         var act = () => _sut.Validate(appointmentType, details);
@@ -113,7 +94,7 @@ public class MetadataFormValidationPolicyTests
         var template = ClinicalFormTemplate.Create("VITALS", "Vitals", "Vital signs", "");
         var appointmentType = CreateAppointmentTypeWithTemplates(template);
         var detail = DynamicClinicalDetail.Create("VITALS", """{"bp":"120/80"}""");
-        var details = new List<IClinicalDetailRecord> { detail };
+        var details = new List<DynamicClinicalDetail> { detail };
 
         // Act
         var act = () => _sut.Validate(appointmentType, details);
@@ -134,7 +115,7 @@ public class MetadataFormValidationPolicyTests
         var template = ClinicalFormTemplate.Create("VITALS", "Vitals", "Description", "   ");
         var appointmentType = CreateAppointmentTypeWithTemplates(template);
         var detail = DynamicClinicalDetail.Create("VITALS", """{"bp":"120/80"}""");
-        var details = new List<IClinicalDetailRecord> { detail };
+        var details = new List<DynamicClinicalDetail> { detail };
 
         // Act
         var act = () => _sut.Validate(appointmentType, details);
@@ -162,7 +143,7 @@ public class MetadataFormValidationPolicyTests
         var appointmentType = CreateAppointmentTypeWithTemplates(template);
         var payload = """{"bp":"120/80"}""";
         var detail = DynamicClinicalDetail.Create("VITALS", payload);
-        var details = new List<IClinicalDetailRecord> { detail };
+        var details = new List<DynamicClinicalDetail> { detail };
 
         string? errorMsg = null;
         _mockSchemaValidator
@@ -194,7 +175,7 @@ public class MetadataFormValidationPolicyTests
         var appointmentType = CreateAppointmentTypeWithTemplates(template);
         var payload = """{"temperature":"37"}""";
         var detail = DynamicClinicalDetail.Create("VITALS", payload);
-        var details = new List<IClinicalDetailRecord> { detail };
+        var details = new List<DynamicClinicalDetail> { detail };
 
         string? errorMsg = "Required property 'bp' is missing.";
         _mockSchemaValidator
@@ -229,7 +210,7 @@ public class MetadataFormValidationPolicyTests
         var payload2 = """{"allergy":"none"}""";
         var detail1 = DynamicClinicalDetail.Create("VITALS", payload1);
         var detail2 = DynamicClinicalDetail.Create("ALLERGIES", payload2);
-        var details = new List<IClinicalDetailRecord> { detail1, detail2 };
+        var details = new List<DynamicClinicalDetail> { detail1, detail2 };
 
         string? errorMsg = null;
         _mockSchemaValidator
@@ -265,7 +246,7 @@ public class MetadataFormValidationPolicyTests
         var appointmentType = CreateAppointmentTypeWithTemplates(template1, template2);
 
         var detail = DynamicClinicalDetail.Create("ALLERGIES", """{"allergy":"none"}""");
-        var details = new List<IClinicalDetailRecord> { detail };
+        var details = new List<DynamicClinicalDetail> { detail };
 
         // Act
         var act = () => _sut.Validate(appointmentType, details);
@@ -274,12 +255,6 @@ public class MetadataFormValidationPolicyTests
         act.Should()
             .Throw<BusinessRuleValidationException>()
             .WithMessage(DomainErrors.MedicalEncounter.MissingRequiredTemplate);
-    }
-
-    private class StubClinicalDetailRecord(string templateCode) : IClinicalDetailRecord
-    {
-        public string TemplateCode => templateCode;
-        public string JsonDataPayload => string.Empty;
     }
 
     private static AppointmentTypeDefinition CreateAppointmentTypeWithTemplates(
