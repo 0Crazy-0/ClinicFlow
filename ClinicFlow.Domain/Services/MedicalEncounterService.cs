@@ -1,6 +1,5 @@
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
-using ClinicFlow.Domain.Entities.ClinicalDetails;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Services.Contexts;
 using ClinicFlow.Domain.Services.Policies;
@@ -75,7 +74,7 @@ public class MedicalEncounterService(
     /// </summary>
     public void AppendClinicalDetail(
         MedicalRecord record,
-        IClinicalDetailRecord newDetail,
+        DynamicClinicalDetail newDetail,
         ClinicalFormTemplate template
     )
     {

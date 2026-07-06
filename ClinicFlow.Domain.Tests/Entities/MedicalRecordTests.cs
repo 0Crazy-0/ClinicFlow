@@ -1,7 +1,6 @@
 using AwesomeAssertions;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
-using ClinicFlow.Domain.Entities.ClinicalDetails;
 using ClinicFlow.Domain.Exceptions.Base;
 
 namespace ClinicFlow.Domain.Tests.Entities;
@@ -98,7 +97,7 @@ public class MedicalRecordTests
     {
         // Arrange
         var record = CreateValidMedicalRecord();
-        var detail = new StubDynamicClinicalDetail("VITALS");
+        var detail = DynamicClinicalDetail.Create("VITALS", "{}");
 
         // Act
         record.AddClinicalDetail(detail);
@@ -128,8 +127,8 @@ public class MedicalRecordTests
     {
         // Arrange
         var record = CreateValidMedicalRecord();
-        var detail1 = new StubDynamicClinicalDetail("VITALS");
-        var detail2 = new StubDynamicClinicalDetail("VITALS");
+        var detail1 = DynamicClinicalDetail.Create("VITALS", "{}");
+        var detail2 = DynamicClinicalDetail.Create("VITALS", "{}");
 
         record.AddClinicalDetail(detail1);
 
@@ -144,10 +143,4 @@ public class MedicalRecordTests
 
     private static MedicalRecord CreateValidMedicalRecord() =>
         MedicalRecord.Create(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "General checkup");
-
-    private class StubDynamicClinicalDetail(string templateCode) : IClinicalDetailRecord
-    {
-        public string TemplateCode => templateCode;
-        public string JsonDataPayload => string.Empty;
-    }
 }

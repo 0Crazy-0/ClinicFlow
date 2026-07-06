@@ -1,6 +1,5 @@
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
-using ClinicFlow.Domain.Entities.ClinicalDetails;
 using ClinicFlow.Domain.Exceptions.Base;
 
 namespace ClinicFlow.Domain.Services.Policies;
@@ -14,7 +13,7 @@ public class MetadataFormValidationPolicy(IJsonSchemaValidator jsonSchemaValidat
 {
     public void Validate(
         AppointmentTypeDefinition appointmentType,
-        IEnumerable<IClinicalDetailRecord> providedDetails
+        IEnumerable<DynamicClinicalDetail> providedDetails
     )
     {
         if (appointmentType is null)
@@ -40,7 +39,7 @@ public class MetadataFormValidationPolicy(IJsonSchemaValidator jsonSchemaValidat
         }
     }
 
-    private void ValidateJsonStructure(ClinicalFormTemplate template, IClinicalDetailRecord? detail)
+    private void ValidateJsonStructure(ClinicalFormTemplate template, DynamicClinicalDetail? detail)
     {
         if (detail is null || string.IsNullOrWhiteSpace(detail.JsonDataPayload))
             throw new BusinessRuleValidationException(DomainErrors.MedicalEncounter.MissingPayload);

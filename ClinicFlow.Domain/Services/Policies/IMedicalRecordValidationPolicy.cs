@@ -1,5 +1,4 @@
 using ClinicFlow.Domain.Entities;
-using ClinicFlow.Domain.Entities.ClinicalDetails;
 
 namespace ClinicFlow.Domain.Services.Policies;
 
@@ -14,6 +13,6 @@ public interface IMedicalRecordValidationPolicy
     /// </summary>
     void Validate(
         AppointmentTypeDefinition appointmentType,
-        IEnumerable<IClinicalDetailRecord> providedDetails
+        IEnumerable<DynamicClinicalDetail> providedDetails
     );
 }

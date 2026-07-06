@@ -1,7 +1,6 @@
 using AwesomeAssertions;
 using ClinicFlow.Application.MedicalRecords.Queries.GetMedicalRecordsByDoctorId;
 using ClinicFlow.Domain.Entities;
-using ClinicFlow.Domain.Entities.ClinicalDetails;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using Moq;
 
@@ -25,8 +24,8 @@ public class GetMedicalRecordsByDoctorIdQueryHandlerTests
         var doctorId = Guid.NewGuid();
         var request = new GetMedicalRecordsByDoctorIdQuery(doctorId, 1, 10);
 
-        var record1 = CreateMedicalRecord(Guid.NewGuid(), doctorId, Guid.NewGuid(), "Headache");
-        var record2 = CreateMedicalRecord(Guid.NewGuid(), doctorId, Guid.NewGuid(), "Fever");
+        var record1 = CreateMedicalRecord(doctorId, "Headache");
+        var record2 = CreateMedicalRecord(doctorId, "Fever");
 
         record1.AddClinicalDetail(DynamicClinicalDetail.Create("vital-signs", "{}"));
 
@@ -47,12 +46,12 @@ public class GetMedicalRecordsByDoctorIdQueryHandlerTests
 
         var firstResult = result.Items.First(r => r.Id == record1.Id);
         firstResult.DoctorId.Should().Be(doctorId);
-        firstResult.ChiefComplaint.Should().Be("Headache");
+        firstResult.ChiefComplaint.Should().Be(record1.ChiefComplaint);
         firstResult.ClinicalDetails.Should().ContainSingle();
 
         var secondResult = result.Items.First(r => r.Id == record2.Id);
         secondResult.DoctorId.Should().Be(doctorId);
-        secondResult.ChiefComplaint.Should().Be("Fever");
+        secondResult.ChiefComplaint.Should().Be(record2.ChiefComplaint);
         secondResult.ClinicalDetails.Should().BeEmpty();
     }
 
@@ -83,10 +82,6 @@ public class GetMedicalRecordsByDoctorIdQueryHandlerTests
         result.TotalPages.Should().Be(0);
     }
 
-    private static MedicalRecord CreateMedicalRecord(
-        Guid patientId,
-        Guid doctorId,
-        Guid appointmentId,
-        string chiefComplaint
-    ) => MedicalRecord.Create(patientId, doctorId, appointmentId, chiefComplaint);
+    private static MedicalRecord CreateMedicalRecord(Guid doctorId, string chiefComplaint) =>
+        MedicalRecord.Create(Guid.NewGuid(), doctorId, Guid.NewGuid(), chiefComplaint);
 }
