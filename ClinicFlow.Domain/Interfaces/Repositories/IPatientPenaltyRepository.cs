@@ -35,10 +35,6 @@ public interface IPatientPenaltyRepository
         CancellationToken cancellationToken = default
     );
 
-    Task<IReadOnlyList<PatientPenalty>> GetActiveWarningsAsync(
-        CancellationToken cancellationToken = default
-    );
-
     Task<(IReadOnlyList<PatientPenalty> Items, int TotalCount)> GetActiveWarningsPaginatedAsync(
         int pageNumber,
         int pageSize,
