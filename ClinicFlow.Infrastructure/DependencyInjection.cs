@@ -50,6 +50,7 @@ public static class DependencyInjection
         >();
         services.AddScoped<IClinicalFormTemplateRepository, ClinicalFormTemplateRepository>();
         services.AddScoped<IDoctorRepository, DoctorRepository>();
+        services.AddScoped<IMedicalRecordRepository, MedicalRecordRepository>();
 
         return services;
     }

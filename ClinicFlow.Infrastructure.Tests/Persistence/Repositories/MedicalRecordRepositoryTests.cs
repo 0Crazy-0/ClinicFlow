@@ -1,0 +1,648 @@
+using AwesomeAssertions;
+using ClinicFlow.Domain.Entities;
+using ClinicFlow.Domain.Enums;
+using ClinicFlow.Domain.ValueObjects;
+using ClinicFlow.Infrastructure.Persistence;
+using ClinicFlow.Infrastructure.Persistence.Repositories;
+using ClinicFlow.Infrastructure.Tests.Shared;
+using Microsoft.EntityFrameworkCore;
+
+namespace ClinicFlow.Infrastructure.Tests.Persistence.Repositories;
+
+public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
+{
+    private readonly MedicalRecordRepository _sut = new(fixture.Context);
+    private ApplicationDbContext Context => fixture.Context;
+
+    public async ValueTask InitializeAsync()
+    {
+        await fixture.Respawner.ResetAsync(fixture.DbConnection);
+
+        fixture.Context.ChangeTracker.Clear();
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        GC.SuppressFinalize(this);
+
+        return ValueTask.CompletedTask;
+    }
+
+    [Fact]
+    public async Task GetByIdAsync_ShouldReturnMedicalRecord_WhenExists()
+    {
+        // Arrange
+        var (doctor, patient, appointment) = await SeedCommonEntitiesAsync();
+        var record = MedicalRecord.Create(patient.Id, doctor.Id, appointment.Id, "chiefComplaint");
+
+        Context.MedicalRecords.Add(record);
+
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var result = await _sut.GetByIdAsync(record.Id, TestContext.Current.CancellationToken);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Id.Should().Be(record.Id);
+        result.PatientId.Should().Be(patient.Id);
+        result.DoctorId.Should().Be(doctor.Id);
+        result.AppointmentId.Should().Be(appointment.Id);
+        result.ChiefComplaint.Should().Be(record.ChiefComplaint);
+    }
+
+    [Fact]
+    public async Task GetByIdAsync_ShouldReturnNull_WhenDoesNotExist()
+    {
+        // Arrange
+        var nonExistentId = Guid.NewGuid();
+
+        // Act
+        var result = await _sut.GetByIdAsync(nonExistentId, TestContext.Current.CancellationToken);
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task GetByPatientIdPaginatedAsync_ShouldReturnPaginatedRecords_ForPatient()
+    {
+        // Arrange
+        var (doctor, patient, _) = await SeedCommonEntitiesAsync();
+
+        var appointment1 = await CreateAppointmentAsync(patient.Id, doctor.Id);
+        var appointment2 = await CreateAppointmentAsync(patient.Id, doctor.Id);
+        var appointment3 = await CreateAppointmentAsync(patient.Id, doctor.Id);
+
+        var record1 = MedicalRecord.Create(
+            patient.Id,
+            doctor.Id,
+            appointment1.Id,
+            "chiefComplaint 1"
+        );
+
+        var record2 = MedicalRecord.Create(
+            patient.Id,
+            doctor.Id,
+            appointment2.Id,
+            "chiefComplaint 2"
+        );
+
+        var record3 = MedicalRecord.Create(
+            patient.Id,
+            doctor.Id,
+            appointment3.Id,
+            "chiefComplaint 3"
+        );
+
+        Context.MedicalRecords.AddRange(record1, record2, record3);
+
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var (items, totalCount) = await _sut.GetByPatientIdPaginatedAsync(
+            patient.Id,
+            pageNumber: 1,
+            pageSize: 2,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        totalCount.Should().Be(3);
+
+        items.Should().HaveCount(2);
+        items.Should().BeInDescendingOrder(m => m.Id);
+    }
+
+    [Fact]
+    public async Task GetByPatientIdPaginatedAsync_ShouldReturnSecondPage()
+    {
+        // Arrange
+        var (doctor, patient, _) = await SeedCommonEntitiesAsync();
+
+        var appointment1 = await CreateAppointmentAsync(patient.Id, doctor.Id);
+        var appointment2 = await CreateAppointmentAsync(patient.Id, doctor.Id);
+        var appointment3 = await CreateAppointmentAsync(patient.Id, doctor.Id);
+
+        var record1 = MedicalRecord.Create(
+            patient.Id,
+            doctor.Id,
+            appointment1.Id,
+            "chiefComplaint 1"
+        );
+
+        var record2 = MedicalRecord.Create(
+            patient.Id,
+            doctor.Id,
+            appointment2.Id,
+            "chiefComplaint 2"
+        );
+
+        var record3 = MedicalRecord.Create(
+            patient.Id,
+            doctor.Id,
+            appointment3.Id,
+            "chiefComplaint 3"
+        );
+
+        Context.MedicalRecords.AddRange(record1, record2, record3);
+
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var (items, totalCount) = await _sut.GetByPatientIdPaginatedAsync(
+            patient.Id,
+            pageNumber: 2,
+            pageSize: 2,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        totalCount.Should().Be(3);
+
+        items.Should().HaveCount(1);
+    }
+
+    [Fact]
+    public async Task GetByPatientIdPaginatedAsync_ShouldReturnOnlyRecordsFromRequestedPatient()
+    {
+        // Arrange
+        var (doctor, patient1, _) = await SeedCommonEntitiesAsync();
+        var patient2 = await CreatePatientAsync();
+
+        var appointment1 = await CreateAppointmentAsync(patient1.Id, doctor.Id);
+        var appointment2 = await CreateAppointmentAsync(patient2.Id, doctor.Id);
+
+        var record1 = MedicalRecord.Create(
+            patient1.Id,
+            doctor.Id,
+            appointment1.Id,
+            "Patient 1 complaint"
+        );
+        var record2 = MedicalRecord.Create(
+            patient2.Id,
+            doctor.Id,
+            appointment2.Id,
+            "Patient 2 complaint"
+        );
+
+        Context.MedicalRecords.AddRange(record1, record2);
+
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var (items, totalCount) = await _sut.GetByPatientIdPaginatedAsync(
+            patient1.Id,
+            pageNumber: 1,
+            pageSize: 10,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        totalCount.Should().Be(1);
+
+        items.Should().ContainSingle().Which.Id.Should().Be(record1.Id);
+    }
+
+    [Fact]
+    public async Task GetByPatientIdPaginatedAsync_ShouldReturnEmpty_WhenNoRecordsForPatient()
+    {
+        // Arrange
+        var nonExistentPatientId = Guid.NewGuid();
+
+        // Act
+        var (items, totalCount) = await _sut.GetByPatientIdPaginatedAsync(
+            nonExistentPatientId,
+            pageNumber: 1,
+            pageSize: 10,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        totalCount.Should().Be(0);
+
+        items.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task GetByPatientIdPaginatedAsync_ShouldReturnRecordsOrderedByIdDescending()
+    {
+        // Arrange
+        var (doctor, patient, _) = await SeedCommonEntitiesAsync();
+        var appointment1 = await CreateAppointmentAsync(patient.Id, doctor.Id);
+        var appointment2 = await CreateAppointmentAsync(patient.Id, doctor.Id);
+        var appointment3 = await CreateAppointmentAsync(patient.Id, doctor.Id);
+
+        var record1 = MedicalRecord.Create(
+            patient.Id,
+            doctor.Id,
+            appointment1.Id,
+            "chiefComplaint 1"
+        );
+
+        var record2 = MedicalRecord.Create(
+            patient.Id,
+            doctor.Id,
+            appointment2.Id,
+            "chiefComplaint 2"
+        );
+
+        var record3 = MedicalRecord.Create(
+            patient.Id,
+            doctor.Id,
+            appointment3.Id,
+            "chiefComplaint 3"
+        );
+
+        Context.MedicalRecords.AddRange(record1, record2, record3);
+
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var (items, _) = await _sut.GetByPatientIdPaginatedAsync(
+            patient.Id,
+            pageNumber: 1,
+            pageSize: 10,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        items.Should().BeInDescendingOrder(m => m.Id);
+    }
+
+    [Fact]
+    public async Task GetByDoctorIdPaginatedAsync_ShouldReturnPaginatedRecords_ForDoctor()
+    {
+        // Arrange
+        var (doctor, patient, _) = await SeedCommonEntitiesAsync();
+
+        var appointment1 = await CreateAppointmentAsync(patient.Id, doctor.Id);
+        var appointment2 = await CreateAppointmentAsync(patient.Id, doctor.Id);
+        var appointment3 = await CreateAppointmentAsync(patient.Id, doctor.Id);
+
+        var record1 = MedicalRecord.Create(
+            patient.Id,
+            doctor.Id,
+            appointment1.Id,
+            "chiefComplaint 1"
+        );
+
+        var record2 = MedicalRecord.Create(
+            patient.Id,
+            doctor.Id,
+            appointment2.Id,
+            "chiefComplaint 2"
+        );
+
+        var record3 = MedicalRecord.Create(
+            patient.Id,
+            doctor.Id,
+            appointment3.Id,
+            "chiefComplaint 3"
+        );
+
+        Context.MedicalRecords.AddRange(record1, record2, record3);
+
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var (items, totalCount) = await _sut.GetByDoctorIdPaginatedAsync(
+            doctor.Id,
+            pageNumber: 1,
+            pageSize: 2,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        totalCount.Should().Be(3);
+
+        items.Should().HaveCount(2);
+        items.Should().BeInDescendingOrder(m => m.Id);
+    }
+
+    [Fact]
+    public async Task GetByDoctorIdPaginatedAsync_ShouldReturnSecondPage()
+    {
+        // Arrange
+        var (doctor, patient, _) = await SeedCommonEntitiesAsync();
+
+        var appointment1 = await CreateAppointmentAsync(patient.Id, doctor.Id);
+        var appointment2 = await CreateAppointmentAsync(patient.Id, doctor.Id);
+        var appointment3 = await CreateAppointmentAsync(patient.Id, doctor.Id);
+
+        var record1 = MedicalRecord.Create(
+            patient.Id,
+            doctor.Id,
+            appointment1.Id,
+            "chiefComplaint 1"
+        );
+
+        var record2 = MedicalRecord.Create(
+            patient.Id,
+            doctor.Id,
+            appointment2.Id,
+            "chiefComplaint 2"
+        );
+
+        var record3 = MedicalRecord.Create(
+            patient.Id,
+            doctor.Id,
+            appointment3.Id,
+            "chiefComplaint 3"
+        );
+
+        Context.MedicalRecords.AddRange(record1, record2, record3);
+
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var (items, totalCount) = await _sut.GetByDoctorIdPaginatedAsync(
+            doctor.Id,
+            pageNumber: 2,
+            pageSize: 2,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        totalCount.Should().Be(3);
+
+        items.Should().HaveCount(1);
+    }
+
+    [Fact]
+    public async Task GetByDoctorIdPaginatedAsync_ShouldReturnOnlyRecordsFromRequestedDoctor()
+    {
+        // Arrange
+        var (doctor1, patient, _) = await SeedCommonEntitiesAsync();
+        var doctor2 = await CreateDoctorAsync();
+
+        var appointment1 = await CreateAppointmentAsync(patient.Id, doctor1.Id);
+        var appointment2 = await CreateAppointmentAsync(patient.Id, doctor2.Id);
+
+        var record1 = MedicalRecord.Create(
+            patient.Id,
+            doctor1.Id,
+            appointment1.Id,
+            "chiefComplaint 1"
+        );
+        var record2 = MedicalRecord.Create(
+            patient.Id,
+            doctor2.Id,
+            appointment2.Id,
+            "chiefComplaint 2"
+        );
+
+        Context.MedicalRecords.AddRange(record1, record2);
+
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var (items, totalCount) = await _sut.GetByDoctorIdPaginatedAsync(
+            doctor1.Id,
+            pageNumber: 1,
+            pageSize: 10,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        totalCount.Should().Be(1);
+
+        items.Should().ContainSingle().Which.Id.Should().Be(record1.Id);
+    }
+
+    [Fact]
+    public async Task GetByDoctorIdPaginatedAsync_ShouldReturnEmpty_WhenNoRecordsForDoctor()
+    {
+        // Arrange
+        var nonExistentDoctorId = Guid.NewGuid();
+
+        // Act
+        var (items, totalCount) = await _sut.GetByDoctorIdPaginatedAsync(
+            nonExistentDoctorId,
+            pageNumber: 1,
+            pageSize: 10,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        totalCount.Should().Be(0);
+
+        items.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task GetByDoctorIdPaginatedAsync_ShouldReturnRecordsOrderedByIdDescending()
+    {
+        // Arrange
+        var (doctor, patient, _) = await SeedCommonEntitiesAsync();
+        var appointment1 = await CreateAppointmentAsync(patient.Id, doctor.Id);
+        var appointment2 = await CreateAppointmentAsync(patient.Id, doctor.Id);
+        var appointment3 = await CreateAppointmentAsync(patient.Id, doctor.Id);
+
+        var record1 = MedicalRecord.Create(
+            patient.Id,
+            doctor.Id,
+            appointment1.Id,
+            "chiefComplaint 1"
+        );
+
+        var record2 = MedicalRecord.Create(
+            patient.Id,
+            doctor.Id,
+            appointment2.Id,
+            "chiefComplaint 2"
+        );
+
+        var record3 = MedicalRecord.Create(
+            patient.Id,
+            doctor.Id,
+            appointment3.Id,
+            "chiefComplaint 3"
+        );
+
+        Context.MedicalRecords.AddRange(record1, record2, record3);
+
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var (items, _) = await _sut.GetByDoctorIdPaginatedAsync(
+            doctor.Id,
+            pageNumber: 1,
+            pageSize: 10,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        items.Should().BeInDescendingOrder(m => m.Id);
+    }
+
+    [Fact]
+    public async Task GetByAppointmentIdAsync_ShouldReturnMedicalRecord_WhenExists()
+    {
+        // Arrange
+        var (doctor, patient, appointment) = await SeedCommonEntitiesAsync();
+        var record = MedicalRecord.Create(patient.Id, doctor.Id, appointment.Id, "chiefComplaint");
+
+        Context.MedicalRecords.Add(record);
+
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var result = await _sut.GetByAppointmentIdAsync(
+            appointment.Id,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().NotBeNull();
+        result.Id.Should().Be(record.Id);
+        result.PatientId.Should().Be(patient.Id);
+        result.DoctorId.Should().Be(doctor.Id);
+        result.AppointmentId.Should().Be(appointment.Id);
+        result.ChiefComplaint.Should().Be(record.ChiefComplaint);
+    }
+
+    [Fact]
+    public async Task GetByAppointmentIdAsync_ShouldReturnNull_WhenDoesNotExist()
+    {
+        // Arrange
+        var nonExistentAppointmentId = Guid.NewGuid();
+
+        // Act
+        var result = await _sut.GetByAppointmentIdAsync(
+            nonExistentAppointmentId,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task CreateAsync_ShouldAddMedicalRecordToContext()
+    {
+        // Arrange
+        var (doctor, patient, appointment) = await SeedCommonEntitiesAsync();
+        var record = MedicalRecord.Create(patient.Id, doctor.Id, appointment.Id, "chiefComplaint");
+
+        // Act
+        await _sut.CreateAsync(record, TestContext.Current.CancellationToken);
+
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Assert
+        var dbResult = await Context
+            .MedicalRecords.AsNoTracking()
+            .FirstOrDefaultAsync(m => m.Id == record.Id, TestContext.Current.CancellationToken);
+
+        dbResult.Should().NotBeNull();
+        dbResult.Id.Should().Be(record.Id);
+        dbResult.PatientId.Should().Be(patient.Id);
+        dbResult.DoctorId.Should().Be(doctor.Id);
+        dbResult.AppointmentId.Should().Be(appointment.Id);
+        dbResult.ChiefComplaint.Should().Be(record.ChiefComplaint);
+    }
+
+    private async Task<(
+        Doctor Doctor,
+        Patient Patient,
+        Appointment Appointment
+    )> SeedCommonEntitiesAsync()
+    {
+        var doctor = await CreateDoctorAsync();
+        var patient = await CreatePatientAsync();
+        var appointment = await CreateAppointmentAsync(patient.Id, doctor.Id);
+
+        return (doctor, patient, appointment);
+    }
+
+    private async Task<User> CreateUserAsync(UserRole role)
+    {
+        var email = EmailAddress.Create($"{Guid.NewGuid()}@clinic.com");
+        var phone = PhoneNumber.Create($"+1555{Random.Shared.Next(1000000, 9999999)}");
+        var user = User.Create(email, "password", phone, role);
+
+        Context.Users.Add(user);
+
+        await Context.SaveChangesAsync();
+
+        return user;
+    }
+
+    private async Task<Doctor> CreateDoctorAsync()
+    {
+        var user = await CreateUserAsync(UserRole.Doctor);
+        var specialty = MedicalSpecialty.Create("Cardiology", "Desc", 30, 24);
+
+        Context.MedicalSpecialties.Add(specialty);
+
+        await Context.SaveChangesAsync();
+
+        var doctor = Doctor.Create(
+            user.Id,
+            PersonName.Create("Dr. Watson"),
+            MedicalLicenseNumber.Create("CMP-" + Guid.NewGuid().ToString("N")[..5]),
+            specialty.Id,
+            "Desc",
+            ConsultationRoom.Create(10, "Room 10", 1)
+        );
+
+        Context.Doctors.Add(doctor);
+
+        await Context.SaveChangesAsync();
+
+        return doctor;
+    }
+
+    private async Task<Patient> CreatePatientAsync()
+    {
+        var user = await CreateUserAsync(UserRole.Patient);
+        var patient = Patient.CreateSelf(
+            user.Id,
+            PersonName.Create("John Doe"),
+            DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-30)),
+            DateTime.UtcNow
+        );
+
+        patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
+        patient.UpdateEmergencyContact(EmergencyContact.Create("Contact", "555-9999"));
+
+        Context.Patients.Add(patient);
+
+        await Context.SaveChangesAsync();
+
+        return patient;
+    }
+
+    private async Task<Appointment> CreateAppointmentAsync(Guid patientId, Guid doctorId)
+    {
+        var apptType = AppointmentTypeDefinition.Create(
+            AppointmentCategory.FirstConsultation,
+            $"Consultation-{Guid.NewGuid():N}",
+            "Desc",
+            EncounterDuration.FromMinutes(20)
+        );
+
+        Context.AppointmentTypes.Add(apptType);
+
+        await Context.SaveChangesAsync();
+
+        var startMinute = Random.Shared.Next(0, 480);
+        var appointment = Appointment.Schedule(
+            patientId,
+            doctorId,
+            apptType.Id,
+            DateOnly.FromDateTime(DateTime.UtcNow.AddDays(1)),
+            TimeRange.Create(
+                new TimeOnly(8, 0).AddMinutes(startMinute),
+                new TimeOnly(8, 0).AddMinutes(startMinute + 30)
+            )
+        );
+
+        Context.Appointments.Add(appointment);
+
+        await Context.SaveChangesAsync();
+
+        return appointment;
+    }
+}
