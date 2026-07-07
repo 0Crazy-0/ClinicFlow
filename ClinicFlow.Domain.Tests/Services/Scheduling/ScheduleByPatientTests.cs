@@ -212,7 +212,7 @@ public class ScheduleByPatientTests
     [Fact]
     public void ScheduleByPatient_ShouldThrowUnauthorized_WhenNonSelfSchedulesForDifferentPatient()
     {
-        // Arrange — family member tries to schedule for a different patient → should be unauthorized
+        // Arrange, family member tries to schedule for a different patient → should be unauthorized
         var userId = Guid.NewGuid();
         var appointmentType = CreateAppointmentType();
         var initiator = Patient.CreateFamilyMember(
@@ -257,7 +257,7 @@ public class ScheduleByPatientTests
     [Fact]
     public void ScheduleByPatient_ShouldSucceed_WhenNonSelfSchedulesForThemselves()
     {
-        // Arrange — family member schedules for themselves → should be allowed
+        // Arrange, family member schedules for themselves → should be allowed
         var userId = Guid.NewGuid();
         var appointmentType = CreateAppointmentType();
 
