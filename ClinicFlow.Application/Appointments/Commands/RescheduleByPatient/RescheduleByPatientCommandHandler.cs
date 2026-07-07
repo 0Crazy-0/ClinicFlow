@@ -85,7 +85,7 @@ public sealed class RescheduleByPatientCommandHandler(
                 appointment.AppointmentTypeId
             );
 
-        var penalties = await penaltyRepository.GetByPatientIdAsync(
+        var penalties = await penaltyRepository.GetHistoryByPatientIdAsync(
             appointment.PatientId,
             cancellationToken
         );

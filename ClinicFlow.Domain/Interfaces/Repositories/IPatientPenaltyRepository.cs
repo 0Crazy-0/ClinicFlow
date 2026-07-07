@@ -16,12 +16,18 @@ public interface IPatientPenaltyRepository
         CancellationToken cancellationToken = default
     );
 
-    Task<IReadOnlyList<PatientPenalty>> GetByPatientIdAsync(
+    /// <remarks>
+    /// Includes penalties regardless of their current status — this covers
+    /// penalties marked as removed (<see cref="PatientPenalty.IsRemoved"/> is <c>true</c>)
+    /// and temporary blocks whose <see cref="PatientPenalty.BlockedUntil"/> date has already passed.
+    /// </remarks>
+    Task<IReadOnlyList<PatientPenalty>> GetHistoryByPatientIdAsync(
         Guid patientId,
         CancellationToken cancellationToken = default
     );
 
-    Task<(IReadOnlyList<PatientPenalty> Items, int TotalCount)> GetByPatientIdPaginatedAsync(
+    /// <inheritdoc cref="GetHistoryByPatientIdAsync"/>
+    Task<(IReadOnlyList<PatientPenalty> Items, int TotalCount)> GetHistoryByPatientIdPaginatedAsync(
         Guid patientId,
         int pageNumber,
         int pageSize,

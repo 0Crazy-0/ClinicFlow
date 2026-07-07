@@ -22,7 +22,7 @@ public sealed class AppointmentMarkedAsNoShowEventHandler(
     {
         var appointment = notification.DomainEvent.Appointment;
 
-        var existingPenalties = await patientPenaltyRepository.GetByPatientIdAsync(
+        var existingPenalties = await patientPenaltyRepository.GetHistoryByPatientIdAsync(
             appointment.PatientId,
             cancellationToken
         );

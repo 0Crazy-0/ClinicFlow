@@ -14,7 +14,7 @@ public sealed class GetPenaltiesByPatientIdQueryHandler(IPatientPenaltyRepositor
         CancellationToken cancellationToken
     )
     {
-        var (items, totalCount) = await penaltyRepository.GetByPatientIdPaginatedAsync(
+        var (items, totalCount) = await penaltyRepository.GetHistoryByPatientIdPaginatedAsync(
             request.PatientId,
             request.PageNumber,
             request.PageSize,

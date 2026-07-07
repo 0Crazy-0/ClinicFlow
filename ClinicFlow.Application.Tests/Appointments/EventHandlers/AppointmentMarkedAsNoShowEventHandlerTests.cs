@@ -36,13 +36,15 @@ public class AppointmentMarkedAsNoShowEventHandlerTests
     public async Task Handle_ShouldCreatePenaltiesWithCorrectProperties()
     {
         // Arrange
-        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime);
+        var appointment = CreateAppointment();
         var domainEvent = new AppointmentMarkedAsNoShowEvent(appointment);
         var notification = new DomainEventNotification<AppointmentMarkedAsNoShowEvent>(domainEvent);
 
         IEnumerable<PatientPenalty>? capturedPenalties = null;
         _patientPenaltyRepositoryMock
-            .Setup(x => x.GetByPatientIdAsync(appointment.PatientId, It.IsAny<CancellationToken>()))
+            .Setup(x =>
+                x.GetHistoryByPatientIdAsync(appointment.PatientId, It.IsAny<CancellationToken>())
+            )
             .ReturnsAsync([]);
 
         _patientPenaltyRepositoryMock
@@ -72,12 +74,14 @@ public class AppointmentMarkedAsNoShowEventHandlerTests
     public async Task Handle_ShouldCallRepositoryCreateRangeAndSaveChanges()
     {
         // Arrange
-        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime);
+        var appointment = CreateAppointment();
         var domainEvent = new AppointmentMarkedAsNoShowEvent(appointment);
         var notification = new DomainEventNotification<AppointmentMarkedAsNoShowEvent>(domainEvent);
 
         _patientPenaltyRepositoryMock
-            .Setup(x => x.GetByPatientIdAsync(appointment.PatientId, It.IsAny<CancellationToken>()))
+            .Setup(x =>
+                x.GetHistoryByPatientIdAsync(appointment.PatientId, It.IsAny<CancellationToken>())
+            )
             .ReturnsAsync([]);
 
         // Act
@@ -95,12 +99,12 @@ public class AppointmentMarkedAsNoShowEventHandlerTests
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
-    private static Appointment CreateAppointment(DateTime referenceTime) =>
+    private Appointment CreateAppointment() =>
         Appointment.Schedule(
             Guid.NewGuid(),
             Guid.NewGuid(),
             Guid.NewGuid(),
-            DateOnly.FromDateTime(referenceTime.AddDays(1)),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
 }

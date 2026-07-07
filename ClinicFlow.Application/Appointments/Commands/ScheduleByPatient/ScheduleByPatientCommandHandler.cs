@@ -77,7 +77,7 @@ public sealed class ScheduleByPatientCommandHandler(
                 request.AppointmentTypeId
             );
 
-        var penalties = await penaltyRepository.GetByPatientIdAsync(
+        var penalties = await penaltyRepository.GetHistoryByPatientIdAsync(
             request.TargetPatientId,
             cancellationToken
         );
