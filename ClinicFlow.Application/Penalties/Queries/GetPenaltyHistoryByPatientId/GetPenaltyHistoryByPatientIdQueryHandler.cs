@@ -3,14 +3,15 @@ using ClinicFlow.Application.Penalties.Queries.DTOs;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using MediatR;
 
-namespace ClinicFlow.Application.Penalties.Queries.GetPenaltiesByPatientId;
+namespace ClinicFlow.Application.Penalties.Queries.GetPenaltyHistoryByPatientId;
 
-public sealed class GetPenaltiesByPatientIdQueryHandler(IPatientPenaltyRepository penaltyRepository)
-    : IRequestHandler<GetPenaltiesByPatientIdQuery, PaginatedList<PatientPenaltyDto>>
+public sealed class GetPenaltyHistoryByPatientIdQueryHandler(
+    IPatientPenaltyRepository penaltyRepository
+) : IRequestHandler<GetPenaltyHistoryByPatientIdQuery, PaginatedList<PatientPenaltyDto>>
 {
     /// <inheritdoc />
     public async Task<PaginatedList<PatientPenaltyDto>> Handle(
-        GetPenaltiesByPatientIdQuery request,
+        GetPenaltyHistoryByPatientIdQuery request,
         CancellationToken cancellationToken
     )
     {
