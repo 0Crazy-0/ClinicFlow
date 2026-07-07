@@ -105,7 +105,7 @@ public class ScheduleByPatientCommandHandlerTests
             .ReturnsAsync(appointmentType);
         _penaltyRepositoryMock
             .Setup(r =>
-                r.GetByPatientIdAsync(command.TargetPatientId, It.IsAny<CancellationToken>())
+                r.GetHistoryByPatientIdAsync(command.TargetPatientId, It.IsAny<CancellationToken>())
             )
             .ReturnsAsync([]);
         _scheduleRepositoryMock
@@ -210,7 +210,7 @@ public class ScheduleByPatientCommandHandlerTests
             .ReturnsAsync(appointmentType);
         _penaltyRepositoryMock
             .Setup(r =>
-                r.GetByPatientIdAsync(command.TargetPatientId, It.IsAny<CancellationToken>())
+                r.GetHistoryByPatientIdAsync(command.TargetPatientId, It.IsAny<CancellationToken>())
             )
             .ReturnsAsync([]);
         _scheduleRepositoryMock

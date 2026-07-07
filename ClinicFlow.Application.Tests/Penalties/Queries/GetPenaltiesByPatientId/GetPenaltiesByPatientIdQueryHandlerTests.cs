@@ -35,7 +35,12 @@ public class GetPenaltiesByPatientIdQueryHandlerTests
 
         _penaltyRepositoryMock
             .Setup(x =>
-                x.GetByPatientIdPaginatedAsync(patientId, 1, 10, It.IsAny<CancellationToken>())
+                x.GetHistoryByPatientIdPaginatedAsync(
+                    patientId,
+                    1,
+                    10,
+                    It.IsAny<CancellationToken>()
+                )
             )
             .ReturnsAsync(([warning, block], 2));
 
@@ -67,7 +72,12 @@ public class GetPenaltiesByPatientIdQueryHandlerTests
 
         _penaltyRepositoryMock
             .Setup(x =>
-                x.GetByPatientIdPaginatedAsync(patientId, 1, 10, It.IsAny<CancellationToken>())
+                x.GetHistoryByPatientIdPaginatedAsync(
+                    patientId,
+                    1,
+                    10,
+                    It.IsAny<CancellationToken>()
+                )
             )
             .ReturnsAsync((new List<PatientPenalty>(), 0));
 

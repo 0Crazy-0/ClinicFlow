@@ -109,7 +109,7 @@ public class RescheduleByPatientCommandHandlerTests
             .Setup(s => s.EnforceSchedulingRegulations(doctor, targetPatient, appointmentType))
             .Returns(SchedulingClearance.Granted());
         _penaltyRepositoryMock
-            .Setup(r => r.GetByPatientIdAsync(patientId, It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetHistoryByPatientIdAsync(patientId, It.IsAny<CancellationToken>()))
             .ReturnsAsync([]);
         _scheduleRepositoryMock
             .Setup(r =>

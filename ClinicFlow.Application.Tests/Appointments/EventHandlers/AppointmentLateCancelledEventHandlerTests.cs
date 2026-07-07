@@ -61,7 +61,7 @@ public class AppointmentLateCancelledEventHandlerTests
 
         IEnumerable<PatientPenalty>? capturedPenalties = null;
         _penaltyRepositoryMock
-            .Setup(x => x.GetByPatientIdAsync(patientId, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetHistoryByPatientIdAsync(patientId, It.IsAny<CancellationToken>()))
             .ReturnsAsync([]);
 
         _penaltyRepositoryMock
@@ -115,7 +115,7 @@ public class AppointmentLateCancelledEventHandlerTests
         var notification = new DomainEventNotification<AppointmentLateCancelledEvent>(domainEvent);
 
         _penaltyRepositoryMock
-            .Setup(x => x.GetByPatientIdAsync(patientId, It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetHistoryByPatientIdAsync(patientId, It.IsAny<CancellationToken>()))
             .ReturnsAsync([]);
 
         // Act
