@@ -1,12 +1,12 @@
 using ClinicFlow.Domain.Common;
 using FluentValidation;
 
-namespace ClinicFlow.Application.Penalties.Queries.GetPenaltiesByPatientId;
+namespace ClinicFlow.Application.Penalties.Queries.GetPenaltyHistoryByPatientId;
 
-public sealed class GetPenaltiesByPatientIdQueryValidator
-    : AbstractValidator<GetPenaltiesByPatientIdQuery>
+public sealed class GetPenaltyHistoryByPatientIdQueryValidator
+    : AbstractValidator<GetPenaltyHistoryByPatientIdQuery>
 {
-    public GetPenaltiesByPatientIdQueryValidator()
+    public GetPenaltyHistoryByPatientIdQueryValidator()
     {
         RuleFor(x => x.PatientId).NotEmpty().WithMessage(DomainErrors.Validation.InvalidValue);
         RuleFor(x => x.PageNumber)

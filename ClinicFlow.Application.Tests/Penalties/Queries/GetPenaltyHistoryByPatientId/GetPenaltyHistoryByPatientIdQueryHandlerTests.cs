@@ -1,23 +1,23 @@
 using AwesomeAssertions;
-using ClinicFlow.Application.Penalties.Queries.GetPenaltiesByPatientId;
+using ClinicFlow.Application.Penalties.Queries.GetPenaltyHistoryByPatientId;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using Microsoft.Extensions.Time.Testing;
 using Moq;
 
-namespace ClinicFlow.Application.Tests.Penalties.Queries.GetPenaltiesByPatientId;
+namespace ClinicFlow.Application.Tests.Penalties.Queries.GetPenaltyHistoryByPatientId;
 
-public class GetPenaltiesByPatientIdQueryHandlerTests
+public class GetPenaltyHistoryByPatientIdQueryHandlerTests
 {
     private readonly FakeTimeProvider _fakeTime = new();
     private readonly Mock<IPatientPenaltyRepository> _penaltyRepositoryMock;
-    private readonly GetPenaltiesByPatientIdQueryHandler _sut;
+    private readonly GetPenaltyHistoryByPatientIdQueryHandler _sut;
 
-    public GetPenaltiesByPatientIdQueryHandlerTests()
+    public GetPenaltyHistoryByPatientIdQueryHandlerTests()
     {
         _penaltyRepositoryMock = new Mock<IPatientPenaltyRepository>();
-        _sut = new GetPenaltiesByPatientIdQueryHandler(_penaltyRepositoryMock.Object);
+        _sut = new GetPenaltyHistoryByPatientIdQueryHandler(_penaltyRepositoryMock.Object);
     }
 
     [Fact]
@@ -44,7 +44,7 @@ public class GetPenaltiesByPatientIdQueryHandlerTests
             )
             .ReturnsAsync(([warning, block], 2));
 
-        var query = new GetPenaltiesByPatientIdQuery(patientId, 1, 10);
+        var query = new GetPenaltyHistoryByPatientIdQuery(patientId, 1, 10);
 
         // Act
         var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
@@ -81,7 +81,7 @@ public class GetPenaltiesByPatientIdQueryHandlerTests
             )
             .ReturnsAsync((new List<PatientPenalty>(), 0));
 
-        var query = new GetPenaltiesByPatientIdQuery(patientId, 1, 10);
+        var query = new GetPenaltyHistoryByPatientIdQuery(patientId, 1, 10);
 
         // Act
         var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
