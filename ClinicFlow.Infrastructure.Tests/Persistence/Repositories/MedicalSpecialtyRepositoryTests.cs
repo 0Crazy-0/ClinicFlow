@@ -272,8 +272,7 @@ public class MedicalSpecialtyRepositoryTests(PostgresFixture fixture) : IAsyncLi
         var result = await _sut.GetAllIncludingDeletedAsync(TestContext.Current.CancellationToken);
 
         // Assert
-        result.Should().HaveCount(2);
-        result.Select(s => s.Id).Should().BeEquivalentTo([specialty1.Id, specialty2.Id]);
+        result.Should().BeEquivalentTo([specialty1, specialty2]);
     }
 
     [Fact]
