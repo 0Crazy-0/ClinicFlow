@@ -47,6 +47,11 @@ public class GetUsersQueryHandlerTests
         items[0].Role.Should().Be(UserRole.Patient);
         items[1].Role.Should().Be(UserRole.Doctor);
         items.Should().HaveCount(2);
+
+        _userRepositoryMock.Verify(
+            x => x.GetPaginatedAsync(1, 10, null, null, null, It.IsAny<CancellationToken>()),
+            Times.Once
+        );
     }
 
     [Fact]
@@ -76,6 +81,19 @@ public class GetUsersQueryHandlerTests
         result.Items.Should().BeEmpty();
         result.TotalCount.Should().Be(0);
         result.TotalPages.Should().Be(0);
+
+        _userRepositoryMock.Verify(
+            x =>
+                x.GetPaginatedAsync(
+                    1,
+                    10,
+                    UserRole.Admin,
+                    true,
+                    null,
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Once
+        );
     }
 
     [Fact]
@@ -102,6 +120,11 @@ public class GetUsersQueryHandlerTests
         dto.Role.Should().Be(user.Role);
         dto.IsActive.Should().Be(user.IsActive);
         dto.IsPhoneVerified.Should().Be(user.IsPhoneVerified);
+
+        _userRepositoryMock.Verify(
+            x => x.GetPaginatedAsync(1, 10, null, null, null, It.IsAny<CancellationToken>()),
+            Times.Once
+        );
     }
 
     private static User CreateUser(string email, string phone, UserRole role) =>

@@ -37,6 +37,8 @@ public class GetActiveMedicalSpecialtiesQueryHandlerTests
         result.Should().HaveCount(2);
         result[0].Name.Should().Be(specialty1.Name);
         result[1].Name.Should().Be(specialty2.Name);
+
+        _repositoryMock.Verify(x => x.GetAllActiveAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -56,5 +58,7 @@ public class GetActiveMedicalSpecialtiesQueryHandlerTests
         // Assert
         result.Should().NotBeNull();
         result.Should().BeEmpty();
+
+        _repositoryMock.Verify(x => x.GetAllActiveAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 }

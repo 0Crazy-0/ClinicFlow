@@ -49,6 +49,11 @@ public class GetMedicalRecordByIdQueryHandlerTests
         result.ChiefComplaint.Should().Be(record.ChiefComplaint);
         result.ClinicalDetails.Should().ContainSingle();
         result.ClinicalDetails[0].TemplateCode.Should().Be(clinicalDetail.TemplateCode);
+
+        _medicalRecordRepositoryMock.Verify(
+            x => x.GetByIdAsync(id, TestContext.Current.CancellationToken),
+            Times.Once
+        );
     }
 
     [Fact]

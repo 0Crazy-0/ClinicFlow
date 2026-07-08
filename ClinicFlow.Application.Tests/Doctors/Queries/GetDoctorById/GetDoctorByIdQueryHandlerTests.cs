@@ -54,6 +54,11 @@ public class GetDoctorByIdQueryHandlerTests
         result.ConsultationRoomNumber.Should().Be(1);
         result.ConsultationRoomName.Should().Be(doctor.ConsultationRoom.Name);
         result.ConsultationRoomFloor.Should().Be(3);
+
+        _doctorRepositoryMock.Verify(
+            x => x.GetByIdAsync(doctor.Id, It.IsAny<CancellationToken>()),
+            Times.Once
+        );
     }
 
     [Fact]

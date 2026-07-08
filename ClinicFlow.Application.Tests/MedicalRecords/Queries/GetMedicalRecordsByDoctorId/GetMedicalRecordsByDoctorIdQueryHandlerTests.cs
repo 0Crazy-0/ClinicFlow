@@ -53,6 +53,11 @@ public class GetMedicalRecordsByDoctorIdQueryHandlerTests
         secondResult.DoctorId.Should().Be(doctorId);
         secondResult.ChiefComplaint.Should().Be(record2.ChiefComplaint);
         secondResult.ClinicalDetails.Should().BeEmpty();
+
+        _medicalRecordRepositoryMock.Verify(
+            x => x.GetByDoctorIdPaginatedAsync(doctorId, 1, 10, It.IsAny<CancellationToken>()),
+            Times.Once
+        );
     }
 
     [Fact]
@@ -80,6 +85,17 @@ public class GetMedicalRecordsByDoctorIdQueryHandlerTests
         result.Items.Should().BeEmpty();
         result.TotalCount.Should().Be(0);
         result.TotalPages.Should().Be(0);
+
+        _medicalRecordRepositoryMock.Verify(
+            x =>
+                x.GetByDoctorIdPaginatedAsync(
+                    request.DoctorId,
+                    1,
+                    10,
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Once
+        );
     }
 
     private static MedicalRecord CreateMedicalRecord(Guid doctorId, string chiefComplaint) =>

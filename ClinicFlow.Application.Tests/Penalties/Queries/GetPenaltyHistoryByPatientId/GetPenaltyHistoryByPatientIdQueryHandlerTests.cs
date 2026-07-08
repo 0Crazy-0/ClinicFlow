@@ -62,6 +62,17 @@ public class GetPenaltyHistoryByPatientIdQueryHandlerTests
 
         resultList[1].Id.Should().Be(block.Id);
         resultList[1].Type.Should().Be(nameof(PenaltyType.TemporaryBlock));
+
+        _penaltyRepositoryMock.Verify(
+            x =>
+                x.GetHistoryByPatientIdPaginatedAsync(
+                    patientId,
+                    1,
+                    10,
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Once
+        );
     }
 
     [Fact]
@@ -91,5 +102,16 @@ public class GetPenaltyHistoryByPatientIdQueryHandlerTests
         result.Items.Should().BeEmpty();
         result.TotalCount.Should().Be(0);
         result.TotalPages.Should().Be(0);
+
+        _penaltyRepositoryMock.Verify(
+            x =>
+                x.GetHistoryByPatientIdPaginatedAsync(
+                    patientId,
+                    1,
+                    10,
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Once
+        );
     }
 }

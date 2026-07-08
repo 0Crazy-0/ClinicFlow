@@ -52,6 +52,11 @@ public class GetUserByIdQueryHandlerTests
         result.LastLoginAt.Should().BeNull();
         result.FailedLoginAttempts.Should().Be(0);
         result.LockoutEnd.Should().BeNull();
+
+        _userRepositoryMock.Verify(
+            x => x.GetByIdAsync(user.Id, It.IsAny<CancellationToken>()),
+            Times.Once
+        );
     }
 
     [Fact]

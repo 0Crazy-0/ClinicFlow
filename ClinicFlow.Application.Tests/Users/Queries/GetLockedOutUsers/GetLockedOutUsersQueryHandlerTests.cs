@@ -65,6 +65,17 @@ public class GetLockedOutUsersQueryHandlerTests
         dto.LastLoginAt.Should().Be(lockedUser.LastLoginAt);
         dto.FailedLoginAttempts.Should().Be(lockedUser.FailedLoginAttempts);
         dto.LockoutEnd.Should().Be(lockedUser.LockoutEnd);
+
+        _userRepositoryMock.Verify(
+            x =>
+                x.GetLockedOutUsersPaginatedAsync(
+                    It.IsAny<DateTime>(),
+                    1,
+                    10,
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Once
+        );
     }
 
     [Fact]
@@ -93,6 +104,17 @@ public class GetLockedOutUsersQueryHandlerTests
         result.Items.Should().BeEmpty();
         result.TotalCount.Should().Be(0);
         result.TotalPages.Should().Be(0);
+
+        _userRepositoryMock.Verify(
+            x =>
+                x.GetLockedOutUsersPaginatedAsync(
+                    It.IsAny<DateTime>(),
+                    1,
+                    10,
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Once
+        );
     }
 
     [Fact]

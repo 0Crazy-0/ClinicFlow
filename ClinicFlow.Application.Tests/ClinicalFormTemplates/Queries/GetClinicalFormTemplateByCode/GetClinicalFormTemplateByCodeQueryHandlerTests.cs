@@ -46,6 +46,11 @@ public class GetClinicalFormTemplateByCodeQueryHandlerTests
         result.Name.Should().Be(template.Name);
         result.Description.Should().Be(template.Description);
         result.JsonSchemaDefinition.Should().Be(template.JsonSchemaDefinition);
+
+        _repositoryMock.Verify(
+            x => x.GetByCodeAsync(template.Code, It.IsAny<CancellationToken>()),
+            Times.Once
+        );
     }
 
     [Fact]

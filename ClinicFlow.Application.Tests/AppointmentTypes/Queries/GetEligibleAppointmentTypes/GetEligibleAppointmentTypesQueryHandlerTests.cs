@@ -43,6 +43,7 @@ public class GetEligibleAppointmentTypesQueryHandlerTests
             .ReturnsAsync([adultType]);
 
         var query = new GetEligibleAppointmentTypesQuery(30);
+
         // Act
         var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
 
@@ -62,6 +63,11 @@ public class GetEligibleAppointmentTypesQueryHandlerTests
         mappedTemplate.Description.Should().Be(template.Description);
         mappedTemplate.JsonSchemaDefinition.Should().Be(template.JsonSchemaDefinition);
         mappedTemplate.IsDeleted.Should().BeFalse();
+
+        _repositoryMock.Verify(
+            x => x.GetEligibleByAgeAsync(30, It.IsAny<CancellationToken>()),
+            Times.Once
+        );
     }
 
     [Fact]
@@ -80,5 +86,10 @@ public class GetEligibleAppointmentTypesQueryHandlerTests
         // Assert
         result.Should().NotBeNull();
         result.Should().BeEmpty();
+
+        _repositoryMock.Verify(
+            x => x.GetEligibleByAgeAsync(10, It.IsAny<CancellationToken>()),
+            Times.Once
+        );
     }
 }

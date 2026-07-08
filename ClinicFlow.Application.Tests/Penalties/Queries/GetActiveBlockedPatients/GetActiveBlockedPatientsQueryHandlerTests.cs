@@ -66,6 +66,17 @@ public class GetActiveBlockedPatientsQueryHandlerTests
 
         resultList[1].Id.Should().Be(block2.Id);
         resultList[1].Type.Should().Be(nameof(PenaltyType.TemporaryBlock));
+
+        _penaltyRepositoryMock.Verify(
+            x =>
+                x.GetActiveBlocksPaginatedAsync(
+                    It.IsAny<DateOnly>(),
+                    1,
+                    10,
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Once
+        );
     }
 
     [Fact]
@@ -93,5 +104,16 @@ public class GetActiveBlockedPatientsQueryHandlerTests
         result.Items.Should().BeEmpty();
         result.TotalCount.Should().Be(0);
         result.TotalPages.Should().Be(0);
+
+        _penaltyRepositoryMock.Verify(
+            x =>
+                x.GetActiveBlocksPaginatedAsync(
+                    It.IsAny<DateOnly>(),
+                    1,
+                    10,
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Once
+        );
     }
 }

@@ -30,6 +30,11 @@ public class CheckEmailUniquenessQueryHandlerTests
 
         // Assert
         result.Should().BeTrue();
+
+        _userRepositoryMock.Verify(
+            x => x.ExistsByEmailAsync("unique@clinic.com", It.IsAny<CancellationToken>()),
+            Times.Once
+        );
     }
 
     [Fact]
@@ -47,5 +52,10 @@ public class CheckEmailUniquenessQueryHandlerTests
 
         // Assert
         result.Should().BeFalse();
+
+        _userRepositoryMock.Verify(
+            x => x.ExistsByEmailAsync("taken@clinic.com", It.IsAny<CancellationToken>()),
+            Times.Once
+        );
     }
 }

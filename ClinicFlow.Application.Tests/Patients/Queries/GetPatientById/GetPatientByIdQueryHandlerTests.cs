@@ -33,8 +33,10 @@ public class GetPatientByIdQueryHandlerTests
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
+
         patient.UpdateMedicalProfile(BloodType.Create("A+"), "None", "None");
         patient.UpdateEmergencyContact(EmergencyContact.Create("Jane", "555-1234"));
+
         var patientId = patient.Id;
 
         _patientRepositoryMock
@@ -53,6 +55,11 @@ public class GetPatientByIdQueryHandlerTests
         result.BloodType.Should().Be(patient.BloodType.Value);
         result.EmergencyContactName.Should().Be("Jane");
         result.EmergencyContactPhone.Should().Be("555-1234");
+
+        _patientRepositoryMock.Verify(
+            x => x.GetByIdAsync(patientId, It.IsAny<CancellationToken>()),
+            Times.Once
+        );
     }
 
     [Fact]
@@ -85,6 +92,11 @@ public class GetPatientByIdQueryHandlerTests
         result.ChronicConditions.Should().Be(string.Empty);
         result.EmergencyContactName.Should().BeNull();
         result.EmergencyContactPhone.Should().BeNull();
+
+        _patientRepositoryMock.Verify(
+            x => x.GetByIdAsync(patientId, It.IsAny<CancellationToken>()),
+            Times.Once
+        );
     }
 
     [Fact]

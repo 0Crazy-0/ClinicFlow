@@ -67,6 +67,11 @@ public class GetAppointmentTypeByIdQueryHandlerTests
         mappedTemplate.Description.Should().Be(template.Description);
         mappedTemplate.JsonSchemaDefinition.Should().Be(template.JsonSchemaDefinition);
         mappedTemplate.IsDeleted.Should().BeFalse();
+
+        _repositoryMock.Verify(
+            x => x.GetByIdAsync(entity.Id, It.IsAny<CancellationToken>()),
+            Times.Once
+        );
     }
 
     [Fact]

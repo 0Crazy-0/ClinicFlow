@@ -47,6 +47,8 @@ public class GetAllActiveClinicalFormTemplatesQueryHandlerTests
         result.Should().HaveCount(2);
         result[0].Name.Should().Be(template1.Name);
         result[1].Name.Should().Be(template2.Name);
+
+        _repositoryMock.Verify(x => x.GetAllActiveAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -66,5 +68,7 @@ public class GetAllActiveClinicalFormTemplatesQueryHandlerTests
         // Assert
         result.Should().NotBeNull();
         result.Should().BeEmpty();
+
+        _repositoryMock.Verify(x => x.GetAllActiveAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 }

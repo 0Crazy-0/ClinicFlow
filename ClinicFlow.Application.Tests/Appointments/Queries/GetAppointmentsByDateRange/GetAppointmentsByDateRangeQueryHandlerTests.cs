@@ -58,6 +58,18 @@ public class GetAppointmentsByDateRangeQueryHandlerTests
             .Items.Select(x => x.ScheduledDate)
             .Should()
             .OnlyContain(d => d >= startDate && d <= endDate);
+
+        _appointmentRepositoryMock.Verify(
+            x =>
+                x.GetByDateRangePaginatedAsync(
+                    startDate,
+                    endDate,
+                    1,
+                    10,
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Once
+        );
     }
 
     [Fact]
@@ -88,6 +100,18 @@ public class GetAppointmentsByDateRangeQueryHandlerTests
         result.Items.Should().BeEmpty();
         result.TotalCount.Should().Be(0);
         result.TotalPages.Should().Be(0);
+
+        _appointmentRepositoryMock.Verify(
+            x =>
+                x.GetByDateRangePaginatedAsync(
+                    startDate,
+                    endDate,
+                    1,
+                    10,
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Once
+        );
     }
 
     private static Appointment CreateAppointment(DateOnly scheduledDate) =>

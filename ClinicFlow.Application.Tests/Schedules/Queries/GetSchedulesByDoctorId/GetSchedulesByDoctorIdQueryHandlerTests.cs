@@ -57,6 +57,11 @@ public class GetSchedulesByDoctorIdQueryHandlerTests
         resultList[1].DayOfWeek.Should().Be(DayOfWeek.Wednesday);
         resultList[1].StartTime.Should().Be(new TimeOnly(14, 0));
         resultList[1].EndTime.Should().Be(new TimeOnly(18, 0));
+
+        _scheduleRepositoryMock.Verify(
+            x => x.GetByDoctorIdAsync(doctorId, It.IsAny<CancellationToken>()),
+            Times.Once
+        );
     }
 
     [Fact]
@@ -77,5 +82,10 @@ public class GetSchedulesByDoctorIdQueryHandlerTests
         // Assert
         result.Should().NotBeNull();
         result.Should().BeEmpty();
+
+        _scheduleRepositoryMock.Verify(
+            x => x.GetByDoctorIdAsync(doctorId, It.IsAny<CancellationToken>()),
+            Times.Once
+        );
     }
 }

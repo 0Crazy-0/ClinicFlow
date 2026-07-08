@@ -71,6 +71,8 @@ public class GetAllActiveAppointmentTypesQueryHandlerTests
         mappedTemplate.Description.Should().Be(template.Description);
         mappedTemplate.JsonSchemaDefinition.Should().Be(template.JsonSchemaDefinition);
         mappedTemplate.IsDeleted.Should().BeFalse();
+
+        _repositoryMock.Verify(x => x.GetAllActiveAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -90,5 +92,7 @@ public class GetAllActiveAppointmentTypesQueryHandlerTests
         // Assert
         result.Should().NotBeNull();
         result.Should().BeEmpty();
+
+        _repositoryMock.Verify(x => x.GetAllActiveAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 }
