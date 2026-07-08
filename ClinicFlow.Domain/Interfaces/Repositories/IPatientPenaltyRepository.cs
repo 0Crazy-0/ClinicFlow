@@ -7,6 +7,14 @@ namespace ClinicFlow.Domain.Interfaces.Repositories;
 /// </summary>
 public interface IPatientPenaltyRepository
 {
+    /// <summary>
+    /// Retrieves a patient penalty by its identifier, including penalties already removed.
+    /// </summary>
+    /// <remarks>
+    /// Does not filter by <see cref="PatientPenalty.IsRemoved"/>. Removal conflicts are
+    /// handled by the entity itself in <see cref="PatientPenalty.Remove"/>, which throws
+    /// if the penalty was already removed.
+    /// </remarks>
     Task<PatientPenalty?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
     Task CreateAsync(PatientPenalty penalty, CancellationToken cancellationToken = default);
