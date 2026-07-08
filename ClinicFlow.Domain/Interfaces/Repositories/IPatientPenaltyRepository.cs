@@ -28,6 +28,7 @@ public interface IPatientPenaltyRepository
     /// Includes penalties regardless of their current status. This covers
     /// penalties marked as removed (<see cref="PatientPenalty.IsRemoved"/> is <c>true</c>)
     /// and temporary blocks whose <see cref="PatientPenalty.BlockedUntil"/> date has already passed.
+    /// Returned entities are untracked and must not be mutated directly.
     /// </remarks>
     Task<IReadOnlyList<PatientPenalty>> GetHistoryByPatientIdAsync(
         Guid patientId,
