@@ -75,5 +75,10 @@ public class GetScheduleByDoctorAndDayQueryHandlerTests
 
         // Assert
         result.Should().BeNull();
+
+        _scheduleRepositoryMock.Verify(
+            x => x.GetByDoctorAndDayAsync(doctorId, dayOfWeek, It.IsAny<CancellationToken>()),
+            Times.Once
+        );
     }
 }

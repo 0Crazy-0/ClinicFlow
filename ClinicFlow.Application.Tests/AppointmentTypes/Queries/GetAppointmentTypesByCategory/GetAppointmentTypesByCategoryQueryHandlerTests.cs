@@ -62,6 +62,11 @@ public class GetAppointmentTypesByCategoryQueryHandlerTests
         mappedTemplate.Description.Should().Be(template.Description);
         mappedTemplate.JsonSchemaDefinition.Should().Be(template.JsonSchemaDefinition);
         mappedTemplate.IsDeleted.Should().BeFalse();
+
+        _repositoryMock.Verify(
+            x => x.GetByCategoryAsync(AppointmentCategory.Checkup, It.IsAny<CancellationToken>()),
+            Times.Once
+        );
     }
 
     [Fact]
@@ -82,5 +87,10 @@ public class GetAppointmentTypesByCategoryQueryHandlerTests
         // Assert
         result.Should().NotBeNull();
         result.Should().BeEmpty();
+
+        _repositoryMock.Verify(
+            x => x.GetByCategoryAsync(AppointmentCategory.Emergency, It.IsAny<CancellationToken>()),
+            Times.Once
+        );
     }
 }

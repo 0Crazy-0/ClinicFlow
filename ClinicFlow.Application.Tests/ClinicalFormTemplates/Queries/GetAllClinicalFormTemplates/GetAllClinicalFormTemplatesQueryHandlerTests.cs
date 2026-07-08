@@ -48,6 +48,11 @@ public class GetAllClinicalFormTemplatesQueryHandlerTests
         result.Should().HaveCount(2);
         result[0].IsDeleted.Should().BeFalse();
         result[1].IsDeleted.Should().BeTrue();
+
+        _repositoryMock.Verify(
+            x => x.GetAllIncludingDeletedAsync(It.IsAny<CancellationToken>()),
+            Times.Once
+        );
     }
 
     [Fact]
@@ -67,5 +72,10 @@ public class GetAllClinicalFormTemplatesQueryHandlerTests
         // Assert
         result.Should().NotBeNull();
         result.Should().BeEmpty();
+
+        _repositoryMock.Verify(
+            x => x.GetAllIncludingDeletedAsync(It.IsAny<CancellationToken>()),
+            Times.Once
+        );
     }
 }

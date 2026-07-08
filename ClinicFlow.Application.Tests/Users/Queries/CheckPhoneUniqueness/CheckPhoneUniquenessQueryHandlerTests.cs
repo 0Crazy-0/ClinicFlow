@@ -30,6 +30,11 @@ public class CheckPhoneUniquenessQueryHandlerTests
 
         // Assert
         result.Should().BeTrue();
+
+        _userRepositoryMock.Verify(
+            x => x.ExistsByPhoneNumberAsync("555-9999", It.IsAny<CancellationToken>()),
+            Times.Once
+        );
     }
 
     [Fact]
@@ -47,5 +52,10 @@ public class CheckPhoneUniquenessQueryHandlerTests
 
         // Assert
         result.Should().BeFalse();
+
+        _userRepositoryMock.Verify(
+            x => x.ExistsByPhoneNumberAsync("555-0000", It.IsAny<CancellationToken>()),
+            Times.Once
+        );
     }
 }

@@ -68,6 +68,12 @@ public class GetDoctorsBySpecialtyIdQueryHandlerTests
         resultList[1].FullName.Should().Be(doctor2.FullName.FullName);
         resultList[1].LicenseNumber.Should().Be(doctor2.LicenseNumber.Value);
         resultList[1].MedicalSpecialtyId.Should().Be(specialtyId);
+
+        _doctorRepositoryMock.Verify(
+            x =>
+                x.GetBySpecialtyIdPaginatedAsync(specialtyId, 1, 10, It.IsAny<CancellationToken>()),
+            Times.Once
+        );
     }
 
     [Fact]
@@ -93,5 +99,11 @@ public class GetDoctorsBySpecialtyIdQueryHandlerTests
         result.Items.Should().BeEmpty();
         result.TotalCount.Should().Be(0);
         result.TotalPages.Should().Be(0);
+
+        _doctorRepositoryMock.Verify(
+            x =>
+                x.GetBySpecialtyIdPaginatedAsync(specialtyId, 1, 10, It.IsAny<CancellationToken>()),
+            Times.Once
+        );
     }
 }

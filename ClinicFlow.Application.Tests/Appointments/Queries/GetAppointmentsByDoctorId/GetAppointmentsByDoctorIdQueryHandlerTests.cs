@@ -49,6 +49,11 @@ public class GetAppointmentsByDoctorIdQueryHandlerTests
         result.TotalPages.Should().Be(1);
         result.Items.Should().HaveCount(2);
         result.Items.Select(x => x.DoctorId).Should().AllBeEquivalentTo(doctorId);
+
+        _appointmentRepositoryMock.Verify(
+            x => x.GetByDoctorIdAndDateAsync(doctorId, date, 1, 10, It.IsAny<CancellationToken>()),
+            Times.Once
+        );
     }
 
     [Fact]
@@ -82,6 +87,18 @@ public class GetAppointmentsByDoctorIdQueryHandlerTests
         result.Items.Should().BeEmpty();
         result.TotalCount.Should().Be(0);
         result.TotalPages.Should().Be(0);
+
+        _appointmentRepositoryMock.Verify(
+            x =>
+                x.GetByDoctorIdAndDateAsync(
+                    query.DoctorId,
+                    query.Date,
+                    1,
+                    10,
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Once
+        );
     }
 
     private static Appointment CreateAppointment(Guid doctorId, DateOnly scheduledDate) =>

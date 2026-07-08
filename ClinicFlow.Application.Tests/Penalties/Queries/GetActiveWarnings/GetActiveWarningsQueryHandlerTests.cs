@@ -54,6 +54,11 @@ public class GetActiveWarningsQueryHandlerTests
 
         resultList[1].Id.Should().Be(warning2.Id);
         resultList[1].Type.Should().Be(nameof(PenaltyType.Warning));
+
+        _penaltyRepositoryMock.Verify(
+            x => x.GetActiveWarningsPaginatedAsync(1, 10, It.IsAny<CancellationToken>()),
+            Times.Once
+        );
     }
 
     [Fact]
@@ -74,5 +79,10 @@ public class GetActiveWarningsQueryHandlerTests
         result.Items.Should().BeEmpty();
         result.TotalCount.Should().Be(0);
         result.TotalPages.Should().Be(0);
+
+        _penaltyRepositoryMock.Verify(
+            x => x.GetActiveWarningsPaginatedAsync(1, 10, It.IsAny<CancellationToken>()),
+            Times.Once
+        );
     }
 }

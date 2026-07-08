@@ -73,6 +73,11 @@ public class GetPatientsByUserIdQueryHandlerTests
         resultList[1].BloodType.Should().Be("A+");
         resultList[1].EmergencyContactName.Should().Be("Jane");
         resultList[1].EmergencyContactPhone.Should().Be("555-1234");
+
+        _patientRepositoryMock.Verify(
+            x => x.GetAllByUserIdAsync(userId, It.IsAny<CancellationToken>()),
+            Times.Once
+        );
     }
 
     [Fact]
@@ -115,5 +120,10 @@ public class GetPatientsByUserIdQueryHandlerTests
 
         resultList[1].BloodType.Should().BeNull();
         resultList[1].EmergencyContactPhone.Should().BeNull();
+
+        _patientRepositoryMock.Verify(
+            x => x.GetAllByUserIdAsync(userId, It.IsAny<CancellationToken>()),
+            Times.Once
+        );
     }
 }

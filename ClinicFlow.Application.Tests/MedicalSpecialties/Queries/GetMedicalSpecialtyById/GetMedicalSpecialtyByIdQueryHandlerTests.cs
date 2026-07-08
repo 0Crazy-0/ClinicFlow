@@ -46,6 +46,11 @@ public class GetMedicalSpecialtyByIdQueryHandlerTests
         result.Description.Should().Be(specialty.Description);
         result.TypicalDurationMinutes.Should().Be(specialty.TypicalDuration.Minutes);
         result.MinCancellationHours.Should().Be(specialty.CancellationPolicy.Hours);
+
+        _repositoryMock.Verify(
+            x => x.GetByIdAsync(specialty.Id, It.IsAny<CancellationToken>()),
+            Times.Once
+        );
     }
 
     [Fact]

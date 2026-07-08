@@ -38,6 +38,11 @@ public class GetAllMedicalSpecialtiesQueryHandlerTests
         result.Should().HaveCount(2);
         result[0].IsDeleted.Should().BeFalse();
         result[1].IsDeleted.Should().BeTrue();
+
+        _repositoryMock.Verify(
+            x => x.GetAllIncludingDeletedAsync(It.IsAny<CancellationToken>()),
+            Times.Once
+        );
     }
 
     [Fact]
@@ -57,5 +62,10 @@ public class GetAllMedicalSpecialtiesQueryHandlerTests
         // Assert
         result.Should().NotBeNull();
         result.Should().BeEmpty();
+
+        _repositoryMock.Verify(
+            x => x.GetAllIncludingDeletedAsync(It.IsAny<CancellationToken>()),
+            Times.Once
+        );
     }
 }

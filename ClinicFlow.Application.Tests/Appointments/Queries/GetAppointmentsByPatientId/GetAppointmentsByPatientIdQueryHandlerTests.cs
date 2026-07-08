@@ -48,6 +48,11 @@ public class GetAppointmentsByPatientIdQueryHandlerTests
         result.TotalPages.Should().Be(1);
         result.Items.Should().HaveCount(2);
         result.Items.Select(x => x.PatientId).Should().AllBeEquivalentTo(patientId);
+
+        _appointmentRepositoryMock.Verify(
+            x => x.GetByPatientIdPaginatedAsync(patientId, 1, 10, It.IsAny<CancellationToken>()),
+            Times.Once
+        );
     }
 
     [Fact]
@@ -75,6 +80,17 @@ public class GetAppointmentsByPatientIdQueryHandlerTests
         result.Items.Should().BeEmpty();
         result.TotalCount.Should().Be(0);
         result.TotalPages.Should().Be(0);
+
+        _appointmentRepositoryMock.Verify(
+            x =>
+                x.GetByPatientIdPaginatedAsync(
+                    query.PatientId,
+                    1,
+                    10,
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Once
+        );
     }
 
     private Appointment CreateAppointment(Guid patientId) =>
