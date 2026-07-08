@@ -3,15 +3,15 @@ using ClinicFlow.Application.Common.Models;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using MediatR;
 
-namespace ClinicFlow.Application.Appointments.Queries.GetAppointmentsByDoctorId;
+namespace ClinicFlow.Application.Appointments.Queries.GetAppointmentsByDoctorIdAndDate;
 
-public sealed class GetAppointmentsByDoctorIdQueryHandler(
+public sealed class GetAppointmentsByDoctorIdAndDateQueryHandler(
     IAppointmentRepository appointmentRepository
-) : IRequestHandler<GetAppointmentsByDoctorIdQuery, PaginatedList<AppointmentDto>>
+) : IRequestHandler<GetAppointmentsByDoctorIdAndDateQuery, PaginatedList<AppointmentDto>>
 {
     /// <inheritdoc />
     public async Task<PaginatedList<AppointmentDto>> Handle(
-        GetAppointmentsByDoctorIdQuery request,
+        GetAppointmentsByDoctorIdAndDateQuery request,
         CancellationToken cancellationToken
     )
     {

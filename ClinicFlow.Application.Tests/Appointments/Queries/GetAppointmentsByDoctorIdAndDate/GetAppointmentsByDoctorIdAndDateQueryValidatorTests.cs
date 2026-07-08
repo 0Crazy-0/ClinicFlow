@@ -1,20 +1,20 @@
-using ClinicFlow.Application.Appointments.Queries.GetAppointmentsByDoctorId;
+using ClinicFlow.Application.Appointments.Queries.GetAppointmentsByDoctorIdAndDate;
 using ClinicFlow.Domain.Common;
 using FluentValidation.TestHelper;
 using Microsoft.Extensions.Time.Testing;
 
-namespace ClinicFlow.Application.Tests.Appointments.Queries.GetAppointmentsByDoctorId;
+namespace ClinicFlow.Application.Tests.Appointments.Queries.GetAppointmentsByDoctorIdAndDate;
 
-public class GetAppointmentsByDoctorIdQueryValidatorTests
+public class GetAppointmentsByDoctorIdAndDateQueryValidatorTests
 {
     private readonly FakeTimeProvider _fakeTime = new();
-    private readonly GetAppointmentsByDoctorIdQueryValidator _sut = new();
+    private readonly GetAppointmentsByDoctorIdAndDateQueryValidator _sut = new();
 
     [Fact]
     public void Validate_ShouldNotHaveError_WhenQueryIsValid()
     {
         // Arrange
-        var query = new GetAppointmentsByDoctorIdQuery(
+        var query = new GetAppointmentsByDoctorIdAndDateQuery(
             Guid.NewGuid(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime),
             1,
@@ -32,7 +32,7 @@ public class GetAppointmentsByDoctorIdQueryValidatorTests
     public void Validate_ShouldHaveError_WhenDoctorIdIsEmpty()
     {
         // Arrange
-        var query = new GetAppointmentsByDoctorIdQuery(
+        var query = new GetAppointmentsByDoctorIdAndDateQuery(
             Guid.Empty,
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime),
             1,
@@ -52,7 +52,7 @@ public class GetAppointmentsByDoctorIdQueryValidatorTests
     public void Validate_ShouldHaveError_WhenDateIsEmpty()
     {
         // Arrange
-        var query = new GetAppointmentsByDoctorIdQuery(Guid.NewGuid(), default, 1, 10);
+        var query = new GetAppointmentsByDoctorIdAndDateQuery(Guid.NewGuid(), default, 1, 10);
 
         // Act
         var result = _sut.TestValidate(query);
@@ -69,7 +69,7 @@ public class GetAppointmentsByDoctorIdQueryValidatorTests
     public void Validate_ShouldHaveError_WhenPageNumberIsLessThanOne(int pageNumber)
     {
         // Arrange
-        var query = new GetAppointmentsByDoctorIdQuery(
+        var query = new GetAppointmentsByDoctorIdAndDateQuery(
             Guid.NewGuid(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime),
             pageNumber,
@@ -92,7 +92,7 @@ public class GetAppointmentsByDoctorIdQueryValidatorTests
     public void Validate_ShouldHaveError_WhenPageSizeIsOutOfRange(int pageSize)
     {
         // Arrange
-        var query = new GetAppointmentsByDoctorIdQuery(
+        var query = new GetAppointmentsByDoctorIdAndDateQuery(
             Guid.NewGuid(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime),
             1,
