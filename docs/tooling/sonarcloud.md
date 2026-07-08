@@ -2,7 +2,7 @@
 
 This document outlines the design decisions, conventions, and guidelines for using **SonarCloud** within the ClinicFlow project.
 
-Configuration is managed entirely through the SonarCloud web UI and CLI parameters in the CI pipeline — there is no local configuration file. See the [ci.yml](../../.github/workflows/ci.yml) file for the pipeline integration.
+Configuration is managed entirely through the SonarCloud web UI and CLI parameters in the CI pipeline. There is no local configuration file. See the [ci.yml](../../.github/workflows/ci.yml) file for the pipeline integration.
 
 ---
 
@@ -29,7 +29,7 @@ Consistent with the [Codecov philosophy](./codecov.md), **we do not use `// NOSO
 
 ### 3. Coverage Source
 
-SonarCloud consumes the same OpenCover XML report (`coverage.opencover.xml`) generated during the test step in CI. Coverage is not collected separately — both Codecov and SonarCloud share the same test execution and report artifacts.
+SonarCloud consumes the same OpenCover XML report (`coverage.opencover.xml`) generated during the test step in CI. Coverage is not collected separately. Both Codecov and SonarCloud share the same test execution and report artifacts.
 
 ---
 
@@ -46,7 +46,7 @@ The project uses the **Sonar way** default Quality Gate, which enforces the foll
 | New Security Hotspots Rating | ≤ A |
 | New Code Smells Rating | ≤ A |
 
-The Quality Gate is configured as a **required check** for Pull Requests — failing it blocks the merge.
+The Quality Gate is configured as a **required check** for Pull Requests. Failing it blocks the merge.
 
 ---
 
@@ -67,8 +67,8 @@ These patterns are excluded from coverage analysis because they do not contain t
 
 These patterns are excluded from Copy-Paste Detection because their structural similarity is intentional by design:
 
-- **Reschedule Command Handlers:** `RescheduleByDoctorCommandHandler.cs`, `RescheduleByStaffCommandHandler.cs` — These handlers orchestrate the same rescheduling workflow but intentionally remain separate. Each delegates to a distinct domain service method that enforces different authorization and business rules depending on who initiates the reschedule (doctor vs. staff). A generic handler was explicitly rejected to keep each handler readable and independently evolvable as requirements grow.
-- **AppointmentType Query Handlers:** `GetAllActiveAppointmentTypesQueryHandler.cs`, `GetAppointmentTypeByIdQueryHandler.cs`, `GetAppointmentTypesByCategoryQueryHandler.cs`, `GetEligibleAppointmentTypesQueryHandler.cs` — These handlers follow the same CQRS orchestration pattern (fetch → project → return). Their structural similarity is a natural consequence of consistent handler design, not duplication.
+- **Reschedule Command Handlers:** `RescheduleByDoctorCommandHandler.cs`, `RescheduleByStaffCommandHandler.cs`. These handlers orchestrate the same rescheduling workflow but intentionally remain separate. Each delegates to a distinct domain service method that enforces different authorization and business rules depending on who initiates the reschedule (doctor vs. staff). A generic handler was explicitly rejected to keep each handler readable and independently evolvable as requirements grow.
+- **AppointmentType Query Handlers:** `GetAllActiveAppointmentTypesQueryHandler.cs`, `GetAppointmentTypeByIdQueryHandler.cs`, `GetAppointmentTypesByCategoryQueryHandler.cs`, `GetEligibleAppointmentTypesQueryHandler.cs`. These handlers follow the same CQRS orchestration pattern (fetch → project → return). Their structural similarity is a natural consequence of consistent handler design, not duplication.
 - **Command Validators (`**/Commands/**/*Validator.cs`):** Validators were originally built on shared base classes and interfaces (e.g., `RegisterUserCommandValidatorBase<T>`, `CancelCommandValidatorBase<T>`). These abstractions were removed in favor of standalone validators to eliminate unnecessary coupling and forced property contracts. The resulting validators share structural patterns inherent to the FluentValidation API, which triggers the duplication detector despite each validator being independently authored.
 - **`PatientPenalty.cs`:** Contains intentionally duplicated factory methods (`CreateAutomaticBlock` / `CreateManualBlock`) that preserve explicit domain intent despite identical implementations.
 - **Migrations (`**/Migrations/**`):** Auto-generated migration code.
@@ -82,7 +82,7 @@ These patterns are excluded from Copy-Paste Detection because their structural s
 
 The following SonarCloud issues have been marked as **False Positive** in the web UI with documented justifications:
 
-### `CA1859` — Use concrete type for improved performance
+### `CA1859`. Use concrete type for improved performance
 
 **File:** `AppointmentGenerator.cs` (Infrastructure/Persistence/Seeding)
 
@@ -90,9 +90,9 @@ The following SonarCloud issues have been marked as **False Positive** in the we
 Change type of field '_patientUsersById' from 'IReadOnlyDictionary' to 'Dictionary' for improved performance
 ```
 
-**Resolution:** `IReadOnlyDictionary` is intentional — it enforces immutability at compile time. The marginal performance gain from using a concrete type does not justify losing the compile-time safety guarantee.
+**Resolution:** `IReadOnlyDictionary` is intentional. It enforces immutability at compile time. The marginal performance gain from using a concrete type does not justify losing the compile-time safety guarantee.
 
-### `S2068` — Hard-coded credentials
+### `S2068`. Hard-coded credentials
 
 **File:** `ApplicationDbContextFactory.cs` (Infrastructure/Persistence)
 
@@ -102,7 +102,7 @@ Change type of field '_patientUsersById' from 'IReadOnlyDictionary' to 'Dictiona
 
 **Resolution:** This is a design-time factory for EF Core CLI migrations only. The connection string is intentional for local development. This class is not used in production and will be removed once the API layer provides its own DI configuration.
 
-### `S107` — Too many constructor parameters
+### `S107`. Too many constructor parameters
 
 **Files:** `RescheduleByPatientCommandHandler.cs`, `ScheduleByPatientCommandHandler.cs` (Application)
 
@@ -112,7 +112,7 @@ Constructor has 9 parameters, which is greater than the 7 authorized.
 
 **Resolution:** Intentional by design. These are CQRS orchestration handlers where each of the 9 dependencies serves a distinct, non-mergeable responsibility. Refactoring into facade or aggregate services would obscure dependencies without reducing actual complexity.
 
-### `S4144` — Identical method implementations
+### `S4144`. Identical method implementations
 
 **File:** `PatientPenalty.cs` (Domain/Entities)
 
@@ -120,13 +120,13 @@ Constructor has 9 parameters, which is greater than the 7 authorized.
 Update this method so that its implementation is not identical to 'CreateAutomaticBlock'.
 ```
 
-**Resolution:** `CreateManualBlock` intentionally duplicates `CreateAutomaticBlock` to preserve explicit domain intent. Each factory method represents a distinct business concept — merging them would sacrifice domain clarity for mechanical deduplication.
+**Resolution:** `CreateManualBlock` intentionally duplicates `CreateAutomaticBlock` to preserve explicit domain intent. Each factory method represents a distinct business concept. Merging them would sacrifice domain clarity for mechanical deduplication.
 
 ---
 
 ## Resolution Protocol for Failing Quality Gate
 
-The SonarCloud Quality Gate is a **required check** — it cannot be overridden or bypassed. If it fails, the Pull Request cannot be merged. Period.
+The SonarCloud Quality Gate is a **required check**. It cannot be overridden or bypassed. If it fails, the Pull Request cannot be merged. Period.
 
 Resolution is handled through the SonarCloud web UI by inspecting the specific issues reported on the Pull Request.
 
@@ -140,7 +140,7 @@ If the reported issue is legitimate, it must be corrected with a commit on the s
 
 ### False Positives — Mark in SonarCloud UI
 
-If the reported issue is a false positive, the resolution is managed entirely through the SonarCloud web UI — never by modifying source code to appease the tool.
+If the reported issue is a false positive, the resolution is managed entirely through the SonarCloud web UI, never by modifying source code to appease the tool.
 
 **Who can mark false positives:** Only the project administrator. Contributors cannot mark issues as false positives directly.
 
@@ -182,7 +182,7 @@ New query or command handlers that follow established patterns may trigger the d
 
 ### Adding `sonar-project.properties` (PR [#242](https://github.com/0Crazy-0/ClinicFlow/pull/242))
 **Issue:** An attempt to add a local `sonar-project.properties` file. As detailed in [No sonar-project.properties File](#1-no-sonar-projectproperties-file), this file is incompatible with the .NET scanner and causes CI to fail immediately.
-**Resolution:** PR closed. No exclusion or workaround applies — the file must not exist in the repository.
+**Resolution:** PR closed. No exclusion or workaround applies. The file must not exist in the repository.
 
 ### Parameter Renaming in Interface Implementations (Rule S927) (PR [#191](https://github.com/0Crazy-0/ClinicFlow/pull/191))
 **Issue:** Renaming parameters in implemented methods (e.g., `cancellationToken` → `ct` in MediatR handlers) violates rule S927, which requires implementation parameter names to match the interface declaration.

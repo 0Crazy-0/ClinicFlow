@@ -19,7 +19,7 @@ public class MedicalSpecialty : SoftDeletableEntity
 
     /// <remarks>
     /// Reference value for statistics and reporting, and a suggested default when
-    /// defining new appointment types. Does not drive scheduling directly — the
+    /// defining new appointment types. Does not drive scheduling directly. The
     /// operative duration is <see cref="AppointmentTypeDefinition.Duration"/>.
     /// </remarks>
     public EncounterDuration TypicalDuration { get; private set; }

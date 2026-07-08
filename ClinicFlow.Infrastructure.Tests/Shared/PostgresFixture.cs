@@ -26,7 +26,7 @@ public class PostgresFixture : IAsyncLifetime
 
         Context = new ApplicationDbContext(options);
 
-        // Database exists but has no tables yet — EnsureCreatedAsync creates the schema from EF Core model.
+        // Database exists but has no tables yet. EnsureCreatedAsync creates the schema from EF Core model.
         await Context.Database.EnsureCreatedAsync();
 
         DbConnection = Context.Database.GetDbConnection();

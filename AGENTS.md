@@ -1,4 +1,4 @@
-# ClinicFlow — AI Agent Context
+# ClinicFlow AI Agent Context
 
 > This document is the single source of truth for any AI assistant working on this codebase.
 > Read it completely before writing any code. Violating these rules is unacceptable.
@@ -10,7 +10,7 @@
 The system handles:
 
 - Management of doctors, medical specialties, and schedules.
-- Appointment scheduling, rescheduling, cancellation, check-in, start, completion, and no-show marking — all with strict business rules per actor role (Doctor, Patient, Staff).
+- Appointment scheduling, rescheduling, cancellation, check-in, start, completion, and no-show marking, all with strict business rules per actor role (Doctor, Patient, Staff).
 - Patient management, family members, medical profiles, and penalty/blocking systems for non-compliance.
 - Medical records with clinical forms, templates, and JSON schema validation.
 
@@ -33,7 +33,7 @@ ClinicFlow.Infrastructure.Tests → Unit/integration tests for the infrastructur
 
 **Future layers** (not yet created):
 
-- `ClinicFlow.API` — ASP.NET Core Web API / Minimal APIs
+- `ClinicFlow.API` ASP.NET Core Web API / Minimal APIs
 
 ### Technology Stack
 
@@ -61,15 +61,15 @@ Domain ← Application ← Infrastructure ← API
 
 ### Absolute Prohibitions
 
-1. **No external NuGet packages** — The domain layer must have zero `PackageReference` entries.
-2. **No external namespaces** — No `using` statements referencing anything outside `ClinicFlow.Domain`.
-3. **No infrastructure queries** — Domain services never inject repositories or make database calls. They receive pre-fetched data from the Application layer.
-4. **No interfaces injected** — Domain services must not depend on injected interfaces. The single exception is infrastructure validation policies (see [Policy Pattern](#policy-pattern)).
+1. **No external NuGet packages**. The domain layer must have zero `PackageReference` entries.
+2. **No external namespaces**. No `using` statements referencing anything outside `ClinicFlow.Domain`.
+3. **No infrastructure queries**. Domain services never inject repositories or make database calls. They receive pre-fetched data from the Application layer.
+4. **No interfaces injected**. Domain services must not depend on injected interfaces. The single exception is infrastructure validation policies (see [Policy Pattern](#policy-pattern)).
 
 ### Entity Design
 
 - All entities inherit from `BaseEntity` which provides `Id` (Guid, private set), `IsDeleted` (soft-delete), and `DomainEvents`.
-- Entities use the **Factory Method** pattern — construction is done through static `Create(...)` or `Schedule(...)` methods, never through direct `new` (constructors are parameterless and protected/private for ORM compatibility).
+- Entities use the **Factory Method** pattern. Construction is done through static `Create(...)` or `Schedule(...)` methods, never through direct `new` (constructors are parameterless and protected/private for ORM compatibility).
 - Entity methods that **require a Domain Service** to function must be `internal`. Methods that work independently are `public`. This visibility convention communicates architectural intent.
 
 ### Domain Errors
@@ -235,33 +235,34 @@ See the [clinicflow-testing-application](.agents/skills/clinicflow-testing-appli
 
 - All code (classes, methods, variables, namespaces, comments, XML docs) must be in **English**.
 - Chat/discussions with the developer can be in **Spanish**.
-- The developer handles commits manually — never auto-commit.
+- The developer handles commits manually, never auto-commit.
 
 ### C# Preferences
 
 - Use `sealed` on all classes that are not designed for inheritance (handlers, commands, args, contexts).
 - Use `record` for immutable data structures (commands, queries, args, contexts).
 - Use primary constructors for dependency injection in handlers and for data in commands.
-- Nullable reference types are active — respect nullability annotations.
+- Nullable reference types are active. Respect nullability annotations.
 
 ### XML Documentation Rules
 
-1. **Only document when it adds value** — do not document self-explanatory members.
-2. **Never document test classes** — no XML docs in `*Tests.cs`, `*Fixture.cs`, or any test project file.
+1. **Only document when it adds value**. Do not document self-explanatory members.
+2. **Never document test classes**. No XML docs in `*Tests.cs`, `*Fixture.cs`, or any test project file.
 3. **Start `<summary>` with a third-person verb**: "Marks the appointment as...", "Validates the patient's..."
 4. **Do not repeat the member name** in the documentation.
 5. **Use `<inheritdoc/>`** on interface implementations instead of repeating docs.
 6. **Use `<remarks>`** only for non-obvious business constraints or design decisions.
 7. **Always write documentation in English**.
+8. **Never use the em-dash (`—`) or standard hyphen (`-`) as a separator** in documentation or comments. Use a period, comma, or colon instead.
 
 ```csharp
-// ❌ No value added — name says it all
+// ❌ No value added. Name says it all
 /// <summary>
 /// Gets the patient name.
 /// </summary>
 public string Name { get; set; }
 
-// ✅ Adds value — explains non-obvious constraint
+// ✅ Adds value. Explains non-obvious constraint
 /// <summary>
 /// Marks the appointment as a no-show. Can only be executed if the appointment is in a confirmed state.
 /// </summary>
@@ -272,16 +273,16 @@ internal void MarkAsNoShow() { }
 
 ## Interaction Rules with Developer
 
-### Mandatory — Ask Before Acting
+### Mandatory. Ask Before Acting
 
-1. **Before installing any NuGet package** in any layer (including test projects) — propose it, explain why, and wait for approval.
-2. **Before modifying significant domain business logic** — explain the proposed change, the reasoning, and wait for discussion.
+1. **Before installing any NuGet package** in any layer (including test projects), propose it, explain why, and wait for approval.
+2. **Before modifying significant domain business logic**, explain the proposed change, the reasoning, and wait for discussion.
 
 ### Prohibited Actions
 
 - Never install packages in `ClinicFlow.Domain`.
 - Never add conditional/decision logic in the Application layer handlers.
 - Never create test helpers with conditional logic.
-- Never use `DateTime.UtcNow` / `DateTimeOffset.UtcNow` directly — always use `TimeProvider`.
+- Never use `DateTime.UtcNow` / `DateTimeOffset.UtcNow` directly. Always use `TimeProvider`.
 - Never skip writing tests for new features.
 - Never auto-commit or auto-push.
