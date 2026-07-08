@@ -17,7 +17,7 @@ public interface IPatientPenaltyRepository
     );
 
     /// <remarks>
-    /// Includes penalties regardless of their current status — this covers
+    /// Includes penalties regardless of their current status. This covers
     /// penalties marked as removed (<see cref="PatientPenalty.IsRemoved"/> is <c>true</c>)
     /// and temporary blocks whose <see cref="PatientPenalty.BlockedUntil"/> date has already passed.
     /// </remarks>
@@ -31,6 +31,12 @@ public interface IPatientPenaltyRepository
         Guid patientId,
         int pageNumber,
         int pageSize,
+        CancellationToken cancellationToken = default
+    );
+
+    Task<IReadOnlyList<PatientPenalty>> GetActiveBlocksByPatientIdAsync(
+        Guid patientId,
+        DateOnly referenceDate,
         CancellationToken cancellationToken = default
     );
 
