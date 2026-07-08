@@ -1,23 +1,23 @@
 using AwesomeAssertions;
-using ClinicFlow.Application.Appointments.Queries.GetAppointmentsByDoctorId;
+using ClinicFlow.Application.Appointments.Queries.GetAppointmentsByDoctorIdAndDate;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.ValueObjects;
 using Microsoft.Extensions.Time.Testing;
 using Moq;
 
-namespace ClinicFlow.Application.Tests.Appointments.Queries.GetAppointmentsByDoctorId;
+namespace ClinicFlow.Application.Tests.Appointments.Queries.GetAppointmentsByDoctorIdAndDate;
 
-public class GetAppointmentsByDoctorIdQueryHandlerTests
+public class GetAppointmentsByDoctorIdAndDateQueryHandlerTests
 {
     private readonly FakeTimeProvider _fakeTime = new();
     private readonly Mock<IAppointmentRepository> _appointmentRepositoryMock;
-    private readonly GetAppointmentsByDoctorIdQueryHandler _sut;
+    private readonly GetAppointmentsByDoctorIdAndDateQueryHandler _sut;
 
-    public GetAppointmentsByDoctorIdQueryHandlerTests()
+    public GetAppointmentsByDoctorIdAndDateQueryHandlerTests()
     {
         _appointmentRepositoryMock = new Mock<IAppointmentRepository>();
-        _sut = new GetAppointmentsByDoctorIdQueryHandler(_appointmentRepositoryMock.Object);
+        _sut = new GetAppointmentsByDoctorIdAndDateQueryHandler(_appointmentRepositoryMock.Object);
     }
 
     [Fact]
@@ -26,7 +26,7 @@ public class GetAppointmentsByDoctorIdQueryHandlerTests
         // Arrange
         var doctorId = Guid.NewGuid();
         var date = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
-        var query = new GetAppointmentsByDoctorIdQuery(doctorId, date, 1, 10);
+        var query = new GetAppointmentsByDoctorIdAndDateQuery(doctorId, date, 1, 10);
         var appointments = new List<Appointment>
         {
             CreateAppointment(doctorId, date),
@@ -60,7 +60,7 @@ public class GetAppointmentsByDoctorIdQueryHandlerTests
     public async Task Handle_ShouldReturnEmptyPaginatedList_WhenDoctorHasNoAppointmentsOnDate()
     {
         // Arrange
-        var query = new GetAppointmentsByDoctorIdQuery(
+        var query = new GetAppointmentsByDoctorIdAndDateQuery(
             Guid.NewGuid(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime),
             1,

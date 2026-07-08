@@ -1,12 +1,12 @@
 using ClinicFlow.Domain.Common;
 using FluentValidation;
 
-namespace ClinicFlow.Application.Appointments.Queries.GetAppointmentsByDoctorId;
+namespace ClinicFlow.Application.Appointments.Queries.GetAppointmentsByDoctorIdAndDate;
 
-public sealed class GetAppointmentsByDoctorIdQueryValidator
-    : AbstractValidator<GetAppointmentsByDoctorIdQuery>
+public sealed class GetAppointmentsByDoctorIdAndDateQueryValidator
+    : AbstractValidator<GetAppointmentsByDoctorIdAndDateQuery>
 {
-    public GetAppointmentsByDoctorIdQueryValidator()
+    public GetAppointmentsByDoctorIdAndDateQueryValidator()
     {
         RuleFor(x => x.DoctorId).NotEmpty().WithMessage(DomainErrors.Validation.InvalidValue);
         RuleFor(x => x.Date).NotEmpty().WithMessage(DomainErrors.Validation.ValueRequired);
