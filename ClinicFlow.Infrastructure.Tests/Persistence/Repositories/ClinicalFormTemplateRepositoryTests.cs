@@ -331,8 +331,7 @@ public class ClinicalFormTemplateRepositoryTests(PostgresFixture fixture) : IAsy
         var results = await _sut.GetAllActiveAsync(TestContext.Current.CancellationToken);
 
         // Assert
-        results.Should().HaveCount(2);
-        results.Select(r => r.Id).Should().BeEquivalentTo([active1.Id, active2.Id]);
+        results.Should().BeEquivalentTo([active1, active2]);
     }
 
     [Fact]
@@ -353,8 +352,7 @@ public class ClinicalFormTemplateRepositoryTests(PostgresFixture fixture) : IAsy
         var results = await _sut.GetAllIncludingDeletedAsync(TestContext.Current.CancellationToken);
 
         // Assert
-        results.Should().HaveCount(3);
-        results.Select(r => r.Id).Should().BeEquivalentTo([active1.Id, active2.Id, inactive.Id]);
+        results.Should().BeEquivalentTo([active1, active2, inactive]);
     }
 
     [Fact]
