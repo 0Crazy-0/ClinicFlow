@@ -67,7 +67,11 @@ public class Schedule : BaseEntity
         DayOfWeek dayOfWeek
     )
     {
-        if (existingSchedules.Any(s => s.DayOfWeek == dayOfWeek && s.IsActive))
+        if (
+            existingSchedules.Any(s =>
+                s.DoctorId == doctorId && s.DayOfWeek == dayOfWeek && s.IsActive
+            )
+        )
             throw new ScheduleAlreadyExistsException(
                 DomainErrors.Schedule.ScheduleAlreadyExists,
                 doctorId,
