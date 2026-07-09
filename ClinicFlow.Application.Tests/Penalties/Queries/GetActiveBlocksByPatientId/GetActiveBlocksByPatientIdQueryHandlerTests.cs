@@ -24,7 +24,7 @@ public class GetActiveBlocksByPatientIdQueryHandlerTests
     public async Task Handle_ShouldReturnActiveBlocks_WhenActiveBlocksExist()
     {
         // Arrange
-        var patientId = Guid.NewGuid();
+        var patientId = Guid.CreateVersion7();
         var referenceDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
         var block = PatientPenalty.CreateManualBlock(
             patientId,
@@ -72,7 +72,7 @@ public class GetActiveBlocksByPatientIdQueryHandlerTests
     public async Task Handle_ShouldReturnEmptyList_WhenNoActiveBlocksExist()
     {
         // Arrange
-        var patientId = Guid.NewGuid();
+        var patientId = Guid.CreateVersion7();
         var referenceDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
 
         _penaltyRepositoryMock

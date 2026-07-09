@@ -17,7 +17,7 @@ public class GetAppointmentTypeByIdQueryValidatorTests
     public void Validate_ShouldBeValid_WhenIdIsProvided()
     {
         // Arrange
-        var query = new GetAppointmentTypeByIdQuery(Guid.NewGuid());
+        var query = new GetAppointmentTypeByIdQuery(Guid.CreateVersion7());
 
         // Act
         var result = _sut.TestValidate(query);

@@ -20,8 +20,8 @@ public class RescheduleByDoctorCommandValidatorTests
     {
         // Arrange
         var command = new RescheduleByDoctorCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0),
@@ -41,7 +41,7 @@ public class RescheduleByDoctorCommandValidatorTests
         // Arrange
         var command = new RescheduleByDoctorCommand(
             Guid.Empty,
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0),
@@ -62,7 +62,7 @@ public class RescheduleByDoctorCommandValidatorTests
     {
         // Arrange
         var command = new RescheduleByDoctorCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             Guid.Empty,
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
@@ -84,8 +84,8 @@ public class RescheduleByDoctorCommandValidatorTests
     {
         // Arrange
         var command = new RescheduleByDoctorCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(-1)),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0),
@@ -106,8 +106,8 @@ public class RescheduleByDoctorCommandValidatorTests
     {
         // Arrange
         var command = new RescheduleByDoctorCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(12, 0),
             new TimeOnly(11, 0),

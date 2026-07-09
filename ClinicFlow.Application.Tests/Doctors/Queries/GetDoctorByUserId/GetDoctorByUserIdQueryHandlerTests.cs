@@ -24,12 +24,12 @@ public class GetDoctorByUserIdQueryHandlerTests
     public async Task Handle_ShouldReturnDoctor_WhenDoctorExistsForUser()
     {
         // Arrange
-        var userId = Guid.NewGuid();
+        var userId = Guid.CreateVersion7();
         var doctor = Doctor.Create(
             userId,
             PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("67890"),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Dermatologist specialized in skin cancer detection",
             ConsultationRoom.Create(2, "Dermatology B", 5)
         );
@@ -65,7 +65,7 @@ public class GetDoctorByUserIdQueryHandlerTests
     public async Task Handle_ShouldThrowException_WhenDoctorDoesNotExistForUser()
     {
         // Arrange
-        var userId = Guid.NewGuid();
+        var userId = Guid.CreateVersion7();
         _doctorRepositoryMock
             .Setup(x => x.GetByUserIdAsync(userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((Doctor?)null);

@@ -18,9 +18,9 @@ public class CompleteMedicalEncounterCommandValidatorTests
     {
         // Arrange
         var command = new CompleteMedicalEncounterCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             "Headache",
             [new DynamicClinicalDetailDto("vital-signs", "{}")]
         );
@@ -38,8 +38,8 @@ public class CompleteMedicalEncounterCommandValidatorTests
         // Arrange
         var command = new CompleteMedicalEncounterCommand(
             Guid.Empty,
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             "Headache",
             []
         );
@@ -58,9 +58,9 @@ public class CompleteMedicalEncounterCommandValidatorTests
     {
         // Arrange
         var command = new CompleteMedicalEncounterCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             Guid.Empty,
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Headache",
             []
         );
@@ -79,8 +79,8 @@ public class CompleteMedicalEncounterCommandValidatorTests
     {
         // Arrange
         var command = new CompleteMedicalEncounterCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             Guid.Empty,
             "Headache",
             []
@@ -100,9 +100,9 @@ public class CompleteMedicalEncounterCommandValidatorTests
     {
         // Arrange
         var command = new CompleteMedicalEncounterCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             string.Empty,
             []
         );
@@ -121,9 +121,9 @@ public class CompleteMedicalEncounterCommandValidatorTests
     {
         // Arrange
         var command = new CompleteMedicalEncounterCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             "Headache",
             [new DynamicClinicalDetailDto(string.Empty, "{}")]
         );
@@ -142,9 +142,9 @@ public class CompleteMedicalEncounterCommandValidatorTests
     {
         // Arrange
         var command = new CompleteMedicalEncounterCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             "Headache",
             [new DynamicClinicalDetailDto("vital-signs", string.Empty)]
         );

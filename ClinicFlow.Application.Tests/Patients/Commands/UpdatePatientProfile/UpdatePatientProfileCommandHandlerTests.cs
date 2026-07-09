@@ -34,7 +34,7 @@ public class UpdatePatientProfileCommandHandlerTests
     {
         // Arrange
         var command = new UpdatePatientProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "O+",
             "Peanuts",
             "Asthma",
@@ -70,7 +70,7 @@ public class UpdatePatientProfileCommandHandlerTests
     {
         // Arrange
         var command = new UpdatePatientProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "O+",
             "Peanuts",
             "Asthma",

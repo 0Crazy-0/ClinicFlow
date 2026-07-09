@@ -28,11 +28,11 @@ public class CreateDoctorProfileCommandHandlerTests
     {
         // Arrange
         var command = new CreateDoctorProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "John",
             "Doe",
             "12345",
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Biography",
             1,
             "Cardiology",
@@ -74,11 +74,11 @@ public class CreateDoctorProfileCommandHandlerTests
     {
         // Arrange
         var command = new CreateDoctorProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "John",
             "Doe",
             "12345",
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Biography",
             1,
             "Room A",

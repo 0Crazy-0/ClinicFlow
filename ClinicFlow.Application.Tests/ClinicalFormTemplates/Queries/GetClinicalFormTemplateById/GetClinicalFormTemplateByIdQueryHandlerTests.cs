@@ -57,7 +57,7 @@ public class GetClinicalFormTemplateByIdQueryHandlerTests
     public async Task Handle_ShouldThrowException_WhenTemplateDoesNotExist()
     {
         // Arrange
-        var id = Guid.NewGuid();
+        var id = Guid.CreateVersion7();
         _repositoryMock
             .Setup(x => x.GetByIdAsync(id, It.IsAny<CancellationToken>()))
             .ReturnsAsync((ClinicalFormTemplate?)null);

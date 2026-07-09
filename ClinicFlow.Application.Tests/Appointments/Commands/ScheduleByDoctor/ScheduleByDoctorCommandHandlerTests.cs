@@ -48,9 +48,9 @@ public class ScheduleByDoctorCommandHandlerTests
         var startTime = new TimeOnly(10, 0);
         var endTime = new TimeOnly(11, 0);
         var command = new ScheduleByDoctorCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             scheduledDate,
             startTime,
             endTime,
@@ -137,9 +137,9 @@ public class ScheduleByDoctorCommandHandlerTests
         var startTime = new TimeOnly(10, 0);
         var endTime = new TimeOnly(11, 0);
         var command = new ScheduleByDoctorCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             scheduledDate,
             startTime,
             endTime,
@@ -217,9 +217,9 @@ public class ScheduleByDoctorCommandHandlerTests
     {
         // Arrange
         var command = new ScheduleByDoctorCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0),
@@ -251,9 +251,9 @@ public class ScheduleByDoctorCommandHandlerTests
     {
         // Arrange
         var command = new ScheduleByDoctorCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0),
@@ -292,9 +292,9 @@ public class ScheduleByDoctorCommandHandlerTests
     {
         // Arrange
         var command = new ScheduleByDoctorCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0),
@@ -338,9 +338,9 @@ public class ScheduleByDoctorCommandHandlerTests
     {
         // Arrange
         var command = new ScheduleByDoctorCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0),
@@ -415,9 +415,9 @@ public class ScheduleByDoctorCommandHandlerTests
         // Arrange
         var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
         var command = new ScheduleByDoctorCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             scheduledDate,
             new TimeOnly(10, 0),
             new TimeOnly(11, 0),
@@ -475,7 +475,7 @@ public class ScheduleByDoctorCommandHandlerTests
             userId,
             PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("1234567"),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "555-1234",
             ConsultationRoom.Create(1, "Room A", 1)
         );

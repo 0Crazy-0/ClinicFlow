@@ -53,10 +53,10 @@ public class CompleteMedicalEncounterCommandHandlerTests
     public async Task Handle_ShouldCompleteMedicalEncounter_WhenAllEntitiesExistAndValid()
     {
         // Arrange
-        var doctorId = Guid.NewGuid();
-        var patientId = Guid.NewGuid();
-        var appointmentId = Guid.NewGuid();
-        var appointmentTypeId = Guid.NewGuid();
+        var doctorId = Guid.CreateVersion7();
+        var patientId = Guid.CreateVersion7();
+        var appointmentId = Guid.CreateVersion7();
+        var appointmentTypeId = Guid.CreateVersion7();
         var command = new CompleteMedicalEncounterCommand(
             patientId,
             doctorId,
@@ -107,10 +107,10 @@ public class CompleteMedicalEncounterCommandHandlerTests
     public async Task Handle_ShouldCallRepositoryCreateAndSaveChanges_WhenAllEntitiesExistAndValid()
     {
         // Arrange
-        var doctorId = Guid.NewGuid();
-        var patientId = Guid.NewGuid();
-        var appointmentId = Guid.NewGuid();
-        var appointmentTypeId = Guid.NewGuid();
+        var doctorId = Guid.CreateVersion7();
+        var patientId = Guid.CreateVersion7();
+        var appointmentId = Guid.CreateVersion7();
+        var appointmentTypeId = Guid.CreateVersion7();
         var command = new CompleteMedicalEncounterCommand(
             patientId,
             doctorId,
@@ -156,9 +156,9 @@ public class CompleteMedicalEncounterCommandHandlerTests
     {
         // Arrange
         var command = new CompleteMedicalEncounterCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             "Headache",
             []
         );
@@ -187,11 +187,11 @@ public class CompleteMedicalEncounterCommandHandlerTests
     public async Task Handle_ShouldThrowEntityNotFoundException_WhenAppointmentDoesNotExist()
     {
         // Arrange
-        var doctorId = Guid.NewGuid();
+        var doctorId = Guid.CreateVersion7();
         var command = new CompleteMedicalEncounterCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             doctorId,
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Headache",
             []
         );
@@ -224,10 +224,10 @@ public class CompleteMedicalEncounterCommandHandlerTests
     public async Task Handle_ShouldThrowEntityNotFoundException_WhenAppointmentTypeDoesNotExist()
     {
         // Arrange
-        var doctorId = Guid.NewGuid();
-        var patientId = Guid.NewGuid();
-        var appointmentId = Guid.NewGuid();
-        var appointmentTypeId = Guid.NewGuid();
+        var doctorId = Guid.CreateVersion7();
+        var patientId = Guid.CreateVersion7();
+        var appointmentId = Guid.CreateVersion7();
+        var appointmentTypeId = Guid.CreateVersion7();
         var command = new CompleteMedicalEncounterCommand(
             patientId,
             doctorId,
@@ -268,10 +268,10 @@ public class CompleteMedicalEncounterCommandHandlerTests
     private static Doctor CreateDoctor(Guid id)
     {
         var doctor = Doctor.Create(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("RM-12345"),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Bio",
             ConsultationRoom.Create(1, "Room A", 1)
         );

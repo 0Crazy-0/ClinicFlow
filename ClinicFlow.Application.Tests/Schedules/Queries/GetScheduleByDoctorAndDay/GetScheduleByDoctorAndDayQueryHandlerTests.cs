@@ -22,7 +22,7 @@ public class GetScheduleByDoctorAndDayQueryHandlerTests
     public async Task Handle_ShouldReturnScheduleDto_WhenScheduleExists()
     {
         // Arrange
-        var doctorId = Guid.NewGuid();
+        var doctorId = Guid.CreateVersion7();
         var dayOfWeek = DayOfWeek.Tuesday;
         var schedule = Schedule.Create(
             doctorId,
@@ -59,7 +59,7 @@ public class GetScheduleByDoctorAndDayQueryHandlerTests
     public async Task Handle_ShouldReturnNull_WhenNoScheduleExists()
     {
         // Arrange
-        var doctorId = Guid.NewGuid();
+        var doctorId = Guid.CreateVersion7();
         var dayOfWeek = DayOfWeek.Saturday;
 
         _scheduleRepositoryMock

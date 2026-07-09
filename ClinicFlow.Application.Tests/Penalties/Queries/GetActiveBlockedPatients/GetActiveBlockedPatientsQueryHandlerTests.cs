@@ -26,13 +26,13 @@ public class GetActiveBlockedPatientsQueryHandlerTests
     {
         // Arrange
         var block1 = PatientPenalty.CreateManualBlock(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Rude behavior",
             BlockDuration.Minor,
             _fakeTime.GetUtcNow().UtcDateTime
         );
         var block2 = PatientPenalty.CreateManualBlock(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Repeated no-shows",
             BlockDuration.Severe,
             _fakeTime.GetUtcNow().UtcDateTime

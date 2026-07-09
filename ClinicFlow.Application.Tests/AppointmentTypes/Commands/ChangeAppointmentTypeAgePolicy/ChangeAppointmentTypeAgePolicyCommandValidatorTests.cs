@@ -18,7 +18,12 @@ public class ChangeAppointmentTypeAgePolicyCommandValidatorTests
     public void Validate_ShouldBeValid_WhenAllPropertiesAreProvidedAndValid()
     {
         // Arrange
-        var command = new ChangeAppointmentTypeAgePolicyCommand(Guid.NewGuid(), 18, 65, false);
+        var command = new ChangeAppointmentTypeAgePolicyCommand(
+            Guid.CreateVersion7(),
+            18,
+            65,
+            false
+        );
 
         // Act
         var result = _sut.TestValidate(command);
@@ -31,7 +36,12 @@ public class ChangeAppointmentTypeAgePolicyCommandValidatorTests
     public void Validate_ShouldBeValid_WhenAgeFieldsAreNull()
     {
         // Arrange
-        var command = new ChangeAppointmentTypeAgePolicyCommand(Guid.NewGuid(), null, null, false);
+        var command = new ChangeAppointmentTypeAgePolicyCommand(
+            Guid.CreateVersion7(),
+            null,
+            null,
+            false
+        );
 
         // Act
         var result = _sut.TestValidate(command);
@@ -63,7 +73,7 @@ public class ChangeAppointmentTypeAgePolicyCommandValidatorTests
     {
         // Arrange
         var command = new ChangeAppointmentTypeAgePolicyCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             minimumAge,
             null,
             false
@@ -86,7 +96,7 @@ public class ChangeAppointmentTypeAgePolicyCommandValidatorTests
     {
         // Arrange
         var command = new ChangeAppointmentTypeAgePolicyCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             null,
             maximumAge,
             false
@@ -106,7 +116,7 @@ public class ChangeAppointmentTypeAgePolicyCommandValidatorTests
     {
         // Arrange
         var command = new ChangeAppointmentTypeAgePolicyCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             AgeEligibilityPolicy.MaximumAllowedAge + 1,
             null,
             false
@@ -126,7 +136,7 @@ public class ChangeAppointmentTypeAgePolicyCommandValidatorTests
     {
         // Arrange
         var command = new ChangeAppointmentTypeAgePolicyCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             null,
             AgeEligibilityPolicy.MaximumAllowedAge + 1,
             false

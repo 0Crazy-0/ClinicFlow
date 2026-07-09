@@ -56,7 +56,7 @@ public class DeactivateAppointmentTypeCommandHandlerTests
     public async Task Handle_ShouldThrowEntityNotFoundException_WhenNotFound()
     {
         // Arrange
-        var command = new DeactivateAppointmentTypeCommand(Guid.NewGuid());
+        var command = new DeactivateAppointmentTypeCommand(Guid.CreateVersion7());
 
         _appointmentTypeRepositoryMock
             .Setup(x => x.GetByIdAsync(command.AppointmentTypeId, It.IsAny<CancellationToken>()))

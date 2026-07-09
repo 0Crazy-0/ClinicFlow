@@ -55,7 +55,7 @@ public class ClinicalFormTemplateRepositoryTests(PostgresFixture fixture) : IAsy
     public async Task GetByIdAsync_ShouldReturnNull_WhenDoesNotExist()
     {
         // Arrange
-        var nonExistentId = Guid.NewGuid();
+        var nonExistentId = Guid.CreateVersion7();
 
         // Act
         var result = await _sut.GetByIdAsync(nonExistentId, TestContext.Current.CancellationToken);
@@ -260,7 +260,7 @@ public class ClinicalFormTemplateRepositoryTests(PostgresFixture fixture) : IAsy
     {
         // Arrange & Act
         var result = await _sut.GetByIdIncludingDeletedAsync(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             TestContext.Current.CancellationToken
         );
 

@@ -28,7 +28,7 @@ public class GetPatientByIdQueryHandlerTests
     {
         // Arrange
         var patient = Patient.CreateSelf(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             PersonName.Create("John Doe"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
@@ -67,7 +67,7 @@ public class GetPatientByIdQueryHandlerTests
     {
         // Arrange
         var patient = Patient.CreateSelf(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             PersonName.Create("John Doe"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
@@ -103,7 +103,7 @@ public class GetPatientByIdQueryHandlerTests
     public async Task Handle_ShouldThrowException_WhenPatientDoesNotExist()
     {
         // Arrange
-        var patientId = Guid.NewGuid();
+        var patientId = Guid.CreateVersion7();
         _patientRepositoryMock
             .Setup(x => x.GetByIdAsync(patientId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((Patient?)null);

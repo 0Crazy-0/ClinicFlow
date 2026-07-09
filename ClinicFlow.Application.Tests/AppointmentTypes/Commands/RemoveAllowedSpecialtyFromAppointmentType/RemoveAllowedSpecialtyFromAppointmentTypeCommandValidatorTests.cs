@@ -18,8 +18,8 @@ public class RemoveAllowedSpecialtyFromAppointmentTypeCommandValidatorTests
     {
         // Arrange
         var command = new RemoveAllowedSpecialtyFromAppointmentTypeCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid()
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7()
         );
 
         // Act
@@ -35,7 +35,7 @@ public class RemoveAllowedSpecialtyFromAppointmentTypeCommandValidatorTests
         // Arrange
         var command = new RemoveAllowedSpecialtyFromAppointmentTypeCommand(
             Guid.Empty,
-            Guid.NewGuid()
+            Guid.CreateVersion7()
         );
 
         // Act
@@ -52,7 +52,7 @@ public class RemoveAllowedSpecialtyFromAppointmentTypeCommandValidatorTests
     {
         // Arrange
         var command = new RemoveAllowedSpecialtyFromAppointmentTypeCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             Guid.Empty
         );
 

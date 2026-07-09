@@ -18,8 +18,8 @@ public class RestrictAppointmentTypeToSpecialtiesCommandValidatorTests
     {
         // Arrange
         var command = new RestrictAppointmentTypeToSpecialtiesCommand(
-            Guid.NewGuid(),
-            [Guid.NewGuid(), Guid.NewGuid()]
+            Guid.CreateVersion7(),
+            [Guid.CreateVersion7(), Guid.CreateVersion7()]
         );
 
         // Act
@@ -33,7 +33,10 @@ public class RestrictAppointmentTypeToSpecialtiesCommandValidatorTests
     public void Validate_ShouldHaveError_WhenAppointmentTypeIdIsEmpty()
     {
         // Arrange
-        var command = new RestrictAppointmentTypeToSpecialtiesCommand(Guid.Empty, [Guid.NewGuid()]);
+        var command = new RestrictAppointmentTypeToSpecialtiesCommand(
+            Guid.Empty,
+            [Guid.CreateVersion7()]
+        );
 
         // Act
         var result = _sut.TestValidate(command);
@@ -48,7 +51,7 @@ public class RestrictAppointmentTypeToSpecialtiesCommandValidatorTests
     public void Validate_ShouldHaveError_WhenSpecialtyIdsIsEmpty()
     {
         // Arrange
-        var command = new RestrictAppointmentTypeToSpecialtiesCommand(Guid.NewGuid(), []);
+        var command = new RestrictAppointmentTypeToSpecialtiesCommand(Guid.CreateVersion7(), []);
 
         // Act
         var result = _sut.TestValidate(command);
@@ -64,8 +67,8 @@ public class RestrictAppointmentTypeToSpecialtiesCommandValidatorTests
     {
         // Arrange
         var command = new RestrictAppointmentTypeToSpecialtiesCommand(
-            Guid.NewGuid(),
-            [Guid.NewGuid(), Guid.Empty]
+            Guid.CreateVersion7(),
+            [Guid.CreateVersion7(), Guid.Empty]
         );
 
         // Act

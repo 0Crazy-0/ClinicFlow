@@ -30,7 +30,7 @@ public class UpdateScheduleCommandHandlerTests
     public async Task Handle_ShouldDeactivateOldAndCreateNewSchedule_WhenActiveScheduleExists()
     {
         // Arrange
-        var doctorId = Guid.NewGuid();
+        var doctorId = Guid.CreateVersion7();
         var existingSchedule = Schedule.Create(
             doctorId,
             DayOfWeek.Monday,
@@ -73,7 +73,7 @@ public class UpdateScheduleCommandHandlerTests
     public async Task Handle_ShouldCallRepositoryCreateAndSaveChanges_WhenActiveScheduleExists()
     {
         // Arrange
-        var doctorId = Guid.NewGuid();
+        var doctorId = Guid.CreateVersion7();
         var existingSchedule = Schedule.Create(
             doctorId,
             DayOfWeek.Monday,
@@ -108,7 +108,7 @@ public class UpdateScheduleCommandHandlerTests
     public async Task Handle_ShouldThrowEntityNotFoundException_WhenNoActiveScheduleExists()
     {
         // Arrange
-        var doctorId = Guid.NewGuid();
+        var doctorId = Guid.CreateVersion7();
         var command = new UpdateScheduleCommand(
             doctorId,
             DayOfWeek.Monday,

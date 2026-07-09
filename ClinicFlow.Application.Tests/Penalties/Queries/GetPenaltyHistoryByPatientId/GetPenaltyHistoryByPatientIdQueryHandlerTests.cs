@@ -24,8 +24,12 @@ public class GetPenaltyHistoryByPatientIdQueryHandlerTests
     public async Task Handle_ShouldReturnPaginatedList_WhenPenaltiesExist()
     {
         // Arrange
-        var patientId = Guid.NewGuid();
-        var warning = PatientPenalty.CreateAutomaticWarning(patientId, Guid.NewGuid(), "Warning 1");
+        var patientId = Guid.CreateVersion7();
+        var warning = PatientPenalty.CreateAutomaticWarning(
+            patientId,
+            Guid.CreateVersion7(),
+            "Warning 1"
+        );
         var block = PatientPenalty.CreateManualBlock(
             patientId,
             "Block 1",
@@ -79,7 +83,7 @@ public class GetPenaltyHistoryByPatientIdQueryHandlerTests
     public async Task Handle_ShouldReturnEmptyPaginatedList_WhenNoPenaltiesExist()
     {
         // Arrange
-        var patientId = Guid.NewGuid();
+        var patientId = Guid.CreateVersion7();
 
         _penaltyRepositoryMock
             .Setup(x =>

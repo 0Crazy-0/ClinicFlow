@@ -90,7 +90,7 @@ public class DoctorRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
     public async Task GetByIdAsync_ShouldReturnNull_WhenDoesNotExist()
     {
         // Arrange
-        var nonExistentId = Guid.NewGuid();
+        var nonExistentId = Guid.CreateVersion7();
 
         // Act
         var result = await _sut.GetByIdAsync(nonExistentId, TestContext.Current.CancellationToken);
@@ -163,7 +163,7 @@ public class DoctorRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
     public async Task GetByUserIdAsync_ShouldReturnNull_WhenDoesNotExist()
     {
         // Arrange
-        var nonExistentUserId = Guid.NewGuid();
+        var nonExistentUserId = Guid.CreateVersion7();
 
         // Act
         var result = await _sut.GetByUserIdAsync(
@@ -646,7 +646,7 @@ public class DoctorRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
 
     private static User CreateUser() =>
         User.Create(
-            EmailAddress.Create($"{Guid.NewGuid()}@clinic.com"),
+            EmailAddress.Create($"{Guid.CreateVersion7()}@clinic.com"),
             "password",
             PhoneNumber.Create($"+1555{Random.Shared.Next(1000000, 9999999)}"),
             UserRole.Doctor

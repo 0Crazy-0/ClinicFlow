@@ -12,7 +12,7 @@ public class GetClinicalFormTemplateByIdQueryValidatorTests
     public void Validate_ShouldNotHaveErrors_WhenIdIsValid()
     {
         // Arrange
-        var query = new GetClinicalFormTemplateByIdQuery(Guid.NewGuid());
+        var query = new GetClinicalFormTemplateByIdQuery(Guid.CreateVersion7());
 
         // Act
         var result = _sut.TestValidate(query);

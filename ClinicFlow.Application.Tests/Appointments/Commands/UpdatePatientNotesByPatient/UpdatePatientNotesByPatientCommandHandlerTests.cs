@@ -32,9 +32,9 @@ public class UpdatePatientNotesByPatientCommandHandlerTests
     public async Task Handle_ShouldUpdatePatientNotes_WhenInitiatorIsSelf()
     {
         // Arrange
-        var userId = Guid.NewGuid();
+        var userId = Guid.CreateVersion7();
         var command = new UpdatePatientNotesByPatientCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             userId,
             "Updated patient notes"
         );
@@ -68,8 +68,8 @@ public class UpdatePatientNotesByPatientCommandHandlerTests
     {
         // Arrange
         var command = new UpdatePatientNotesByPatientCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             "Notes"
         );
 
@@ -94,11 +94,11 @@ public class UpdatePatientNotesByPatientCommandHandlerTests
     {
         // Arrange
         var command = new UpdatePatientNotesByPatientCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             "Notes"
         );
-        var appointment = CreateAppointment(Guid.NewGuid());
+        var appointment = CreateAppointment(Guid.CreateVersion7());
 
         _appointmentRepositoryMock
             .Setup(r => r.GetByIdAsync(command.AppointmentId, It.IsAny<CancellationToken>()))
@@ -128,8 +128,12 @@ public class UpdatePatientNotesByPatientCommandHandlerTests
     public async Task Handle_ShouldThrowEntityNotFoundException_WhenInitiatorPatientNotFound()
     {
         // Arrange
-        var userId = Guid.NewGuid();
-        var command = new UpdatePatientNotesByPatientCommand(Guid.NewGuid(), userId, "Notes");
+        var userId = Guid.CreateVersion7();
+        var command = new UpdatePatientNotesByPatientCommand(
+            Guid.CreateVersion7(),
+            userId,
+            "Notes"
+        );
         var targetPatient = CreatePatientSelf(userId);
         var appointment = CreateAppointment(targetPatient.Id);
 
@@ -166,8 +170,8 @@ public class UpdatePatientNotesByPatientCommandHandlerTests
     private Appointment CreateAppointment(Guid patientId) =>
         Appointment.Schedule(
             patientId,
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0))
         );

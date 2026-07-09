@@ -29,7 +29,7 @@ public class SetupWeeklyScheduleCommandHandlerTests
     public async Task Handle_ShouldCreateAllSchedules_WhenNoDuplicatesExist()
     {
         // Arrange
-        var doctorId = Guid.NewGuid();
+        var doctorId = Guid.CreateVersion7();
         var command = new SetupWeeklyScheduleCommand(
             doctorId,
             [
@@ -71,7 +71,7 @@ public class SetupWeeklyScheduleCommandHandlerTests
     public async Task Handle_ShouldCallRepositoryCreateRangeAndSaveChanges_WhenNoDuplicatesExist()
     {
         // Arrange
-        var doctorId = Guid.NewGuid();
+        var doctorId = Guid.CreateVersion7();
         var command = new SetupWeeklyScheduleCommand(
             doctorId,
             [
@@ -104,7 +104,7 @@ public class SetupWeeklyScheduleCommandHandlerTests
     public async Task Handle_ShouldThrowException_WhenDuplicateDayExistsInDatabase()
     {
         // Arrange
-        var doctorId = Guid.NewGuid();
+        var doctorId = Guid.CreateVersion7();
         var command = new SetupWeeklyScheduleCommand(
             doctorId,
             [

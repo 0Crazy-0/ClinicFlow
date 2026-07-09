@@ -19,7 +19,7 @@ public class FamilyMemberRegistrationServiceTests
     public void Register_ShouldCreateFamilyMember_WhenNoExistingProfile()
     {
         // Arrange
-        var args = CreateArgs(PatientRelationship.Sibling, Guid.NewGuid());
+        var args = CreateArgs(PatientRelationship.Sibling, Guid.CreateVersion7());
 
         // Act
         var result = FamilyMemberRegistrationService.Register(null, args);
@@ -36,7 +36,7 @@ public class FamilyMemberRegistrationServiceTests
     public void Register_ShouldThrowAlreadyExists_WhenActiveProfileExists()
     {
         // Arrange
-        var existingProfile = CreateActivePatient(Guid.NewGuid());
+        var existingProfile = CreateActivePatient(Guid.CreateVersion7());
         var args = CreateArgs(PatientRelationship.Sibling, existingProfile.UserId);
 
         // Act
@@ -52,10 +52,10 @@ public class FamilyMemberRegistrationServiceTests
     public void Register_ShouldThrowUserIdMismatch_WhenUserIdsDoNotMatch()
     {
         // Arrange
-        var existingProfile = CreateDeletedPatient(Guid.NewGuid());
+        var existingProfile = CreateDeletedPatient(Guid.CreateVersion7());
         var args = new FamilyMemberRegistrationArgs
         {
-            UserId = Guid.NewGuid(),
+            UserId = Guid.CreateVersion7(),
             FullName = PersonName.Create("Test Patient"),
             Relationship = PatientRelationship.Sibling,
             DateOfBirth = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
@@ -75,7 +75,7 @@ public class FamilyMemberRegistrationServiceTests
     public void Register_ShouldReactivateProfile_WhenDeletedProfileExists()
     {
         // Arrange
-        var deletedProfile = CreateDeletedPatient(Guid.NewGuid());
+        var deletedProfile = CreateDeletedPatient(Guid.CreateVersion7());
         var args = CreateArgs(PatientRelationship.Other, deletedProfile.UserId);
 
         // Act
@@ -91,7 +91,7 @@ public class FamilyMemberRegistrationServiceTests
     public void Register_ShouldEmitReactivatedEvent_WhenDeletedProfileExists()
     {
         // Arrange
-        var deletedProfile = CreateDeletedPatient(Guid.NewGuid());
+        var deletedProfile = CreateDeletedPatient(Guid.CreateVersion7());
         var args = CreateArgs(PatientRelationship.Other, deletedProfile.UserId);
 
         // Act

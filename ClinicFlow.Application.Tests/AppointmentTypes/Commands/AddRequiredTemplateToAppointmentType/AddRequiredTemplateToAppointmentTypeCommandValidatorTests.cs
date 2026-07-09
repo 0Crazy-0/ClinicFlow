@@ -18,8 +18,8 @@ public class AddRequiredTemplateToAppointmentTypeCommandValidatorTests
     {
         // Arrange
         var command = new AddRequiredTemplateToAppointmentTypeCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid()
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7()
         );
 
         // Act
@@ -33,7 +33,10 @@ public class AddRequiredTemplateToAppointmentTypeCommandValidatorTests
     public void Validate_ShouldHaveError_WhenAppointmentTypeIdIsEmpty()
     {
         // Arrange
-        var command = new AddRequiredTemplateToAppointmentTypeCommand(Guid.Empty, Guid.NewGuid());
+        var command = new AddRequiredTemplateToAppointmentTypeCommand(
+            Guid.Empty,
+            Guid.CreateVersion7()
+        );
 
         // Act
         var result = _sut.TestValidate(command);
@@ -48,7 +51,10 @@ public class AddRequiredTemplateToAppointmentTypeCommandValidatorTests
     public void Validate_ShouldHaveError_WhenTemplateIdIsEmpty()
     {
         // Arrange
-        var command = new AddRequiredTemplateToAppointmentTypeCommand(Guid.NewGuid(), Guid.Empty);
+        var command = new AddRequiredTemplateToAppointmentTypeCommand(
+            Guid.CreateVersion7(),
+            Guid.Empty
+        );
 
         // Act
         var result = _sut.TestValidate(command);

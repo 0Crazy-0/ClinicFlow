@@ -31,10 +31,10 @@ public class AddAllowedSpecialtyToAppointmentTypeCommandHandlerTests
     public async Task Handle_ShouldAddSpecialty_WhenEntityExistsAndIsRestricted()
     {
         // Arrange
-        var existingSpecialtyId = Guid.NewGuid();
-        var newSpecialtyId = Guid.NewGuid();
+        var existingSpecialtyId = Guid.CreateVersion7();
+        var newSpecialtyId = Guid.CreateVersion7();
         var command = new AddAllowedSpecialtyToAppointmentTypeCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             newSpecialtyId
         );
 
@@ -65,8 +65,8 @@ public class AddAllowedSpecialtyToAppointmentTypeCommandHandlerTests
     {
         // Arrange
         var command = new AddAllowedSpecialtyToAppointmentTypeCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid()
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7()
         );
 
         _appointmentTypeRepositoryMock

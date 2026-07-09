@@ -14,7 +14,7 @@ public class ScheduleTests
     public void Create_ShouldCreateSchedule_WhenValidParameters()
     {
         // Arrange
-        var doctorId = Guid.NewGuid();
+        var doctorId = Guid.CreateVersion7();
         var dayOfWeek = DayOfWeek.Monday;
         var timeRange = TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(17, 0));
 
@@ -71,7 +71,7 @@ public class ScheduleTests
     public void Create_ShouldThrowException_WhenTimeRangeIsNull()
     {
         // Arrange & Act
-        var act = () => Schedule.Create(Guid.NewGuid(), DayOfWeek.Monday, null!);
+        var act = () => Schedule.Create(Guid.CreateVersion7(), DayOfWeek.Monday, null!);
 
         // Assert
         act.Should()
@@ -97,7 +97,7 @@ public class ScheduleTests
     {
         // Arrange
         var schedule = Schedule.Create(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             DayOfWeek.Monday,
             TimeRange.Create(
                 TimeOnly.FromTimeSpan(TimeSpan.FromHours(scheduleStart)),
@@ -134,7 +134,7 @@ public class ScheduleTests
     public void Deactivate_ShouldEmitScheduleDeactivatedEvent_WhenScheduleIsActive()
     {
         // Arrange
-        var doctorId = Guid.NewGuid();
+        var doctorId = Guid.CreateVersion7();
         var schedule = new ScheduleBuilder().WithDoctorId(doctorId).Build();
 
         // Act
@@ -187,7 +187,7 @@ public class ScheduleTests
     public void EnsureNoDuplicateDay_ShouldThrowException_WhenActiveDuplicateExists()
     {
         // Arrange
-        var doctorId = Guid.NewGuid();
+        var doctorId = Guid.CreateVersion7();
         var existingSchedules = new List<Schedule>
         {
             new ScheduleBuilder().WithDoctorId(doctorId).Build(),
@@ -209,7 +209,7 @@ public class ScheduleTests
     public void EnsureNoDuplicateDay_ShouldNotThrow_WhenNoDuplicateExists()
     {
         // Arrange
-        var doctorId = Guid.NewGuid();
+        var doctorId = Guid.CreateVersion7();
         var existingSchedules = new List<Schedule>
         {
             new ScheduleBuilder().WithDoctorId(doctorId).Build(),
@@ -227,7 +227,7 @@ public class ScheduleTests
     public void EnsureNoDuplicateDay_ShouldNotThrow_WhenDuplicateExistsButIsInactive()
     {
         // Arrange
-        var doctorId = Guid.NewGuid();
+        var doctorId = Guid.CreateVersion7();
         var inactiveSchedule = new ScheduleBuilder().WithDoctorId(doctorId).Build();
         inactiveSchedule.Deactivate();
 
@@ -243,7 +243,7 @@ public class ScheduleTests
 
     private class ScheduleBuilder
     {
-        private Guid _doctorId = Guid.NewGuid();
+        private Guid _doctorId = Guid.CreateVersion7();
 
         public ScheduleBuilder WithDoctorId(Guid doctorId)
         {

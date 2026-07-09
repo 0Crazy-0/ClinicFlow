@@ -32,7 +32,7 @@ public class VerifyPhoneCommandHandlerTests
     public async Task Handle_ShouldMarkPhoneAsVerified_WhenCodeIsValid()
     {
         // Arrange
-        var userId = Guid.NewGuid();
+        var userId = Guid.CreateVersion7();
         var command = new VerifyPhoneCommand(userId, "123456");
         var phone = PhoneNumber.Create("555-1234");
 
@@ -63,7 +63,7 @@ public class VerifyPhoneCommandHandlerTests
     public async Task Handle_ShouldThrowException_WhenCodeIsInvalid()
     {
         // Arrange
-        var userId = Guid.NewGuid();
+        var userId = Guid.CreateVersion7();
         var command = new VerifyPhoneCommand(userId, "wrong-code");
         var phone = PhoneNumber.Create("555-1234");
 
@@ -98,7 +98,7 @@ public class VerifyPhoneCommandHandlerTests
     public async Task Handle_ShouldThrowException_WhenUserNotFound()
     {
         // Arrange
-        var command = new VerifyPhoneCommand(Guid.NewGuid(), "123456");
+        var command = new VerifyPhoneCommand(Guid.CreateVersion7(), "123456");
 
         _userRepositoryMock
             .Setup(x => x.GetByIdAsync(command.UserId, It.IsAny<CancellationToken>()))

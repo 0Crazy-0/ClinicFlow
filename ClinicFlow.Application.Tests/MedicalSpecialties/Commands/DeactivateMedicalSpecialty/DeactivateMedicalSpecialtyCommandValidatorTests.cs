@@ -12,7 +12,7 @@ public class DeactivateMedicalSpecialtyCommandValidatorTests
     public void Validate_ShouldPass_WhenValidCommand()
     {
         // Arrange
-        var command = new DeactivateMedicalSpecialtyCommand(Guid.NewGuid());
+        var command = new DeactivateMedicalSpecialtyCommand(Guid.CreateVersion7());
 
         // Act
         var result = _sut.TestValidate(command);

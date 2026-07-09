@@ -32,10 +32,10 @@ public class SuspendDoctorProfileCommandHandlerTests
     {
         // Arrange
         var doctor = Doctor.Create(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("12345"),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Biography",
             ConsultationRoom.Create(1, "Room", 1)
         );
@@ -60,7 +60,7 @@ public class SuspendDoctorProfileCommandHandlerTests
     public async Task Handle_ShouldThrowEntityNotFoundException_WhenDoctorNotFound()
     {
         // Arrange
-        var command = new SuspendDoctorProfileCommand(Guid.NewGuid());
+        var command = new SuspendDoctorProfileCommand(Guid.CreateVersion7());
 
         _doctorRepositoryMock
             .Setup(x => x.GetByIdAsync(command.DoctorId, It.IsAny<CancellationToken>()))

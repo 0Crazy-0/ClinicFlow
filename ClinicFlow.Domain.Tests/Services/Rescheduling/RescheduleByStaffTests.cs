@@ -23,7 +23,7 @@ public class RescheduleByStaffTests
             AppointmentReschedulingService.RescheduleByStaff(
                 null!,
                 CreateValidStaffReschedulingArgs(),
-                CreateSchedule(Guid.NewGuid(), DayOfWeek.Monday, 9, 17),
+                CreateSchedule(Guid.CreateVersion7(), DayOfWeek.Monday, 9, 17),
                 SchedulingClearance.Granted()
             );
 
@@ -41,7 +41,7 @@ public class RescheduleByStaffTests
             AppointmentReschedulingService.RescheduleByStaff(
                 CreateAppointment(),
                 null!,
-                CreateSchedule(Guid.NewGuid(), DayOfWeek.Monday, 9, 17),
+                CreateSchedule(Guid.CreateVersion7(), DayOfWeek.Monday, 9, 17),
                 SchedulingClearance.Granted()
             );
 
@@ -80,7 +80,7 @@ public class RescheduleByStaffTests
                 {
                     NewTimeRange = null!,
                 },
-                CreateSchedule(Guid.NewGuid(), DayOfWeek.Monday, 9, 17),
+                CreateSchedule(Guid.CreateVersion7(), DayOfWeek.Monday, 9, 17),
                 SchedulingClearance.Granted()
             );
 
@@ -98,7 +98,7 @@ public class RescheduleByStaffTests
             AppointmentReschedulingService.RescheduleByStaff(
                 CreateAppointment(),
                 CreateValidStaffReschedulingArgs(),
-                CreateSchedule(Guid.NewGuid(), DayOfWeek.Monday, 9, 17),
+                CreateSchedule(Guid.CreateVersion7(), DayOfWeek.Monday, 9, 17),
                 null!
             );
 
@@ -212,9 +212,9 @@ public class RescheduleByStaffTests
     private Appointment CreateAppointment()
     {
         var appointment = Appointment.Schedule(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2)),
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );

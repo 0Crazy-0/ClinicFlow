@@ -12,7 +12,7 @@ public class GetPenaltyHistoryByPatientIdQueryValidatorTests
     public void Validate_ShouldNotHaveError_WhenQueryIsValid()
     {
         // Arrange
-        var query = new GetPenaltyHistoryByPatientIdQuery(Guid.NewGuid(), 1, 10);
+        var query = new GetPenaltyHistoryByPatientIdQuery(Guid.CreateVersion7(), 1, 10);
 
         // Act
         var result = _sut.TestValidate(query);
@@ -42,7 +42,7 @@ public class GetPenaltyHistoryByPatientIdQueryValidatorTests
     public void Validate_ShouldHaveError_WhenPageNumberIsLessThanOne(int pageNumber)
     {
         // Arrange
-        var query = new GetPenaltyHistoryByPatientIdQuery(Guid.NewGuid(), pageNumber, 10);
+        var query = new GetPenaltyHistoryByPatientIdQuery(Guid.CreateVersion7(), pageNumber, 10);
 
         // Act
         var result = _sut.TestValidate(query);
@@ -60,7 +60,7 @@ public class GetPenaltyHistoryByPatientIdQueryValidatorTests
     public void Validate_ShouldHaveError_WhenPageSizeIsOutOfRange(int pageSize)
     {
         // Arrange
-        var query = new GetPenaltyHistoryByPatientIdQuery(Guid.NewGuid(), 1, pageSize);
+        var query = new GetPenaltyHistoryByPatientIdQuery(Guid.CreateVersion7(), 1, pageSize);
 
         // Act
         var result = _sut.TestValidate(query);

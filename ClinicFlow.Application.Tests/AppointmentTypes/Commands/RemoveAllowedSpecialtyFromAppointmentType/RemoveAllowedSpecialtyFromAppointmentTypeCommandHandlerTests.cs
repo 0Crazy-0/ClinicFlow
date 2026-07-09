@@ -31,10 +31,10 @@ public class RemoveAllowedSpecialtyFromAppointmentTypeCommandHandlerTests
     public async Task Handle_ShouldRemoveSpecialty_WhenEntityExistsAndSpecialtyIsAllowed()
     {
         // Arrange
-        var specialtyToRemove = Guid.NewGuid();
-        var remainingSpecialty = Guid.NewGuid();
+        var specialtyToRemove = Guid.CreateVersion7();
+        var remainingSpecialty = Guid.CreateVersion7();
         var command = new RemoveAllowedSpecialtyFromAppointmentTypeCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             specialtyToRemove
         );
 
@@ -69,8 +69,8 @@ public class RemoveAllowedSpecialtyFromAppointmentTypeCommandHandlerTests
     {
         // Arrange
         var command = new RemoveAllowedSpecialtyFromAppointmentTypeCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid()
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7()
         );
 
         _appointmentTypeRepositoryMock

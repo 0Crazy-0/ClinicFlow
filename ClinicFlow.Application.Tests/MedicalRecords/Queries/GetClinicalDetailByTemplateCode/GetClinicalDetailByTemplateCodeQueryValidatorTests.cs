@@ -17,7 +17,7 @@ public class GetClinicalDetailByTemplateCodeQueryValidatorTests
     public void Validate_ShouldNotHaveError_WhenQueryIsValid()
     {
         // Arrange
-        var query = new GetClinicalDetailByTemplateCodeQuery(Guid.NewGuid(), "VITALS");
+        var query = new GetClinicalDetailByTemplateCodeQuery(Guid.CreateVersion7(), "VITALS");
 
         // Act
         var result = _sut.TestValidate(query);
@@ -48,7 +48,7 @@ public class GetClinicalDetailByTemplateCodeQueryValidatorTests
     public void Validate_ShouldHaveError_WhenTemplateCodeIsEmpty(string? templateCode)
     {
         // Arrange
-        var query = new GetClinicalDetailByTemplateCodeQuery(Guid.NewGuid(), templateCode!);
+        var query = new GetClinicalDetailByTemplateCodeQuery(Guid.CreateVersion7(), templateCode!);
 
         // Act
         var result = _sut.TestValidate(query);

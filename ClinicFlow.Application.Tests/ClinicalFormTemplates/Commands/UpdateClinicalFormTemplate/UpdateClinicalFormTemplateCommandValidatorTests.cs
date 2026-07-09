@@ -26,7 +26,7 @@ public class UpdateClinicalFormTemplateCommandValidatorTests
     {
         // Arrange
         var command = new UpdateClinicalFormTemplateCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Blood Pressure",
             "Form description",
             "{}"
@@ -67,7 +67,7 @@ public class UpdateClinicalFormTemplateCommandValidatorTests
     {
         // Arrange
         var command = new UpdateClinicalFormTemplateCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             name!,
             "Description",
             "{}"
@@ -88,7 +88,7 @@ public class UpdateClinicalFormTemplateCommandValidatorTests
         // Arrange
         var tooLongName = new string('A', 101);
         var command = new UpdateClinicalFormTemplateCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             tooLongName,
             "Description",
             "{}"
@@ -109,7 +109,7 @@ public class UpdateClinicalFormTemplateCommandValidatorTests
         // Arrange
         var tooLongDescription = new string('B', 501);
         var command = new UpdateClinicalFormTemplateCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Blood Pressure",
             tooLongDescription,
             "{}"
@@ -134,7 +134,7 @@ public class UpdateClinicalFormTemplateCommandValidatorTests
             .Returns(false);
 
         var command = new UpdateClinicalFormTemplateCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Blood Pressure",
             "Desc",
             "{invalid}"

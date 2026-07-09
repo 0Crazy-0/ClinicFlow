@@ -18,7 +18,7 @@ public class UpdateScheduleCommandValidatorTests
     {
         // Arrange
         var command = new UpdateScheduleCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             DayOfWeek.Monday,
             new TimeOnly(10, 0),
             new TimeOnly(14, 0)
@@ -56,7 +56,7 @@ public class UpdateScheduleCommandValidatorTests
     {
         // Arrange
         var command = new UpdateScheduleCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             (DayOfWeek)999,
             new TimeOnly(10, 0),
             new TimeOnly(14, 0)
@@ -76,7 +76,7 @@ public class UpdateScheduleCommandValidatorTests
     {
         // Arrange
         var command = new UpdateScheduleCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             DayOfWeek.Monday,
             new TimeOnly(17, 0),
             new TimeOnly(9, 0)
@@ -96,7 +96,7 @@ public class UpdateScheduleCommandValidatorTests
     {
         // Arrange
         var command = new UpdateScheduleCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             DayOfWeek.Monday,
             new TimeOnly(9, 0),
             new TimeOnly(9, 0)

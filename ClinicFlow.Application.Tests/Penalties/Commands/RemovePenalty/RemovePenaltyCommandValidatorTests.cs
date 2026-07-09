@@ -17,7 +17,7 @@ public class RemovePenaltyCommandValidatorTests
     public void Validate_ShouldBeValid_WhenPenaltyIdIsValid()
     {
         // Arrange
-        var command = new RemovePenaltyCommand(Guid.NewGuid());
+        var command = new RemovePenaltyCommand(Guid.CreateVersion7());
 
         // Act
         var result = _sut.TestValidate(command);

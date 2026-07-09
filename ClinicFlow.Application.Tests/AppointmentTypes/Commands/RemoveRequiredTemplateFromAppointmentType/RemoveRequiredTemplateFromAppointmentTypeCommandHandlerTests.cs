@@ -42,7 +42,7 @@ public class RemoveRequiredTemplateFromAppointmentTypeCommandHandlerTests
         );
 
         var command = new RemoveRequiredTemplateFromAppointmentTypeCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             template.Id
         );
 
@@ -76,8 +76,8 @@ public class RemoveRequiredTemplateFromAppointmentTypeCommandHandlerTests
     {
         // Arrange
         var command = new RemoveRequiredTemplateFromAppointmentTypeCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid()
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7()
         );
 
         _appointmentTypeRepositoryMock
@@ -101,8 +101,8 @@ public class RemoveRequiredTemplateFromAppointmentTypeCommandHandlerTests
     {
         // Arrange
         var command = new RemoveRequiredTemplateFromAppointmentTypeCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid()
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7()
         );
 
         var appointmentTypeDefinition = AppointmentTypeDefinition.Create(

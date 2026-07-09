@@ -33,7 +33,7 @@ public class CreateCompletePatientProfileCommandHandlerTests
     {
         // Arrange
         var command = new CreateCompletePatientProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "John",
             "Doe",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
@@ -74,7 +74,7 @@ public class CreateCompletePatientProfileCommandHandlerTests
     {
         // Arrange
         var command = new CreateCompletePatientProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "John",
             "Doe",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),

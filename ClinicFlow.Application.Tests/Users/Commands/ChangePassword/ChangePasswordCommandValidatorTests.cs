@@ -12,7 +12,11 @@ public class ChangePasswordCommandValidatorTests
     public void Validate_ShouldPass_WhenValidCommand()
     {
         // Arrange
-        var command = new ChangePasswordCommand(Guid.NewGuid(), "oldpassword", "newpassword123");
+        var command = new ChangePasswordCommand(
+            Guid.CreateVersion7(),
+            "oldpassword",
+            "newpassword123"
+        );
 
         // Act
         var result = _sut.TestValidate(command);
@@ -43,7 +47,11 @@ public class ChangePasswordCommandValidatorTests
     public void Validate_ShouldFail_WhenCurrentPasswordIsEmpty(string? currentPassword)
     {
         // Arrange
-        var command = new ChangePasswordCommand(Guid.NewGuid(), currentPassword!, "newpassword123");
+        var command = new ChangePasswordCommand(
+            Guid.CreateVersion7(),
+            currentPassword!,
+            "newpassword123"
+        );
 
         // Act
         var result = _sut.TestValidate(command);
@@ -61,7 +69,7 @@ public class ChangePasswordCommandValidatorTests
     public void Validate_ShouldFail_WhenNewPasswordIsEmpty(string? newPassword)
     {
         // Arrange
-        var command = new ChangePasswordCommand(Guid.NewGuid(), "oldpassword", newPassword!);
+        var command = new ChangePasswordCommand(Guid.CreateVersion7(), "oldpassword", newPassword!);
 
         // Act
         var result = _sut.TestValidate(command);
@@ -76,7 +84,7 @@ public class ChangePasswordCommandValidatorTests
     public void Validate_ShouldFail_WhenNewPasswordIsTooShort()
     {
         // Arrange
-        var command = new ChangePasswordCommand(Guid.NewGuid(), "oldpassword", "short");
+        var command = new ChangePasswordCommand(Guid.CreateVersion7(), "oldpassword", "short");
 
         // Act
         var result = _sut.TestValidate(command);

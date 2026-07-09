@@ -32,7 +32,7 @@ public class GetPatientByIdQueryValidatorTests
     public void Validate_ShouldNotHaveError_WhenPatientIdIsValid()
     {
         // Arrange
-        var query = new GetPatientByIdQuery(Guid.NewGuid());
+        var query = new GetPatientByIdQuery(Guid.CreateVersion7());
 
         // Act
         var result = _sut.TestValidate(query);

@@ -52,7 +52,7 @@ public class ReactivateMedicalSpecialtyCommandHandlerTests
     public async Task Handle_ShouldThrowEntityNotFoundException_WhenSpecialtyNotFound()
     {
         // Arrange
-        var command = new ReactivateMedicalSpecialtyCommand(Guid.NewGuid());
+        var command = new ReactivateMedicalSpecialtyCommand(Guid.CreateVersion7());
 
         _medicalSpecialtyRepositoryMock
             .Setup(x =>

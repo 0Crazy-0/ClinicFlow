@@ -18,8 +18,8 @@ public class AddAllowedSpecialtyToAppointmentTypeCommandValidatorTests
     {
         // Arrange
         var command = new AddAllowedSpecialtyToAppointmentTypeCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid()
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7()
         );
 
         // Act
@@ -33,7 +33,10 @@ public class AddAllowedSpecialtyToAppointmentTypeCommandValidatorTests
     public void Validate_ShouldHaveError_WhenAppointmentTypeIdIsEmpty()
     {
         // Arrange
-        var command = new AddAllowedSpecialtyToAppointmentTypeCommand(Guid.Empty, Guid.NewGuid());
+        var command = new AddAllowedSpecialtyToAppointmentTypeCommand(
+            Guid.Empty,
+            Guid.CreateVersion7()
+        );
 
         // Act
         var result = _sut.TestValidate(command);
@@ -48,7 +51,10 @@ public class AddAllowedSpecialtyToAppointmentTypeCommandValidatorTests
     public void Validate_ShouldHaveError_WhenSpecialtyIdIsEmpty()
     {
         // Arrange
-        var command = new AddAllowedSpecialtyToAppointmentTypeCommand(Guid.NewGuid(), Guid.Empty);
+        var command = new AddAllowedSpecialtyToAppointmentTypeCommand(
+            Guid.CreateVersion7(),
+            Guid.Empty
+        );
 
         // Act
         var result = _sut.TestValidate(command);

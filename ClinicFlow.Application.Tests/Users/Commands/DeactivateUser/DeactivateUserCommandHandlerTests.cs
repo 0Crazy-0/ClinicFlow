@@ -46,7 +46,7 @@ public class DeactivateUserCommandHandlerTests
     public async Task Handle_ShouldThrowEntityNotFound_WhenUserDoesNotExist()
     {
         // Arrange
-        var command = new DeactivateUserCommand(Guid.NewGuid());
+        var command = new DeactivateUserCommand(Guid.CreateVersion7());
 
         _userRepositoryMock
             .Setup(x => x.GetByIdAsync(command.UserId, It.IsAny<CancellationToken>()))

@@ -32,7 +32,7 @@ public class GetMedicalRecordByAppointmentIdQueryValidatorTests
     public void Validate_ShouldNotHaveError_WhenAppointmentIdIsValid()
     {
         // Arrange
-        var query = new GetMedicalRecordByAppointmentIdQuery(Guid.NewGuid());
+        var query = new GetMedicalRecordByAppointmentIdQuery(Guid.CreateVersion7());
 
         // Act
         var result = _sut.TestValidate(query);

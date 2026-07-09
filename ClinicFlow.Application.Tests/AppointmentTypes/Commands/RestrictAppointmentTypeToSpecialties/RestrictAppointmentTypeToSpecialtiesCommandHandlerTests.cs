@@ -31,8 +31,11 @@ public class RestrictAppointmentTypeToSpecialtiesCommandHandlerTests
     public async Task Handle_ShouldRestrictToSpecialties_WhenEntityExistsAndIsUnrestricted()
     {
         // Arrange
-        var specialtyIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() };
-        var command = new RestrictAppointmentTypeToSpecialtiesCommand(Guid.NewGuid(), specialtyIds);
+        var specialtyIds = new List<Guid> { Guid.CreateVersion7(), Guid.CreateVersion7() };
+        var command = new RestrictAppointmentTypeToSpecialtiesCommand(
+            Guid.CreateVersion7(),
+            specialtyIds
+        );
         var appointmentType = AppointmentTypeDefinition.Create(
             AppointmentCategory.Checkup,
             "Checkup",
@@ -59,8 +62,8 @@ public class RestrictAppointmentTypeToSpecialtiesCommandHandlerTests
     {
         // Arrange
         var command = new RestrictAppointmentTypeToSpecialtiesCommand(
-            Guid.NewGuid(),
-            [Guid.NewGuid()]
+            Guid.CreateVersion7(),
+            [Guid.CreateVersion7()]
         );
 
         _appointmentTypeRepositoryMock

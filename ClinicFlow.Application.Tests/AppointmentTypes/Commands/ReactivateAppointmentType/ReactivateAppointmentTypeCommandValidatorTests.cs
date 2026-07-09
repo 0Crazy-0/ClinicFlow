@@ -12,7 +12,7 @@ public class ReactivateAppointmentTypeCommandValidatorTests
     public void Validate_ShouldPass_WhenValidCommand()
     {
         // Arrange
-        var command = new ReactivateAppointmentTypeCommand(Guid.NewGuid());
+        var command = new ReactivateAppointmentTypeCommand(Guid.CreateVersion7());
 
         // Act
         var result = _sut.TestValidate(command);

@@ -36,16 +36,16 @@ public class CancelAppointmentByDoctorCommandHandlerTests
     {
         // Arrange
         var command = new CancelAppointmentByDoctorCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             "Doctor reason"
         );
 
-        var doctorId = Guid.NewGuid();
+        var doctorId = Guid.CreateVersion7();
         var appointment = Appointment.Schedule(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             doctorId,
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2)),
             TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0))
         );
@@ -54,7 +54,7 @@ public class CancelAppointmentByDoctorCommandHandlerTests
             command.InitiatorUserId,
             PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("1234567"),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "555-1234",
             ConsultationRoom.Create(1, "Room A", 1)
         );
@@ -81,8 +81,8 @@ public class CancelAppointmentByDoctorCommandHandlerTests
     {
         // Arrange
         var command = new CancelAppointmentByDoctorCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             "Doctor reason"
         );
 
@@ -107,15 +107,15 @@ public class CancelAppointmentByDoctorCommandHandlerTests
     {
         // Arrange
         var command = new CancelAppointmentByDoctorCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             "Doctor reason"
         );
 
         var appointment = Appointment.Schedule(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2)),
             TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0))
         );

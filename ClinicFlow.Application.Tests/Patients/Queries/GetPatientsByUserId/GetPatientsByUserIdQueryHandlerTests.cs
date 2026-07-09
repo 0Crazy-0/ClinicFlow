@@ -26,7 +26,7 @@ public class GetPatientsByUserIdQueryHandlerTests
     public async Task Handle_ShouldReturnPatients_WhenPatientsExist()
     {
         // Arrange
-        var userId = Guid.NewGuid();
+        var userId = Guid.CreateVersion7();
         var patient1 = Patient.CreateSelf(
             userId,
             PersonName.Create("John Doe"),
@@ -84,7 +84,7 @@ public class GetPatientsByUserIdQueryHandlerTests
     public async Task Handle_ShouldReturnPatients_WhenProfilesAreIncomplete()
     {
         // Arrange
-        var userId = Guid.NewGuid();
+        var userId = Guid.CreateVersion7();
         var patient1 = Patient.CreateSelf(
             userId,
             PersonName.Create("John Doe"),

@@ -12,7 +12,7 @@ public class GetActiveBlocksByPatientIdQueryValidatorTests
     public void Validate_ShouldNotHaveError_WhenQueryIsValid()
     {
         // Arrange
-        var query = new GetActiveBlocksByPatientIdQuery(Guid.NewGuid());
+        var query = new GetActiveBlocksByPatientIdQuery(Guid.CreateVersion7());
 
         // Act
         var result = _sut.TestValidate(query);

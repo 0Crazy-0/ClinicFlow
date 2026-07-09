@@ -18,7 +18,7 @@ public class PatientAccessServiceTests
     public void EnsureCanActOnBehalfOf_ShouldThrowDomainValidationException_WhenInitiatorIsNull()
     {
         // Arrange
-        var target = CreateSelfPatient(Guid.NewGuid(), 30);
+        var target = CreateSelfPatient(Guid.CreateVersion7(), 30);
 
         // Act
         var act = () => PatientAccessService.EnsureCanActOnBehalfOf(null!, target);
@@ -33,7 +33,7 @@ public class PatientAccessServiceTests
     public void EnsureCanActOnBehalfOf_ShouldThrowDomainValidationException_WhenTargetIsNull()
     {
         // Arrange
-        var initiator = CreateSelfPatient(Guid.NewGuid(), 30);
+        var initiator = CreateSelfPatient(Guid.CreateVersion7(), 30);
 
         // Act
         var act = () => PatientAccessService.EnsureCanActOnBehalfOf(initiator, null!);
@@ -48,7 +48,7 @@ public class PatientAccessServiceTests
     public void EnsureCanActOnBehalfOf_ShouldNotThrow_WhenInitiatorIsSelf()
     {
         // Arrange
-        var userId = Guid.NewGuid();
+        var userId = Guid.CreateVersion7();
         var initiator = CreateSelfPatient(userId, 30);
         var target = initiator;
 
@@ -63,7 +63,7 @@ public class PatientAccessServiceTests
     public void EnsureCanActOnBehalfOf_ShouldNotThrow_WhenInitiatorIsParent()
     {
         // Arrange
-        var userId = Guid.NewGuid();
+        var userId = Guid.CreateVersion7();
         var initiator = CreateSelfPatient(userId, 30);
         var target = CreateFamilyMember(userId, PatientRelationship.Child, 10);
 
@@ -78,8 +78,8 @@ public class PatientAccessServiceTests
     public void EnsureCanActOnBehalfOf_ShouldThrowPatientAccessUnauthorizedException_WhenUserIdsDoNotMatch()
     {
         // Arrange
-        var initiator = CreateSelfPatient(Guid.NewGuid(), 30);
-        var target = CreateSelfPatient(Guid.NewGuid(), 30);
+        var initiator = CreateSelfPatient(Guid.CreateVersion7(), 30);
+        var target = CreateSelfPatient(Guid.CreateVersion7(), 30);
 
         // Act
         var act = () => PatientAccessService.EnsureCanActOnBehalfOf(initiator, target);
@@ -94,7 +94,7 @@ public class PatientAccessServiceTests
     public void EnsureCanActOnBehalfOf_ShouldThrowPatientAccessUnauthorizedException_WhenInitiatorIsNotSelfOrChild()
     {
         // Arrange
-        var userId = Guid.NewGuid();
+        var userId = Guid.CreateVersion7();
         var initiator = CreateFamilyMember(userId, PatientRelationship.Spouse, 30);
         var target = CreateFamilyMember(userId, PatientRelationship.Child, 10);
 

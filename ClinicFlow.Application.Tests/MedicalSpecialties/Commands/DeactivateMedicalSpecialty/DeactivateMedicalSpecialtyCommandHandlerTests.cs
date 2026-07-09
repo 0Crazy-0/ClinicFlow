@@ -55,7 +55,7 @@ public class DeactivateMedicalSpecialtyCommandHandlerTests
     public async Task Handle_ShouldThrowEntityNotFoundException_WhenSpecialtyNotFound()
     {
         // Arrange
-        var command = new DeactivateMedicalSpecialtyCommand(Guid.NewGuid());
+        var command = new DeactivateMedicalSpecialtyCommand(Guid.CreateVersion7());
 
         _medicalSpecialtyRepositoryMock
             .Setup(x => x.GetByIdAsync(command.SpecialtyId, It.IsAny<CancellationToken>()))

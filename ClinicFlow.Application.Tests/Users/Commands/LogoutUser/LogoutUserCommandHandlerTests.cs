@@ -18,7 +18,7 @@ public class LogoutUserCommandHandlerTests
     public async Task Handle_ShouldCallRevokeAsync_WhenValidCommand()
     {
         // Arrange
-        var command = new LogoutUserCommand(Guid.NewGuid());
+        var command = new LogoutUserCommand(Guid.CreateVersion7());
 
         // Act
         await _sut.Handle(command, TestContext.Current.CancellationToken);

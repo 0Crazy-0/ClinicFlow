@@ -19,7 +19,7 @@ public class PrimaryProfileRegistrationServiceTests
     public void Register_ShouldCreateSelfProfile_WhenNoExistingProfile()
     {
         // Arrange
-        var args = CreateArgs(Guid.NewGuid());
+        var args = CreateArgs(Guid.CreateVersion7());
 
         // Act
         var result = PrimaryProfileRegistrationService.Register(null, args);
@@ -37,7 +37,7 @@ public class PrimaryProfileRegistrationServiceTests
     {
         // Arrange
         var existingProfile = Patient.CreateSelf(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             PersonName.Create("Test Patient"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
@@ -60,7 +60,7 @@ public class PrimaryProfileRegistrationServiceTests
         var existingProfile = CreateDeletedPatient();
         var args = new PrimaryProfileRegistrationArgs
         {
-            UserId = Guid.NewGuid(),
+            UserId = Guid.CreateVersion7(),
             FullName = PersonName.Create("Test Patient"),
             DateOfBirth = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             ReferenceTime = _fakeTime.GetUtcNow().UtcDateTime,
@@ -117,7 +117,7 @@ public class PrimaryProfileRegistrationServiceTests
     private Patient CreateDeletedPatient()
     {
         var patient = Patient.CreateSelf(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             PersonName.Create("Test Patient"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime

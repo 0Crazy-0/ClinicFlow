@@ -30,7 +30,7 @@ public class DeactivateDoctorSchedulesEventHandlerTests
     public async Task Handle_ShouldDeactivateAllActiveSchedules_WhenDoctorIsSuspended()
     {
         // Arrange
-        var doctorId = Guid.NewGuid();
+        var doctorId = Guid.CreateVersion7();
 
         var activeSchedule1 = Schedule.Create(
             doctorId,
@@ -65,7 +65,7 @@ public class DeactivateDoctorSchedulesEventHandlerTests
     public async Task Handle_ShouldCallSaveChanges_WhenDoctorHasNoActiveSchedules()
     {
         // Arrange
-        var doctorId = Guid.NewGuid();
+        var doctorId = Guid.CreateVersion7();
 
         _scheduleRepositoryMock
             .Setup(x => x.GetActiveByDoctorIdAsync(doctorId, It.IsAny<CancellationToken>()))

@@ -87,9 +87,9 @@ public class CleanExpiredDisplacedAppointmentsCommandHandlerTests
     private static Appointment CreateDisplacedAppointment(DateTime scheduledDate)
     {
         var appointment = Appointment.Schedule(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             DateOnly.FromDateTime(scheduledDate),
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );

@@ -23,10 +23,10 @@ public class GetMedicalRecordByIdQueryHandlerTests
     public async Task Handle_ShouldReturnMedicalRecordDto_WhenRecordExists()
     {
         // Arrange
-        var id = Guid.NewGuid();
-        var patientId = Guid.NewGuid();
-        var doctorId = Guid.NewGuid();
-        var appointmentId = Guid.NewGuid();
+        var id = Guid.CreateVersion7();
+        var patientId = Guid.CreateVersion7();
+        var doctorId = Guid.CreateVersion7();
+        var appointmentId = Guid.CreateVersion7();
         var request = new GetMedicalRecordByIdQuery(id);
         var record = MedicalRecord.Create(patientId, doctorId, appointmentId, "Headache");
         var clinicalDetail = DynamicClinicalDetail.Create("vital-signs", "{}");
@@ -60,7 +60,7 @@ public class GetMedicalRecordByIdQueryHandlerTests
     public async Task Handle_ShouldThrowEntityNotFoundException_WhenRecordDoesNotExist()
     {
         // Arrange
-        var request = new GetMedicalRecordByIdQuery(Guid.NewGuid());
+        var request = new GetMedicalRecordByIdQuery(Guid.CreateVersion7());
 
         _medicalRecordRepositoryMock
             .Setup(x => x.GetByIdAsync(request.Id, TestContext.Current.CancellationToken))

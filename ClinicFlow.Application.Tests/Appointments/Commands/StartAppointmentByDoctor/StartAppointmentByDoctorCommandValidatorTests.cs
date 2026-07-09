@@ -17,7 +17,10 @@ public class StartAppointmentByDoctorCommandValidatorTests
     public void Validate_ShouldBeValid_WhenPropertiesAreProvidedAndValid()
     {
         // Arrange
-        var command = new StartAppointmentByDoctorCommand(Guid.NewGuid(), Guid.NewGuid());
+        var command = new StartAppointmentByDoctorCommand(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7()
+        );
 
         // Act
         var result = _sut.TestValidate(command);
@@ -30,7 +33,7 @@ public class StartAppointmentByDoctorCommandValidatorTests
     public void Validate_ShouldHaveError_WhenAppointmentIdIsEmpty()
     {
         // Arrange
-        var command = new StartAppointmentByDoctorCommand(Guid.Empty, Guid.NewGuid());
+        var command = new StartAppointmentByDoctorCommand(Guid.Empty, Guid.CreateVersion7());
 
         // Act
         var result = _sut.TestValidate(command);
@@ -45,7 +48,7 @@ public class StartAppointmentByDoctorCommandValidatorTests
     public void Validate_ShouldHaveError_WhenInitiatorUserIdIsEmpty()
     {
         // Arrange
-        var command = new StartAppointmentByDoctorCommand(Guid.NewGuid(), Guid.Empty);
+        var command = new StartAppointmentByDoctorCommand(Guid.CreateVersion7(), Guid.Empty);
 
         // Act
         var result = _sut.TestValidate(command);

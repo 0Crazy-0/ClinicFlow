@@ -105,7 +105,7 @@ public class AppointmentTypeDefinitionTests
         var appointmentType = CreateAppointmentTypeDefinition();
         var template1 = ClinicalFormTemplate.Create("CODE1", "Name", "Desc", "{}");
         var template2 = ClinicalFormTemplate.Create("CODE2", "Different", "Desc", "{}");
-        var sharedId = Guid.NewGuid();
+        var sharedId = Guid.CreateVersion7();
 
         template1.SetId(sharedId);
         template2.SetId(sharedId);
@@ -331,7 +331,7 @@ public class AppointmentTypeDefinitionTests
     {
         // Arrange
         var appointmentType = CreateAppointmentTypeDefinition();
-        appointmentType.RestrictToSpecialties([Guid.NewGuid()]);
+        appointmentType.RestrictToSpecialties([Guid.CreateVersion7()]);
 
         // Act
         appointmentType.MakeUnrestricted();
@@ -360,8 +360,8 @@ public class AppointmentTypeDefinitionTests
     {
         // Arrange
         var appointmentType = CreateAppointmentTypeDefinition();
-        var specialtyId1 = Guid.NewGuid();
-        var specialtyId2 = Guid.NewGuid();
+        var specialtyId1 = Guid.CreateVersion7();
+        var specialtyId2 = Guid.CreateVersion7();
 
         // Act
         appointmentType.RestrictToSpecialties([specialtyId1, specialtyId2]);
@@ -378,10 +378,10 @@ public class AppointmentTypeDefinitionTests
     {
         // Arrange
         var appointmentType = CreateAppointmentTypeDefinition();
-        appointmentType.RestrictToSpecialties([Guid.NewGuid()]);
+        appointmentType.RestrictToSpecialties([Guid.CreateVersion7()]);
 
         // Act
-        var act = () => appointmentType.RestrictToSpecialties([Guid.NewGuid()]);
+        var act = () => appointmentType.RestrictToSpecialties([Guid.CreateVersion7()]);
 
         // Assert
         act.Should()
@@ -426,7 +426,7 @@ public class AppointmentTypeDefinitionTests
         var appointmentType = CreateAppointmentTypeDefinition();
 
         // Act
-        var act = () => appointmentType.RestrictToSpecialties([Guid.NewGuid(), Guid.Empty]);
+        var act = () => appointmentType.RestrictToSpecialties([Guid.CreateVersion7(), Guid.Empty]);
 
         // Assert
         act.Should()
@@ -439,7 +439,7 @@ public class AppointmentTypeDefinitionTests
     {
         // Arrange
         var appointmentType = CreateAppointmentTypeDefinition();
-        var duplicateId = Guid.NewGuid();
+        var duplicateId = Guid.CreateVersion7();
 
         // Act
         var act = () => appointmentType.RestrictToSpecialties([duplicateId, duplicateId]);
@@ -455,9 +455,9 @@ public class AppointmentTypeDefinitionTests
     {
         // Arrange
         var appointmentType = CreateAppointmentTypeDefinition();
-        var baseSpecialtyId = Guid.NewGuid();
+        var baseSpecialtyId = Guid.CreateVersion7();
         appointmentType.RestrictToSpecialties([baseSpecialtyId]);
-        var specialtyId = Guid.NewGuid();
+        var specialtyId = Guid.CreateVersion7();
 
         // Act
         appointmentType.AddAllowedSpecialty(specialtyId);
@@ -474,7 +474,7 @@ public class AppointmentTypeDefinitionTests
         var appointmentType = CreateAppointmentTypeDefinition();
 
         // Act
-        var act = () => appointmentType.AddAllowedSpecialty(Guid.NewGuid());
+        var act = () => appointmentType.AddAllowedSpecialty(Guid.CreateVersion7());
 
         // Assert
         act.Should()
@@ -487,7 +487,7 @@ public class AppointmentTypeDefinitionTests
     {
         // Arrange
         var appointmentType = CreateAppointmentTypeDefinition();
-        appointmentType.RestrictToSpecialties([Guid.NewGuid()]);
+        appointmentType.RestrictToSpecialties([Guid.CreateVersion7()]);
 
         // Act
         var act = () => appointmentType.AddAllowedSpecialty(Guid.Empty);
@@ -503,7 +503,7 @@ public class AppointmentTypeDefinitionTests
     {
         // Arrange
         var appointmentType = CreateAppointmentTypeDefinition();
-        var specialtyId = Guid.NewGuid();
+        var specialtyId = Guid.CreateVersion7();
         appointmentType.RestrictToSpecialties([specialtyId]);
 
         // Act
@@ -520,8 +520,8 @@ public class AppointmentTypeDefinitionTests
     {
         // Arrange
         var appointmentType = CreateAppointmentTypeDefinition();
-        var specialtyId1 = Guid.NewGuid();
-        var specialtyId2 = Guid.NewGuid();
+        var specialtyId1 = Guid.CreateVersion7();
+        var specialtyId2 = Guid.CreateVersion7();
         appointmentType.RestrictToSpecialties([specialtyId1, specialtyId2]);
 
         // Act
@@ -542,7 +542,7 @@ public class AppointmentTypeDefinitionTests
         var appointmentType = CreateAppointmentTypeDefinition();
 
         // Act
-        var act = () => appointmentType.RemoveAllowedSpecialty(Guid.NewGuid());
+        var act = () => appointmentType.RemoveAllowedSpecialty(Guid.CreateVersion7());
 
         // Assert
         act.Should()
@@ -555,12 +555,12 @@ public class AppointmentTypeDefinitionTests
     {
         // Arrange
         var appointmentType = CreateAppointmentTypeDefinition();
-        var existingId = Guid.NewGuid();
-        var existingId2 = Guid.NewGuid();
+        var existingId = Guid.CreateVersion7();
+        var existingId2 = Guid.CreateVersion7();
         appointmentType.RestrictToSpecialties([existingId, existingId2]);
 
         // Act
-        var act = () => appointmentType.RemoveAllowedSpecialty(Guid.NewGuid());
+        var act = () => appointmentType.RemoveAllowedSpecialty(Guid.CreateVersion7());
 
         // Assert
         act.Should()
@@ -573,7 +573,7 @@ public class AppointmentTypeDefinitionTests
     {
         // Arrange
         var appointmentType = CreateAppointmentTypeDefinition();
-        var specialtyId = Guid.NewGuid();
+        var specialtyId = Guid.CreateVersion7();
         appointmentType.RestrictToSpecialties([specialtyId]);
 
         // Act

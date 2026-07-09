@@ -19,7 +19,7 @@ public class UpdateDoctorProfileCommandValidatorTests
     {
         // Arrange
         var command = new UpdateDoctorProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Updated biography",
             20,
             "Dermatology B",
@@ -37,7 +37,7 @@ public class UpdateDoctorProfileCommandValidatorTests
     public void Validate_ShouldBeValid_WhenBiographyIsEmpty()
     {
         // Arrange
-        var command = new UpdateDoctorProfileCommand(Guid.NewGuid(), "", 10, "Room A", 1);
+        var command = new UpdateDoctorProfileCommand(Guid.CreateVersion7(), "", 10, "Room A", 1);
 
         // Act
         var result = _sut.TestValidate(command);
@@ -69,7 +69,7 @@ public class UpdateDoctorProfileCommandValidatorTests
     {
         // Arrange
         var command = new UpdateDoctorProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Biography",
             roomNumber,
             "Room A",
@@ -93,7 +93,7 @@ public class UpdateDoctorProfileCommandValidatorTests
     {
         // Arrange
         var command = new UpdateDoctorProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Biography",
             roomNumber,
             "Room A",
@@ -116,7 +116,13 @@ public class UpdateDoctorProfileCommandValidatorTests
     public void Validate_ShouldHaveError_WhenConsultationRoomNameIsEmpty(string? roomName)
     {
         // Arrange
-        var command = new UpdateDoctorProfileCommand(Guid.NewGuid(), "Biography", 10, roomName!, 1);
+        var command = new UpdateDoctorProfileCommand(
+            Guid.CreateVersion7(),
+            "Biography",
+            10,
+            roomName!,
+            1
+        );
 
         // Act
         var result = _sut.TestValidate(command);
@@ -135,7 +141,7 @@ public class UpdateDoctorProfileCommandValidatorTests
     {
         // Arrange
         var command = new UpdateDoctorProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Biography",
             10,
             "Room A",
@@ -159,7 +165,7 @@ public class UpdateDoctorProfileCommandValidatorTests
     {
         // Arrange
         var command = new UpdateDoctorProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Biography",
             10,
             "Room A",

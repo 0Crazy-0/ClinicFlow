@@ -20,7 +20,7 @@ public class UnitOfWorkTests : IDisposable
     public UnitOfWorkTests()
     {
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-            .UseInMemoryDatabase(Guid.NewGuid().ToString())
+            .UseInMemoryDatabase(Guid.CreateVersion7().ToString())
             .Options;
 
         _dbContext = new ApplicationDbContext(options);

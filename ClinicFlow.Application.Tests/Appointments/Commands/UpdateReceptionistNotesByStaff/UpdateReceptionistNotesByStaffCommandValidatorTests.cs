@@ -17,7 +17,10 @@ public class UpdateReceptionistNotesByStaffCommandValidatorTests
     public void Validate_ShouldBeValid_WhenRequestIsValid()
     {
         // Arrange
-        var command = new UpdateReceptionistNotesByStaffCommand(Guid.NewGuid(), "Valid notes");
+        var command = new UpdateReceptionistNotesByStaffCommand(
+            Guid.CreateVersion7(),
+            "Valid notes"
+        );
 
         // Act
         var result = _sut.TestValidate(command);
@@ -46,7 +49,7 @@ public class UpdateReceptionistNotesByStaffCommandValidatorTests
     {
         // Arrange
         var command = new UpdateReceptionistNotesByStaffCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             new string('a', 501)
         );
 

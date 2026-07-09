@@ -19,7 +19,7 @@ public class BlockPatientCommandValidatorTests
     {
         // Arrange
         var command = new BlockPatientCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Patient was rude to staff",
             BlockDuration.Minor
         );
@@ -53,7 +53,7 @@ public class BlockPatientCommandValidatorTests
     public void Validate_ShouldHaveError_WhenReasonIsEmpty(string? reason)
     {
         // Arrange
-        var command = new BlockPatientCommand(Guid.NewGuid(), reason!, BlockDuration.Minor);
+        var command = new BlockPatientCommand(Guid.CreateVersion7(), reason!, BlockDuration.Minor);
 
         // Act
         var result = _sut.TestValidate(command);
@@ -68,7 +68,11 @@ public class BlockPatientCommandValidatorTests
     public void Validate_ShouldHaveError_WhenDurationIsInvalid()
     {
         // Arrange
-        var command = new BlockPatientCommand(Guid.NewGuid(), "Block reason", (BlockDuration)999);
+        var command = new BlockPatientCommand(
+            Guid.CreateVersion7(),
+            "Block reason",
+            (BlockDuration)999
+        );
 
         // Act
         var result = _sut.TestValidate(command);

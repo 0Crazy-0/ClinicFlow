@@ -17,7 +17,7 @@ public class UpdatePatientNotesByStaffCommandValidatorTests
     public void Validate_ShouldBeValid_WhenRequestIsValid()
     {
         // Arrange
-        var command = new UpdatePatientNotesByStaffCommand(Guid.NewGuid(), "Valid notes");
+        var command = new UpdatePatientNotesByStaffCommand(Guid.CreateVersion7(), "Valid notes");
 
         // Act
         var result = _sut.TestValidate(command);
@@ -45,7 +45,10 @@ public class UpdatePatientNotesByStaffCommandValidatorTests
     public void Validate_ShouldHaveError_WhenNotesTooLong()
     {
         // Arrange
-        var command = new UpdatePatientNotesByStaffCommand(Guid.NewGuid(), new string('a', 501));
+        var command = new UpdatePatientNotesByStaffCommand(
+            Guid.CreateVersion7(),
+            new string('a', 501)
+        );
 
         // Act
         var result = _sut.TestValidate(command);

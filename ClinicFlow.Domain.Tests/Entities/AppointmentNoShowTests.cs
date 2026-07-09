@@ -49,7 +49,7 @@ public class AppointmentNoShowTests
         var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2));
 
         // Act
-        var act = () => appointment.MarkAsNoShowByDoctor(Guid.NewGuid());
+        var act = () => appointment.MarkAsNoShowByDoctor(Guid.CreateVersion7());
 
         // Assert
         act.Should()
@@ -80,11 +80,11 @@ public class AppointmentNoShowTests
         var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2));
 
         appointment.Cancel(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Reason",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime)
         );
-        ;
+
         // Act && Assert
         appointment
             .Invoking(x => x.MarkAsNoShowByStaff())
@@ -95,9 +95,9 @@ public class AppointmentNoShowTests
 
     private static Appointment CreateAppointment(DateTime scheduledDateTime) =>
         Appointment.Schedule(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             DateOnly.FromDateTime(scheduledDateTime),
             TimeRange.Create(
                 TimeOnly.FromDateTime(scheduledDateTime),

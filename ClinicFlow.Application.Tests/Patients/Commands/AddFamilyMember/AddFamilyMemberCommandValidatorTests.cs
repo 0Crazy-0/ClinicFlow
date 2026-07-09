@@ -22,7 +22,7 @@ public class AddFamilyMemberCommandValidatorTests
     {
         // Arrange
         var command = new AddFamilyMemberCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "John",
             "Doe",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
@@ -65,7 +65,7 @@ public class AddFamilyMemberCommandValidatorTests
     {
         // Arrange
         var command = new AddFamilyMemberCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             firstName!,
             "Doe",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
@@ -86,7 +86,7 @@ public class AddFamilyMemberCommandValidatorTests
     {
         // Arrange
         var command = new AddFamilyMemberCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "J",
             "Doe",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
@@ -108,7 +108,7 @@ public class AddFamilyMemberCommandValidatorTests
         // Arrange
         var firstName = new string('A', PersonName.MaximumLength + 1);
         var command = new AddFamilyMemberCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             firstName,
             "Doe",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
@@ -132,7 +132,7 @@ public class AddFamilyMemberCommandValidatorTests
     {
         // Arrange
         var command = new AddFamilyMemberCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "John",
             lastName!,
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
@@ -153,7 +153,7 @@ public class AddFamilyMemberCommandValidatorTests
     {
         // Arrange
         var command = new AddFamilyMemberCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "John",
             "D",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
@@ -175,7 +175,7 @@ public class AddFamilyMemberCommandValidatorTests
         // Arrange
         var lastName = new string('A', PersonName.MaximumLength + 1);
         var command = new AddFamilyMemberCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "John",
             lastName,
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
@@ -196,7 +196,7 @@ public class AddFamilyMemberCommandValidatorTests
     {
         // Arrange
         var command = new AddFamilyMemberCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "John",
             "Doe",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
@@ -217,7 +217,7 @@ public class AddFamilyMemberCommandValidatorTests
     {
         // Arrange
         var command = new AddFamilyMemberCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "John",
             "Doe",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
@@ -238,7 +238,7 @@ public class AddFamilyMemberCommandValidatorTests
     {
         // Arrange
         var command = new AddFamilyMemberCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "John",
             "Doe",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),

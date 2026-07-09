@@ -34,7 +34,7 @@ public class RemovePenaltyCommandHandlerTests
     {
         // Arrange
         var penalty = PatientPenalty.CreateManualBlock(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Block reason",
             BlockDuration.Minor,
             _fakeTime.GetUtcNow().UtcDateTime
@@ -59,7 +59,7 @@ public class RemovePenaltyCommandHandlerTests
     public async Task Handle_ShouldThrowException_WhenPenaltyDoesNotExist()
     {
         // Arrange
-        var penaltyId = Guid.NewGuid();
+        var penaltyId = Guid.CreateVersion7();
         _penaltyRepositoryMock
             .Setup(x => x.GetByIdAsync(penaltyId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((PatientPenalty?)null);

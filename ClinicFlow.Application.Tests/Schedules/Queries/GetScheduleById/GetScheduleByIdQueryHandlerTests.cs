@@ -25,8 +25,8 @@ public class GetScheduleByIdQueryHandlerTests
     public async Task Handle_ShouldReturnScheduleDto_WhenScheduleExists()
     {
         // Arrange
-        var scheduleId = Guid.NewGuid();
-        var doctorId = Guid.NewGuid();
+        var scheduleId = Guid.CreateVersion7();
+        var doctorId = Guid.CreateVersion7();
         var schedule = Schedule.Create(
             doctorId,
             DayOfWeek.Monday,
@@ -62,7 +62,7 @@ public class GetScheduleByIdQueryHandlerTests
     public async Task Handle_ShouldThrowEntityNotFoundException_WhenScheduleDoesNotExist()
     {
         // Arrange
-        var query = new GetScheduleByIdQuery(Guid.NewGuid());
+        var query = new GetScheduleByIdQuery(Guid.CreateVersion7());
 
         _scheduleRepositoryMock
             .Setup(x => x.GetByIdAsync(query.ScheduleId, It.IsAny<CancellationToken>()))

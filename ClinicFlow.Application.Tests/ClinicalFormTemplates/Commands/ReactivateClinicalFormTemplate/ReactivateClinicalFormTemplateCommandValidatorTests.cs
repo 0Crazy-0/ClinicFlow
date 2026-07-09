@@ -12,7 +12,7 @@ public class ReactivateClinicalFormTemplateCommandValidatorTests
     public void Validate_ShouldPass_WhenValidCommand()
     {
         // Arrange
-        var command = new ReactivateClinicalFormTemplateCommand(Guid.NewGuid());
+        var command = new ReactivateClinicalFormTemplateCommand(Guid.CreateVersion7());
 
         // Act
         var result = _sut.TestValidate(command);

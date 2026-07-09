@@ -53,7 +53,7 @@ public class DeactivateClinicalFormTemplateCommandHandlerTests
     public async Task Handle_ShouldThrowEntityNotFoundException_WhenNotFound()
     {
         // Arrange
-        var command = new DeactivateClinicalFormTemplateCommand(Guid.NewGuid());
+        var command = new DeactivateClinicalFormTemplateCommand(Guid.CreateVersion7());
 
         _repositoryMock
             .Setup(x => x.GetByIdAsync(command.TemplateId, It.IsAny<CancellationToken>()))

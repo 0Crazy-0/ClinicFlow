@@ -14,7 +14,7 @@ public class WeeklyScheduleSetupServiceTests
     public void SetupWeeklySchedule_ShouldCreateAllSchedules_WhenNoDuplicatesExist()
     {
         // Arrange
-        var doctorId = Guid.NewGuid();
+        var doctorId = Guid.CreateVersion7();
 
         var slots = new List<WeeklyScheduleSlot>
         {
@@ -45,7 +45,7 @@ public class WeeklyScheduleSetupServiceTests
     public void SetupWeeklySchedule_ShouldThrowException_WhenDuplicateDayExistsInExistingSchedules()
     {
         // Arrange
-        var doctorId = Guid.NewGuid();
+        var doctorId = Guid.CreateVersion7();
         var existingSchedules = new List<Schedule>
         {
             Schedule.Create(
@@ -77,7 +77,7 @@ public class WeeklyScheduleSetupServiceTests
     public void SetupWeeklySchedule_ShouldCreateSchedules_WhenExistingScheduleIsInactive()
     {
         // Arrange
-        var doctorId = Guid.NewGuid();
+        var doctorId = Guid.CreateVersion7();
         var inactiveSchedule = Schedule.Create(
             doctorId,
             DayOfWeek.Monday,

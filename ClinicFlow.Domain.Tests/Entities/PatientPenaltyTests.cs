@@ -15,8 +15,8 @@ public class PatientPenaltyTests
     public void CreateAutomaticWarning_ShouldCreateWarningPenalty()
     {
         // Arrange
-        var patientId = Guid.NewGuid();
-        var appointmentId = Guid.NewGuid();
+        var patientId = Guid.CreateVersion7();
+        var appointmentId = Guid.CreateVersion7();
         var reason = "No show";
 
         // Act
@@ -36,7 +36,7 @@ public class PatientPenaltyTests
     {
         // Arrange & Act
         var act = () =>
-            PatientPenalty.CreateAutomaticWarning(Guid.Empty, Guid.NewGuid(), "No show");
+            PatientPenalty.CreateAutomaticWarning(Guid.Empty, Guid.CreateVersion7(), "No show");
 
         // Assert
         act.Should()
@@ -49,7 +49,7 @@ public class PatientPenaltyTests
     {
         // Arrange & Act
         var act = () =>
-            PatientPenalty.CreateAutomaticWarning(Guid.NewGuid(), Guid.Empty, "No show");
+            PatientPenalty.CreateAutomaticWarning(Guid.CreateVersion7(), Guid.Empty, "No show");
 
         // Assert
         act.Should()
@@ -65,7 +65,11 @@ public class PatientPenaltyTests
     {
         // Arrange & Act
         var act = () =>
-            PatientPenalty.CreateAutomaticWarning(Guid.NewGuid(), Guid.NewGuid(), reason!);
+            PatientPenalty.CreateAutomaticWarning(
+                Guid.CreateVersion7(),
+                Guid.CreateVersion7(),
+                reason!
+            );
 
         // Assert
         act.Should()
@@ -77,7 +81,7 @@ public class PatientPenaltyTests
     public void CreateAutomaticBlock_ShouldCreateBlockPenalty()
     {
         // Arrange
-        var patientId = Guid.NewGuid();
+        var patientId = Guid.CreateVersion7();
         var reason = "Automatic block due to 3 strikes";
         var blockedUntil = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime).AddDays(5);
 
@@ -125,7 +129,7 @@ public class PatientPenaltyTests
         // Arrange & Act
         var act = () =>
             PatientPenalty.CreateAutomaticBlock(
-                Guid.NewGuid(),
+                Guid.CreateVersion7(),
                 reason!,
                 BlockDuration.Minor,
                 _fakeTime.GetUtcNow().UtcDateTime
@@ -143,7 +147,7 @@ public class PatientPenaltyTests
         // Arrange & Act
         var act = () =>
             PatientPenalty.CreateAutomaticBlock(
-                Guid.NewGuid(),
+                Guid.CreateVersion7(),
                 "Block reason",
                 (BlockDuration)999,
                 _fakeTime.GetUtcNow().UtcDateTime
@@ -160,7 +164,7 @@ public class PatientPenaltyTests
     {
         // Arrange
         var penalty = PatientPenalty.CreateAutomaticBlock(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Block reason",
             BlockDuration.Minor,
             _fakeTime.GetUtcNow().UtcDateTime
@@ -178,7 +182,7 @@ public class PatientPenaltyTests
     {
         // Arrange
         var penalty = PatientPenalty.CreateAutomaticBlock(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Block reason",
             BlockDuration.Minor,
             _fakeTime.GetUtcNow().UtcDateTime
@@ -203,7 +207,7 @@ public class PatientPenaltyTests
     )
     {
         // Arrange
-        var patientId = Guid.NewGuid();
+        var patientId = Guid.CreateVersion7();
         var reason = "Patient was rude to staff";
         var referenceTime = _fakeTime.GetUtcNow().UtcDateTime;
 
@@ -249,7 +253,7 @@ public class PatientPenaltyTests
         // Arrange & Act
         var act = () =>
             PatientPenalty.CreateManualBlock(
-                Guid.NewGuid(),
+                Guid.CreateVersion7(),
                 reason!,
                 BlockDuration.Minor,
                 _fakeTime.GetUtcNow().UtcDateTime
@@ -267,7 +271,7 @@ public class PatientPenaltyTests
         // Arrange & Act
         var act = () =>
             PatientPenalty.CreateManualBlock(
-                Guid.NewGuid(),
+                Guid.CreateVersion7(),
                 "Block reason",
                 (BlockDuration)999,
                 _fakeTime.GetUtcNow().UtcDateTime

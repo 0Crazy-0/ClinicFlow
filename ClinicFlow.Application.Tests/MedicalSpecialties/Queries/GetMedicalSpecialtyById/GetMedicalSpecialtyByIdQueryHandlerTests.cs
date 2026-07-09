@@ -57,7 +57,7 @@ public class GetMedicalSpecialtyByIdQueryHandlerTests
     public async Task Handle_ShouldThrowException_WhenSpecialtyDoesNotExist()
     {
         // Arrange
-        var id = Guid.NewGuid();
+        var id = Guid.CreateVersion7();
         _repositoryMock
             .Setup(x => x.GetByIdAsync(id, It.IsAny<CancellationToken>()))
             .ReturnsAsync((MedicalSpecialty?)null);

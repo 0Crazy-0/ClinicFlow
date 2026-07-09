@@ -39,7 +39,7 @@ public class BlockPatientCommandHandlerTests
     {
         // Arrange
         var command = new BlockPatientCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Patient was rude to staff",
             duration
         );
@@ -69,7 +69,7 @@ public class BlockPatientCommandHandlerTests
     {
         // Arrange
         var command = new BlockPatientCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Patient was rude to staff",
             BlockDuration.Minor
         );

@@ -24,7 +24,7 @@ public class GetAppointmentsByPatientIdQueryHandlerTests
     public async Task Handle_ShouldReturnPaginatedList_WhenPatientHasAppointments()
     {
         // Arrange
-        var patientId = Guid.NewGuid();
+        var patientId = Guid.CreateVersion7();
         var query = new GetAppointmentsByPatientIdQuery(patientId, 1, 10);
         var appointments = new List<Appointment>
         {
@@ -59,7 +59,7 @@ public class GetAppointmentsByPatientIdQueryHandlerTests
     public async Task Handle_ShouldReturnEmptyPaginatedList_WhenPatientHasNoAppointments()
     {
         // Arrange
-        var query = new GetAppointmentsByPatientIdQuery(Guid.NewGuid(), 1, 10);
+        var query = new GetAppointmentsByPatientIdQuery(Guid.CreateVersion7(), 1, 10);
 
         _appointmentRepositoryMock
             .Setup(x =>
@@ -96,8 +96,8 @@ public class GetAppointmentsByPatientIdQueryHandlerTests
     private Appointment CreateAppointment(Guid patientId) =>
         Appointment.Schedule(
             patientId,
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );

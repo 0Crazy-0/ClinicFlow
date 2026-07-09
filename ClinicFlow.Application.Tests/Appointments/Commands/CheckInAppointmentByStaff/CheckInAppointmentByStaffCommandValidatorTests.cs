@@ -17,7 +17,7 @@ public class CheckInAppointmentByStaffCommandValidatorTests
     public void Validate_ShouldBeValid_WhenPropertiesAreProvidedAndValid()
     {
         // Arrange
-        var command = new CheckInAppointmentByStaffCommand(Guid.NewGuid());
+        var command = new CheckInAppointmentByStaffCommand(Guid.CreateVersion7());
 
         // Act
         var result = _sut.TestValidate(command);
@@ -45,7 +45,10 @@ public class CheckInAppointmentByStaffCommandValidatorTests
     public void Validate_ShouldHaveError_WhenReceptionistNotesAreTooLong()
     {
         // Arrange
-        var command = new CheckInAppointmentByStaffCommand(Guid.NewGuid(), new string('a', 501));
+        var command = new CheckInAppointmentByStaffCommand(
+            Guid.CreateVersion7(),
+            new string('a', 501)
+        );
 
         // Act
         var result = _sut.TestValidate(command);

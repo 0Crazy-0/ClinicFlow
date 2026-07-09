@@ -29,7 +29,7 @@ public class SendPhoneVerificationCommandHandlerTests
     public async Task Handle_ShouldSendVerificationCode_WhenUserExists()
     {
         // Arrange
-        var userId = Guid.NewGuid();
+        var userId = Guid.CreateVersion7();
         var command = new SendPhoneVerificationCommand(userId);
         var phone = PhoneNumber.Create("555-1234");
 
@@ -58,7 +58,7 @@ public class SendPhoneVerificationCommandHandlerTests
     public async Task Handle_ShouldThrowException_WhenUserNotFound()
     {
         // Arrange
-        var command = new SendPhoneVerificationCommand(Guid.NewGuid());
+        var command = new SendPhoneVerificationCommand(Guid.CreateVersion7());
 
         _userRepositoryMock
             .Setup(x => x.GetByIdAsync(command.UserId, It.IsAny<CancellationToken>()))

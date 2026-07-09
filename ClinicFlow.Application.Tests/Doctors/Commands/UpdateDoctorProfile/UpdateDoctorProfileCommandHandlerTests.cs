@@ -31,7 +31,7 @@ public class UpdateDoctorProfileCommandHandlerTests
     {
         // Arrange
         var command = new UpdateDoctorProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Updated biography with new certifications",
             5,
             "Dermatology B",
@@ -39,10 +39,10 @@ public class UpdateDoctorProfileCommandHandlerTests
         );
 
         var doctor = Doctor.Create(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("12345"),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Original biography",
             ConsultationRoom.Create(1, "Room A", 1)
         );
@@ -68,7 +68,7 @@ public class UpdateDoctorProfileCommandHandlerTests
     {
         // Arrange
         var command = new UpdateDoctorProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "New biography",
             5,
             "Room B",

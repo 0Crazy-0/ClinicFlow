@@ -31,7 +31,12 @@ public class ChangeAppointmentTypeAgePolicyCommandHandlerTests
     public async Task Handle_ShouldChangeAgePolicy_WhenEntityExists()
     {
         // Arrange
-        var command = new ChangeAppointmentTypeAgePolicyCommand(Guid.NewGuid(), 21, 60, false);
+        var command = new ChangeAppointmentTypeAgePolicyCommand(
+            Guid.CreateVersion7(),
+            21,
+            60,
+            false
+        );
 
         var appointmentType = AppointmentTypeDefinition.Create(
             AppointmentCategory.Checkup,
@@ -61,7 +66,12 @@ public class ChangeAppointmentTypeAgePolicyCommandHandlerTests
     public async Task Handle_ShouldThrowException_WhenEntityDoesNotExist()
     {
         // Arrange
-        var command = new ChangeAppointmentTypeAgePolicyCommand(Guid.NewGuid(), null, null, false);
+        var command = new ChangeAppointmentTypeAgePolicyCommand(
+            Guid.CreateVersion7(),
+            null,
+            null,
+            false
+        );
 
         _appointmentTypeRepositoryMock
             .Setup(x => x.GetByIdAsync(command.AppointmentTypeId, It.IsAny<CancellationToken>()))

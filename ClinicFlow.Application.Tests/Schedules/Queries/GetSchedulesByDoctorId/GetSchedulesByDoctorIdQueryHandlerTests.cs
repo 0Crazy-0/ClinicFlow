@@ -22,7 +22,7 @@ public class GetSchedulesByDoctorIdQueryHandlerTests
     public async Task Handle_ShouldReturnSchedules_WhenSchedulesExist()
     {
         // Arrange
-        var doctorId = Guid.NewGuid();
+        var doctorId = Guid.CreateVersion7();
         var schedule1 = Schedule.Create(
             doctorId,
             DayOfWeek.Monday,
@@ -68,7 +68,7 @@ public class GetSchedulesByDoctorIdQueryHandlerTests
     public async Task Handle_ShouldReturnEmptyList_WhenNoSchedulesExist()
     {
         // Arrange
-        var doctorId = Guid.NewGuid();
+        var doctorId = Guid.CreateVersion7();
 
         _scheduleRepositoryMock
             .Setup(x => x.GetByDoctorIdAsync(doctorId, It.IsAny<CancellationToken>()))

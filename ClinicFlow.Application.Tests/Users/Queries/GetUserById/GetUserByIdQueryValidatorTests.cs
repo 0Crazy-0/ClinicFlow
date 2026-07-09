@@ -12,7 +12,7 @@ public class GetUserByIdQueryValidatorTests
     public void Validate_ShouldNotHaveError_WhenUserIdIsValid()
     {
         // Arrange
-        var query = new GetUserByIdQuery(Guid.NewGuid());
+        var query = new GetUserByIdQuery(Guid.CreateVersion7());
 
         // Act
         var result = _sut.TestValidate(query);

@@ -21,7 +21,7 @@ public class CreateCompletePatientProfileCommandValidatorTests
     {
         // Arrange
         var command = new CreateCompletePatientProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "John",
             "Doe",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
@@ -72,7 +72,7 @@ public class CreateCompletePatientProfileCommandValidatorTests
     {
         // Arrange
         var command = new CreateCompletePatientProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             firstName!,
             "Doe",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
@@ -97,7 +97,7 @@ public class CreateCompletePatientProfileCommandValidatorTests
     {
         // Arrange
         var command = new CreateCompletePatientProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "J",
             "Doe",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
@@ -122,7 +122,7 @@ public class CreateCompletePatientProfileCommandValidatorTests
     {
         // Arrange
         var command = new CreateCompletePatientProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             new string('A', PersonName.MaximumLength + 1),
             "Doe",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
@@ -150,7 +150,7 @@ public class CreateCompletePatientProfileCommandValidatorTests
     {
         // Arrange
         var command = new CreateCompletePatientProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "John",
             lastName!,
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
@@ -175,7 +175,7 @@ public class CreateCompletePatientProfileCommandValidatorTests
     {
         // Arrange
         var command = new CreateCompletePatientProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "John",
             "D",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
@@ -200,7 +200,7 @@ public class CreateCompletePatientProfileCommandValidatorTests
     {
         // Arrange
         var command = new CreateCompletePatientProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "John",
             new string('A', PersonName.MaximumLength + 1),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
@@ -225,7 +225,7 @@ public class CreateCompletePatientProfileCommandValidatorTests
     {
         // Arrange
         var command = new CreateCompletePatientProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "John",
             "Doe",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
@@ -253,7 +253,7 @@ public class CreateCompletePatientProfileCommandValidatorTests
     {
         // Arrange
         var command = new CreateCompletePatientProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "John",
             "Doe",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
@@ -281,7 +281,7 @@ public class CreateCompletePatientProfileCommandValidatorTests
     {
         // Arrange
         var command = new CreateCompletePatientProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "John",
             "Doe",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
@@ -306,7 +306,7 @@ public class CreateCompletePatientProfileCommandValidatorTests
     {
         // Arrange
         var command = new CreateCompletePatientProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "John",
             "Doe",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
@@ -331,7 +331,7 @@ public class CreateCompletePatientProfileCommandValidatorTests
     {
         // Arrange
         var command = new CreateCompletePatientProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "John",
             "Doe",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
@@ -359,7 +359,7 @@ public class CreateCompletePatientProfileCommandValidatorTests
     {
         // Arrange
         var command = new CreateCompletePatientProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "John",
             "Doe",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
@@ -384,7 +384,7 @@ public class CreateCompletePatientProfileCommandValidatorTests
     {
         // Arrange
         var command = new CreateCompletePatientProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "John",
             "Doe",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
@@ -409,7 +409,7 @@ public class CreateCompletePatientProfileCommandValidatorTests
     {
         // Arrange
         var command = new CreateCompletePatientProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "John",
             "Doe",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),

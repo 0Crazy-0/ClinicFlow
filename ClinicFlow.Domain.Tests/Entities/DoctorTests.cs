@@ -13,10 +13,10 @@ public class DoctorTests
     public void Create_ShouldCreateDoctor_WhenValidParameters()
     {
         // Arrange
-        var userId = Guid.NewGuid();
+        var userId = Guid.CreateVersion7();
         var fullName = PersonName.Create("Test Doctor");
         var licenseNumber = MedicalLicenseNumber.Create("12345");
-        var specialtyId = Guid.NewGuid();
+        var specialtyId = Guid.CreateVersion7();
         var biography = "Cardiologist with 10 years of experience";
         var room = ConsultationRoom.Create(1, "Cardiology A", 3);
 
@@ -42,7 +42,7 @@ public class DoctorTests
                 Guid.Empty,
                 PersonName.Create("Test Doctor"),
                 MedicalLicenseNumber.Create("12345"),
-                Guid.NewGuid(),
+                Guid.CreateVersion7(),
                 "Biography",
                 ConsultationRoom.Create(1, "Room A", 1)
             );
@@ -59,7 +59,7 @@ public class DoctorTests
         // Arrange & Act
         var act = () =>
             Doctor.Create(
-                Guid.NewGuid(),
+                Guid.CreateVersion7(),
                 PersonName.Create("Test Doctor"),
                 MedicalLicenseNumber.Create("12345"),
                 Guid.Empty,
@@ -79,10 +79,10 @@ public class DoctorTests
         // Arrange & Act
         var act = () =>
             Doctor.Create(
-                Guid.NewGuid(),
+                Guid.CreateVersion7(),
                 null!,
                 MedicalLicenseNumber.Create("12345"),
-                Guid.NewGuid(),
+                Guid.CreateVersion7(),
                 "Biography",
                 ConsultationRoom.Create(1, "Room A", 1)
             );
@@ -98,10 +98,10 @@ public class DoctorTests
     {
         // Arrange
         var doctor = Doctor.Create(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("12345"),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Original biography",
             ConsultationRoom.Create(1, "Room A", 1)
         );
@@ -182,10 +182,10 @@ public class DoctorTests
 
     private static Doctor CreateDoctor() =>
         Doctor.Create(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("12345"),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Biography",
             ConsultationRoom.Create(1, "Room A", 1)
         );

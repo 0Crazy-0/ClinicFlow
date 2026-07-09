@@ -32,7 +32,7 @@ public class GetSchedulesByDoctorIdQueryValidatorTests
     public void Validate_ShouldNotHaveError_WhenDoctorIdIsValid()
     {
         // Arrange
-        var query = new GetSchedulesByDoctorIdQuery(Guid.NewGuid());
+        var query = new GetSchedulesByDoctorIdQuery(Guid.CreateVersion7());
 
         // Act
         var result = _sut.TestValidate(query);

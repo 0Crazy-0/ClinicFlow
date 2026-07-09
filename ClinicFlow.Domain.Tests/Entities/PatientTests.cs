@@ -18,7 +18,7 @@ public class PatientTests
     public void Create_ShouldCreatePatient_WhenValidParameters()
     {
         // Arrange
-        var userId = Guid.NewGuid();
+        var userId = Guid.CreateVersion7();
         var dateOfBirth = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30));
         var bloodType = BloodType.Create("O+");
         var allergies = "Penicillin";
@@ -51,7 +51,7 @@ public class PatientTests
         // Arrange & Act
         var act = () =>
             Patient.CreateSelf(
-                Guid.NewGuid(),
+                Guid.CreateVersion7(),
                 PersonName.Create("John Doe"),
                 DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
                 _fakeTime.GetUtcNow().UtcDateTime
@@ -87,7 +87,7 @@ public class PatientTests
         // Arrange & Act
         var act = () =>
             Patient.CreateSelf(
-                Guid.NewGuid(),
+                Guid.CreateVersion7(),
                 null!,
                 DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
                 _fakeTime.GetUtcNow().UtcDateTime
@@ -109,7 +109,7 @@ public class PatientTests
         // Act
         var act = () =>
             Patient.CreateSelf(
-                Guid.NewGuid(),
+                Guid.CreateVersion7(),
                 PersonName.Create("John Doe"),
                 dateOfBirth,
                 referenceTime
@@ -123,7 +123,7 @@ public class PatientTests
     public void CreateFamilyMember_ShouldCreatePatient_WhenValidParameters()
     {
         // Arrange
-        var userId = Guid.NewGuid();
+        var userId = Guid.CreateVersion7();
         var dateOfBirth = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10));
 
         // Act
@@ -148,7 +148,7 @@ public class PatientTests
         // Arrange & Act
         var act = () =>
             Patient.CreateFamilyMember(
-                Guid.NewGuid(),
+                Guid.CreateVersion7(),
                 PersonName.Create("Family Member"),
                 PatientRelationship.Self,
                 DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10)),
@@ -186,7 +186,7 @@ public class PatientTests
         // Arrange & Act
         var act = () =>
             Patient.CreateFamilyMember(
-                Guid.NewGuid(),
+                Guid.CreateVersion7(),
                 null!,
                 PatientRelationship.Child,
                 DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10)),
@@ -205,7 +205,7 @@ public class PatientTests
         // Arrange & Act
         var act = () =>
             Patient.CreateFamilyMember(
-                Guid.NewGuid(),
+                Guid.CreateVersion7(),
                 PersonName.Create("Family Member"),
                 PatientRelationship.Child,
                 DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
@@ -228,7 +228,7 @@ public class PatientTests
         // Act
         var act = () =>
             Patient.CreateFamilyMember(
-                Guid.NewGuid(),
+                Guid.CreateVersion7(),
                 PersonName.Create("Family Member"),
                 PatientRelationship.Child,
                 dateOfBirth,
@@ -243,7 +243,7 @@ public class PatientTests
     public void RemoveFamilyMember_ShouldMarkAsDeleted_WhenPatientIsFamilyMember()
     {
         // Arrange
-        var userId = Guid.NewGuid();
+        var userId = Guid.CreateVersion7();
         var patient = CreateFamilyMember(userId);
 
         // Act
@@ -271,9 +271,9 @@ public class PatientTests
     public void RemoveFamilyMember_ShouldThrowException_WhenInitiatorIsUnauthorized()
     {
         // Arrange
-        var userId = Guid.NewGuid();
+        var userId = Guid.CreateVersion7();
         var patient = CreateFamilyMember(userId);
-        var anotherUserId = Guid.NewGuid();
+        var anotherUserId = Guid.CreateVersion7();
 
         //Act && Assert
         patient
@@ -300,7 +300,7 @@ public class PatientTests
     public void CloseAccount_ShouldThrowException_WhenPatientIsNotPrimaryUser()
     {
         // Arrange
-        var patient = CreateFamilyMember(Guid.NewGuid());
+        var patient = CreateFamilyMember(Guid.CreateVersion7());
 
         // Act
         var act = () => patient.CloseAccount(false);
@@ -360,7 +360,7 @@ public class PatientTests
     public void ReactivateAsFamilyMember_ShouldUndoDeletionAndUpdateRelationship_WhenCalled()
     {
         // Arrange
-        var patient = CreateFamilyMember(Guid.NewGuid());
+        var patient = CreateFamilyMember(Guid.CreateVersion7());
         patient.RemoveFamilyMember(patient.UserId);
 
         // Act
@@ -375,7 +375,7 @@ public class PatientTests
     public void ReactivateAsFamilyMember_ShouldEmitPatientReactivatedEvent_WhenCalled()
     {
         // Arrange
-        var patient = CreateFamilyMember(Guid.NewGuid());
+        var patient = CreateFamilyMember(Guid.CreateVersion7());
         patient.RemoveFamilyMember(patient.UserId);
         patient.ClearDomainEvents();
 
@@ -390,7 +390,7 @@ public class PatientTests
     public void ReactivateAsFamilyMember_ShouldThrowException_WhenRelationshipIsSelf()
     {
         // Arrange
-        var patient = CreateFamilyMember(Guid.NewGuid());
+        var patient = CreateFamilyMember(Guid.CreateVersion7());
         patient.RemoveFamilyMember(patient.UserId);
 
         // Act
@@ -407,7 +407,7 @@ public class PatientTests
     {
         // Arrange
         var patient = Patient.CreateSelf(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             PersonName.Create("John Doe"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
@@ -424,7 +424,7 @@ public class PatientTests
     {
         // Arrange
         var patient = Patient.CreateSelf(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             PersonName.Create("John Doe"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
@@ -443,7 +443,7 @@ public class PatientTests
     {
         // Arrange
         var patient = Patient.CreateSelf(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             PersonName.Create("John Doe"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
@@ -463,7 +463,7 @@ public class PatientTests
     {
         // Arrange
         var patient = Patient.CreateSelf(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             PersonName.Create("John Doe"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
@@ -483,7 +483,7 @@ public class PatientTests
     {
         // Arrange
         var patient = Patient.CreateSelf(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             PersonName.Create("John Doe"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
@@ -506,7 +506,7 @@ public class PatientTests
         var referenceTime = _fakeTime.GetUtcNow().UtcDateTime;
         var yearsAgo = 25;
         var patient = Patient.CreateSelf(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             PersonName.Create("John Doe"),
             DateOnly.FromDateTime(referenceTime.AddYears(-yearsAgo)),
             referenceTime
@@ -525,7 +525,7 @@ public class PatientTests
         _fakeTime.SetUtcNow(dayBeforeBirthday);
 
         var patient = Patient.CreateSelf(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             PersonName.Create("John Doe"),
             new DateOnly(2000, 6, 20),
             _fakeTime.GetUtcNow().UtcDateTime
@@ -541,7 +541,7 @@ public class PatientTests
     private Patient CreatePatient()
     {
         var patient = Patient.CreateSelf(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             PersonName.Create("John Doe"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime

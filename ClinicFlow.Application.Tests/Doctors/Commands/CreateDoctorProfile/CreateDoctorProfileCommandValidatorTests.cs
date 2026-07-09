@@ -19,11 +19,11 @@ public class CreateDoctorProfileCommandValidatorTests
     {
         // Arrange
         var command = new CreateDoctorProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "John",
             "Doe",
             "12345",
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Cardiologist with 10 years of experience",
             10,
             "Cardiology A",
@@ -46,7 +46,7 @@ public class CreateDoctorProfileCommandValidatorTests
             "John",
             "Doe",
             "12345",
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Biography",
             10,
             "Room A",
@@ -70,11 +70,11 @@ public class CreateDoctorProfileCommandValidatorTests
     {
         // Arrange
         var command = new CreateDoctorProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             firstName!,
             "Doe",
             "12345",
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Biography",
             10,
             "Room A",
@@ -95,11 +95,11 @@ public class CreateDoctorProfileCommandValidatorTests
     {
         // Arrange
         var command = new CreateDoctorProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "A",
             "Doe",
             "12345",
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Biography",
             10,
             "Room A",
@@ -120,11 +120,11 @@ public class CreateDoctorProfileCommandValidatorTests
     {
         // Arrange
         var command = new CreateDoctorProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             new string('A', PersonName.MaximumLength + 1),
             "Doe",
             "12345",
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Biography",
             10,
             "Room A",
@@ -148,11 +148,11 @@ public class CreateDoctorProfileCommandValidatorTests
     {
         // Arrange
         var command = new CreateDoctorProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "John",
             lastName!,
             "12345",
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Biography",
             10,
             "Room A",
@@ -173,11 +173,11 @@ public class CreateDoctorProfileCommandValidatorTests
     {
         // Arrange
         var command = new CreateDoctorProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "John",
             "A",
             "12345",
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Biography",
             10,
             "Room A",
@@ -198,11 +198,11 @@ public class CreateDoctorProfileCommandValidatorTests
     {
         // Arrange
         var command = new CreateDoctorProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "John",
             new string('A', PersonName.MaximumLength + 1),
             "12345",
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Biography",
             10,
             "Room A",
@@ -223,11 +223,11 @@ public class CreateDoctorProfileCommandValidatorTests
     {
         // Arrange
         var command = new CreateDoctorProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "John",
             "Doe",
             "",
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Biography",
             10,
             "Room A",
@@ -248,11 +248,11 @@ public class CreateDoctorProfileCommandValidatorTests
     {
         // Arrange
         var command = new CreateDoctorProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "John",
             "Doe",
             "123",
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Biography",
             10,
             "Room A",
@@ -273,11 +273,11 @@ public class CreateDoctorProfileCommandValidatorTests
     {
         // Arrange
         var command = new CreateDoctorProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "John",
             "Doe",
             new string('A', MedicalLicenseNumber.MaximumLength + 1),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Biography",
             10,
             "Room A",
@@ -298,7 +298,7 @@ public class CreateDoctorProfileCommandValidatorTests
     {
         // Arrange
         var command = new CreateDoctorProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "John",
             "Doe",
             "12345",
@@ -326,11 +326,11 @@ public class CreateDoctorProfileCommandValidatorTests
     {
         // Arrange
         var command = new CreateDoctorProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "John",
             "Doe",
             "12345",
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Biography",
             roomNumber,
             "Room A",
@@ -354,11 +354,11 @@ public class CreateDoctorProfileCommandValidatorTests
     {
         // Arrange
         var command = new CreateDoctorProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "John",
             "Doe",
             "12345",
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Biography",
             roomNumber,
             "Room A",
@@ -382,11 +382,11 @@ public class CreateDoctorProfileCommandValidatorTests
     {
         // Arrange
         var command = new CreateDoctorProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "John",
             "Doe",
             "12345",
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Biography",
             10,
             roomName!,
@@ -410,11 +410,11 @@ public class CreateDoctorProfileCommandValidatorTests
     {
         // Arrange
         var command = new CreateDoctorProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "John",
             "Doe",
             "12345",
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Biography",
             10,
             "Room A",
@@ -438,11 +438,11 @@ public class CreateDoctorProfileCommandValidatorTests
     {
         // Arrange
         var command = new CreateDoctorProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "John",
             "Doe",
             "12345",
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Biography",
             10,
             "Room A",
