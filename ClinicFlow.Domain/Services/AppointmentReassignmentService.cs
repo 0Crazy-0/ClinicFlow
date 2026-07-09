@@ -1,7 +1,6 @@
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Exceptions.Base;
-using ClinicFlow.Domain.Exceptions.Scheduling;
 using ClinicFlow.Domain.Services.Args.Reassignment;
 
 namespace ClinicFlow.Domain.Services;
@@ -28,12 +27,11 @@ public static class AppointmentReassignmentService
         if (args is null || args.NewTimeRange is null)
             throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
 
-        if (!newDoctorSchedule.CoversTimeRange(args.NewTimeRange))
-            throw new DoctorNotAvailableException(
-                DomainErrors.Schedule.DoctorNotAvailable,
-                args.NewDoctorId,
-                args.NewDate.DayOfWeek
-            );
+        newDoctorSchedule.EnsureDoctorIsAvailable(
+            args.NewDoctorId,
+            args.NewDate.DayOfWeek,
+            args.NewTimeRange
+        );
 
         appointment.Reassign(args.NewDoctorId, args.NewDate, args.NewTimeRange);
     }

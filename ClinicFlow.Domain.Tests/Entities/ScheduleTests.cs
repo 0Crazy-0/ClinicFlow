@@ -121,7 +121,7 @@ public class ScheduleTests
     public void Deactivate_ShouldSetIsActiveToFalse_WhenScheduleIsActive()
     {
         // Arrange
-        var schedule = new ScheduleBuilder().Build();
+        var schedule = CreateSchedule();
 
         // Act
         schedule.Deactivate();
@@ -135,7 +135,7 @@ public class ScheduleTests
     {
         // Arrange
         var doctorId = Guid.CreateVersion7();
-        var schedule = new ScheduleBuilder().WithDoctorId(doctorId).Build();
+        var schedule = CreateSchedule(doctorId);
 
         // Act
         schedule.Deactivate();
@@ -156,7 +156,7 @@ public class ScheduleTests
     public void Deactivate_ShouldThrowException_WhenScheduleIsAlreadyInactive()
     {
         // Arrange
-        var schedule = new ScheduleBuilder().Build();
+        var schedule = CreateSchedule();
         schedule.Deactivate();
 
         // Act & Assert
@@ -171,7 +171,7 @@ public class ScheduleTests
     public void Deactivate_ShouldPreventCoversTimeRange_WhenDeactivated()
     {
         // Arrange
-        var schedule = new ScheduleBuilder().Build();
+        var schedule = CreateSchedule();
 
         // Act
         schedule.Deactivate();
@@ -188,10 +188,7 @@ public class ScheduleTests
     {
         // Arrange
         var doctorId = Guid.CreateVersion7();
-        var existingSchedules = new List<Schedule>
-        {
-            new ScheduleBuilder().WithDoctorId(doctorId).Build(),
-        };
+        var existingSchedules = new List<Schedule> { CreateSchedule(doctorId) };
 
         // Act
         var act = () =>
@@ -209,15 +206,15 @@ public class ScheduleTests
     public void EnsureNoDuplicateDay_ShouldNotThrow_WhenNoDuplicateExists()
     {
         // Arrange
-        var doctorId = Guid.CreateVersion7();
-        var existingSchedules = new List<Schedule>
-        {
-            new ScheduleBuilder().WithDoctorId(doctorId).Build(),
-        };
+        var existingSchedules = new List<Schedule> { CreateSchedule() };
 
         // Act
         var act = () =>
-            Schedule.EnsureNoDuplicateDay(existingSchedules, doctorId, DayOfWeek.Tuesday);
+            Schedule.EnsureNoDuplicateDay(
+                existingSchedules,
+                Guid.CreateVersion7(),
+                DayOfWeek.Tuesday
+            );
 
         // Assert
         act.Should().NotThrow();
@@ -227,35 +224,90 @@ public class ScheduleTests
     public void EnsureNoDuplicateDay_ShouldNotThrow_WhenDuplicateExistsButIsInactive()
     {
         // Arrange
-        var doctorId = Guid.CreateVersion7();
-        var inactiveSchedule = new ScheduleBuilder().WithDoctorId(doctorId).Build();
+        var inactiveSchedule = CreateSchedule();
+
         inactiveSchedule.Deactivate();
 
         var existingSchedules = new List<Schedule> { inactiveSchedule };
 
         // Act
         var act = () =>
-            Schedule.EnsureNoDuplicateDay(existingSchedules, doctorId, DayOfWeek.Monday);
+            Schedule.EnsureNoDuplicateDay(
+                existingSchedules,
+                Guid.CreateVersion7(),
+                DayOfWeek.Monday
+            );
 
         // Assert
         act.Should().NotThrow();
     }
 
-    private class ScheduleBuilder
+    [Fact]
+    public void EnsureDoctorIsAvailable_ShouldNotThrow_WhenDoctorMatchesAndScheduleCoversTimeRange()
     {
-        private Guid _doctorId = Guid.CreateVersion7();
+        // Arrange
+        var doctorId = Guid.CreateVersion7();
+        var schedule = CreateSchedule(doctorId);
+        var timeRange = TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(12, 0));
 
-        public ScheduleBuilder WithDoctorId(Guid doctorId)
-        {
-            _doctorId = doctorId;
-            return this;
-        }
+        // Act
+        var act = () => schedule.EnsureDoctorIsAvailable(doctorId, DayOfWeek.Monday, timeRange);
 
-        public Schedule Build() =>
-            Schedule.Create(
-                _doctorId,
-                DayOfWeek.Monday,
-                TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(17, 0))
-            );
+        // Assert
+        act.Should().NotThrow();
     }
+
+    [Fact]
+    public void EnsureDoctorIsAvailable_ShouldThrowDoctorNotAvailableException_WhenDoctorIdDoesNotMatch()
+    {
+        // Arrange
+        var doctorId = Guid.CreateVersion7();
+        var otherDoctorId = Guid.CreateVersion7();
+        var schedule = CreateSchedule(doctorId);
+        var timeRange = TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(12, 0));
+
+        // Act
+        var act = () =>
+            schedule.EnsureDoctorIsAvailable(otherDoctorId, DayOfWeek.Monday, timeRange);
+
+        // Assert
+        var exceptionAssertion = act.Should()
+            .Throw<DoctorNotAvailableException>()
+            .WithMessage(DomainErrors.Schedule.DoctorNotAvailable);
+        exceptionAssertion.Which.DoctorId.Should().Be(otherDoctorId);
+        exceptionAssertion.Which.DayOfWeek.Should().Be(DayOfWeek.Monday);
+    }
+
+    [Fact]
+    public void EnsureDoctorIsAvailable_ShouldThrowDoctorNotAvailableException_WhenScheduleDoesNotCoverTimeRange()
+    {
+        // Arrange
+        var doctorId = Guid.CreateVersion7();
+        var schedule = CreateSchedule(doctorId);
+        var timeRange = TimeRange.Create(new TimeOnly(8, 0), new TimeOnly(10, 0));
+
+        // Act
+        var act = () => schedule.EnsureDoctorIsAvailable(doctorId, DayOfWeek.Monday, timeRange);
+
+        // Assert
+        var exceptionAssertion = act.Should()
+            .Throw<DoctorNotAvailableException>()
+            .WithMessage(DomainErrors.Schedule.DoctorNotAvailable);
+        exceptionAssertion.Which.DoctorId.Should().Be(doctorId);
+        exceptionAssertion.Which.DayOfWeek.Should().Be(DayOfWeek.Monday);
+    }
+
+    private static Schedule CreateSchedule() =>
+        Schedule.Create(
+            Guid.CreateVersion7(),
+            DayOfWeek.Monday,
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(17, 0))
+        );
+
+    private static Schedule CreateSchedule(Guid doctorId) =>
+        Schedule.Create(
+            doctorId,
+            DayOfWeek.Monday,
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(17, 0))
+        );
 }

@@ -2,7 +2,6 @@ using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Exceptions.Appointments;
 using ClinicFlow.Domain.Exceptions.Base;
-using ClinicFlow.Domain.Exceptions.Scheduling;
 using ClinicFlow.Domain.Services.Args.Rescheduling;
 using ClinicFlow.Domain.Services.Contexts;
 using ClinicFlow.Domain.ValueObjects;
@@ -57,10 +56,9 @@ public static class AppointmentReschedulingService
 
         new PenaltyHistory(context.Penalties).EnsureNotBlocked(args.NewDate);
 
-        EnsureDoctorIsAvailable(
-            context.DoctorSchedule,
+        context.DoctorSchedule.EnsureDoctorIsAvailable(
             appointment.DoctorId,
-            args.NewDate,
+            args.NewDate.DayOfWeek,
             args.NewTimeRange
         );
 
@@ -95,10 +93,9 @@ public static class AppointmentReschedulingService
             );
 
         if (!args.IsOverbook)
-            EnsureDoctorIsAvailable(
-                doctorSchedule,
+            doctorSchedule.EnsureDoctorIsAvailable(
                 appointment.DoctorId,
-                args.NewDate,
+                args.NewDate.DayOfWeek,
                 args.NewTimeRange
             );
 
@@ -125,28 +122,12 @@ public static class AppointmentReschedulingService
             throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
 
         if (!args.IsOverbook)
-            EnsureDoctorIsAvailable(
-                doctorSchedule,
+            doctorSchedule.EnsureDoctorIsAvailable(
                 appointment.DoctorId,
-                args.NewDate,
+                args.NewDate.DayOfWeek,
                 args.NewTimeRange
             );
 
         appointment.Reschedule(args.NewDate, args.NewTimeRange);
-    }
-
-    private static void EnsureDoctorIsAvailable(
-        Schedule schedule,
-        Guid doctorId,
-        DateOnly scheduledDate,
-        TimeRange timeRange
-    )
-    {
-        if (!schedule.CoversTimeRange(timeRange))
-            throw new DoctorNotAvailableException(
-                DomainErrors.Schedule.DoctorNotAvailable,
-                doctorId,
-                scheduledDate.DayOfWeek
-            );
     }
 }
