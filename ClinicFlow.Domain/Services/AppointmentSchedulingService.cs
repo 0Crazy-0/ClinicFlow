@@ -3,7 +3,6 @@ using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Appointments;
 using ClinicFlow.Domain.Exceptions.Base;
-using ClinicFlow.Domain.Exceptions.Scheduling;
 using ClinicFlow.Domain.Services.Args.Scheduling;
 using ClinicFlow.Domain.Services.Contexts;
 using ClinicFlow.Domain.ValueObjects;
@@ -65,10 +64,9 @@ public static class AppointmentSchedulingService
             isGuardianScheduling
         );
 
-        EnsureDoctorIsAvailable(
-            context.DoctorSchedule,
+        context.DoctorSchedule.EnsureDoctorIsAvailable(
             args.DoctorId,
-            args.ScheduledDate,
+            args.ScheduledDate.DayOfWeek,
             args.TimeRange
         );
 
@@ -112,10 +110,9 @@ public static class AppointmentSchedulingService
         );
 
         if (!args.IsOverbook)
-            EnsureDoctorIsAvailable(
-                doctorSchedule,
+            doctorSchedule.EnsureDoctorIsAvailable(
                 args.InitiatorDoctor.Id,
-                args.ScheduledDate,
+                args.ScheduledDate.DayOfWeek,
                 args.TimeRange
             );
 
@@ -155,10 +152,9 @@ public static class AppointmentSchedulingService
         );
 
         if (!args.IsOverbook)
-            EnsureDoctorIsAvailable(
-                doctorSchedule,
+            doctorSchedule.EnsureDoctorIsAvailable(
                 args.DoctorId,
-                args.ScheduledDate,
+                args.ScheduledDate.DayOfWeek,
                 args.TimeRange
             );
 
@@ -169,20 +165,5 @@ public static class AppointmentSchedulingService
             args.ScheduledDate,
             args.TimeRange
         );
-    }
-
-    private static void EnsureDoctorIsAvailable(
-        Schedule schedule,
-        Guid doctorId,
-        DateOnly scheduledDate,
-        TimeRange timeRange
-    )
-    {
-        if (!schedule.CoversTimeRange(timeRange))
-            throw new DoctorNotAvailableException(
-                DomainErrors.Schedule.DoctorNotAvailable,
-                doctorId,
-                scheduledDate.DayOfWeek
-            );
     }
 }
