@@ -34,8 +34,11 @@ public class AddRequiredTemplateToAppointmentTypeCommandHandlerTests
     public async Task Handle_ShouldAddTemplate_WhenBothEntitiesExist()
     {
         // Arrange
-        var templateId = Guid.NewGuid();
-        var command = new AddRequiredTemplateToAppointmentTypeCommand(Guid.NewGuid(), templateId);
+        var templateId = Guid.CreateVersion7();
+        var command = new AddRequiredTemplateToAppointmentTypeCommand(
+            Guid.CreateVersion7(),
+            templateId
+        );
 
         var appointmentTypeDefinition = AppointmentTypeDefinition.Create(
             AppointmentCategory.Checkup,
@@ -72,8 +75,8 @@ public class AddRequiredTemplateToAppointmentTypeCommandHandlerTests
     {
         // Arrange
         var command = new AddRequiredTemplateToAppointmentTypeCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid()
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7()
         );
 
         _appointmentTypeRepositoryMock
@@ -97,8 +100,8 @@ public class AddRequiredTemplateToAppointmentTypeCommandHandlerTests
     {
         // Arrange
         var command = new AddRequiredTemplateToAppointmentTypeCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid()
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7()
         );
 
         var appointmentTypeDefinition = AppointmentTypeDefinition.Create(

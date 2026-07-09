@@ -18,8 +18,8 @@ public class UpdatePatientNotesByPatientCommandValidatorTests
     {
         // Arrange
         var command = new UpdatePatientNotesByPatientCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             "Valid notes"
         );
 
@@ -36,7 +36,7 @@ public class UpdatePatientNotesByPatientCommandValidatorTests
         // Arrange
         var command = new UpdatePatientNotesByPatientCommand(
             Guid.Empty,
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Valid notes"
         );
 
@@ -54,7 +54,7 @@ public class UpdatePatientNotesByPatientCommandValidatorTests
     {
         // Arrange
         var command = new UpdatePatientNotesByPatientCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             Guid.Empty,
             "Valid notes"
         );
@@ -73,8 +73,8 @@ public class UpdatePatientNotesByPatientCommandValidatorTests
     {
         // Arrange
         var command = new UpdatePatientNotesByPatientCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             new string('a', 501)
         );
 

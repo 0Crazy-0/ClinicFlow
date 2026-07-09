@@ -63,7 +63,7 @@ public class GetUserByIdQueryHandlerTests
     public async Task Handle_ShouldThrowEntityNotFoundException_WhenUserDoesNotExist()
     {
         // Arrange
-        var userId = Guid.NewGuid();
+        var userId = Guid.CreateVersion7();
 
         _userRepositoryMock
             .Setup(x => x.GetByIdAsync(userId, It.IsAny<CancellationToken>()))

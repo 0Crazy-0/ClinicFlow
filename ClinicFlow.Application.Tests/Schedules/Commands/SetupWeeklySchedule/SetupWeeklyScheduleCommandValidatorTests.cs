@@ -19,7 +19,7 @@ public class SetupWeeklyScheduleCommandValidatorTests
     {
         // Arrange
         var command = new SetupWeeklyScheduleCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             [
                 new ScheduleSlot(DayOfWeek.Monday, new TimeOnly(8, 0), new TimeOnly(13, 0)),
                 new ScheduleSlot(DayOfWeek.Wednesday, new TimeOnly(14, 0), new TimeOnly(18, 0)),
@@ -55,7 +55,7 @@ public class SetupWeeklyScheduleCommandValidatorTests
     public void Validate_ShouldHaveError_WhenSlotsIsEmpty()
     {
         // Arrange
-        var command = new SetupWeeklyScheduleCommand(Guid.NewGuid(), []);
+        var command = new SetupWeeklyScheduleCommand(Guid.CreateVersion7(), []);
 
         // Act
         var result = _sut.TestValidate(command);
@@ -71,7 +71,7 @@ public class SetupWeeklyScheduleCommandValidatorTests
     {
         // Arrange
         var command = new SetupWeeklyScheduleCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             [new ScheduleSlot((DayOfWeek)99, new TimeOnly(8, 0), new TimeOnly(13, 0))]
         );
 
@@ -91,7 +91,7 @@ public class SetupWeeklyScheduleCommandValidatorTests
     {
         // Arrange
         var command = new SetupWeeklyScheduleCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             [new ScheduleSlot(DayOfWeek.Monday, new TimeOnly(17, 0), new TimeOnly(8, 0))]
         );
 

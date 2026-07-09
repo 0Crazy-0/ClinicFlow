@@ -23,10 +23,10 @@ public class GetMedicalRecordByAppointmentIdQueryHandlerTests
     public async Task Handle_GivenValidAppointmentId_ReturnsMedicalRecordDto()
     {
         // Arrange
-        var appointmentId = Guid.NewGuid();
+        var appointmentId = Guid.CreateVersion7();
         var expectedRecord = MedicalRecord.Create(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             appointmentId,
             "Headache"
         );
@@ -60,7 +60,7 @@ public class GetMedicalRecordByAppointmentIdQueryHandlerTests
     public async Task Handle_GivenInvalidAppointmentId_ThrowsEntityNotFoundException()
     {
         // Arrange
-        var appointmentId = Guid.NewGuid();
+        var appointmentId = Guid.CreateVersion7();
 
         _medicalRecordRepositoryMock
             .Setup(x =>

@@ -14,7 +14,7 @@ public class ReactivateDoctorProfileCommandValidatorTests
     {
         // Arrange
         var command = new ReactivateDoctorProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Biography",
             5,
             "Pediatrics C",
@@ -51,7 +51,7 @@ public class ReactivateDoctorProfileCommandValidatorTests
     {
         // Arrange
         var command = new ReactivateDoctorProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Bio",
             roomNumber,
             "Room",
@@ -75,7 +75,7 @@ public class ReactivateDoctorProfileCommandValidatorTests
     {
         // Arrange
         var command = new ReactivateDoctorProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Bio",
             roomNumber,
             "Room",
@@ -99,7 +99,7 @@ public class ReactivateDoctorProfileCommandValidatorTests
     {
         // Arrange
         var command = new ReactivateDoctorProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Biography",
             1,
             roomName!,
@@ -120,7 +120,7 @@ public class ReactivateDoctorProfileCommandValidatorTests
     {
         // Arrange
         var command = new ReactivateDoctorProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Bio",
             1,
             "Room",
@@ -141,7 +141,7 @@ public class ReactivateDoctorProfileCommandValidatorTests
     {
         // Arrange
         var command = new ReactivateDoctorProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Bio",
             1,
             "Room",

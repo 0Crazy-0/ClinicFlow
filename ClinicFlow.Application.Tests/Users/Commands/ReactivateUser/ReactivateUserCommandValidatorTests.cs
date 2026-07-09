@@ -12,7 +12,7 @@ public class ReactivateUserCommandValidatorTests
     public void Validate_ShouldPass_WhenValidCommand()
     {
         // Arrange
-        var command = new ReactivateUserCommand(Guid.NewGuid());
+        var command = new ReactivateUserCommand(Guid.CreateVersion7());
 
         // Act
         var result = _sut.TestValidate(command);

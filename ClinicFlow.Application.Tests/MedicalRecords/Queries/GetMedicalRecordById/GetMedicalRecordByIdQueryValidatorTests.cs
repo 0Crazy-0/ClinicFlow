@@ -32,7 +32,7 @@ public class GetMedicalRecordByIdQueryValidatorTests
     public void Validate_ShouldNotHaveError_WhenIdIsValid()
     {
         // Arrange
-        var query = new GetMedicalRecordByIdQuery(Guid.NewGuid());
+        var query = new GetMedicalRecordByIdQuery(Guid.CreateVersion7());
 
         // Act
         var result = _sut.TestValidate(query);

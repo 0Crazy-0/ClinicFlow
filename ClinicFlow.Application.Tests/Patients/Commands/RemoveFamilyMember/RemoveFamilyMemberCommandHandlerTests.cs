@@ -34,7 +34,7 @@ public class RemoveFamilyMemberCommandHandlerTests
     public async Task Handle_ShouldMarkAsDeleted_WhenPatientIsFamilyMember()
     {
         // Arrange
-        var command = new RemoveFamilyMemberCommand(Guid.NewGuid(), Guid.NewGuid());
+        var command = new RemoveFamilyMemberCommand(Guid.CreateVersion7(), Guid.CreateVersion7());
 
         var familyMember = Patient.CreateFamilyMember(
             command.UserId,
@@ -61,7 +61,7 @@ public class RemoveFamilyMemberCommandHandlerTests
     public async Task Handle_ShouldThrowException_WhenPatientIsPrimaryUser()
     {
         // Arrange
-        var command = new RemoveFamilyMemberCommand(Guid.NewGuid(), Guid.NewGuid());
+        var command = new RemoveFamilyMemberCommand(Guid.CreateVersion7(), Guid.CreateVersion7());
 
         var primaryPatient = Patient.CreateSelf(
             command.UserId,
@@ -89,7 +89,7 @@ public class RemoveFamilyMemberCommandHandlerTests
     public async Task Handle_ShouldThrowException_WhenPatientNotFound()
     {
         // Arrange
-        var command = new RemoveFamilyMemberCommand(Guid.NewGuid(), Guid.NewGuid());
+        var command = new RemoveFamilyMemberCommand(Guid.CreateVersion7(), Guid.CreateVersion7());
 
         _patientRepositoryMock
             .Setup(x => x.GetByIdAsync(command.PatientId, It.IsAny<CancellationToken>()))
@@ -111,8 +111,8 @@ public class RemoveFamilyMemberCommandHandlerTests
     public async Task Handle_ShouldThrowException_WhenUserIsUnauthorized()
     {
         // Arrange
-        var patientUserId = Guid.NewGuid();
-        var command = new RemoveFamilyMemberCommand(Guid.NewGuid(), Guid.NewGuid());
+        var patientUserId = Guid.CreateVersion7();
+        var command = new RemoveFamilyMemberCommand(Guid.CreateVersion7(), Guid.CreateVersion7());
 
         var familyMember = Patient.CreateFamilyMember(
             patientUserId,

@@ -59,7 +59,7 @@ public class UpdateMedicalSpecialtyCommandHandlerTests
     {
         // Arrange
         var command = new UpdateMedicalSpecialtyCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Dermatology",
             "Skin specialty",
             45,

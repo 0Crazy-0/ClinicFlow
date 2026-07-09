@@ -19,7 +19,7 @@ public class UpdateAppointmentTypeCommandValidatorTests
     {
         // Arrange
         var command = new UpdateAppointmentTypeCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             AppointmentCategory.Checkup,
             "General Checkup",
             "Routine consultation",
@@ -62,7 +62,7 @@ public class UpdateAppointmentTypeCommandValidatorTests
     {
         // Arrange
         var command = new UpdateAppointmentTypeCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             AppointmentCategory.Checkup,
             name!,
             "Description",
@@ -88,7 +88,7 @@ public class UpdateAppointmentTypeCommandValidatorTests
     {
         // Arrange
         var command = new UpdateAppointmentTypeCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             AppointmentCategory.Checkup,
             "Checkup",
             "Description",

@@ -19,7 +19,7 @@ public class UpdatePatientProfileCommandValidatorTests
     {
         // Arrange
         var command = new UpdatePatientProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "O+",
             "None",
             "None",
@@ -64,7 +64,7 @@ public class UpdatePatientProfileCommandValidatorTests
     {
         // Arrange
         var command = new UpdatePatientProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             bloodType!,
             "None",
             "None",
@@ -91,7 +91,7 @@ public class UpdatePatientProfileCommandValidatorTests
     {
         // Arrange
         var command = new UpdatePatientProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "O+",
             "None",
             "None",
@@ -114,7 +114,7 @@ public class UpdatePatientProfileCommandValidatorTests
         // Arrange
         var emergencyContactName = new string('A', PersonName.MinimumLength - 1);
         var command = new UpdatePatientProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "O+",
             "None",
             "None",
@@ -137,7 +137,7 @@ public class UpdatePatientProfileCommandValidatorTests
         // Arrange
         var emergencyContactName = new string('A', PersonName.MaximumLength + 1);
         var command = new UpdatePatientProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "O+",
             "None",
             "None",
@@ -164,7 +164,7 @@ public class UpdatePatientProfileCommandValidatorTests
     {
         // Arrange
         var command = new UpdatePatientProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "O+",
             "None",
             "None",
@@ -187,7 +187,7 @@ public class UpdatePatientProfileCommandValidatorTests
         // Arrange
         var emergencyContactPhone = new string('1', PhoneNumber.MinimumLength - 1);
         var command = new UpdatePatientProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "O+",
             "None",
             "None",
@@ -210,7 +210,7 @@ public class UpdatePatientProfileCommandValidatorTests
         // Arrange
         var emergencyContactPhone = "+" + new string('1', PhoneNumber.MaximumLength);
         var command = new UpdatePatientProfileCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "O+",
             "None",
             "None",

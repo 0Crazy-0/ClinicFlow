@@ -43,15 +43,15 @@ public class CancelAppointmentByPatientCommandHandlerTests
     {
         // Arrange
         var command = new CancelAppointmentByPatientCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             "Reason"
         );
 
-        var patientId = Guid.NewGuid();
-        var doctorId = Guid.NewGuid();
-        var specialtyId = Guid.NewGuid();
-        var typeId = Guid.NewGuid();
+        var patientId = Guid.CreateVersion7();
+        var doctorId = Guid.CreateVersion7();
+        var specialtyId = Guid.CreateVersion7();
+        var typeId = Guid.CreateVersion7();
         var appointment = CreateAppointment(patientId, doctorId, typeId);
         var patient = CreatePatient(patientId, command.InitiatorUserId);
         var typeDef = CreateAppointmentType();
@@ -91,8 +91,8 @@ public class CancelAppointmentByPatientCommandHandlerTests
     {
         // Arrange
         var command = new CancelAppointmentByPatientCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             "Reason"
         );
 
@@ -117,14 +117,14 @@ public class CancelAppointmentByPatientCommandHandlerTests
     {
         // Arrange
         var command = new CancelAppointmentByPatientCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             "Reason"
         );
 
-        var patientId = Guid.NewGuid();
-        var doctorId = Guid.NewGuid();
-        var typeId = Guid.NewGuid();
+        var patientId = Guid.CreateVersion7();
+        var doctorId = Guid.CreateVersion7();
+        var typeId = Guid.CreateVersion7();
         var appointment = CreateAppointment(patientId, doctorId, typeId);
 
         _appointmentRepositoryMock
@@ -151,14 +151,14 @@ public class CancelAppointmentByPatientCommandHandlerTests
     {
         // Arrange
         var command = new CancelAppointmentByPatientCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             "Reason"
         );
 
-        var patientId = Guid.NewGuid();
-        var doctorId = Guid.NewGuid();
-        var typeId = Guid.NewGuid();
+        var patientId = Guid.CreateVersion7();
+        var doctorId = Guid.CreateVersion7();
+        var typeId = Guid.CreateVersion7();
         var appointment = CreateAppointment(patientId, doctorId, typeId);
         var patient = CreatePatient(patientId, command.InitiatorUserId);
 
@@ -189,14 +189,14 @@ public class CancelAppointmentByPatientCommandHandlerTests
     {
         // Arrange
         var command = new CancelAppointmentByPatientCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             "Reason"
         );
 
-        var patientId = Guid.NewGuid();
-        var doctorId = Guid.NewGuid();
-        var typeId = Guid.NewGuid();
+        var patientId = Guid.CreateVersion7();
+        var doctorId = Guid.CreateVersion7();
+        var typeId = Guid.CreateVersion7();
         var appointment = CreateAppointment(patientId, doctorId, typeId);
         var patient = CreatePatient(patientId, command.InitiatorUserId);
         var typeDef = CreateAppointmentType();
@@ -231,15 +231,15 @@ public class CancelAppointmentByPatientCommandHandlerTests
     {
         // Arrange
         var command = new CancelAppointmentByPatientCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             "Reason"
         );
 
-        var patientId = Guid.NewGuid();
-        var doctorId = Guid.NewGuid();
-        var specialtyId = Guid.NewGuid();
-        var typeId = Guid.NewGuid();
+        var patientId = Guid.CreateVersion7();
+        var doctorId = Guid.CreateVersion7();
+        var specialtyId = Guid.CreateVersion7();
+        var typeId = Guid.CreateVersion7();
         var appointment = CreateAppointment(patientId, doctorId, typeId);
         var patient = CreatePatient(patientId, command.InitiatorUserId);
         var typeDef = CreateAppointmentType();

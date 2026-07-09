@@ -12,7 +12,7 @@ public class SendPhoneVerificationCommandValidatorTests
     public void Validate_ShouldBeValid_WhenUserIdIsProvided()
     {
         // Arrange
-        var command = new SendPhoneVerificationCommand(Guid.NewGuid());
+        var command = new SendPhoneVerificationCommand(Guid.CreateVersion7());
 
         // Act
         var result = _sut.TestValidate(command);

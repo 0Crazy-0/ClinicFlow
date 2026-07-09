@@ -17,7 +17,7 @@ public class DeactivateScheduleCommandValidatorTests
     public void Validate_ShouldBeValid_WhenScheduleIdIsValid()
     {
         // Arrange
-        var command = new DeactivateScheduleCommand(Guid.NewGuid());
+        var command = new DeactivateScheduleCommand(Guid.CreateVersion7());
 
         // Act
         var result = _sut.TestValidate(command);

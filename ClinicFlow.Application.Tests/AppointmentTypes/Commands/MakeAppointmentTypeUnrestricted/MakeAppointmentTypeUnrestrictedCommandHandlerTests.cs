@@ -31,7 +31,7 @@ public class MakeAppointmentTypeUnrestrictedCommandHandlerTests
     public async Task Handle_ShouldMakeUnrestricted_WhenEntityExistsAndIsRestricted()
     {
         // Arrange
-        var command = new MakeAppointmentTypeUnrestrictedCommand(Guid.NewGuid());
+        var command = new MakeAppointmentTypeUnrestrictedCommand(Guid.CreateVersion7());
         var appointmentType = AppointmentTypeDefinition.Create(
             AppointmentCategory.Checkup,
             "Checkup",
@@ -39,7 +39,7 @@ public class MakeAppointmentTypeUnrestrictedCommandHandlerTests
             EncounterDuration.FromMinutes(30)
         );
 
-        appointmentType.RestrictToSpecialties([Guid.NewGuid()]);
+        appointmentType.RestrictToSpecialties([Guid.CreateVersion7()]);
 
         _appointmentTypeRepositoryMock
             .Setup(x => x.GetByIdAsync(command.AppointmentTypeId, It.IsAny<CancellationToken>()))
@@ -59,7 +59,7 @@ public class MakeAppointmentTypeUnrestrictedCommandHandlerTests
     public async Task Handle_ShouldThrowException_WhenEntityDoesNotExist()
     {
         // Arrange
-        var command = new MakeAppointmentTypeUnrestrictedCommand(Guid.NewGuid());
+        var command = new MakeAppointmentTypeUnrestrictedCommand(Guid.CreateVersion7());
 
         _appointmentTypeRepositoryMock
             .Setup(x => x.GetByIdAsync(command.AppointmentTypeId, It.IsAny<CancellationToken>()))

@@ -11,9 +11,9 @@ public class MedicalRecordTests
     public void Create_ShouldCreateMedicalRecord_WhenValidDataProvided()
     {
         // Arrange
-        var patientId = Guid.NewGuid();
-        var doctorId = Guid.NewGuid();
-        var appointmentId = Guid.NewGuid();
+        var patientId = Guid.CreateVersion7();
+        var doctorId = Guid.CreateVersion7();
+        var appointmentId = Guid.CreateVersion7();
         var chiefComplaint = "Headache and fever";
 
         // Act
@@ -142,5 +142,10 @@ public class MedicalRecordTests
     }
 
     private static MedicalRecord CreateValidMedicalRecord() =>
-        MedicalRecord.Create(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "General checkup");
+        MedicalRecord.Create(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            "General checkup"
+        );
 }

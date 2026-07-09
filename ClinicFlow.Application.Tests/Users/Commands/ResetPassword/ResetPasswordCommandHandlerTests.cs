@@ -94,7 +94,7 @@ public class ResetPasswordCommandHandlerTests
 
         _passwordResetTokenServiceMock
             .Setup(x => x.ValidateTokenAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Guid.NewGuid());
+            .ReturnsAsync(Guid.CreateVersion7());
 
         _userRepositoryMock
             .Setup(x => x.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()))

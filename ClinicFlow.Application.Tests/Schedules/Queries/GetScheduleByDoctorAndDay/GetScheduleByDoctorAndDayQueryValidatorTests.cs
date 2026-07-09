@@ -32,7 +32,7 @@ public class GetScheduleByDoctorAndDayQueryValidatorTests
     public void Validate_ShouldHaveError_WhenDayOfWeekIsInvalid()
     {
         // Arrange
-        var query = new GetScheduleByDoctorAndDayQuery(Guid.NewGuid(), (DayOfWeek)99);
+        var query = new GetScheduleByDoctorAndDayQuery(Guid.CreateVersion7(), (DayOfWeek)99);
 
         // Act
         var result = _sut.TestValidate(query);
@@ -47,7 +47,7 @@ public class GetScheduleByDoctorAndDayQueryValidatorTests
     public void Validate_ShouldNotHaveError_WhenQueryIsValid()
     {
         // Arrange
-        var query = new GetScheduleByDoctorAndDayQuery(Guid.NewGuid(), DayOfWeek.Wednesday);
+        var query = new GetScheduleByDoctorAndDayQuery(Guid.CreateVersion7(), DayOfWeek.Wednesday);
 
         // Act
         var result = _sut.TestValidate(query);

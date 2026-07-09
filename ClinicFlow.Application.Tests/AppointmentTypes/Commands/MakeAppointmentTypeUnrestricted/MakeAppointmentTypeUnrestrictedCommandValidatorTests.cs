@@ -17,7 +17,7 @@ public class MakeAppointmentTypeUnrestrictedCommandValidatorTests
     public void Validate_ShouldBeValid_WhenAppointmentTypeIdIsProvided()
     {
         // Arrange
-        var command = new MakeAppointmentTypeUnrestrictedCommand(Guid.NewGuid());
+        var command = new MakeAppointmentTypeUnrestrictedCommand(Guid.CreateVersion7());
 
         // Act
         var result = _sut.TestValidate(command);

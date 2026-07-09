@@ -18,9 +18,9 @@ public class AppointmentTests
     public void Schedule_ShouldCreateAppointment_WhenValidDataProvided()
     {
         // Arrange
-        var patientId = Guid.NewGuid();
-        var doctorId = Guid.NewGuid();
-        var appointmentTypeId = Guid.NewGuid();
+        var patientId = Guid.CreateVersion7();
+        var doctorId = Guid.CreateVersion7();
+        var appointmentTypeId = Guid.CreateVersion7();
         var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
         var timeRange = TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0));
 
@@ -92,9 +92,9 @@ public class AppointmentTests
         // Arrange & Act
         var act = () =>
             Appointment.Schedule(
-                Guid.NewGuid(),
-                Guid.NewGuid(),
-                Guid.NewGuid(),
+                Guid.CreateVersion7(),
+                Guid.CreateVersion7(),
+                Guid.CreateVersion7(),
                 DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
                 null!
             );
@@ -109,9 +109,9 @@ public class AppointmentTests
     public void Schedule_ShouldSetPatientNotes_WhenProvided()
     {
         // Arrange
-        var patientId = Guid.NewGuid();
-        var doctorId = Guid.NewGuid();
-        var appointmentTypeId = Guid.NewGuid();
+        var patientId = Guid.CreateVersion7();
+        var doctorId = Guid.CreateVersion7();
+        var appointmentTypeId = Guid.CreateVersion7();
         var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
         var timeRange = TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0));
         var patientNotes = "Test patient notes";
@@ -134,9 +134,9 @@ public class AppointmentTests
     public void Schedule_ShouldSetPatientNotesToEmpty_WhenNullProvided()
     {
         // Arrange
-        var patientId = Guid.NewGuid();
-        var doctorId = Guid.NewGuid();
-        var appointmentTypeId = Guid.NewGuid();
+        var patientId = Guid.CreateVersion7();
+        var doctorId = Guid.CreateVersion7();
+        var appointmentTypeId = Guid.CreateVersion7();
         var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
         var timeRange = TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0));
 
@@ -159,7 +159,7 @@ public class AppointmentTests
     {
         // Arrange
         var appointment = CreateAppointment();
-        var userId = Guid.NewGuid();
+        var userId = Guid.CreateVersion7();
 
         // Act
         appointment.Cancel(
@@ -183,7 +183,7 @@ public class AppointmentTests
     {
         // Arrange
         var appointment = CreateAppointment();
-        var userId = Guid.NewGuid();
+        var userId = Guid.CreateVersion7();
 
         appointment.Cancel(
             userId,
@@ -211,7 +211,7 @@ public class AppointmentTests
     {
         // Arrange
         var appointment = CreateAppointment();
-        var userId = Guid.NewGuid();
+        var userId = Guid.CreateVersion7();
 
         appointment.CancelLate(
             userId,
@@ -239,7 +239,7 @@ public class AppointmentTests
     {
         // Arrange
         var appointment = CreateAppointment();
-        var userId = Guid.NewGuid();
+        var userId = Guid.CreateVersion7();
 
         // Act
         appointment.CancelLate(
@@ -263,7 +263,7 @@ public class AppointmentTests
     {
         // Arrange
         var appointment = CreateAppointment();
-        var userId = Guid.NewGuid();
+        var userId = Guid.CreateVersion7();
 
         appointment.Cancel(
             userId,
@@ -291,7 +291,7 @@ public class AppointmentTests
     {
         // Arrange
         var appointment = CreateAppointment();
-        var userId = Guid.NewGuid();
+        var userId = Guid.CreateVersion7();
 
         appointment.CancelLate(
             userId,
@@ -359,7 +359,7 @@ public class AppointmentTests
         var appointment = CreateAppointment();
 
         appointment.Cancel(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Reason",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime)
         );
@@ -414,7 +414,7 @@ public class AppointmentTests
         var appointment = CreateAppointment();
 
         appointment.Cancel(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Reason",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime)
         );
@@ -471,7 +471,7 @@ public class AppointmentTests
         appointment.CheckIn(DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime));
 
         // Act
-        var act = () => appointment.Start(Guid.NewGuid(), _fakeTime.GetUtcNow().UtcDateTime);
+        var act = () => appointment.Start(Guid.CreateVersion7(), _fakeTime.GetUtcNow().UtcDateTime);
 
         // Assert
         act.Should()
@@ -545,7 +545,7 @@ public class AppointmentTests
         // Arrange
         var appointment = CreateAppointment();
         appointment.Cancel(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Reason",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime)
         );
@@ -567,7 +567,7 @@ public class AppointmentTests
         appointment.MarkAsRequiresReassignment();
         appointment.ClearDomainEvents();
 
-        var newDoctorId = Guid.NewGuid();
+        var newDoctorId = Guid.CreateVersion7();
         var newDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3));
         var newTimeRange = TimeRange.Create(new TimeOnly(14, 0), new TimeOnly(15, 0));
 
@@ -593,7 +593,7 @@ public class AppointmentTests
         // Act
         var act = () =>
             appointment.Reassign(
-                Guid.NewGuid(),
+                Guid.CreateVersion7(),
                 DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
                 null!
             );
@@ -635,7 +635,7 @@ public class AppointmentTests
         // Act
         var act = () =>
             appointment.Reassign(
-                Guid.NewGuid(),
+                Guid.CreateVersion7(),
                 DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
                 TimeRange.Create(new TimeOnly(14, 0), new TimeOnly(15, 0))
             );
@@ -793,9 +793,9 @@ public class AppointmentTests
 
     private Appointment CreateAppointment() =>
         Appointment.Schedule(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2)),
             TimeRange.Create(new TimeOnly(9), new TimeOnly(10))
         );

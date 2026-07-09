@@ -21,7 +21,7 @@ public class GetMedicalRecordsByDoctorIdQueryHandlerTests
     public async Task Handle_ShouldReturnPaginatedList_WhenRecordsExistForDoctor()
     {
         // Arrange
-        var doctorId = Guid.NewGuid();
+        var doctorId = Guid.CreateVersion7();
         var request = new GetMedicalRecordsByDoctorIdQuery(doctorId, 1, 10);
 
         var record1 = CreateMedicalRecord(doctorId, "Headache");
@@ -64,7 +64,7 @@ public class GetMedicalRecordsByDoctorIdQueryHandlerTests
     public async Task Handle_ShouldReturnEmptyPaginatedList_WhenNoRecordsExistForDoctor()
     {
         // Arrange
-        var request = new GetMedicalRecordsByDoctorIdQuery(Guid.NewGuid(), 1, 10);
+        var request = new GetMedicalRecordsByDoctorIdQuery(Guid.CreateVersion7(), 1, 10);
 
         _medicalRecordRepositoryMock
             .Setup(x =>
@@ -99,5 +99,10 @@ public class GetMedicalRecordsByDoctorIdQueryHandlerTests
     }
 
     private static MedicalRecord CreateMedicalRecord(Guid doctorId, string chiefComplaint) =>
-        MedicalRecord.Create(Guid.NewGuid(), doctorId, Guid.NewGuid(), chiefComplaint);
+        MedicalRecord.Create(
+            Guid.CreateVersion7(),
+            doctorId,
+            Guid.CreateVersion7(),
+            chiefComplaint
+        );
 }

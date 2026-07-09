@@ -31,7 +31,7 @@ public class CreateScheduleCommandHandlerTests
     {
         // Arrange
         var command = new CreateScheduleCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             DayOfWeek.Monday,
             new TimeOnly(9, 0),
             new TimeOnly(17, 0)
@@ -64,7 +64,7 @@ public class CreateScheduleCommandHandlerTests
     {
         // Arrange
         var command = new CreateScheduleCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             DayOfWeek.Monday,
             new TimeOnly(9, 0),
             new TimeOnly(17, 0)
@@ -89,7 +89,7 @@ public class CreateScheduleCommandHandlerTests
     public async Task Handle_ShouldThrowException_WhenDuplicateDayExists()
     {
         // Arrange
-        var doctorId = Guid.NewGuid();
+        var doctorId = Guid.CreateVersion7();
         var command = new CreateScheduleCommand(
             doctorId,
             DayOfWeek.Monday,

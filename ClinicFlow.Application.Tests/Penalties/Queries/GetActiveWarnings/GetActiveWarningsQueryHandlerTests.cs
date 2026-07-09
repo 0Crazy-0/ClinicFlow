@@ -23,13 +23,13 @@ public class GetActiveWarningsQueryHandlerTests
     {
         // Arrange
         var warning1 = PatientPenalty.CreateAutomaticWarning(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             "No show"
         );
         var warning2 = PatientPenalty.CreateAutomaticWarning(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             "Late cancellation"
         );
 

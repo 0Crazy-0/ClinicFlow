@@ -31,14 +31,14 @@ public class UpdateReceptionistNotesByStaffCommandHandlerTests
     {
         // Arrange
         var command = new UpdateReceptionistNotesByStaffCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Checked in note update"
         );
 
         var appointment = Appointment.Schedule(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0))
         );
@@ -62,7 +62,7 @@ public class UpdateReceptionistNotesByStaffCommandHandlerTests
     public async Task Handle_ShouldThrowEntityNotFoundException_WhenAppointmentNotFound()
     {
         // Arrange
-        var command = new UpdateReceptionistNotesByStaffCommand(Guid.NewGuid(), "Notes");
+        var command = new UpdateReceptionistNotesByStaffCommand(Guid.CreateVersion7(), "Notes");
 
         _appointmentRepositoryMock
             .Setup(r => r.GetByIdAsync(command.AppointmentId, It.IsAny<CancellationToken>()))

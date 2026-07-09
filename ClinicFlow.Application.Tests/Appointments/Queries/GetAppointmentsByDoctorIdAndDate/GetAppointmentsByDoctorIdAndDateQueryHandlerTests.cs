@@ -24,7 +24,7 @@ public class GetAppointmentsByDoctorIdAndDateQueryHandlerTests
     public async Task Handle_ShouldReturnPaginatedList_WhenDoctorHasAppointmentsOnDate()
     {
         // Arrange
-        var doctorId = Guid.NewGuid();
+        var doctorId = Guid.CreateVersion7();
         var date = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
         var query = new GetAppointmentsByDoctorIdAndDateQuery(doctorId, date, 1, 10);
         var appointments = new List<Appointment>
@@ -61,7 +61,7 @@ public class GetAppointmentsByDoctorIdAndDateQueryHandlerTests
     {
         // Arrange
         var query = new GetAppointmentsByDoctorIdAndDateQuery(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime),
             1,
             10
@@ -103,9 +103,9 @@ public class GetAppointmentsByDoctorIdAndDateQueryHandlerTests
 
     private static Appointment CreateAppointment(Guid doctorId, DateOnly scheduledDate) =>
         Appointment.Schedule(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             doctorId,
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             scheduledDate,
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );

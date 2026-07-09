@@ -18,8 +18,8 @@ public class CancelAppointmentByPatientCommandValidatorTests
     {
         // Arrange
         var command = new CancelAppointmentByPatientCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             "Reason"
         );
 
@@ -34,7 +34,11 @@ public class CancelAppointmentByPatientCommandValidatorTests
     public void Validate_ShouldHaveError_WhenAppointmentIdIsEmpty()
     {
         // Arrange
-        var command = new CancelAppointmentByPatientCommand(Guid.Empty, Guid.NewGuid(), "Reason");
+        var command = new CancelAppointmentByPatientCommand(
+            Guid.Empty,
+            Guid.CreateVersion7(),
+            "Reason"
+        );
 
         // Act
         var result = _sut.TestValidate(command);
@@ -49,7 +53,11 @@ public class CancelAppointmentByPatientCommandValidatorTests
     public void Validate_ShouldHaveError_WhenInitiatorUserIdIsEmpty()
     {
         // Arrange
-        var command = new CancelAppointmentByPatientCommand(Guid.NewGuid(), Guid.Empty, "Reason");
+        var command = new CancelAppointmentByPatientCommand(
+            Guid.CreateVersion7(),
+            Guid.Empty,
+            "Reason"
+        );
 
         // Act
         var result = _sut.TestValidate(command);
@@ -66,8 +74,8 @@ public class CancelAppointmentByPatientCommandValidatorTests
         // Arrange
         var longReason = new string('a', 501);
         var command = new CancelAppointmentByPatientCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             longReason
         );
 

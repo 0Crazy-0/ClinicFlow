@@ -29,7 +29,7 @@ public class ScheduleByPatientTests
                 CreateValidPatientSchedulingArgs(),
                 new PatientSchedulingContext
                 {
-                    DoctorSchedule = CreateSchedule(Guid.NewGuid(), DayOfWeek.Monday),
+                    DoctorSchedule = CreateSchedule(Guid.CreateVersion7(), DayOfWeek.Monday),
                 },
                 SchedulingClearance.Granted()
             );
@@ -50,7 +50,7 @@ public class ScheduleByPatientTests
                 null!,
                 new PatientSchedulingContext
                 {
-                    DoctorSchedule = CreateSchedule(Guid.NewGuid(), DayOfWeek.Monday),
+                    DoctorSchedule = CreateSchedule(Guid.CreateVersion7(), DayOfWeek.Monday),
                 },
                 SchedulingClearance.Granted()
             );
@@ -92,7 +92,7 @@ public class ScheduleByPatientTests
                 },
                 new PatientSchedulingContext
                 {
-                    DoctorSchedule = CreateSchedule(Guid.NewGuid(), DayOfWeek.Monday),
+                    DoctorSchedule = CreateSchedule(Guid.CreateVersion7(), DayOfWeek.Monday),
                 },
                 SchedulingClearance.Granted()
             );
@@ -116,7 +116,7 @@ public class ScheduleByPatientTests
                 },
                 new PatientSchedulingContext
                 {
-                    DoctorSchedule = CreateSchedule(Guid.NewGuid(), DayOfWeek.Monday),
+                    DoctorSchedule = CreateSchedule(Guid.CreateVersion7(), DayOfWeek.Monday),
                 },
                 SchedulingClearance.Granted()
             );
@@ -140,7 +140,7 @@ public class ScheduleByPatientTests
                 },
                 new PatientSchedulingContext
                 {
-                    DoctorSchedule = CreateSchedule(Guid.NewGuid(), DayOfWeek.Monday),
+                    DoctorSchedule = CreateSchedule(Guid.CreateVersion7(), DayOfWeek.Monday),
                 },
                 SchedulingClearance.Granted()
             );
@@ -161,7 +161,7 @@ public class ScheduleByPatientTests
                 CreateValidPatientSchedulingArgs(),
                 new PatientSchedulingContext
                 {
-                    DoctorSchedule = CreateSchedule(Guid.NewGuid(), DayOfWeek.Monday),
+                    DoctorSchedule = CreateSchedule(Guid.CreateVersion7(), DayOfWeek.Monday),
                 },
                 null!
             );
@@ -183,7 +183,7 @@ public class ScheduleByPatientTests
         {
             InitiatorPatient = initiator,
             TargetPatient = target,
-            DoctorId = Guid.NewGuid(),
+            DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
@@ -213,7 +213,7 @@ public class ScheduleByPatientTests
     public void ScheduleByPatient_ShouldThrowUnauthorized_WhenNonSelfSchedulesForDifferentPatient()
     {
         // Arrange, family member tries to schedule for a different patient → should be unauthorized
-        var userId = Guid.NewGuid();
+        var userId = Guid.CreateVersion7();
         var appointmentType = CreateAppointmentType();
         var initiator = Patient.CreateFamilyMember(
             userId,
@@ -228,7 +228,7 @@ public class ScheduleByPatientTests
         {
             InitiatorPatient = initiator,
             TargetPatient = target,
-            DoctorId = Guid.NewGuid(),
+            DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
@@ -258,7 +258,7 @@ public class ScheduleByPatientTests
     public void ScheduleByPatient_ShouldSucceed_WhenNonSelfSchedulesForThemselves()
     {
         // Arrange, family member schedules for themselves → should be allowed
-        var userId = Guid.NewGuid();
+        var userId = Guid.CreateVersion7();
         var appointmentType = CreateAppointmentType();
 
         var familyMember = Patient.CreateFamilyMember(
@@ -276,7 +276,7 @@ public class ScheduleByPatientTests
         {
             InitiatorPatient = familyMember,
             TargetPatient = familyMember,
-            DoctorId = Guid.NewGuid(),
+            DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
@@ -312,7 +312,7 @@ public class ScheduleByPatientTests
         {
             InitiatorPatient = target,
             TargetPatient = target,
-            DoctorId = Guid.NewGuid(),
+            DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange = CreateTimeRange(),
             IsInitiatorPhoneVerified = false,
@@ -342,7 +342,7 @@ public class ScheduleByPatientTests
     public void ScheduleByPatient_ShouldThrowIncompleteProfileException_WhenProfileIncomplete()
     {
         // Arrange
-        var userId = Guid.NewGuid();
+        var userId = Guid.CreateVersion7();
         var appointmentType = CreateAppointmentType();
         var incompletePatient = Patient.CreateSelf(
             userId,
@@ -355,7 +355,7 @@ public class ScheduleByPatientTests
         {
             InitiatorPatient = incompletePatient,
             TargetPatient = incompletePatient,
-            DoctorId = Guid.NewGuid(),
+            DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
@@ -391,7 +391,7 @@ public class ScheduleByPatientTests
         {
             InitiatorPatient = target,
             TargetPatient = target,
-            DoctorId = Guid.NewGuid(),
+            DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
@@ -439,7 +439,7 @@ public class ScheduleByPatientTests
         );
 
         var target = Patient.CreateSelf(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             PersonName.Create("Test"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-15)),
             _fakeTime.GetUtcNow().UtcDateTime
@@ -452,7 +452,7 @@ public class ScheduleByPatientTests
         {
             InitiatorPatient = target,
             TargetPatient = target,
-            DoctorId = Guid.NewGuid(),
+            DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
@@ -488,7 +488,7 @@ public class ScheduleByPatientTests
         {
             InitiatorPatient = target,
             TargetPatient = target,
-            DoctorId = Guid.NewGuid(),
+            DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange = TimeRange.Create(new TimeOnly(18, 0), new TimeOnly(19, 0)),
             IsInitiatorPhoneVerified = true,
@@ -524,7 +524,7 @@ public class ScheduleByPatientTests
         {
             InitiatorPatient = target,
             TargetPatient = target,
-            DoctorId = Guid.NewGuid(),
+            DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
@@ -584,7 +584,7 @@ public class ScheduleByPatientTests
     private Patient CreateSelfPatient()
     {
         var patient = Patient.CreateSelf(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             PersonName.Create("Test"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime

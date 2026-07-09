@@ -61,7 +61,7 @@ public class ChangePasswordCommandHandlerTests
     {
         // Arrange
         var command = new ChangePasswordCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "currentpassword",
             "newpassword123"
         );

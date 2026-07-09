@@ -12,7 +12,7 @@ public class VerifyPhoneCommandValidatorTests
     public void Validate_ShouldBeValid_WhenAllPropertiesAreProvided()
     {
         // Arrange
-        var command = new VerifyPhoneCommand(Guid.NewGuid(), "123456");
+        var command = new VerifyPhoneCommand(Guid.CreateVersion7(), "123456");
 
         // Act
         var result = _sut.TestValidate(command);
@@ -43,7 +43,7 @@ public class VerifyPhoneCommandValidatorTests
     public void Validate_ShouldHaveError_WhenCodeIsEmpty(string? invalidCode)
     {
         // Arrange
-        var command = new VerifyPhoneCommand(Guid.NewGuid(), invalidCode!);
+        var command = new VerifyPhoneCommand(Guid.CreateVersion7(), invalidCode!);
 
         // Act
         var result = _sut.TestValidate(command);

@@ -48,7 +48,7 @@ public class ReactivateUserCommandHandlerTests
     public async Task Handle_ShouldThrowEntityNotFound_WhenUserDoesNotExist()
     {
         // Arrange
-        var command = new ReactivateUserCommand(Guid.NewGuid());
+        var command = new ReactivateUserCommand(Guid.CreateVersion7());
 
         _userRepositoryMock
             .Setup(x => x.GetByIdAsync(command.UserId, It.IsAny<CancellationToken>()))
@@ -71,7 +71,7 @@ public class ReactivateUserCommandHandlerTests
     {
         // Arrange
         var user = CreateUser();
-        var command = new ReactivateUserCommand(Guid.NewGuid());
+        var command = new ReactivateUserCommand(Guid.CreateVersion7());
 
         _userRepositoryMock
             .Setup(x => x.GetByIdAsync(command.UserId, It.IsAny<CancellationToken>()))

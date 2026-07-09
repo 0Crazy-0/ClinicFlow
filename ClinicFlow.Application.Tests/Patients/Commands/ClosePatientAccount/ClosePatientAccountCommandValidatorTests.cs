@@ -12,7 +12,7 @@ public class ClosePatientAccountCommandValidatorTests
     public void Validate_ShouldBeValid_WhenUserIdIsProvided()
     {
         // Arrange
-        var command = new ClosePatientAccountCommand(Guid.NewGuid());
+        var command = new ClosePatientAccountCommand(Guid.CreateVersion7());
 
         // Act
         var result = _sut.TestValidate(command);

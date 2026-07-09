@@ -116,9 +116,9 @@ public class GetAppointmentsByDateRangeQueryHandlerTests
 
     private static Appointment CreateAppointment(DateOnly scheduledDate) =>
         Appointment.Schedule(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             scheduledDate,
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );

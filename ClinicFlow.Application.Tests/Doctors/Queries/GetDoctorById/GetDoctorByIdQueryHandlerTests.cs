@@ -25,10 +25,10 @@ public class GetDoctorByIdQueryHandlerTests
     {
         // Arrange
         var doctor = Doctor.Create(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("12345"),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Cardiologist with 10 years of experience",
             ConsultationRoom.Create(1, "Cardiology A", 3)
         );
@@ -65,7 +65,7 @@ public class GetDoctorByIdQueryHandlerTests
     public async Task Handle_ShouldThrowException_WhenDoctorDoesNotExist()
     {
         // Arrange
-        var doctorId = Guid.NewGuid();
+        var doctorId = Guid.CreateVersion7();
         _doctorRepositoryMock
             .Setup(x => x.GetByIdAsync(doctorId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((Doctor?)null);

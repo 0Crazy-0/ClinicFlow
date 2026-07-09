@@ -57,7 +57,7 @@ public class ReactivateClinicalFormTemplateCommandHandlerTests
     public async Task Handle_ShouldThrowEntityNotFoundException_WhenNotFound()
     {
         // Arrange
-        var command = new ReactivateClinicalFormTemplateCommand(Guid.NewGuid());
+        var command = new ReactivateClinicalFormTemplateCommand(Guid.CreateVersion7());
 
         _repositoryMock
             .Setup(x =>

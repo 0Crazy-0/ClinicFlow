@@ -26,9 +26,9 @@ public class PenaltyHistoryTests
     public void HasPriorWarnings_ShouldReturnTrue_WhenWarningsExist()
     {
         // Arrange
-        var patientId = Guid.NewGuid();
+        var patientId = Guid.CreateVersion7();
         var history = new PenaltyHistory([
-            PatientPenalty.CreateAutomaticWarning(patientId, Guid.NewGuid(), "No show"),
+            PatientPenalty.CreateAutomaticWarning(patientId, Guid.CreateVersion7(), "No show"),
         ]);
 
         // Assert
@@ -39,9 +39,9 @@ public class PenaltyHistoryTests
     public void TotalHistoricalBlocks_ShouldReturnZero_WhenNoBlocksExist()
     {
         // Arrange
-        var patientId = Guid.NewGuid();
+        var patientId = Guid.CreateVersion7();
         var history = new PenaltyHistory([
-            PatientPenalty.CreateAutomaticWarning(patientId, Guid.NewGuid(), "No show"),
+            PatientPenalty.CreateAutomaticWarning(patientId, Guid.CreateVersion7(), "No show"),
         ]);
 
         // Assert
@@ -52,7 +52,7 @@ public class PenaltyHistoryTests
     public void TotalHistoricalBlocks_ShouldCountAllBlocks_RegardlessOfState()
     {
         // Arrange
-        var patientId = Guid.NewGuid();
+        var patientId = Guid.CreateVersion7();
 
         var expiredBlock = PatientPenalty.CreateAutomaticBlock(
             patientId,
@@ -78,7 +78,7 @@ public class PenaltyHistoryTests
     public void IsCurrentlyBlocked_ShouldReturnFalse_WhenNoActiveBlocks()
     {
         // Arrange
-        var patientId = Guid.NewGuid();
+        var patientId = Guid.CreateVersion7();
 
         var expiredBlock = PatientPenalty.CreateAutomaticBlock(
             patientId,
@@ -100,7 +100,7 @@ public class PenaltyHistoryTests
     public void IsCurrentlyBlocked_ShouldReturnTrue_WhenActiveBlockExists()
     {
         // Arrange
-        var patientId = Guid.NewGuid();
+        var patientId = Guid.CreateVersion7();
 
         var activeBlock = PatientPenalty.CreateAutomaticBlock(
             patientId,
@@ -122,7 +122,7 @@ public class PenaltyHistoryTests
     public void IsCurrentlyBlocked_ShouldReturnFalse_WhenBlockIsRemoved()
     {
         // Arrange
-        var patientId = Guid.NewGuid();
+        var patientId = Guid.CreateVersion7();
 
         var removedBlock = PatientPenalty.CreateAutomaticBlock(
             patientId,
@@ -155,7 +155,7 @@ public class PenaltyHistoryTests
     public void DetermineNextBlockDuration_ShouldReturnModerate_WhenOneHistoricalBlock()
     {
         // Arrange
-        var patientId = Guid.NewGuid();
+        var patientId = Guid.CreateVersion7();
 
         var history = new PenaltyHistory([
             PatientPenalty.CreateAutomaticBlock(
@@ -174,7 +174,7 @@ public class PenaltyHistoryTests
     public void DetermineNextBlockDuration_ShouldReturnSevere_WhenTwoOrMoreHistoricalBlocks()
     {
         // Arrange
-        var patientId = Guid.NewGuid();
+        var patientId = Guid.CreateVersion7();
 
         var history = new PenaltyHistory([
             PatientPenalty.CreateAutomaticBlock(
@@ -199,7 +199,7 @@ public class PenaltyHistoryTests
     public void DetermineNextBlockDuration_ShouldCapAtSevere_WhenManyHistoricalBlocks()
     {
         // Arrange
-        var patientId = Guid.NewGuid();
+        var patientId = Guid.CreateVersion7();
 
         var history = new PenaltyHistory([
             PatientPenalty.CreateAutomaticBlock(
@@ -244,11 +244,11 @@ public class PenaltyHistoryTests
     public void EnsureNotBlocked_ShouldNotThrow_WhenOnlyWarnings()
     {
         // Arrange
-        var patientId = Guid.NewGuid();
+        var patientId = Guid.CreateVersion7();
         var penalties = new List<PatientPenalty>
         {
-            PatientPenalty.CreateAutomaticWarning(patientId, Guid.NewGuid(), "Warning 1"),
-            PatientPenalty.CreateAutomaticWarning(patientId, Guid.NewGuid(), "Warning 2"),
+            PatientPenalty.CreateAutomaticWarning(patientId, Guid.CreateVersion7(), "Warning 1"),
+            PatientPenalty.CreateAutomaticWarning(patientId, Guid.CreateVersion7(), "Warning 2"),
         };
 
         var history = new PenaltyHistory(penalties);
@@ -265,7 +265,7 @@ public class PenaltyHistoryTests
     public void EnsureNotBlocked_ShouldNotThrow_WhenBlockExpired()
     {
         // Arrange
-        var patientId = Guid.NewGuid();
+        var patientId = Guid.CreateVersion7();
         var penalties = new List<PatientPenalty>
         {
             PatientPenalty.CreateAutomaticBlock(
@@ -289,7 +289,7 @@ public class PenaltyHistoryTests
     public void EnsureNotBlocked_ShouldThrowPatientBlockedException_WhenActiveBlockExists()
     {
         // Arrange
-        var patientId = Guid.NewGuid();
+        var patientId = Guid.CreateVersion7();
         var blockedUntil = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime).AddDays(5);
         var penalties = new List<PatientPenalty>
         {
@@ -318,7 +318,7 @@ public class PenaltyHistoryTests
     public void EnsureNotBlocked_ShouldNotThrow_WhenActiveBlockIsRemoved()
     {
         // Arrange
-        var patientId = Guid.NewGuid();
+        var patientId = Guid.CreateVersion7();
         var penalty = PatientPenalty.CreateAutomaticBlock(
             patientId,
             PenaltyReasons.AutomaticBlock,
@@ -343,7 +343,7 @@ public class PenaltyHistoryTests
     public void EnsureNotBlocked_ShouldNotThrow_WhenBlockExpiresExactlyOnReferenceDate()
     {
         // Arrange
-        var patientId = Guid.NewGuid();
+        var patientId = Guid.CreateVersion7();
         var penalty = PatientPenalty.CreateAutomaticBlock(
             patientId,
             PenaltyReasons.AutomaticBlock,
@@ -366,7 +366,7 @@ public class PenaltyHistoryTests
     public void EnsureNotBlocked_ShouldThrowPatientBlockedExceptionWithFurthestDate_WhenMultipleActiveBlocksExistWithDifferentExpirationDates()
     {
         // Arrange
-        var patientId = Guid.NewGuid();
+        var patientId = Guid.CreateVersion7();
         var referenceTime = _fakeTime.GetUtcNow().UtcDateTime;
         var penaltyMinor = PatientPenalty.CreateAutomaticBlock(
             patientId,

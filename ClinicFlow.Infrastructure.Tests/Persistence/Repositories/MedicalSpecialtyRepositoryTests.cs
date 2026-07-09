@@ -72,7 +72,7 @@ public class MedicalSpecialtyRepositoryTests(PostgresFixture fixture) : IAsyncLi
     public async Task GetByIdAsync_ShouldReturnNull_WhenDoesNotExist()
     {
         // Arrange
-        var nonExistentId = Guid.NewGuid();
+        var nonExistentId = Guid.CreateVersion7();
 
         // Act
         var result = await _sut.GetByIdAsync(nonExistentId, TestContext.Current.CancellationToken);
@@ -113,7 +113,7 @@ public class MedicalSpecialtyRepositoryTests(PostgresFixture fixture) : IAsyncLi
     public async Task GetByIdIncludingDeletedAsync_ShouldReturnNull_WhenDoesNotExist()
     {
         // Arrange
-        var nonExistentId = Guid.NewGuid();
+        var nonExistentId = Guid.CreateVersion7();
 
         // Act
         var result = await _sut.GetByIdIncludingDeletedAsync(

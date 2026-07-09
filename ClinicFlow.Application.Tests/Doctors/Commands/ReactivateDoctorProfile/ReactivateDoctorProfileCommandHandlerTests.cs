@@ -31,10 +31,10 @@ public class ReactivateDoctorProfileCommandHandlerTests
     {
         // Arrange
         var doctor = Doctor.Create(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("12345"),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Old biography",
             ConsultationRoom.Create(1, "Old Room", 1)
         );
@@ -71,7 +71,13 @@ public class ReactivateDoctorProfileCommandHandlerTests
     public async Task Handle_ShouldThrowEntityNotFoundException_WhenDoctorNotFound()
     {
         // Arrange
-        var command = new ReactivateDoctorProfileCommand(Guid.NewGuid(), "Biography", 1, "Room", 1);
+        var command = new ReactivateDoctorProfileCommand(
+            Guid.CreateVersion7(),
+            "Biography",
+            1,
+            "Room",
+            1
+        );
 
         _doctorRepositoryMock
             .Setup(x => x.GetByIdAsync(command.DoctorId, It.IsAny<CancellationToken>()))

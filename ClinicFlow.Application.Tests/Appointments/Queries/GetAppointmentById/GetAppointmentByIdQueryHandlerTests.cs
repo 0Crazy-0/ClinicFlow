@@ -27,14 +27,14 @@ public class GetAppointmentByIdQueryHandlerTests
     public async Task Handle_ShouldReturnAppointmentDto_WhenAppointmentExists()
     {
         // Arrange
-        var appointmentId = Guid.NewGuid();
-        var patientId = Guid.NewGuid();
-        var doctorId = Guid.NewGuid();
+        var appointmentId = Guid.CreateVersion7();
+        var patientId = Guid.CreateVersion7();
+        var doctorId = Guid.CreateVersion7();
         var query = new GetAppointmentByIdQuery(appointmentId);
         var appointment = Appointment.Schedule(
             patientId,
             doctorId,
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
@@ -64,7 +64,7 @@ public class GetAppointmentByIdQueryHandlerTests
     public async Task Handle_ShouldThrowEntityNotFoundException_WhenAppointmentDoesNotExist()
     {
         // Arrange
-        var query = new GetAppointmentByIdQuery(Guid.NewGuid());
+        var query = new GetAppointmentByIdQuery(Guid.CreateVersion7());
 
         _appointmentRepositoryMock
             .Setup(x => x.GetByIdAsync(query.AppointmentId, It.IsAny<CancellationToken>()))

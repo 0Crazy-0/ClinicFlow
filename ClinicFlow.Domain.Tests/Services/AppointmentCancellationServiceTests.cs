@@ -27,7 +27,7 @@ public class AppointmentCancellationServiceTests
                 null!,
                 new StaffCancellationArgs
                 {
-                    InitiatorUserId = Guid.NewGuid(),
+                    InitiatorUserId = Guid.CreateVersion7(),
                     Reason = "Valid reason",
                     CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
                 }
@@ -44,7 +44,7 @@ public class AppointmentCancellationServiceTests
     {
         // Arrange
         var appointment = CreateAppointment();
-        var initiatorUserId = Guid.NewGuid();
+        var initiatorUserId = Guid.CreateVersion7();
         var args = new StaffCancellationArgs
         {
             InitiatorUserId = initiatorUserId,
@@ -65,7 +65,7 @@ public class AppointmentCancellationServiceTests
     {
         // Arrange
         var appointment = CreateAppointment();
-        var initiatorUserId = Guid.NewGuid();
+        var initiatorUserId = Guid.CreateVersion7();
         var args = new StaffCancellationArgs
         {
             InitiatorUserId = initiatorUserId,
@@ -92,7 +92,7 @@ public class AppointmentCancellationServiceTests
         var appointment = CreateAppointment();
         var args = new StaffCancellationArgs
         {
-            InitiatorUserId = Guid.NewGuid(),
+            InitiatorUserId = Guid.CreateVersion7(),
             Reason = reason!,
             CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
         };
@@ -115,8 +115,8 @@ public class AppointmentCancellationServiceTests
                 null!,
                 new DoctorCancellationArgs
                 {
-                    InitiatorDoctorId = Guid.NewGuid(),
-                    InitiatorUserId = Guid.NewGuid(),
+                    InitiatorDoctorId = Guid.CreateVersion7(),
+                    InitiatorUserId = Guid.CreateVersion7(),
                     Reason = "Valid reason",
                     CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
                 }
@@ -133,7 +133,7 @@ public class AppointmentCancellationServiceTests
     {
         // Arrange
         var appointment = CreateAppointment();
-        var doctor = CreateDoctor(appointment.DoctorId, Guid.NewGuid());
+        var doctor = CreateDoctor(appointment.DoctorId, Guid.CreateVersion7());
         var args = new DoctorCancellationArgs
         {
             InitiatorDoctorId = doctor.Id,
@@ -154,7 +154,7 @@ public class AppointmentCancellationServiceTests
     {
         // Arrange
         var appointment = CreateAppointment();
-        var doctor = CreateDoctor(Guid.NewGuid(), Guid.NewGuid());
+        var doctor = CreateDoctor(Guid.CreateVersion7(), Guid.CreateVersion7());
 
         var args = new DoctorCancellationArgs
         {
@@ -273,8 +273,8 @@ public class AppointmentCancellationServiceTests
     )
     {
         // Arrange
-        var initiatorUserId = Guid.NewGuid();
-        var patientId = Guid.NewGuid();
+        var initiatorUserId = Guid.CreateVersion7();
+        var patientId = Guid.CreateVersion7();
         var patient = CreateSelfPatient(patientId, initiatorUserId, age);
         var appointment = CreateAppointment(
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(2),
@@ -316,10 +316,10 @@ public class AppointmentCancellationServiceTests
     )
     {
         // Arrange
-        var initiatorUserId = Guid.NewGuid();
-        var patientId = Guid.NewGuid();
+        var initiatorUserId = Guid.CreateVersion7();
+        var patientId = Guid.CreateVersion7();
         var patient = CreateFamilyMemberPatient(patientId, initiatorUserId, relationship, age);
-        var initiatorPatient = CreateSelfPatient(Guid.NewGuid(), initiatorUserId, 30);
+        var initiatorPatient = CreateSelfPatient(Guid.CreateVersion7(), initiatorUserId, 30);
         var appointment = CreateAppointment(
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(2),
             patientId
@@ -351,8 +351,8 @@ public class AppointmentCancellationServiceTests
     public void CancelByPatient_ShouldThrowUnauthorized_WhenPatientIsSelfButCategoryIsProcedure()
     {
         // Arrange
-        var initiatorUserId = Guid.NewGuid();
-        var patientId = Guid.NewGuid();
+        var initiatorUserId = Guid.CreateVersion7();
+        var patientId = Guid.CreateVersion7();
         var patient = CreateSelfPatient(patientId, initiatorUserId, 30);
         var appointment = CreateAppointment(
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(2),
@@ -395,10 +395,10 @@ public class AppointmentCancellationServiceTests
     )
     {
         // Arrange
-        var initiatorUserId = Guid.NewGuid();
-        var patientId = Guid.NewGuid();
+        var initiatorUserId = Guid.CreateVersion7();
+        var patientId = Guid.CreateVersion7();
         var patient = CreateFamilyMemberPatient(patientId, initiatorUserId, relationship, age);
-        var initiatorPatient = CreateSelfPatient(Guid.NewGuid(), initiatorUserId, 30);
+        var initiatorPatient = CreateSelfPatient(Guid.CreateVersion7(), initiatorUserId, 30);
         var appointment = CreateAppointment(
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(2),
             patientId
@@ -431,11 +431,11 @@ public class AppointmentCancellationServiceTests
     public void CancelByPatient_ShouldThrowUnauthorized_WhenPatientDoesNotBelongToUser()
     {
         // Arrange
-        var initiatorUserId = Guid.NewGuid();
-        var anotherUserId = Guid.NewGuid();
-        var patientId = Guid.NewGuid();
+        var initiatorUserId = Guid.CreateVersion7();
+        var anotherUserId = Guid.CreateVersion7();
+        var patientId = Guid.CreateVersion7();
         var patient = CreateSelfPatient(patientId, anotherUserId, 30);
-        var initiatorPatient = CreateSelfPatient(Guid.NewGuid(), initiatorUserId, 30);
+        var initiatorPatient = CreateSelfPatient(Guid.CreateVersion7(), initiatorUserId, 30);
         var appointment = CreateAppointment(
             _fakeTime.GetUtcNow().UtcDateTime.AddDays(2),
             patientId
@@ -468,8 +468,8 @@ public class AppointmentCancellationServiceTests
     public void CancelByPatient_ShouldThrowValidationException_WhenDataMismatch()
     {
         // Arrange
-        var initiatorUserId = Guid.NewGuid();
-        var patientId = Guid.NewGuid();
+        var initiatorUserId = Guid.CreateVersion7();
+        var patientId = Guid.CreateVersion7();
         var patient = CreateSelfPatient(patientId, initiatorUserId, 30);
         var appointment = CreateAppointment();
         var context = new AppointmentCancellationContext
@@ -499,8 +499,8 @@ public class AppointmentCancellationServiceTests
     public void CancelByPatient_ShouldSetLateCancellation_WhenNoticePeriodIsInsufficient()
     {
         // Arrange
-        var initiatorUserId = Guid.NewGuid();
-        var patientId = Guid.NewGuid();
+        var initiatorUserId = Guid.CreateVersion7();
+        var patientId = Guid.CreateVersion7();
         var patient = CreateSelfPatient(patientId, initiatorUserId, 30);
         var appointment = CreateAppointment(
             _fakeTime.GetUtcNow().UtcDateTime.AddHours(2),
@@ -543,8 +543,8 @@ public class AppointmentCancellationServiceTests
     )
     {
         // Arrange
-        var initiatorUserId = Guid.NewGuid();
-        var patientId = Guid.NewGuid();
+        var initiatorUserId = Guid.CreateVersion7();
+        var patientId = Guid.CreateVersion7();
         var patient = CreateSelfPatient(patientId, initiatorUserId, 30);
         var appointment = CreateAppointment(
             _fakeTime.GetUtcNow().UtcDateTime.AddHours(hoursUntilAppointment),
@@ -577,9 +577,9 @@ public class AppointmentCancellationServiceTests
 
     private Appointment CreateAppointment() =>
         Appointment.Schedule(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2)),
             TimeRange.Create(new TimeOnly(9), new TimeOnly(10))
         );
@@ -587,8 +587,8 @@ public class AppointmentCancellationServiceTests
     private static Appointment CreateAppointment(DateTime scheduledDateTime, Guid patientId) =>
         Appointment.Schedule(
             patientId,
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             DateOnly.FromDateTime(scheduledDateTime),
             TimeRange.Create(
                 TimeOnly.FromDateTime(scheduledDateTime),
@@ -636,7 +636,7 @@ public class AppointmentCancellationServiceTests
             userId,
             PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("12345"),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "555-0000",
             ConsultationRoom.Create(1, "Room A", 1)
         );
@@ -646,7 +646,7 @@ public class AppointmentCancellationServiceTests
 
     private PatientCancellationArgs CreateValidPatientCancellationArgs()
     {
-        var patient = CreateSelfPatient(Guid.NewGuid(), Guid.NewGuid(), 30);
+        var patient = CreateSelfPatient(Guid.CreateVersion7(), Guid.CreateVersion7(), 30);
 
         return new PatientCancellationArgs
         {

@@ -18,7 +18,7 @@ public class AddClinicalDetailToMedicalRecordCommandValidatorTests
     {
         // Arrange
         var command = new AddClinicalDetailToMedicalRecordCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "vital-signs",
             "{}"
         );
@@ -53,7 +53,7 @@ public class AddClinicalDetailToMedicalRecordCommandValidatorTests
     {
         // Arrange
         var command = new AddClinicalDetailToMedicalRecordCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             templateCode!,
             payload!
         );
@@ -75,7 +75,7 @@ public class AddClinicalDetailToMedicalRecordCommandValidatorTests
     {
         // Arrange
         var command = new AddClinicalDetailToMedicalRecordCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             templateCode!,
             payload!
         );

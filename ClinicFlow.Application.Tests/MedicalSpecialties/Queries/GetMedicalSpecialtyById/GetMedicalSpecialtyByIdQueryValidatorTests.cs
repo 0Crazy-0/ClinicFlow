@@ -12,7 +12,7 @@ public class GetMedicalSpecialtyByIdQueryValidatorTests
     public void Validate_ShouldNotHaveErrors_WhenIdIsValid()
     {
         // Arrange
-        var query = new GetMedicalSpecialtyByIdQuery(Guid.NewGuid());
+        var query = new GetMedicalSpecialtyByIdQuery(Guid.CreateVersion7());
 
         // Act
         var result = _sut.TestValidate(query);

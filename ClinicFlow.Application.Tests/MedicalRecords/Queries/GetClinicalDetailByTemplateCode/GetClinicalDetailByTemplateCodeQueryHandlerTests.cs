@@ -75,7 +75,7 @@ public class GetClinicalDetailByTemplateCodeQueryHandlerTests
     public async Task Handle_ShouldThrowEntityNotFoundException_WhenMedicalRecordNotFound()
     {
         // Arrange
-        var medicalRecordId = Guid.NewGuid();
+        var medicalRecordId = Guid.CreateVersion7();
 
         _medicalRecordRepositoryMock
             .Setup(x => x.GetByIdAsync(medicalRecordId, TestContext.Current.CancellationToken))
@@ -99,5 +99,10 @@ public class GetClinicalDetailByTemplateCodeQueryHandlerTests
     }
 
     private static MedicalRecord CreateMedicalRecord() =>
-        MedicalRecord.Create(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "General checkup");
+        MedicalRecord.Create(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            "General checkup"
+        );
 }

@@ -17,7 +17,11 @@ public class CancelAppointmentByStaffCommandValidatorTests
     public void Validate_ShouldBeValid_WhenAllPropertiesAreProvidedAndValid()
     {
         // Arrange
-        var command = new CancelAppointmentByStaffCommand(Guid.NewGuid(), Guid.NewGuid(), "Reason");
+        var command = new CancelAppointmentByStaffCommand(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            "Reason"
+        );
 
         // Act
         var result = _sut.TestValidate(command);
@@ -30,7 +34,11 @@ public class CancelAppointmentByStaffCommandValidatorTests
     public void Validate_ShouldHaveError_WhenAppointmentIdIsEmpty()
     {
         // Arrange
-        var command = new CancelAppointmentByStaffCommand(Guid.Empty, Guid.NewGuid(), "Reason");
+        var command = new CancelAppointmentByStaffCommand(
+            Guid.Empty,
+            Guid.CreateVersion7(),
+            "Reason"
+        );
 
         // Act
         var result = _sut.TestValidate(command);
@@ -45,7 +53,11 @@ public class CancelAppointmentByStaffCommandValidatorTests
     public void Validate_ShouldHaveError_WhenInitiatorUserIdIsEmpty()
     {
         // Arrange
-        var command = new CancelAppointmentByStaffCommand(Guid.NewGuid(), Guid.Empty, "Reason");
+        var command = new CancelAppointmentByStaffCommand(
+            Guid.CreateVersion7(),
+            Guid.Empty,
+            "Reason"
+        );
 
         // Act
         var result = _sut.TestValidate(command);
@@ -63,7 +75,11 @@ public class CancelAppointmentByStaffCommandValidatorTests
     public void Validate_ShouldHaveError_WhenReasonIsEmpty(string? reason)
     {
         // Arrange
-        var command = new CancelAppointmentByStaffCommand(Guid.NewGuid(), Guid.NewGuid(), reason!);
+        var command = new CancelAppointmentByStaffCommand(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            reason!
+        );
 
         // Act
         var result = _sut.TestValidate(command);
@@ -80,8 +96,8 @@ public class CancelAppointmentByStaffCommandValidatorTests
         // Arrange
         var longReason = new string('a', 501);
         var command = new CancelAppointmentByStaffCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             longReason
         );
 

@@ -12,7 +12,7 @@ public class LogoutUserCommandValidatorTests
     public void Validate_ShouldPass_WhenUserIdIsValid()
     {
         // Arrange
-        var command = new LogoutUserCommand(Guid.NewGuid());
+        var command = new LogoutUserCommand(Guid.CreateVersion7());
 
         // Act
         var result = _sut.TestValidate(command);

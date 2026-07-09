@@ -32,7 +32,7 @@ public class GetScheduleByIdQueryValidatorTests
     public void Validate_ShouldNotHaveError_WhenScheduleIdIsValid()
     {
         // Arrange
-        var query = new GetScheduleByIdQuery(Guid.NewGuid());
+        var query = new GetScheduleByIdQuery(Guid.CreateVersion7());
 
         // Act
         var result = _sut.TestValidate(query);

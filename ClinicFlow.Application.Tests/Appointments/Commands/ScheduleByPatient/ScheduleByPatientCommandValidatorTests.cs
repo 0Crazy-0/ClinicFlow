@@ -20,10 +20,10 @@ public class ScheduleByPatientCommandValidatorTests
     {
         // Arrange
         var command = new ScheduleByPatientCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0),
@@ -43,9 +43,9 @@ public class ScheduleByPatientCommandValidatorTests
         // Arrange
         var command = new ScheduleByPatientCommand(
             Guid.Empty,
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0)
@@ -65,10 +65,10 @@ public class ScheduleByPatientCommandValidatorTests
     {
         // Arrange
         var command = new ScheduleByPatientCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             Guid.Empty,
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0)
@@ -88,10 +88,10 @@ public class ScheduleByPatientCommandValidatorTests
     {
         // Arrange
         var command = new ScheduleByPatientCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             Guid.Empty,
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0)
@@ -111,9 +111,9 @@ public class ScheduleByPatientCommandValidatorTests
     {
         // Arrange
         var command = new ScheduleByPatientCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             Guid.Empty,
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
@@ -134,10 +134,10 @@ public class ScheduleByPatientCommandValidatorTests
     {
         // Arrange
         var command = new ScheduleByPatientCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(-1)),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0)
@@ -157,10 +157,10 @@ public class ScheduleByPatientCommandValidatorTests
     {
         // Arrange
         var command = new ScheduleByPatientCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(12, 0),
             new TimeOnly(11, 0)
@@ -180,10 +180,10 @@ public class ScheduleByPatientCommandValidatorTests
     {
         // Arrange
         var command = new ScheduleByPatientCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0),

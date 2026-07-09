@@ -38,14 +38,17 @@ public class MarkAppointmentAsNoShowByDoctorCommandHandlerTests
     public async Task Handle_ShouldMarkAsNoShow_WhenDoctorIdMatches()
     {
         // Arrange
-        var command = new MarkAppointmentAsNoShowByDoctorCommand(Guid.NewGuid(), Guid.NewGuid());
-        var doctorId = Guid.NewGuid();
+        var command = new MarkAppointmentAsNoShowByDoctorCommand(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7()
+        );
+        var doctorId = Guid.CreateVersion7();
         var appointment = CreateAppointment(doctorId);
         var doctor = Doctor.Create(
             command.InitiatorUserId,
             PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("12345"),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Room 1",
             ConsultationRoom.Create(1, "Room 1", 1)
         );
@@ -72,7 +75,10 @@ public class MarkAppointmentAsNoShowByDoctorCommandHandlerTests
     public async Task Handle_ShouldThrowEntityNotFound_WhenAppointmentNotFound()
     {
         // Arrange
-        var command = new MarkAppointmentAsNoShowByDoctorCommand(Guid.NewGuid(), Guid.NewGuid());
+        var command = new MarkAppointmentAsNoShowByDoctorCommand(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7()
+        );
 
         _appointmentRepositoryMock
             .Setup(x => x.GetByIdAsync(command.AppointmentId, It.IsAny<CancellationToken>()))
@@ -94,8 +100,11 @@ public class MarkAppointmentAsNoShowByDoctorCommandHandlerTests
     public async Task Handle_ShouldThrowEntityNotFound_WhenDoctorProfileMissing()
     {
         // Arrange
-        var command = new MarkAppointmentAsNoShowByDoctorCommand(Guid.NewGuid(), Guid.NewGuid());
-        var appointment = CreateAppointment(Guid.NewGuid());
+        var command = new MarkAppointmentAsNoShowByDoctorCommand(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7()
+        );
+        var appointment = CreateAppointment(Guid.CreateVersion7());
 
         _appointmentRepositoryMock
             .Setup(x => x.GetByIdAsync(command.AppointmentId, It.IsAny<CancellationToken>()))
@@ -118,9 +127,9 @@ public class MarkAppointmentAsNoShowByDoctorCommandHandlerTests
 
     private Appointment CreateAppointment(Guid doctorId) =>
         Appointment.Schedule(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             doctorId,
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(-1)),
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );

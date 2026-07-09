@@ -42,7 +42,7 @@ public class AddClinicalDetailToMedicalRecordCommandHandlerTests
     public async Task Handle_GivenValidRequest_AddsDetailAndSaves()
     {
         // Arrange
-        var medicalRecordId = Guid.NewGuid();
+        var medicalRecordId = Guid.CreateVersion7();
         var request = new AddClinicalDetailToMedicalRecordCommand(
             medicalRecordId,
             "lab-results",
@@ -85,7 +85,7 @@ public class AddClinicalDetailToMedicalRecordCommandHandlerTests
     public async Task Handle_GivenInvalidMedicalRecordId_ThrowsEntityNotFoundException()
     {
         // Arrange
-        var medicalRecordId = Guid.NewGuid();
+        var medicalRecordId = Guid.CreateVersion7();
         var request = new AddClinicalDetailToMedicalRecordCommand(
             medicalRecordId,
             "lab-results",
@@ -116,7 +116,7 @@ public class AddClinicalDetailToMedicalRecordCommandHandlerTests
     public async Task Handle_GivenInvalidTemplateCode_ThrowsEntityNotFoundException()
     {
         // Arrange
-        var medicalRecordId = Guid.NewGuid();
+        var medicalRecordId = Guid.CreateVersion7();
         var request = new AddClinicalDetailToMedicalRecordCommand(
             medicalRecordId,
             "invalid-code",
@@ -148,5 +148,10 @@ public class AddClinicalDetailToMedicalRecordCommandHandlerTests
     }
 
     private static MedicalRecord CreateMedicalRecord() =>
-        MedicalRecord.Create(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "Checkup");
+        MedicalRecord.Create(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            "Checkup"
+        );
 }

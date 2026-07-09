@@ -12,7 +12,7 @@ public class DeactivateUserCommandValidatorTests
     public void Validate_ShouldPass_WhenValidCommand()
     {
         // Arrange
-        var command = new DeactivateUserCommand(Guid.NewGuid());
+        var command = new DeactivateUserCommand(Guid.CreateVersion7());
 
         // Act
         var result = _sut.TestValidate(command);

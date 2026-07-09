@@ -51,9 +51,9 @@ public class MedicalEncounterServiceTests
     {
         // Arrange
         var scheduledAppointment = Appointment.Schedule(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0))
         );
@@ -72,7 +72,7 @@ public class MedicalEncounterServiceTests
     public void InitiateMedicalRecord_ShouldReturnMedicalRecord_WhenAppointmentIsInProgress()
     {
         // Arrange
-        var appointment = CreateAppointment(Guid.NewGuid());
+        var appointment = CreateAppointment(Guid.CreateVersion7());
         var chiefComplaint = "Headache";
 
         // Act
@@ -183,9 +183,9 @@ public class MedicalEncounterServiceTests
     public void ValidateAndCompleteRecord_ShouldThrowBusinessRuleValidationException_WhenDoctorIdMismatch()
     {
         // Arrange
-        var expectedDoctorId = Guid.NewGuid();
-        var actualDoctorId = Guid.NewGuid();
-        var appointmentId = Guid.NewGuid();
+        var expectedDoctorId = Guid.CreateVersion7();
+        var actualDoctorId = Guid.CreateVersion7();
+        var appointmentId = Guid.CreateVersion7();
         var record = CreateMedicalRecord(actualDoctorId, appointmentId);
         var context = new MedicalEncounterContext
         {
@@ -208,9 +208,9 @@ public class MedicalEncounterServiceTests
     public void ValidateAndCompleteRecord_ShouldThrowBusinessRuleValidationException_WhenAppointmentIdMismatch()
     {
         // Arrange
-        var doctorId = Guid.NewGuid();
-        var expectedAppointmentId = Guid.NewGuid();
-        var actualAppointmentId = Guid.NewGuid();
+        var doctorId = Guid.CreateVersion7();
+        var expectedAppointmentId = Guid.CreateVersion7();
+        var actualAppointmentId = Guid.CreateVersion7();
         var record = CreateMedicalRecord(doctorId, actualAppointmentId);
         var context = new MedicalEncounterContext
         {
@@ -233,8 +233,8 @@ public class MedicalEncounterServiceTests
     public void ValidateAndCompleteRecord_ShouldCallPoliciesAndAddDetails_WhenValid()
     {
         // Arrange
-        var doctorId = Guid.NewGuid();
-        var appointmentId = Guid.NewGuid();
+        var doctorId = Guid.CreateVersion7();
+        var appointmentId = Guid.CreateVersion7();
         var record = CreateMedicalRecord(doctorId, appointmentId);
         var appointmentType = CreateAppointmentType();
         var detail1 = DynamicClinicalDetail.Create("Test1", "{}");
@@ -381,25 +381,30 @@ public class MedicalEncounterServiceTests
     private MedicalEncounterContext CreateValidContext() =>
         new()
         {
-            ExpectedDoctor = CreateDoctor(Guid.NewGuid()),
-            Appointment = CreateAppointment(Guid.NewGuid()),
+            ExpectedDoctor = CreateDoctor(Guid.CreateVersion7()),
+            Appointment = CreateAppointment(Guid.CreateVersion7()),
             AppointmentTypeDefinition = CreateAppointmentType(),
             CompletedAt = _fakeTime.GetUtcNow().UtcDateTime,
         };
 
     private static MedicalRecord CreateMedicalRecord(Guid doctorId, Guid appointmentId) =>
-        MedicalRecord.Create(Guid.NewGuid(), doctorId, appointmentId, "Headache");
+        MedicalRecord.Create(Guid.CreateVersion7(), doctorId, appointmentId, "Headache");
 
     private static MedicalRecord CreateMedicalRecord() =>
-        MedicalRecord.Create(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "Headache");
+        MedicalRecord.Create(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            "Headache"
+        );
 
     private static Doctor CreateDoctor(Guid id)
     {
         var doctor = Doctor.Create(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("12345"),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "555-0000",
             ConsultationRoom.Create(1, "Room A", 1)
         );
@@ -410,9 +415,9 @@ public class MedicalEncounterServiceTests
     private Appointment CreateAppointment(Guid id)
     {
         var appointment = Appointment.Schedule(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0))
         );

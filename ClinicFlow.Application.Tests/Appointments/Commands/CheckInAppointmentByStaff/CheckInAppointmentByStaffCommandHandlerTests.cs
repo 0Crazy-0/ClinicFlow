@@ -32,11 +32,11 @@ public class CheckInAppointmentByStaffCommandHandlerTests
     public async Task Handle_ShouldSucceed_WhenValidRequest()
     {
         // Arrange
-        var command = new CheckInAppointmentByStaffCommand(Guid.NewGuid());
+        var command = new CheckInAppointmentByStaffCommand(Guid.CreateVersion7());
         var appointment = Appointment.Schedule(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0))
         );
@@ -62,13 +62,13 @@ public class CheckInAppointmentByStaffCommandHandlerTests
     {
         // Arrange
         var command = new CheckInAppointmentByStaffCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Checked in with receptionist notes"
         );
         var appointment = Appointment.Schedule(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0))
         );
@@ -90,7 +90,7 @@ public class CheckInAppointmentByStaffCommandHandlerTests
     public async Task Handle_ShouldThrowEntityNotFoundException_WhenAppointmentNotFound()
     {
         // Arrange
-        var command = new CheckInAppointmentByStaffCommand(Guid.NewGuid());
+        var command = new CheckInAppointmentByStaffCommand(Guid.CreateVersion7());
 
         _appointmentRepositoryMock
             .Setup(r => r.GetByIdAsync(command.AppointmentId, It.IsAny<CancellationToken>()))

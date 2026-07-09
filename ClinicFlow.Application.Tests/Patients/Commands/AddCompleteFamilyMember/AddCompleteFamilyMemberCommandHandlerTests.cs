@@ -34,7 +34,7 @@ public class AddCompleteFamilyMemberCommandHandlerTests
     {
         // Arrange
         var command = new AddCompleteFamilyMemberCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Child",
             "Doe",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-5)),
@@ -76,7 +76,7 @@ public class AddCompleteFamilyMemberCommandHandlerTests
     {
         // Arrange
         var command = new AddCompleteFamilyMemberCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Child",
             "Doe",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-5)),
@@ -104,7 +104,7 @@ public class AddCompleteFamilyMemberCommandHandlerTests
     {
         // Arrange
         var command = new AddCompleteFamilyMemberCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Self",
             "Doe",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),

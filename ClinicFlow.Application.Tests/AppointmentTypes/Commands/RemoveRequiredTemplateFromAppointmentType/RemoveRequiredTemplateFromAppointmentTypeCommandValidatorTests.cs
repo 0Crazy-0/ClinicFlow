@@ -18,8 +18,8 @@ public class RemoveRequiredTemplateFromAppointmentTypeCommandValidatorTests
     {
         // Arrange
         var command = new RemoveRequiredTemplateFromAppointmentTypeCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid()
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7()
         );
 
         // Act
@@ -35,7 +35,7 @@ public class RemoveRequiredTemplateFromAppointmentTypeCommandValidatorTests
         // Arrange
         var command = new RemoveRequiredTemplateFromAppointmentTypeCommand(
             Guid.Empty,
-            Guid.NewGuid()
+            Guid.CreateVersion7()
         );
 
         // Act
@@ -52,7 +52,7 @@ public class RemoveRequiredTemplateFromAppointmentTypeCommandValidatorTests
     {
         // Arrange
         var command = new RemoveRequiredTemplateFromAppointmentTypeCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             Guid.Empty
         );
 

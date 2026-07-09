@@ -64,7 +64,7 @@ public class UpdateClinicalFormTemplateCommandHandlerTests
     {
         // Arrange
         var command = new UpdateClinicalFormTemplateCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Name",
             "Description",
             "{}"

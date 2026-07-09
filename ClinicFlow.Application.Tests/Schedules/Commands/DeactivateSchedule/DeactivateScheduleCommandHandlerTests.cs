@@ -31,7 +31,7 @@ public class DeactivateScheduleCommandHandlerTests
     {
         // Arrange
         var schedule = Schedule.Create(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             DayOfWeek.Monday,
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(17, 0))
         );
@@ -55,7 +55,7 @@ public class DeactivateScheduleCommandHandlerTests
     public async Task Handle_ShouldThrowException_WhenScheduleDoesNotExist()
     {
         // Arrange
-        var scheduleId = Guid.NewGuid();
+        var scheduleId = Guid.CreateVersion7();
         _scheduleRepositoryMock
             .Setup(x => x.GetByIdAsync(scheduleId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((Schedule?)null);

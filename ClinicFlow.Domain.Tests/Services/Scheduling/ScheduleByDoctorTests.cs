@@ -24,7 +24,7 @@ public class ScheduleByDoctorTests
             AppointmentSchedulingService.ScheduleByDoctor(
                 null!,
                 CreateValidDoctorSchedulingArgs(),
-                CreateSchedule(Guid.NewGuid(), DayOfWeek.Monday),
+                CreateSchedule(Guid.CreateVersion7(), DayOfWeek.Monday),
                 SchedulingClearance.Granted()
             );
 
@@ -42,7 +42,7 @@ public class ScheduleByDoctorTests
             AppointmentSchedulingService.ScheduleByDoctor(
                 CreateAppointmentType(AppointmentCategory.Checkup),
                 null!,
-                CreateSchedule(Guid.NewGuid(), DayOfWeek.Monday),
+                CreateSchedule(Guid.CreateVersion7(), DayOfWeek.Monday),
                 SchedulingClearance.Granted()
             );
 
@@ -81,7 +81,7 @@ public class ScheduleByDoctorTests
                 {
                     InitiatorDoctor = null!,
                 },
-                CreateSchedule(Guid.NewGuid(), DayOfWeek.Monday),
+                CreateSchedule(Guid.CreateVersion7(), DayOfWeek.Monday),
                 SchedulingClearance.Granted()
             );
 
@@ -102,7 +102,7 @@ public class ScheduleByDoctorTests
                 {
                     TargetPatient = null!,
                 },
-                CreateSchedule(Guid.NewGuid(), DayOfWeek.Monday),
+                CreateSchedule(Guid.CreateVersion7(), DayOfWeek.Monday),
                 SchedulingClearance.Granted()
             );
 
@@ -123,7 +123,7 @@ public class ScheduleByDoctorTests
                 {
                     TimeRange = null!,
                 },
-                CreateSchedule(Guid.NewGuid(), DayOfWeek.Monday),
+                CreateSchedule(Guid.CreateVersion7(), DayOfWeek.Monday),
                 SchedulingClearance.Granted()
             );
 
@@ -141,7 +141,7 @@ public class ScheduleByDoctorTests
             AppointmentSchedulingService.ScheduleByDoctor(
                 CreateAppointmentType(AppointmentCategory.Checkup),
                 CreateValidDoctorSchedulingArgs(),
-                CreateSchedule(Guid.NewGuid(), DayOfWeek.Monday),
+                CreateSchedule(Guid.CreateVersion7(), DayOfWeek.Monday),
                 null!
             );
 
@@ -165,7 +165,7 @@ public class ScheduleByDoctorTests
 
         var doctor = CreateDoctor();
         var target = Patient.CreateSelf(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             PersonName.Create("Test"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-15)),
             _fakeTime.GetUtcNow().UtcDateTime
@@ -328,7 +328,7 @@ public class ScheduleByDoctorTests
     private Patient CreateSelfPatient()
     {
         var patient = Patient.CreateSelf(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             PersonName.Create("Test"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
@@ -342,10 +342,10 @@ public class ScheduleByDoctorTests
 
     private static Doctor CreateDoctor() =>
         Doctor.Create(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("12345"),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "555-0000",
             ConsultationRoom.Create(1, "Room A", 1)
         );

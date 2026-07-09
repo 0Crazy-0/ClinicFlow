@@ -44,10 +44,10 @@ public class ReassignAppointmentCommandHandlerTests
         // Arrange
         var appointment = CreateDisplacedAppointment();
         var newDoctor = Doctor.Create(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("DOC123"),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Specialist",
             ConsultationRoom.Create(1, "Room A", 1)
         );
@@ -113,8 +113,8 @@ public class ReassignAppointmentCommandHandlerTests
     {
         // Arrange
         var command = new ReassignAppointmentCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             DateOnly.FromDateTime(DateTime.UtcNow).AddDays(1),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0)
@@ -143,7 +143,7 @@ public class ReassignAppointmentCommandHandlerTests
         var appointment = CreateDisplacedAppointment();
         var command = new ReassignAppointmentCommand(
             appointment.Id,
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             DateOnly.FromDateTime(DateTime.UtcNow).AddDays(1),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0)
@@ -175,10 +175,10 @@ public class ReassignAppointmentCommandHandlerTests
         // Arrange
         var appointment = CreateDisplacedAppointment();
         var newDoctor = Doctor.Create(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("DOC123"),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Specialist",
             ConsultationRoom.Create(1, "Room A", 1)
         );
@@ -241,10 +241,10 @@ public class ReassignAppointmentCommandHandlerTests
         // Arrange
         var appointment = CreateDisplacedAppointment();
         var newDoctor = Doctor.Create(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("DOC123"),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Specialist",
             ConsultationRoom.Create(1, "Room A", 1)
         );
@@ -291,9 +291,9 @@ public class ReassignAppointmentCommandHandlerTests
     private Appointment CreateDisplacedAppointment()
     {
         var appointment = Appointment.Schedule(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2)),
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );

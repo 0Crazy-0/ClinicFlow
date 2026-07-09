@@ -15,7 +15,7 @@ public class GetAppointmentsByDoctorIdAndDateQueryValidatorTests
     {
         // Arrange
         var query = new GetAppointmentsByDoctorIdAndDateQuery(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime),
             1,
             10
@@ -52,7 +52,12 @@ public class GetAppointmentsByDoctorIdAndDateQueryValidatorTests
     public void Validate_ShouldHaveError_WhenDateIsEmpty()
     {
         // Arrange
-        var query = new GetAppointmentsByDoctorIdAndDateQuery(Guid.NewGuid(), default, 1, 10);
+        var query = new GetAppointmentsByDoctorIdAndDateQuery(
+            Guid.CreateVersion7(),
+            default,
+            1,
+            10
+        );
 
         // Act
         var result = _sut.TestValidate(query);
@@ -70,7 +75,7 @@ public class GetAppointmentsByDoctorIdAndDateQueryValidatorTests
     {
         // Arrange
         var query = new GetAppointmentsByDoctorIdAndDateQuery(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime),
             pageNumber,
             10
@@ -93,7 +98,7 @@ public class GetAppointmentsByDoctorIdAndDateQueryValidatorTests
     {
         // Arrange
         var query = new GetAppointmentsByDoctorIdAndDateQuery(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime),
             1,
             pageSize

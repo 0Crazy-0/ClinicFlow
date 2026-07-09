@@ -16,10 +16,10 @@ public class DoctorRegistrationServiceTests
         // Arrange
         var args = new DoctorRegistrationArgs
         {
-            UserId = Guid.NewGuid(),
+            UserId = Guid.CreateVersion7(),
             FullName = PersonName.Create("Test Doctor"),
             LicenseNumber = MedicalLicenseNumber.Create("12345"),
-            MedicalSpecialtyId = Guid.NewGuid(),
+            MedicalSpecialtyId = Guid.CreateVersion7(),
             Biography = "Cardiologist",
             ConsultationRoom = ConsultationRoom.Create(1, "Room A", 1),
         };
@@ -42,20 +42,20 @@ public class DoctorRegistrationServiceTests
     {
         // Arrange
         var existingDoctor = Doctor.Create(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("12345"),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Old Bio",
             ConsultationRoom.Create(1, "Old Room", 1)
         );
 
         var args = new DoctorRegistrationArgs
         {
-            UserId = Guid.NewGuid(),
+            UserId = Guid.CreateVersion7(),
             FullName = PersonName.Create("Test Doctor"),
             LicenseNumber = MedicalLicenseNumber.Create("12345"),
-            MedicalSpecialtyId = Guid.NewGuid(),
+            MedicalSpecialtyId = Guid.CreateVersion7(),
             Biography = "Cardiologist",
             ConsultationRoom = ConsultationRoom.Create(1, "Room A", 1),
         };

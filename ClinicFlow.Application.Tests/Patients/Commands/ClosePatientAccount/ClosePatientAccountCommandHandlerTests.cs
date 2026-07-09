@@ -37,7 +37,7 @@ public class ClosePatientAccountCommandHandlerTests
     public async Task Handle_ShouldCloseAccountAndRemoveFamilyMembers_WhenNoPendingAppointments()
     {
         // Arrange
-        var userId = Guid.NewGuid();
+        var userId = Guid.CreateVersion7();
         var command = new ClosePatientAccountCommand(userId);
 
         var primaryPatient = Patient.CreateSelf(
@@ -79,7 +79,7 @@ public class ClosePatientAccountCommandHandlerTests
     public async Task Handle_ShouldCloseAccountSuccessfully_WhenNoFamilyMembers()
     {
         // Arrange
-        var userId = Guid.NewGuid();
+        var userId = Guid.CreateVersion7();
         var command = new ClosePatientAccountCommand(userId);
 
         var primaryPatient = Patient.CreateSelf(
@@ -112,7 +112,7 @@ public class ClosePatientAccountCommandHandlerTests
     public async Task Handle_ShouldThrowException_WhenHasPendingAppointments()
     {
         // Arrange
-        var userId = Guid.NewGuid();
+        var userId = Guid.CreateVersion7();
         var command = new ClosePatientAccountCommand(userId);
 
         var primaryPatient = Patient.CreateSelf(

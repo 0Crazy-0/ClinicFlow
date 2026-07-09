@@ -17,7 +17,7 @@ public class MarkAppointmentAsNoShowByStaffCommandValidatorTests
     public void Validate_ShouldBeValid_WhenAllPropertiesAreProvidedAndValid()
     {
         // Arrange
-        var command = new MarkAppointmentAsNoShowByStaffCommand(Guid.NewGuid());
+        var command = new MarkAppointmentAsNoShowByStaffCommand(Guid.CreateVersion7());
 
         // Act
         var result = _sut.TestValidate(command);

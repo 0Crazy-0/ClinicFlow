@@ -22,9 +22,9 @@ public class GetDoctorsBySpecialtyIdQueryHandlerTests
     public async Task Handle_ShouldReturnPaginatedList_WhenDoctorsExistForSpecialty()
     {
         // Arrange
-        var specialtyId = Guid.NewGuid();
+        var specialtyId = Guid.CreateVersion7();
         var doctor1 = Doctor.Create(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("12345"),
             specialtyId,
@@ -33,7 +33,7 @@ public class GetDoctorsBySpecialtyIdQueryHandlerTests
         );
 
         var doctor2 = Doctor.Create(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("67890"),
             specialtyId,
@@ -80,7 +80,7 @@ public class GetDoctorsBySpecialtyIdQueryHandlerTests
     public async Task Handle_ShouldReturnEmptyPaginatedList_WhenNoDoctorsExistForSpecialty()
     {
         // Arrange
-        var specialtyId = Guid.NewGuid();
+        var specialtyId = Guid.CreateVersion7();
 
         _doctorRepositoryMock
             .Setup(x =>

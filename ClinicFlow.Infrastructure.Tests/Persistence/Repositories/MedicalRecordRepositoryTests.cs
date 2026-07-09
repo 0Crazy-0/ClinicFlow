@@ -55,7 +55,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
     public async Task GetByIdAsync_ShouldReturnNull_WhenDoesNotExist()
     {
         // Arrange
-        var nonExistentId = Guid.NewGuid();
+        var nonExistentId = Guid.CreateVersion7();
 
         // Act
         var result = await _sut.GetByIdAsync(nonExistentId, TestContext.Current.CancellationToken);
@@ -208,7 +208,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
     public async Task GetByPatientIdPaginatedAsync_ShouldReturnEmpty_WhenNoRecordsForPatient()
     {
         // Arrange
-        var nonExistentPatientId = Guid.NewGuid();
+        var nonExistentPatientId = Guid.CreateVersion7();
 
         // Act
         var (items, totalCount) = await _sut.GetByPatientIdPaginatedAsync(
@@ -414,7 +414,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
     public async Task GetByDoctorIdPaginatedAsync_ShouldReturnEmpty_WhenNoRecordsForDoctor()
     {
         // Arrange
-        var nonExistentDoctorId = Guid.NewGuid();
+        var nonExistentDoctorId = Guid.CreateVersion7();
 
         // Act
         var (items, totalCount) = await _sut.GetByDoctorIdPaginatedAsync(
@@ -506,7 +506,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
     public async Task GetByAppointmentIdAsync_ShouldReturnNull_WhenDoesNotExist()
     {
         // Arrange
-        var nonExistentAppointmentId = Guid.NewGuid();
+        var nonExistentAppointmentId = Guid.CreateVersion7();
 
         // Act
         var result = await _sut.GetByAppointmentIdAsync(
@@ -558,7 +558,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
 
     private async Task<User> CreateUserAsync(UserRole role)
     {
-        var email = EmailAddress.Create($"{Guid.NewGuid()}@clinic.com");
+        var email = EmailAddress.Create($"{Guid.CreateVersion7()}@clinic.com");
         var phone = PhoneNumber.Create($"+1555{Random.Shared.Next(1000000, 9999999)}");
         var user = User.Create(email, "password", phone, role);
 
@@ -581,7 +581,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
         var doctor = Doctor.Create(
             user.Id,
             PersonName.Create("Dr. Watson"),
-            MedicalLicenseNumber.Create("CMP-" + Guid.NewGuid().ToString("N")[..5]),
+            MedicalLicenseNumber.Create("CMP-" + Guid.CreateVersion7().ToString("N")[..5]),
             specialty.Id,
             "Desc",
             ConsultationRoom.Create(10, "Room 10", 1)
@@ -618,7 +618,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
     {
         var apptType = AppointmentTypeDefinition.Create(
             AppointmentCategory.FirstConsultation,
-            $"Consultation-{Guid.NewGuid():N}",
+            $"Consultation-{Guid.CreateVersion7():N}",
             "Desc",
             EncounterDuration.FromMinutes(20)
         );

@@ -70,7 +70,7 @@ public class AppointmentRepositoryTests : IAsyncLifetime
     public async Task GetByIdAsync_ShouldReturnNull_WhenDoesNotExist()
     {
         // Arrange
-        var nonExistentId = Guid.NewGuid();
+        var nonExistentId = Guid.CreateVersion7();
 
         // Act
         var result = await _sut.GetByIdAsync(nonExistentId, TestContext.Current.CancellationToken);
@@ -915,7 +915,7 @@ public class AppointmentRepositoryTests : IAsyncLifetime
             TimeRange.Create(new TimeOnly(11, 0), new TimeOnly(12, 0))
         );
 
-        Appointment3.Cancel(Guid.NewGuid(), "cancelled", baseDate);
+        Appointment3.Cancel(Guid.CreateVersion7(), "cancelled", baseDate);
 
         Context.Appointments.AddRange(Appointment1, Appointment2, Appointment3);
 
@@ -1109,7 +1109,7 @@ public class AppointmentRepositoryTests : IAsyncLifetime
 
     private async Task<User> CreateUserAsync(UserRole role)
     {
-        var email = EmailAddress.Create($"{Guid.NewGuid()}@clinic.com");
+        var email = EmailAddress.Create($"{Guid.CreateVersion7()}@clinic.com");
         var phone = PhoneNumber.Create($"+1555{Random.Shared.Next(1000000, 9999999)}");
         var user = User.Create(email, "password", phone, role);
 
@@ -1131,7 +1131,7 @@ public class AppointmentRepositoryTests : IAsyncLifetime
         var doctor = Doctor.Create(
             userId,
             PersonName.Create("Dr. Watson"),
-            MedicalLicenseNumber.Create("CMP-" + Guid.NewGuid().ToString("N")[..5]),
+            MedicalLicenseNumber.Create("CMP-" + Guid.CreateVersion7().ToString("N")[..5]),
             specialty.Id,
             "Desc",
             ConsultationRoom.Create(10, "Room 10", 1)

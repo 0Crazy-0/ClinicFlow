@@ -25,7 +25,7 @@ public class ScheduleByStaffTests
             AppointmentSchedulingService.ScheduleByStaff(
                 null!,
                 CreateValidStaffSchedulingArgs(),
-                CreateSchedule(Guid.NewGuid(), DayOfWeek.Monday),
+                CreateSchedule(Guid.CreateVersion7(), DayOfWeek.Monday),
                 SchedulingClearance.Granted()
             );
 
@@ -43,7 +43,7 @@ public class ScheduleByStaffTests
             AppointmentSchedulingService.ScheduleByStaff(
                 CreateAppointmentType(),
                 null!,
-                CreateSchedule(Guid.NewGuid(), DayOfWeek.Monday),
+                CreateSchedule(Guid.CreateVersion7(), DayOfWeek.Monday),
                 SchedulingClearance.Granted()
             );
 
@@ -82,7 +82,7 @@ public class ScheduleByStaffTests
                 {
                     TargetPatient = null!,
                 },
-                CreateSchedule(Guid.NewGuid(), DayOfWeek.Monday),
+                CreateSchedule(Guid.CreateVersion7(), DayOfWeek.Monday),
                 SchedulingClearance.Granted()
             );
 
@@ -103,7 +103,7 @@ public class ScheduleByStaffTests
                 {
                     TimeRange = null!,
                 },
-                CreateSchedule(Guid.NewGuid(), DayOfWeek.Monday),
+                CreateSchedule(Guid.CreateVersion7(), DayOfWeek.Monday),
                 SchedulingClearance.Granted()
             );
 
@@ -121,7 +121,7 @@ public class ScheduleByStaffTests
             AppointmentSchedulingService.ScheduleByStaff(
                 CreateAppointmentType(),
                 CreateValidStaffSchedulingArgs(),
-                CreateSchedule(Guid.NewGuid(), DayOfWeek.Monday),
+                CreateSchedule(Guid.CreateVersion7(), DayOfWeek.Monday),
                 null!
             );
 
@@ -137,7 +137,7 @@ public class ScheduleByStaffTests
         // Arrange
         var appointmentType = CreateAppointmentType();
         var incompletePatient = Patient.CreateSelf(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             PersonName.Create("Test"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
@@ -146,7 +146,7 @@ public class ScheduleByStaffTests
         var args = new StaffSchedulingArgs
         {
             TargetPatient = incompletePatient,
-            DoctorId = Guid.NewGuid(),
+            DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange = CreateTimeRange(),
             IsOverbook = false,
@@ -183,7 +183,7 @@ public class ScheduleByStaffTests
         );
 
         var target = Patient.CreateSelf(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             PersonName.Create("Test"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-15)),
             _fakeTime.GetUtcNow().UtcDateTime
@@ -195,7 +195,7 @@ public class ScheduleByStaffTests
         var args = new StaffSchedulingArgs
         {
             TargetPatient = target,
-            DoctorId = Guid.NewGuid(),
+            DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange = CreateTimeRange(),
             IsOverbook = false,
@@ -228,7 +228,7 @@ public class ScheduleByStaffTests
         var args = new StaffSchedulingArgs
         {
             TargetPatient = target,
-            DoctorId = Guid.NewGuid(),
+            DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange = CreateTimeRange(),
             IsOverbook = true,
@@ -260,7 +260,7 @@ public class ScheduleByStaffTests
         var args = new StaffSchedulingArgs
         {
             TargetPatient = target,
-            DoctorId = Guid.NewGuid(),
+            DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange = TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(18, 0)),
             IsOverbook = false,
@@ -293,7 +293,7 @@ public class ScheduleByStaffTests
         var args = new StaffSchedulingArgs
         {
             TargetPatient = target,
-            DoctorId = Guid.NewGuid(),
+            DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange = CreateTimeRange(),
             IsOverbook = false,
@@ -345,7 +345,7 @@ public class ScheduleByStaffTests
     private Patient CreateSelfPatient()
     {
         var patient = Patient.CreateSelf(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             PersonName.Create("Test"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime

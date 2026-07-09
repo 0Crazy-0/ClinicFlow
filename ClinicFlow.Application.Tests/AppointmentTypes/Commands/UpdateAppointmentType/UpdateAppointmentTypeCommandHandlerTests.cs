@@ -32,7 +32,7 @@ public class UpdateAppointmentTypeCommandHandlerTests
     {
         // Arrange
         var command = new UpdateAppointmentTypeCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             AppointmentCategory.FollowUp,
             "Updated Checkup",
             "Updated description",
@@ -67,7 +67,7 @@ public class UpdateAppointmentTypeCommandHandlerTests
     {
         // Arrange
         var command = new UpdateAppointmentTypeCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             AppointmentCategory.Checkup,
             "Checkup",
             "Description",
@@ -95,7 +95,7 @@ public class UpdateAppointmentTypeCommandHandlerTests
     {
         // Arrange
         var command = new UpdateAppointmentTypeCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             AppointmentCategory.Checkup,
             "Existing Name",
             "Description",

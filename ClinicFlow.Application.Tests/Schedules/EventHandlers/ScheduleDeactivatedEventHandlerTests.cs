@@ -43,12 +43,12 @@ public class ScheduleDeactivatedEventHandlerTests
             DateTimeOffset.Parse("2024-01-01T00:00:00Z", CultureInfo.InvariantCulture)
         ); // Monday
 
-        var doctorId = Guid.NewGuid();
+        var doctorId = Guid.CreateVersion7();
         var nextMondayDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(7));
         var appointment = Appointment.Schedule(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             doctorId,
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             nextMondayDate,
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
@@ -69,7 +69,11 @@ public class ScheduleDeactivatedEventHandlerTests
             )
             .ReturnsAsync((Schedule?)null);
 
-        var domainEvent = new ScheduleDeactivatedEvent(Guid.NewGuid(), doctorId, DayOfWeek.Monday);
+        var domainEvent = new ScheduleDeactivatedEvent(
+            Guid.CreateVersion7(),
+            doctorId,
+            DayOfWeek.Monday
+        );
         var notification = new DomainEventNotification<ScheduleDeactivatedEvent>(domainEvent);
 
         // Act
@@ -87,12 +91,12 @@ public class ScheduleDeactivatedEventHandlerTests
         // Arrange
         _fakeTime.SetUtcNow(DateTimeOffset.Parse("2024-01-01T00:00:00Z")); // Monday
 
-        var doctorId = Guid.NewGuid();
+        var doctorId = Guid.CreateVersion7();
         var mondayDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(7));
         var appointmentOutside = Appointment.Schedule(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             doctorId,
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             mondayDate,
             TimeRange.Create(new TimeOnly(15, 0), new TimeOnly(16, 0))
         );
@@ -119,7 +123,11 @@ public class ScheduleDeactivatedEventHandlerTests
             )
             .ReturnsAsync(newSchedule);
 
-        var domainEvent = new ScheduleDeactivatedEvent(Guid.NewGuid(), doctorId, DayOfWeek.Monday);
+        var domainEvent = new ScheduleDeactivatedEvent(
+            Guid.CreateVersion7(),
+            doctorId,
+            DayOfWeek.Monday
+        );
         var notification = new DomainEventNotification<ScheduleDeactivatedEvent>(domainEvent);
 
         // Act
@@ -137,12 +145,12 @@ public class ScheduleDeactivatedEventHandlerTests
         // Arrange
         _fakeTime.SetUtcNow(DateTimeOffset.Parse("2024-01-01T00:00:00Z")); // Monday
 
-        var doctorId = Guid.NewGuid();
+        var doctorId = Guid.CreateVersion7();
         var mondayDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(7));
         var appointmentInside = Appointment.Schedule(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             doctorId,
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             mondayDate,
             TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0))
         );
@@ -169,7 +177,11 @@ public class ScheduleDeactivatedEventHandlerTests
             )
             .ReturnsAsync(newSchedule);
 
-        var domainEvent = new ScheduleDeactivatedEvent(Guid.NewGuid(), doctorId, DayOfWeek.Monday);
+        var domainEvent = new ScheduleDeactivatedEvent(
+            Guid.CreateVersion7(),
+            doctorId,
+            DayOfWeek.Monday
+        );
         var notification = new DomainEventNotification<ScheduleDeactivatedEvent>(domainEvent);
 
         // Act
@@ -189,12 +201,12 @@ public class ScheduleDeactivatedEventHandlerTests
             DateTimeOffset.Parse("2024-01-01T00:00:00Z", CultureInfo.InvariantCulture)
         ); // Monday
 
-        var doctorId = Guid.NewGuid();
+        var doctorId = Guid.CreateVersion7();
         var tuesdayDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
         var tuesdayAppointment = Appointment.Schedule(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             doctorId,
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             tuesdayDate,
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
@@ -215,7 +227,11 @@ public class ScheduleDeactivatedEventHandlerTests
             )
             .ReturnsAsync((Schedule?)null);
 
-        var domainEvent = new ScheduleDeactivatedEvent(Guid.NewGuid(), doctorId, DayOfWeek.Monday);
+        var domainEvent = new ScheduleDeactivatedEvent(
+            Guid.CreateVersion7(),
+            doctorId,
+            DayOfWeek.Monday
+        );
         var notification = new DomainEventNotification<ScheduleDeactivatedEvent>(domainEvent);
 
         // Act
@@ -231,7 +247,7 @@ public class ScheduleDeactivatedEventHandlerTests
     public async Task Handle_ShouldCallSaveChanges_WhenDoctorHasNoFutureAppointments()
     {
         // Arrange
-        var doctorId = Guid.NewGuid();
+        var doctorId = Guid.CreateVersion7();
 
         _appointmentRepositoryMock
             .Setup(x =>
@@ -243,7 +259,11 @@ public class ScheduleDeactivatedEventHandlerTests
             )
             .ReturnsAsync([]);
 
-        var domainEvent = new ScheduleDeactivatedEvent(Guid.NewGuid(), doctorId, DayOfWeek.Monday);
+        var domainEvent = new ScheduleDeactivatedEvent(
+            Guid.CreateVersion7(),
+            doctorId,
+            DayOfWeek.Monday
+        );
         var notification = new DomainEventNotification<ScheduleDeactivatedEvent>(domainEvent);
 
         // Act

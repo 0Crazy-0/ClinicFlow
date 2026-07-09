@@ -12,7 +12,7 @@ public class SuspendDoctorProfileCommandValidatorTests
     public void Validate_ShouldPass_WhenValidCommand()
     {
         // Arrange
-        var command = new SuspendDoctorProfileCommand(Guid.NewGuid());
+        var command = new SuspendDoctorProfileCommand(Guid.CreateVersion7());
 
         // Act
         var result = _sut.TestValidate(command);

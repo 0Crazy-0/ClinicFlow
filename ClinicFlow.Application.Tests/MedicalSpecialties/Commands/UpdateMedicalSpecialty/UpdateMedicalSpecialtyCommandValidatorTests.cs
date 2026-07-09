@@ -13,7 +13,7 @@ public class UpdateMedicalSpecialtyCommandValidatorTests
     {
         // Arrange
         var command = new UpdateMedicalSpecialtyCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Cardiology",
             "Heart specialty",
             30,
@@ -56,7 +56,7 @@ public class UpdateMedicalSpecialtyCommandValidatorTests
     {
         // Arrange
         var command = new UpdateMedicalSpecialtyCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             name!,
             "Heart specialty",
             30,
@@ -80,7 +80,7 @@ public class UpdateMedicalSpecialtyCommandValidatorTests
     {
         // Arrange
         var command = new UpdateMedicalSpecialtyCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Cardiology",
             description!,
             30,
@@ -106,7 +106,7 @@ public class UpdateMedicalSpecialtyCommandValidatorTests
     {
         // Arrange
         var command = new UpdateMedicalSpecialtyCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Cardiology",
             "Heart specialty",
             duration,
@@ -130,7 +130,7 @@ public class UpdateMedicalSpecialtyCommandValidatorTests
     {
         // Arrange
         var command = new UpdateMedicalSpecialtyCommand(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Cardiology",
             "Heart specialty",
             30,

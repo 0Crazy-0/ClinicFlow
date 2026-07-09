@@ -34,21 +34,21 @@ public class StartAppointmentByDoctorCommandHandlerTests
     public async Task Handle_ShouldSucceed_WhenValidRequest()
     {
         // Arrange
-        var initiatorUserId = Guid.NewGuid();
-        var command = new StartAppointmentByDoctorCommand(Guid.NewGuid(), initiatorUserId);
+        var initiatorUserId = Guid.CreateVersion7();
+        var command = new StartAppointmentByDoctorCommand(Guid.CreateVersion7(), initiatorUserId);
         var doctor = Doctor.Create(
             initiatorUserId,
             PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("12345"),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "555-0000",
             ConsultationRoom.Create(1, "Room A", 1)
         );
 
         var appointment = Appointment.Schedule(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             doctor.Id,
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0))
         );
@@ -75,7 +75,10 @@ public class StartAppointmentByDoctorCommandHandlerTests
     public async Task Handle_ShouldThrowEntityNotFoundException_WhenAppointmentNotFound()
     {
         // Arrange
-        var command = new StartAppointmentByDoctorCommand(Guid.NewGuid(), Guid.NewGuid());
+        var command = new StartAppointmentByDoctorCommand(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7()
+        );
 
         _appointmentRepositoryMock
             .Setup(r => r.GetByIdAsync(command.AppointmentId, It.IsAny<CancellationToken>()))
@@ -97,11 +100,14 @@ public class StartAppointmentByDoctorCommandHandlerTests
     public async Task Handle_ShouldThrowEntityNotFoundException_WhenDoctorNotFound()
     {
         // Arrange
-        var command = new StartAppointmentByDoctorCommand(Guid.NewGuid(), Guid.NewGuid());
+        var command = new StartAppointmentByDoctorCommand(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7()
+        );
         var appointment = Appointment.Schedule(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0))
         );

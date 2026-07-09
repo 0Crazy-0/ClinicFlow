@@ -15,8 +15,8 @@ public class PatientPenaltyServiceTests
     public void ApplyPenalty_ShouldReturnWarningOnly_WhenFirstOffense()
     {
         // Arrange
-        var patientId = Guid.NewGuid();
-        var appointmentId = Guid.NewGuid();
+        var patientId = Guid.CreateVersion7();
+        var appointmentId = Guid.CreateVersion7();
 
         // Act
         var result = PatientPenaltyService
@@ -40,10 +40,10 @@ public class PatientPenaltyServiceTests
     public void ApplyPenalty_ShouldReturnMinorBlock_WhenSecondOffense()
     {
         // Arrange
-        var patientId = Guid.NewGuid();
+        var patientId = Guid.CreateVersion7();
         var existingPenalties = new List<PatientPenalty>
         {
-            PatientPenalty.CreateAutomaticWarning(patientId, Guid.NewGuid(), "Warning 1"),
+            PatientPenalty.CreateAutomaticWarning(patientId, Guid.CreateVersion7(), "Warning 1"),
         };
 
         // Act
@@ -51,7 +51,7 @@ public class PatientPenaltyServiceTests
             .ApplyPenalty(
                 patientId,
                 existingPenalties,
-                Guid.NewGuid(),
+                Guid.CreateVersion7(),
                 "Warning 2",
                 _fakeTime.GetUtcNow().UtcDateTime
             )
@@ -76,11 +76,11 @@ public class PatientPenaltyServiceTests
     public void ApplyPenalty_ShouldReturnModerateBlock_WhenThirdOffense()
     {
         // Arrange
-        var patientId = Guid.NewGuid();
+        var patientId = Guid.CreateVersion7();
         var existingPenalties = new List<PatientPenalty>
         {
-            PatientPenalty.CreateAutomaticWarning(patientId, Guid.NewGuid(), "Warning 1"),
-            PatientPenalty.CreateAutomaticWarning(patientId, Guid.NewGuid(), "Warning 2"),
+            PatientPenalty.CreateAutomaticWarning(patientId, Guid.CreateVersion7(), "Warning 1"),
+            PatientPenalty.CreateAutomaticWarning(patientId, Guid.CreateVersion7(), "Warning 2"),
             PatientPenalty.CreateAutomaticBlock(
                 patientId,
                 PenaltyReasons.AutomaticBlock,
@@ -94,7 +94,7 @@ public class PatientPenaltyServiceTests
             .ApplyPenalty(
                 patientId,
                 existingPenalties,
-                Guid.NewGuid(),
+                Guid.CreateVersion7(),
                 "Warning 3",
                 _fakeTime.GetUtcNow().UtcDateTime
             )
@@ -118,18 +118,18 @@ public class PatientPenaltyServiceTests
     public void ApplyPenalty_ShouldReturnSevereBlock_WhenFourthOffenseOrMore()
     {
         // Arrange
-        var patientId = Guid.NewGuid();
+        var patientId = Guid.CreateVersion7();
         var existingPenalties = new List<PatientPenalty>
         {
-            PatientPenalty.CreateAutomaticWarning(patientId, Guid.NewGuid(), "Warning 1"),
-            PatientPenalty.CreateAutomaticWarning(patientId, Guid.NewGuid(), "Warning 2"),
+            PatientPenalty.CreateAutomaticWarning(patientId, Guid.CreateVersion7(), "Warning 1"),
+            PatientPenalty.CreateAutomaticWarning(patientId, Guid.CreateVersion7(), "Warning 2"),
             PatientPenalty.CreateAutomaticBlock(
                 patientId,
                 PenaltyReasons.AutomaticBlock,
                 BlockDuration.Minor,
                 _fakeTime.GetUtcNow().UtcDateTime.AddDays(-25)
             ),
-            PatientPenalty.CreateAutomaticWarning(patientId, Guid.NewGuid(), "Warning 3"),
+            PatientPenalty.CreateAutomaticWarning(patientId, Guid.CreateVersion7(), "Warning 3"),
             PatientPenalty.CreateAutomaticBlock(
                 patientId,
                 PenaltyReasons.AutomaticBlock,
@@ -143,7 +143,7 @@ public class PatientPenaltyServiceTests
             .ApplyPenalty(
                 patientId,
                 existingPenalties,
-                Guid.NewGuid(),
+                Guid.CreateVersion7(),
                 "Warning 4",
                 _fakeTime.GetUtcNow().UtcDateTime
             )
@@ -167,10 +167,10 @@ public class PatientPenaltyServiceTests
     public void ApplyPenalty_ShouldNotReturnBlock_WhenAlreadyBlocked()
     {
         // Arrange
-        var patientId = Guid.NewGuid();
+        var patientId = Guid.CreateVersion7();
         var existingPenalties = new List<PatientPenalty>
         {
-            PatientPenalty.CreateAutomaticWarning(patientId, Guid.NewGuid(), "Warning 1"),
+            PatientPenalty.CreateAutomaticWarning(patientId, Guid.CreateVersion7(), "Warning 1"),
             PatientPenalty.CreateAutomaticBlock(
                 patientId,
                 PenaltyReasons.AutomaticBlock,
@@ -184,7 +184,7 @@ public class PatientPenaltyServiceTests
             .ApplyPenalty(
                 patientId,
                 existingPenalties,
-                Guid.NewGuid(),
+                Guid.CreateVersion7(),
                 "Warning 2",
                 _fakeTime.GetUtcNow().UtcDateTime
             )

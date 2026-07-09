@@ -48,20 +48,20 @@ public class RescheduleByStaffCommandHandlerTests
         var newStartTime = new TimeOnly(10, 0);
         var newEndTime = new TimeOnly(11, 0);
         var command = new RescheduleByStaffCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             newDate,
             newStartTime,
             newEndTime,
             false
         );
 
-        var doctorId = Guid.NewGuid();
-        var patientId = Guid.NewGuid();
+        var doctorId = Guid.CreateVersion7();
+        var patientId = Guid.CreateVersion7();
         var appointment = Appointment.Schedule(
             patientId,
             doctorId,
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0))
         );
@@ -129,8 +129,8 @@ public class RescheduleByStaffCommandHandlerTests
     {
         // Arrange
         var command = new RescheduleByStaffCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0),
@@ -158,8 +158,8 @@ public class RescheduleByStaffCommandHandlerTests
     {
         // Arrange
         var command = new RescheduleByStaffCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0),
@@ -192,8 +192,8 @@ public class RescheduleByStaffCommandHandlerTests
     {
         // Arrange
         var command = new RescheduleByStaffCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0),
@@ -230,8 +230,8 @@ public class RescheduleByStaffCommandHandlerTests
     {
         // Arrange
         var command = new RescheduleByStaffCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0),
@@ -274,8 +274,8 @@ public class RescheduleByStaffCommandHandlerTests
     {
         // Arrange
         var command = new RescheduleByStaffCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0),
@@ -350,8 +350,8 @@ public class RescheduleByStaffCommandHandlerTests
     {
         // Arrange
         var command = new RescheduleByStaffCommand(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0),
@@ -407,26 +407,26 @@ public class RescheduleByStaffCommandHandlerTests
 
     private Appointment CreateAppointment() =>
         Appointment.Schedule(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0))
         );
 
     private static Doctor CreateDoctor() =>
         Doctor.Create(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("1234567"),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "555-1234",
             ConsultationRoom.Create(1, "Room A", 1)
         );
 
     private Patient CreatePatient() =>
         Patient.CreateSelf(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             PersonName.Create("Test"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime

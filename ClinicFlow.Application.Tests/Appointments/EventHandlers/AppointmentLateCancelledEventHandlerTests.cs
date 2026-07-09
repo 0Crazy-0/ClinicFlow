@@ -36,24 +36,24 @@ public class AppointmentLateCancelledEventHandlerTests
     public async Task Handle_ShouldCreatePenaltiesWithCorrectProperties()
     {
         // Arrange
-        var patientId = Guid.NewGuid();
+        var patientId = Guid.CreateVersion7();
         var appointment = Appointment.Schedule(
             patientId,
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime),
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
 
         appointment.CancelLate(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Late",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddHours(-2))
         );
 
         var domainEvent = new AppointmentLateCancelledEvent(
             appointment,
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Too late"
         );
 
@@ -91,24 +91,24 @@ public class AppointmentLateCancelledEventHandlerTests
     public async Task Handle_ShouldCallRepositoryCreateRangeAndSaveChanges()
     {
         // Arrange
-        var patientId = Guid.NewGuid();
+        var patientId = Guid.CreateVersion7();
         var appointment = Appointment.Schedule(
             patientId,
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime),
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
 
         appointment.CancelLate(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Late",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddHours(-2))
         );
 
         var domainEvent = new AppointmentLateCancelledEvent(
             appointment,
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             "Too late"
         );
 

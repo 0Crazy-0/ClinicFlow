@@ -30,11 +30,14 @@ public class UpdatePatientNotesByStaffCommandHandlerTests
     public async Task Handle_ShouldUpdatePatientNotes_WhenValidRequest()
     {
         // Arrange
-        var command = new UpdatePatientNotesByStaffCommand(Guid.NewGuid(), "Updated by staff");
+        var command = new UpdatePatientNotesByStaffCommand(
+            Guid.CreateVersion7(),
+            "Updated by staff"
+        );
         var appointment = Appointment.Schedule(
-            Guid.NewGuid(),
-            Guid.NewGuid(),
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0))
         );
@@ -56,7 +59,7 @@ public class UpdatePatientNotesByStaffCommandHandlerTests
     public async Task Handle_ShouldThrowEntityNotFoundException_WhenAppointmentNotFound()
     {
         // Arrange
-        var command = new UpdatePatientNotesByStaffCommand(Guid.NewGuid(), "Notes");
+        var command = new UpdatePatientNotesByStaffCommand(Guid.CreateVersion7(), "Notes");
 
         _appointmentRepositoryMock
             .Setup(r => r.GetByIdAsync(command.AppointmentId, It.IsAny<CancellationToken>()))

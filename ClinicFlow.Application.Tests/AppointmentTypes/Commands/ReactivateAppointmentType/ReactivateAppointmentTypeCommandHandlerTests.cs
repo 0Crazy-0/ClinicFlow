@@ -62,7 +62,7 @@ public class ReactivateAppointmentTypeCommandHandlerTests
     public async Task Handle_ShouldThrowEntityNotFoundException_WhenNotFound()
     {
         // Arrange
-        var command = new ReactivateAppointmentTypeCommand(Guid.NewGuid());
+        var command = new ReactivateAppointmentTypeCommand(Guid.CreateVersion7());
 
         _appointmentTypeRepositoryMock
             .Setup(x =>

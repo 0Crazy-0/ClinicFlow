@@ -35,7 +35,7 @@ public class DoctorSuspendedEventHandlerTests
     public async Task Handle_ShouldTransitionAllFutureAppointmentsToRequiresReassignment()
     {
         // Arrange
-        var doctorId = Guid.NewGuid();
+        var doctorId = Guid.CreateVersion7();
         var referenceDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
         var appointment1 = CreateScheduledAppointment(doctorId, referenceDate.AddDays(1));
         var appointment2 = CreateScheduledAppointment(doctorId, referenceDate.AddDays(5));
@@ -67,7 +67,7 @@ public class DoctorSuspendedEventHandlerTests
     public async Task Handle_ShouldCallSaveChanges_WhenDoctorHasNoFutureAppointments()
     {
         // Arrange
-        var doctorId = Guid.NewGuid();
+        var doctorId = Guid.CreateVersion7();
 
         _appointmentRepositoryMock
             .Setup(x =>
@@ -91,9 +91,9 @@ public class DoctorSuspendedEventHandlerTests
 
     private static Appointment CreateScheduledAppointment(Guid doctorId, DateOnly scheduledDate) =>
         Appointment.Schedule(
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             doctorId,
-            Guid.NewGuid(),
+            Guid.CreateVersion7(),
             scheduledDate,
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
