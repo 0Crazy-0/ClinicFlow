@@ -18,7 +18,7 @@ public class AppointmentNoShowTests
     public void MarkAsNoShowByStaff_ShouldSucceed()
     {
         // Arrange
-        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2));
+        var appointment = CreateAppointment();
 
         // Act
         appointment.MarkAsNoShowByStaff();
@@ -32,7 +32,7 @@ public class AppointmentNoShowTests
     public void MarkAsNoShowByDoctor_ShouldSucceed_WhenDoctorIdMatches()
     {
         // Arrange
-        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2));
+        var appointment = CreateAppointment();
 
         // Act
         appointment.MarkAsNoShowByDoctor(appointment.DoctorId);
@@ -46,7 +46,7 @@ public class AppointmentNoShowTests
     public void MarkAsNoShowByDoctor_ShouldThrowUnauthorized_WhenDoctorIdDoesNotMatch()
     {
         // Arrange
-        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2));
+        var appointment = CreateAppointment();
 
         // Act
         var act = () => appointment.MarkAsNoShowByDoctor(Guid.CreateVersion7());
@@ -61,7 +61,7 @@ public class AppointmentNoShowTests
     public void MarkAsNoShowByStaff_ShouldSetStatusToNoShow_WhenStatusIsScheduled()
     {
         // Arrange
-        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var appointment = CreateAppointment();
 
         appointment.ClearDomainEvents();
 
@@ -77,7 +77,7 @@ public class AppointmentNoShowTests
     public void MarkAsNoShowByStaff_ShouldThrowException_WhenStatusIsCancelled()
     {
         // Arrange
-        var appointment = CreateAppointment(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2));
+        var appointment = CreateAppointment();
 
         appointment.Cancel(
             Guid.CreateVersion7(),
@@ -93,15 +93,15 @@ public class AppointmentNoShowTests
             .WithMessage(DomainErrors.Appointment.CannotMarkNoShow);
     }
 
-    private static Appointment CreateAppointment(DateTime scheduledDateTime) =>
+    private Appointment CreateAppointment() =>
         Appointment.Schedule(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
-            DateOnly.FromDateTime(scheduledDateTime),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2)),
             TimeRange.Create(
-                TimeOnly.FromDateTime(scheduledDateTime),
-                TimeOnly.FromDateTime(scheduledDateTime.AddHours(1))
+                TimeOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2)),
+                TimeOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2).AddHours(1))
             )
         );
 }

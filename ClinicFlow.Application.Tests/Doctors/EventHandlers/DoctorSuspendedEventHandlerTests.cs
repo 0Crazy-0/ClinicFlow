@@ -36,9 +36,8 @@ public class DoctorSuspendedEventHandlerTests
     {
         // Arrange
         var doctorId = Guid.CreateVersion7();
-        var referenceDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
-        var appointment1 = CreateScheduledAppointment(doctorId, referenceDate.AddDays(1));
-        var appointment2 = CreateScheduledAppointment(doctorId, referenceDate.AddDays(5));
+        var appointment1 = CreateFutureScheduledAppointment(doctorId);
+        var appointment2 = CreateFutureScheduledAppointment(doctorId);
 
         _appointmentRepositoryMock
             .Setup(x =>
@@ -89,12 +88,12 @@ public class DoctorSuspendedEventHandlerTests
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
-    private static Appointment CreateScheduledAppointment(Guid doctorId, DateOnly scheduledDate) =>
+    private Appointment CreateFutureScheduledAppointment(Guid doctorId) =>
         Appointment.Schedule(
             Guid.CreateVersion7(),
             doctorId,
             Guid.CreateVersion7(),
-            scheduledDate,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime),
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
 }

@@ -27,10 +27,7 @@ public class ScheduleByPatientTests
             AppointmentSchedulingService.ScheduleByPatient(
                 null!,
                 CreateValidPatientSchedulingArgs(),
-                new PatientSchedulingContext
-                {
-                    DoctorSchedule = CreateSchedule(Guid.CreateVersion7(), DayOfWeek.Monday),
-                },
+                new PatientSchedulingContext { DoctorSchedule = CreateSchedule() },
                 SchedulingClearance.Granted()
             );
 
@@ -48,10 +45,7 @@ public class ScheduleByPatientTests
             AppointmentSchedulingService.ScheduleByPatient(
                 CreateAppointmentType(),
                 null!,
-                new PatientSchedulingContext
-                {
-                    DoctorSchedule = CreateSchedule(Guid.CreateVersion7(), DayOfWeek.Monday),
-                },
+                new PatientSchedulingContext { DoctorSchedule = CreateSchedule() },
                 SchedulingClearance.Granted()
             );
 
@@ -90,10 +84,7 @@ public class ScheduleByPatientTests
                 {
                     TargetPatient = null!,
                 },
-                new PatientSchedulingContext
-                {
-                    DoctorSchedule = CreateSchedule(Guid.CreateVersion7(), DayOfWeek.Monday),
-                },
+                new PatientSchedulingContext { DoctorSchedule = CreateSchedule() },
                 SchedulingClearance.Granted()
             );
 
@@ -114,10 +105,7 @@ public class ScheduleByPatientTests
                 {
                     InitiatorPatient = null!,
                 },
-                new PatientSchedulingContext
-                {
-                    DoctorSchedule = CreateSchedule(Guid.CreateVersion7(), DayOfWeek.Monday),
-                },
+                new PatientSchedulingContext { DoctorSchedule = CreateSchedule() },
                 SchedulingClearance.Granted()
             );
 
@@ -138,10 +126,7 @@ public class ScheduleByPatientTests
                 {
                     TimeRange = null!,
                 },
-                new PatientSchedulingContext
-                {
-                    DoctorSchedule = CreateSchedule(Guid.CreateVersion7(), DayOfWeek.Monday),
-                },
+                new PatientSchedulingContext { DoctorSchedule = CreateSchedule() },
                 SchedulingClearance.Granted()
             );
 
@@ -159,10 +144,7 @@ public class ScheduleByPatientTests
             AppointmentSchedulingService.ScheduleByPatient(
                 CreateAppointmentType(),
                 CreateValidPatientSchedulingArgs(),
-                new PatientSchedulingContext
-                {
-                    DoctorSchedule = CreateSchedule(Guid.CreateVersion7(), DayOfWeek.Monday),
-                },
+                new PatientSchedulingContext { DoctorSchedule = CreateSchedule() },
                 null!
             );
 
@@ -189,10 +171,7 @@ public class ScheduleByPatientTests
             IsInitiatorPhoneVerified = true,
         };
 
-        var context = new PatientSchedulingContext
-        {
-            DoctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek),
-        };
+        var context = new PatientSchedulingContext { DoctorSchedule = CreateSchedule() };
 
         // Act
         var act = () =>
@@ -234,10 +213,7 @@ public class ScheduleByPatientTests
             IsInitiatorPhoneVerified = true,
         };
 
-        var context = new PatientSchedulingContext
-        {
-            DoctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek),
-        };
+        var context = new PatientSchedulingContext { DoctorSchedule = CreateSchedule() };
 
         // Act
         var act = () =>
@@ -282,10 +258,13 @@ public class ScheduleByPatientTests
             IsInitiatorPhoneVerified = true,
         };
 
-        var context = new PatientSchedulingContext
-        {
-            DoctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek),
-        };
+        var doctorSchedule = Schedule.Create(
+            args.DoctorId,
+            args.ScheduledDate.DayOfWeek,
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(17, 0))
+        );
+
+        var context = new PatientSchedulingContext { DoctorSchedule = doctorSchedule };
 
         // Act
         var appointment = AppointmentSchedulingService.ScheduleByPatient(
@@ -318,10 +297,7 @@ public class ScheduleByPatientTests
             IsInitiatorPhoneVerified = false,
         };
 
-        var context = new PatientSchedulingContext
-        {
-            DoctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek),
-        };
+        var context = new PatientSchedulingContext { DoctorSchedule = CreateSchedule() };
 
         // Act
         var act = () =>
@@ -361,10 +337,7 @@ public class ScheduleByPatientTests
             IsInitiatorPhoneVerified = true,
         };
 
-        var context = new PatientSchedulingContext
-        {
-            DoctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek),
-        };
+        var context = new PatientSchedulingContext { DoctorSchedule = CreateSchedule() };
 
         // Act
         var act = () =>
@@ -410,7 +383,7 @@ public class ScheduleByPatientTests
         var context = new PatientSchedulingContext
         {
             Penalties = penalties,
-            DoctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek),
+            DoctorSchedule = CreateSchedule(),
         };
 
         // Act
@@ -458,10 +431,7 @@ public class ScheduleByPatientTests
             IsInitiatorPhoneVerified = true,
         };
 
-        var context = new PatientSchedulingContext
-        {
-            DoctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek),
-        };
+        var context = new PatientSchedulingContext { DoctorSchedule = CreateSchedule() };
 
         // Act
         var act = () =>
@@ -494,10 +464,9 @@ public class ScheduleByPatientTests
             IsInitiatorPhoneVerified = true,
         };
 
-        var context = new PatientSchedulingContext
-        {
-            DoctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek),
-        };
+        var scheduleForDifferentDoctor = CreateSchedule();
+
+        var context = new PatientSchedulingContext { DoctorSchedule = scheduleForDifferentDoctor };
 
         // Act
         var act = () =>
@@ -530,10 +499,13 @@ public class ScheduleByPatientTests
             IsInitiatorPhoneVerified = true,
         };
 
-        var context = new PatientSchedulingContext
-        {
-            DoctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek),
-        };
+        var doctorSchedule = Schedule.Create(
+            args.DoctorId,
+            args.ScheduledDate.DayOfWeek,
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(17, 0))
+        );
+
+        var context = new PatientSchedulingContext { DoctorSchedule = doctorSchedule };
 
         // Act
         var appointment = AppointmentSchedulingService.ScheduleByPatient(
@@ -565,10 +537,10 @@ public class ScheduleByPatientTests
     private static TimeRange CreateTimeRange() =>
         TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0));
 
-    private static Schedule CreateSchedule(Guid doctorId, DayOfWeek dayOfWeek) =>
+    private static Schedule CreateSchedule() =>
         Schedule.Create(
-            doctorId,
-            dayOfWeek,
+            Guid.CreateVersion7(),
+            DayOfWeek.Monday,
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(17, 0))
         );
 

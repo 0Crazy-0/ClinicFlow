@@ -244,7 +244,14 @@ public class PatientTests
     {
         // Arrange
         var userId = Guid.CreateVersion7();
-        var patient = CreateFamilyMember(userId);
+
+        var patient = Patient.CreateFamilyMember(
+            userId,
+            PersonName.Create("Family Member"),
+            PatientRelationship.Child,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10)),
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
 
         // Act
         patient.RemoveFamilyMember(userId);
@@ -271,8 +278,7 @@ public class PatientTests
     public void RemoveFamilyMember_ShouldThrowException_WhenInitiatorIsUnauthorized()
     {
         // Arrange
-        var userId = Guid.CreateVersion7();
-        var patient = CreateFamilyMember(userId);
+        var patient = CreateFamilyMember();
         var anotherUserId = Guid.CreateVersion7();
 
         //Act && Assert
@@ -300,7 +306,7 @@ public class PatientTests
     public void CloseAccount_ShouldThrowException_WhenPatientIsNotPrimaryUser()
     {
         // Arrange
-        var patient = CreateFamilyMember(Guid.CreateVersion7());
+        var patient = CreateFamilyMember();
 
         // Act
         var act = () => patient.CloseAccount(false);
@@ -360,7 +366,7 @@ public class PatientTests
     public void ReactivateAsFamilyMember_ShouldUndoDeletionAndUpdateRelationship_WhenCalled()
     {
         // Arrange
-        var patient = CreateFamilyMember(Guid.CreateVersion7());
+        var patient = CreateFamilyMember();
         patient.RemoveFamilyMember(patient.UserId);
 
         // Act
@@ -375,7 +381,7 @@ public class PatientTests
     public void ReactivateAsFamilyMember_ShouldEmitPatientReactivatedEvent_WhenCalled()
     {
         // Arrange
-        var patient = CreateFamilyMember(Guid.CreateVersion7());
+        var patient = CreateFamilyMember();
         patient.RemoveFamilyMember(patient.UserId);
         patient.ClearDomainEvents();
 
@@ -390,7 +396,7 @@ public class PatientTests
     public void ReactivateAsFamilyMember_ShouldThrowException_WhenRelationshipIsSelf()
     {
         // Arrange
-        var patient = CreateFamilyMember(Guid.CreateVersion7());
+        var patient = CreateFamilyMember();
         patient.RemoveFamilyMember(patient.UserId);
 
         // Act
@@ -552,9 +558,9 @@ public class PatientTests
         return patient;
     }
 
-    private Patient CreateFamilyMember(Guid userId) =>
+    private Patient CreateFamilyMember() =>
         Patient.CreateFamilyMember(
-            userId,
+            Guid.CreateVersion7(),
             PersonName.Create("Family Member"),
             PatientRelationship.Child,
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10)),

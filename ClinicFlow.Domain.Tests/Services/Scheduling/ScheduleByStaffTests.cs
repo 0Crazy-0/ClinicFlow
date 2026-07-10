@@ -25,7 +25,7 @@ public class ScheduleByStaffTests
             AppointmentSchedulingService.ScheduleByStaff(
                 null!,
                 CreateValidStaffSchedulingArgs(),
-                CreateSchedule(Guid.CreateVersion7(), DayOfWeek.Monday),
+                CreateSchedule(),
                 SchedulingClearance.Granted()
             );
 
@@ -43,7 +43,7 @@ public class ScheduleByStaffTests
             AppointmentSchedulingService.ScheduleByStaff(
                 CreateAppointmentType(),
                 null!,
-                CreateSchedule(Guid.CreateVersion7(), DayOfWeek.Monday),
+                CreateSchedule(),
                 SchedulingClearance.Granted()
             );
 
@@ -82,7 +82,7 @@ public class ScheduleByStaffTests
                 {
                     TargetPatient = null!,
                 },
-                CreateSchedule(Guid.CreateVersion7(), DayOfWeek.Monday),
+                CreateSchedule(),
                 SchedulingClearance.Granted()
             );
 
@@ -103,7 +103,7 @@ public class ScheduleByStaffTests
                 {
                     TimeRange = null!,
                 },
-                CreateSchedule(Guid.CreateVersion7(), DayOfWeek.Monday),
+                CreateSchedule(),
                 SchedulingClearance.Granted()
             );
 
@@ -121,7 +121,7 @@ public class ScheduleByStaffTests
             AppointmentSchedulingService.ScheduleByStaff(
                 CreateAppointmentType(),
                 CreateValidStaffSchedulingArgs(),
-                CreateSchedule(Guid.CreateVersion7(), DayOfWeek.Monday),
+                CreateSchedule(),
                 null!
             );
 
@@ -153,7 +153,7 @@ public class ScheduleByStaffTests
             HasGuardianConsentVerified = false,
         };
 
-        var doctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek);
+        var doctorSchedule = CreateSchedule();
 
         // Act
         var act = () =>
@@ -202,7 +202,7 @@ public class ScheduleByStaffTests
             HasGuardianConsentVerified = false,
         };
 
-        var doctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek);
+        var doctorSchedule = CreateSchedule();
 
         // Act
         var act = () =>
@@ -235,7 +235,7 @@ public class ScheduleByStaffTests
             HasGuardianConsentVerified = false,
         };
 
-        var doctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek);
+        var doctorSchedule = CreateSchedule();
 
         // Act
         var appointment = AppointmentSchedulingService.ScheduleByStaff(
@@ -267,14 +267,14 @@ public class ScheduleByStaffTests
             HasGuardianConsentVerified = false,
         };
 
-        var doctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek);
+        var scheduleForDifferentDoctor = CreateSchedule();
 
         // Act
         var act = () =>
             AppointmentSchedulingService.ScheduleByStaff(
                 appointmentType,
                 args,
-                doctorSchedule,
+                scheduleForDifferentDoctor,
                 SchedulingClearance.Granted()
             );
 
@@ -300,7 +300,11 @@ public class ScheduleByStaffTests
             HasGuardianConsentVerified = false,
         };
 
-        var doctorSchedule = CreateSchedule(args.DoctorId, args.ScheduledDate.DayOfWeek);
+        var doctorSchedule = Schedule.Create(
+            args.DoctorId,
+            args.ScheduledDate.DayOfWeek,
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(17, 0))
+        );
 
         // Act
         var appointment = AppointmentSchedulingService.ScheduleByStaff(
@@ -326,10 +330,10 @@ public class ScheduleByStaffTests
     private static TimeRange CreateTimeRange() =>
         TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0));
 
-    private static Schedule CreateSchedule(Guid doctorId, DayOfWeek dayOfWeek) =>
+    private static Schedule CreateSchedule() =>
         Schedule.Create(
-            doctorId,
-            dayOfWeek,
+            Guid.CreateVersion7(),
+            DayOfWeek.Monday,
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(17, 0))
         );
 

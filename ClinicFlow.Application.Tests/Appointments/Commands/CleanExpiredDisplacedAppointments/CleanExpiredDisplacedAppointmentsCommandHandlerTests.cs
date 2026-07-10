@@ -30,12 +30,8 @@ public class CleanExpiredDisplacedAppointmentsCommandHandlerTests
     public async Task Handle_ShouldCancelAllExpiredDisplacedAppointments()
     {
         // Arrange
-        var appointment1 = CreateDisplacedAppointment(
-            _fakeTime.GetUtcNow().UtcDateTime.AddDays(-1)
-        );
-        var appointment2 = CreateDisplacedAppointment(
-            _fakeTime.GetUtcNow().UtcDateTime.AddDays(-3)
-        );
+        var appointment1 = CreateDisplacedAppointment();
+        var appointment2 = CreateDisplacedAppointment();
 
         _appointmentRepositoryMock
             .Setup(x =>
@@ -84,13 +80,13 @@ public class CleanExpiredDisplacedAppointmentsCommandHandlerTests
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
-    private static Appointment CreateDisplacedAppointment(DateTime scheduledDate)
+    private Appointment CreateDisplacedAppointment()
     {
         var appointment = Appointment.Schedule(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
-            DateOnly.FromDateTime(scheduledDate),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(-4)),
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
 

@@ -23,7 +23,7 @@ public class RescheduleByStaffTests
             AppointmentReschedulingService.RescheduleByStaff(
                 null!,
                 CreateValidStaffReschedulingArgs(),
-                CreateSchedule(Guid.CreateVersion7(), DayOfWeek.Monday, 9, 17),
+                CreateSchedule(),
                 SchedulingClearance.Granted()
             );
 
@@ -41,7 +41,7 @@ public class RescheduleByStaffTests
             AppointmentReschedulingService.RescheduleByStaff(
                 CreateAppointment(),
                 null!,
-                CreateSchedule(Guid.CreateVersion7(), DayOfWeek.Monday, 9, 17),
+                CreateSchedule(),
                 SchedulingClearance.Granted()
             );
 
@@ -80,7 +80,7 @@ public class RescheduleByStaffTests
                 {
                     NewTimeRange = null!,
                 },
-                CreateSchedule(Guid.CreateVersion7(), DayOfWeek.Monday, 9, 17),
+                CreateSchedule(),
                 SchedulingClearance.Granted()
             );
 
@@ -98,7 +98,7 @@ public class RescheduleByStaffTests
             AppointmentReschedulingService.RescheduleByStaff(
                 CreateAppointment(),
                 CreateValidStaffReschedulingArgs(),
-                CreateSchedule(Guid.CreateVersion7(), DayOfWeek.Monday, 9, 17),
+                CreateSchedule(),
                 null!
             );
 
@@ -117,11 +117,11 @@ public class RescheduleByStaffTests
         var args = new StaffReschedulingArgs
         {
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
-            NewTimeRange = CreateTimeRange(18, 19),
+            NewTimeRange = CreateTimeRange(),
             IsOverbook = true,
         };
 
-        var doctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek, 9, 17);
+        var doctorSchedule = CreateSchedule();
 
         // Act
         AppointmentReschedulingService.RescheduleByStaff(
@@ -146,18 +146,18 @@ public class RescheduleByStaffTests
         var args = new StaffReschedulingArgs
         {
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
-            NewTimeRange = CreateTimeRange(18, 19),
+            NewTimeRange = CreateTimeRange(),
             IsOverbook = false,
         };
 
-        var doctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek, 9, 17);
+        var scheduleForDifferentDoctor = CreateSchedule();
 
         // Act
         var act = () =>
             AppointmentReschedulingService.RescheduleByStaff(
                 appointment,
                 args,
-                doctorSchedule,
+                scheduleForDifferentDoctor,
                 SchedulingClearance.Granted()
             );
 
@@ -176,11 +176,15 @@ public class RescheduleByStaffTests
         var args = new StaffReschedulingArgs
         {
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
-            NewTimeRange = CreateTimeRange(10, 11),
+            NewTimeRange = TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0)),
             IsOverbook = false,
         };
 
-        var doctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek, 9, 17);
+        var doctorSchedule = Schedule.Create(
+            appointment.DoctorId,
+            args.NewDate.DayOfWeek,
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(17, 0))
+        );
 
         // Act
         AppointmentReschedulingService.RescheduleByStaff(
@@ -197,17 +201,17 @@ public class RescheduleByStaffTests
     }
 
     private static StaffReschedulingArgs CreateValidStaffReschedulingArgs() =>
-        new() { NewTimeRange = CreateTimeRange(10, 11) };
+        new() { NewTimeRange = TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0)) };
 
-    private static TimeRange CreateTimeRange(int startHour, int endHour) =>
-        TimeRange.Create(new TimeOnly(startHour, 0), new TimeOnly(endHour, 0));
+    private static TimeRange CreateTimeRange() =>
+        TimeRange.Create(new TimeOnly(18, 0), new TimeOnly(19, 0));
 
-    private static Schedule CreateSchedule(
-        Guid doctorId,
-        DayOfWeek dayOfWeek,
-        int startHour,
-        int endHour
-    ) => Schedule.Create(doctorId, dayOfWeek, CreateTimeRange(startHour, endHour));
+    private static Schedule CreateSchedule() =>
+        Schedule.Create(
+            Guid.CreateVersion7(),
+            DayOfWeek.Monday,
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(17, 0))
+        );
 
     private Appointment CreateAppointment()
     {
