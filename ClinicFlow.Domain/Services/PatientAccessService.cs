@@ -11,7 +11,7 @@ namespace ClinicFlow.Domain.Services;
 /// </summary>
 public static class PatientAccessService
 {
-    public static void EnsureCanActOnBehalfOf(Patient initiator, Patient target)
+    public static void VerifyAccess(Patient initiator, Patient target)
     {
         if (initiator is null || target is null)
             throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);

@@ -44,7 +44,7 @@ public static class AppointmentSchedulingService
         if (clearance is null)
             throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
 
-        PatientAccessService.EnsureCanActOnBehalfOf(args.InitiatorPatient, args.TargetPatient);
+        PatientAccessService.VerifyAccess(args.InitiatorPatient, args.TargetPatient);
 
         if (!args.IsInitiatorPhoneVerified)
             throw new AppointmentSchedulingUnauthorizedException(

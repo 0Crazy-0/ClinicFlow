@@ -15,13 +15,13 @@ public class PatientAccessServiceTests
     private readonly FakeTimeProvider _fakeTime = new();
 
     [Fact]
-    public void EnsureCanActOnBehalfOf_ShouldThrowDomainValidationException_WhenInitiatorIsNull()
+    public void VerifyAccess_ShouldThrowDomainValidationException_WhenInitiatorIsNull()
     {
         // Arrange
         var target = CreateSelfPatient(Guid.CreateVersion7());
 
         // Act
-        var act = () => PatientAccessService.EnsureCanActOnBehalfOf(null!, target);
+        var act = () => PatientAccessService.VerifyAccess(null!, target);
 
         // Assert
         act.Should()
@@ -30,13 +30,13 @@ public class PatientAccessServiceTests
     }
 
     [Fact]
-    public void EnsureCanActOnBehalfOf_ShouldThrowDomainValidationException_WhenTargetIsNull()
+    public void VerifyAccess_ShouldThrowDomainValidationException_WhenTargetIsNull()
     {
         // Arrange
         var initiator = CreateSelfPatient(Guid.CreateVersion7());
 
         // Act
-        var act = () => PatientAccessService.EnsureCanActOnBehalfOf(initiator, null!);
+        var act = () => PatientAccessService.VerifyAccess(initiator, null!);
 
         // Assert
         act.Should()
@@ -45,7 +45,7 @@ public class PatientAccessServiceTests
     }
 
     [Fact]
-    public void EnsureCanActOnBehalfOf_ShouldNotThrow_WhenInitiatorIsSelf()
+    public void VerifyAccess_ShouldNotThrow_WhenInitiatorIsSelf()
     {
         // Arrange
         var userId = Guid.CreateVersion7();
@@ -53,14 +53,14 @@ public class PatientAccessServiceTests
         var target = initiator;
 
         // Act
-        var act = () => PatientAccessService.EnsureCanActOnBehalfOf(initiator, target);
+        var act = () => PatientAccessService.VerifyAccess(initiator, target);
 
         // Assert
         act.Should().NotThrow();
     }
 
     [Fact]
-    public void EnsureCanActOnBehalfOf_ShouldNotThrow_WhenInitiatorIsParent()
+    public void VerifyAccess_ShouldNotThrow_WhenInitiatorIsParent()
     {
         // Arrange
         var userId = Guid.CreateVersion7();
@@ -68,21 +68,21 @@ public class PatientAccessServiceTests
         var target = CreateFamilyMember(userId, PatientRelationship.Child, 10);
 
         // Act
-        var act = () => PatientAccessService.EnsureCanActOnBehalfOf(initiator, target);
+        var act = () => PatientAccessService.VerifyAccess(initiator, target);
 
         // Assert
         act.Should().NotThrow();
     }
 
     [Fact]
-    public void EnsureCanActOnBehalfOf_ShouldThrowPatientAccessUnauthorizedException_WhenUserIdsDoNotMatch()
+    public void VerifyAccess_ShouldThrowPatientAccessUnauthorizedException_WhenUserIdsDoNotMatch()
     {
         // Arrange
         var initiator = CreateSelfPatient(Guid.CreateVersion7());
         var target = CreateSelfPatient(Guid.CreateVersion7());
 
         // Act
-        var act = () => PatientAccessService.EnsureCanActOnBehalfOf(initiator, target);
+        var act = () => PatientAccessService.VerifyAccess(initiator, target);
 
         // Assert
         act.Should()
@@ -91,7 +91,7 @@ public class PatientAccessServiceTests
     }
 
     [Fact]
-    public void EnsureCanActOnBehalfOf_ShouldThrowPatientAccessUnauthorizedException_WhenInitiatorIsNotSelfOrChild()
+    public void VerifyAccess_ShouldThrowPatientAccessUnauthorizedException_WhenInitiatorIsNotSelfOrChild()
     {
         // Arrange
         var userId = Guid.CreateVersion7();
@@ -99,7 +99,7 @@ public class PatientAccessServiceTests
         var target = CreateFamilyMember(userId, PatientRelationship.Child, 10);
 
         // Act
-        var act = () => PatientAccessService.EnsureCanActOnBehalfOf(initiator, target);
+        var act = () => PatientAccessService.VerifyAccess(initiator, target);
 
         // Assert
         act.Should()
