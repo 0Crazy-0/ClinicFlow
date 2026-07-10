@@ -121,17 +121,20 @@ Mark only what applies — do not over-select.
 
 1. **Be direct** — list the specific test classes that verify the changes. Do not describe what to "test manually" or say "run `dotnet test`".
 
-2. **Layer separation** — only separate into "Domain" and "Application" sections when the PR has meaningful, testable changes in **both** layers. If changes are concentrated in a single layer, list the test classes directly without section headers.
+2. **Tie tests to the change (when applicable)** — when the PR refactors production code or existing test code, each affected test class description must explain what it verifies *in relation to the specific change made*, not just describe the class's general purpose. E.g. instead of "Verifies the cancellation logic", write "Verifies the cancellation logic passes successfully with the newly modified object initializers for patient, doctor, and staff arguments."
+   - This does NOT apply when the PR adds brand-new test classes/methods for previously uncovered scenarios — in that case, simply describe what the new test verifies, since there is no prior behavior to tie it to.
 
-3. **No method-level instructions** — reference test classes, not individual test methods. Do not say "test the `Cancel` method".
+3. **Layer separation** — only separate into "Domain" and "Application" sections when the PR has meaningful, testable changes in **both** layers. If changes are concentrated in a single layer, list the test classes directly without section headers.
 
-4. **Documentation-only PRs** — when the PR exclusively modifies XML documentation (`/// <summary>`, `/// <remarks>`, `/// <exception>`, etc.) with zero functional code changes, use this exact message instead of listing test classes:
+4. **No method-level instructions** — reference test classes, not individual test methods. Do not say "test the `Cancel` method".
+
+5. **Documentation-only PRs** — when the PR exclusively modifies XML documentation (`/// <summary>`, `/// <remarks>`, `/// <exception>`, etc.) with zero functional code changes, use this exact message instead of listing test classes:
 
 ```
 No functional tests are required as these changes are strictly limited to XML documentation updates.
 ```
 
-5. **AGENTS.md-only PRs** — when the PR exclusively modifies the `AGENTS.md` file, use this exact message:
+6. **AGENTS.md-only PRs** — when the PR exclusively modifies the `AGENTS.md` file, use this exact message:
 
 ```
 No functional tests are required as these changes are strictly limited to project documentation updates in AGENTS.md.
