@@ -25,7 +25,7 @@ public class RescheduleByDoctorTests
             AppointmentReschedulingService.RescheduleByDoctor(
                 null!,
                 CreateValidDoctorReschedulingArgs(),
-                CreateSchedule(Guid.CreateVersion7(), DayOfWeek.Monday, 9, 17),
+                CreateSchedule(),
                 SchedulingClearance.Granted()
             );
 
@@ -41,9 +41,9 @@ public class RescheduleByDoctorTests
         // Arrange & Act
         var act = () =>
             AppointmentReschedulingService.RescheduleByDoctor(
-                CreateAppointment(Guid.CreateVersion7()),
+                CreateAppointment(),
                 null!,
-                CreateSchedule(Guid.CreateVersion7(), DayOfWeek.Monday, 9, 17),
+                CreateSchedule(),
                 SchedulingClearance.Granted()
             );
 
@@ -59,7 +59,7 @@ public class RescheduleByDoctorTests
         // Arrange & Act
         var act = () =>
             AppointmentReschedulingService.RescheduleByDoctor(
-                CreateAppointment(Guid.CreateVersion7()),
+                CreateAppointment(),
                 CreateValidDoctorReschedulingArgs(),
                 null!,
                 SchedulingClearance.Granted()
@@ -77,12 +77,12 @@ public class RescheduleByDoctorTests
         // Arrange & Act
         var act = () =>
             AppointmentReschedulingService.RescheduleByDoctor(
-                CreateAppointment(Guid.CreateVersion7()),
+                CreateAppointment(),
                 CreateValidDoctorReschedulingArgs() with
                 {
                     InitiatorDoctor = null!,
                 },
-                CreateSchedule(Guid.CreateVersion7(), DayOfWeek.Monday, 9, 17),
+                CreateSchedule(),
                 SchedulingClearance.Granted()
             );
 
@@ -98,12 +98,12 @@ public class RescheduleByDoctorTests
         // Arrange & Act
         var act = () =>
             AppointmentReschedulingService.RescheduleByDoctor(
-                CreateAppointment(Guid.CreateVersion7()),
+                CreateAppointment(),
                 CreateValidDoctorReschedulingArgs() with
                 {
                     NewTimeRange = null!,
                 },
-                CreateSchedule(Guid.CreateVersion7(), DayOfWeek.Monday, 9, 17),
+                CreateSchedule(),
                 SchedulingClearance.Granted()
             );
 
@@ -119,9 +119,9 @@ public class RescheduleByDoctorTests
         // Arrange & Act
         var act = () =>
             AppointmentReschedulingService.RescheduleByDoctor(
-                CreateAppointment(Guid.CreateVersion7()),
+                CreateAppointment(),
                 CreateValidDoctorReschedulingArgs(),
-                CreateSchedule(Guid.CreateVersion7(), DayOfWeek.Monday, 9, 17),
+                CreateSchedule(),
                 null!
             );
 
@@ -135,8 +135,8 @@ public class RescheduleByDoctorTests
     public void RescheduleByDoctor_ShouldThrowUnauthorized_WhenDoctorMismatch()
     {
         // Arrange
-        var appointment = CreateAppointment(Guid.CreateVersion7());
-        var invalidDoctor = CreateDoctor(Guid.CreateVersion7(), Guid.CreateVersion7());
+        var appointment = CreateAppointment();
+        var invalidDoctor = CreateDoctor(Guid.CreateVersion7());
         var args = new DoctorReschedulingArgs
         {
             InitiatorDoctor = invalidDoctor,
@@ -145,7 +145,7 @@ public class RescheduleByDoctorTests
             IsOverbook = false,
         };
 
-        var doctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek, 9, 17);
+        var doctorSchedule = CreateSchedule();
 
         // Act
         var act = () =>
@@ -169,7 +169,7 @@ public class RescheduleByDoctorTests
         var doctorId = Guid.CreateVersion7();
         var appointment = CreateAppointment(doctorId);
 
-        var doctor = CreateDoctor(doctorId, Guid.CreateVersion7());
+        var doctor = CreateDoctor(doctorId);
         var args = new DoctorReschedulingArgs
         {
             InitiatorDoctor = doctor,
@@ -178,7 +178,7 @@ public class RescheduleByDoctorTests
             IsOverbook = true,
         };
 
-        var doctorSchedule = CreateSchedule(doctorId, args.NewDate.DayOfWeek, 9, 17);
+        var doctorSchedule = CreateSchedule();
 
         // Act
         AppointmentReschedulingService.RescheduleByDoctor(
@@ -200,17 +200,17 @@ public class RescheduleByDoctorTests
         // Arrange
         var doctorId = Guid.CreateVersion7();
         var appointment = CreateAppointment(doctorId);
-        var doctor = CreateDoctor(doctorId, Guid.CreateVersion7());
+        var doctor = CreateDoctor(doctorId);
 
         var args = new DoctorReschedulingArgs
         {
             InitiatorDoctor = doctor,
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
-            NewTimeRange = CreateTimeRange(18, 19), // 6pm - 7pm
+            NewTimeRange = CreateTimeRange(18, 19),
             IsOverbook = false,
         };
 
-        var doctorSchedule = CreateSchedule(doctorId, args.NewDate.DayOfWeek, 9, 17);
+        var doctorSchedule = CreateSchedule();
 
         // Act
         var act = () =>
@@ -233,7 +233,7 @@ public class RescheduleByDoctorTests
         // Arrange
         var doctorId = Guid.CreateVersion7();
         var appointment = CreateAppointment(doctorId);
-        var doctor = CreateDoctor(doctorId, Guid.CreateVersion7());
+        var doctor = CreateDoctor(doctorId);
 
         var args = new DoctorReschedulingArgs
         {
@@ -243,7 +243,11 @@ public class RescheduleByDoctorTests
             IsOverbook = false,
         };
 
-        var doctorSchedule = CreateSchedule(doctorId, args.NewDate.DayOfWeek, 9, 17);
+        var doctorSchedule = Schedule.Create(
+            doctorId,
+            args.NewDate.DayOfWeek,
+            CreateTimeRange(9, 17)
+        );
 
         // Act
         AppointmentReschedulingService.RescheduleByDoctor(
@@ -262,24 +266,20 @@ public class RescheduleByDoctorTests
     private static DoctorReschedulingArgs CreateValidDoctorReschedulingArgs() =>
         new()
         {
-            InitiatorDoctor = CreateDoctor(Guid.CreateVersion7(), Guid.CreateVersion7()),
+            InitiatorDoctor = CreateDoctor(Guid.CreateVersion7()),
             NewTimeRange = CreateTimeRange(10, 11),
         };
 
     private static TimeRange CreateTimeRange(int startHour, int endHour) =>
         TimeRange.Create(new TimeOnly(startHour, 0), new TimeOnly(endHour, 0));
 
-    private static Schedule CreateSchedule(
-        Guid doctorId,
-        DayOfWeek dayOfWeek,
-        int startHour,
-        int endHour
-    ) => Schedule.Create(doctorId, dayOfWeek, CreateTimeRange(startHour, endHour));
+    private static Schedule CreateSchedule() =>
+        Schedule.Create(Guid.CreateVersion7(), DayOfWeek.Monday, CreateTimeRange(9, 17));
 
-    private static Doctor CreateDoctor(Guid id, Guid userId)
+    private static Doctor CreateDoctor(Guid id)
     {
         var doctor = Doctor.Create(
-            userId,
+            Guid.CreateVersion7(),
             PersonName.Create("Test Doctor"),
             MedicalLicenseNumber.Create("12345"),
             Guid.CreateVersion7(),
@@ -295,6 +295,21 @@ public class RescheduleByDoctorTests
         var appointment = Appointment.Schedule(
             Guid.CreateVersion7(),
             doctorId,
+            Guid.CreateVersion7(),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2)),
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+        );
+
+        appointment.ClearDomainEvents();
+
+        return appointment;
+    }
+
+    private Appointment CreateAppointment()
+    {
+        var appointment = Appointment.Schedule(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2)),
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))

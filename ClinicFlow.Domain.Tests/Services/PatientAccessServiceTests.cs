@@ -18,7 +18,7 @@ public class PatientAccessServiceTests
     public void EnsureCanActOnBehalfOf_ShouldThrowDomainValidationException_WhenInitiatorIsNull()
     {
         // Arrange
-        var target = CreateSelfPatient(Guid.CreateVersion7(), 30);
+        var target = CreateSelfPatient(Guid.CreateVersion7());
 
         // Act
         var act = () => PatientAccessService.EnsureCanActOnBehalfOf(null!, target);
@@ -33,7 +33,7 @@ public class PatientAccessServiceTests
     public void EnsureCanActOnBehalfOf_ShouldThrowDomainValidationException_WhenTargetIsNull()
     {
         // Arrange
-        var initiator = CreateSelfPatient(Guid.CreateVersion7(), 30);
+        var initiator = CreateSelfPatient(Guid.CreateVersion7());
 
         // Act
         var act = () => PatientAccessService.EnsureCanActOnBehalfOf(initiator, null!);
@@ -49,7 +49,7 @@ public class PatientAccessServiceTests
     {
         // Arrange
         var userId = Guid.CreateVersion7();
-        var initiator = CreateSelfPatient(userId, 30);
+        var initiator = CreateSelfPatient(userId);
         var target = initiator;
 
         // Act
@@ -64,7 +64,7 @@ public class PatientAccessServiceTests
     {
         // Arrange
         var userId = Guid.CreateVersion7();
-        var initiator = CreateSelfPatient(userId, 30);
+        var initiator = CreateSelfPatient(userId);
         var target = CreateFamilyMember(userId, PatientRelationship.Child, 10);
 
         // Act
@@ -78,8 +78,8 @@ public class PatientAccessServiceTests
     public void EnsureCanActOnBehalfOf_ShouldThrowPatientAccessUnauthorizedException_WhenUserIdsDoNotMatch()
     {
         // Arrange
-        var initiator = CreateSelfPatient(Guid.CreateVersion7(), 30);
-        var target = CreateSelfPatient(Guid.CreateVersion7(), 30);
+        var initiator = CreateSelfPatient(Guid.CreateVersion7());
+        var target = CreateSelfPatient(Guid.CreateVersion7());
 
         // Act
         var act = () => PatientAccessService.EnsureCanActOnBehalfOf(initiator, target);
@@ -107,11 +107,11 @@ public class PatientAccessServiceTests
             .WithMessage(DomainErrors.Patient.UnauthorizedAccess);
     }
 
-    private Patient CreateSelfPatient(Guid userId, int age) =>
+    private Patient CreateSelfPatient(Guid userId) =>
         Patient.CreateSelf(
             userId,
             PersonName.Create("Test"),
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-age)),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
 

@@ -23,8 +23,8 @@ public class GetMedicalRecordsByPatientIdQueryHandlerTests
         // Arrange
         var patientId = Guid.CreateVersion7();
         var request = new GetMedicalRecordsByPatientIdQuery(patientId, 1, 10);
-        var record1 = CreateMedicalRecord(patientId, "Checkup");
-        var record2 = CreateMedicalRecord(patientId, "Follow-up");
+        var record1 = CreateMedicalRecord(patientId);
+        var record2 = CreateMedicalRecord(patientId);
 
         record1.AddClinicalDetail(DynamicClinicalDetail.Create("vital-signs", "{}"));
 
@@ -96,11 +96,11 @@ public class GetMedicalRecordsByPatientIdQueryHandlerTests
         );
     }
 
-    private static MedicalRecord CreateMedicalRecord(Guid patientId, string chiefComplaint) =>
+    private static MedicalRecord CreateMedicalRecord(Guid patientId) =>
         MedicalRecord.Create(
             patientId,
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
-            chiefComplaint
+            "chiefComplaint"
         );
 }
