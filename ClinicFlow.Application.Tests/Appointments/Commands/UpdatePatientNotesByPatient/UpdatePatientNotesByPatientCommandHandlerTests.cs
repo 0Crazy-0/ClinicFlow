@@ -3,6 +3,7 @@ using ClinicFlow.Application.Appointments.Commands.UpdatePatientNotesByPatient;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Exceptions.Base;
+using ClinicFlow.Domain.Exceptions.Patients;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.ValueObjects;
@@ -155,6 +156,45 @@ public class UpdatePatientNotesByPatientCommandHandlerTests
             .ThrowAsync<EntityNotFoundException>()
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(Patient));
+
+        _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldThrowPatientAccessUnauthorizedException_WhenInitiatorHasNoAccess()
+    {
+        // Arrange
+        var initiatorUserId = Guid.CreateVersion7();
+        var targetUserId = Guid.CreateVersion7();
+        var command = new UpdatePatientNotesByPatientCommand(
+            Guid.CreateVersion7(),
+            initiatorUserId,
+            "Notes"
+        );
+
+        var initiatorPatient = CreatePatientSelf(initiatorUserId);
+        var targetPatient = CreatePatientSelf(targetUserId);
+        var appointment = CreateAppointment(targetPatient.Id);
+
+        _appointmentRepositoryMock
+            .Setup(r => r.GetByIdAsync(command.AppointmentId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(appointment);
+
+        _patientRepositoryMock
+            .Setup(r => r.GetByIdAsync(appointment.PatientId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(targetPatient);
+
+        _patientRepositoryMock
+            .Setup(r => r.GetByUserIdAsync(command.InitiatorUserId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(initiatorPatient);
+
+        // Act
+        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
+
+        // Assert
+        await act.Should()
+            .ThrowAsync<PatientAccessUnauthorizedException>()
+            .WithMessage(DomainErrors.Patient.UnauthorizedAccess);
 
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }

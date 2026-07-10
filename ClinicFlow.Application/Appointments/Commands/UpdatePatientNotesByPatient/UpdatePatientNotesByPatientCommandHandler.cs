@@ -44,7 +44,7 @@ public sealed class UpdatePatientNotesByPatientCommandHandler(
                 request.InitiatorUserId
             );
 
-        PatientAccessService.EnsureCanActOnBehalfOf(initiatorPatient, targetPatient);
+        PatientAccessService.VerifyAccess(initiatorPatient, targetPatient);
 
         appointment.UpdatePatientNotes(request.Notes);
 
