@@ -929,8 +929,7 @@ public class AppointmentRepositoryTests : IAsyncLifetime
         );
 
         // Assert
-        results.Should().ContainSingle();
-        results[0].Id.Should().Be(Appointment1.Id);
+        results.Should().ContainSingle().Which.Should().BeEquivalentTo(Appointment1);
     }
 
     [Fact]
@@ -955,8 +954,7 @@ public class AppointmentRepositoryTests : IAsyncLifetime
         );
 
         // Assert
-        results.Should().ContainSingle();
-        results[0].Id.Should().Be(appointment.Id);
+        results.Should().ContainSingle().Which.Should().BeEquivalentTo(appointment);
     }
 
     [Fact]
@@ -1006,8 +1004,7 @@ public class AppointmentRepositoryTests : IAsyncLifetime
         );
 
         // Assert
-        results.Should().ContainSingle();
-        results[0].Id.Should().Be(Appointment1.Id);
+        results.Should().ContainSingle().Which.Should().BeEquivalentTo(Appointment1);
     }
 
     [Fact]

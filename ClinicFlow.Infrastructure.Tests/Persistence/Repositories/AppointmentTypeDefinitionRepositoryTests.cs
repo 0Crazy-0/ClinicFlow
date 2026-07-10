@@ -114,7 +114,7 @@ public class AppointmentTypeDefinitionRepositoryTests(PostgresFixture fixture) :
 
         // Assert
         result.Should().NotBeNull();
-        result.RequiredTemplates.Should().ContainSingle(t => t.Id == template.Id);
+        result.RequiredTemplates.Should().ContainSingle().Which.Should().BeEquivalentTo(template);
     }
 
     [Fact]
@@ -159,7 +159,7 @@ public class AppointmentTypeDefinitionRepositoryTests(PostgresFixture fixture) :
         );
 
         // Assert
-        results.Should().ContainSingle(at => at.Id == firstConsult.Id);
+        results.Should().ContainSingle().Which.Should().BeEquivalentTo(firstConsult);
     }
 
     [Fact]
@@ -200,7 +200,7 @@ public class AppointmentTypeDefinitionRepositoryTests(PostgresFixture fixture) :
         var results = await _sut.GetEligibleByAgeAsync(18, TestContext.Current.CancellationToken);
 
         // Assert
-        results.Should().ContainSingle(at => at.Id == adultOnly.Id);
+        results.Should().ContainSingle().Which.Should().BeEquivalentTo(adultOnly);
     }
 
     [Fact]
@@ -216,7 +216,7 @@ public class AppointmentTypeDefinitionRepositoryTests(PostgresFixture fixture) :
         var results = await _sut.GetEligibleByAgeAsync(12, TestContext.Current.CancellationToken);
 
         // Assert
-        results.Should().ContainSingle(at => at.Id == kidOnly.Id);
+        results.Should().ContainSingle().Which.Should().BeEquivalentTo(kidOnly);
     }
 
     [Fact]
