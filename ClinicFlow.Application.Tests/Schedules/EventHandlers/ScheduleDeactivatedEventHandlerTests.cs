@@ -89,7 +89,9 @@ public class ScheduleDeactivatedEventHandlerTests
     public async Task Handle_ShouldMarkAppointmentsAsRequiresReassignment_WhenAppointmentFallsOutsideNewSchedule()
     {
         // Arrange
-        _fakeTime.SetUtcNow(DateTimeOffset.Parse("2024-01-01T00:00:00Z")); // Monday
+        _fakeTime.SetUtcNow(
+            DateTimeOffset.Parse("2024-01-01T00:00:00Z", CultureInfo.InvariantCulture)
+        ); // Monday
 
         var doctorId = Guid.CreateVersion7();
         var mondayDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(7));
@@ -143,7 +145,9 @@ public class ScheduleDeactivatedEventHandlerTests
     public async Task Handle_ShouldNotMarkAppointment_WhenAppointmentFallsInsideNewSchedule()
     {
         // Arrange
-        _fakeTime.SetUtcNow(DateTimeOffset.Parse("2024-01-01T00:00:00Z")); // Monday
+        _fakeTime.SetUtcNow(
+            DateTimeOffset.Parse("2024-01-01T00:00:00Z", CultureInfo.InvariantCulture)
+        ); // Monday
 
         var doctorId = Guid.CreateVersion7();
         var mondayDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(7));
