@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 namespace ClinicFlow.Infrastructure.Persistence.Repositories;
 
 /// <summary>
-/// Repository implementation for <see cref="ClinicalFormTemplate"/> persistence operations.
+/// Provides the repository implementation for <see cref="ClinicalFormTemplate"/> persistence operations.
 /// </summary>
 public sealed class ClinicalFormTemplateRepository(ApplicationDbContext dbContext)
     : IClinicalFormTemplateRepository

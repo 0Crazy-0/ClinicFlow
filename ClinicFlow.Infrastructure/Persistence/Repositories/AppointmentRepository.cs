@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace ClinicFlow.Infrastructure.Persistence.Repositories;
 
 /// <summary>
-/// Repository implementation for <see cref="Appointment"/> persistence operations.
+/// Provides the repository implementation for <see cref="Appointment"/> persistence operations.
 /// </summary>
 public sealed class AppointmentRepository(ApplicationDbContext dbContext, TimeProvider timeProvider)
     : IAppointmentRepository

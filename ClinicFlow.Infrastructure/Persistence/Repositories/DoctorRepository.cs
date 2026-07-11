@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace ClinicFlow.Infrastructure.Persistence.Repositories;
 
 /// <summary>
-/// Repository implementation for <see cref="Doctor"/> persistence operations.
+/// Provides the repository implementation for <see cref="Doctor"/> persistence operations.
 /// </summary>
 public sealed class DoctorRepository(ApplicationDbContext dbContext) : IDoctorRepository
 {
