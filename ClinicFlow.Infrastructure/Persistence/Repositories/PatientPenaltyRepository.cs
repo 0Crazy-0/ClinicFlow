@@ -17,15 +17,20 @@ public sealed class PatientPenaltyRepository(ApplicationDbContext dbContext)
         CancellationToken cancellationToken = default
     ) => await dbContext.PatientPenalties.FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
 
-    public async Task CreateAsync(
-        PatientPenalty penalty,
-        CancellationToken cancellationToken = default
-    ) => await dbContext.PatientPenalties.AddAsync(penalty, cancellationToken);
+    public Task CreateAsync(PatientPenalty penalty, CancellationToken cancellationToken = default)
+    {
+        dbContext.PatientPenalties.Add(penalty);
+        return Task.CompletedTask;
+    }
 
-    public async Task CreateRangeAsync(
+    public Task CreateRangeAsync(
         IEnumerable<PatientPenalty> penalties,
         CancellationToken cancellationToken = default
-    ) => await dbContext.PatientPenalties.AddRangeAsync(penalties, cancellationToken);
+    )
+    {
+        dbContext.PatientPenalties.AddRange(penalties);
+        return Task.CompletedTask;
+    }
 
     /// <inheritdoc />
     public async Task<IReadOnlyList<PatientPenalty>> GetHistoryByPatientIdAsync(
