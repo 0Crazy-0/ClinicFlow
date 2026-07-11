@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace ClinicFlow.Infrastructure.Persistence.Repositories;
 
 /// <summary>
-/// Repository implementation for <see cref="PatientPenalty"/> persistence operations.
+/// Provides the repository implementation for <see cref="PatientPenalty"/> persistence operations.
 /// </summary>
 public sealed class PatientPenaltyRepository(ApplicationDbContext dbContext)
     : IPatientPenaltyRepository
@@ -17,15 +17,20 @@ public sealed class PatientPenaltyRepository(ApplicationDbContext dbContext)
         CancellationToken cancellationToken = default
     ) => await dbContext.PatientPenalties.FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
 
-    public async Task CreateAsync(
-        PatientPenalty penalty,
-        CancellationToken cancellationToken = default
-    ) => await dbContext.PatientPenalties.AddAsync(penalty, cancellationToken);
+    public Task CreateAsync(PatientPenalty penalty, CancellationToken cancellationToken = default)
+    {
+        dbContext.PatientPenalties.Add(penalty);
+        return Task.CompletedTask;
+    }
 
-    public async Task CreateRangeAsync(
+    public Task CreateRangeAsync(
         IEnumerable<PatientPenalty> penalties,
         CancellationToken cancellationToken = default
-    ) => await dbContext.PatientPenalties.AddRangeAsync(penalties, cancellationToken);
+    )
+    {
+        dbContext.PatientPenalties.AddRange(penalties);
+        return Task.CompletedTask;
+    }
 
     /// <inheritdoc />
     public async Task<IReadOnlyList<PatientPenalty>> GetHistoryByPatientIdAsync(
@@ -65,14 +70,8 @@ public sealed class PatientPenaltyRepository(ApplicationDbContext dbContext)
         DateOnly referenceDate,
         CancellationToken cancellationToken = default
     ) =>
-        await dbContext
-            .PatientPenalties.AsNoTracking()
-            .Where(p =>
-                p.PatientId == patientId
-                && !p.IsRemoved
-                && p.Type == PenaltyType.TemporaryBlock
-                && p.BlockedUntil > referenceDate
-            )
+        await ActiveBlocksQuery(referenceDate)
+            .Where(p => p.PatientId == patientId)
             .OrderBy(p => p.BlockedUntil)
             .ToListAsync(cancellationToken);
 
@@ -86,14 +85,7 @@ public sealed class PatientPenaltyRepository(ApplicationDbContext dbContext)
         CancellationToken cancellationToken = default
     )
     {
-        var query = dbContext
-            .PatientPenalties.AsNoTracking()
-            .Where(p =>
-                !p.IsRemoved
-                && p.Type == PenaltyType.TemporaryBlock
-                && p.BlockedUntil > referenceDate
-            );
-
+        var query = ActiveBlocksQuery(referenceDate);
         var totalCount = await query.CountAsync(cancellationToken);
         var items = await query
             .OrderBy(p => p.BlockedUntil)
@@ -126,4 +118,13 @@ public sealed class PatientPenaltyRepository(ApplicationDbContext dbContext)
 
         return (items, totalCount);
     }
+
+    private IQueryable<PatientPenalty> ActiveBlocksQuery(DateOnly referenceDate) =>
+        dbContext
+            .PatientPenalties.AsNoTracking()
+            .Where(p =>
+                !p.IsRemoved
+                && p.Type == PenaltyType.TemporaryBlock
+                && p.BlockedUntil > referenceDate
+            );
 }
