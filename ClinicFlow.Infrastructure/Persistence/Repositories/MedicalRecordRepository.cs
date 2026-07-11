@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 namespace ClinicFlow.Infrastructure.Persistence.Repositories;
 
 /// <summary>
-/// Repository implementation for <see cref="MedicalRecord"/> persistence operations.
+/// Provides the repository implementation for <see cref="MedicalRecord"/> persistence operations.
 /// </summary>
 public sealed class MedicalRecordRepository(ApplicationDbContext dbContext)
     : IMedicalRecordRepository
