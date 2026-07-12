@@ -13,8 +13,8 @@ public abstract class BaseEntity
     /// <remarks>
     /// Guid v7 identifiers encode a millisecond timestamp, so entities created within the
     /// same millisecond can be ordered arbitrarily when sorting by <see cref="Id"/>. This
-    /// property provides a database generated, gapless ordering key for deterministic
-    /// sorting and stable pagination.
+    /// property provides a database generated, strictly increasing ordering key for
+    /// deterministic sorting and stable pagination. Values may contain gaps.
     /// </remarks>
     public long SequenceNumber { get; }
 
