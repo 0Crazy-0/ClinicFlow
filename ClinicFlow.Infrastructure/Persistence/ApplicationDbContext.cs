@@ -35,6 +35,12 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         )
         {
             modelBuilder.Entity(clrType).Ignore(nameof(BaseEntity.DomainEvents));
+            modelBuilder
+                .Entity(clrType)
+                .Property(nameof(BaseEntity.SequenceNumber))
+                .ValueGeneratedOnAdd();
+
+            modelBuilder.Entity(clrType).Property(nameof(BaseEntity.Version)).IsRowVersion();
         }
 
         foreach (
