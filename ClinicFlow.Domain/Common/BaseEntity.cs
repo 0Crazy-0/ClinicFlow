@@ -6,6 +6,22 @@ namespace ClinicFlow.Domain.Common;
 public abstract class BaseEntity
 {
     public Guid Id { get; private set; }
+
+    /// <summary>
+    /// Gets the strictly increasing sequence value assigned by the database on insertion.
+    /// </summary>
+    /// <remarks>
+    /// Guid v7 identifiers encode a millisecond timestamp, so entities created within the
+    /// same millisecond can be ordered arbitrarily when sorting by <see cref="Id"/>. This
+    /// property provides a database generated, gapless ordering key for deterministic
+    /// sorting and stable pagination.
+    /// </remarks>
+    public long SequenceNumber { get; }
+
+    /// <summary>
+    /// Represents the row's concurrency token, mapped to PostgreSQL's system column "xmin".
+    /// </summary>
+    public uint Version { get; }
     private readonly IList<IDomainEvent> _domainEvents = [];
 
     /// <summary>
