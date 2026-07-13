@@ -27,6 +27,13 @@ public abstract class BaseEntity
     /// <summary>
     /// Domain events raised by this entity, pending dispatch.
     /// </summary>
+    /// <remarks>
+    /// This collection is never mapped to the database. EF Core excludes it by convention
+    /// because it exposes a read-only interface without a public setter. If the underlying
+    /// type of <see cref="IDomainEvent"/> ever changes to a concrete, mappable class, this
+    /// collection could be discovered as a navigation property through reachability. See the
+    /// architecture test that guards this invariant.
+    /// </remarks>
     public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
 
     protected BaseEntity()

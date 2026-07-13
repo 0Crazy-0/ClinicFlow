@@ -34,7 +34,6 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 .Select(e => e.ClrType)
         )
         {
-            modelBuilder.Entity(clrType).Ignore(nameof(BaseEntity.DomainEvents));
             modelBuilder
                 .Entity(clrType)
                 .Property(nameof(BaseEntity.SequenceNumber))
