@@ -40,7 +40,7 @@ public sealed class PatientPenaltyRepository(ApplicationDbContext dbContext)
         await dbContext
             .PatientPenalties.AsNoTracking()
             .Where(p => p.PatientId == patientId)
-            .OrderByDescending(p => p.Id)
+            .OrderByDescending(p => p.SequenceNumber)
             .ToListAsync(cancellationToken);
 
     /// <inheritdoc />
@@ -57,7 +57,7 @@ public sealed class PatientPenaltyRepository(ApplicationDbContext dbContext)
         var query = dbContext.PatientPenalties.AsNoTracking().Where(p => p.PatientId == patientId);
         var totalCount = await query.CountAsync(cancellationToken);
         var items = await query
-            .OrderByDescending(p => p.Id)
+            .OrderByDescending(p => p.SequenceNumber)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync(cancellationToken);
@@ -73,6 +73,7 @@ public sealed class PatientPenaltyRepository(ApplicationDbContext dbContext)
         await ActiveBlocksQuery(referenceDate)
             .Where(p => p.PatientId == patientId)
             .OrderBy(p => p.BlockedUntil)
+            .ThenBy(p => p.SequenceNumber)
             .ToListAsync(cancellationToken);
 
     public async Task<(
@@ -89,6 +90,7 @@ public sealed class PatientPenaltyRepository(ApplicationDbContext dbContext)
         var totalCount = await query.CountAsync(cancellationToken);
         var items = await query
             .OrderBy(p => p.BlockedUntil)
+            .ThenBy(p => p.SequenceNumber)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync(cancellationToken);
@@ -111,7 +113,7 @@ public sealed class PatientPenaltyRepository(ApplicationDbContext dbContext)
 
         var totalCount = await query.CountAsync(cancellationToken);
         var items = await query
-            .OrderByDescending(p => p.Id)
+            .OrderByDescending(p => p.SequenceNumber)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync(cancellationToken);

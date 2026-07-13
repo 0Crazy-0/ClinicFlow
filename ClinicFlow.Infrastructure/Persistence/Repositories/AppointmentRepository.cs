@@ -32,6 +32,7 @@ public sealed class AppointmentRepository(ApplicationDbContext dbContext, TimePr
         var totalCount = await query.CountAsync(cancellationToken);
         var items = await query
             .OrderBy(a => a.TimeRange.Start)
+            .ThenBy(a => a.SequenceNumber)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync(cancellationToken);
@@ -58,6 +59,7 @@ public sealed class AppointmentRepository(ApplicationDbContext dbContext, TimePr
         var items = await query
             .OrderBy(a => a.ScheduledDate)
             .ThenBy(a => a.TimeRange.Start)
+            .ThenBy(a => a.SequenceNumber)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync(cancellationToken);
@@ -80,6 +82,7 @@ public sealed class AppointmentRepository(ApplicationDbContext dbContext, TimePr
         var items = await query
             .OrderBy(a => a.ScheduledDate)
             .ThenBy(a => a.TimeRange.Start)
+            .ThenBy(a => a.SequenceNumber)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync(cancellationToken);
