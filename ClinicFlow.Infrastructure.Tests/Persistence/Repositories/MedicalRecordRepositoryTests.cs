@@ -81,12 +81,20 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
             "chiefComplaint 1"
         );
 
+        Context.MedicalRecords.Add(record1);
+
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
         var record2 = MedicalRecord.Create(
             patient.Id,
             doctor.Id,
             appointment2.Id,
             "chiefComplaint 2"
         );
+
+        Context.MedicalRecords.Add(record2);
+
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var record3 = MedicalRecord.Create(
             patient.Id,
@@ -95,7 +103,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
             "chiefComplaint 3"
         );
 
-        Context.MedicalRecords.AddRange(record1, record2, record3);
+        Context.MedicalRecords.Add(record3);
 
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
@@ -110,8 +118,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
         // Assert
         totalCount.Should().Be(3);
 
-        items.Should().HaveCount(2);
-        items.Should().BeInDescendingOrder(m => m.Id);
+        items.Should().BeEquivalentTo([record3, record2], options => options.WithStrictOrdering());
     }
 
     [Fact]
@@ -131,12 +138,18 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
             "chiefComplaint 1"
         );
 
+        Context.MedicalRecords.Add(record1);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
         var record2 = MedicalRecord.Create(
             patient.Id,
             doctor.Id,
             appointment2.Id,
             "chiefComplaint 2"
         );
+
+        Context.MedicalRecords.Add(record2);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var record3 = MedicalRecord.Create(
             patient.Id,
@@ -145,8 +158,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
             "chiefComplaint 3"
         );
 
-        Context.MedicalRecords.AddRange(record1, record2, record3);
-
+        Context.MedicalRecords.Add(record3);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Act
@@ -160,7 +172,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
         // Assert
         totalCount.Should().Be(3);
 
-        items.Should().HaveCount(1);
+        items.Should().ContainSingle().Which.Should().BeEquivalentTo(record1);
     }
 
     [Fact]
@@ -179,6 +191,10 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
             appointment1.Id,
             "Patient 1 complaint"
         );
+
+        Context.MedicalRecords.Add(record1);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
         var record2 = MedicalRecord.Create(
             patient2.Id,
             doctor.Id,
@@ -186,8 +202,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
             "Patient 2 complaint"
         );
 
-        Context.MedicalRecords.AddRange(record1, record2);
-
+        Context.MedicalRecords.Add(record2);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Act
@@ -201,7 +216,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
         // Assert
         totalCount.Should().Be(1);
 
-        items.Should().ContainSingle().Which.Id.Should().Be(record1.Id);
+        items.Should().ContainSingle().Which.Should().BeEquivalentTo(record1);
     }
 
     [Fact]
@@ -240,12 +255,18 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
             "chiefComplaint 1"
         );
 
+        Context.MedicalRecords.Add(record1);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
         var record2 = MedicalRecord.Create(
             patient.Id,
             doctor.Id,
             appointment2.Id,
             "chiefComplaint 2"
         );
+
+        Context.MedicalRecords.Add(record2);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var record3 = MedicalRecord.Create(
             patient.Id,
@@ -254,8 +275,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
             "chiefComplaint 3"
         );
 
-        Context.MedicalRecords.AddRange(record1, record2, record3);
-
+        Context.MedicalRecords.Add(record3);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Act
@@ -267,7 +287,9 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
         );
 
         // Assert
-        items.Should().BeInDescendingOrder(m => m.Id);
+        items
+            .Should()
+            .BeEquivalentTo([record3, record2, record1], options => options.WithStrictOrdering());
     }
 
     [Fact]
@@ -287,12 +309,18 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
             "chiefComplaint 1"
         );
 
+        Context.MedicalRecords.Add(record1);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
         var record2 = MedicalRecord.Create(
             patient.Id,
             doctor.Id,
             appointment2.Id,
             "chiefComplaint 2"
         );
+
+        Context.MedicalRecords.Add(record2);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var record3 = MedicalRecord.Create(
             patient.Id,
@@ -301,8 +329,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
             "chiefComplaint 3"
         );
 
-        Context.MedicalRecords.AddRange(record1, record2, record3);
-
+        Context.MedicalRecords.Add(record3);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Act
@@ -316,8 +343,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
         // Assert
         totalCount.Should().Be(3);
 
-        items.Should().HaveCount(2);
-        items.Should().BeInDescendingOrder(m => m.Id);
+        items.Should().BeEquivalentTo([record3, record2], options => options.WithStrictOrdering());
     }
 
     [Fact]
@@ -337,12 +363,18 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
             "chiefComplaint 1"
         );
 
+        Context.MedicalRecords.Add(record1);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
         var record2 = MedicalRecord.Create(
             patient.Id,
             doctor.Id,
             appointment2.Id,
             "chiefComplaint 2"
         );
+
+        Context.MedicalRecords.Add(record2);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var record3 = MedicalRecord.Create(
             patient.Id,
@@ -351,8 +383,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
             "chiefComplaint 3"
         );
 
-        Context.MedicalRecords.AddRange(record1, record2, record3);
-
+        Context.MedicalRecords.Add(record3);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Act
@@ -366,7 +397,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
         // Assert
         totalCount.Should().Be(3);
 
-        items.Should().HaveCount(1);
+        items.Should().ContainSingle().Which.Should().BeEquivalentTo(record1);
     }
 
     [Fact]
@@ -385,6 +416,10 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
             appointment1.Id,
             "chiefComplaint 1"
         );
+
+        Context.MedicalRecords.Add(record1);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
         var record2 = MedicalRecord.Create(
             patient.Id,
             doctor2.Id,
@@ -392,8 +427,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
             "chiefComplaint 2"
         );
 
-        Context.MedicalRecords.AddRange(record1, record2);
-
+        Context.MedicalRecords.Add(record2);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Act
@@ -407,7 +441,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
         // Assert
         totalCount.Should().Be(1);
 
-        items.Should().ContainSingle().Which.Id.Should().Be(record1.Id);
+        items.Should().ContainSingle().Which.Should().BeEquivalentTo(record1);
     }
 
     [Fact]
@@ -446,12 +480,18 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
             "chiefComplaint 1"
         );
 
+        Context.MedicalRecords.Add(record1);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
         var record2 = MedicalRecord.Create(
             patient.Id,
             doctor.Id,
             appointment2.Id,
             "chiefComplaint 2"
         );
+
+        Context.MedicalRecords.Add(record2);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var record3 = MedicalRecord.Create(
             patient.Id,
@@ -460,8 +500,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
             "chiefComplaint 3"
         );
 
-        Context.MedicalRecords.AddRange(record1, record2, record3);
-
+        Context.MedicalRecords.Add(record3);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Act
@@ -473,7 +512,9 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
         );
 
         // Assert
-        items.Should().BeInDescendingOrder(m => m.Id);
+        items
+            .Should()
+            .BeEquivalentTo([record3, record2, record1], options => options.WithStrictOrdering());
     }
 
     [Fact]

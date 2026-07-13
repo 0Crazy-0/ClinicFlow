@@ -151,7 +151,12 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
         );
 
         // Assert
-        result.Should().BeEquivalentTo([activeWarning, removedWarning, expiredBlock]);
+        result
+            .Should()
+            .BeEquivalentTo(
+                [expiredBlock, removedWarning, activeWarning],
+                options => options.WithStrictOrdering()
+            );
     }
 
     [Fact]
@@ -193,27 +198,6 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
     }
 
     [Fact]
-    public async Task GetHistoryByPatientIdAsync_ShouldReturnPenaltiesOrderedByIdDescending()
-    {
-        // Arrange
-        var patient = await CreatePatientAsync();
-        var appointment = await CreateAppointmentAsync(patient.Id);
-
-        await CreateWarningAsync(patient.Id, appointment.Id);
-        await CreateWarningAsync(patient.Id, appointment.Id);
-        await CreateWarningAsync(patient.Id, appointment.Id);
-
-        // Act
-        var result = await _sut.GetHistoryByPatientIdAsync(
-            patient.Id,
-            TestContext.Current.CancellationToken
-        );
-
-        // Assert
-        result.Should().BeInDescendingOrder(p => p.Id);
-    }
-
-    [Fact]
     public async Task GetHistoryByPatientIdPaginatedAsync_ShouldReturnPaginatedPenalties()
     {
         // Arrange
@@ -234,7 +218,9 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
 
         // Assert
         totalCount.Should().Be(3);
-        items.Should().BeEquivalentTo([warning3, warning2]);
+        items
+            .Should()
+            .BeEquivalentTo([warning3, warning2], options => options.WithStrictOrdering());
     }
 
     [Fact]
@@ -308,7 +294,12 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
         // Assert
         totalCount.Should().Be(2);
 
-        items.Should().BeEquivalentTo([removedWarning, expiredBlock]);
+        items
+            .Should()
+            .BeEquivalentTo(
+                [expiredBlock, removedWarning],
+                options => options.WithStrictOrdering()
+            );
     }
 
     [Fact]
@@ -418,9 +409,9 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
         var patient = await CreatePatientAsync();
         var referenceDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
 
-        await CreateActiveBlockAsync(patient.Id, daysFromNow: 15);
-        await CreateActiveBlockAsync(patient.Id, daysFromNow: 5);
-        await CreateActiveBlockAsync(patient.Id, daysFromNow: 10);
+        var block1 = await CreateActiveBlockAsync(patient.Id, daysFromNow: 15);
+        var block2 = await CreateActiveBlockAsync(patient.Id, daysFromNow: 5);
+        var block3 = await CreateActiveBlockAsync(patient.Id, daysFromNow: 10);
 
         // Act
         var result = await _sut.GetActiveBlocksByPatientIdAsync(
@@ -430,8 +421,9 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
         );
 
         // Assert
-        result.Should().HaveCount(3);
-        result.Should().BeInAscendingOrder(p => p.BlockedUntil);
+        result
+            .Should()
+            .BeEquivalentTo([block2, block3, block1], options => options.WithStrictOrdering());
     }
 
     [Fact]
@@ -479,7 +471,7 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
         // Assert
         totalCount.Should().Be(3);
 
-        items.Should().BeEquivalentTo([block1, block3]);
+        items.Should().BeEquivalentTo([block3, block1], options => options.WithStrictOrdering());
     }
 
     [Fact]
@@ -577,6 +569,7 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
 
         // Assert
         totalCount.Should().Be(0);
+
         items.Should().BeEmpty();
     }
 
@@ -621,7 +614,9 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
         // Assert
         totalCount.Should().Be(3);
 
-        items.Should().BeEquivalentTo([warning3, warning2]);
+        items
+            .Should()
+            .BeEquivalentTo([warning3, warning2], options => options.WithStrictOrdering());
     }
 
     [Fact]
@@ -708,6 +703,56 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
         totalCount.Should().Be(0);
 
         items.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task GetActiveBlocksByPatientIdAsync_ShouldReturnBlocksOrderedBySequenceNumberAscending_WhenBlockedUntilDatesAreEqual()
+    {
+        // Arrange
+        var patient = await CreatePatientAsync();
+        var referenceDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+
+        var block1 = await CreateActiveBlockAsync(patient.Id, daysFromNow: 5);
+        var block2 = await CreateActiveBlockAsync(patient.Id, daysFromNow: 5);
+        var block3 = await CreateActiveBlockAsync(patient.Id, daysFromNow: 5);
+
+        // Act
+        var result = await _sut.GetActiveBlocksByPatientIdAsync(
+            patient.Id,
+            referenceDate,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result
+            .Should()
+            .BeEquivalentTo([block1, block2, block3], options => options.WithStrictOrdering());
+    }
+
+    [Fact]
+    public async Task GetActiveBlocksPaginatedAsync_ShouldReturnBlocksOrderedBySequenceNumberAscending_WhenBlockedUntilDatesAreEqual()
+    {
+        // Arrange
+        var patient = await CreatePatientAsync();
+        var referenceDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+
+        var block1 = await CreateActiveBlockAsync(patient.Id, daysFromNow: 5);
+        var block2 = await CreateActiveBlockAsync(patient.Id, daysFromNow: 5);
+        var block3 = await CreateActiveBlockAsync(patient.Id, daysFromNow: 5);
+
+        // Act
+        var (items, totalCount) = await _sut.GetActiveBlocksPaginatedAsync(
+            referenceDate,
+            pageNumber: 1,
+            pageSize: 10,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        totalCount.Should().Be(3);
+        items
+            .Should()
+            .BeEquivalentTo([block1, block2, block3], options => options.WithStrictOrdering());
     }
 
     private async Task<User> CreateUserAsync(UserRole role)
