@@ -23,6 +23,7 @@ Use the following template:
 - [ ] Bug fix
 - [ ] New feature
 - [ ] Refactor
+- [ ] Performance
 - [ ] Test / QA
 - [ ] Documentation
 - [ ] Tooling
