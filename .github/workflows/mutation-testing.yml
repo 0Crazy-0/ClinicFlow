@@ -7,12 +7,35 @@ on:
     branches: ["main"]
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      domain: ${{ steps.filter.outputs.domain }}
+      application: ${{ steps.filter.outputs.application }}
+      infrastructure: ${{ steps.filter.outputs.infrastructure }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dorny/paths-filter@7b450fff21473bca461d4b92ce414b9d0420d706 # v4.0.2
+        id: filter
+        with:
+          filters: |
+            domain:
+              - 'ClinicFlow.Domain/**'
+            application:
+              - 'ClinicFlow.Application/**'
+            infrastructure:
+              - 'ClinicFlow.Infrastructure/**'
+
   mutation-testing:
+    needs: changes
     runs-on: ubuntu-latest
     permissions:
       checks: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -36,27 +59,43 @@ jobs:
         run: |
           projects=("ClinicFlow.Domain.Tests" "ClinicFlow.Application.Tests" "ClinicFlow.Infrastructure.Tests")
           for proj in "${projects[@]}"; do
-            echo "===== $proj ====="
             cd "$proj"
             ../tools/dotnet-stryker --version main
             cd ..
           done
 
-      - name: Run Stryker (PR — baseline compare)
-        if: github.event_name == 'pull_request'
+      - name: Run Stryker Domain (PR)
+        if: github.event_name == 'pull_request' && needs.changes.outputs.domain == 'true'
         env:
           STRYKER_DASHBOARD_API_KEY: ${{ secrets.STRYKER_DASHBOARD_API_KEY }}
           PR_BRANCH: ${{ github.head_ref }}
           BASE_BRANCH: ${{ github.base_ref }}
           DOTNET_ROLL_FORWARD: LatestMajor
         run: |
-          projects=("ClinicFlow.Domain.Tests" "ClinicFlow.Application.Tests" "ClinicFlow.Infrastructure.Tests")
-          for proj in "${projects[@]}"; do
-            echo "===== $proj ====="
-            cd "$proj"
-            ../tools/dotnet-stryker --with-baseline:"$BASE_BRANCH" --version "$PR_BRANCH"
-            cd ..
-          done
+          cd ClinicFlow.Domain.Tests
+          ../tools/dotnet-stryker --with-baseline:"$BASE_BRANCH" --version "$PR_BRANCH"
+
+      - name: Run Stryker Application (PR)
+        if: github.event_name == 'pull_request' && needs.changes.outputs.application == 'true'
+        env:
+          STRYKER_DASHBOARD_API_KEY: ${{ secrets.STRYKER_DASHBOARD_API_KEY }}
+          PR_BRANCH: ${{ github.head_ref }}
+          BASE_BRANCH: ${{ github.base_ref }}
+          DOTNET_ROLL_FORWARD: LatestMajor
+        run: |
+          cd ClinicFlow.Application.Tests
+          ../tools/dotnet-stryker --with-baseline:"$BASE_BRANCH" --version "$PR_BRANCH"
+
+      - name: Run Stryker Infrastructure (PR)
+        if: github.event_name == 'pull_request' && needs.changes.outputs.infrastructure == 'true'
+        env:
+          STRYKER_DASHBOARD_API_KEY: ${{ secrets.STRYKER_DASHBOARD_API_KEY }}
+          PR_BRANCH: ${{ github.head_ref }}
+          BASE_BRANCH: ${{ github.base_ref }}
+          DOTNET_ROLL_FORWARD: LatestMajor
+        run: |
+          cd ClinicFlow.Infrastructure.Tests
+          ../tools/dotnet-stryker --with-baseline:"$BASE_BRANCH" --version "$PR_BRANCH"
 
       - name: Upload HTML report
         if: always()
