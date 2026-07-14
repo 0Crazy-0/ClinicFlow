@@ -239,7 +239,7 @@ See the [clinicflow-testing-application](.agents/skills/clinicflow-testing-appli
 
 ### C# Preferences
 
-- Use `sealed` on all classes that are not designed for inheritance (handlers, commands, args, contexts).
+- Do not abuse `sealed`. Test classes must never be sealed. Limit its usage to specific, well-justified cases in production code (e.g., handlers, commands, validators, args, contexts).
 - Use `record` for immutable data structures (commands, queries, args, contexts).
 - Use primary constructors for dependency injection in handlers and for data in commands.
 - Nullable reference types are active. Respect nullability annotations.
