@@ -35,7 +35,7 @@ public sealed class MedicalRecordRepository(ApplicationDbContext dbContext)
 
         var totalCount = await query.CountAsync(cancellationToken);
         var items = await query
-            .OrderByDescending(m => m.Id)
+            .OrderByDescending(m => m.SequenceNumber)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync(cancellationToken);
@@ -60,7 +60,7 @@ public sealed class MedicalRecordRepository(ApplicationDbContext dbContext)
 
         var totalCount = await query.CountAsync(cancellationToken);
         var items = await query
-            .OrderByDescending(m => m.Id)
+            .OrderByDescending(m => m.SequenceNumber)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync(cancellationToken);

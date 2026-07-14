@@ -62,8 +62,7 @@ public class AppointmentRepositoryTests : IAsyncLifetime
         result.DoctorId.Should().Be(doctor.Id);
         result.AppointmentTypeId.Should().Be(appointment.AppointmentTypeId);
         result.ScheduledDate.Should().Be(scheduledDate);
-        result.TimeRange.Start.Should().Be(timeRange.Start);
-        result.TimeRange.End.Should().Be(timeRange.End);
+        result.TimeRange.Should().Be(timeRange);
     }
 
     [Fact]
@@ -94,6 +93,9 @@ public class AppointmentRepositoryTests : IAsyncLifetime
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
 
+        Context.Appointments.Add(appointment1);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
         var appointment2 = Appointment.Schedule(
             patient.Id,
             doctor.Id,
@@ -101,6 +103,9 @@ public class AppointmentRepositoryTests : IAsyncLifetime
             scheduledDate,
             TimeRange.Create(new TimeOnly(11, 0), new TimeOnly(12, 0))
         );
+
+        Context.Appointments.Add(appointment2);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var appointment3 = Appointment.Schedule(
             patient.Id,
@@ -110,8 +115,7 @@ public class AppointmentRepositoryTests : IAsyncLifetime
             TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0))
         );
 
-        Context.Appointments.AddRange(appointment1, appointment2, appointment3);
-
+        Context.Appointments.Add(appointment3);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Act
@@ -126,9 +130,12 @@ public class AppointmentRepositoryTests : IAsyncLifetime
         // Assert
         totalCount.Should().Be(3);
 
-        items.Should().HaveCount(2);
-        items[0].Id.Should().Be(appointment1.Id);
-        items[1].Id.Should().Be(appointment3.Id);
+        items
+            .Should()
+            .BeEquivalentTo(
+                [appointment1, appointment3],
+                options => options.WithStrictOrdering().Excluding(a => a.DomainEvents)
+            );
     }
 
     [Fact]
@@ -142,13 +149,15 @@ public class AppointmentRepositoryTests : IAsyncLifetime
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
 
+        Context.Appointments.Add(appointmentDoctor1);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
         var (appointmentDoctor2, _, _) = await CreateAppointmentDraftAsync(
             scheduledDate,
             TimeRange.Create(new TimeOnly(11, 0), new TimeOnly(12, 0))
         );
 
-        Context.Appointments.AddRange(appointmentDoctor1, appointmentDoctor2);
-
+        Context.Appointments.Add(appointmentDoctor2);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Act
@@ -163,8 +172,7 @@ public class AppointmentRepositoryTests : IAsyncLifetime
         // Assert
         totalCount.Should().Be(1);
 
-        items.Should().HaveCount(1);
-        items[0].Id.Should().Be(appointmentDoctor1.Id);
+        items.Should().ContainSingle().Which.Should().BeEquivalentTo(appointmentDoctor1);
     }
 
     [Fact]
@@ -182,6 +190,9 @@ public class AppointmentRepositoryTests : IAsyncLifetime
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
 
+        Context.Appointments.Add(appointment1);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
         var appointment2 = Appointment.Schedule(
             patient.Id,
             doctor.Id,
@@ -189,6 +200,9 @@ public class AppointmentRepositoryTests : IAsyncLifetime
             scheduledDate,
             TimeRange.Create(new TimeOnly(11, 0), new TimeOnly(12, 0))
         );
+
+        Context.Appointments.Add(appointment2);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var appointment3 = Appointment.Schedule(
             patient.Id,
@@ -198,8 +212,7 @@ public class AppointmentRepositoryTests : IAsyncLifetime
             TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0))
         );
 
-        Context.Appointments.AddRange(appointment1, appointment2, appointment3);
-
+        Context.Appointments.Add(appointment3);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Act
@@ -214,8 +227,68 @@ public class AppointmentRepositoryTests : IAsyncLifetime
         // Assert
         totalCount.Should().Be(3);
 
-        items.Should().HaveCount(1);
-        items[0].Id.Should().Be(appointment2.Id);
+        items
+            .Should()
+            .ContainSingle()
+            .Which.Should()
+            .BeEquivalentTo(appointment2, options => options.Excluding(a => a.DomainEvents));
+    }
+
+    [Fact]
+    public async Task GetByDoctorIdAndDateAsync_ShouldOrderBySequenceNumberAscending_WhenTimeRangeStartIsEqual()
+    {
+        // Arrange
+        var (doctor, patient, apptType) = await SeedCommonEntitiesAsync();
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+
+        var appointment1 = Appointment.Schedule(
+            patient.Id,
+            doctor.Id,
+            apptType.Id,
+            scheduledDate,
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+        );
+        Context.Appointments.Add(appointment1);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var appointment2 = Appointment.Schedule(
+            patient.Id,
+            doctor.Id,
+            apptType.Id,
+            scheduledDate,
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+        );
+        Context.Appointments.Add(appointment2);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var appointment3 = Appointment.Schedule(
+            patient.Id,
+            doctor.Id,
+            apptType.Id,
+            scheduledDate,
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+        );
+        Context.Appointments.Add(appointment3);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var (items, totalCount) = await _sut.GetByDoctorIdAndDateAsync(
+            doctor.Id,
+            scheduledDate,
+            pageNumber: 1,
+            pageSize: 10,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        totalCount.Should().Be(3);
+
+        items
+            .Should()
+            .BeEquivalentTo(
+                [appointment1, appointment2, appointment3],
+                options => options.WithStrictOrdering().Excluding(a => a.DomainEvents)
+            );
     }
 
     [Fact]
@@ -225,21 +298,29 @@ public class AppointmentRepositoryTests : IAsyncLifetime
         var (doctor, patient, apptType) = await SeedCommonEntitiesAsync();
         var baseDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
 
-        var Appointment1 = Appointment.Schedule(
+        var appointment1 = Appointment.Schedule(
             patient.Id,
             doctor.Id,
             apptType.Id,
             baseDate.AddDays(1),
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
-        var Appointment2 = Appointment.Schedule(
+
+        Context.Appointments.Add(appointment1);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var appointment2 = Appointment.Schedule(
             patient.Id,
             doctor.Id,
             apptType.Id,
             baseDate.AddDays(1),
             TimeRange.Create(new TimeOnly(11, 0), new TimeOnly(12, 0))
         );
-        var Appointment3 = Appointment.Schedule(
+
+        Context.Appointments.Add(appointment2);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var appointment3 = Appointment.Schedule(
             patient.Id,
             doctor.Id,
             apptType.Id,
@@ -247,7 +328,10 @@ public class AppointmentRepositoryTests : IAsyncLifetime
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
 
-        var AppointmentOutOfRange = Appointment.Schedule(
+        Context.Appointments.Add(appointment3);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var appointmentOutOfRange = Appointment.Schedule(
             patient.Id,
             doctor.Id,
             apptType.Id,
@@ -255,13 +339,7 @@ public class AppointmentRepositoryTests : IAsyncLifetime
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
 
-        Context.Appointments.AddRange(
-            Appointment1,
-            Appointment2,
-            Appointment3,
-            AppointmentOutOfRange
-        );
-
+        Context.Appointments.Add(appointmentOutOfRange);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Act
@@ -276,10 +354,12 @@ public class AppointmentRepositoryTests : IAsyncLifetime
         // Assert
         totalCount.Should().Be(3);
 
-        items.Should().HaveCount(3);
-        items[0].Id.Should().Be(Appointment1.Id);
-        items[1].Id.Should().Be(Appointment2.Id);
-        items[2].Id.Should().Be(Appointment3.Id);
+        items
+            .Should()
+            .BeEquivalentTo(
+                [appointment1, appointment2, appointment3],
+                options => options.WithStrictOrdering().Excluding(a => a.DomainEvents)
+            );
     }
 
     [Fact]
@@ -289,21 +369,29 @@ public class AppointmentRepositoryTests : IAsyncLifetime
         var (doctor, patient, apptType) = await SeedCommonEntitiesAsync();
         var baseDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
 
-        var Appointment1 = Appointment.Schedule(
+        var appointment1 = Appointment.Schedule(
             patient.Id,
             doctor.Id,
             apptType.Id,
             baseDate.AddDays(1),
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
-        var Appointment2 = Appointment.Schedule(
+
+        Context.Appointments.Add(appointment1);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var appointment2 = Appointment.Schedule(
             patient.Id,
             doctor.Id,
             apptType.Id,
             baseDate.AddDays(1),
             TimeRange.Create(new TimeOnly(11, 0), new TimeOnly(12, 0))
         );
-        var Appointment3 = Appointment.Schedule(
+
+        Context.Appointments.Add(appointment2);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var appointment3 = Appointment.Schedule(
             patient.Id,
             doctor.Id,
             apptType.Id,
@@ -311,8 +399,7 @@ public class AppointmentRepositoryTests : IAsyncLifetime
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
 
-        Context.Appointments.AddRange(Appointment1, Appointment2, Appointment3);
-
+        Context.Appointments.Add(appointment3);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Act
@@ -326,8 +413,72 @@ public class AppointmentRepositoryTests : IAsyncLifetime
 
         // Assert
         totalCount.Should().Be(3);
-        items.Should().HaveCount(1);
-        items[0].Id.Should().Be(Appointment3.Id);
+
+        items
+            .Should()
+            .ContainSingle()
+            .Which.Should()
+            .BeEquivalentTo(appointment3, options => options.Excluding(a => a.DomainEvents));
+    }
+
+    [Fact]
+    public async Task GetByDateRangePaginatedAsync_ShouldOrderBySequenceNumberAscending_WhenScheduledDateAndTimeStartAreEqual()
+    {
+        // Arrange
+        var (doctor, patient, apptType) = await SeedCommonEntitiesAsync();
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+
+        var appointment1 = Appointment.Schedule(
+            patient.Id,
+            doctor.Id,
+            apptType.Id,
+            scheduledDate,
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+        );
+
+        Context.Appointments.Add(appointment1);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var appointment2 = Appointment.Schedule(
+            patient.Id,
+            doctor.Id,
+            apptType.Id,
+            scheduledDate,
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+        );
+
+        Context.Appointments.Add(appointment2);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var appointment3 = Appointment.Schedule(
+            patient.Id,
+            doctor.Id,
+            apptType.Id,
+            scheduledDate,
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+        );
+
+        Context.Appointments.Add(appointment3);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var (items, totalCount) = await _sut.GetByDateRangePaginatedAsync(
+            scheduledDate,
+            scheduledDate,
+            pageNumber: 1,
+            pageSize: 10,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        totalCount.Should().Be(3);
+
+        items
+            .Should()
+            .BeEquivalentTo(
+                [appointment1, appointment2, appointment3],
+                options => options.WithStrictOrdering().Excluding(a => a.DomainEvents)
+            );
     }
 
     [Fact]
@@ -339,28 +490,40 @@ public class AppointmentRepositoryTests : IAsyncLifetime
         var patient2 = await CreatePatientAsync(patientUser2.Id);
         var baseDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
 
-        var Appointment1 = Appointment.Schedule(
+        var appointment1 = Appointment.Schedule(
             patient1.Id,
             doctor.Id,
             apptType.Id,
             baseDate.AddDays(1),
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
-        var Appointment2 = Appointment.Schedule(
+
+        Context.Appointments.Add(appointment1);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var appointment2 = Appointment.Schedule(
             patient1.Id,
             doctor.Id,
             apptType.Id,
             baseDate.AddDays(1),
             TimeRange.Create(new TimeOnly(11, 0), new TimeOnly(12, 0))
         );
-        var Appointment3 = Appointment.Schedule(
+
+        Context.Appointments.Add(appointment2);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var appointment3 = Appointment.Schedule(
             patient1.Id,
             doctor.Id,
             apptType.Id,
             baseDate.AddDays(2),
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
-        var AppointmentOtherPatient = Appointment.Schedule(
+
+        Context.Appointments.Add(appointment3);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var appointmentOtherPatient = Appointment.Schedule(
             patient2.Id,
             doctor.Id,
             apptType.Id,
@@ -368,13 +531,7 @@ public class AppointmentRepositoryTests : IAsyncLifetime
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
 
-        Context.Appointments.AddRange(
-            Appointment1,
-            Appointment2,
-            Appointment3,
-            AppointmentOtherPatient
-        );
-
+        Context.Appointments.Add(appointmentOtherPatient);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Act
@@ -388,10 +545,12 @@ public class AppointmentRepositoryTests : IAsyncLifetime
         // Assert
         totalCount.Should().Be(3);
 
-        items.Should().HaveCount(3);
-        items[0].Id.Should().Be(Appointment1.Id);
-        items[1].Id.Should().Be(Appointment2.Id);
-        items[2].Id.Should().Be(Appointment3.Id);
+        items
+            .Should()
+            .BeEquivalentTo(
+                [appointment1, appointment2, appointment3],
+                options => options.WithStrictOrdering().Excluding(a => a.DomainEvents)
+            );
     }
 
     [Fact]
@@ -403,28 +562,40 @@ public class AppointmentRepositoryTests : IAsyncLifetime
         var patient2 = await CreatePatientAsync(patientUser2.Id);
         var baseDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
 
-        var Appointment1 = Appointment.Schedule(
+        var appointment1 = Appointment.Schedule(
             patient1.Id,
             doctor.Id,
             apptType.Id,
             baseDate.AddDays(1),
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
-        var Appointment2 = Appointment.Schedule(
+
+        Context.Appointments.Add(appointment1);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var appointment2 = Appointment.Schedule(
             patient1.Id,
             doctor.Id,
             apptType.Id,
             baseDate.AddDays(1),
             TimeRange.Create(new TimeOnly(11, 0), new TimeOnly(12, 0))
         );
-        var Appointment3 = Appointment.Schedule(
+
+        Context.Appointments.Add(appointment2);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var appointment3 = Appointment.Schedule(
             patient1.Id,
             doctor.Id,
             apptType.Id,
             baseDate.AddDays(2),
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
-        var AppointmentOtherPatient = Appointment.Schedule(
+
+        Context.Appointments.Add(appointment3);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var appointmentOtherPatient = Appointment.Schedule(
             patient2.Id,
             doctor.Id,
             apptType.Id,
@@ -432,13 +603,7 @@ public class AppointmentRepositoryTests : IAsyncLifetime
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
 
-        Context.Appointments.AddRange(
-            Appointment1,
-            Appointment2,
-            Appointment3,
-            AppointmentOtherPatient
-        );
-
+        Context.Appointments.Add(appointmentOtherPatient);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Act
@@ -451,8 +616,68 @@ public class AppointmentRepositoryTests : IAsyncLifetime
 
         // Assert
         totalCount.Should().Be(3);
-        items.Should().HaveCount(1);
-        items[0].Id.Should().Be(Appointment3.Id);
+
+        items
+            .Should()
+            .ContainSingle()
+            .Which.Should()
+            .BeEquivalentTo(appointment3, options => options.Excluding(a => a.DomainEvents));
+    }
+
+    [Fact]
+    public async Task GetByPatientIdPaginatedAsync_ShouldOrderBySequenceNumberAscending_WhenScheduledDateAndTimeStartAreEqual()
+    {
+        // Arrange
+        var (doctor, patient, apptType) = await SeedCommonEntitiesAsync();
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+
+        var appointment1 = Appointment.Schedule(
+            patient.Id,
+            doctor.Id,
+            apptType.Id,
+            scheduledDate,
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+        );
+        Context.Appointments.Add(appointment1);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var appointment2 = Appointment.Schedule(
+            patient.Id,
+            doctor.Id,
+            apptType.Id,
+            scheduledDate,
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+        );
+        Context.Appointments.Add(appointment2);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var appointment3 = Appointment.Schedule(
+            patient.Id,
+            doctor.Id,
+            apptType.Id,
+            scheduledDate,
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+        );
+        Context.Appointments.Add(appointment3);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var (items, totalCount) = await _sut.GetByPatientIdPaginatedAsync(
+            patient.Id,
+            pageNumber: 1,
+            pageSize: 10,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        totalCount.Should().Be(3);
+
+        items
+            .Should()
+            .BeEquivalentTo(
+                [appointment1, appointment2, appointment3],
+                options => options.WithStrictOrdering().Excluding(a => a.DomainEvents)
+            );
     }
 
     [Fact]
@@ -891,7 +1116,7 @@ public class AppointmentRepositoryTests : IAsyncLifetime
         var (doctor, patient, apptType) = await SeedCommonEntitiesAsync();
         var baseDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
 
-        var Appointment1 = Appointment.Schedule(
+        var appointment1 = Appointment.Schedule(
             patient.Id,
             doctor.Id,
             apptType.Id,
@@ -899,7 +1124,10 @@ public class AppointmentRepositoryTests : IAsyncLifetime
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
 
-        var Appointment2 = Appointment.Schedule(
+        Context.Appointments.Add(appointment1);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var appointment2 = Appointment.Schedule(
             patient.Id,
             doctor.Id,
             apptType.Id,
@@ -907,7 +1135,10 @@ public class AppointmentRepositoryTests : IAsyncLifetime
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
 
-        var Appointment3 = Appointment.Schedule(
+        Context.Appointments.Add(appointment2);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var appointment3 = Appointment.Schedule(
             patient.Id,
             doctor.Id,
             apptType.Id,
@@ -915,10 +1146,9 @@ public class AppointmentRepositoryTests : IAsyncLifetime
             TimeRange.Create(new TimeOnly(11, 0), new TimeOnly(12, 0))
         );
 
-        Appointment3.Cancel(Guid.CreateVersion7(), "cancelled", baseDate);
+        appointment3.Cancel(Guid.CreateVersion7(), "cancelled", baseDate);
 
-        Context.Appointments.AddRange(Appointment1, Appointment2, Appointment3);
-
+        Context.Appointments.Add(appointment3);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Act
@@ -929,7 +1159,7 @@ public class AppointmentRepositoryTests : IAsyncLifetime
         );
 
         // Assert
-        results.Should().ContainSingle().Which.Should().BeEquivalentTo(Appointment1);
+        results.Should().ContainSingle().Which.Should().BeEquivalentTo(appointment1);
     }
 
     [Fact]
@@ -965,7 +1195,7 @@ public class AppointmentRepositoryTests : IAsyncLifetime
         var baseTime = _fakeTime.GetUtcNow().UtcDateTime;
         var baseDate = DateOnly.FromDateTime(baseTime);
 
-        var Appointment1 = Appointment.Schedule(
+        var appointment1 = Appointment.Schedule(
             patient.Id,
             doctor.Id,
             apptType.Id,
@@ -973,9 +1203,9 @@ public class AppointmentRepositoryTests : IAsyncLifetime
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
 
-        Appointment1.MarkAsRequiresReassignment();
+        appointment1.MarkAsRequiresReassignment();
 
-        var Appointment2 = Appointment.Schedule(
+        var appointment2 = Appointment.Schedule(
             patient.Id,
             doctor.Id,
             apptType.Id,
@@ -983,9 +1213,9 @@ public class AppointmentRepositoryTests : IAsyncLifetime
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
 
-        Appointment2.MarkAsRequiresReassignment();
+        appointment2.MarkAsRequiresReassignment();
 
-        var Appointment3 = Appointment.Schedule(
+        var appointment3 = Appointment.Schedule(
             patient.Id,
             doctor.Id,
             apptType.Id,
@@ -993,7 +1223,7 @@ public class AppointmentRepositoryTests : IAsyncLifetime
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
 
-        Context.Appointments.AddRange(Appointment1, Appointment2, Appointment3);
+        Context.Appointments.AddRange(appointment1, appointment2, appointment3);
 
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
@@ -1004,7 +1234,7 @@ public class AppointmentRepositoryTests : IAsyncLifetime
         );
 
         // Assert
-        results.Should().ContainSingle().Which.Should().BeEquivalentTo(Appointment1);
+        results.Should().ContainSingle().Which.Should().BeEquivalentTo(appointment1);
     }
 
     [Fact]
@@ -1076,6 +1306,7 @@ public class AppointmentRepositoryTests : IAsyncLifetime
             scheduledDate,
             timeRange
         );
+        appointment.ClearDomainEvents();
 
         return (appointment, doctor, patient);
     }

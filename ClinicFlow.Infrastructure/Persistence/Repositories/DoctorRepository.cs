@@ -34,7 +34,7 @@ public sealed class DoctorRepository(ApplicationDbContext dbContext) : IDoctorRe
         var totalCount = await query.CountAsync(cancellationToken);
         var items = await query
             .OrderBy(d => d.FullName)
-            .ThenBy(d => d.Id)
+            .ThenBy(d => d.SequenceNumber)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
             .ToListAsync(cancellationToken);

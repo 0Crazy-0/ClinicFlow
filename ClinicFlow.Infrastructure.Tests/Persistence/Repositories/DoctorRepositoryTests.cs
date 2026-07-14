@@ -179,19 +179,11 @@ public class DoctorRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
     public async Task GetBySpecialtyIdPaginatedAsync_ShouldReturnPaginatedActiveDoctors_ForSpecialty()
     {
         // Arrange
-        var specialty = CreateSpecialty();
+        var specialty = await CreateSpecialty();
 
-        Context.MedicalSpecialties.Add(specialty);
-
-        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
-
-        var user1 = CreateUser();
-        var user2 = CreateUser();
-        var user3 = CreateUser();
-
-        Context.Users.AddRange(user1, user2, user3);
-
-        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+        var user1 = await CreateUser();
+        var user2 = await CreateUser();
+        var user3 = await CreateUser();
 
         var doctor1 = Doctor.Create(
             user1.Id,
@@ -202,6 +194,9 @@ public class DoctorRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
             ConsultationRoom.Create(1, "Room 1", 1)
         );
 
+        Context.Doctors.Add(doctor1);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
         var doctor2 = Doctor.Create(
             user2.Id,
             PersonName.Create("Doctor C"),
@@ -210,6 +205,9 @@ public class DoctorRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
             "Bio",
             ConsultationRoom.Create(2, "Room 2", 1)
         );
+
+        Context.Doctors.Add(doctor2);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var doctor3 = Doctor.Create(
             user3.Id,
@@ -220,8 +218,7 @@ public class DoctorRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
             ConsultationRoom.Create(3, "Room 3", 1)
         );
 
-        Context.Doctors.AddRange(doctor1, doctor2, doctor3);
-
+        Context.Doctors.Add(doctor3);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Act
@@ -235,28 +232,18 @@ public class DoctorRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         // Assert
         totalCount.Should().Be(3);
 
-        items.Should().HaveCount(2);
-        items[0].Id.Should().Be(doctor1.Id);
-        items[1].Id.Should().Be(doctor3.Id);
+        items.Should().BeEquivalentTo([doctor1, doctor3], options => options.WithStrictOrdering());
     }
 
     [Fact]
     public async Task GetBySpecialtyIdPaginatedAsync_ShouldReturnSecondPage()
     {
         // Arrange
-        var specialty = CreateSpecialty();
+        var specialty = await CreateSpecialty();
 
-        Context.MedicalSpecialties.Add(specialty);
-
-        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
-
-        var user1 = CreateUser();
-        var user2 = CreateUser();
-        var user3 = CreateUser();
-
-        Context.Users.AddRange(user1, user2, user3);
-
-        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+        var user1 = await CreateUser();
+        var user2 = await CreateUser();
+        var user3 = await CreateUser();
 
         var doctor1 = Doctor.Create(
             user1.Id,
@@ -267,6 +254,9 @@ public class DoctorRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
             ConsultationRoom.Create(1, "Room 1", 1)
         );
 
+        Context.Doctors.Add(doctor1);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
         var doctor2 = Doctor.Create(
             user2.Id,
             PersonName.Create("Doctor C"),
@@ -275,6 +265,9 @@ public class DoctorRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
             "Bio",
             ConsultationRoom.Create(2, "Room 2", 1)
         );
+
+        Context.Doctors.Add(doctor2);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var doctor3 = Doctor.Create(
             user3.Id,
@@ -285,8 +278,7 @@ public class DoctorRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
             ConsultationRoom.Create(3, "Room 3", 1)
         );
 
-        Context.Doctors.AddRange(doctor1, doctor2, doctor3);
-
+        Context.Doctors.Add(doctor3);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Act
@@ -300,27 +292,18 @@ public class DoctorRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         // Assert
         totalCount.Should().Be(3);
 
-        items.Should().HaveCount(1);
-        items[0].Id.Should().Be(doctor2.Id);
+        items.Should().ContainSingle().Which.Should().BeEquivalentTo(doctor2);
     }
 
     [Fact]
     public async Task GetBySpecialtyIdPaginatedAsync_ShouldReturnOnlyDoctorsFromRequestedSpecialty()
     {
         // Arrange
-        var specialty1 = CreateSpecialty("Specialty 1");
-        var specialty2 = CreateSpecialty("Specialty 2");
+        var specialty1 = await CreateSpecialty("Specialty 1");
+        var specialty2 = await CreateSpecialty("Specialty 2");
 
-        Context.MedicalSpecialties.AddRange(specialty1, specialty2);
-
-        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
-
-        var user1 = CreateUser();
-        var user2 = CreateUser();
-
-        Context.Users.AddRange(user1, user2);
-
-        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+        var user1 = await CreateUser();
+        var user2 = await CreateUser();
 
         var doctor1 = Doctor.Create(
             user1.Id,
@@ -330,6 +313,10 @@ public class DoctorRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
             "Bio",
             ConsultationRoom.Create(1, "Room 1", 1)
         );
+
+        Context.Doctors.Add(doctor1);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
         var doctor2 = Doctor.Create(
             user2.Id,
             PersonName.Create("Doctor B"),
@@ -338,7 +325,8 @@ public class DoctorRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
             "Bio",
             ConsultationRoom.Create(2, "Room 2", 1)
         );
-        Context.Doctors.AddRange(doctor1, doctor2);
+
+        Context.Doctors.Add(doctor2);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Act
@@ -352,25 +340,17 @@ public class DoctorRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         // Assert
         totalCount.Should().Be(1);
 
-        items.Should().ContainSingle().Which.Id.Should().Be(doctor1.Id);
+        items.Should().ContainSingle().Which.Should().BeEquivalentTo(doctor1);
     }
 
     [Fact]
     public async Task GetBySpecialtyIdPaginatedAsync_ShouldNotReturnSuspendedDoctors()
     {
         // Arrange
-        var specialty = CreateSpecialty();
+        var specialty = await CreateSpecialty();
 
-        Context.MedicalSpecialties.Add(specialty);
-
-        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
-
-        var user1 = CreateUser();
-        var user2 = CreateUser();
-
-        Context.Users.AddRange(user1, user2);
-
-        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+        var user1 = await CreateUser();
+        var user2 = await CreateUser();
 
         var doctor1 = Doctor.Create(
             user1.Id,
@@ -380,6 +360,9 @@ public class DoctorRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
             "Bio",
             ConsultationRoom.Create(1, "Room 1", 1)
         );
+
+        Context.Doctors.Add(doctor1);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var doctor2 = Doctor.Create(
             user2.Id,
@@ -392,8 +375,7 @@ public class DoctorRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
 
         doctor2.Suspend();
 
-        Context.Doctors.AddRange(doctor1, doctor2);
-
+        Context.Doctors.Add(doctor2);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Act
@@ -407,23 +389,17 @@ public class DoctorRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         // Assert
         totalCount.Should().Be(1);
 
-        items.Should().ContainSingle().Which.Id.Should().Be(doctor1.Id);
+        items.Should().ContainSingle().Which.Should().BeEquivalentTo(doctor1);
     }
 
     [Fact]
-    public async Task GetBySpecialtyIdPaginatedAsync_ShouldOrderByIdAscending_WhenFullNamesAreEqual()
+    public async Task GetBySpecialtyIdPaginatedAsync_ShouldOrderBySequenceNumberAscending_WhenFullNamesAreEqual()
     {
         // Arrange
-        var specialty = CreateSpecialty();
-        Context.MedicalSpecialties.Add(specialty);
-        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+        var specialty = await CreateSpecialty();
 
-        var user1 = CreateUser();
-        var user2 = CreateUser();
-
-        Context.Users.AddRange(user1, user2);
-
-        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+        var user1 = await CreateUser();
+        var user2 = await CreateUser();
 
         var doctor1 = Doctor.Create(
             user1.Id,
@@ -434,6 +410,9 @@ public class DoctorRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
             ConsultationRoom.Create(1, "Room 1", 1)
         );
 
+        Context.Doctors.Add(doctor1);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
         var doctor2 = Doctor.Create(
             user2.Id,
             PersonName.Create("Doctor Same"),
@@ -443,7 +422,7 @@ public class DoctorRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
             ConsultationRoom.Create(2, "Room 2", 1)
         );
 
-        Context.Doctors.AddRange(doctor1, doctor2);
+        Context.Doctors.Add(doctor2);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Act
@@ -457,8 +436,7 @@ public class DoctorRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         // Assert
         totalCount.Should().Be(2);
 
-        items.Should().HaveCount(2);
-        items.Should().BeInAscendingOrder(d => d.Id);
+        items.Should().BeEquivalentTo([doctor1, doctor2], options => options.WithStrictOrdering());
     }
 
     [Fact]
@@ -644,26 +622,35 @@ public class DoctorRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         result.Should().BeNull();
     }
 
-    private static User CreateUser() =>
-        User.Create(
+    private async Task<User> CreateUser()
+    {
+        var user = User.Create(
             EmailAddress.Create($"{Guid.CreateVersion7()}@clinic.com"),
             "password",
             PhoneNumber.Create($"+1555{Random.Shared.Next(1000000, 9999999)}"),
             UserRole.Doctor
         );
 
-    private static MedicalSpecialty CreateSpecialty(string name = "Specialty") =>
-        MedicalSpecialty.Create(name, "Description", 30, 24);
+        Context.Users.Add(user);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        return user;
+    }
+
+    private async Task<MedicalSpecialty> CreateSpecialty(string name = "Specialty")
+    {
+        var specialty = MedicalSpecialty.Create(name, "Description", 30, 24);
+
+        Context.MedicalSpecialties.Add(specialty);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        return specialty;
+    }
 
     private async Task<(User User, MedicalSpecialty Specialty)> CreatePrerequisitesAsync()
     {
-        var user = CreateUser();
-        var specialty = CreateSpecialty();
-
-        Context.Users.Add(user);
-        Context.MedicalSpecialties.Add(specialty);
-
-        await Context.SaveChangesAsync();
+        var user = await CreateUser();
+        var specialty = await CreateSpecialty();
 
         return (user, specialty);
     }
