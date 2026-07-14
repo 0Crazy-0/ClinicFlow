@@ -30,11 +30,7 @@ public class MedicalSpecialtyRepositoryTests(PostgresFixture fixture) : IAsyncLi
     public async Task GetByIdAsync_ShouldReturnSpecialty_WhenExistsAndActive()
     {
         // Arrange
-        var specialty = CreateSpecialty("Cardiology");
-
-        Context.MedicalSpecialties.Add(specialty);
-
-        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+        var specialty = await CreateSpecialty("Cardiology");
 
         // Act
         var result = await _sut.GetByIdAsync(specialty.Id, TestContext.Current.CancellationToken);
@@ -53,11 +49,9 @@ public class MedicalSpecialtyRepositoryTests(PostgresFixture fixture) : IAsyncLi
     public async Task GetByIdAsync_ShouldReturnNull_WhenSoftDeleted()
     {
         // Arrange
-        var specialty = CreateSpecialty();
+        var specialty = await CreateSpecialty();
 
         specialty.Deactivate(hasActiveDoctors: false);
-
-        Context.MedicalSpecialties.Add(specialty);
 
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
@@ -85,11 +79,9 @@ public class MedicalSpecialtyRepositoryTests(PostgresFixture fixture) : IAsyncLi
     public async Task GetByIdIncludingDeletedAsync_ShouldReturnSoftDeletedEntity()
     {
         // Arrange
-        var specialty = CreateSpecialty();
+        var specialty = await CreateSpecialty();
 
         specialty.Deactivate(hasActiveDoctors: false);
-
-        Context.MedicalSpecialties.Add(specialty);
 
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
@@ -129,10 +121,7 @@ public class MedicalSpecialtyRepositoryTests(PostgresFixture fixture) : IAsyncLi
     public async Task ExistsByNameAsync_ShouldReturnTrue_WhenActiveExistsWithName()
     {
         // Arrange
-        var specialty = CreateSpecialty("Pediatrics");
-
-        Context.MedicalSpecialties.Add(specialty);
-        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+        await CreateSpecialty("Pediatrics");
 
         // Act
         var result = await _sut.ExistsByNameAsync(
@@ -148,11 +137,9 @@ public class MedicalSpecialtyRepositoryTests(PostgresFixture fixture) : IAsyncLi
     public async Task ExistsByNameAsync_ShouldReturnFalse_WhenNoActiveWithName()
     {
         // Arrange
-        var specialty = CreateSpecialty("Pediatrics");
+        var specialty = await CreateSpecialty("Pediatrics");
 
         specialty.Deactivate(hasActiveDoctors: false);
-
-        Context.MedicalSpecialties.Add(specialty);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Act
@@ -171,12 +158,8 @@ public class MedicalSpecialtyRepositoryTests(PostgresFixture fixture) : IAsyncLi
         // Arrange
         // Duplicate names are prevented at the handler level (see DomainErrors.MedicalSpecialty.NameAlreadyExists).
         // Two are seeded here only to test the repository's exclusion logic in isolation.
-        var specialty1 = CreateSpecialty("Dermatology");
-        var specialty2 = CreateSpecialty("Dermatology");
-
-        Context.MedicalSpecialties.AddRange(specialty1, specialty2);
-
-        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+        var specialty1 = await CreateSpecialty("Dermatology");
+        await CreateSpecialty("Dermatology");
 
         // Act
         var result = await _sut.ExistsByNameExcludingAsync(
@@ -193,10 +176,7 @@ public class MedicalSpecialtyRepositoryTests(PostgresFixture fixture) : IAsyncLi
     public async Task ExistsByNameExcludingAsync_ShouldReturnFalse_WhenOnlySelfMatchesName()
     {
         // Arrange
-        var specialty = CreateSpecialty("Dermatology");
-
-        Context.MedicalSpecialties.Add(specialty);
-        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+        var specialty = await CreateSpecialty("Dermatology");
 
         // Act
         var result = await _sut.ExistsByNameExcludingAsync(
@@ -215,12 +195,10 @@ public class MedicalSpecialtyRepositoryTests(PostgresFixture fixture) : IAsyncLi
         // Arrange
         // Duplicate names are prevented at the handler level (see DomainErrors.MedicalSpecialty.NameAlreadyExists).
         // Two are seeded here only to test the repository's exclusion logic in isolation.
-        var specialty1 = CreateSpecialty("Dermatology");
-        var specialty2 = CreateSpecialty("Dermatology");
+        var specialty1 = await CreateSpecialty("Dermatology");
+        var specialty2 = await CreateSpecialty("Dermatology");
 
         specialty2.Deactivate(hasActiveDoctors: false);
-
-        Context.MedicalSpecialties.AddRange(specialty1, specialty2);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Act
@@ -238,12 +216,10 @@ public class MedicalSpecialtyRepositoryTests(PostgresFixture fixture) : IAsyncLi
     public async Task GetAllActiveAsync_ShouldReturnOnlyActiveSpecialties()
     {
         // Arrange
-        var specialty1 = CreateSpecialty("Cardiology");
-        var specialty2 = CreateSpecialty("Pediatrics");
+        var specialty1 = await CreateSpecialty("Cardiology");
+        var specialty2 = await CreateSpecialty("Pediatrics");
 
         specialty2.Deactivate(hasActiveDoctors: false);
-
-        Context.MedicalSpecialties.AddRange(specialty1, specialty2);
 
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
@@ -258,13 +234,10 @@ public class MedicalSpecialtyRepositoryTests(PostgresFixture fixture) : IAsyncLi
     public async Task GetAllIncludingDeletedAsync_ShouldReturnAllSpecialties()
     {
         // Arrange
-        var specialty1 = CreateSpecialty("Cardiology");
-        var specialty2 = CreateSpecialty("Pediatrics");
+        var specialty1 = await CreateSpecialty("Cardiology");
+        var specialty2 = await CreateSpecialty("Pediatrics");
 
         specialty2.Deactivate(hasActiveDoctors: false);
-
-        Context.MedicalSpecialties.AddRange(specialty1, specialty2);
-
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Act
@@ -278,14 +251,9 @@ public class MedicalSpecialtyRepositoryTests(PostgresFixture fixture) : IAsyncLi
     public async Task CreateAsync_ShouldAddSpecialtyToContext()
     {
         // Arrange
-        var specialty = CreateSpecialty("Ophthalmology");
+        var specialty = await CreateSpecialty("Ophthalmology");
 
-        // Act
-        await _sut.CreateAsync(specialty, TestContext.Current.CancellationToken);
-
-        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
-
-        // Assert
+        // Assert & Act
         var dbResult = await Context
             .MedicalSpecialties.AsNoTracking()
             .FirstOrDefaultAsync(s => s.Id == specialty.Id, TestContext.Current.CancellationToken);
@@ -299,6 +267,13 @@ public class MedicalSpecialtyRepositoryTests(PostgresFixture fixture) : IAsyncLi
         dbResult.IsDeleted.Should().BeFalse();
     }
 
-    private static MedicalSpecialty CreateSpecialty(string name = "Specialty") =>
-        MedicalSpecialty.Create(name, "Description", 30, 24);
+    private async Task<MedicalSpecialty> CreateSpecialty(string name = "Specialty")
+    {
+        var specialty = MedicalSpecialty.Create(name, "Description", 30, 24);
+
+        Context.MedicalSpecialties.Add(specialty);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        return specialty;
+    }
 }
