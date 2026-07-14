@@ -1,4 +1,5 @@
 using ClinicFlow.Domain.Entities;
+using EFCore.ComplexIndexes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -10,7 +11,8 @@ public sealed class AppointmentConfiguration : IEntityTypeConfiguration<Appointm
     public void Configure(EntityTypeBuilder<Appointment> builder)
     {
         builder.Property(a => a.Status).HasConversion<string>();
-        builder.OwnsOne(
+
+        builder.ComplexProperty(
             a => a.TimeRange,
             range =>
             {
@@ -36,5 +38,28 @@ public sealed class AppointmentConfiguration : IEntityTypeConfiguration<Appointm
             .WithMany()
             .HasForeignKey(a => a.AppointmentTypeId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasComplexCompositeIndex(a => new
+        {
+            a.DoctorId,
+            a.ScheduledDate,
+            a.TimeRange.Start,
+            a.SequenceNumber,
+        });
+
+        builder.HasComplexCompositeIndex(a => new
+        {
+            a.PatientId,
+            a.ScheduledDate,
+            a.TimeRange.Start,
+            a.SequenceNumber,
+        });
+
+        builder.HasComplexCompositeIndex(a => new
+        {
+            a.ScheduledDate,
+            a.TimeRange.Start,
+            a.SequenceNumber,
+        });
     }
 }
