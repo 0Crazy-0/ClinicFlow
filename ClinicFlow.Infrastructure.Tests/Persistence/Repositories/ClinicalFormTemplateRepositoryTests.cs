@@ -206,7 +206,7 @@ public class ClinicalFormTemplateRepositoryTests(PostgresFixture fixture) : IAsy
     public async Task GetByIdIncludingDeletedAsync_ShouldReturnSoftDeletedTemplate()
     {
         // Arrange
-        var template = await CreateTemplate(code: "pene grande 123");
+        var template = await CreateTemplate();
 
         template.Deactivate();
 
