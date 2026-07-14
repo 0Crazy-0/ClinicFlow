@@ -346,12 +346,12 @@ public class ClinicalFormTemplateRepositoryTests(PostgresFixture fixture) : IAsy
         string jsonSchema = """{"type": "object"}"""
     )
     {
-        var temlate = ClinicalFormTemplate.Create(code, name, description, jsonSchema);
+        var template = ClinicalFormTemplate.Create(code, name, description, jsonSchema);
 
-        Context.ClinicalFormTemplates.Add(temlate);
+        Context.ClinicalFormTemplates.Add(template);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        return temlate;
+        return template;
     }
 
     private static void AssertJsonEquivalent(string actualJson, string expectedJson)
