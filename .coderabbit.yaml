@@ -1,0 +1,11 @@
+reviews:
+  profile: chill
+
+  path_filters:
+    - "!**/Migrations/**"
+
+  auto_review:
+    enabled: true
+    drafts: false
+
+  poem: false
