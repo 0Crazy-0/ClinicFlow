@@ -37,5 +37,8 @@ public sealed class MedicalRecordConfiguration : IEntityTypeConfiguration<Medica
             .WithOne()
             .HasForeignKey<MedicalRecord>(m => m.AppointmentId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasIndex(m => new { m.PatientId, m.SequenceNumber }).IsDescending(false, true);
+        builder.HasIndex(m => new { m.DoctorId, m.SequenceNumber }).IsDescending(false, true);
     }
 }

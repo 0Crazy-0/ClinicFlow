@@ -22,5 +22,23 @@ public sealed class PatientPenaltyConfiguration : IEntityTypeConfiguration<Patie
             .WithMany()
             .HasForeignKey(p => p.AppointmentId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasIndex(p => new { p.PatientId, p.SequenceNumber }).IsDescending(false, true);
+        builder.HasIndex(p => new
+        {
+            p.IsRemoved,
+            p.Type,
+            p.BlockedUntil,
+            p.SequenceNumber,
+        });
+
+        builder
+            .HasIndex(p => new
+            {
+                p.IsRemoved,
+                p.Type,
+                p.SequenceNumber,
+            })
+            .IsDescending(false, false, true);
     }
 }
