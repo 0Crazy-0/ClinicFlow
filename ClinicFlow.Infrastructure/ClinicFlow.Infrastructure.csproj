@@ -4,6 +4,7 @@
     <ProjectReference Include="..\ClinicFlow.Application\ClinicFlow.Application.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="EFCore.ComplexIndexes" Version="4.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.8">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
