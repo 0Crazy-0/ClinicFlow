@@ -75,7 +75,7 @@ These patterns are excluded from Copy-Paste Detection because their structural s
 - **Seeding (`**/Seeding/**`):** Data seeding code with repetitive builder patterns.
 
 ### File Exclusions (`sonar.exclusions`)
-These patterns are completely excluded from analysism: no issues, no coverage, no duplication check:
+These patterns are completely excluded from analysis: no issues, no coverage, no duplication check:
 
 - **Migrations (`**/Migrations/**`):** Entity Framework Core migration history. Auto-generated code with no testable business logic, triggers false-positive-prone rules like `CA1861` (prefer static readonly array) that are inherent to how the EF Core scaffolder writes `Up()`/`Down()` methods.
 
