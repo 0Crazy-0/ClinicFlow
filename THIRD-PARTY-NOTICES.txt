@@ -24,15 +24,20 @@ THIRD-PARTY COMPONENTS
    - Authors: tonerdo
    - Project: https://github.com/coverlet-coverage/coverlet
    - License: MIT
-   - Copyright: (c) 2018 Toni Solarin-Sodara
+    - Copyright: (c) 2018 Toni Solarin-Sodara
 
-4. FluentValidation.DependencyInjectionExtensions (v12.1.1)
+4. EFCore.ComplexIndexes (v4.0.0)
+   - Authors: Ricardo Groß
+   - Project: https://github.com/CaffeinatedCoder/EFCore.ComplexIndexes
+   - License: MIT
+
+5. FluentValidation.DependencyInjectionExtensions (v12.1.1)
    - Authors: Jeremy Skinner
    - Project: https://fluentvalidation.net/
    - License: Apache-2.0
    - Copyright: Copyright (c) Jeremy Skinner, .NET Foundation, and contributors 2008-2025
 
-5. MediatR (v14.1.0)
+6. MediatR (v14.1.0)
    - Authors: Jimmy Bogard / Lucky Penny Software
    - Project: https://mediatr.io/
    - License: Reciprocal Public License 1.5 (RPL-1.5) or Commercial
@@ -41,85 +46,85 @@ THIRD-PARTY COMPONENTS
      organizations with less than $5,000,000 USD in annual revenue
      under RPL-1.5; commercial license required above that threshold.
 
-6. Microsoft.EntityFrameworkCore (v10.0.8)
+7. Microsoft.EntityFrameworkCore (v10.0.8)
    - Authors: Microsoft
    - Project: https://docs.microsoft.com/ef/core/
    - License: MIT
    - Copyright: © Microsoft Corporation. All rights reserved.
 
-7. Microsoft.EntityFrameworkCore.Design (v10.0.8)
+8. Microsoft.EntityFrameworkCore.Design (v10.0.8)
    - Authors: Microsoft
    - Project: https://docs.microsoft.com/ef/core/
    - License: MIT
    - Copyright: © Microsoft Corporation. All rights reserved.
 
-8. Microsoft.EntityFrameworkCore.InMemory (v10.0.8)
+9. Microsoft.EntityFrameworkCore.InMemory (v10.0.8)
    - Authors: Microsoft
    - Project: https://docs.microsoft.com/ef/core/
    - License: MIT
    - Copyright: © Microsoft Corporation. All rights reserved.
 
-9. Microsoft.EntityFrameworkCore.Relational (v10.0.8)
+10. Microsoft.EntityFrameworkCore.Relational (v10.0.8)
    - Authors: Microsoft
    - Project: https://docs.microsoft.com/ef/core/
    - License: MIT
    - Copyright: © Microsoft Corporation. All rights reserved.
 
-10. Microsoft.Extensions.Configuration.Binder (v10.0.8)
+11. Microsoft.Extensions.Configuration.Binder (v10.0.8)
     - Authors: Microsoft
     - Project: https://dot.net/
     - License: MIT
     - Copyright: © Microsoft Corporation. All rights reserved.
 
-11. Microsoft.Extensions.DependencyInjection.Abstractions (v10.0.8)
+12. Microsoft.Extensions.DependencyInjection.Abstractions (v10.0.8)
     - Authors: Microsoft
     - Project: https://dot.net/
     - License: MIT
     - Copyright: © Microsoft Corporation. All rights reserved.
 
-12. Microsoft.Extensions.TimeProvider.Testing (v10.6.0)
+13. Microsoft.Extensions.TimeProvider.Testing (v10.6.0)
     - Authors: Microsoft
     - Project: https://dot.net/
     - License: MIT
     - Copyright: © Microsoft Corporation. All rights reserved.
 
-13. Microsoft.NET.Test.Sdk (v18.6.0)
+14. Microsoft.NET.Test.Sdk (v18.6.0)
     - Authors: Microsoft
     - Project: https://github.com/microsoft/vstest
     - License: MIT
     - Copyright: © Microsoft Corporation. All rights reserved.
 
-14. Moq (v4.20.72)
+15. Moq (v4.20.72)
     - Authors: Daniel Cazzulino, kzu
     - Project: https://github.com/moq/moq
     - License: BSD-3-Clause
     - Copyright: Copyright (c) 2007, Clarius Consulting, Manas Technology Solutions, InSTEDD, and Contributors. All rights reserved.
 
-15. Npgsql.EntityFrameworkCore.PostgreSQL (v10.0.2)
+16. Npgsql.EntityFrameworkCore.PostgreSQL (v10.0.2)
     - Authors: Shay Rojansky, Austin Drenski, Yoh Deadfall
     - Project: https://github.com/npgsql/efcore.pg
     - License: PostgreSQL License
     - Copyright: Copyright 2025 © The Npgsql Development Team
 
-16. Respawn (v7.0.0)
+17. Respawn (v7.0.0)
     - Authors: Jimmy Bogard
     - Project: https://github.com/jbogard/Respawn
     - License: Apache-2.0
     - Copyright: Copyright Jimmy Bogard
 
-17. Testcontainers.PostgreSql (v4.12.0)
+18. Testcontainers.PostgreSql (v4.12.0)
     - Authors: Andre Hofmeister and contributors
     - Project: https://dotnet.testcontainers.org/
     - License: MIT
     - Copyright: Copyright (c) 2019 - 2026 Andre Hofmeister and other authors
 
-18. xunit.v3 (v3.2.2)
+19. xunit.v3 (v3.2.2)
     - Authors: xunit
     - Project: https://github.com/xunit/xunit
     - License: Apache-2.0
     - Copyright: Copyright (c) .NET Foundation and Contributors
 
-19. xunit.runner.visualstudio (v3.1.5)
+20. xunit.runner.visualstudio (v3.1.5)
     - Authors: xunit
     - Project: https://github.com/xunit/xunit
     - License: Apache-2.0
