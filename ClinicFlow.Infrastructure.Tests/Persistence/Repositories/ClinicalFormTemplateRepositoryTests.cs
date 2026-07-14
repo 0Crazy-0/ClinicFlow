@@ -31,11 +31,7 @@ public class ClinicalFormTemplateRepositoryTests(PostgresFixture fixture) : IAsy
     public async Task GetByIdAsync_ShouldReturnTemplate_WhenExistsAndActive()
     {
         // Arrange
-        var template = CreateTemplate();
-
-        Context.ClinicalFormTemplates.Add(template);
-
-        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+        var template = await CreateTemplate();
 
         // Act
         var result = await _sut.GetByIdAsync(template.Id, TestContext.Current.CancellationToken);
@@ -68,11 +64,9 @@ public class ClinicalFormTemplateRepositoryTests(PostgresFixture fixture) : IAsy
     public async Task GetByIdAsync_ShouldReturnNull_WhenSoftDeleted()
     {
         // Arrange
-        var template = CreateTemplate();
+        var template = await CreateTemplate();
 
         template.Deactivate();
-
-        Context.ClinicalFormTemplates.Add(template);
 
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
@@ -87,11 +81,7 @@ public class ClinicalFormTemplateRepositoryTests(PostgresFixture fixture) : IAsy
     public async Task GetByCodeAsync_ShouldReturnTemplate_WhenExistsAndActive()
     {
         // Arrange
-        var template = CreateTemplate();
-
-        Context.ClinicalFormTemplates.Add(template);
-
-        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+        var template = await CreateTemplate();
 
         // Act
         var result = await _sut.GetByCodeAsync(
@@ -130,11 +120,9 @@ public class ClinicalFormTemplateRepositoryTests(PostgresFixture fixture) : IAsy
     public async Task GetByCodeAsync_ShouldReturnNull_WhenSoftDeleted()
     {
         // Arrange
-        var template = CreateTemplate();
+        var template = await CreateTemplate();
 
         template.Deactivate();
-
-        Context.ClinicalFormTemplates.Add(template);
 
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
@@ -152,11 +140,7 @@ public class ClinicalFormTemplateRepositoryTests(PostgresFixture fixture) : IAsy
     public async Task ExistsByCodeAsync_ShouldReturnTrue_WhenActiveExistsWithCode()
     {
         // Arrange
-        var template = CreateTemplate(code: "TEMP01");
-
-        Context.ClinicalFormTemplates.Add(template);
-
-        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+        await CreateTemplate(code: "TEMP01");
 
         // Act
         var result = await _sut.ExistsByCodeAsync("TEMP01", TestContext.Current.CancellationToken);
@@ -169,11 +153,9 @@ public class ClinicalFormTemplateRepositoryTests(PostgresFixture fixture) : IAsy
     public async Task ExistsByCodeAsync_ShouldReturnFalse_WhenNoActiveWithCode()
     {
         // Arrange
-        var template = CreateTemplate(code: "TEMP01");
+        var template = await CreateTemplate(code: "TEMP01");
 
         template.Deactivate();
-
-        Context.ClinicalFormTemplates.Add(template);
 
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
@@ -188,11 +170,7 @@ public class ClinicalFormTemplateRepositoryTests(PostgresFixture fixture) : IAsy
     public async Task ExistsByNameAsync_ShouldReturnTrue_WhenActiveExistsWithName()
     {
         // Arrange
-        var template = CreateTemplate(name: "Vitals Form");
-
-        Context.ClinicalFormTemplates.Add(template);
-
-        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+        await CreateTemplate(name: "Vitals Form");
 
         // Act
         var result = await _sut.ExistsByNameAsync(
@@ -208,11 +186,9 @@ public class ClinicalFormTemplateRepositoryTests(PostgresFixture fixture) : IAsy
     public async Task ExistsByNameAsync_ShouldReturnFalse_WhenNoActiveWithName()
     {
         // Arrange
-        var template = CreateTemplate(name: "Vitals Form");
+        var template = await CreateTemplate(name: "Vitals Form");
 
         template.Deactivate();
-
-        Context.ClinicalFormTemplates.Add(template);
 
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
@@ -230,11 +206,9 @@ public class ClinicalFormTemplateRepositoryTests(PostgresFixture fixture) : IAsy
     public async Task GetByIdIncludingDeletedAsync_ShouldReturnSoftDeletedTemplate()
     {
         // Arrange
-        var template = CreateTemplate(code: "pene grande 123");
+        var template = await CreateTemplate();
 
         template.Deactivate();
-
-        Context.ClinicalFormTemplates.Add(template);
 
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
@@ -274,12 +248,9 @@ public class ClinicalFormTemplateRepositoryTests(PostgresFixture fixture) : IAsy
         // Arrange
         // Duplicate names are prevented at the handler level (see DomainErrors.ClinicalFormTemplate.NameAlreadyExists).
         // Two are seeded here only to test the repository's exclusion logic in isolation.
-        var template1 = CreateTemplate(code: "TEMP01", name: "FormName");
-        var template2 = CreateTemplate(code: "TEMP02", name: "FormName");
+        var template1 = await CreateTemplate(code: "TEMP01", name: "FormName");
 
-        Context.ClinicalFormTemplates.AddRange(template1, template2);
-
-        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+        await CreateTemplate(code: "TEMP02", name: "FormName");
 
         // Act
         var result = await _sut.ExistsByNameExcludingAsync(
@@ -296,11 +267,7 @@ public class ClinicalFormTemplateRepositoryTests(PostgresFixture fixture) : IAsy
     public async Task ExistsByNameExcludingAsync_ShouldReturnFalse_WhenOnlySelfMatchesName()
     {
         // Arrange
-        var template = CreateTemplate(name: "FormName");
-
-        Context.ClinicalFormTemplates.Add(template);
-
-        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+        var template = await CreateTemplate(name: "FormName");
 
         // Act
         var result = await _sut.ExistsByNameExcludingAsync(
@@ -317,13 +284,11 @@ public class ClinicalFormTemplateRepositoryTests(PostgresFixture fixture) : IAsy
     public async Task GetAllActiveAsync_ShouldReturnOnlyActiveTemplates()
     {
         // Arrange
-        var active1 = CreateTemplate(code: "TEMP01");
-        var active2 = CreateTemplate(code: "TEMP02");
-        var inactive = CreateTemplate(code: "TEMP03");
+        var active1 = await CreateTemplate(code: "TEMP01");
+        var active2 = await CreateTemplate(code: "TEMP02");
+        var inactive = await CreateTemplate(code: "TEMP03");
 
         inactive.Deactivate();
-
-        Context.ClinicalFormTemplates.AddRange(active1, active2, inactive);
 
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
@@ -338,13 +303,11 @@ public class ClinicalFormTemplateRepositoryTests(PostgresFixture fixture) : IAsy
     public async Task GetAllIncludingDeletedAsync_ShouldReturnAllActiveAndDeletedTemplates()
     {
         // Arrange
-        var active1 = CreateTemplate(code: "TEMP01");
-        var active2 = CreateTemplate(code: "TEMP02");
-        var inactive = CreateTemplate(code: "TEMP03");
+        var active1 = await CreateTemplate(code: "TEMP01");
+        var active2 = await CreateTemplate(code: "TEMP02");
+        var inactive = await CreateTemplate(code: "TEMP03");
 
         inactive.Deactivate();
-
-        Context.ClinicalFormTemplates.AddRange(active1, active2, inactive);
 
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
@@ -359,18 +322,14 @@ public class ClinicalFormTemplateRepositoryTests(PostgresFixture fixture) : IAsy
     public async Task CreateAsync_ShouldAddTemplateToContext()
     {
         // Arrange
-        var template = CreateTemplate();
+        var template = await CreateTemplate();
 
         // Act
-        await _sut.CreateAsync(template, TestContext.Current.CancellationToken);
-
-        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
-
-        // Assert
         var dbResult = await Context
             .ClinicalFormTemplates.AsNoTracking()
             .FirstOrDefaultAsync(c => c.Id == template.Id, TestContext.Current.CancellationToken);
 
+        // Assert
         dbResult.Should().NotBeNull();
         dbResult.Code.Should().Be(template.Code);
         dbResult.Name.Should().Be(template.Name);
@@ -380,12 +339,20 @@ public class ClinicalFormTemplateRepositoryTests(PostgresFixture fixture) : IAsy
         AssertJsonEquivalent(dbResult.JsonSchemaDefinition, template.JsonSchemaDefinition);
     }
 
-    private static ClinicalFormTemplate CreateTemplate(
+    private async Task<ClinicalFormTemplate> CreateTemplate(
         string code = "TEMP99",
         string name = "Default Template",
         string description = "Default Description",
         string jsonSchema = """{"type": "object"}"""
-    ) => ClinicalFormTemplate.Create(code, name, description, jsonSchema);
+    )
+    {
+        var template = ClinicalFormTemplate.Create(code, name, description, jsonSchema);
+
+        Context.ClinicalFormTemplates.Add(template);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        return template;
+    }
 
     private static void AssertJsonEquivalent(string actualJson, string expectedJson)
     {
