@@ -23,6 +23,7 @@ Use the following template:
 - [ ] Bug fix
 - [ ] New feature
 - [ ] Refactor
+- [ ] Performance
 - [ ] Test / QA
 - [ ] Documentation
 - [ ] Tooling
@@ -108,12 +109,14 @@ Bad — treats domain rules as optional examples:
 
 ## Type of Change Rules
 
+- **Bug fix**: Select when the PR fixes incorrect behavior.
 - **New feature**: Select this alone when delivering a feature, even if it includes tests and XML documentation — those are expected to accompany any feature.
+- **Refactor**: Select for structural improvements that do not change behavior.
+- **Performance**: Select for changes that improve execution speed, memory footprint, or resource utilization.
 - **Test / QA**: Select when the PR exclusively adds, refactors, or modifies tests. If tests are refactored without adding new coverage, combine with `Refactor`.
 - **Documentation**: Select only for XML documentation additions or official documentation files (README, guides). Inline `//` comments do not count.
-- **Refactor**: Select for structural improvements that do not change behavior.
-- **Bug fix**: Select when the PR fixes incorrect behavior.
-- **Style / Tooling**: Select for formatting, linting, CI/CD, or tooling changes.
+- **Tooling**: Select for CI/CD, build setups, dependency updates, or tooling configurations.
+- **Style**: Select for formatting, linting, or non-functional styling adjustments.
 
 Mark only what applies — do not over-select.
 
