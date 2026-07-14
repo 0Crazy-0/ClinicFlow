@@ -7,13 +7,47 @@ on:
     branches: ["main"]
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      domain: ${{ steps.filter.outputs.domain }}
+      application: ${{ steps.filter.outputs.application }}
+      infrastructure: ${{ steps.filter.outputs.infrastructure }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: dorny/paths-filter@7b450fff21473bca461d4b92ce414b9d0420d706 # v4.0.2
+        id: filter
+        with:
+          filters: |
+            domain:
+              - 'ClinicFlow.Domain/**'
+              - 'ClinicFlow.Domain.Tests/**'
+            application:
+              - 'ClinicFlow.Application/**'
+              - 'ClinicFlow.Application.Tests/**'
+            infrastructure:
+              - 'ClinicFlow.Infrastructure/**'
+              - 'ClinicFlow.Infrastructure.Tests/**'
+
   mutation-testing:
+    needs: changes
     runs-on: ubuntu-latest
     permissions:
       checks: write
+    env:
+      STRYKER_DASHBOARD_API_KEY: ${{ secrets.STRYKER_DASHBOARD_API_KEY }}
+      DOTNET_ROLL_FORWARD: LatestMajor
+      PR_BRANCH: ${{ github.head_ref }}
+      BASE_BRANCH: ${{ github.base_ref }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
+          persist-credentials: false
           fetch-depth: 0
 
       - name: Setup .NET
@@ -30,33 +64,32 @@ jobs:
       - name: Run Stryker (main — save baseline)
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         env:
-          STRYKER_DASHBOARD_API_KEY: ${{ secrets.STRYKER_DASHBOARD_API_KEY }}
           REPO_NAME: ${{ github.repository }}
-          DOTNET_ROLL_FORWARD: LatestMajor
         run: |
           projects=("ClinicFlow.Domain.Tests" "ClinicFlow.Application.Tests" "ClinicFlow.Infrastructure.Tests")
           for proj in "${projects[@]}"; do
-            echo "===== $proj ====="
             cd "$proj"
             ../tools/dotnet-stryker --version main
             cd ..
           done
 
-      - name: Run Stryker (PR — baseline compare)
-        if: github.event_name == 'pull_request'
-        env:
-          STRYKER_DASHBOARD_API_KEY: ${{ secrets.STRYKER_DASHBOARD_API_KEY }}
-          PR_BRANCH: ${{ github.head_ref }}
-          BASE_BRANCH: ${{ github.base_ref }}
-          DOTNET_ROLL_FORWARD: LatestMajor
+      - name: Run Stryker Domain (PR)
+        if: github.event_name == 'pull_request' && needs.changes.outputs.domain == 'true'
         run: |
-          projects=("ClinicFlow.Domain.Tests" "ClinicFlow.Application.Tests" "ClinicFlow.Infrastructure.Tests")
-          for proj in "${projects[@]}"; do
-            echo "===== $proj ====="
-            cd "$proj"
-            ../tools/dotnet-stryker --with-baseline:"$BASE_BRANCH" --version "$PR_BRANCH"
-            cd ..
-          done
+          cd ClinicFlow.Domain.Tests
+          ../tools/dotnet-stryker --with-baseline:"$BASE_BRANCH" --version "$PR_BRANCH"
+
+      - name: Run Stryker Application (PR)
+        if: github.event_name == 'pull_request' && needs.changes.outputs.application == 'true'
+        run: |
+          cd ClinicFlow.Application.Tests
+          ../tools/dotnet-stryker --with-baseline:"$BASE_BRANCH" --version "$PR_BRANCH"
+
+      - name: Run Stryker Infrastructure (PR)
+        if: github.event_name == 'pull_request' && needs.changes.outputs.infrastructure == 'true'
+        run: |
+          cd ClinicFlow.Infrastructure.Tests
+          ../tools/dotnet-stryker --with-baseline:"$BASE_BRANCH" --version "$PR_BRANCH"
 
       - name: Upload HTML report
         if: always()
