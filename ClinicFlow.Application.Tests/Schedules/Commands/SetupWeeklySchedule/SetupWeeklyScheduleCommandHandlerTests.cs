@@ -1,5 +1,6 @@
 using AwesomeAssertions;
 using ClinicFlow.Application.Schedules.Commands.SetupWeeklySchedule;
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Exceptions.Scheduling;
 using ClinicFlow.Domain.Interfaces;
@@ -133,10 +134,16 @@ public class SetupWeeklyScheduleCommandHandlerTests
         var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
-        await act.Should().ThrowAsync<ScheduleAlreadyExistsException>();
+        await act.Should()
+            .ThrowAsync<ScheduleAlreadyExistsException>()
+            .WithMessage(DomainErrors.Schedule.ScheduleAlreadyExists);
 
         _scheduleRepositoryMock.Verify(
-            x => x.CreateRangeAsync(It.IsAny<List<Schedule>>(), It.IsAny<CancellationToken>()),
+            x =>
+                x.CreateRangeAsync(
+                    It.IsAny<IReadOnlyList<Schedule>>(),
+                    It.IsAny<CancellationToken>()
+                ),
             Times.Never
         );
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
