@@ -1,5 +1,6 @@
 using System.Globalization;
 using AwesomeAssertions;
+using ClinicFlow.Application.Users.Queries.DTOs;
 using ClinicFlow.Application.Users.Queries.GetLockedOutUsers;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
@@ -50,21 +51,22 @@ public class GetLockedOutUsersQueryHandlerTests
         );
 
         // Assert
-        result.Should().NotBeNull();
+        var expectedDtos = new List<User> { lockedUser }.Select(user => new UserDto(
+            user.Id,
+            user.Email.Value,
+            user.PhoneNumber.Value,
+            user.Role,
+            user.IsActive,
+            user.IsPhoneVerified,
+            user.LastLoginAt,
+            user.FailedLoginAttempts,
+            user.LockoutEnd
+        ));
+
+        result.Items.Should().BeEquivalentTo(expectedDtos);
         result.TotalCount.Should().Be(1);
         result.PageNumber.Should().Be(1);
-        result.Items.Should().ContainSingle();
-
-        var dto = result.Items.First();
-        dto.Id.Should().Be(lockedUser.Id);
-        dto.Email.Should().Be(lockedUser.Email.Value);
-        dto.PhoneNumber.Should().Be(lockedUser.PhoneNumber.Value);
-        dto.Role.Should().Be(lockedUser.Role);
-        dto.IsActive.Should().Be(lockedUser.IsActive);
-        dto.IsPhoneVerified.Should().Be(lockedUser.IsPhoneVerified);
-        dto.LastLoginAt.Should().Be(lockedUser.LastLoginAt);
-        dto.FailedLoginAttempts.Should().Be(lockedUser.FailedLoginAttempts);
-        dto.LockoutEnd.Should().Be(lockedUser.LockoutEnd);
+        result.TotalPages.Should().Be(1);
 
         _userRepositoryMock.Verify(
             x =>
@@ -100,9 +102,9 @@ public class GetLockedOutUsersQueryHandlerTests
         );
 
         // Assert
-        result.Should().NotBeNull();
         result.Items.Should().BeEmpty();
         result.TotalCount.Should().Be(0);
+        result.PageNumber.Should().Be(1);
         result.TotalPages.Should().Be(0);
 
         _userRepositoryMock.Verify(

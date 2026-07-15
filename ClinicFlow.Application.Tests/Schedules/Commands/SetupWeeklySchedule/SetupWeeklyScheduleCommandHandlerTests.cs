@@ -57,14 +57,20 @@ public class SetupWeeklyScheduleCommandHandlerTests
         var result = await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
-        result.Should().HaveCount(3);
-        result.Should().AllSatisfy(id => id.Should().NotBeEmpty());
         capturedSchedules.Should().NotBeNull();
-        capturedSchedules.Should().HaveCount(3);
-        capturedSchedules[0].DoctorId.Should().Be(doctorId);
-        capturedSchedules[0].DayOfWeek.Should().Be(DayOfWeek.Monday);
-        capturedSchedules[1].DayOfWeek.Should().Be(DayOfWeek.Wednesday);
-        capturedSchedules[2].DayOfWeek.Should().Be(DayOfWeek.Friday);
+
+        var expectedSchedules = command.Slots.Select(slot => new
+        {
+            DoctorId = doctorId,
+            slot.DayOfWeek,
+        });
+
+        capturedSchedules
+            .Select(s => new { s.DoctorId, s.DayOfWeek })
+            .Should()
+            .BeEquivalentTo(expectedSchedules);
+
+        result.Should().BeEquivalentTo(capturedSchedules.Select(s => s.Id));
     }
 
     [Fact]

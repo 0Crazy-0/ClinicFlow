@@ -1,4 +1,5 @@
 using AwesomeAssertions;
+using ClinicFlow.Application.Appointments.Queries.DTOs;
 using ClinicFlow.Application.Appointments.Queries.GetAppointmentsByPatientId;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Interfaces.Repositories;
@@ -42,12 +43,23 @@ public class GetAppointmentsByPatientIdQueryHandlerTests
         var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
-        result.Should().NotBeNull();
+        var expectedDtos = appointments.Select(a => new AppointmentDto(
+            a.Id,
+            a.PatientId,
+            a.DoctorId,
+            a.AppointmentTypeId,
+            a.ScheduledDate,
+            a.TimeRange.Start,
+            a.TimeRange.End,
+            a.Status,
+            a.PatientNotes,
+            a.ReceptionistNotes
+        ));
+
+        result.Items.Should().BeEquivalentTo(expectedDtos);
         result.TotalCount.Should().Be(2);
         result.PageNumber.Should().Be(1);
         result.TotalPages.Should().Be(1);
-        result.Items.Should().HaveCount(2);
-        result.Items.Select(x => x.PatientId).Should().AllBeEquivalentTo(patientId);
 
         _appointmentRepositoryMock.Verify(
             x => x.GetByPatientIdPaginatedAsync(patientId, 1, 10, It.IsAny<CancellationToken>()),
@@ -76,9 +88,9 @@ public class GetAppointmentsByPatientIdQueryHandlerTests
         var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
-        result.Should().NotBeNull();
         result.Items.Should().BeEmpty();
         result.TotalCount.Should().Be(0);
+        result.PageNumber.Should().Be(1);
         result.TotalPages.Should().Be(0);
 
         _appointmentRepositoryMock.Verify(

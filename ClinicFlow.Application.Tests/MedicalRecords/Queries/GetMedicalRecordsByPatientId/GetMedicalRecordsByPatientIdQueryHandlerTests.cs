@@ -1,4 +1,5 @@
 using AwesomeAssertions;
+using ClinicFlow.Application.MedicalRecords.Queries.DTOs;
 using ClinicFlow.Application.MedicalRecords.Queries.GetMedicalRecordsByPatientId;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Interfaces.Repositories;
@@ -38,19 +39,26 @@ public class GetMedicalRecordsByPatientIdQueryHandlerTests
         var result = await _sut.Handle(request, TestContext.Current.CancellationToken);
 
         // Assert
-        result.Should().NotBeNull();
+        var expectedDtos = new List<MedicalRecord> { record1, record2 }.Select(
+            record => new MedicalRecordDto(
+                record.Id,
+                record.PatientId,
+                record.DoctorId,
+                record.AppointmentId,
+                record.ChiefComplaint,
+                [
+                    .. record.ClinicalDetails.Select(d => new ClinicalDetailDto(
+                        d.TemplateCode,
+                        d.JsonDataPayload
+                    )),
+                ]
+            )
+        );
+
+        result.Items.Should().BeEquivalentTo(expectedDtos);
         result.TotalCount.Should().Be(2);
         result.PageNumber.Should().Be(1);
-        result.Items.Should().HaveCount(2);
-
-        var firstResult = result.Items.First(r => r.Id == record1.Id);
-        firstResult.PatientId.Should().Be(patientId);
-        firstResult.ChiefComplaint.Should().Be(record1.ChiefComplaint);
-        firstResult.ClinicalDetails.Should().ContainSingle();
-
-        var secondResult = result.Items.First(r => r.Id == record2.Id);
-        secondResult.ChiefComplaint.Should().Be(record2.ChiefComplaint);
-        secondResult.ClinicalDetails.Should().BeEmpty();
+        result.TotalPages.Should().Be(1);
 
         _medicalRecordRepositoryMock.Verify(
             x => x.GetByPatientIdPaginatedAsync(patientId, 1, 10, It.IsAny<CancellationToken>()),
@@ -79,9 +87,9 @@ public class GetMedicalRecordsByPatientIdQueryHandlerTests
         var result = await _sut.Handle(request, TestContext.Current.CancellationToken);
 
         // Assert
-        result.Should().NotBeNull();
         result.Items.Should().BeEmpty();
         result.TotalCount.Should().Be(0);
+        result.PageNumber.Should().Be(1);
         result.TotalPages.Should().Be(0);
 
         _medicalRecordRepositoryMock.Verify(

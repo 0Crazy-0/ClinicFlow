@@ -1,4 +1,5 @@
 using AwesomeAssertions;
+using ClinicFlow.Application.Penalties.Queries.DTOs;
 using ClinicFlow.Application.Penalties.Queries.GetActiveBlocksByPatientId;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
@@ -49,13 +50,17 @@ public class GetActiveBlocksByPatientIdQueryHandlerTests
         var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().ContainSingle();
+        var expectedDtos = new List<PatientPenalty> { block }.Select(p => new PatientPenaltyDto(
+            p.Id,
+            p.PatientId,
+            p.AppointmentId,
+            p.Type.ToString(),
+            p.Reason,
+            p.BlockedUntil,
+            p.IsRemoved
+        ));
 
-        var resultList = result.ToList();
-        resultList[0].Id.Should().Be(block.Id);
-        resultList[0].PatientId.Should().Be(patientId);
-        resultList[0].Type.Should().Be(nameof(PenaltyType.TemporaryBlock));
+        result.Should().BeEquivalentTo(expectedDtos);
 
         _penaltyRepositoryMock.Verify(
             x =>
@@ -91,7 +96,6 @@ public class GetActiveBlocksByPatientIdQueryHandlerTests
         var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
-        result.Should().NotBeNull();
         result.Should().BeEmpty();
 
         _penaltyRepositoryMock.Verify(

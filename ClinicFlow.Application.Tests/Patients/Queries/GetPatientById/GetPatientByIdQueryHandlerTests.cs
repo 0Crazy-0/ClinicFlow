@@ -1,4 +1,5 @@
 using AwesomeAssertions;
+using ClinicFlow.Application.Patients.Queries.DTOs;
 using ClinicFlow.Application.Patients.Queries.GetPatientById;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
@@ -49,12 +50,20 @@ public class GetPatientByIdQueryHandlerTests
         var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Id.Should().Be(patientId);
-        result.FullName.Should().Be(patient.FullName.FullName);
-        result.BloodType.Should().Be(patient.BloodType.Value);
-        result.EmergencyContactName.Should().Be("Jane");
-        result.EmergencyContactPhone.Should().Be("555-1234");
+        var expectedDto = new PatientDto(
+            patient.Id,
+            patient.UserId,
+            patient.FullName.FullName,
+            patient.RelationshipToUser,
+            patient.DateOfBirth,
+            patient.BloodType?.Value,
+            patient.Allergies,
+            patient.ChronicConditions,
+            patient.EmergencyContact?.Name.ToString(),
+            patient.EmergencyContact?.PhoneNumber.ToString()
+        );
+
+        result.Should().BeEquivalentTo(expectedDto);
 
         _patientRepositoryMock.Verify(
             x => x.GetByIdAsync(patientId, It.IsAny<CancellationToken>()),
@@ -84,14 +93,20 @@ public class GetPatientByIdQueryHandlerTests
         var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Id.Should().Be(patientId);
-        result.FullName.Should().Be(patient.FullName.FullName);
-        result.BloodType.Should().BeNull();
-        result.Allergies.Should().Be(string.Empty);
-        result.ChronicConditions.Should().Be(string.Empty);
-        result.EmergencyContactName.Should().BeNull();
-        result.EmergencyContactPhone.Should().BeNull();
+        var expectedDto = new PatientDto(
+            patient.Id,
+            patient.UserId,
+            patient.FullName.FullName,
+            patient.RelationshipToUser,
+            patient.DateOfBirth,
+            patient.BloodType?.Value,
+            patient.Allergies,
+            patient.ChronicConditions,
+            patient.EmergencyContact?.Name.ToString(),
+            patient.EmergencyContact?.PhoneNumber.ToString()
+        );
+
+        result.Should().BeEquivalentTo(expectedDto);
 
         _patientRepositoryMock.Verify(
             x => x.GetByIdAsync(patientId, It.IsAny<CancellationToken>()),

@@ -1,4 +1,5 @@
 using AwesomeAssertions;
+using ClinicFlow.Application.Users.Queries.DTOs;
 using ClinicFlow.Application.Users.Queries.GetUsers;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
@@ -38,15 +39,22 @@ public class GetUsersQueryHandlerTests
         var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
-        result.Should().NotBeNull();
+        var expectedDtos = users.Select(user => new UserDto(
+            user.Id,
+            user.Email.Value,
+            user.PhoneNumber.Value,
+            user.Role,
+            user.IsActive,
+            user.IsPhoneVerified,
+            user.LastLoginAt,
+            user.FailedLoginAttempts,
+            user.LockoutEnd
+        ));
+
+        result.Items.Should().BeEquivalentTo(expectedDtos);
         result.TotalCount.Should().Be(2);
         result.PageNumber.Should().Be(1);
         result.TotalPages.Should().Be(1);
-
-        var items = result.Items.ToList();
-        items[0].Role.Should().Be(UserRole.Patient);
-        items[1].Role.Should().Be(UserRole.Doctor);
-        items.Should().HaveCount(2);
 
         _userRepositoryMock.Verify(
             x => x.GetPaginatedAsync(1, 10, null, null, null, It.IsAny<CancellationToken>()),
@@ -77,9 +85,9 @@ public class GetUsersQueryHandlerTests
         var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
-        result.Should().NotBeNull();
         result.Items.Should().BeEmpty();
         result.TotalCount.Should().Be(0);
+        result.PageNumber.Should().Be(1);
         result.TotalPages.Should().Be(0);
 
         _userRepositoryMock.Verify(
@@ -92,37 +100,6 @@ public class GetUsersQueryHandlerTests
                     null,
                     It.IsAny<CancellationToken>()
                 ),
-            Times.Once
-        );
-    }
-
-    [Fact]
-    public async Task Handle_ShouldMapUserPropertiesCorrectly()
-    {
-        // Arrange
-        var user = CreateUser("admin@clinic.com", "333-3333", UserRole.Admin);
-        var users = new List<User> { user };
-
-        _userRepositoryMock
-            .Setup(x => x.GetPaginatedAsync(1, 10, null, null, null, It.IsAny<CancellationToken>()))
-            .ReturnsAsync((users, 1));
-
-        var query = new GetUsersQuery(1, 10, null, null, null);
-
-        // Act
-        var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
-
-        // Assert
-        var dto = result.Items.First();
-        dto.Id.Should().Be(user.Id);
-        dto.Email.Should().Be(user.Email.Value);
-        dto.PhoneNumber.Should().Be(user.PhoneNumber.Value);
-        dto.Role.Should().Be(user.Role);
-        dto.IsActive.Should().Be(user.IsActive);
-        dto.IsPhoneVerified.Should().Be(user.IsPhoneVerified);
-
-        _userRepositoryMock.Verify(
-            x => x.GetPaginatedAsync(1, 10, null, null, null, It.IsAny<CancellationToken>()),
             Times.Once
         );
     }

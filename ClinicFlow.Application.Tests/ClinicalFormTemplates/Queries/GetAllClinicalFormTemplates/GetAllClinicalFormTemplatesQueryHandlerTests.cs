@@ -1,4 +1,5 @@
 using AwesomeAssertions;
+using ClinicFlow.Application.ClinicalFormTemplates.Queries.DTOs;
 using ClinicFlow.Application.ClinicalFormTemplates.Queries.GetAllClinicalFormTemplates;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Interfaces.Repositories;
@@ -45,9 +46,20 @@ public class GetAllClinicalFormTemplatesQueryHandlerTests
         var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
-        result.Should().HaveCount(2);
-        result[0].IsDeleted.Should().BeFalse();
-        result[1].IsDeleted.Should().BeTrue();
+        var expectedDtos = new List<ClinicalFormTemplate>
+        {
+            activeTemplate,
+            inactiveTemplate,
+        }.Select(template => new ClinicalFormTemplateDto(
+            template.Id,
+            template.Code,
+            template.Name,
+            template.Description,
+            template.JsonSchemaDefinition,
+            template.IsDeleted
+        ));
+
+        result.Should().BeEquivalentTo(expectedDtos);
 
         _repositoryMock.Verify(
             x => x.GetAllIncludingDeletedAsync(It.IsAny<CancellationToken>()),
@@ -70,7 +82,6 @@ public class GetAllClinicalFormTemplatesQueryHandlerTests
         );
 
         // Assert
-        result.Should().NotBeNull();
         result.Should().BeEmpty();
 
         _repositoryMock.Verify(

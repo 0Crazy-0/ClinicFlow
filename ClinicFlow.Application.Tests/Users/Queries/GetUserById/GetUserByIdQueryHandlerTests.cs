@@ -1,4 +1,5 @@
 using AwesomeAssertions;
+using ClinicFlow.Application.Users.Queries.DTOs;
 using ClinicFlow.Application.Users.Queries.GetUserById;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
@@ -42,16 +43,19 @@ public class GetUserByIdQueryHandlerTests
         );
 
         // Assert
-        result.Should().NotBeNull();
-        result.Id.Should().Be(user.Id);
-        result.Email.Should().Be(user.Email.Value);
-        result.PhoneNumber.Should().Be(user.PhoneNumber.Value);
-        result.Role.Should().Be(user.Role);
-        result.IsActive.Should().Be(user.IsActive);
-        result.IsPhoneVerified.Should().Be(user.IsPhoneVerified);
-        result.LastLoginAt.Should().BeNull();
-        result.FailedLoginAttempts.Should().Be(0);
-        result.LockoutEnd.Should().BeNull();
+        var expectedDto = new UserDto(
+            user.Id,
+            user.Email.Value,
+            user.PhoneNumber.Value,
+            user.Role,
+            user.IsActive,
+            user.IsPhoneVerified,
+            user.LastLoginAt,
+            user.FailedLoginAttempts,
+            user.LockoutEnd
+        );
+
+        result.Should().BeEquivalentTo(expectedDto);
 
         _userRepositoryMock.Verify(
             x => x.GetByIdAsync(user.Id, It.IsAny<CancellationToken>()),

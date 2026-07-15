@@ -1,4 +1,5 @@
 using AwesomeAssertions;
+using ClinicFlow.Application.Doctors.Queries.DTOs;
 using ClinicFlow.Application.Doctors.Queries.GetDoctorByUserId;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
@@ -45,15 +46,19 @@ public class GetDoctorByUserIdQueryHandlerTests
         );
 
         // Assert
-        result.Should().NotBeNull();
-        result.Id.Should().Be(doctor.Id);
-        result.UserId.Should().Be(userId);
-        result.FullName.Should().Be(doctor.FullName.FullName);
-        result.LicenseNumber.Should().Be(doctor.LicenseNumber.Value);
-        result.Biography.Should().Be(doctor.Biography);
-        result.ConsultationRoomNumber.Should().Be(doctor.ConsultationRoom.Number);
-        result.ConsultationRoomName.Should().Be(doctor.ConsultationRoom.Name);
-        result.ConsultationRoomFloor.Should().Be(doctor.ConsultationRoom.Floor);
+        var expectedDto = new DoctorDto(
+            doctor.Id,
+            doctor.UserId,
+            doctor.FullName.FullName,
+            doctor.MedicalSpecialtyId,
+            doctor.LicenseNumber.Value,
+            doctor.Biography,
+            doctor.ConsultationRoom.Number,
+            doctor.ConsultationRoom.Name,
+            doctor.ConsultationRoom.Floor
+        );
+
+        result.Should().BeEquivalentTo(expectedDto);
 
         _doctorRepositoryMock.Verify(
             x => x.GetByUserIdAsync(userId, It.IsAny<CancellationToken>()),

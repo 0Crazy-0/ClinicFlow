@@ -1,4 +1,5 @@
 using AwesomeAssertions;
+using ClinicFlow.Application.MedicalSpecialties.Queries.DTOs;
 using ClinicFlow.Application.MedicalSpecialties.Queries.GetMedicalSpecialtyById;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
@@ -40,12 +41,16 @@ public class GetMedicalSpecialtyByIdQueryHandlerTests
         var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Id.Should().Be(specialty.Id);
-        result.Name.Should().Be(specialty.Name);
-        result.Description.Should().Be(specialty.Description);
-        result.TypicalDurationMinutes.Should().Be(specialty.TypicalDuration.Minutes);
-        result.MinCancellationHours.Should().Be(specialty.CancellationPolicy.Hours);
+        var expectedDto = new MedicalSpecialtyDto(
+            specialty.Id,
+            specialty.Name,
+            specialty.Description,
+            specialty.TypicalDuration.Minutes,
+            specialty.CancellationPolicy.Hours,
+            specialty.IsDeleted
+        );
+
+        result.Should().BeEquivalentTo(expectedDto);
 
         _repositoryMock.Verify(
             x => x.GetByIdAsync(specialty.Id, It.IsAny<CancellationToken>()),

@@ -1,4 +1,5 @@
 using AwesomeAssertions;
+using ClinicFlow.Application.Schedules.Queries.DTOs;
 using ClinicFlow.Application.Schedules.Queries.GetScheduleByDoctorAndDay;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Interfaces.Repositories;
@@ -42,12 +43,16 @@ public class GetScheduleByDoctorAndDayQueryHandlerTests
         var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
-        result.Should().NotBeNull();
-        result!.DoctorId.Should().Be(doctorId);
-        result.DayOfWeek.Should().Be(DayOfWeek.Tuesday);
-        result.StartTime.Should().Be(new TimeOnly(9, 0));
-        result.EndTime.Should().Be(new TimeOnly(14, 0));
-        result.IsActive.Should().BeTrue();
+        var expectedDto = new ScheduleDto(
+            schedule.Id,
+            schedule.DoctorId,
+            schedule.DayOfWeek,
+            schedule.TimeRange.Start,
+            schedule.TimeRange.End,
+            schedule.IsActive
+        );
+
+        result.Should().BeEquivalentTo(expectedDto);
 
         _scheduleRepositoryMock.Verify(
             x => x.GetByDoctorAndDayAsync(doctorId, dayOfWeek, It.IsAny<CancellationToken>()),

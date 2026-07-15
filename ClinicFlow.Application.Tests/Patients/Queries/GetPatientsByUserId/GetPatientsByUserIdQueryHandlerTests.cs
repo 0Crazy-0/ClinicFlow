@@ -1,4 +1,5 @@
 using AwesomeAssertions;
+using ClinicFlow.Application.Patients.Queries.DTOs;
 using ClinicFlow.Application.Patients.Queries.GetPatientsByUserId;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
@@ -58,21 +59,20 @@ public class GetPatientsByUserIdQueryHandlerTests
         var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().HaveCount(2);
+        var expectedDtos = patients.Select(patient => new PatientDto(
+            patient.Id,
+            patient.UserId,
+            patient.FullName.FullName,
+            patient.RelationshipToUser,
+            patient.DateOfBirth,
+            patient.BloodType?.Value,
+            patient.Allergies,
+            patient.ChronicConditions,
+            patient.EmergencyContact?.Name.ToString(),
+            patient.EmergencyContact?.PhoneNumber.ToString()
+        ));
 
-        var resultList = result.ToList();
-        resultList[0].FullName.Should().Be("John Doe");
-        resultList[0].RelationshipToUser.Should().Be(PatientRelationship.Self);
-        resultList[0].BloodType.Should().Be("A+");
-        resultList[0].EmergencyContactName.Should().Be("Jane");
-        resultList[0].EmergencyContactPhone.Should().Be("555-1234");
-
-        resultList[1].FullName.Should().Be("Child Doe");
-        resultList[1].RelationshipToUser.Should().Be(PatientRelationship.Child);
-        resultList[1].BloodType.Should().Be("A+");
-        resultList[1].EmergencyContactName.Should().Be("Jane");
-        resultList[1].EmergencyContactPhone.Should().Be("555-1234");
+        result.Should().BeEquivalentTo(expectedDtos);
 
         _patientRepositoryMock.Verify(
             x => x.GetAllByUserIdAsync(userId, It.IsAny<CancellationToken>()),
@@ -111,15 +111,20 @@ public class GetPatientsByUserIdQueryHandlerTests
         var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().HaveCount(2);
+        var expectedDtos = patients.Select(patient => new PatientDto(
+            patient.Id,
+            patient.UserId,
+            patient.FullName.FullName,
+            patient.RelationshipToUser,
+            patient.DateOfBirth,
+            patient.BloodType?.Value,
+            patient.Allergies,
+            patient.ChronicConditions,
+            patient.EmergencyContact?.Name.ToString(),
+            patient.EmergencyContact?.PhoneNumber.ToString()
+        ));
 
-        var resultList = result.ToList();
-        resultList[0].BloodType.Should().BeNull();
-        resultList[0].EmergencyContactName.Should().BeNull();
-
-        resultList[1].BloodType.Should().BeNull();
-        resultList[1].EmergencyContactPhone.Should().BeNull();
+        result.Should().BeEquivalentTo(expectedDtos);
 
         _patientRepositoryMock.Verify(
             x => x.GetAllByUserIdAsync(userId, It.IsAny<CancellationToken>()),

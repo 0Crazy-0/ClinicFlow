@@ -1,4 +1,5 @@
 using AwesomeAssertions;
+using ClinicFlow.Application.MedicalRecords.Queries.DTOs;
 using ClinicFlow.Application.MedicalRecords.Queries.GetMedicalRecordByAppointmentId;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
@@ -43,12 +44,21 @@ public class GetMedicalRecordByAppointmentIdQueryHandlerTests
         var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Id.Should().Be(expectedRecord.Id);
-        result.PatientId.Should().Be(expectedRecord.PatientId);
-        result.DoctorId.Should().Be(expectedRecord.DoctorId);
-        result.AppointmentId.Should().Be(expectedRecord.AppointmentId);
-        result.ChiefComplaint.Should().Be(expectedRecord.ChiefComplaint);
+        var expectedDto = new MedicalRecordDto(
+            expectedRecord.Id,
+            expectedRecord.PatientId,
+            expectedRecord.DoctorId,
+            expectedRecord.AppointmentId,
+            expectedRecord.ChiefComplaint,
+            [
+                .. expectedRecord.ClinicalDetails.Select(d => new ClinicalDetailDto(
+                    d.TemplateCode,
+                    d.JsonDataPayload
+                )),
+            ]
+        );
+
+        result.Should().BeEquivalentTo(expectedDto);
 
         _medicalRecordRepositoryMock.Verify(
             x => x.GetByAppointmentIdAsync(appointmentId, TestContext.Current.CancellationToken),

@@ -1,4 +1,5 @@
 using AwesomeAssertions;
+using ClinicFlow.Application.Penalties.Queries.DTOs;
 using ClinicFlow.Application.Penalties.Queries.GetPenaltyHistoryByPatientId;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
@@ -54,18 +55,22 @@ public class GetPenaltyHistoryByPatientIdQueryHandlerTests
         var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
-        result.Should().NotBeNull();
+        var expectedDtos = new List<PatientPenalty> { warning, block }.Select(
+            p => new PatientPenaltyDto(
+                p.Id,
+                p.PatientId,
+                p.AppointmentId,
+                p.Type.ToString(),
+                p.Reason,
+                p.BlockedUntil,
+                p.IsRemoved
+            )
+        );
+
+        result.Items.Should().BeEquivalentTo(expectedDtos);
         result.TotalCount.Should().Be(2);
         result.PageNumber.Should().Be(1);
-        result.Items.Should().HaveCount(2);
-
-        var resultList = result.Items.ToList();
-        resultList[0].Id.Should().Be(warning.Id);
-        resultList[0].PatientId.Should().Be(patientId);
-        resultList[0].Type.Should().Be(nameof(PenaltyType.Warning));
-
-        resultList[1].Id.Should().Be(block.Id);
-        resultList[1].Type.Should().Be(nameof(PenaltyType.TemporaryBlock));
+        result.TotalPages.Should().Be(1);
 
         _penaltyRepositoryMock.Verify(
             x =>
@@ -102,9 +107,9 @@ public class GetPenaltyHistoryByPatientIdQueryHandlerTests
         var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
-        result.Should().NotBeNull();
         result.Items.Should().BeEmpty();
         result.TotalCount.Should().Be(0);
+        result.PageNumber.Should().Be(1);
         result.TotalPages.Should().Be(0);
 
         _penaltyRepositoryMock.Verify(

@@ -1,5 +1,7 @@
 using AwesomeAssertions;
+using ClinicFlow.Application.AppointmentTypes.Queries.DTOs;
 using ClinicFlow.Application.AppointmentTypes.Queries.GetAllActiveAppointmentTypes;
+using ClinicFlow.Application.ClinicalFormTemplates.Queries.DTOs;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Interfaces.Repositories;
@@ -54,23 +56,32 @@ public class GetAllActiveAppointmentTypesQueryHandlerTests
         var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
-        result.Should().HaveCount(2);
-        result[0].Name.Should().Be(type1.Name);
-        result[0].IsUnrestrictedBySpecialty.Should().BeTrue();
-        result[0].AllowedSpecialtyIds.Should().BeEmpty();
-        result[0].RequiredTemplates.Should().ContainSingle();
-        result[1].Name.Should().Be(type2.Name);
-        result[1].IsUnrestrictedBySpecialty.Should().BeTrue();
-        result[1].AllowedSpecialtyIds.Should().BeEmpty();
-        result[1].RequiredTemplates.Should().BeEmpty();
+        var expectedDtos = new List<AppointmentTypeDefinition> { type1, type2 }.Select(
+            appointmentType => new AppointmentTypeDto(
+                appointmentType.Id,
+                appointmentType.Category.ToString(),
+                appointmentType.Name,
+                appointmentType.Description,
+                appointmentType.Duration.Minutes,
+                appointmentType.AgePolicy.MinimumAge,
+                appointmentType.AgePolicy.MaximumAge,
+                appointmentType.AgePolicy.RequiresLegalGuardian,
+                appointmentType.IsUnrestrictedBySpecialty,
+                appointmentType.AllowedSpecialtyIds,
+                [
+                    .. appointmentType.RequiredTemplates.Select(t => new ClinicalFormTemplateDto(
+                        t.Id,
+                        t.Code,
+                        t.Name,
+                        t.Description,
+                        t.JsonSchemaDefinition,
+                        t.IsDeleted
+                    )),
+                ]
+            )
+        );
 
-        var mappedTemplate = result[0].RequiredTemplates.First();
-        mappedTemplate.Id.Should().Be(template.Id);
-        mappedTemplate.Code.Should().Be(template.Code);
-        mappedTemplate.Name.Should().Be(template.Name);
-        mappedTemplate.Description.Should().Be(template.Description);
-        mappedTemplate.JsonSchemaDefinition.Should().Be(template.JsonSchemaDefinition);
-        mappedTemplate.IsDeleted.Should().BeFalse();
+        result.Should().BeEquivalentTo(expectedDtos);
 
         _repositoryMock.Verify(x => x.GetAllActiveAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -90,7 +101,6 @@ public class GetAllActiveAppointmentTypesQueryHandlerTests
         );
 
         // Assert
-        result.Should().NotBeNull();
         result.Should().BeEmpty();
 
         _repositoryMock.Verify(x => x.GetAllActiveAsync(It.IsAny<CancellationToken>()), Times.Once);

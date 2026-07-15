@@ -1,4 +1,5 @@
 using AwesomeAssertions;
+using ClinicFlow.Application.Doctors.Queries.DTOs;
 using ClinicFlow.Application.Doctors.Queries.GetDoctorsBySpecialtyId;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Interfaces.Repositories;
@@ -54,20 +55,22 @@ public class GetDoctorsBySpecialtyIdQueryHandlerTests
         );
 
         // Assert
-        result.Should().NotBeNull();
+        var expectedDtos = new List<Doctor> { doctor1, doctor2 }.Select(doctor => new DoctorDto(
+            doctor.Id,
+            doctor.UserId,
+            doctor.FullName.FullName,
+            doctor.MedicalSpecialtyId,
+            doctor.LicenseNumber.Value,
+            doctor.Biography,
+            doctor.ConsultationRoom.Number,
+            doctor.ConsultationRoom.Name,
+            doctor.ConsultationRoom.Floor
+        ));
+
+        result.Items.Should().BeEquivalentTo(expectedDtos);
         result.TotalCount.Should().Be(2);
         result.PageNumber.Should().Be(1);
-        result.Items.Should().HaveCount(2);
-
-        var resultList = result.Items.ToList();
-        resultList[0].Id.Should().Be(doctor1.Id);
-        resultList[0].FullName.Should().Be(doctor1.FullName.FullName);
-        resultList[0].LicenseNumber.Should().Be(doctor1.LicenseNumber.Value);
-        resultList[0].MedicalSpecialtyId.Should().Be(specialtyId);
-        resultList[1].Id.Should().Be(doctor2.Id);
-        resultList[1].FullName.Should().Be(doctor2.FullName.FullName);
-        resultList[1].LicenseNumber.Should().Be(doctor2.LicenseNumber.Value);
-        resultList[1].MedicalSpecialtyId.Should().Be(specialtyId);
+        result.TotalPages.Should().Be(1);
 
         _doctorRepositoryMock.Verify(
             x =>
@@ -95,9 +98,9 @@ public class GetDoctorsBySpecialtyIdQueryHandlerTests
         );
 
         // Assert
-        result.Should().NotBeNull();
         result.Items.Should().BeEmpty();
         result.TotalCount.Should().Be(0);
+        result.PageNumber.Should().Be(1);
         result.TotalPages.Should().Be(0);
 
         _doctorRepositoryMock.Verify(

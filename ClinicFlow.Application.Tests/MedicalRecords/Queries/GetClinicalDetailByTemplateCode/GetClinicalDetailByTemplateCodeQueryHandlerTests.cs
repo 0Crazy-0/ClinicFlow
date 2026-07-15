@@ -1,4 +1,5 @@
 using AwesomeAssertions;
+using ClinicFlow.Application.MedicalRecords.Queries.DTOs;
 using ClinicFlow.Application.MedicalRecords.Queries.GetClinicalDetailByTemplateCode;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
@@ -37,9 +38,9 @@ public class GetClinicalDetailByTemplateCodeQueryHandlerTests
         var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
-        result.Should().NotBeNull();
-        result.TemplateCode.Should().Be("VITALS");
-        result.JsonDataPayload.Should().Be("""{"bp":"120/80"}""");
+        var expectedDto = new ClinicalDetailDto(detail.TemplateCode, detail.JsonDataPayload);
+
+        result.Should().BeEquivalentTo(expectedDto);
 
         _medicalRecordRepositoryMock.Verify(
             x => x.GetByIdAsync(record.Id, TestContext.Current.CancellationToken),
