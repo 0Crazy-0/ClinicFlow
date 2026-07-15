@@ -1,4 +1,5 @@
 using AwesomeAssertions;
+using ClinicFlow.Application.ClinicalFormTemplates.Queries.DTOs;
 using ClinicFlow.Application.ClinicalFormTemplates.Queries.GetClinicalFormTemplateById;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
@@ -40,12 +41,16 @@ public class GetClinicalFormTemplateByIdQueryHandlerTests
         var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Id.Should().Be(template.Id);
-        result.Code.Should().Be(template.Code);
-        result.Name.Should().Be(template.Name);
-        result.Description.Should().Be(template.Description);
-        result.JsonSchemaDefinition.Should().Be(template.JsonSchemaDefinition);
+        var expectedDto = new ClinicalFormTemplateDto(
+            template.Id,
+            template.Code,
+            template.Name,
+            template.Description,
+            template.JsonSchemaDefinition,
+            template.IsDeleted
+        );
+
+        result.Should().BeEquivalentTo(expectedDto);
 
         _repositoryMock.Verify(
             x => x.GetByIdAsync(template.Id, It.IsAny<CancellationToken>()),

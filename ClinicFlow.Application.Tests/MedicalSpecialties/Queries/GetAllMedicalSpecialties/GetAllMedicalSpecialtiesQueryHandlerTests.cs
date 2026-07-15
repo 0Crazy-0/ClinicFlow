@@ -1,4 +1,5 @@
 using AwesomeAssertions;
+using ClinicFlow.Application.MedicalSpecialties.Queries.DTOs;
 using ClinicFlow.Application.MedicalSpecialties.Queries.GetAllMedicalSpecialties;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Interfaces.Repositories;
@@ -35,9 +36,18 @@ public class GetAllMedicalSpecialtiesQueryHandlerTests
         var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
-        result.Should().HaveCount(2);
-        result[0].IsDeleted.Should().BeFalse();
-        result[1].IsDeleted.Should().BeTrue();
+        var expectedDtos = new List<MedicalSpecialty> { activeSpecialty, inactiveSpecialty }.Select(
+            specialty => new MedicalSpecialtyDto(
+                specialty.Id,
+                specialty.Name,
+                specialty.Description,
+                specialty.TypicalDuration.Minutes,
+                specialty.CancellationPolicy.Hours,
+                specialty.IsDeleted
+            )
+        );
+
+        result.Should().BeEquivalentTo(expectedDtos);
 
         _repositoryMock.Verify(
             x => x.GetAllIncludingDeletedAsync(It.IsAny<CancellationToken>()),
@@ -60,7 +70,6 @@ public class GetAllMedicalSpecialtiesQueryHandlerTests
         );
 
         // Assert
-        result.Should().NotBeNull();
         result.Should().BeEmpty();
 
         _repositoryMock.Verify(

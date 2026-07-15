@@ -1,4 +1,5 @@
 using AwesomeAssertions;
+using ClinicFlow.Application.Schedules.Queries.DTOs;
 using ClinicFlow.Application.Schedules.Queries.GetSchedulesByDoctorId;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Interfaces.Repositories;
@@ -44,19 +45,18 @@ public class GetSchedulesByDoctorIdQueryHandlerTests
         var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().HaveCount(2);
+        var expectedDtos = new List<Schedule> { schedule1, schedule2 }.Select(
+            schedule => new ScheduleDto(
+                schedule.Id,
+                schedule.DoctorId,
+                schedule.DayOfWeek,
+                schedule.TimeRange.Start,
+                schedule.TimeRange.End,
+                schedule.IsActive
+            )
+        );
 
-        var resultList = result.ToList();
-        resultList[0].DoctorId.Should().Be(doctorId);
-        resultList[0].DayOfWeek.Should().Be(DayOfWeek.Monday);
-        resultList[0].StartTime.Should().Be(new TimeOnly(8, 0));
-        resultList[0].EndTime.Should().Be(new TimeOnly(13, 0));
-        resultList[0].IsActive.Should().BeTrue();
-
-        resultList[1].DayOfWeek.Should().Be(DayOfWeek.Wednesday);
-        resultList[1].StartTime.Should().Be(new TimeOnly(14, 0));
-        resultList[1].EndTime.Should().Be(new TimeOnly(18, 0));
+        result.Should().BeEquivalentTo(expectedDtos);
 
         _scheduleRepositoryMock.Verify(
             x => x.GetByDoctorIdAsync(doctorId, It.IsAny<CancellationToken>()),
@@ -80,7 +80,6 @@ public class GetSchedulesByDoctorIdQueryHandlerTests
         var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
-        result.Should().NotBeNull();
         result.Should().BeEmpty();
 
         _scheduleRepositoryMock.Verify(

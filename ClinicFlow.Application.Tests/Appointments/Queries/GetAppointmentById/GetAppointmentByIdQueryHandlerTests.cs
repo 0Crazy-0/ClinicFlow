@@ -1,4 +1,5 @@
 using AwesomeAssertions;
+using ClinicFlow.Application.Appointments.Queries.DTOs;
 using ClinicFlow.Application.Appointments.Queries.GetAppointmentById;
 using ClinicFlow.Application.Tests.Shared;
 using ClinicFlow.Domain.Common;
@@ -48,11 +49,20 @@ public class GetAppointmentByIdQueryHandlerTests
         var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Id.Should().Be(appointmentId);
-        result.PatientId.Should().Be(patientId);
-        result.DoctorId.Should().Be(doctorId);
-        result.AppointmentTypeId.Should().Be(appointment.AppointmentTypeId);
+        var expectedDto = new AppointmentDto(
+            appointment.Id,
+            appointment.PatientId,
+            appointment.DoctorId,
+            appointment.AppointmentTypeId,
+            appointment.ScheduledDate,
+            appointment.TimeRange.Start,
+            appointment.TimeRange.End,
+            appointment.Status,
+            appointment.PatientNotes,
+            appointment.ReceptionistNotes
+        );
+
+        result.Should().BeEquivalentTo(expectedDto);
 
         _appointmentRepositoryMock.Verify(
             x => x.GetByIdAsync(appointmentId, It.IsAny<CancellationToken>()),

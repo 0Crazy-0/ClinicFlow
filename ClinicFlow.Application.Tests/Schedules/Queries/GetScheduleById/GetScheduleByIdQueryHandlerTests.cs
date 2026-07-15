@@ -1,4 +1,5 @@
 using AwesomeAssertions;
+using ClinicFlow.Application.Schedules.Queries.DTOs;
 using ClinicFlow.Application.Schedules.Queries.GetScheduleById;
 using ClinicFlow.Application.Tests.Shared;
 using ClinicFlow.Domain.Common;
@@ -44,13 +45,16 @@ public class GetScheduleByIdQueryHandlerTests
         var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Id.Should().Be(scheduleId);
-        result.DoctorId.Should().Be(doctorId);
-        result.DayOfWeek.Should().Be(DayOfWeek.Monday);
-        result.StartTime.Should().Be(new TimeOnly(8, 0));
-        result.EndTime.Should().Be(new TimeOnly(13, 0));
-        result.IsActive.Should().BeTrue();
+        var expectedDto = new ScheduleDto(
+            schedule.Id,
+            schedule.DoctorId,
+            schedule.DayOfWeek,
+            schedule.TimeRange.Start,
+            schedule.TimeRange.End,
+            schedule.IsActive
+        );
+
+        result.Should().BeEquivalentTo(expectedDto);
 
         _scheduleRepositoryMock.Verify(
             x => x.GetByIdAsync(scheduleId, It.IsAny<CancellationToken>()),

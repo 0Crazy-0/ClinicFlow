@@ -1,5 +1,7 @@
 using AwesomeAssertions;
+using ClinicFlow.Application.AppointmentTypes.Queries.DTOs;
 using ClinicFlow.Application.AppointmentTypes.Queries.GetAppointmentTypeById;
+using ClinicFlow.Application.ClinicalFormTemplates.Queries.DTOs;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
@@ -50,23 +52,30 @@ public class GetAppointmentTypeByIdQueryHandlerTests
         var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Id.Should().Be(entity.Id);
-        result.Category.Should().Be(nameof(AppointmentCategory.Checkup));
-        result.Name.Should().Be(entity.Name);
-        result.Description.Should().Be(entity.Description);
-        result.DurationMinutes.Should().Be(entity.Duration.Minutes);
-        result.IsUnrestrictedBySpecialty.Should().Be(entity.IsUnrestrictedBySpecialty);
-        result.AllowedSpecialtyIds.Should().BeEquivalentTo(entity.AllowedSpecialtyIds);
+        var expectedDto = new AppointmentTypeDto(
+            entity.Id,
+            entity.Category.ToString(),
+            entity.Name,
+            entity.Description,
+            entity.Duration.Minutes,
+            entity.AgePolicy.MinimumAge,
+            entity.AgePolicy.MaximumAge,
+            entity.AgePolicy.RequiresLegalGuardian,
+            entity.IsUnrestrictedBySpecialty,
+            entity.AllowedSpecialtyIds,
+            [
+                .. entity.RequiredTemplates.Select(t => new ClinicalFormTemplateDto(
+                    t.Id,
+                    t.Code,
+                    t.Name,
+                    t.Description,
+                    t.JsonSchemaDefinition,
+                    t.IsDeleted
+                )),
+            ]
+        );
 
-        result.RequiredTemplates.Should().ContainSingle();
-        var mappedTemplate = result.RequiredTemplates.First();
-        mappedTemplate.Id.Should().Be(template.Id);
-        mappedTemplate.Code.Should().Be(template.Code);
-        mappedTemplate.Name.Should().Be(template.Name);
-        mappedTemplate.Description.Should().Be(template.Description);
-        mappedTemplate.JsonSchemaDefinition.Should().Be(template.JsonSchemaDefinition);
-        mappedTemplate.IsDeleted.Should().BeFalse();
+        result.Should().BeEquivalentTo(expectedDto);
 
         _repositoryMock.Verify(
             x => x.GetByIdAsync(entity.Id, It.IsAny<CancellationToken>()),
