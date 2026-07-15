@@ -184,4 +184,54 @@ _otherRepositoryMock.Verify(
 
 This ensures complete consistency across command and query tests, verifying that execution terminates early and cleanly on failures.
 
+### Query Handler Return Verification
+
+For query handlers, verify the returned results using structural comparison (`BeEquivalentTo`) instead of checking individual properties, following the specific pattern based on the return type. In all three patterns, omit `result.Should().NotBeNull()`: any subsequent property or collection access on `result` already throws if it were null, making the explicit check redundant.
+
+#### Pattern A: Single DTO (e.g., GetById)
+
+Construct an `expectedDto` matching the exact mapping performed by the handler (verify property names and any nested value objects against the handler's source code, do not assume), and assert the entire DTO:
+
+```csharp
+var expectedDto = new EntityDto(
+    entity.Id,
+    entity.Name,
+    entity.Status
+);
+
+result.Should().BeEquivalentTo(expectedDto);
+```
+
+#### Pattern B: Simple Collection (e.g., IReadOnlyList<TDto>)
+
+Map the mock entities to their corresponding DTOs using the same mapping as the handler, and assert the returned collection using `BeEquivalentTo`:
+
+```csharp
+var expectedDtos = entities.Select(e => new EntityDto(e.Id, e.Name));
+
+result.Should().BeEquivalentTo(expectedDtos);
+```
+
+#### Pattern C: Paginated List (e.g., PaginatedList<TDto>)
+
+Assert that the inner `Items` collection is structurally equivalent to the expected DTOs, and verify all pagination metadata fields (`TotalCount`, `PageNumber`, `TotalPages`) in both the happy path and the empty scenario:
+
+```csharp
+// Happy Path
+var expectedDtos = entities.Select(e => new EntityDto(e.Id, e.Name));
+
+result.Items.Should().BeEquivalentTo(expectedDtos);
+result.TotalCount.Should().Be(2);
+result.PageNumber.Should().Be(1);
+result.TotalPages.Should().Be(1);
+
+// Empty Path
+result.Items.Should().BeEmpty();
+result.TotalCount.Should().Be(0);
+result.PageNumber.Should().Be(1); // use the PageNumber from that specific test's query, not always 1
+result.TotalPages.Should().Be(0);
+```
+
+Do not use `WithStrictOrdering()` the order of collections returned by repositories is not the handler's responsibility to validate (see `clinicflow-testing-repositories`).
+
 > **Note:** Query handlers must never call `SaveChangesAsync`. If one does, that's a design smell — the handler belongs on the command side. No `SaveChangesAsync` verification is needed here precisely because it should never appear in a query handler.
