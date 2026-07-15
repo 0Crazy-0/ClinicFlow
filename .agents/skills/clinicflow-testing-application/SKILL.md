@@ -232,6 +232,6 @@ result.PageNumber.Should().Be(1); // use the PageNumber from that specific test'
 result.TotalPages.Should().Be(0);
 ```
 
-Do not use `WithStrictOrdering()` the order of collections returned by repositories is not the handler's responsibility to validate (see `clinicflow-testing-repositories`).
+Do not use `WithStrictOrdering()`. The order of collections returned by repositories is not the handler's responsibility to validate (see `clinicflow-testing-repositories`).
 
 > **Note:** Query handlers must never call `SaveChangesAsync`. If one does, that's a design smell — the handler belongs on the command side. No `SaveChangesAsync` verification is needed here precisely because it should never appear in a query handler.
