@@ -50,8 +50,12 @@ public sealed class MedicalSpecialtyRepository(ApplicationDbContext dbContext)
             .IgnoreQueryFilters()
             .ToListAsync(cancellationToken);
 
-    public async Task CreateAsync(
+    public Task CreateAsync(
         MedicalSpecialty specialty,
         CancellationToken cancellationToken = default
-    ) => await dbContext.MedicalSpecialties.AddAsync(specialty, cancellationToken);
+    )
+    {
+        dbContext.MedicalSpecialties.Add(specialty);
+        return Task.CompletedTask;
+    }
 }

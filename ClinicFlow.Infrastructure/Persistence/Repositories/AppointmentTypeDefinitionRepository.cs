@@ -74,8 +74,12 @@ public sealed class AppointmentTypeDefinitionRepository(ApplicationDbContext dbC
             cancellationToken
         );
 
-    public async Task CreateAsync(
+    public Task CreateAsync(
         AppointmentTypeDefinition appointmentType,
         CancellationToken cancellationToken = default
-    ) => await dbContext.AppointmentTypes.AddAsync(appointmentType, cancellationToken);
+    )
+    {
+        dbContext.AppointmentTypes.Add(appointmentType);
+        return Task.CompletedTask;
+    }
 }

@@ -42,8 +42,11 @@ public sealed class DoctorRepository(ApplicationDbContext dbContext) : IDoctorRe
         return (items, totalCount);
     }
 
-    public async Task CreateAsync(Doctor doctor, CancellationToken cancellationToken = default) =>
-        await dbContext.Doctors.AddAsync(doctor, cancellationToken);
+    public Task CreateAsync(Doctor doctor, CancellationToken cancellationToken = default)
+    {
+        dbContext.Doctors.Add(doctor);
+        return Task.CompletedTask;
+    }
 
     public async Task<bool> HasActiveBySpecialtyIdAsync(
         Guid specialtyId,
