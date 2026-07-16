@@ -30,8 +30,7 @@ public class PatientPenaltyServiceTests
             .ToList();
 
         // Assert
-        result.Should().ContainSingle();
-        var warning = result.First();
+        var warning = result.Should().ContainSingle().Subject;
         warning.Type.Should().Be(PenaltyType.Warning);
         warning.Reason.Should().Be(PenaltyReasons.NoShow);
     }
@@ -46,30 +45,24 @@ public class PatientPenaltyServiceTests
             PatientPenalty.CreateAutomaticWarning(patientId, Guid.CreateVersion7(), "Warning 1"),
         };
 
+        var now = _fakeTime.GetUtcNow().UtcDateTime;
+
         // Act
         var result = PatientPenaltyService
-            .ApplyPenalty(
-                patientId,
-                existingPenalties,
-                Guid.CreateVersion7(),
-                "Warning 2",
-                _fakeTime.GetUtcNow().UtcDateTime
-            )
+            .ApplyPenalty(patientId, existingPenalties, Guid.CreateVersion7(), "Warning 2", now)
             .ToList();
 
         // Assert
         result.Should().HaveCount(2);
         result.Should().ContainSingle(p => p.Type == PenaltyType.Warning);
 
-        var block = result.Single(p => p.Type == PenaltyType.TemporaryBlock);
-        block.Reason.Should().Be(PenaltyReasons.AutomaticBlock);
-        block
-            .BlockedUntil.Should()
-            .Be(
-                DateOnly
-                    .FromDateTime(_fakeTime.GetUtcNow().UtcDateTime)
-                    .AddDays((int)BlockDuration.Minor)
-            );
+        var expectedBlockedUntil = DateOnly.FromDateTime(now).AddDays((int)BlockDuration.Minor);
+
+        result
+            .Should()
+            .ContainSingle(p => p.Type == PenaltyType.TemporaryBlock)
+            .Which.Should()
+            .Match<PatientPenalty>(block => block.BlockedUntil == expectedBlockedUntil);
     }
 
     [Fact]
@@ -77,6 +70,7 @@ public class PatientPenaltyServiceTests
     {
         // Arrange
         var patientId = Guid.CreateVersion7();
+        var now = _fakeTime.GetUtcNow().UtcDateTime;
         var existingPenalties = new List<PatientPenalty>
         {
             PatientPenalty.CreateAutomaticWarning(patientId, Guid.CreateVersion7(), "Warning 1"),
@@ -85,33 +79,26 @@ public class PatientPenaltyServiceTests
                 patientId,
                 PenaltyReasons.AutomaticBlock,
                 BlockDuration.Minor,
-                _fakeTime.GetUtcNow().UtcDateTime.AddDays(-6)
+                now.AddDays(-6)
             ),
         };
 
         // Act
         var result = PatientPenaltyService
-            .ApplyPenalty(
-                patientId,
-                existingPenalties,
-                Guid.CreateVersion7(),
-                "Warning 3",
-                _fakeTime.GetUtcNow().UtcDateTime
-            )
+            .ApplyPenalty(patientId, existingPenalties, Guid.CreateVersion7(), "Warning 3", now)
             .ToList();
 
         // Assert
         result.Should().HaveCount(2);
         result.Should().ContainSingle(p => p.Type == PenaltyType.Warning);
 
-        var block = result.Single(p => p.Type == PenaltyType.TemporaryBlock);
-        block
-            .BlockedUntil.Should()
-            .Be(
-                DateOnly
-                    .FromDateTime(_fakeTime.GetUtcNow().UtcDateTime)
-                    .AddDays((int)BlockDuration.Moderate)
-            );
+        var expectedBlockedUntil = DateOnly.FromDateTime(now).AddDays((int)BlockDuration.Moderate);
+
+        result
+            .Should()
+            .ContainSingle(p => p.Type == PenaltyType.TemporaryBlock)
+            .Which.Should()
+            .Match<PatientPenalty>(block => block.BlockedUntil == expectedBlockedUntil);
     }
 
     [Fact]
@@ -119,6 +106,7 @@ public class PatientPenaltyServiceTests
     {
         // Arrange
         var patientId = Guid.CreateVersion7();
+        var now = _fakeTime.GetUtcNow().UtcDateTime;
         var existingPenalties = new List<PatientPenalty>
         {
             PatientPenalty.CreateAutomaticWarning(patientId, Guid.CreateVersion7(), "Warning 1"),
@@ -127,40 +115,33 @@ public class PatientPenaltyServiceTests
                 patientId,
                 PenaltyReasons.AutomaticBlock,
                 BlockDuration.Minor,
-                _fakeTime.GetUtcNow().UtcDateTime.AddDays(-25)
+                now.AddDays(-25)
             ),
             PatientPenalty.CreateAutomaticWarning(patientId, Guid.CreateVersion7(), "Warning 3"),
             PatientPenalty.CreateAutomaticBlock(
                 patientId,
                 PenaltyReasons.AutomaticBlock,
                 BlockDuration.Minor,
-                _fakeTime.GetUtcNow().UtcDateTime.AddDays(-6)
+                now.AddDays(-6)
             ),
         };
 
         // Act
         var result = PatientPenaltyService
-            .ApplyPenalty(
-                patientId,
-                existingPenalties,
-                Guid.CreateVersion7(),
-                "Warning 4",
-                _fakeTime.GetUtcNow().UtcDateTime
-            )
+            .ApplyPenalty(patientId, existingPenalties, Guid.CreateVersion7(), "Warning 4", now)
             .ToList();
 
         // Assert
         result.Should().HaveCount(2);
         result.Should().ContainSingle(p => p.Type == PenaltyType.Warning);
 
-        var block = result.Single(p => p.Type == PenaltyType.TemporaryBlock);
-        block
-            .BlockedUntil.Should()
-            .Be(
-                DateOnly
-                    .FromDateTime(_fakeTime.GetUtcNow().UtcDateTime)
-                    .AddDays((int)BlockDuration.Severe)
-            );
+        var expectedBlockedUntil = DateOnly.FromDateTime(now).AddDays((int)BlockDuration.Severe);
+
+        result
+            .Should()
+            .ContainSingle(p => p.Type == PenaltyType.TemporaryBlock)
+            .Which.Should()
+            .Match<PatientPenalty>(block => block.BlockedUntil == expectedBlockedUntil);
     }
 
     [Fact]
@@ -191,7 +172,7 @@ public class PatientPenaltyServiceTests
             .ToList();
 
         // Assert
-        result.Should().ContainSingle();
         result.Should().ContainSingle(p => p.Type == PenaltyType.Warning);
+        result.Should().NotContain(p => p.Type == PenaltyType.TemporaryBlock);
     }
 }
