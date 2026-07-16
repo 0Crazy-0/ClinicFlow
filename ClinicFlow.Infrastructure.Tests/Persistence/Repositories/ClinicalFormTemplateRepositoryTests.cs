@@ -338,7 +338,9 @@ public class ClinicalFormTemplateRepositoryTests(PostgresFixture fixture) : IAsy
             .ClinicalFormTemplates.AsNoTracking()
             .FirstOrDefaultAsync(c => c.Id == template.Id, TestContext.Current.CancellationToken);
 
-        dbResult.Should().BeEquivalentTo(template);
+        dbResult
+            .Should()
+            .BeEquivalentTo(template, options => options.Excluding(x => x.JsonSchemaDefinition));
 
         AssertJsonEquivalent(dbResult.JsonSchemaDefinition, template.JsonSchemaDefinition);
     }
