@@ -37,12 +37,9 @@ public class ClinicalFormTemplateRepositoryTests(PostgresFixture fixture) : IAsy
         var result = await _sut.GetByIdAsync(template.Id, TestContext.Current.CancellationToken);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Id.Should().Be(template.Id);
-        result.Code.Should().Be(template.Code);
-        result.Name.Should().Be(template.Name);
-        result.Description.Should().Be(template.Description);
-        result.IsDeleted.Should().BeFalse();
+        result
+            .Should()
+            .BeEquivalentTo(template, options => options.Excluding(x => x.JsonSchemaDefinition));
 
         AssertJsonEquivalent(result.JsonSchemaDefinition, template.JsonSchemaDefinition);
     }
@@ -90,12 +87,9 @@ public class ClinicalFormTemplateRepositoryTests(PostgresFixture fixture) : IAsy
         );
 
         // Assert
-        result.Should().NotBeNull();
-        result.Code.Should().Be(template.Code);
-        result.Id.Should().Be(template.Id);
-        result.Name.Should().Be(template.Name);
-        result.Description.Should().Be(template.Description);
-        result.IsDeleted.Should().BeFalse();
+        result
+            .Should()
+            .BeEquivalentTo(template, options => options.Excluding(x => x.JsonSchemaDefinition));
 
         AssertJsonEquivalent(result.JsonSchemaDefinition, template.JsonSchemaDefinition);
     }
@@ -219,12 +213,9 @@ public class ClinicalFormTemplateRepositoryTests(PostgresFixture fixture) : IAsy
         );
 
         // Assert
-        result.Should().NotBeNull();
-        result.Code.Should().Be(template.Code);
-        result.Id.Should().Be(template.Id);
-        result.Name.Should().Be(template.Name);
-        result.Description.Should().Be(template.Description);
-        result.IsDeleted.Should().BeTrue();
+        result
+            .Should()
+            .BeEquivalentTo(template, options => options.Excluding(x => x.JsonSchemaDefinition));
 
         AssertJsonEquivalent(result.JsonSchemaDefinition, template.JsonSchemaDefinition);
     }
@@ -296,7 +287,12 @@ public class ClinicalFormTemplateRepositoryTests(PostgresFixture fixture) : IAsy
         var results = await _sut.GetAllActiveAsync(TestContext.Current.CancellationToken);
 
         // Assert
-        results.Should().BeEquivalentTo([active1, active2]);
+        results
+            .Should()
+            .BeEquivalentTo(
+                [active1, active2],
+                option => option.Excluding(x => x.JsonSchemaDefinition)
+            );
     }
 
     [Fact]
@@ -315,7 +311,12 @@ public class ClinicalFormTemplateRepositoryTests(PostgresFixture fixture) : IAsy
         var results = await _sut.GetAllIncludingDeletedAsync(TestContext.Current.CancellationToken);
 
         // Assert
-        results.Should().BeEquivalentTo([active1, active2, inactive]);
+        results
+            .Should()
+            .BeEquivalentTo(
+                [active1, active2, inactive],
+                option => option.Excluding(x => x.JsonSchemaDefinition)
+            );
     }
 
     [Fact]

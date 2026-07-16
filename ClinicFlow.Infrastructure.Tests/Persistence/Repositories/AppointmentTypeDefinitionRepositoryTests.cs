@@ -45,13 +45,7 @@ public class AppointmentTypeDefinitionRepositoryTests(PostgresFixture fixture) :
         );
 
         // Assert
-        result.Should().NotBeNull();
-        result.Id.Should().Be(appointmentTypes.Id);
-        result.Name.Should().Be(appointmentTypes.Name);
-        result.Category.Should().Be(appointmentTypes.Category);
-        result.Description.Should().Be(appointmentTypes.Description);
-        result.Duration.Should().Be(appointmentTypes.Duration);
-        result.IsDeleted.Should().BeFalse();
+        result.Should().BeEquivalentTo(appointmentTypes);
     }
 
     [Fact]
@@ -113,8 +107,7 @@ public class AppointmentTypeDefinitionRepositoryTests(PostgresFixture fixture) :
         );
 
         // Assert
-        result.Should().NotBeNull();
-        result.RequiredTemplates.Should().ContainSingle().Which.Should().BeEquivalentTo(template);
+        result.Should().BeEquivalentTo(appointmentTypes);
     }
 
     [Fact]
@@ -181,9 +174,7 @@ public class AppointmentTypeDefinitionRepositoryTests(PostgresFixture fixture) :
         var results = await _sut.GetEligibleByAgeAsync(10, TestContext.Current.CancellationToken);
 
         // Assert
-        results.Should().HaveCount(2);
-        results.Select(r => r.Id).Should().Contain([noRestriction.Id, kidOnly.Id]);
-        results.Select(r => r.Id).Should().NotContain([adultOnly.Id, inactive.Id]);
+        results.Should().BeEquivalentTo([noRestriction, kidOnly]);
     }
 
     [Fact]
@@ -273,9 +264,7 @@ public class AppointmentTypeDefinitionRepositoryTests(PostgresFixture fixture) :
         );
 
         // Assert
-        result.Should().NotBeNull();
-        result.Id.Should().Be(appointmentTypes.Id);
-        result.IsDeleted.Should().BeTrue();
+        result.Should().BeEquivalentTo(appointmentTypes);
     }
 
     [Fact]
@@ -341,12 +330,7 @@ public class AppointmentTypeDefinitionRepositoryTests(PostgresFixture fixture) :
                 TestContext.Current.CancellationToken
             );
 
-        dbResult.Should().NotBeNull();
-        dbResult.Name.Should().Be(appointmentType.Name);
-        dbResult.Category.Should().Be(appointmentType.Category);
-        dbResult.Description.Should().Be(appointmentType.Description);
-        dbResult.Duration.Should().Be(appointmentType.Duration);
-        dbResult.IsDeleted.Should().BeFalse();
+        dbResult.Should().BeEquivalentTo(appointmentType);
     }
 
     private static AppointmentTypeDefinition CreateAppointmentType(

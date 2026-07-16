@@ -42,13 +42,7 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
         var result = await _sut.GetByIdAsync(penalty.Id, TestContext.Current.CancellationToken);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Id.Should().Be(penalty.Id);
-        result.PatientId.Should().Be(patient.Id);
-        result.AppointmentId.Should().Be(appointment.Id);
-        result.Type.Should().Be(PenaltyType.Warning);
-        result.BlockedUntil.Should().BeNull();
-        result.IsRemoved.Should().BeFalse();
+        result.Should().BeEquivalentTo(penalty);
     }
 
     [Fact]
@@ -78,7 +72,6 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
 
         // Act
         await _sut.CreateAsync(penalty, TestContext.Current.CancellationToken);
-
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Assert
@@ -86,13 +79,7 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
             .PatientPenalties.AsNoTracking()
             .FirstOrDefaultAsync(p => p.Id == penalty.Id, TestContext.Current.CancellationToken);
 
-        dbResult.Should().NotBeNull();
-        dbResult.Id.Should().Be(penalty.Id);
-        dbResult.PatientId.Should().Be(patient.Id);
-        dbResult.Type.Should().Be(PenaltyType.TemporaryBlock);
-        dbResult.Reason.Should().Be(penalty.Reason);
-        dbResult.BlockedUntil.Should().NotBeNull();
-        dbResult.IsRemoved.Should().BeFalse();
+        dbResult.Should().BeEquivalentTo(penalty);
     }
 
     [Fact]

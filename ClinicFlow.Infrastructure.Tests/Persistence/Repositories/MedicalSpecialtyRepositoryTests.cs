@@ -36,13 +36,7 @@ public class MedicalSpecialtyRepositoryTests(PostgresFixture fixture) : IAsyncLi
         var result = await _sut.GetByIdAsync(specialty.Id, TestContext.Current.CancellationToken);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Id.Should().Be(specialty.Id);
-        result.Name.Should().Be(specialty.Name);
-        result.Description.Should().Be(specialty.Description);
-        result.TypicalDuration.Should().Be(specialty.TypicalDuration);
-        result.CancellationPolicy.Should().Be(specialty.CancellationPolicy);
-        result.IsDeleted.Should().BeFalse();
+        result.Should().BeEquivalentTo(specialty);
     }
 
     [Fact]
@@ -92,13 +86,7 @@ public class MedicalSpecialtyRepositoryTests(PostgresFixture fixture) : IAsyncLi
         );
 
         // Assert
-        result.Should().NotBeNull();
-        result.Id.Should().Be(specialty.Id);
-        result.Name.Should().Be(specialty.Name);
-        result.Description.Should().Be(specialty.Description);
-        result.TypicalDuration.Should().Be(specialty.TypicalDuration);
-        result.CancellationPolicy.Should().Be(specialty.CancellationPolicy);
-        result.IsDeleted.Should().BeTrue();
+        result.Should().BeEquivalentTo(specialty);
     }
 
     [Fact]
