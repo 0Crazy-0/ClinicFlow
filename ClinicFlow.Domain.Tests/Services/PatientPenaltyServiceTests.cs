@@ -61,8 +61,8 @@ public class PatientPenaltyServiceTests
         result
             .Should()
             .ContainSingle(p => p.Type == PenaltyType.TemporaryBlock)
-            .Which.Should()
-            .Match<PatientPenalty>(block => block.BlockedUntil == expectedBlockedUntil);
+            .Which.BlockedUntil.Should()
+            .Be(expectedBlockedUntil);
     }
 
     [Fact]
