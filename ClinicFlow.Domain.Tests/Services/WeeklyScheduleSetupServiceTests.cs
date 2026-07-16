@@ -98,7 +98,7 @@ public class WeeklyScheduleSetupServiceTests
             .ToList();
 
         // Assert
-        result.Should().HaveCount(1);
+        result.Should().ContainSingle();
         result[0].DayOfWeek.Should().Be(DayOfWeek.Monday);
         result[0].IsActive.Should().BeTrue();
     }
