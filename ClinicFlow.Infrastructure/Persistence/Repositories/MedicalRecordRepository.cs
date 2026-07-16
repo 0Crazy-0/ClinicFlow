@@ -76,8 +76,12 @@ public sealed class MedicalRecordRepository(ApplicationDbContext dbContext)
             .MedicalRecords.Include(m => m.ClinicalDetails)
             .FirstOrDefaultAsync(m => m.AppointmentId == appointmentId, cancellationToken);
 
-    public async Task CreateAsync(
+    public Task CreateAsync(
         MedicalRecord medicalRecord,
         CancellationToken cancellationToken = default
-    ) => await dbContext.MedicalRecords.AddAsync(medicalRecord, cancellationToken);
+    )
+    {
+        dbContext.MedicalRecords.Add(medicalRecord);
+        return Task.CompletedTask;
+    }
 }

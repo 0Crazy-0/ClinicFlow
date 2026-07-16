@@ -251,20 +251,18 @@ public class MedicalSpecialtyRepositoryTests(PostgresFixture fixture) : IAsyncLi
     public async Task CreateAsync_ShouldAddSpecialtyToContext()
     {
         // Arrange
-        var specialty = await CreateSpecialty("Ophthalmology");
+        var specialty = MedicalSpecialty.Create("Ophthalmology", "Description", 30, 24);
 
-        // Assert & Act
+        // Act
+        await _sut.CreateAsync(specialty, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Assert
         var dbResult = await Context
             .MedicalSpecialties.AsNoTracking()
             .FirstOrDefaultAsync(s => s.Id == specialty.Id, TestContext.Current.CancellationToken);
 
-        dbResult.Should().NotBeNull();
-        dbResult.Id.Should().Be(specialty.Id);
-        dbResult.Name.Should().Be(specialty.Name);
-        dbResult.Description.Should().Be(specialty.Description);
-        dbResult.TypicalDuration.Should().Be(specialty.TypicalDuration);
-        dbResult.CancellationPolicy.Should().Be(specialty.CancellationPolicy);
-        dbResult.IsDeleted.Should().BeFalse();
+        dbResult.Should().BeEquivalentTo(specialty);
     }
 
     private async Task<MedicalSpecialty> CreateSpecialty(string name = "Specialty")

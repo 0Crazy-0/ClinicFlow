@@ -322,19 +322,25 @@ public class ClinicalFormTemplateRepositoryTests(PostgresFixture fixture) : IAsy
     public async Task CreateAsync_ShouldAddTemplateToContext()
     {
         // Arrange
-        var template = await CreateTemplate();
+        var template = ClinicalFormTemplate.Create(
+            "TEMP99",
+            "Default Template",
+            "Default Description",
+            """{"type": "object"}"""
+        );
 
         // Act
+        await _sut.CreateAsync(template, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Assert
         var dbResult = await Context
             .ClinicalFormTemplates.AsNoTracking()
             .FirstOrDefaultAsync(c => c.Id == template.Id, TestContext.Current.CancellationToken);
 
-        // Assert
-        dbResult.Should().NotBeNull();
-        dbResult.Code.Should().Be(template.Code);
-        dbResult.Name.Should().Be(template.Name);
-        dbResult.Description.Should().Be(template.Description);
-        dbResult.IsDeleted.Should().BeFalse();
+        dbResult
+            .Should()
+            .BeEquivalentTo(template, options => options.Excluding(x => x.JsonSchemaDefinition));
 
         AssertJsonEquivalent(dbResult.JsonSchemaDefinition, template.JsonSchemaDefinition);
     }

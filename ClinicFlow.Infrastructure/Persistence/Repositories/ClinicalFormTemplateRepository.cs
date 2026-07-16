@@ -68,8 +68,12 @@ public sealed class ClinicalFormTemplateRepository(ApplicationDbContext dbContex
             .AsNoTracking()
             .ToListAsync(cancellationToken);
 
-    public async Task CreateAsync(
+    public Task CreateAsync(
         ClinicalFormTemplate template,
         CancellationToken cancellationToken = default
-    ) => await dbContext.ClinicalFormTemplates.AddAsync(template, cancellationToken);
+    )
+    {
+        dbContext.ClinicalFormTemplates.Add(template);
+        return Task.CompletedTask;
+    }
 }

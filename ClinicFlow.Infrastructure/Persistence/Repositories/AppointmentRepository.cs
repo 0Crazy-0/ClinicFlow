@@ -90,10 +90,11 @@ public sealed class AppointmentRepository(ApplicationDbContext dbContext, TimePr
         return (items, totalCount);
     }
 
-    public async Task CreateAsync(
-        Appointment appointment,
-        CancellationToken cancellationToken = default
-    ) => await dbContext.Appointments.AddAsync(appointment, cancellationToken);
+    public Task CreateAsync(Appointment appointment, CancellationToken cancellationToken = default)
+    {
+        dbContext.Appointments.Add(appointment);
+        return Task.CompletedTask;
+    }
 
     public async Task<bool> HasActiveAppointmentsForUserAsync(
         Guid userId,
