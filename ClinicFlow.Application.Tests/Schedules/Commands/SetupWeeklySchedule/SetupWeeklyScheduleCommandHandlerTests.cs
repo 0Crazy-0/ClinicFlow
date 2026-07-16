@@ -64,10 +64,18 @@ public class SetupWeeklyScheduleCommandHandlerTests
         {
             DoctorId = doctorId,
             slot.DayOfWeek,
+            slot.StartTime,
+            slot.EndTime,
         });
 
         capturedSchedules
-            .Select(s => new { s.DoctorId, s.DayOfWeek })
+            .Select(s => new
+            {
+                s.DoctorId,
+                s.DayOfWeek,
+                StartTime = s.TimeRange.Start,
+                EndTime = s.TimeRange.End,
+            })
             .Should()
             .BeEquivalentTo(expectedSchedules);
 
