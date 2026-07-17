@@ -43,10 +43,7 @@ public class AppointmentRepositoryTests : IAsyncLifetime
         // Arrange
         var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
         var timeRange = TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0));
-        var (appointment, doctor, patient) = await CreateAppointmentDraftAsync(
-            scheduledDate,
-            timeRange
-        );
+        var (appointment, _, _) = await CreateAppointmentDraftAsync(scheduledDate, timeRange);
 
         Context.Appointments.Add(appointment);
 
@@ -56,13 +53,7 @@ public class AppointmentRepositoryTests : IAsyncLifetime
         var result = await _sut.GetByIdAsync(appointment.Id, TestContext.Current.CancellationToken);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Id.Should().Be(appointment.Id);
-        result.PatientId.Should().Be(patient.Id);
-        result.DoctorId.Should().Be(doctor.Id);
-        result.AppointmentTypeId.Should().Be(appointment.AppointmentTypeId);
-        result.ScheduledDate.Should().Be(scheduledDate);
-        result.TimeRange.Should().Be(timeRange);
+        result.Should().BeEquivalentTo(appointment);
     }
 
     [Fact]
@@ -686,30 +677,21 @@ public class AppointmentRepositoryTests : IAsyncLifetime
         // Arrange
         var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
         var timeRange = TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0));
-        var (appointment, doctor, patient) = await CreateAppointmentDraftAsync(
-            scheduledDate,
-            timeRange
-        );
+        var (appointment, _, _) = await CreateAppointmentDraftAsync(scheduledDate, timeRange);
 
         // Act
         await _sut.CreateAsync(appointment, TestContext.Current.CancellationToken);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Assert
-        var dbAppt = await Context
+        var dbResult = await Context
             .Appointments.AsNoTracking()
             .FirstOrDefaultAsync(
                 a => a.Id == appointment.Id,
                 TestContext.Current.CancellationToken
             );
 
-        dbAppt.Should().NotBeNull();
-        dbAppt.PatientId.Should().Be(patient.Id);
-        dbAppt.DoctorId.Should().Be(doctor.Id);
-        dbAppt.AppointmentTypeId.Should().Be(appointment.AppointmentTypeId);
-        dbAppt.ScheduledDate.Should().Be(scheduledDate);
-        dbAppt.TimeRange.Should().Be(timeRange);
-        dbAppt.Status.Should().Be(AppointmentStatus.Scheduled);
+        dbResult.Should().BeEquivalentTo(appointment);
     }
 
     [Fact]

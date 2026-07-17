@@ -49,15 +49,7 @@ public class DoctorRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         var result = await _sut.GetByIdAsync(doctor.Id, TestContext.Current.CancellationToken);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Id.Should().Be(doctor.Id);
-        result.UserId.Should().Be(user.Id);
-        result.FullName.Should().Be(doctor.FullName);
-        result.MedicalSpecialtyId.Should().Be(specialty.Id);
-        result.LicenseNumber.Value.Should().Be(doctor.LicenseNumber.Value);
-        result.Biography.Should().Be(doctor.Biography);
-        result.ConsultationRoom.Should().Be(doctor.ConsultationRoom);
-        result.IsDeleted.Should().BeFalse();
+        result.Should().BeEquivalentTo(doctor);
     }
 
     [Fact]
@@ -121,15 +113,7 @@ public class DoctorRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         var result = await _sut.GetByUserIdAsync(user.Id, TestContext.Current.CancellationToken);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Id.Should().Be(doctor.Id);
-        result.UserId.Should().Be(user.Id);
-        result.FullName.Should().Be(doctor.FullName);
-        result.MedicalSpecialtyId.Should().Be(specialty.Id);
-        result.LicenseNumber.Value.Should().Be(doctor.LicenseNumber.Value);
-        result.Biography.Should().Be(doctor.Biography);
-        result.ConsultationRoom.Should().Be(doctor.ConsultationRoom);
-        result.IsDeleted.Should().BeFalse();
+        result.Should().BeEquivalentTo(doctor);
     }
 
     [Fact]
@@ -455,7 +439,6 @@ public class DoctorRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
 
         // Act
         await _sut.CreateAsync(doctor, TestContext.Current.CancellationToken);
-
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Assert
@@ -463,15 +446,7 @@ public class DoctorRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
             .Doctors.AsNoTracking()
             .FirstOrDefaultAsync(d => d.Id == doctor.Id, TestContext.Current.CancellationToken);
 
-        dbResult.Should().NotBeNull();
-        dbResult.Id.Should().Be(doctor.Id);
-        dbResult.UserId.Should().Be(user.Id);
-        dbResult.FullName.Should().Be(doctor.FullName);
-        dbResult.MedicalSpecialtyId.Should().Be(specialty.Id);
-        dbResult.LicenseNumber.Value.Should().Be(doctor.LicenseNumber.Value);
-        dbResult.Biography.Should().Be(doctor.Biography);
-        dbResult.ConsultationRoom.Should().Be(doctor.ConsultationRoom);
-        dbResult.IsDeleted.Should().BeFalse();
+        dbResult.Should().BeEquivalentTo(doctor);
     }
 
     [Fact]
@@ -557,15 +532,7 @@ public class DoctorRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         );
 
         // Assert
-        result.Should().NotBeNull();
-        result.Id.Should().Be(doctor.Id);
-        result.UserId.Should().Be(user.Id);
-        result.FullName.Should().Be(doctor.FullName);
-        result.MedicalSpecialtyId.Should().Be(specialty.Id);
-        result.LicenseNumber.Value.Should().Be(doctor.LicenseNumber.Value);
-        result.Biography.Should().Be(doctor.Biography);
-        result.ConsultationRoom.Should().Be(doctor.ConsultationRoom);
-        result.IsDeleted.Should().BeFalse();
+        result.Should().BeEquivalentTo(doctor);
     }
 
     [Fact]
@@ -595,15 +562,7 @@ public class DoctorRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         );
 
         // Assert
-        result.Should().NotBeNull();
-        result.Id.Should().Be(doctor.Id);
-        result.UserId.Should().Be(user.Id);
-        result.FullName.Should().Be(doctor.FullName);
-        result.MedicalSpecialtyId.Should().Be(specialty.Id);
-        result.LicenseNumber.Value.Should().Be(doctor.LicenseNumber.Value);
-        result.Biography.Should().Be(doctor.Biography);
-        result.ConsultationRoom.Should().Be(doctor.ConsultationRoom);
-        result.IsDeleted.Should().BeTrue();
+        result.Should().BeEquivalentTo(doctor);
     }
 
     [Fact]

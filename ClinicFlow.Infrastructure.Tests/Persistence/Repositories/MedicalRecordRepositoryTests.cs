@@ -43,12 +43,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
         var result = await _sut.GetByIdAsync(record.Id, TestContext.Current.CancellationToken);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Id.Should().Be(record.Id);
-        result.PatientId.Should().Be(patient.Id);
-        result.DoctorId.Should().Be(doctor.Id);
-        result.AppointmentId.Should().Be(appointment.Id);
-        result.ChiefComplaint.Should().Be(record.ChiefComplaint);
+        result.Should().BeEquivalentTo(record);
     }
 
     [Fact]
@@ -568,7 +563,6 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
 
         // Act
         await _sut.CreateAsync(record, TestContext.Current.CancellationToken);
-
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Assert
@@ -576,12 +570,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
             .MedicalRecords.AsNoTracking()
             .FirstOrDefaultAsync(m => m.Id == record.Id, TestContext.Current.CancellationToken);
 
-        dbResult.Should().NotBeNull();
-        dbResult.Id.Should().Be(record.Id);
-        dbResult.PatientId.Should().Be(patient.Id);
-        dbResult.DoctorId.Should().Be(doctor.Id);
-        dbResult.AppointmentId.Should().Be(appointment.Id);
-        dbResult.ChiefComplaint.Should().Be(record.ChiefComplaint);
+        dbResult.Should().BeEquivalentTo(record);
     }
 
     private async Task<(
