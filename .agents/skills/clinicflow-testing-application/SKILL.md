@@ -38,7 +38,7 @@ exceptionAssertion.Which.EntityName.Should().Be(nameof(Appointment));
 
 ## UnitOfWork Verification on Exceptions
 
-When testing that a handler throws an exception, **always** verify that `SaveChangesAsync` was never called. This ensures that a failed operation never persists partial state. If the handler also calls a repository write method (`CreateAsync`, `CreateRangeAsync`, etc.), **always** verify that it was never called as well — both verifications must appear together:
+When testing that a handler throws an exception, **always** verify that `SaveChangesAsync` was never called. This ensures that a failed operation never persists partial state. If the handler also calls a repository write method (`CreateAsync`, `CreateRangeAsync`, etc.), **always** verify that it was never called as well; both verifications must appear together:
 
 ```csharp
 // Assert
@@ -53,13 +53,13 @@ _repositoryMock.Verify(
 _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
 ```
 
-This rule applies to **every** exception scenario — `EntityNotFoundException`, `BusinessRuleValidationException`, domain-specific exceptions, etc. The repository write method verification is **mandatory** whenever the handler's code path includes a call to any persistence method (`CreateAsync`, `CreateRangeAsync`, `UpdateAsync`, etc.). Both `Times.Never` assertions must always appear as a pair.
+This rule applies to **every** exception scenario: `EntityNotFoundException`, `BusinessRuleValidationException`, domain-specific exceptions, etc. The repository write method verification is **mandatory** whenever the handler's code path includes a call to any persistence method (`CreateAsync`, `CreateRangeAsync`, `UpdateAsync`, etc.). Both `Times.Never` assertions must always appear as a pair.
 
 ## Create Handler Split
 
 When a create handler returns a `Guid` and persists via a repository + `IUnitOfWork`, always split the happy path into **two separate tests**:
 
-1. **Data validation test** — uses the `Callback` pattern to capture the entity and assert its properties:
+1. **Data validation test**: uses the `Callback` pattern to capture the entity and assert its properties:
 
 ```csharp
 [Fact]
@@ -82,7 +82,7 @@ public async Task Handle_ShouldCreateEntity_WhenValidCommand()
 }
 ```
 
-2. **Persistence verification test** — verifies that both the repository and `SaveChangesAsync` were called exactly once:
+2. **Persistence verification test**: verifies that both the repository and `SaveChangesAsync` were called exactly once:
 
 ```csharp
 [Fact]
@@ -111,7 +111,7 @@ This separation keeps each test focused on a single concern: one validates corre
 
 Any handler that calls a repository write method (`CreateAsync`, `CreateRangeAsync`, `UpdateAsync`, etc.) must verify that method in **both** happy and unhappy path tests, always paired with the `SaveChangesAsync` verification:
 
-**Happy path** — verify both were called exactly once:
+**Happy path**: verify both were called exactly once:
 
 ```csharp
 // Assert
@@ -122,7 +122,7 @@ _repositoryMock.Verify(
 _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
 ```
 
-**Unhappy path** — verify neither was called:
+**Unhappy path**: verify neither was called:
 
 ```csharp
 // Assert
@@ -133,7 +133,7 @@ _repositoryMock.Verify(
 _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
 ```
 
-This applies regardless of the specific write method — `CreateRangeAsync`, `UpdateAsync`, etc. The key principle: repository write verification and `SaveChangesAsync` verification are **inseparable pairs**. If one is present, the other must be too.
+This applies regardless of the specific write method: `CreateRangeAsync`, `UpdateAsync`, etc. The key principle: repository write verification and `SaveChangesAsync` verification are **inseparable pairs**. If one is present, the other must be too.
 
 ## UnitOfWork Verification on Success
 
@@ -152,7 +152,7 @@ This verification ensures the handler completes the full orchestration pipeline:
 
 For query handlers, verify repository read methods in both happy and unhappy path tests:
 
-**Happy path** — verify the read method was called exactly once:
+**Happy path**: verify the read method was called exactly once:
 
 ```csharp
 // Assert
@@ -162,7 +162,7 @@ _repositoryMock.Verify(
 );
 ```
 
-**Unhappy path (Exception)** — verify the read method was called exactly once to attempt fetching the entity, and verify that any other subsequent repository or service methods were never called:
+**Unhappy path (Exception)**: verify the read method was called exactly once to attempt fetching the entity, and verify that any other subsequent repository or service methods were never called:
 
 ```csharp
 // Assert
@@ -234,4 +234,4 @@ result.TotalPages.Should().Be(0);
 
 Do not use `WithStrictOrdering()`. The order of collections returned by repositories is not the handler's responsibility to validate (see `clinicflow-testing-repositories`).
 
-> **Note:** Query handlers must never call `SaveChangesAsync`. If one does, that's a design smell — the handler belongs on the command side. No `SaveChangesAsync` verification is needed here precisely because it should never appear in a query handler.
+> **Note:** Query handlers must never call `SaveChangesAsync`. If one does, that's a design smell; the handler belongs on the command side. No `SaveChangesAsync` verification is needed here precisely because it should never appear in a query handler.

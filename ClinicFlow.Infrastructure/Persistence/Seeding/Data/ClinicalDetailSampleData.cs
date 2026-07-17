@@ -49,7 +49,7 @@ public static class ClinicalDetailSampleData
                 """,
             """
                 {
-                  "chiefComplaint": "Annual checkup — no active complaints",
+                  "chiefComplaint": "Annual checkup: no active complaints",
                   "vitalSigns": {
                     "bloodPressure": "120/80",
                     "heartRate": 72,
@@ -58,7 +58,7 @@ public static class ClinicalDetailSampleData
                     "height": 165
                   },
                   "diagnosis": {
-                    "description": "Routine health examination — no abnormalities detected",
+                    "description": "Routine health examination: no abnormalities detected",
                     "icd10": "Z00.0",
                     "type": "definitive"
                   },
@@ -123,7 +123,7 @@ public static class ClinicalDetailSampleData
         [
             """
                 {
-                  "chiefComplaint": "Routine well-child visit — 4-year-old",
+                  "chiefComplaint": "Routine well-child visit: 4-year-old",
                   "vitalSigns": {
                     "bloodPressure": "90/60",
                     "heartRate": 100,
@@ -139,10 +139,10 @@ public static class ClinicalDetailSampleData
                       "Varicella"
                     ],
                     "milestones": "Age-appropriate speech and motor skills",
-                    "schoolPerformance": "N/A — pre-school"
+                    "schoolPerformance": "N/A: pre-school"
                   },
                   "diagnosis": {
-                    "description": "Well-child visit — normal development",
+                    "description": "Well-child visit: normal development",
                     "icd10": "Z00.12",
                     "type": "definitive"
                   },
@@ -153,7 +153,7 @@ public static class ClinicalDetailSampleData
                 """,
             """
                 {
-                  "chiefComplaint": "Recurring ear pain — 6-year-old",
+                  "chiefComplaint": "Recurring ear pain: 6-year-old",
                   "vitalSigns": {
                     "bloodPressure": "95/60",
                     "heartRate": 95,
@@ -240,7 +240,7 @@ public static class ClinicalDetailSampleData
                   "heartSounds": "S1 S2 normal",
                   "peripheralEdema": false,
                   "dyspnea": true,
-                  "exerciseTolerance": "Moderate — NYHA class II",
+                  "exerciseTolerance": "Moderate: NYHA class II",
                   "chestPainDetails": {
                     "type": "Anginal",
                     "intensity": 3,
@@ -291,7 +291,7 @@ public static class ClinicalDetailSampleData
                   "heartSounds": "S1 S2 normal, systolic murmur grade II/VI",
                   "peripheralEdema": true,
                   "dyspnea": true,
-                  "exerciseTolerance": "Limited — NYHA class III",
+                  "exerciseTolerance": "Limited: NYHA class III",
                   "ejectionFraction": 35,
                   "riskFactors": {
                     "smoking": false,
@@ -366,7 +366,7 @@ public static class ClinicalDetailSampleData
                   ],
                   "interpretation": "New-onset atrial fibrillation with rapid ventricular response",
                   "diagnosis": {
-                    "description": "Atrial fibrillation — new onset",
+                    "description": "Atrial fibrillation: new onset",
                     "icd10": "I48.0",
                     "type": "definitive"
                   },
@@ -404,7 +404,7 @@ public static class ClinicalDetailSampleData
                   "photoDocumentation": true,
                   "dermoscopyFindings": "Atypical pigment network with blue-white veil",
                   "diagnosis": {
-                    "description": "Suspicious melanocytic lesion — biopsy pending",
+                    "description": "Suspicious melanocytic lesion: biopsy pending",
                     "icd10": "D48.5",
                     "type": "presumptive"
                   },
@@ -482,7 +482,7 @@ public static class ClinicalDetailSampleData
                     "lastPapSmear": "2025-03-15"
                   },
                   "diagnosis": {
-                    "description": "Polycystic ovary syndrome — suspected",
+                    "description": "Polycystic ovary syndrome: suspected",
                     "icd10": "E28.2",
                     "type": "differential"
                   },
@@ -500,7 +500,7 @@ public static class ClinicalDetailSampleData
                 """,
             """
                 {
-                  "chiefComplaint": "Routine prenatal checkup — 24 weeks",
+                  "chiefComplaint": "Routine prenatal checkup: 24 weeks",
                   "pregnancyStatus": "pregnant",
                   "sexualActivity": true,
                   "pelvicPain": false,
@@ -525,7 +525,7 @@ public static class ClinicalDetailSampleData
                     "contraceptives": "None"
                   },
                   "diagnosis": {
-                    "description": "Normal pregnancy — second trimester",
+                    "description": "Normal pregnancy: second trimester",
                     "icd10": "Z34.82",
                     "type": "definitive"
                   },
@@ -544,14 +544,14 @@ public static class ClinicalDetailSampleData
         [
             """
                 {
-                  "chiefComplaint": "Progressive blurry vision — both eyes",
+                  "chiefComplaint": "Progressive blurry vision: both eyes",
                   "visualAcuity": {
                     "leftEye": "20/40",
                     "rightEye": "20/50",
                     "withCorrection": true
                   },
                   "pupilReaction": "Equal, round, reactive to light",
-                  "ocularMotility": "Full range — no restriction",
+                  "ocularMotility": "Full range: no restriction",
                   "intraocularPressure": {
                     "leftEye": 16,
                     "rightEye": 17
@@ -559,7 +559,7 @@ public static class ClinicalDetailSampleData
                   "fundusExam": "Normal optic discs, no papilledema",
                   "slitLampFindings": "Early nuclear sclerosis bilaterally",
                   "diagnosis": {
-                    "description": "Age-related nuclear cataract — bilateral",
+                    "description": "Age-related nuclear cataract: bilateral",
                     "icd10": "H25.1",
                     "type": "definitive"
                   },
@@ -570,7 +570,7 @@ public static class ClinicalDetailSampleData
                 """,
             """
                 {
-                  "chiefComplaint": "Eye redness and discharge — left eye",
+                  "chiefComplaint": "Eye redness and discharge: left eye",
                   "visualAcuity": {
                     "leftEye": "20/25",
                     "rightEye": "20/20",
@@ -580,7 +580,7 @@ public static class ClinicalDetailSampleData
                   "externalExam": "Left conjunctival injection, mucopurulent discharge",
                   "slitLampFindings": "Papillary reaction on tarsal conjunctiva",
                   "diagnosis": {
-                    "description": "Bacterial conjunctivitis — left eye",
+                    "description": "Bacterial conjunctivitis: left eye",
                     "icd10": "H10.0",
                     "type": "definitive"
                   },
@@ -624,7 +624,7 @@ public static class ClinicalDetailSampleData
                     "findings": "Partial ACL tear, no meniscal damage"
                   },
                   "diagnosis": {
-                    "description": "Partial anterior cruciate ligament tear — right knee",
+                    "description": "Partial anterior cruciate ligament tear: right knee",
                     "icd10": "S83.511",
                     "type": "definitive"
                   },
@@ -691,7 +691,7 @@ public static class ClinicalDetailSampleData
         [
             """
                 {
-                  "chiefComplaint": "Progressive hearing loss — left ear",
+                  "chiefComplaint": "Progressive hearing loss: left ear",
                   "symptomDuration": "6 months",
                   "fever": false,
                   "vertigo": false,
@@ -715,7 +715,7 @@ public static class ClinicalDetailSampleData
                   },
                   "audiometryResults": "Left-sided conductive hearing loss, 35dB at speech frequencies",
                   "diagnosis": {
-                    "description": "Serous otitis media — left ear",
+                    "description": "Serous otitis media: left ear",
                     "icd10": "H65.22",
                     "type": "definitive"
                   },
@@ -849,7 +849,7 @@ public static class ClinicalDetailSampleData
                     "consciousLevel": "alert"
                   },
                   "diagnosis": {
-                    "description": "Parkinsonism — early stage, pending confirmatory workup",
+                    "description": "Parkinsonism: early stage, pending confirmatory workup",
                     "icd10": "G20",
                     "type": "presumptive"
                   },
@@ -881,7 +881,7 @@ public static class ClinicalDetailSampleData
                     "urgency": "routine"
                   },
                   "diagnosis": {
-                    "description": "Cerebral small vessel disease — age-related",
+                    "description": "Cerebral small vessel disease: age-related",
                     "icd10": "I67.89",
                     "type": "definitive"
                   },
@@ -907,11 +907,11 @@ public static class ClinicalDetailSampleData
                     "sessionNotes": "Patient describes worsening depressive symptoms following job loss. Sleep disrupted. Appetite decreased. Denies suicidal ideation."
                   },
                   "anxietyLevel": 6,
-                  "sleepPattern": "Initial insomnia — 2-3 hours to fall asleep",
+                  "sleepPattern": "Initial insomnia: 2-3 hours to fall asleep",
                   "therapyType": "Cognitive behavioral therapy",
-                  "riskAssessment": "Low risk — no suicidal or homicidal ideation",
+                  "riskAssessment": "Low risk: no suicidal or homicidal ideation",
                   "diagnosis": {
-                    "description": "Major depressive disorder — moderate, single episode",
+                    "description": "Major depressive disorder: moderate, single episode",
                     "icd10": "F32.1",
                     "type": "definitive"
                   },
@@ -931,7 +931,7 @@ public static class ClinicalDetailSampleData
                 """,
             """
                 {
-                  "chiefComplaint": "Follow-up — medication adjustment for generalized anxiety",
+                  "chiefComplaint": "Follow-up: medication adjustment for generalized anxiety",
                   "mentalStateExam": {
                     "mood": "anxious",
                     "affect": "Tense but cooperative",
@@ -943,7 +943,7 @@ public static class ClinicalDetailSampleData
                     "sessionNotes": "Patient reports partial improvement with current SSRI. Residual somatic anxiety (chest tightness, restlessness). Sleep improved slightly. Dose increase discussed and agreed upon."
                   },
                   "anxietyLevel": 5,
-                  "sleepPattern": "Improved — occasional early awakening",
+                  "sleepPattern": "Improved: occasional early awakening",
                   "currentMedications": [
                     "Escitalopram 10mg"
                   ],
@@ -987,7 +987,7 @@ public static class ClinicalDetailSampleData
                     "safetyPlan": "Patient agreed to contact crisis line if urges escalate. Emergency contacts updated. Firearms removed from home."
                   },
                   "diagnosis": {
-                    "description": "Adjustment disorder with depressed mood — suicidal ideation present",
+                    "description": "Adjustment disorder with depressed mood: suicidal ideation present",
                     "icd10": "F43.21",
                     "type": "definitive"
                   },
@@ -1094,7 +1094,7 @@ public static class ClinicalDetailSampleData
         [
             """
                 {
-                  "chiefComplaint": "Scheduled follow-up — breast cancer, cycle 4 of chemotherapy",
+                  "chiefComplaint": "Scheduled follow-up: breast cancer, cycle 4 of chemotherapy",
                   "cancerStage": {
                     "tnmT": "T2",
                     "tnmN": "N1",
@@ -1126,7 +1126,7 @@ public static class ClinicalDetailSampleData
                     }
                   ],
                   "diagnosis": {
-                    "description": "Invasive ductal carcinoma — partial response to chemotherapy",
+                    "description": "Invasive ductal carcinoma: partial response to chemotherapy",
                     "icd10": "C50.9",
                     "type": "definitive"
                   },
@@ -1199,7 +1199,7 @@ public static class ClinicalDetailSampleData
                       {
                         "name": "Levothyroxine",
                         "dose": "50mcg",
-                        "frequency": "Once daily — fasting",
+                        "frequency": "Once daily: fasting",
                         "duration": "Ongoing"
                       }
                     ]
@@ -1208,7 +1208,7 @@ public static class ClinicalDetailSampleData
                 """,
             """
                 {
-                  "chiefComplaint": "Polyuria and polydipsia — newly diagnosed diabetes",
+                  "chiefComplaint": "Polyuria and polydipsia: newly diagnosed diabetes",
                   "biologicalSex": "male",
                   "vitalSigns": {
                     "bloodPressure": "132/86",
@@ -1237,7 +1237,7 @@ public static class ClinicalDetailSampleData
                     }
                   },
                   "diagnosis": {
-                    "description": "Type 2 diabetes mellitus — newly diagnosed, uncontrolled",
+                    "description": "Type 2 diabetes mellitus: newly diagnosed, uncontrolled",
                     "icd10": "E11.65",
                     "type": "definitive"
                   },
@@ -1335,7 +1335,7 @@ public static class ClinicalDetailSampleData
                     "rigidity": false
                   },
                   "diagnosis": {
-                    "description": "Irritable bowel syndrome — mixed type",
+                    "description": "Irritable bowel syndrome: mixed type",
                     "icd10": "K58.2",
                     "type": "definitive"
                   },
@@ -1389,7 +1389,7 @@ public static class ClinicalDetailSampleData
                     "interpretation": "obstructive"
                   },
                   "diagnosis": {
-                    "description": "Chronic obstructive pulmonary disease — moderate (GOLD II)",
+                    "description": "Chronic obstructive pulmonary disease: moderate (GOLD II)",
                     "icd10": "J44.9",
                     "type": "definitive"
                   },
@@ -1427,7 +1427,7 @@ public static class ClinicalDetailSampleData
                     "hemoptysis": false,
                     "wheezing": true,
                     "sputumProduction": "None",
-                    "exerciseTolerance": "Good — mMRC grade 0",
+                    "exerciseTolerance": "Good: mMRC grade 0",
                     "oxygenTherapy": false
                   },
                   "spirometryResults": {
@@ -1445,7 +1445,7 @@ public static class ClinicalDetailSampleData
                     "interpretation": "normal"
                   },
                   "diagnosis": {
-                    "description": "Persistent asthma — moderate",
+                    "description": "Persistent asthma: moderate",
                     "icd10": "J45.4",
                     "type": "definitive"
                   },

@@ -253,7 +253,7 @@ public static class ClinicalFormTemplateData
             ClinicalFormTemplate.Create(
                 "CARD_VITALS_V2",
                 "Cardiology Vitals Form (Extended)",
-                "Extended cardiovascular vitals — adds respiratory rate and ejection fraction.",
+                "Extended cardiovascular vitals: adds respiratory rate and ejection fraction.",
                 $$"""
                 {
                   "$schema": "http://json-schema.org/draft-07/schema#",

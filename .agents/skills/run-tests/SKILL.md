@@ -46,7 +46,7 @@ Detect the test platform and framework, run tests, and apply filters using `dotn
 | Filter expression | No | Filter expression to select specific tests |
 | Target framework | No | Target framework moniker to run against (e.g., `net8.0`) |
 
-## Critical Rules — Avoid Cross-Platform Mistakes
+## Critical Rules: Avoid Cross-Platform Mistakes
 
 These are the most common agent mistakes. Internalize before proceeding:
 
@@ -76,8 +76,8 @@ These are the most common agent mistakes. Internalize before proceeding:
 ### Step 1: Detect the test platform and framework
 
 1. Run `dotnet --version` in the project directory to determine the SDK version. This accounts for `global.json` SDK pinning.
-2. Read `global.json` — on .NET SDK 10+, `"test": { "runner": "Microsoft.Testing.Platform" }` is the **authoritative MTP signal**. If present, the project uses MTP and SDK 10+ syntax (no `--` separator).
-3. Read `.csproj`, `Directory.Build.props`, **and** `Directory.Packages.props` for framework packages and MTP properties. **Always check all three files** — MTP properties are frequently set in `Directory.Build.props` rather than individual `.csproj` files.
+2. Read `global.json`: on .NET SDK 10+, `"test": { "runner": "Microsoft.Testing.Platform" }` is the **authoritative MTP signal**. If present, the project uses MTP and SDK 10+ syntax (no `--` separator).
+3. Read `.csproj`, `Directory.Build.props`, **and** `Directory.Packages.props` for framework packages and MTP properties. **Always check all three files**: MTP properties are frequently set in `Directory.Build.props` rather than individual `.csproj` files.
 4. For full detection logic (SDK 8/9 signals, framework identification), see the `platform-detection` skill.
 
 **What to look for in each file:**
@@ -89,7 +89,7 @@ These are the most common agent mistakes. Internalize before proceeding:
 | `.csproj` | `<TestingPlatformDotnetTestSupport>true` | MTP on SDK 8/9 |
 | `.csproj` | `MSTest`, `xunit.v3`, `NUnit`, `TUnit` packages | Framework identity |
 | `.csproj` | `Microsoft.NET.Test.Sdk` + test adapter | VSTest (unless overridden by MTP signals above) |
-| `.csproj` | `<TargetFrameworks>` (plural) | Multi-TFM — may need `--framework` |
+| `.csproj` | `<TargetFrameworks>` (plural) | Multi-TFM; may need `--framework` |
 | `Directory.Build.props` | `<TestingPlatformDotnetTestSupport>true` | MTP on SDK 8/9 (often set here, not in .csproj) |
 | `Directory.Packages.props` | Centrally managed test package versions | Framework identity for CPM repos |
 
@@ -97,8 +97,8 @@ These are the most common agent mistakes. Internalize before proceeding:
 
 | Signal | Means |
 |--------|-------|
-| `global.json` has `"test": { "runner": "Microsoft.Testing.Platform" }` | **MTP on SDK 10+** — pass args directly, no `--` |
-| `<TestingPlatformDotnetTestSupport>true` in csproj or Directory.Build.props | **MTP on SDK 8/9** — pass args after `--` |
+| `global.json` has `"test": { "runner": "Microsoft.Testing.Platform" }` | **MTP on SDK 10+**: pass args directly, no `--` |
+| `<TestingPlatformDotnetTestSupport>true` in csproj or Directory.Build.props | **MTP on SDK 8/9**: pass args after `--` |
 | Neither signal present | **VSTest** |
 
 ### Step 2: Run tests
@@ -232,9 +232,9 @@ See the `filter-syntax` skill for the complete filter syntax for each platform a
 | Missing `Microsoft.NET.Test.Sdk` in a VSTest project | Tests won't be discovered. Add `<PackageReference Include="Microsoft.NET.Test.Sdk" />` |
 | Using VSTest `--filter` syntax with xUnit v3 on MTP | xUnit v3 on MTP uses `--filter-class`, `--filter-method`, etc. -- not the VSTest expression syntax |
 | Passing MTP args without `--` on .NET SDK 8/9 | Before .NET 10, MTP args must go after `--`: `dotnet test -- --report-trx` |
-| Using `-- --arg` separator on .NET SDK 10+ | SDK 10+ passes MTP args directly — do NOT use `--` separator |
-| Using `--logger trx` for MTP or `--report-trx` for VSTest | Each platform has its own TRX flag — check the Critical Rules table |
-| Only checking `.csproj` for MTP signals | Always check `Directory.Build.props` and `Directory.Packages.props` too — MTP properties are frequently set there |
+| Using `-- --arg` separator on .NET SDK 10+ | SDK 10+ passes MTP args directly; do NOT use `--` separator |
+| Using `--logger trx` for MTP or `--report-trx` for VSTest | Each platform has its own TRX flag; check the Critical Rules table |
+| Only checking `.csproj` for MTP signals | Always check `Directory.Build.props` and `Directory.Packages.props` too; MTP properties are frequently set there |
 | Using bare positional path argument on SDK 10+ | SDK 10+ requires named flags: `--project <path>` or `--solution <path>` |
 
 ## Troubleshooting
@@ -250,7 +250,7 @@ Common error messages and how to resolve them:
 | `The test runner process exited with non-zero exit code` | MTP test host crashed or test failure | Run with `--blame-crash` (MTP) or `--blame` (VSTest) to collect a crash dump for diagnosis |
 | `No test source files were found` / `No test project found` | `dotnet test` can't find a test project in the given path | Specify the path explicitly: `dotnet test <path/to/project.csproj>` (VSTest) or `dotnet test --project <path>` (SDK 10+) |
 | Tests discovered but 0 executed | Filter expression matches no tests | Double-check filter property names and values. Common typo: `TestCategory` (MSTest) vs `Category` (NUnit) vs trait syntax (xUnit) |
-| Using `--` for MTP args on .NET SDK 10+ | On .NET 10+, MTP args are passed directly: `dotnet test --project . --blame-hang-timeout 5min` — do NOT use `-- --blame-hang-timeout` |
+| Using `--` for MTP args on .NET SDK 10+ | On .NET 10+, MTP args are passed directly: `dotnet test --project . --blame-hang-timeout 5min`; do NOT use `-- --blame-hang-timeout` |
 | Multi-TFM project runs tests for all frameworks | Use `--framework <TFM>` to target a specific framework |
 | `global.json` runner setting ignored | Requires .NET 10+ SDK. On older SDKs, use `<TestingPlatformDotnetTestSupport>` MSBuild property instead |
 | TUnit `--treenode-filter` not recognized | TUnit is MTP-only. On .NET SDK 10+ use `dotnet test`; on older SDKs use `dotnet run` since VSTest-mode `dotnet test` does not support TUnit |

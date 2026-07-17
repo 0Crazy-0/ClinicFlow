@@ -1,6 +1,6 @@
 ---
 name: microsoft-code-reference
-description: Find working code samples, verify API signatures, and fix Microsoft SDK errors using official docs. Use whenever the user is writing, debugging, or reviewing code that touches any Microsoft SDK, .NET library, Azure client library, or Microsoft API—even if they don't ask for a "reference." Catches hallucinated methods, wrong signatures, and deprecated patterns. If the task involves producing or fixing Microsoft-related code, this is the right skill.
+description: Find working code samples, verify API signatures, and fix Microsoft SDK errors using official docs. Use whenever the user is writing, debugging, or reviewing code that touches any Microsoft SDK, .NET library, Azure client library, or Microsoft API, even if they don't ask for a "reference." Catches hallucinated methods, wrong signatures, and deprecated patterns. If the task involves producing or fixing Microsoft-related code, this is the right skill.
 compatibility: Primarily uses the Microsoft Learn MCP Server (https://learn.microsoft.com/api/mcp); if that is unavailable, fall back to the mslearn CLI (`npx @microsoft/learn-cli`).
 ---
 
@@ -25,9 +25,9 @@ microsoft_code_sample_search(query: "send message service bus", language: "javas
 ```
 
 **When to use:**
-- Before writing code—find a working pattern to follow
-- After errors—compare your code against a known-good sample
-- Unsure of initialization/setup—samples show complete context
+- Before writing code: find a working pattern to follow
+- After errors: compare your code against a known-good sample
+- Unsure of initialization/setup: samples show complete context
 
 ## API Lookups
 
@@ -71,9 +71,9 @@ Always verify when:
 
 Before generating code using Microsoft SDKs, verify it's correct:
 
-1. **Confirm method or package exists** — `microsoft_docs_search(query: "[ClassName] [MethodName] [Namespace]")`
-2. **Fetch full details** (for overloads/complex params) — `microsoft_docs_fetch(url: "...")`
-3. **Find working sample** — `microsoft_code_sample_search(query: "[task]", language: "[lang]")`
+1. **Confirm method or package exists**: `microsoft_docs_search(query: "[ClassName] [MethodName] [Namespace]")`
+2. **Fetch full details** (for overloads/complex params): `microsoft_docs_fetch(url: "...")`
+3. **Find working sample**: `microsoft_code_sample_search(query: "[task]", language: "[lang]")`
 
 For simple lookups, step 1 alone may suffice. For complex API usage, complete all three steps.
 

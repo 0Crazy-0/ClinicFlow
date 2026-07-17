@@ -22,7 +22,7 @@ This is in `EntityTestExtensions.cs` and uses reflection. Only use it when the t
 
 ## Value Object Tests
 
-For value objects with computed/getter properties, the `// Act` section may be omitted — construction is the act:
+For value objects with computed/getter properties, the `// Act` section may be omitted; construction is the act:
 
 ```csharp
 [Fact]
