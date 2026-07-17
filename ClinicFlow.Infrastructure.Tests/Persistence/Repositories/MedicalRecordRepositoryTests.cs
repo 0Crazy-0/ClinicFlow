@@ -549,12 +549,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
         );
 
         // Assert
-        result.Should().NotBeNull();
-        result.Id.Should().Be(record.Id);
-        result.PatientId.Should().Be(patient.Id);
-        result.DoctorId.Should().Be(doctor.Id);
-        result.AppointmentId.Should().Be(appointment.Id);
-        result.ChiefComplaint.Should().Be(record.ChiefComplaint);
+        result.Should().BeEquivalentTo(record);
     }
 
     [Fact]
