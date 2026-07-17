@@ -38,7 +38,7 @@ exceptionAssertion.Which.EntityName.Should().Be(nameof(Appointment));
 
 ## UnitOfWork Verification on Exceptions
 
-When testing that a handler throws an exception, **always** verify that `SaveChangesAsync` was never called. This ensures that a failed operation never persists partial state. If the handler also calls a repository write method (`CreateAsync`, `CreateRangeAsync`, etc.), **always** verify that it was never called as well; both verifications must appear together:
+When testing that a handler throws a **domain or validation exception** (one raised **before** any persistence call, e.g. not-found checks, business rule violations), **always** verify that `SaveChangesAsync` was never called. This ensures that a failed operation never persists partial state. If the handler also calls a repository write method (`CreateAsync`, `CreateRangeAsync`, etc.), **always** verify that it was never called as well; both verifications must appear together:
 
 ```csharp
 // Assert
@@ -53,7 +53,7 @@ _repositoryMock.Verify(
 _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
 ```
 
-This rule applies to **every** exception scenario: `EntityNotFoundException`, `BusinessRuleValidationException`, domain-specific exceptions, etc. The repository write method verification is **mandatory** whenever the handler's code path includes a call to any persistence method (`CreateAsync`, `CreateRangeAsync`, `UpdateAsync`, etc.). Both `Times.Never` assertions must always appear as a pair.
+This rule applies to exception scenarios raised **before** the write path executes: `EntityNotFoundException`, `BusinessRuleValidationException`, domain-specific exceptions, etc. The repository write method verification is **mandatory** whenever the handler's code path includes a call to any persistence method (`CreateAsync`, `CreateRangeAsync`, `UpdateAsync`, etc.) that was never reached. Both `Times.Never` assertions must always appear as a pair.
 
 ## Create Handler Split
 
