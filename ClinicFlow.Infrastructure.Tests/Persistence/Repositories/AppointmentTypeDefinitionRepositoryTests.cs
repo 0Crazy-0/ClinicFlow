@@ -32,7 +32,13 @@ public class AppointmentTypeDefinitionRepositoryTests(PostgresFixture fixture) :
     public async Task CreateAsync_ShouldAddAppointmentTypeToContext()
     {
         // Arrange
-        var appointmentType = CreateAppointmentType();
+        var appointmentType = AppointmentTypeDefinition.Create(
+            AppointmentCategory.FirstConsultation,
+            "Name",
+            "Description",
+            EncounterDuration.FromMinutes(20),
+            AgeEligibilityPolicy.NoRestriction
+        );
 
         // Act
         await _sut.CreateAsync(appointmentType, TestContext.Current.CancellationToken);
@@ -53,11 +59,7 @@ public class AppointmentTypeDefinitionRepositoryTests(PostgresFixture fixture) :
     public async Task GetByIdAsync_ShouldReturnAppointmentType_WhenExistsAndActive()
     {
         // Arrange
-        var appointmentTypes = CreateAppointmentType();
-
-        Context.AppointmentTypes.Add(appointmentTypes);
-
-        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+        var appointmentTypes = await CreateAppointmentType();
 
         // Act
         var result = await _sut.GetByIdAsync(
@@ -86,11 +88,9 @@ public class AppointmentTypeDefinitionRepositoryTests(PostgresFixture fixture) :
     public async Task GetByIdAsync_ShouldReturnNull_WhenSoftDeleted()
     {
         // Arrange
-        var appointmentTypes = CreateAppointmentType();
+        var appointmentTypes = await CreateAppointmentType();
 
         appointmentTypes.Deactivate();
-
-        Context.AppointmentTypes.Add(appointmentTypes);
 
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
@@ -108,16 +108,13 @@ public class AppointmentTypeDefinitionRepositoryTests(PostgresFixture fixture) :
     public async Task GetByIdAsync_ShouldIncludeRequiredTemplates()
     {
         // Arrange
-        var appointmentTypes = CreateAppointmentType();
+        var appointmentTypes = await CreateAppointmentType();
         var template = ClinicalFormTemplate.Create("TEMP01", "Vitals Form", "Description", "{}");
 
         Context.ClinicalFormTemplates.Add(template);
-
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         appointmentTypes.AddRequiredTemplate(template);
-
-        Context.AppointmentTypes.Add(appointmentTypes);
 
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
@@ -135,13 +132,11 @@ public class AppointmentTypeDefinitionRepositoryTests(PostgresFixture fixture) :
     public async Task GetAllActiveAsync_ShouldReturnOnlyActiveAppointmentTypes()
     {
         // Arrange
-        var active1 = CreateAppointmentType();
-        var active2 = CreateAppointmentType();
-        var inactive = CreateAppointmentType();
+        var active1 = await CreateAppointmentType();
+        var active2 = await CreateAppointmentType();
+        var inactive = await CreateAppointmentType();
 
         inactive.Deactivate();
-
-        Context.AppointmentTypes.AddRange(active1, active2, inactive);
 
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
@@ -156,13 +151,16 @@ public class AppointmentTypeDefinitionRepositoryTests(PostgresFixture fixture) :
     public async Task GetByCategoryAsync_ShouldReturnOnlyMatchingActiveCategory()
     {
         // Arrange
-        var firstConsult = CreateAppointmentType(category: AppointmentCategory.FirstConsultation);
-        var followUp = CreateAppointmentType(category: AppointmentCategory.FollowUp);
-        var inactiveFirst = CreateAppointmentType(category: AppointmentCategory.FirstConsultation);
+        var firstConsult = await CreateAppointmentType(
+            category: AppointmentCategory.FirstConsultation
+        );
+        await CreateAppointmentType(category: AppointmentCategory.FollowUp);
+
+        var inactiveFirst = await CreateAppointmentType(
+            category: AppointmentCategory.FirstConsultation
+        );
 
         inactiveFirst.Deactivate();
-
-        Context.AppointmentTypes.AddRange(firstConsult, followUp, inactiveFirst);
 
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
@@ -180,14 +178,12 @@ public class AppointmentTypeDefinitionRepositoryTests(PostgresFixture fixture) :
     public async Task GetEligibleByAgeAsync_ShouldReturnDefinitions_WhenAgeIsEligible()
     {
         // Arrange
-        var noRestriction = CreateAppointmentType(AgeEligibilityPolicy.NoRestriction);
-        var kidOnly = CreateAppointmentType(AgeEligibilityPolicy.Create(0, 12, false));
-        var adultOnly = CreateAppointmentType(AgeEligibilityPolicy.Create(18, 120, false));
-        var inactive = CreateAppointmentType(AgeEligibilityPolicy.Create(0, 12, false));
+        var noRestriction = await CreateAppointmentType(AgeEligibilityPolicy.NoRestriction);
+        var kidOnly = await CreateAppointmentType(AgeEligibilityPolicy.Create(0, 12, false));
+        await CreateAppointmentType(AgeEligibilityPolicy.Create(18, 120, false));
+        var inactive = await CreateAppointmentType(AgeEligibilityPolicy.Create(0, 12, false));
 
         inactive.Deactivate();
-
-        Context.AppointmentTypes.AddRange(noRestriction, kidOnly, adultOnly, inactive);
 
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
@@ -202,11 +198,7 @@ public class AppointmentTypeDefinitionRepositoryTests(PostgresFixture fixture) :
     public async Task GetEligibleByAgeAsync_ShouldReturnDefinitions_WhenAgeIsExactlyMinimumAge()
     {
         // Arrange
-
-        var adultOnly = CreateAppointmentType(AgeEligibilityPolicy.Create(18, 120, false));
-
-        Context.AppointmentTypes.Add(adultOnly);
-        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+        var adultOnly = await CreateAppointmentType(AgeEligibilityPolicy.Create(18, 120, false));
 
         // Act
         var results = await _sut.GetEligibleByAgeAsync(18, TestContext.Current.CancellationToken);
@@ -219,10 +211,7 @@ public class AppointmentTypeDefinitionRepositoryTests(PostgresFixture fixture) :
     public async Task GetEligibleByAgeAsync_ShouldReturnDefinitions_WhenAgeIsExactlyMaximumAge()
     {
         // Arrange
-        var kidOnly = CreateAppointmentType(AgeEligibilityPolicy.Create(0, 12, false));
-
-        Context.AppointmentTypes.Add(kidOnly);
-        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+        var kidOnly = await CreateAppointmentType(AgeEligibilityPolicy.Create(0, 12, false));
 
         // Act
         var results = await _sut.GetEligibleByAgeAsync(12, TestContext.Current.CancellationToken);
@@ -235,10 +224,7 @@ public class AppointmentTypeDefinitionRepositoryTests(PostgresFixture fixture) :
     public async Task ExistsByNameAsync_ShouldReturnTrue_WhenActiveExistsWithName()
     {
         // Arrange
-        var appointmentTypes = CreateAppointmentType("Checkup");
-
-        Context.AppointmentTypes.Add(appointmentTypes);
-        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+        await CreateAppointmentType("Checkup");
 
         // Act
         var result = await _sut.ExistsByNameAsync("Checkup", TestContext.Current.CancellationToken);
@@ -251,11 +237,9 @@ public class AppointmentTypeDefinitionRepositoryTests(PostgresFixture fixture) :
     public async Task ExistsByNameAsync_ShouldReturnFalse_WhenNoActiveWithName()
     {
         // Arrange
-        var inactive = CreateAppointmentType("Checkup");
+        var inactive = await CreateAppointmentType("Checkup");
 
         inactive.Deactivate();
-
-        Context.AppointmentTypes.Add(inactive);
 
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
@@ -270,11 +254,9 @@ public class AppointmentTypeDefinitionRepositoryTests(PostgresFixture fixture) :
     public async Task GetByIdIncludingDeletedAsync_ShouldReturnSoftDeletedAppointmentType()
     {
         // Arrange
-        var appointmentTypes = CreateAppointmentType();
+        var appointmentTypes = await CreateAppointmentType();
 
         appointmentTypes.Deactivate();
-
-        Context.AppointmentTypes.Add(appointmentTypes);
 
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
@@ -294,10 +276,8 @@ public class AppointmentTypeDefinitionRepositoryTests(PostgresFixture fixture) :
         // Arrange
         // Duplicate names are prevented at the handler level (see DomainErrors.AppointmentType.NameAlreadyExists).
         // Two are seeded here only to test the repository's exclusion logic in isolation.
-        var appointmentTypes1 = CreateAppointmentType("Name1");
-        var appointmentTypes2 = CreateAppointmentType("Name1");
-
-        Context.AppointmentTypes.AddRange(appointmentTypes1, appointmentTypes2);
+        var appointmentTypes1 = await CreateAppointmentType("Name1");
+        await CreateAppointmentType("Name1");
 
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
@@ -316,11 +296,7 @@ public class AppointmentTypeDefinitionRepositoryTests(PostgresFixture fixture) :
     public async Task ExistsByNameExcludingAsync_ShouldReturnFalse_WhenOnlySelfMatchesName()
     {
         // Arrange
-        var appointmentTypes = CreateAppointmentType();
-
-        Context.AppointmentTypes.Add(appointmentTypes);
-
-        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+        var appointmentTypes = await CreateAppointmentType();
 
         // Act
         var result = await _sut.ExistsByNameExcludingAsync(
@@ -333,11 +309,12 @@ public class AppointmentTypeDefinitionRepositoryTests(PostgresFixture fixture) :
         result.Should().BeFalse();
     }
 
-    private static AppointmentTypeDefinition CreateAppointmentType(
+    private async Task<AppointmentTypeDefinition> CreateAppointmentType(
         AgeEligibilityPolicy? agePolicy = null,
         AppointmentCategory category = AppointmentCategory.FirstConsultation
-    ) =>
-        AppointmentTypeDefinition.Create(
+    )
+    {
+        var appointmentType = AppointmentTypeDefinition.Create(
             category,
             "Name",
             "Description",
@@ -345,15 +322,28 @@ public class AppointmentTypeDefinitionRepositoryTests(PostgresFixture fixture) :
             agePolicy ?? AgeEligibilityPolicy.NoRestriction
         );
 
-    private static AppointmentTypeDefinition CreateAppointmentType(
+        Context.AppointmentTypes.Add(appointmentType);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        return appointmentType;
+    }
+
+    private async Task<AppointmentTypeDefinition> CreateAppointmentType(
         string name,
         AppointmentCategory category = AppointmentCategory.FirstConsultation
-    ) =>
-        AppointmentTypeDefinition.Create(
+    )
+    {
+        var appointmentType = AppointmentTypeDefinition.Create(
             category,
             name,
             "Description",
             EncounterDuration.FromMinutes(20),
             AgeEligibilityPolicy.NoRestriction
         );
+
+        Context.AppointmentTypes.Add(appointmentType);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        return appointmentType;
+    }
 }
