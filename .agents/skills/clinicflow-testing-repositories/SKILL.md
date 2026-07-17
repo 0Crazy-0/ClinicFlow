@@ -322,7 +322,7 @@ public async Task GetByCategoryAsync_ShouldReturnOnlyMatchingActiveCategory()
 {
     // Arrange
     var expected = await CreateEntityAsync(category: targetCategory);
-    var otherCategory = await CreateEntityAsync(category: otherCategory);
+    var otherCategoryEntity = await CreateEntityAsync(category: otherCategory);
     var inactive = await CreateEntityAsync(category: targetCategory);
 
     inactive.Deactivate();
@@ -339,30 +339,84 @@ public async Task GetByCategoryAsync_ShouldReturnOnlyMatchingActiveCategory()
 
 ## Strict Ordering Assertion
 
-When a query applies `OrderBy` or `ThenBy`, assert the expected order explicitly with `WithStrictOrdering()`:
+When a query applies `OrderBy` or `ThenBy`, assert the expected order explicitly with `WithStrictOrdering()`. Name the test after the actual sort column, not a conceptual one.
+
+### Basic Ascending
 
 ```csharp
 [Fact]
-public async Task GetPaginatedAsync_ShouldReturnOrderedResults()
+public async Task GetBySpecialtyIdPaginatedAsync_ShouldReturnDoctorsOrderedByFullNameThenSequenceNumber()
 {
     // Arrange
-    var entity1 = await CreateEntityAsync();  // sorts first
-    var entity2 = await CreateEntityAsync();  // sorts second
-    var entity3 = await CreateEntityAsync();  // sorts third
+    var entity1 = await CreateEntityAsync(fullName: "Alice");
+    var entity2 = await CreateEntityAsync(fullName: "Bob");
+    var entity3 = await CreateEntityAsync(fullName: "Charlie");
 
     // Act
-    var (items, totalCount) = await _sut.GetPaginatedAsync(
-        pageNumber: 1,
-        pageSize: 2,
-        TestContext.Current.CancellationToken
+    var (items, totalCount) = await _sut.GetBySpecialtyIdPaginatedAsync(
+        specialtyId, 1, 2, TestContext.Current.CancellationToken
     );
 
     // Assert
     totalCount.Should().Be(3);
-
     items.Should().BeEquivalentTo([entity1, entity2], options => options.WithStrictOrdering());
 }
 ```
+
+### Descending
+
+When the query uses `OrderByDescending`, seed entities so the collection produces the first entity as the last in insertion order:
+
+```csharp
+[Fact]
+public async Task GetHistoryByPatientIdAsync_ShouldReturnPenaltiesOrderedBySequenceNumberDescending()
+{
+    // Arrange
+    // SequenceNumber increments auto: entity1=1, entity2=2, entity3=3
+    // Descending means entity3 appears first
+    var entity1 = await CreateEntityAsync();
+    var entity2 = await CreateEntityAsync();
+    var entity3 = await CreateEntityAsync();
+
+    // Act
+    var results = await _sut.GetHistoryByPatientIdAsync(patientId, TestContext.Current.CancellationToken);
+
+    // Assert
+    results.Should().BeEquivalentTo([entity3, entity2, entity1], options => options.WithStrictOrdering());
+}
+```
+
+### Tiebreaker
+
+When the primary sort column alone cannot guarantee deterministic order (multiple entities share the same value), verify the tiebreaker column independently:
+
+```csharp
+[Fact]
+public async Task GetByDoctorIdAndDateAsync_ShouldOrderBySequenceNumberAscending_WhenTimeRangeStartIsEqual()
+{
+    // Arrange
+    // These entities share TimeRangeStart=9:00 (primary sort value); SequenceNumber breaks the tie
+    var entity1 = await CreateEntityAsync(startHour: 9);  // SequenceNumber=1
+    var entity2 = await CreateEntityAsync(startHour: 9);  // SequenceNumber=2
+    var entity3 = await CreateEntityAsync(startHour: 9);  // SequenceNumber=3
+
+    // Act
+    var results = await _sut.GetByDoctorIdAndDateAsync(doctorId, date, TestContext.Current.CancellationToken);
+
+    // Assert
+    results.Should().BeEquivalentTo([entity1, entity2, entity3], options => options.WithStrictOrdering());
+}
+```
+
+If the entity generates domain events (e.g., `Appointment`), chain the exclusion:
+
+```csharp
+results.Should().BeEquivalentTo([entity1, entity2], options => options
+    .Excluding(a => a.DomainEvents)
+    .WithStrictOrdering());
+```
+
+### Unordered Queries
 
 If the query has **no** `OrderBy`/`ThenBy`, omit `WithStrictOrdering()`. Use `BeEquivalentTo([...])` without ordering options.
 
