@@ -10,6 +10,12 @@ namespace ClinicFlow.Infrastructure.Persistence.Repositories;
 /// </summary>
 public sealed class DoctorRepository(ApplicationDbContext dbContext) : IDoctorRepository
 {
+    public Task CreateAsync(Doctor doctor, CancellationToken cancellationToken = default)
+    {
+        dbContext.Doctors.Add(doctor);
+        return Task.CompletedTask;
+    }
+
     public async Task<Doctor?> GetByIdAsync(
         Guid id,
         CancellationToken cancellationToken = default
@@ -40,12 +46,6 @@ public sealed class DoctorRepository(ApplicationDbContext dbContext) : IDoctorRe
             .ToListAsync(cancellationToken);
 
         return (items, totalCount);
-    }
-
-    public Task CreateAsync(Doctor doctor, CancellationToken cancellationToken = default)
-    {
-        dbContext.Doctors.Add(doctor);
-        return Task.CompletedTask;
     }
 
     public async Task<bool> HasActiveBySpecialtyIdAsync(

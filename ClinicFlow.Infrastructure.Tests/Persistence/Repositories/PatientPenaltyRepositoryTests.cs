@@ -31,34 +31,6 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
     }
 
     [Fact]
-    public async Task GetByIdAsync_ShouldReturnPenalty_WhenExists()
-    {
-        // Arrange
-        var patient = await CreatePatientAsync();
-        var appointment = await CreateAppointmentAsync(patient.Id);
-        var penalty = await CreateWarningAsync(patient.Id, appointment.Id);
-
-        // Act
-        var result = await _sut.GetByIdAsync(penalty.Id, TestContext.Current.CancellationToken);
-
-        // Assert
-        result.Should().BeEquivalentTo(penalty);
-    }
-
-    [Fact]
-    public async Task GetByIdAsync_ShouldReturnNull_WhenDoesNotExist()
-    {
-        // Arrange
-        var nonExistentId = Guid.NewGuid();
-
-        // Act
-        var result = await _sut.GetByIdAsync(nonExistentId, TestContext.Current.CancellationToken);
-
-        // Assert
-        result.Should().BeNull();
-    }
-
-    [Fact]
     public async Task CreateAsync_ShouldAddPenaltyToContext()
     {
         // Arrange
@@ -113,6 +85,34 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
             .ToListAsync(TestContext.Current.CancellationToken);
 
         dbResults.Should().BeEquivalentTo([warning, block]);
+    }
+
+    [Fact]
+    public async Task GetByIdAsync_ShouldReturnPenalty_WhenExists()
+    {
+        // Arrange
+        var patient = await CreatePatientAsync();
+        var appointment = await CreateAppointmentAsync(patient.Id);
+        var penalty = await CreateWarningAsync(patient.Id, appointment.Id);
+
+        // Act
+        var result = await _sut.GetByIdAsync(penalty.Id, TestContext.Current.CancellationToken);
+
+        // Assert
+        result.Should().BeEquivalentTo(penalty);
+    }
+
+    [Fact]
+    public async Task GetByIdAsync_ShouldReturnNull_WhenDoesNotExist()
+    {
+        // Arrange
+        var nonExistentId = Guid.NewGuid();
+
+        // Act
+        var result = await _sut.GetByIdAsync(nonExistentId, TestContext.Current.CancellationToken);
+
+        // Assert
+        result.Should().BeNull();
     }
 
     [Fact]

@@ -27,6 +27,24 @@ public class MedicalSpecialtyRepositoryTests(PostgresFixture fixture) : IAsyncLi
     }
 
     [Fact]
+    public async Task CreateAsync_ShouldAddSpecialtyToContext()
+    {
+        // Arrange
+        var specialty = MedicalSpecialty.Create("Ophthalmology", "Description", 30, 24);
+
+        // Act
+        await _sut.CreateAsync(specialty, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Assert
+        var dbResult = await Context
+            .MedicalSpecialties.AsNoTracking()
+            .FirstOrDefaultAsync(s => s.Id == specialty.Id, TestContext.Current.CancellationToken);
+
+        dbResult.Should().BeEquivalentTo(specialty);
+    }
+
+    [Fact]
     public async Task GetByIdAsync_ShouldReturnSpecialty_WhenExistsAndActive()
     {
         // Arrange
@@ -233,24 +251,6 @@ public class MedicalSpecialtyRepositoryTests(PostgresFixture fixture) : IAsyncLi
 
         // Assert
         result.Should().BeEquivalentTo([specialty1, specialty2]);
-    }
-
-    [Fact]
-    public async Task CreateAsync_ShouldAddSpecialtyToContext()
-    {
-        // Arrange
-        var specialty = MedicalSpecialty.Create("Ophthalmology", "Description", 30, 24);
-
-        // Act
-        await _sut.CreateAsync(specialty, TestContext.Current.CancellationToken);
-        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
-
-        // Assert
-        var dbResult = await Context
-            .MedicalSpecialties.AsNoTracking()
-            .FirstOrDefaultAsync(s => s.Id == specialty.Id, TestContext.Current.CancellationToken);
-
-        dbResult.Should().BeEquivalentTo(specialty);
     }
 
     private async Task<MedicalSpecialty> CreateSpecialty(string name = "Specialty")

@@ -11,6 +11,15 @@ namespace ClinicFlow.Infrastructure.Persistence.Repositories;
 public sealed class AppointmentTypeDefinitionRepository(ApplicationDbContext dbContext)
     : IAppointmentTypeDefinitionRepository
 {
+    public Task CreateAsync(
+        AppointmentTypeDefinition appointmentType,
+        CancellationToken cancellationToken = default
+    )
+    {
+        dbContext.AppointmentTypes.Add(appointmentType);
+        return Task.CompletedTask;
+    }
+
     public async Task<AppointmentTypeDefinition?> GetByIdAsync(
         Guid id,
         CancellationToken cancellationToken = default
@@ -73,13 +82,4 @@ public sealed class AppointmentTypeDefinitionRepository(ApplicationDbContext dbC
             a => a.Name == name && a.Id != excludeId,
             cancellationToken
         );
-
-    public Task CreateAsync(
-        AppointmentTypeDefinition appointmentType,
-        CancellationToken cancellationToken = default
-    )
-    {
-        dbContext.AppointmentTypes.Add(appointmentType);
-        return Task.CompletedTask;
-    }
 }

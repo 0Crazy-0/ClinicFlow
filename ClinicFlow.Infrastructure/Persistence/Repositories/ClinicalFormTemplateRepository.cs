@@ -10,6 +10,15 @@ namespace ClinicFlow.Infrastructure.Persistence.Repositories;
 public sealed class ClinicalFormTemplateRepository(ApplicationDbContext dbContext)
     : IClinicalFormTemplateRepository
 {
+    public Task CreateAsync(
+        ClinicalFormTemplate template,
+        CancellationToken cancellationToken = default
+    )
+    {
+        dbContext.ClinicalFormTemplates.Add(template);
+        return Task.CompletedTask;
+    }
+
     public async Task<ClinicalFormTemplate?> GetByIdAsync(
         Guid id,
         CancellationToken cancellationToken = default
@@ -67,13 +76,4 @@ public sealed class ClinicalFormTemplateRepository(ApplicationDbContext dbContex
             .ClinicalFormTemplates.IgnoreQueryFilters()
             .AsNoTracking()
             .ToListAsync(cancellationToken);
-
-    public Task CreateAsync(
-        ClinicalFormTemplate template,
-        CancellationToken cancellationToken = default
-    )
-    {
-        dbContext.ClinicalFormTemplates.Add(template);
-        return Task.CompletedTask;
-    }
 }

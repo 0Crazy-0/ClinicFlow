@@ -11,12 +11,6 @@ namespace ClinicFlow.Infrastructure.Persistence.Repositories;
 public sealed class PatientPenaltyRepository(ApplicationDbContext dbContext)
     : IPatientPenaltyRepository
 {
-    /// <inheritdoc />
-    public async Task<PatientPenalty?> GetByIdAsync(
-        Guid id,
-        CancellationToken cancellationToken = default
-    ) => await dbContext.PatientPenalties.FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
-
     public Task CreateAsync(PatientPenalty penalty, CancellationToken cancellationToken = default)
     {
         dbContext.PatientPenalties.Add(penalty);
@@ -31,6 +25,12 @@ public sealed class PatientPenaltyRepository(ApplicationDbContext dbContext)
         dbContext.PatientPenalties.AddRange(penalties);
         return Task.CompletedTask;
     }
+
+    /// <inheritdoc />
+    public async Task<PatientPenalty?> GetByIdAsync(
+        Guid id,
+        CancellationToken cancellationToken = default
+    ) => await dbContext.PatientPenalties.FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
 
     /// <inheritdoc />
     public async Task<IReadOnlyList<PatientPenalty>> GetHistoryByPatientIdAsync(

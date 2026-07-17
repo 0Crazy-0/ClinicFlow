@@ -28,6 +28,33 @@ public class ClinicalFormTemplateRepositoryTests(PostgresFixture fixture) : IAsy
     }
 
     [Fact]
+    public async Task CreateAsync_ShouldAddTemplateToContext()
+    {
+        // Arrange
+        var template = ClinicalFormTemplate.Create(
+            "TEMP99",
+            "Default Template",
+            "Default Description",
+            """{"type": "object"}"""
+        );
+
+        // Act
+        await _sut.CreateAsync(template, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Assert
+        var dbResult = await Context
+            .ClinicalFormTemplates.AsNoTracking()
+            .FirstOrDefaultAsync(c => c.Id == template.Id, TestContext.Current.CancellationToken);
+
+        dbResult
+            .Should()
+            .BeEquivalentTo(template, options => options.Excluding(x => x.JsonSchemaDefinition));
+
+        AssertJsonEquivalent(dbResult.JsonSchemaDefinition, template.JsonSchemaDefinition);
+    }
+
+    [Fact]
     public async Task GetByIdAsync_ShouldReturnTemplate_WhenExistsAndActive()
     {
         // Arrange
@@ -317,33 +344,6 @@ public class ClinicalFormTemplateRepositoryTests(PostgresFixture fixture) : IAsy
                 [active1, active2, inactive],
                 option => option.Excluding(x => x.JsonSchemaDefinition)
             );
-    }
-
-    [Fact]
-    public async Task CreateAsync_ShouldAddTemplateToContext()
-    {
-        // Arrange
-        var template = ClinicalFormTemplate.Create(
-            "TEMP99",
-            "Default Template",
-            "Default Description",
-            """{"type": "object"}"""
-        );
-
-        // Act
-        await _sut.CreateAsync(template, TestContext.Current.CancellationToken);
-        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
-
-        // Assert
-        var dbResult = await Context
-            .ClinicalFormTemplates.AsNoTracking()
-            .FirstOrDefaultAsync(c => c.Id == template.Id, TestContext.Current.CancellationToken);
-
-        dbResult
-            .Should()
-            .BeEquivalentTo(template, options => options.Excluding(x => x.JsonSchemaDefinition));
-
-        AssertJsonEquivalent(dbResult.JsonSchemaDefinition, template.JsonSchemaDefinition);
     }
 
     private async Task<ClinicalFormTemplate> CreateTemplate(

@@ -38,6 +38,29 @@ public class AppointmentRepositoryTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task CreateAsync_ShouldAddAppointmentToDbContext()
+    {
+        // Arrange
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var timeRange = TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0));
+        var (appointment, _, _) = await CreateAppointmentDraftAsync(scheduledDate, timeRange);
+
+        // Act
+        await _sut.CreateAsync(appointment, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Assert
+        var dbResult = await Context
+            .Appointments.AsNoTracking()
+            .FirstOrDefaultAsync(
+                a => a.Id == appointment.Id,
+                TestContext.Current.CancellationToken
+            );
+
+        dbResult.Should().BeEquivalentTo(appointment);
+    }
+
+    [Fact]
     public async Task GetByIdAsync_ShouldReturnAppointment_WhenExists()
     {
         // Arrange
@@ -669,29 +692,6 @@ public class AppointmentRepositoryTests : IAsyncLifetime
                 [appointment1, appointment2, appointment3],
                 options => options.WithStrictOrdering().Excluding(a => a.DomainEvents)
             );
-    }
-
-    [Fact]
-    public async Task CreateAsync_ShouldAddAppointmentToDbContext()
-    {
-        // Arrange
-        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
-        var timeRange = TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0));
-        var (appointment, _, _) = await CreateAppointmentDraftAsync(scheduledDate, timeRange);
-
-        // Act
-        await _sut.CreateAsync(appointment, TestContext.Current.CancellationToken);
-        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
-
-        // Assert
-        var dbResult = await Context
-            .Appointments.AsNoTracking()
-            .FirstOrDefaultAsync(
-                a => a.Id == appointment.Id,
-                TestContext.Current.CancellationToken
-            );
-
-        dbResult.Should().BeEquivalentTo(appointment);
     }
 
     [Fact]
