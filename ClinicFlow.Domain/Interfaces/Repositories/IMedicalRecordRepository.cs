@@ -7,6 +7,8 @@ namespace ClinicFlow.Domain.Interfaces.Repositories;
 /// </summary>
 public interface IMedicalRecordRepository
 {
+    Task CreateAsync(MedicalRecord medicalRecord, CancellationToken cancellationToken = default);
+
     Task<MedicalRecord?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
     Task<(IReadOnlyList<MedicalRecord> Items, int TotalCount)> GetByPatientIdPaginatedAsync(
@@ -27,6 +29,4 @@ public interface IMedicalRecordRepository
         Guid appointmentId,
         CancellationToken cancellationToken = default
     );
-
-    Task CreateAsync(MedicalRecord medicalRecord, CancellationToken cancellationToken = default);
 }

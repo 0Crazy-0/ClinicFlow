@@ -29,6 +29,27 @@ public class AppointmentTypeDefinitionRepositoryTests(PostgresFixture fixture) :
     }
 
     [Fact]
+    public async Task CreateAsync_ShouldAddAppointmentTypeToContext()
+    {
+        // Arrange
+        var appointmentType = CreateAppointmentType();
+
+        // Act
+        await _sut.CreateAsync(appointmentType, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Assert
+        var dbResult = await Context
+            .AppointmentTypes.AsNoTracking()
+            .FirstOrDefaultAsync(
+                a => a.Id == appointmentType.Id,
+                TestContext.Current.CancellationToken
+            );
+
+        dbResult.Should().BeEquivalentTo(appointmentType);
+    }
+
+    [Fact]
     public async Task GetByIdAsync_ShouldReturnAppointmentType_WhenExistsAndActive()
     {
         // Arrange
@@ -310,27 +331,6 @@ public class AppointmentTypeDefinitionRepositoryTests(PostgresFixture fixture) :
 
         // Assert
         result.Should().BeFalse();
-    }
-
-    [Fact]
-    public async Task CreateAsync_ShouldAddAppointmentTypeToContext()
-    {
-        // Arrange
-        var appointmentType = CreateAppointmentType();
-
-        // Act
-        await _sut.CreateAsync(appointmentType, TestContext.Current.CancellationToken);
-        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
-
-        // Assert
-        var dbResult = await Context
-            .AppointmentTypes.AsNoTracking()
-            .FirstOrDefaultAsync(
-                a => a.Id == appointmentType.Id,
-                TestContext.Current.CancellationToken
-            );
-
-        dbResult.Should().BeEquivalentTo(appointmentType);
     }
 
     private static AppointmentTypeDefinition CreateAppointmentType(

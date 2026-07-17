@@ -12,6 +12,12 @@ namespace ClinicFlow.Infrastructure.Persistence.Repositories;
 public sealed class AppointmentRepository(ApplicationDbContext dbContext, TimeProvider timeProvider)
     : IAppointmentRepository
 {
+    public Task CreateAsync(Appointment appointment, CancellationToken cancellationToken = default)
+    {
+        dbContext.Appointments.Add(appointment);
+        return Task.CompletedTask;
+    }
+
     public async Task<Appointment?> GetByIdAsync(
         Guid id,
         CancellationToken cancellationToken = default
@@ -88,12 +94,6 @@ public sealed class AppointmentRepository(ApplicationDbContext dbContext, TimePr
             .ToListAsync(cancellationToken);
 
         return (items, totalCount);
-    }
-
-    public Task CreateAsync(Appointment appointment, CancellationToken cancellationToken = default)
-    {
-        dbContext.Appointments.Add(appointment);
-        return Task.CompletedTask;
     }
 
     public async Task<bool> HasActiveAppointmentsForUserAsync(

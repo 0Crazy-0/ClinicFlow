@@ -10,6 +10,15 @@ namespace ClinicFlow.Infrastructure.Persistence.Repositories;
 public sealed class MedicalRecordRepository(ApplicationDbContext dbContext)
     : IMedicalRecordRepository
 {
+    public Task CreateAsync(
+        MedicalRecord medicalRecord,
+        CancellationToken cancellationToken = default
+    )
+    {
+        dbContext.MedicalRecords.Add(medicalRecord);
+        return Task.CompletedTask;
+    }
+
     public async Task<MedicalRecord?> GetByIdAsync(
         Guid id,
         CancellationToken cancellationToken = default
@@ -75,13 +84,4 @@ public sealed class MedicalRecordRepository(ApplicationDbContext dbContext)
         await dbContext
             .MedicalRecords.Include(m => m.ClinicalDetails)
             .FirstOrDefaultAsync(m => m.AppointmentId == appointmentId, cancellationToken);
-
-    public Task CreateAsync(
-        MedicalRecord medicalRecord,
-        CancellationToken cancellationToken = default
-    )
-    {
-        dbContext.MedicalRecords.Add(medicalRecord);
-        return Task.CompletedTask;
-    }
 }

@@ -10,6 +10,15 @@ namespace ClinicFlow.Infrastructure.Persistence.Repositories;
 public sealed class MedicalSpecialtyRepository(ApplicationDbContext dbContext)
     : IMedicalSpecialtyRepository
 {
+    public Task CreateAsync(
+        MedicalSpecialty specialty,
+        CancellationToken cancellationToken = default
+    )
+    {
+        dbContext.MedicalSpecialties.Add(specialty);
+        return Task.CompletedTask;
+    }
+
     public async Task<MedicalSpecialty?> GetByIdAsync(
         Guid id,
         CancellationToken cancellationToken = default
@@ -49,13 +58,4 @@ public sealed class MedicalSpecialtyRepository(ApplicationDbContext dbContext)
             .MedicalSpecialties.AsNoTracking()
             .IgnoreQueryFilters()
             .ToListAsync(cancellationToken);
-
-    public Task CreateAsync(
-        MedicalSpecialty specialty,
-        CancellationToken cancellationToken = default
-    )
-    {
-        dbContext.MedicalSpecialties.Add(specialty);
-        return Task.CompletedTask;
-    }
 }

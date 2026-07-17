@@ -29,6 +29,25 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
     }
 
     [Fact]
+    public async Task CreateAsync_ShouldAddMedicalRecordToContext()
+    {
+        // Arrange
+        var (doctor, patient, appointment) = await SeedCommonEntitiesAsync();
+        var record = MedicalRecord.Create(patient.Id, doctor.Id, appointment.Id, "chiefComplaint");
+
+        // Act
+        await _sut.CreateAsync(record, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Assert
+        var dbResult = await Context
+            .MedicalRecords.AsNoTracking()
+            .FirstOrDefaultAsync(m => m.Id == record.Id, TestContext.Current.CancellationToken);
+
+        dbResult.Should().BeEquivalentTo(record);
+    }
+
+    [Fact]
     public async Task GetByIdAsync_ShouldReturnMedicalRecord_WhenExists()
     {
         // Arrange
@@ -552,25 +571,6 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
 
         // Assert
         result.Should().BeNull();
-    }
-
-    [Fact]
-    public async Task CreateAsync_ShouldAddMedicalRecordToContext()
-    {
-        // Arrange
-        var (doctor, patient, appointment) = await SeedCommonEntitiesAsync();
-        var record = MedicalRecord.Create(patient.Id, doctor.Id, appointment.Id, "chiefComplaint");
-
-        // Act
-        await _sut.CreateAsync(record, TestContext.Current.CancellationToken);
-        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
-
-        // Assert
-        var dbResult = await Context
-            .MedicalRecords.AsNoTracking()
-            .FirstOrDefaultAsync(m => m.Id == record.Id, TestContext.Current.CancellationToken);
-
-        dbResult.Should().BeEquivalentTo(record);
     }
 
     private async Task<(

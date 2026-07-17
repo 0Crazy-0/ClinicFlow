@@ -7,6 +7,13 @@ namespace ClinicFlow.Domain.Interfaces.Repositories;
 /// </summary>
 public interface IPatientPenaltyRepository
 {
+    Task CreateAsync(PatientPenalty penalty, CancellationToken cancellationToken = default);
+
+    Task CreateRangeAsync(
+        IEnumerable<PatientPenalty> penalties,
+        CancellationToken cancellationToken = default
+    );
+
     /// <summary>
     /// Retrieves a patient penalty by its identifier, including penalties already removed.
     /// </summary>
@@ -16,13 +23,6 @@ public interface IPatientPenaltyRepository
     /// if the penalty was already removed.
     /// </remarks>
     Task<PatientPenalty?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
-
-    Task CreateAsync(PatientPenalty penalty, CancellationToken cancellationToken = default);
-
-    Task CreateRangeAsync(
-        IEnumerable<PatientPenalty> penalties,
-        CancellationToken cancellationToken = default
-    );
 
     /// <remarks>
     /// Includes penalties regardless of their current status. This covers

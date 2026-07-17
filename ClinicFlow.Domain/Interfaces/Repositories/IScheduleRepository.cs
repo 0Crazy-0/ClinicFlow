@@ -7,6 +7,13 @@ namespace ClinicFlow.Domain.Interfaces.Repositories;
 /// </summary>
 public interface IScheduleRepository
 {
+    Task CreateAsync(Schedule schedule, CancellationToken cancellationToken = default);
+
+    Task CreateRangeAsync(
+        IReadOnlyList<Schedule> schedules,
+        CancellationToken cancellationToken = default
+    );
+
     Task<Schedule?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
     Task<Schedule?> GetByDoctorAndDayAsync(
@@ -22,13 +29,6 @@ public interface IScheduleRepository
 
     Task<IReadOnlyList<Schedule>> GetActiveByDoctorIdAsync(
         Guid doctorId,
-        CancellationToken cancellationToken = default
-    );
-
-    Task CreateAsync(Schedule schedule, CancellationToken cancellationToken = default);
-
-    Task CreateRangeAsync(
-        IReadOnlyList<Schedule> schedules,
         CancellationToken cancellationToken = default
     );
 }

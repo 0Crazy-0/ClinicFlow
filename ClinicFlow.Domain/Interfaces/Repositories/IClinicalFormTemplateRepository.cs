@@ -4,6 +4,8 @@ namespace ClinicFlow.Domain.Interfaces.Repositories;
 
 public interface IClinicalFormTemplateRepository
 {
+    Task CreateAsync(ClinicalFormTemplate template, CancellationToken cancellationToken = default);
+
     Task<ClinicalFormTemplate?> GetByIdAsync(
         Guid id,
         CancellationToken cancellationToken = default
@@ -36,6 +38,4 @@ public interface IClinicalFormTemplateRepository
     Task<IReadOnlyList<ClinicalFormTemplate>> GetAllIncludingDeletedAsync(
         CancellationToken cancellationToken = default
     );
-
-    Task CreateAsync(ClinicalFormTemplate template, CancellationToken cancellationToken = default);
 }

@@ -7,6 +7,8 @@ namespace ClinicFlow.Domain.Interfaces.Repositories;
 /// </summary>
 public interface IDoctorRepository
 {
+    Task CreateAsync(Doctor doctor, CancellationToken cancellationToken = default);
+
     Task<Doctor?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
     Task<Doctor?> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
@@ -17,8 +19,6 @@ public interface IDoctorRepository
         int pageSize,
         CancellationToken cancellationToken = default
     );
-
-    Task CreateAsync(Doctor doctor, CancellationToken cancellationToken = default);
 
     Task<bool> HasActiveBySpecialtyIdAsync(
         Guid specialtyId,

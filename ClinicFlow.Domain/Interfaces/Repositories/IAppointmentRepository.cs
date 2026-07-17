@@ -8,6 +8,8 @@ namespace ClinicFlow.Domain.Interfaces.Repositories;
 /// </summary>
 public interface IAppointmentRepository
 {
+    Task CreateAsync(Appointment appointment, CancellationToken cancellationToken = default);
+
     Task<Appointment?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
     Task<(IReadOnlyList<Appointment> Items, int TotalCount)> GetByDoctorIdAndDateAsync(
@@ -32,8 +34,6 @@ public interface IAppointmentRepository
         int pageSize,
         CancellationToken cancellationToken = default
     );
-
-    Task CreateAsync(Appointment appointment, CancellationToken cancellationToken = default);
 
     Task<bool> HasActiveAppointmentsForUserAsync(
         Guid userId,

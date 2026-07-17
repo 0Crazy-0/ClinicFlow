@@ -29,6 +29,32 @@ public class DoctorRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
     }
 
     [Fact]
+    public async Task CreateAsync_ShouldAddDoctorToContext()
+    {
+        // Arrange
+        var (user, specialty) = await CreatePrerequisitesAsync();
+        var doctor = Doctor.Create(
+            user.Id,
+            PersonName.Create("Dr. Watson"),
+            MedicalLicenseNumber.Create("CMP-12345"),
+            specialty.Id,
+            "Biography",
+            ConsultationRoom.Create(10, "Room 10", 1)
+        );
+
+        // Act
+        await _sut.CreateAsync(doctor, TestContext.Current.CancellationToken);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Assert
+        var dbResult = await Context
+            .Doctors.AsNoTracking()
+            .FirstOrDefaultAsync(d => d.Id == doctor.Id, TestContext.Current.CancellationToken);
+
+        dbResult.Should().BeEquivalentTo(doctor);
+    }
+
+    [Fact]
     public async Task GetByIdAsync_ShouldReturnDoctor_WhenExistsAndActive()
     {
         // Arrange
@@ -421,32 +447,6 @@ public class DoctorRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         totalCount.Should().Be(2);
 
         items.Should().BeEquivalentTo([doctor1, doctor2], options => options.WithStrictOrdering());
-    }
-
-    [Fact]
-    public async Task CreateAsync_ShouldAddDoctorToContext()
-    {
-        // Arrange
-        var (user, specialty) = await CreatePrerequisitesAsync();
-        var doctor = Doctor.Create(
-            user.Id,
-            PersonName.Create("Dr. Watson"),
-            MedicalLicenseNumber.Create("CMP-12345"),
-            specialty.Id,
-            "Biography",
-            ConsultationRoom.Create(10, "Room 10", 1)
-        );
-
-        // Act
-        await _sut.CreateAsync(doctor, TestContext.Current.CancellationToken);
-        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
-
-        // Assert
-        var dbResult = await Context
-            .Doctors.AsNoTracking()
-            .FirstOrDefaultAsync(d => d.Id == doctor.Id, TestContext.Current.CancellationToken);
-
-        dbResult.Should().BeEquivalentTo(doctor);
     }
 
     [Fact]
