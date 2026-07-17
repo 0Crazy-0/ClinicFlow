@@ -153,7 +153,7 @@ private async Task<(
 
 ## CreateAsync / CreateRangeAsync Verification
 
-Use the entity's domain factory method in Arrange (e.g. Create, Schedule, CreateSelf — whatever term the aggregate's ubiquitous language uses), never a private helper. Follow with `_sut.CreateAsync`, then `Context.SaveChangesAsync`, then verify with an `AsNoTracking()` query to bypass EF's cache:
+Use the entity's domain factory method in Arrange (e.g. Create, Schedule, CreateSelf, whatever term the aggregate's ubiquitous language uses), never a private helper. Follow with `_sut.CreateAsync`, then `Context.SaveChangesAsync`, then verify with an `AsNoTracking()` query to bypass EF's cache:
 
 ```csharp
 [Fact]
@@ -233,7 +233,7 @@ public async Task CreateRangeAsync_ShouldAddMultipleEntitiesToContext()
 
 For every query method that respects the global query filter (`IsDeleted`), always write these three tests as a group:
 
-1. **Happy path** — entity is active:
+1. **Happy path**: entity is active:
 
 ```csharp
 [Fact]
@@ -250,7 +250,7 @@ public async Task GetByIdAsync_ShouldReturnEntity_WhenExistsAndActive()
 }
 ```
 
-2. **Filtered out** — entity is soft-deleted:
+2. **Filtered out**: entity is soft-deleted:
 
 ```csharp
 [Fact]
@@ -271,7 +271,7 @@ public async Task GetByIdAsync_ShouldReturnNull_WhenSoftDeleted()
 }
 ```
 
-3. **Bypasses filter** — `IncludingDeleted` variant returns soft-deleted entity:
+3. **Bypasses filter**: `IncludingDeleted` variant returns soft-deleted entity:
 
 ```csharp
 [Fact]
@@ -295,7 +295,7 @@ public async Task GetByIdIncludingDeletedAsync_ShouldReturnSoftDeletedEntity()
 }
 ```
 
-A fourth test — `GetByIdAsync_ShouldReturnNull_WhenDoesNotExist` — always accompanies the triad for the non-existent ID case:
+A fourth test, `GetByIdAsync_ShouldReturnNull_WhenDoesNotExist`, always accompanies the triad for the non-existent ID case:
 
 ```csharp
 [Fact]
@@ -422,7 +422,7 @@ If the query has **no** `OrderBy`/`ThenBy`, omit `WithStrictOrdering()`. Use `Be
 
 ## Domain Events Exclusion
 
-When creating an entity triggers domain events (e.g., `Appointment.Schedule` adds an `AppointmentScheduledEvent`), the in-memory entity will hold those events while the entity reloaded from the database won't — EF reconstructs it purely from persisted columns, and domain events are never part of that state. Exclude `DomainEvents` from the comparison:
+When creating an entity triggers domain events (e.g., `Appointment.Schedule` adds an `AppointmentScheduledEvent`), the in-memory entity will hold those events while the entity reloaded from the database won't; EF reconstructs it purely from persisted columns, and domain events are never part of that state. Exclude `DomainEvents` from the comparison:
 
 ```csharp
 [Fact]
