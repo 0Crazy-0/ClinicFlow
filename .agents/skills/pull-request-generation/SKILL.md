@@ -95,7 +95,7 @@ Added comprehensive unit tests for `AppointmentSchedulingService` and `Appointme
 
 Bad: uses bullets instead of paragraph:
 
-```
+```text
 ❌ This PR introduces the medical records feature. It adds:
 - CompleteMedicalEncounterCommand and handler...
 - Queries to fetch medical records...
