@@ -1,4 +1,5 @@
 using ClinicFlow.Domain.Entities;
+using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
@@ -18,7 +19,11 @@ public sealed class PatientRepository(ApplicationDbContext dbContext) : IPatient
     public async Task<Patient?> GetByUserIdAsync(
         Guid userId,
         CancellationToken cancellationToken = default
-    ) => await dbContext.Patients.FirstOrDefaultAsync(p => p.UserId == userId, cancellationToken);
+    ) =>
+        await dbContext.Patients.FirstOrDefaultAsync(
+            p => p.UserId == userId && p.RelationshipToUser == PatientRelationship.Self,
+            cancellationToken
+        );
 
     public async Task<IReadOnlyList<Patient>> GetAllByUserIdAsync(
         Guid userId,
