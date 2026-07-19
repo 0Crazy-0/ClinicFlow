@@ -154,6 +154,25 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
     }
 
     [Fact]
+    public async Task GetByUserIdAsync_ShouldReturnSelfPatient_WhenUserHasFamilyMemberToo()
+    {
+        // Arrange
+        var user = await CreateUserAsync();
+        var selfPatient = await CreateSelfPatientAsync(
+            user.Id,
+            "John Doe",
+            new DateOnly(1990, 1, 1)
+        );
+        await CreateFamilyMemberPatientAsync(user.Id, "Family Member", new DateOnly(2015, 1, 1));
+
+        // Act
+        var result = await _sut.GetByUserIdAsync(user.Id, TestContext.Current.CancellationToken);
+
+        // Assert
+        result.Should().BeEquivalentTo(selfPatient);
+    }
+
+    [Fact]
     public async Task GetAllByUserIdAsync_ShouldReturnAllPatients_WhenUserHasMultiple()
     {
         // Arrange
