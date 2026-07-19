@@ -102,13 +102,13 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
     }
 
     [Fact]
-    public async Task GetByUserIdAsync_ShouldReturnPatient_WhenExistsAndActive()
+    public async Task GetSelfPatientByUserIdAsync_ShouldReturnPatient_WhenExistsAndActive()
     {
         // Arrange
         var patient = await CreateSelfPatientAsync();
 
         // Act
-        var result = await _sut.GetByUserIdAsync(
+        var result = await _sut.GetSelfPatientByUserIdAsync(
             patient.UserId,
             TestContext.Current.CancellationToken
         );
@@ -118,7 +118,7 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
     }
 
     [Fact]
-    public async Task GetByUserIdAsync_ShouldReturnNull_WhenSoftDeleted()
+    public async Task GetSelfPatientByUserIdAsync_ShouldReturnNull_WhenSoftDeleted()
     {
         // Arrange
         var patient = await CreateSelfPatientAsync();
@@ -128,7 +128,7 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Act
-        var result = await _sut.GetByUserIdAsync(
+        var result = await _sut.GetSelfPatientByUserIdAsync(
             patient.UserId,
             TestContext.Current.CancellationToken
         );
@@ -138,13 +138,13 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
     }
 
     [Fact]
-    public async Task GetByUserIdAsync_ShouldReturnNull_WhenDoesNotExist()
+    public async Task GetSelfPatientByUserIdAsync_ShouldReturnNull_WhenDoesNotExist()
     {
         // Arrange
         var nonExistentUserId = Guid.CreateVersion7();
 
         // Act
-        var result = await _sut.GetByUserIdAsync(
+        var result = await _sut.GetSelfPatientByUserIdAsync(
             nonExistentUserId,
             TestContext.Current.CancellationToken
         );
@@ -154,7 +154,7 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
     }
 
     [Fact]
-    public async Task GetByUserIdAsync_ShouldReturnSelfPatient_WhenUserHasFamilyMemberToo()
+    public async Task GetSelfPatientByUserIdAsync_ShouldReturnSelfPatient_WhenUserHasFamilyMemberToo()
     {
         // Arrange
         var user = await CreateUserAsync();
@@ -166,7 +166,7 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         await CreateFamilyMemberPatientAsync(user.Id, "Family Member", new DateOnly(2015, 1, 1));
 
         // Act
-        var result = await _sut.GetByUserIdAsync(user.Id, TestContext.Current.CancellationToken);
+        var result = await _sut.GetSelfPatientByUserIdAsync(user.Id, TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().BeEquivalentTo(selfPatient);
