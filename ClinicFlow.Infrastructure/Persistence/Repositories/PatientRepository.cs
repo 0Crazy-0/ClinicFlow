@@ -16,7 +16,7 @@ public sealed class PatientRepository(ApplicationDbContext dbContext) : IPatient
         CancellationToken cancellationToken = default
     ) => await dbContext.Patients.FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
 
-    public async Task<Patient?> GetByUserIdAsync(
+    public async Task<Patient?> GetSelfPatientByUserIdAsync(
         Guid userId,
         CancellationToken cancellationToken = default
     ) =>

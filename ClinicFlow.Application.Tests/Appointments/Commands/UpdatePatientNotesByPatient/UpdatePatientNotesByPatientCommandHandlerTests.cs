@@ -52,7 +52,7 @@ public class UpdatePatientNotesByPatientCommandHandlerTests
             .ReturnsAsync(targetPatient);
 
         _patientRepositoryMock
-            .Setup(r => r.GetByUserIdAsync(command.InitiatorUserId, It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetSelfPatientByUserIdAsync(command.InitiatorUserId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(targetPatient);
 
         // Act
@@ -110,7 +110,7 @@ public class UpdatePatientNotesByPatientCommandHandlerTests
             .ReturnsAsync((Patient?)null);
 
         _patientRepositoryMock
-            .Setup(r => r.GetByUserIdAsync(command.InitiatorUserId, It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetSelfPatientByUserIdAsync(command.InitiatorUserId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(CreatePatientSelf(command.InitiatorUserId));
 
         // Act
@@ -145,7 +145,7 @@ public class UpdatePatientNotesByPatientCommandHandlerTests
             .Setup(r => r.GetByIdAsync(appointment.PatientId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(targetPatient);
         _patientRepositoryMock
-            .Setup(r => r.GetByUserIdAsync(command.InitiatorUserId, It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetSelfPatientByUserIdAsync(command.InitiatorUserId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((Patient?)null);
 
         // Act
@@ -185,7 +185,7 @@ public class UpdatePatientNotesByPatientCommandHandlerTests
             .ReturnsAsync(targetPatient);
 
         _patientRepositoryMock
-            .Setup(r => r.GetByUserIdAsync(command.InitiatorUserId, It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetSelfPatientByUserIdAsync(command.InitiatorUserId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(initiatorPatient);
 
         // Act
