@@ -14,6 +14,9 @@ public interface IScheduleRepository
         CancellationToken cancellationToken = default
     );
 
+    /// <remarks>
+    /// Returns schedules regardless of their <see cref="Schedule.IsActive"/> state.
+    /// </remarks>
     Task<Schedule?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
     Task<Schedule?> GetActiveByDoctorAndDayAsync(
@@ -22,6 +25,9 @@ public interface IScheduleRepository
         CancellationToken cancellationToken = default
     );
 
+    /// <remarks>
+    /// Returns schedules regardless of their <see cref="Schedule.IsActive"/> state.
+    /// </remarks>
     Task<IReadOnlyList<Schedule>> GetByDoctorIdAsync(
         Guid doctorId,
         CancellationToken cancellationToken = default
