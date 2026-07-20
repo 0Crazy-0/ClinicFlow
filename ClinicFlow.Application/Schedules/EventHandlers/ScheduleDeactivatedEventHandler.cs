@@ -27,7 +27,7 @@ public sealed class ScheduleDeactivatedEventHandler(
             cancellationToken
         );
 
-        var activeSchedule = await scheduleRepository.GetByDoctorAndDayAsync(
+        var activeSchedule = await scheduleRepository.GetActiveByDoctorAndDayAsync(
             domainEvent.DoctorId,
             domainEvent.DayOfWeek,
             cancellationToken

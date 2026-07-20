@@ -13,7 +13,7 @@ public sealed class GetScheduleByDoctorAndDayQueryHandler(IScheduleRepository sc
         CancellationToken cancellationToken
     )
     {
-        var schedule = await scheduleRepository.GetByDoctorAndDayAsync(
+        var schedule = await scheduleRepository.GetActiveByDoctorAndDayAsync(
             request.DoctorId,
             request.DayOfWeek,
             cancellationToken

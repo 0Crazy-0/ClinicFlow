@@ -65,7 +65,11 @@ public class ScheduleDeactivatedEventHandlerTests
 
         _scheduleRepositoryMock
             .Setup(x =>
-                x.GetByDoctorAndDayAsync(doctorId, DayOfWeek.Monday, It.IsAny<CancellationToken>())
+                x.GetActiveByDoctorAndDayAsync(
+                    doctorId,
+                    DayOfWeek.Monday,
+                    It.IsAny<CancellationToken>()
+                )
             )
             .ReturnsAsync((Schedule?)null);
 
@@ -121,7 +125,11 @@ public class ScheduleDeactivatedEventHandlerTests
 
         _scheduleRepositoryMock
             .Setup(x =>
-                x.GetByDoctorAndDayAsync(doctorId, DayOfWeek.Monday, It.IsAny<CancellationToken>())
+                x.GetActiveByDoctorAndDayAsync(
+                    doctorId,
+                    DayOfWeek.Monday,
+                    It.IsAny<CancellationToken>()
+                )
             )
             .ReturnsAsync(newSchedule);
 
@@ -177,7 +185,11 @@ public class ScheduleDeactivatedEventHandlerTests
 
         _scheduleRepositoryMock
             .Setup(x =>
-                x.GetByDoctorAndDayAsync(doctorId, DayOfWeek.Monday, It.IsAny<CancellationToken>())
+                x.GetActiveByDoctorAndDayAsync(
+                    doctorId,
+                    DayOfWeek.Monday,
+                    It.IsAny<CancellationToken>()
+                )
             )
             .ReturnsAsync(newSchedule);
 
@@ -227,7 +239,11 @@ public class ScheduleDeactivatedEventHandlerTests
 
         _scheduleRepositoryMock
             .Setup(x =>
-                x.GetByDoctorAndDayAsync(doctorId, DayOfWeek.Monday, It.IsAny<CancellationToken>())
+                x.GetActiveByDoctorAndDayAsync(
+                    doctorId,
+                    DayOfWeek.Monday,
+                    It.IsAny<CancellationToken>()
+                )
             )
             .ReturnsAsync((Schedule?)null);
 

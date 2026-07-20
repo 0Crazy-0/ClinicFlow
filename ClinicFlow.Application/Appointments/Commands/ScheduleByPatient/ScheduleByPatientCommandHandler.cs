@@ -43,7 +43,10 @@ public sealed class ScheduleByPatientCommandHandler(
             );
 
         var initiatorPatient =
-            await patientRepository.GetSelfPatientByUserIdAsync(request.InitiatorUserId, cancellationToken)
+            await patientRepository.GetSelfPatientByUserIdAsync(
+                request.InitiatorUserId,
+                cancellationToken
+            )
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Patient),
@@ -84,7 +87,7 @@ public sealed class ScheduleByPatientCommandHandler(
         var timeRange = TimeRange.Create(request.StartTime, request.EndTime);
 
         var doctorSchedule =
-            await scheduleRepository.GetByDoctorAndDayAsync(
+            await scheduleRepository.GetActiveByDoctorAndDayAsync(
                 request.DoctorId,
                 request.ScheduledDate.DayOfWeek,
                 cancellationToken

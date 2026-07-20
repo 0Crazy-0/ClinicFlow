@@ -77,7 +77,7 @@ public class ReassignAppointmentCommandHandlerTests
 
         _scheduleRepositoryMock
             .Setup(x =>
-                x.GetByDoctorAndDayAsync(
+                x.GetActiveByDoctorAndDayAsync(
                     newDoctor.Id,
                     newDate.DayOfWeek,
                     It.IsAny<CancellationToken>()
@@ -206,7 +206,7 @@ public class ReassignAppointmentCommandHandlerTests
             .ReturnsAsync(newDoctor);
         _scheduleRepositoryMock
             .Setup(x =>
-                x.GetByDoctorAndDayAsync(
+                x.GetActiveByDoctorAndDayAsync(
                     newDoctor.Id,
                     newDate.DayOfWeek,
                     It.IsAny<CancellationToken>()
@@ -268,7 +268,7 @@ public class ReassignAppointmentCommandHandlerTests
 
         _scheduleRepositoryMock
             .Setup(x =>
-                x.GetByDoctorAndDayAsync(
+                x.GetActiveByDoctorAndDayAsync(
                     newDoctor.Id,
                     newDate.DayOfWeek,
                     It.IsAny<CancellationToken>()

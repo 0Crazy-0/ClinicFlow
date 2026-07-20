@@ -58,7 +58,7 @@ public sealed class ScheduleByStaffCommandHandler(
         var timeRange = TimeRange.Create(request.StartTime, request.EndTime);
 
         var doctorSchedule =
-            await scheduleRepository.GetByDoctorAndDayAsync(
+            await scheduleRepository.GetActiveByDoctorAndDayAsync(
                 request.DoctorId,
                 request.ScheduledDate.DayOfWeek,
                 cancellationToken

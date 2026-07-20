@@ -94,7 +94,11 @@ public class RescheduleByDoctorCommandHandlerTests
             .Returns(SchedulingClearance.Granted());
         _scheduleRepositoryMock
             .Setup(r =>
-                r.GetByDoctorAndDayAsync(doctorId, newDate.DayOfWeek, It.IsAny<CancellationToken>())
+                r.GetActiveByDoctorAndDayAsync(
+                    doctorId,
+                    newDate.DayOfWeek,
+                    It.IsAny<CancellationToken>()
+                )
             )
             .ReturnsAsync(schedule);
         _appointmentRepositoryMock
@@ -321,7 +325,7 @@ public class RescheduleByDoctorCommandHandlerTests
 
         _scheduleRepositoryMock
             .Setup(r =>
-                r.GetByDoctorAndDayAsync(
+                r.GetActiveByDoctorAndDayAsync(
                     doctorId,
                     command.NewDate.DayOfWeek,
                     It.IsAny<CancellationToken>()
@@ -388,7 +392,7 @@ public class RescheduleByDoctorCommandHandlerTests
             .ReturnsAsync(appointmentType);
         _scheduleRepositoryMock
             .Setup(r =>
-                r.GetByDoctorAndDayAsync(
+                r.GetActiveByDoctorAndDayAsync(
                     doctorId,
                     command.NewDate.DayOfWeek,
                     It.IsAny<CancellationToken>()

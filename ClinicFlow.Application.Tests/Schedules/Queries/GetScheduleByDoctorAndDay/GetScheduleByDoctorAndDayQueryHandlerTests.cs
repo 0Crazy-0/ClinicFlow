@@ -33,7 +33,7 @@ public class GetScheduleByDoctorAndDayQueryHandlerTests
 
         _scheduleRepositoryMock
             .Setup(x =>
-                x.GetByDoctorAndDayAsync(doctorId, dayOfWeek, It.IsAny<CancellationToken>())
+                x.GetActiveByDoctorAndDayAsync(doctorId, dayOfWeek, It.IsAny<CancellationToken>())
             )
             .ReturnsAsync(schedule);
 
@@ -55,7 +55,7 @@ public class GetScheduleByDoctorAndDayQueryHandlerTests
         result.Should().BeEquivalentTo(expectedDto);
 
         _scheduleRepositoryMock.Verify(
-            x => x.GetByDoctorAndDayAsync(doctorId, dayOfWeek, It.IsAny<CancellationToken>()),
+            x => x.GetActiveByDoctorAndDayAsync(doctorId, dayOfWeek, It.IsAny<CancellationToken>()),
             Times.Once
         );
     }
@@ -69,7 +69,7 @@ public class GetScheduleByDoctorAndDayQueryHandlerTests
 
         _scheduleRepositoryMock
             .Setup(x =>
-                x.GetByDoctorAndDayAsync(doctorId, dayOfWeek, It.IsAny<CancellationToken>())
+                x.GetActiveByDoctorAndDayAsync(doctorId, dayOfWeek, It.IsAny<CancellationToken>())
             )
             .ReturnsAsync((Schedule?)null);
 
@@ -82,7 +82,7 @@ public class GetScheduleByDoctorAndDayQueryHandlerTests
         result.Should().BeNull();
 
         _scheduleRepositoryMock.Verify(
-            x => x.GetByDoctorAndDayAsync(doctorId, dayOfWeek, It.IsAny<CancellationToken>()),
+            x => x.GetActiveByDoctorAndDayAsync(doctorId, dayOfWeek, It.IsAny<CancellationToken>()),
             Times.Once
         );
     }

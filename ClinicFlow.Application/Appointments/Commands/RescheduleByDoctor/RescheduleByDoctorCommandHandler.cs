@@ -63,7 +63,7 @@ public sealed class RescheduleByDoctorCommandHandler(
         var newTimeRange = TimeRange.Create(request.NewStartTime, request.NewEndTime);
 
         var doctorSchedule =
-            await scheduleRepository.GetByDoctorAndDayAsync(
+            await scheduleRepository.GetActiveByDoctorAndDayAsync(
                 appointment.DoctorId,
                 request.NewDate.DayOfWeek,
                 cancellationToken
