@@ -37,7 +37,10 @@ public sealed class UpdatePatientNotesByPatientCommandHandler(
             );
 
         var initiatorPatient =
-            await patientRepository.GetSelfPatientByUserIdAsync(request.InitiatorUserId, cancellationToken)
+            await patientRepository.GetSelfPatientByUserIdAsync(
+                request.InitiatorUserId,
+                cancellationToken
+            )
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Patient),

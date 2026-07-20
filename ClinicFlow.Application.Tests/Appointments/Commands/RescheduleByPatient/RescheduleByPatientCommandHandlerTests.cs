@@ -97,7 +97,12 @@ public class RescheduleByPatientCommandHandlerTests
             .Setup(r => r.GetByIdAsync(patientId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(targetPatient);
         _patientRepositoryMock
-            .Setup(r => r.GetSelfPatientByUserIdAsync(command.InitiatorUserId, It.IsAny<CancellationToken>()))
+            .Setup(r =>
+                r.GetSelfPatientByUserIdAsync(
+                    command.InitiatorUserId,
+                    It.IsAny<CancellationToken>()
+                )
+            )
             .ReturnsAsync(targetPatient);
         _doctorRepositoryMock
             .Setup(r => r.GetByIdAsync(doctorId, It.IsAny<CancellationToken>()))
@@ -113,7 +118,11 @@ public class RescheduleByPatientCommandHandlerTests
             .ReturnsAsync([]);
         _scheduleRepositoryMock
             .Setup(r =>
-                r.GetByDoctorAndDayAsync(doctorId, newDate.DayOfWeek, It.IsAny<CancellationToken>())
+                r.GetActiveByDoctorAndDayAsync(
+                    doctorId,
+                    newDate.DayOfWeek,
+                    It.IsAny<CancellationToken>()
+                )
             )
             .ReturnsAsync(schedule);
         _appointmentRepositoryMock
@@ -225,7 +234,12 @@ public class RescheduleByPatientCommandHandlerTests
             .ReturnsAsync(targetPatient);
 
         _patientRepositoryMock
-            .Setup(r => r.GetSelfPatientByUserIdAsync(command.InitiatorUserId, It.IsAny<CancellationToken>()))
+            .Setup(r =>
+                r.GetSelfPatientByUserIdAsync(
+                    command.InitiatorUserId,
+                    It.IsAny<CancellationToken>()
+                )
+            )
             .ReturnsAsync((Patient?)null);
 
         // Act
@@ -264,7 +278,12 @@ public class RescheduleByPatientCommandHandlerTests
             .ReturnsAsync(targetPatient);
 
         _patientRepositoryMock
-            .Setup(r => r.GetSelfPatientByUserIdAsync(command.InitiatorUserId, It.IsAny<CancellationToken>()))
+            .Setup(r =>
+                r.GetSelfPatientByUserIdAsync(
+                    command.InitiatorUserId,
+                    It.IsAny<CancellationToken>()
+                )
+            )
             .ReturnsAsync(targetPatient);
 
         _doctorRepositoryMock
@@ -308,7 +327,12 @@ public class RescheduleByPatientCommandHandlerTests
             .ReturnsAsync(targetPatient);
 
         _patientRepositoryMock
-            .Setup(r => r.GetSelfPatientByUserIdAsync(command.InitiatorUserId, It.IsAny<CancellationToken>()))
+            .Setup(r =>
+                r.GetSelfPatientByUserIdAsync(
+                    command.InitiatorUserId,
+                    It.IsAny<CancellationToken>()
+                )
+            )
             .ReturnsAsync(targetPatient);
 
         _doctorRepositoryMock
@@ -357,7 +381,12 @@ public class RescheduleByPatientCommandHandlerTests
             .ReturnsAsync(targetPatient);
 
         _patientRepositoryMock
-            .Setup(r => r.GetSelfPatientByUserIdAsync(command.InitiatorUserId, It.IsAny<CancellationToken>()))
+            .Setup(r =>
+                r.GetSelfPatientByUserIdAsync(
+                    command.InitiatorUserId,
+                    It.IsAny<CancellationToken>()
+                )
+            )
             .ReturnsAsync(targetPatient);
 
         _doctorRepositoryMock
@@ -432,7 +461,12 @@ public class RescheduleByPatientCommandHandlerTests
             .Setup(r => r.GetByIdAsync(patientId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(targetPatient);
         _patientRepositoryMock
-            .Setup(r => r.GetSelfPatientByUserIdAsync(command.InitiatorUserId, It.IsAny<CancellationToken>()))
+            .Setup(r =>
+                r.GetSelfPatientByUserIdAsync(
+                    command.InitiatorUserId,
+                    It.IsAny<CancellationToken>()
+                )
+            )
             .ReturnsAsync(targetPatient);
         _doctorRepositoryMock
             .Setup(r => r.GetByIdAsync(doctorId, It.IsAny<CancellationToken>()))
@@ -456,7 +490,11 @@ public class RescheduleByPatientCommandHandlerTests
 
         _scheduleRepositoryMock
             .Setup(r =>
-                r.GetByDoctorAndDayAsync(doctorId, newDate.DayOfWeek, It.IsAny<CancellationToken>())
+                r.GetActiveByDoctorAndDayAsync(
+                    doctorId,
+                    newDate.DayOfWeek,
+                    It.IsAny<CancellationToken>()
+                )
             )
             .ReturnsAsync(
                 Schedule.Create(
@@ -520,7 +558,12 @@ public class RescheduleByPatientCommandHandlerTests
             .Setup(r => r.GetByIdAsync(patientId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(targetPatient);
         _patientRepositoryMock
-            .Setup(r => r.GetSelfPatientByUserIdAsync(command.InitiatorUserId, It.IsAny<CancellationToken>()))
+            .Setup(r =>
+                r.GetSelfPatientByUserIdAsync(
+                    command.InitiatorUserId,
+                    It.IsAny<CancellationToken>()
+                )
+            )
             .ReturnsAsync(targetPatient);
         _doctorRepositoryMock
             .Setup(r => r.GetByIdAsync(doctorId, It.IsAny<CancellationToken>()))
@@ -533,7 +576,11 @@ public class RescheduleByPatientCommandHandlerTests
             .ReturnsAsync(user);
         _scheduleRepositoryMock
             .Setup(r =>
-                r.GetByDoctorAndDayAsync(doctorId, newDate.DayOfWeek, It.IsAny<CancellationToken>())
+                r.GetActiveByDoctorAndDayAsync(
+                    doctorId,
+                    newDate.DayOfWeek,
+                    It.IsAny<CancellationToken>()
+                )
             )
             .ReturnsAsync((Schedule?)null);
 

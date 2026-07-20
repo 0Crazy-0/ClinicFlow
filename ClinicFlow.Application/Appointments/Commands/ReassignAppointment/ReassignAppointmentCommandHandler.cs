@@ -43,7 +43,7 @@ public sealed class ReassignAppointmentCommandHandler(
         var newTimeRange = TimeRange.Create(request.NewStartTime, request.NewEndTime);
 
         var newDoctorSchedule =
-            await scheduleRepository.GetByDoctorAndDayAsync(
+            await scheduleRepository.GetActiveByDoctorAndDayAsync(
                 newDoctor.Id,
                 request.NewDate.DayOfWeek,
                 cancellationToken

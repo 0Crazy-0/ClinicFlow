@@ -74,7 +74,12 @@ public class CancelAppointmentByPatientCommandHandlerTests
             .Setup(r => r.GetByIdAsync(specialtyId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(specialty);
         _patientRepositoryMock
-            .Setup(r => r.GetSelfPatientByUserIdAsync(command.InitiatorUserId, It.IsAny<CancellationToken>()))
+            .Setup(r =>
+                r.GetSelfPatientByUserIdAsync(
+                    command.InitiatorUserId,
+                    It.IsAny<CancellationToken>()
+                )
+            )
             .ReturnsAsync(patient);
 
         // Act

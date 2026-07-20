@@ -20,7 +20,7 @@ public sealed class UpdateScheduleCommandHandler(
     )
     {
         var currentSchedule =
-            await scheduleRepository.GetByDoctorAndDayAsync(
+            await scheduleRepository.GetActiveByDoctorAndDayAsync(
                 request.DoctorId,
                 request.DayOfWeek,
                 cancellationToken

@@ -16,7 +16,7 @@ public interface IScheduleRepository
 
     Task<Schedule?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
-    Task<Schedule?> GetByDoctorAndDayAsync(
+    Task<Schedule?> GetActiveByDoctorAndDayAsync(
         Guid doctorId,
         DayOfWeek day,
         CancellationToken cancellationToken = default

@@ -46,7 +46,11 @@ public class UpdateScheduleCommandHandlerTests
 
         _scheduleRepositoryMock
             .Setup(x =>
-                x.GetByDoctorAndDayAsync(doctorId, DayOfWeek.Monday, It.IsAny<CancellationToken>())
+                x.GetActiveByDoctorAndDayAsync(
+                    doctorId,
+                    DayOfWeek.Monday,
+                    It.IsAny<CancellationToken>()
+                )
             )
             .ReturnsAsync(existingSchedule);
 
@@ -89,7 +93,11 @@ public class UpdateScheduleCommandHandlerTests
 
         _scheduleRepositoryMock
             .Setup(x =>
-                x.GetByDoctorAndDayAsync(doctorId, DayOfWeek.Monday, It.IsAny<CancellationToken>())
+                x.GetActiveByDoctorAndDayAsync(
+                    doctorId,
+                    DayOfWeek.Monday,
+                    It.IsAny<CancellationToken>()
+                )
             )
             .ReturnsAsync(existingSchedule);
 
@@ -118,7 +126,11 @@ public class UpdateScheduleCommandHandlerTests
 
         _scheduleRepositoryMock
             .Setup(x =>
-                x.GetByDoctorAndDayAsync(doctorId, DayOfWeek.Monday, It.IsAny<CancellationToken>())
+                x.GetActiveByDoctorAndDayAsync(
+                    doctorId,
+                    DayOfWeek.Monday,
+                    It.IsAny<CancellationToken>()
+                )
             )
             .ReturnsAsync((Schedule?)null);
 
