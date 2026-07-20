@@ -10,6 +10,8 @@ public sealed class ScheduleConfiguration : IEntityTypeConfiguration<Schedule>
     public void Configure(EntityTypeBuilder<Schedule> builder)
     {
         builder.Property(s => s.DayOfWeek).HasConversion<string>();
+        builder.HasIndex(s => new { s.DoctorId, s.DayOfWeek }).IsUnique();
+
         builder.OwnsOne(
             s => s.TimeRange,
             range =>
