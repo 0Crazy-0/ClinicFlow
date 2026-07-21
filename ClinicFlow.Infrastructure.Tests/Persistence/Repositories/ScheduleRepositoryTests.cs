@@ -525,7 +525,7 @@ public class ScheduleRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         );
 
         Context.Doctors.Add(doctor);
-        await Context.SaveChangesAsync();
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         return doctor;
     }
