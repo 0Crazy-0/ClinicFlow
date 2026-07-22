@@ -94,14 +94,7 @@ public sealed class UserRepository(ApplicationDbContext dbContext) : IUserReposi
             );
         }
 
-        var totalCount = await query.CountAsync(cancellationToken);
-        var items = await query
-            .OrderBy(user => user.SequenceNumber)
-            .Skip((pageNumber - 1) * pageSize)
-            .Take(pageSize)
-            .ToListAsync(cancellationToken);
-
-        return (items, totalCount);
+        return await PaginateAsync(query, pageNumber, pageSize, cancellationToken);
     }
 
     public async Task<(
@@ -116,6 +109,16 @@ public sealed class UserRepository(ApplicationDbContext dbContext) : IUserReposi
     {
         var query = dbContext.Users.AsNoTracking().Where(user => user.LockoutEnd > referenceTime);
 
+        return await PaginateAsync(query, pageNumber, pageSize, cancellationToken);
+    }
+
+    private static async Task<(IReadOnlyCollection<User> Items, int TotalCount)> PaginateAsync(
+        IQueryable<User> query,
+        int pageNumber,
+        int pageSize,
+        CancellationToken cancellationToken
+    )
+    {
         var totalCount = await query.CountAsync(cancellationToken);
         var items = await query
             .OrderBy(user => user.SequenceNumber)
