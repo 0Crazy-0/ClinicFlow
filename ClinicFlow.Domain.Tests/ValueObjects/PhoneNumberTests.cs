@@ -81,7 +81,7 @@ public class PhoneNumberTests
     [Fact]
     public void Create_ShouldTrimWhitespace()
     {
-        // Arrange
+        // Arrange & Act
         var phone = PhoneNumber.Create("  +1234567890  ");
 
         // Assert
@@ -95,7 +95,7 @@ public class PhoneNumberTests
     [InlineData("123-456-7890")]
     public void Create_ShouldSucceed_WithValidFormats(string value)
     {
-        // Arrange
+        // Arrange & Act
         var phone = PhoneNumber.Create(value);
 
         // Assert
@@ -115,7 +115,7 @@ public class PhoneNumberTests
     [Fact]
     public void Equality_ShouldWorkCorrectly()
     {
-        // Arrange
+        // Arrange & Act
         var p1 = PhoneNumber.Create("+1234567890");
         var p2 = PhoneNumber.Create("+1234567890");
         var p3 = PhoneNumber.Create("+0987654321");
@@ -125,5 +125,18 @@ public class PhoneNumberTests
             .Should()
             .BeTrue();
         (p1 != p3).Should().BeTrue();
+    }
+
+    [Fact]
+    public void ImplicitConversionToString_ShouldReturnUnderlyingValue()
+    {
+        // Arrangue
+        var phoneNumber = PhoneNumber.Create("+1234567890");
+
+        // Act
+        string result = phoneNumber;
+
+        // Assert
+        result.Should().Be("+1234567890");
     }
 }
