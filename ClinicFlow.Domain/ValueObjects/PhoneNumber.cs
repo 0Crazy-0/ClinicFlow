@@ -36,4 +36,12 @@ public partial record PhoneNumber
 
     /// <inheritdoc/>
     public override string ToString() => Value;
+
+    /// <remarks>
+    /// Enables EF Core to translate LINQ expressions such as EF.Functions.ILike(user.PhoneNumber, pattern)
+    /// into SQL. Direct nested member access (user.PhoneNumber.Value) inside a LINQ expression cannot be
+    /// translated by EF Core's query compiler. Prefer accessing Value explicitly outside of query
+    /// expressions for clarity.
+    /// </remarks>
+    public static implicit operator string(PhoneNumber phone) => phone.Value;
 }
