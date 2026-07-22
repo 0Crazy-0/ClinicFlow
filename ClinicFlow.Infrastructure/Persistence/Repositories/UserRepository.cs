@@ -78,11 +78,19 @@ public sealed class UserRepository(ApplicationDbContext dbContext) : IUserReposi
 
         if (!string.IsNullOrWhiteSpace(searchTerm))
         {
-            var searchPattern = $"%{searchTerm.Trim()}%";
+            const string escapeChar = "\\";
+
+            var escapedTerm = searchTerm
+                .Trim()
+                .Replace(escapeChar, escapeChar + escapeChar)
+                .Replace("%", escapeChar + "%")
+                .Replace("_", escapeChar + "_");
+
+            var searchPattern = $"%{escapedTerm}%";
 
             query = query.Where(user =>
-                EF.Functions.ILike(user.Email, searchPattern)
-                || EF.Functions.ILike(user.PhoneNumber, searchPattern)
+                EF.Functions.ILike(user.Email, searchPattern, escapeChar)
+                || EF.Functions.ILike(user.PhoneNumber, searchPattern, escapeChar)
             );
         }
 
