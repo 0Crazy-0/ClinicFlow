@@ -132,7 +132,7 @@ public class EmailAddressTests
     public void ImplicitConversionToString_ShouldReturnUnderlyingValue()
     {
         // Arrange
-        var email = EmailAddress.Create("test@test.com").Value;
+        var email = EmailAddress.Create("test@test.com");
 
         // Act
         string result = email;

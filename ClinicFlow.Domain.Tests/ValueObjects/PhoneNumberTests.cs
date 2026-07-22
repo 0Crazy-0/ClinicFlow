@@ -131,7 +131,7 @@ public class PhoneNumberTests
     public void ImplicitConversionToString_ShouldReturnUnderlyingValue()
     {
         // Arrangue
-        var phoneNumber = PhoneNumber.Create("+1234567890").Value;
+        var phoneNumber = PhoneNumber.Create("+1234567890");
 
         // Act
         string result = phoneNumber;
