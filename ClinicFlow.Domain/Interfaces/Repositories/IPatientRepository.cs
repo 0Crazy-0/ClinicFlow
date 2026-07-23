@@ -17,6 +17,11 @@ public interface IPatientRepository
         CancellationToken cancellationToken = default
     );
 
+    Task<int> CountActiveFamilyMembersAsync(
+        Guid userId,
+        CancellationToken cancellationToken = default
+    );
+
     Task<IReadOnlyList<Patient>> GetAllByUserIdAsync(
         Guid userId,
         CancellationToken cancellationToken = default

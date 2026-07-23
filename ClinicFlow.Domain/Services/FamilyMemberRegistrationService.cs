@@ -14,10 +14,19 @@ namespace ClinicFlow.Domain.Services;
 /// </remarks>
 public static class FamilyMemberRegistrationService
 {
-    public static Patient Register(Patient? existingProfile, FamilyMemberRegistrationArgs args)
+    public const int MaxActiveFamilyMembers = 15;
+
+    public static Patient Register(
+        Patient? existingProfile,
+        int activeFamilyMemberCount,
+        FamilyMemberRegistrationArgs args
+    )
     {
         if (existingProfile is null)
         {
+            if (activeFamilyMemberCount >= MaxActiveFamilyMembers)
+                throw new DomainValidationException(DomainErrors.Patient.FamilyMemberLimitExceeded);
+
             return Patient.CreateFamilyMember(
                 args.UserId,
                 args.FullName,

@@ -97,6 +97,7 @@ public static class DomainErrors
         public const string ActiveProfileAlreadyExists = "PATIENT_ACTIVE_PROFILE_ALREADY_EXISTS";
         public const string UserIdMismatch = "PATIENT_USER_ID_MISMATCH";
         public const string UnauthorizedAccess = "PATIENT_UNAUTHORIZED_ACCESS";
+        public const string FamilyMemberLimitExceeded = "PATIENT_FAMILY_MEMBER_LIMIT_EXCEEDED";
     }
 
     public static class Doctor
