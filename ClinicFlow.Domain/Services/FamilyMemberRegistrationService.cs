@@ -22,11 +22,17 @@ public static class FamilyMemberRegistrationService
         FamilyMemberRegistrationArgs args
     )
     {
+        if (existingProfile is not null && existingProfile.UserId != args.UserId)
+            throw new DomainValidationException(DomainErrors.Patient.UserIdMismatch);
+
+        if (existingProfile is not null && !existingProfile.IsDeleted)
+            throw new DomainValidationException(DomainErrors.Patient.ActiveProfileAlreadyExists);
+
+        if (activeFamilyMemberCount >= MaxActiveFamilyMembers)
+            throw new DomainValidationException(DomainErrors.Patient.FamilyMemberLimitExceeded);
+
         if (existingProfile is null)
         {
-            if (activeFamilyMemberCount >= MaxActiveFamilyMembers)
-                throw new DomainValidationException(DomainErrors.Patient.FamilyMemberLimitExceeded);
-
             return Patient.CreateFamilyMember(
                 args.UserId,
                 args.FullName,
@@ -35,12 +41,6 @@ public static class FamilyMemberRegistrationService
                 args.ReferenceTime
             );
         }
-
-        if (existingProfile.UserId != args.UserId)
-            throw new DomainValidationException(DomainErrors.Patient.UserIdMismatch);
-
-        if (!existingProfile.IsDeleted)
-            throw new DomainValidationException(DomainErrors.Patient.ActiveProfileAlreadyExists);
 
         existingProfile.ReactivateAsFamilyMember(args.Relationship);
         return existingProfile;
