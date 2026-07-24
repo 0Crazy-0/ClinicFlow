@@ -128,6 +128,27 @@ public class FamilyMemberRegistrationServiceTests
         deletedProfile.DomainEvents.OfType<PatientReactivatedEvent>().Should().ContainSingle();
     }
 
+    [Fact]
+    public void Register_ShouldThrowFamilyMemberLimitExceeded_WhenReactivatingDeletedProfileAtLimit()
+    {
+        // Arrange
+        var deletedProfile = CreateDeletedPatient();
+        var args = CreateArgs(PatientRelationship.Other, deletedProfile.UserId);
+
+        // Act
+        var act = () =>
+            FamilyMemberRegistrationService.Register(
+                deletedProfile,
+                FamilyMemberRegistrationService.MaxActiveFamilyMembers,
+                args
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Patient.FamilyMemberLimitExceeded);
+    }
+
     private FamilyMemberRegistrationArgs CreateArgs(
         PatientRelationship relationship,
         Guid userId
