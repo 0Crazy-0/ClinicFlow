@@ -1,4 +1,3 @@
-using System.Globalization;
 using AwesomeAssertions;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
@@ -158,15 +157,15 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
     {
         // Arrange
         var user = await CreateUserAsync();
-        var selfPatient = await CreateSelfPatientAsync(
-            user.Id,
-            "John Doe",
-            new DateOnly(1990, 1, 1)
-        );
-        await CreateFamilyMemberPatientAsync(user.Id, "Family Member", new DateOnly(2015, 1, 1));
+        var selfPatient = await CreateSelfPatientAsync(user.Id);
+
+        await CreateFamilyMemberPatientAsync(user.Id);
 
         // Act
-        var result = await _sut.GetSelfPatientByUserIdAsync(user.Id, TestContext.Current.CancellationToken);
+        var result = await _sut.GetSelfPatientByUserIdAsync(
+            user.Id,
+            TestContext.Current.CancellationToken
+        );
 
         // Assert
         result.Should().BeEquivalentTo(selfPatient);
@@ -177,16 +176,8 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
     {
         // Arrange
         var user = await CreateUserAsync();
-        var patient1 = await CreateSelfPatientAsync(
-            user.Id,
-            "Patient One",
-            new DateOnly(1990, 1, 1)
-        );
-        var patient2 = await CreateFamilyMemberPatientAsync(
-            user.Id,
-            "Patient Two",
-            new DateOnly(2020, 1, 1)
-        );
+        var patient1 = await CreateSelfPatientAsync(user.Id);
+        var patient2 = await CreateFamilyMemberPatientAsync(user.Id);
 
         // Act
         var result = await _sut.GetAllByUserIdAsync(user.Id, TestContext.Current.CancellationToken);
@@ -213,18 +204,8 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
     {
         // Arrange
         var user = await CreateUserAsync();
-        var active = await CreateSelfPatientAsync(
-            user.Id,
-            "Active Patient",
-            new DateOnly(1990, 1, 1)
-        );
-
-        var deleted = await CreateFamilyMemberPatientAsync(
-            user.Id,
-            "Deleted Patient",
-            new DateOnly(2020, 1, 1),
-            "B+"
-        );
+        var active = await CreateSelfPatientAsync(user.Id);
+        var deleted = await CreateFamilyMemberPatientAsync(user.Id);
 
         deleted.RemoveFamilyMember(deleted.UserId);
 
@@ -235,6 +216,105 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
 
         // Assert
         result.Should().ContainSingle().Which.Should().BeEquivalentTo(active);
+    }
+
+    [Fact]
+    public async Task CountActiveFamilyMembersAsync_ShouldReturnCount_WhenUserHasActiveFamilyMembers()
+    {
+        // Arrange
+        var user = await CreateUserAsync();
+
+        await CreateFamilyMemberPatientAsync(user.Id);
+        await CreateFamilyMemberPatientAsync(user.Id);
+
+        // Act
+        var result = await _sut.CountActiveFamilyMembersAsync(
+            user.Id,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().Be(2);
+    }
+
+    [Fact]
+    public async Task CountActiveFamilyMembersAsync_ShouldExcludeSelfPatient()
+    {
+        // Arrange
+        var user = await CreateUserAsync();
+
+        await CreateSelfPatientAsync(user.Id);
+        await CreateFamilyMemberPatientAsync(user.Id);
+
+        // Act
+        var result = await _sut.CountActiveFamilyMembersAsync(
+            user.Id,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().Be(1);
+    }
+
+    [Fact]
+    public async Task CountActiveFamilyMembersAsync_ShouldExcludeSoftDeletedFamilyMembers()
+    {
+        // Arrange
+        var user = await CreateUserAsync();
+
+        await CreateFamilyMemberPatientAsync(user.Id);
+
+        var deletedChild = await CreateFamilyMemberPatientAsync(user.Id);
+
+        deletedChild.RemoveFamilyMember(deletedChild.UserId);
+
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var result = await _sut.CountActiveFamilyMembersAsync(
+            user.Id,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().Be(1);
+    }
+
+    [Fact]
+    public async Task CountActiveFamilyMembersAsync_ShouldExcludeFamilyMembersOfOtherUsers()
+    {
+        // Arrange
+        var user1 = await CreateUserAsync();
+        var user2 = await CreateUserAsync();
+
+        await CreateFamilyMemberPatientAsync(user1.Id);
+        await CreateFamilyMemberPatientAsync(user2.Id);
+
+        // Act
+        var result = await _sut.CountActiveFamilyMembersAsync(
+            user1.Id,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().Be(1);
+    }
+
+    [Fact]
+    public async Task CountActiveFamilyMembersAsync_ShouldReturnZero_WhenUserHasNoFamilyMembers()
+    {
+        // Arrange
+        var user = await CreateUserAsync();
+        await CreateSelfPatientAsync(user.Id);
+
+        // Act
+        var result = await _sut.CountActiveFamilyMembersAsync(
+            user.Id,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().Be(0);
     }
 
     [Fact]
@@ -315,28 +395,19 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
     {
         var user = await CreateUserAsync();
 
-        return await CreateSelfPatientAsync(user.Id, "John Doe", new DateOnly(1990, 1, 1));
+        return await CreateSelfPatientAsync(user.Id);
     }
 
-    private async Task<Patient> CreateSelfPatientAsync(
-        Guid userId,
-        string fullName,
-        DateOnly dateOfBirth,
-        string bloodType = "O+"
-    )
+    private async Task<Patient> CreateSelfPatientAsync(Guid userId)
     {
-        _fakeTime.SetUtcNow(
-            DateTimeOffset.Parse("2026-01-01T00:00:00Z", CultureInfo.InvariantCulture)
-        );
-
         var patient = Patient.CreateSelf(
             userId,
-            PersonName.Create(fullName),
-            dateOfBirth,
+            PersonName.Create("fullName"),
+            new DateOnly(1990, 1, 1),
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
-        patient.UpdateMedicalProfile(BloodType.Create(bloodType), "None", "None");
+        patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
         patient.UpdateEmergencyContact(EmergencyContact.Create("Contact", "555-9999"));
 
         Context.Patients.Add(patient);
@@ -346,22 +417,17 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         return patient;
     }
 
-    private async Task<Patient> CreateFamilyMemberPatientAsync(
-        Guid userId,
-        string fullName,
-        DateOnly dateOfBirth,
-        string bloodType = "A+"
-    )
+    private async Task<Patient> CreateFamilyMemberPatientAsync(Guid userId)
     {
         var patient = Patient.CreateFamilyMember(
             userId,
-            PersonName.Create(fullName),
+            PersonName.Create("fullName"),
             PatientRelationship.Child,
-            dateOfBirth,
+            new DateOnly(1990, 1, 1),
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
-        patient.UpdateMedicalProfile(BloodType.Create(bloodType), "None", "None");
+        patient.UpdateMedicalProfile(BloodType.Create("A+"), "None", "None");
         patient.UpdateEmergencyContact(EmergencyContact.Create("Contact", "555-9999"));
 
         Context.Patients.Add(patient);

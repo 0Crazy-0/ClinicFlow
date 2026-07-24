@@ -25,6 +25,20 @@ public sealed class PatientRepository(ApplicationDbContext dbContext) : IPatient
             cancellationToken
         );
 
+    public async Task<int> CountActiveFamilyMembersAsync(
+        Guid userId,
+        CancellationToken cancellationToken = default
+    ) =>
+        await dbContext
+            .Patients.AsNoTracking()
+            .CountAsync(
+                patient =>
+                    patient.UserId == userId
+                    && patient.RelationshipToUser != PatientRelationship.Self
+                    && !patient.IsDeleted,
+                cancellationToken
+            );
+
     public async Task<IReadOnlyList<Patient>> GetAllByUserIdAsync(
         Guid userId,
         CancellationToken cancellationToken = default

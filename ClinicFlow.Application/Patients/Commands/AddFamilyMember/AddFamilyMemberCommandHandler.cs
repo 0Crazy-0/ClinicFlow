@@ -27,8 +27,14 @@ public sealed class AddFamilyMemberCommandHandler(
             cancellationToken
         );
 
+        var activeCount = await patientRepository.CountActiveFamilyMembersAsync(
+            request.UserId,
+            cancellationToken
+        );
+
         var patient = FamilyMemberRegistrationService.Register(
             existingProfile,
+            activeCount,
             new FamilyMemberRegistrationArgs
             {
                 UserId = request.UserId,

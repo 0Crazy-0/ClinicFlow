@@ -22,7 +22,7 @@ public class FamilyMemberRegistrationServiceTests
         var args = CreateArgs(PatientRelationship.Sibling, Guid.CreateVersion7());
 
         // Act
-        var result = FamilyMemberRegistrationService.Register(null, args);
+        var result = FamilyMemberRegistrationService.Register(null, 0, args);
 
         // Assert
         result.Should().NotBeNull();
@@ -30,6 +30,26 @@ public class FamilyMemberRegistrationServiceTests
         result.FullName.Should().Be(args.FullName);
         result.DateOfBirth.Should().Be(args.DateOfBirth);
         result.RelationshipToUser.Should().Be(PatientRelationship.Sibling);
+    }
+
+    [Fact]
+    public void Register_ShouldThrowFamilyMemberLimitExceeded_WhenActiveFamilyMemberCountReachesMax()
+    {
+        // Arrange
+        var args = CreateArgs(PatientRelationship.Sibling, Guid.CreateVersion7());
+
+        // Act
+        var act = () =>
+            FamilyMemberRegistrationService.Register(
+                null,
+                FamilyMemberRegistrationService.MaxActiveFamilyMembers,
+                args
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Patient.FamilyMemberLimitExceeded);
     }
 
     [Fact]
@@ -47,7 +67,7 @@ public class FamilyMemberRegistrationServiceTests
         var args = CreateArgs(PatientRelationship.Sibling, existingProfile.UserId);
 
         // Act
-        var act = () => FamilyMemberRegistrationService.Register(existingProfile, args);
+        var act = () => FamilyMemberRegistrationService.Register(existingProfile, 0, args);
 
         // Assert
         act.Should()
@@ -70,7 +90,7 @@ public class FamilyMemberRegistrationServiceTests
         };
 
         // Act
-        var act = () => FamilyMemberRegistrationService.Register(existingProfile, args);
+        var act = () => FamilyMemberRegistrationService.Register(existingProfile, 0, args);
 
         // Assert
         act.Should()
@@ -86,7 +106,7 @@ public class FamilyMemberRegistrationServiceTests
         var args = CreateArgs(PatientRelationship.Other, deletedProfile.UserId);
 
         // Act
-        var result = FamilyMemberRegistrationService.Register(deletedProfile, args);
+        var result = FamilyMemberRegistrationService.Register(deletedProfile, 0, args);
 
         // Assert
         result.Should().BeSameAs(deletedProfile);
@@ -102,10 +122,31 @@ public class FamilyMemberRegistrationServiceTests
         var args = CreateArgs(PatientRelationship.Other, deletedProfile.UserId);
 
         // Act
-        FamilyMemberRegistrationService.Register(deletedProfile, args);
+        FamilyMemberRegistrationService.Register(deletedProfile, 0, args);
 
         // Assert
         deletedProfile.DomainEvents.OfType<PatientReactivatedEvent>().Should().ContainSingle();
+    }
+
+    [Fact]
+    public void Register_ShouldThrowFamilyMemberLimitExceeded_WhenReactivatingDeletedProfileAtLimit()
+    {
+        // Arrange
+        var deletedProfile = CreateDeletedPatient();
+        var args = CreateArgs(PatientRelationship.Other, deletedProfile.UserId);
+
+        // Act
+        var act = () =>
+            FamilyMemberRegistrationService.Register(
+                deletedProfile,
+                FamilyMemberRegistrationService.MaxActiveFamilyMembers,
+                args
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Patient.FamilyMemberLimitExceeded);
     }
 
     private FamilyMemberRegistrationArgs CreateArgs(

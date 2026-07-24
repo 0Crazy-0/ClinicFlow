@@ -14,8 +14,23 @@ namespace ClinicFlow.Domain.Services;
 /// </remarks>
 public static class FamilyMemberRegistrationService
 {
-    public static Patient Register(Patient? existingProfile, FamilyMemberRegistrationArgs args)
+    public const int MaxActiveFamilyMembers = 15;
+
+    public static Patient Register(
+        Patient? existingProfile,
+        int activeFamilyMemberCount,
+        FamilyMemberRegistrationArgs args
+    )
     {
+        if (existingProfile is not null && existingProfile.UserId != args.UserId)
+            throw new DomainValidationException(DomainErrors.Patient.UserIdMismatch);
+
+        if (existingProfile is not null && !existingProfile.IsDeleted)
+            throw new DomainValidationException(DomainErrors.Patient.ActiveProfileAlreadyExists);
+
+        if (activeFamilyMemberCount >= MaxActiveFamilyMembers)
+            throw new DomainValidationException(DomainErrors.Patient.FamilyMemberLimitExceeded);
+
         if (existingProfile is null)
         {
             return Patient.CreateFamilyMember(
@@ -26,12 +41,6 @@ public static class FamilyMemberRegistrationService
                 args.ReferenceTime
             );
         }
-
-        if (existingProfile.UserId != args.UserId)
-            throw new DomainValidationException(DomainErrors.Patient.UserIdMismatch);
-
-        if (!existingProfile.IsDeleted)
-            throw new DomainValidationException(DomainErrors.Patient.ActiveProfileAlreadyExists);
 
         existingProfile.ReactivateAsFamilyMember(args.Relationship);
         return existingProfile;
