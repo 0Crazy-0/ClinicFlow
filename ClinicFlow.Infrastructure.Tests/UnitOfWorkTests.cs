@@ -9,7 +9,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 
-namespace ClinicFlow.Infrastructure.Tests.Persistence;
+namespace ClinicFlow.Infrastructure.Tests;
 
 public class UnitOfWorkTests : IDisposable
 {
