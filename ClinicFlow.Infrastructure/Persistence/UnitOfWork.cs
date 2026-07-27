@@ -97,7 +97,6 @@ public sealed class UnitOfWork(ApplicationDbContext dbContext, IPublisher publis
 
         foreach (var notification in _pendingNotifications)
             await publisher.Publish(notification, cancellationToken);
-        _pendingNotifications.Clear();
 
         return result;
     }
