@@ -79,21 +79,24 @@ public sealed class UnitOfWork(ApplicationDbContext dbContext, IPublisher publis
     {
         var strategy = dbContext.Database.CreateExecutionStrategy();
 
-        var result = await strategy.ExecuteAsync(async () =>
-        {
-            _pendingNotifications.Clear();
+        var result = await strategy.ExecuteAsync(
+            async (cancellationToken) =>
+            {
+                _pendingNotifications.Clear();
 
-            await using var transaction = await dbContext.Database.BeginTransactionAsync(
-                cancellationToken
-            );
+                await using var transaction = await dbContext.Database.BeginTransactionAsync(
+                    cancellationToken
+                );
 
-            await acquireLock(cancellationToken);
+                await acquireLock(cancellationToken);
 
-            var operationResult = await operation(cancellationToken);
+                var operationResult = await operation(cancellationToken);
 
-            await transaction.CommitAsync(cancellationToken);
-            return operationResult;
-        });
+                await transaction.CommitAsync(cancellationToken);
+                return operationResult;
+            },
+            cancellationToken
+        );
 
         foreach (var notification in _pendingNotifications)
             await publisher.Publish(notification, cancellationToken);
