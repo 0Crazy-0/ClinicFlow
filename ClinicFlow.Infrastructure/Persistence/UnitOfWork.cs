@@ -101,13 +101,13 @@ public sealed class UnitOfWork(ApplicationDbContext dbContext, IPublisher publis
         return result;
     }
 
-    private Task AcquireLockAsync(long key, CancellationToken cancellationToken) =>
+    private Task<int> AcquireLockAsync(long key, CancellationToken cancellationToken) =>
         dbContext.Database.ExecuteSqlInterpolatedAsync(
             $"SELECT pg_advisory_xact_lock({key})",
             cancellationToken
         );
 
-    private Task AcquireLockAsync(long key1, long key2, CancellationToken cancellationToken) =>
+    private Task<int> AcquireLockAsync(long key1, long key2, CancellationToken cancellationToken) =>
         dbContext.Database.ExecuteSqlInterpolatedAsync(
             $"SELECT pg_advisory_xact_lock({(int)key1}, {(int)key2})",
             cancellationToken
