@@ -22,6 +22,23 @@ public class AddFamilyMemberCommandHandlerTests
         _patientRepositoryMock = new Mock<IPatientRepository>();
         _unitOfWorkMock = new Mock<IUnitOfWork>();
         _fakeTime = new FakeTimeProvider();
+
+        _unitOfWorkMock
+            .Setup(x =>
+                x.ExecuteWithLockAsync(
+                    It.IsAny<Guid>(),
+                    It.IsAny<Func<CancellationToken, Task<Guid>>>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .Returns(
+                (
+                    Guid _,
+                    Func<CancellationToken, Task<Guid>> operation,
+                    CancellationToken cancellationToken
+                ) => operation(cancellationToken)
+            );
+
         _sut = new AddFamilyMemberCommandHandler(
             _fakeTime,
             _patientRepositoryMock.Object,
