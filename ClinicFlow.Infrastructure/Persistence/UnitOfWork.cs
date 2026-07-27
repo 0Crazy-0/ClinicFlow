@@ -53,20 +53,20 @@ public sealed class UnitOfWork(ApplicationDbContext dbContext, IPublisher publis
         CancellationToken cancellationToken = default
     ) =>
         ExecuteWithLockCoreAsync(
-            cancellationToken => AcquireLockAsync(GetStableLockKey(lockKey), cancellationToken),
+            cancellationToken => AcquireLockAsync(ToStableLong(lockKey), cancellationToken),
             operation,
             cancellationToken
         );
 
     public Task<TResult> ExecuteWithLockAsync<TResult>(
         Guid lockKeyPart1,
-        long lockKeyPart2,
+        int lockKeyPart2,
         Func<CancellationToken, Task<TResult>> operation,
         CancellationToken cancellationToken = default
     ) =>
         ExecuteWithLockCoreAsync(
             cancellationToken =>
-                AcquireLockAsync(GetStableLockKey(lockKeyPart1), lockKeyPart2, cancellationToken),
+                AcquireLockAsync(ToStableInt(lockKeyPart1), lockKeyPart2, cancellationToken),
             operation,
             cancellationToken
         );
@@ -110,9 +110,9 @@ public sealed class UnitOfWork(ApplicationDbContext dbContext, IPublisher publis
             cancellationToken
         );
 
-    private Task<int> AcquireLockAsync(long key1, long key2, CancellationToken cancellationToken) =>
+    private Task<int> AcquireLockAsync(int key1, int key2, CancellationToken cancellationToken) =>
         dbContext.Database.ExecuteSqlInterpolatedAsync(
-            $"SELECT pg_advisory_xact_lock({(int)key1}, {(int)key2})",
+            $"SELECT pg_advisory_xact_lock({key1}, {key2})",
             cancellationToken
         );
 
@@ -124,10 +124,19 @@ public sealed class UnitOfWork(ApplicationDbContext dbContext, IPublisher publis
         return (INotification)Activator.CreateInstance(notificationType, domainEvent)!;
     }
 
-    private static long GetStableLockKey(Guid guid)
+    private static long ToStableLong(Guid guid)
     {
         Span<byte> bytes = stackalloc byte[16];
         guid.TryWriteBytes(bytes);
-        return BitConverter.ToInt64(bytes[..8]);
+        var high = BitConverter.ToInt64(bytes[..8]);
+        var low = BitConverter.ToInt64(bytes[8..]);
+        return high ^ low;
+    }
+
+    private static int ToStableInt(Guid guid)
+    {
+        var value = ToStableLong(guid);
+
+        return unchecked((int)(value ^ (value >> 32)));
     }
 }

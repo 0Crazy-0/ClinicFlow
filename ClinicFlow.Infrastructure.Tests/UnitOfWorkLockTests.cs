@@ -64,7 +64,7 @@ public class UnitOfWorkLockTests : IAsyncLifetime
         // Act
         var result = await _sut.ExecuteWithLockAsync(
             lockKeyPart1,
-            42L,
+            42,
             _ => Task.FromResult(100),
             TestContext.Current.CancellationToken
         );

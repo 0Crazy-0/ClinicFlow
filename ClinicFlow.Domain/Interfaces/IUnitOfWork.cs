@@ -15,7 +15,7 @@ public interface IUnitOfWork
 
     Task<TResult> ExecuteWithLockAsync<TResult>(
         Guid lockKeyPart1,
-        long lockKeyPart2,
+        int lockKeyPart2,
         Func<CancellationToken, Task<TResult>> operation,
         CancellationToken cancellationToken = default
     );
