@@ -20,36 +20,44 @@ public sealed class AddFamilyMemberCommandHandler(
     )
     {
         var fullName = PersonName.Create($"{request.FirstName} {request.LastName}");
-        var existingProfile = await patientRepository.GetIncludingDeletedByNameAndDobAsync(
-            request.UserId,
-            fullName,
-            request.DateOfBirth,
-            cancellationToken
-        );
 
-        var activeCount = await patientRepository.CountActiveFamilyMembersAsync(
+        return await unitOfWork.ExecuteWithLockAsync(
             request.UserId,
-            cancellationToken
-        );
-
-        var patient = FamilyMemberRegistrationService.Register(
-            existingProfile,
-            activeCount,
-            new FamilyMemberRegistrationArgs
+            async cancellationToken =>
             {
-                UserId = request.UserId,
-                FullName = fullName,
-                Relationship = request.Relationship,
-                DateOfBirth = request.DateOfBirth,
-                ReferenceTime = timeProvider.GetUtcNow().UtcDateTime,
-            }
+                var existingProfile = await patientRepository.GetIncludingDeletedByNameAndDobAsync(
+                    request.UserId,
+                    fullName,
+                    request.DateOfBirth,
+                    cancellationToken
+                );
+
+                var activeCount = await patientRepository.CountActiveFamilyMembersAsync(
+                    request.UserId,
+                    cancellationToken
+                );
+
+                var patient = FamilyMemberRegistrationService.Register(
+                    existingProfile,
+                    activeCount,
+                    new FamilyMemberRegistrationArgs
+                    {
+                        UserId = request.UserId,
+                        FullName = fullName,
+                        Relationship = request.Relationship,
+                        DateOfBirth = request.DateOfBirth,
+                        ReferenceTime = timeProvider.GetUtcNow().UtcDateTime,
+                    }
+                );
+
+                if (existingProfile is null)
+                    await patientRepository.CreateAsync(patient, cancellationToken);
+
+                await unitOfWork.SaveChangesAsync(cancellationToken);
+
+                return patient.Id;
+            },
+            cancellationToken
         );
-
-        if (existingProfile is null)
-            await patientRepository.CreateAsync(patient, cancellationToken);
-
-        await unitOfWork.SaveChangesAsync(cancellationToken);
-
-        return patient.Id;
     }
 }
