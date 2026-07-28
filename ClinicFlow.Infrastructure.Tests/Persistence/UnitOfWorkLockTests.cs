@@ -10,7 +10,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 
-namespace ClinicFlow.Infrastructure.Tests;
+namespace ClinicFlow.Infrastructure.Tests.Persistence;
 
 public class UnitOfWorkLockTests : IAsyncLifetime
 {
