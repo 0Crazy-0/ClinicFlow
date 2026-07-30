@@ -121,6 +121,15 @@ public class SetupWeeklyScheduleCommandHandlerTests
         await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
+        _unitOfWorkMock.Verify(
+            x =>
+                x.ExecuteWithLockAsync(
+                    command.DoctorId,
+                    It.IsAny<Func<CancellationToken, Task<IReadOnlyList<Guid>>>>(),
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Once
+        );
         _scheduleRepositoryMock.Verify(
             x =>
                 x.CreateRangeAsync(
@@ -163,6 +172,15 @@ public class SetupWeeklyScheduleCommandHandlerTests
             .ThrowAsync<ScheduleAlreadyExistsException>()
             .WithMessage(DomainErrors.Schedule.ScheduleAlreadyExists);
 
+        _unitOfWorkMock.Verify(
+            x =>
+                x.ExecuteWithLockAsync(
+                    It.IsAny<Guid>(),
+                    It.IsAny<Func<CancellationToken, Task<IReadOnlyList<Guid>>>>(),
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Once
+        );
         _scheduleRepositoryMock.Verify(
             x =>
                 x.CreateRangeAsync(
