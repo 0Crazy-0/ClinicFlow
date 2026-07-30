@@ -27,6 +27,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     {
         base.OnModelCreating(modelBuilder);
 
+        modelBuilder.HasPostgresExtension("btree_gist");
+
         foreach (
             var clrType in modelBuilder
                 .Model.GetEntityTypes()
