@@ -1,6 +1,6 @@
 ---
 name: clinicflow-testing-application
-description: Use this skill alongside clinicflow-testing-base when writing tests for the ClinicFlow Application layer. Covers Callback Pattern, EntityNotFoundException assertions, UnitOfWork verification, Create Handler Split, and Repository Write verification.
+description: Use this skill alongside clinicflow-testing-base when writing tests for the ClinicFlow Application layer. Covers Callback Pattern, EntityNotFoundException assertions, UnitOfWork verification, Create Handler Split, Repository Write verification, and ExecuteWithLockAsync verification.
 ---
 
 # ClinicFlow Testing Application
@@ -134,6 +134,38 @@ _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), T
 ```
 
 This applies regardless of the specific write method: `CreateRangeAsync`, `UpdateAsync`, etc. The key principle: repository write verification and `SaveChangesAsync` verification are **inseparable pairs**. If one is present, the other must be too.
+
+## ExecuteWithLockAsync Verification
+
+For handlers that utilize `unitOfWork.ExecuteWithLockAsync(...)`:
+
+- **Create Handlers**: Do NOT verify `ExecuteWithLockAsync` in the data validation test (`WhenValidCommand`). Verify it in the persistence verification test (`ShouldCallRepositoryCreateAndSaveChanges_WhenValidCommand`) or other persistence tests using the specific lock key (`command.UserId` / `command.DoctorId`):
+
+```csharp
+_unitOfWorkMock.Verify(
+    x => x.ExecuteWithLockAsync(
+        command.UserId,
+        It.IsAny<Func<CancellationToken, Task<Guid>>>(),
+        It.IsAny<CancellationToken>()
+    ),
+    Times.Once
+);
+```
+
+- **Unhappy Path / Exception Tests**: Verify `ExecuteWithLockAsync` was called once using `It.IsAny<Guid>()` (since the lock was acquired before the exception inside the delegate was thrown), paired with `Times.Never` for write and `SaveChangesAsync` calls:
+
+```csharp
+_unitOfWorkMock.Verify(
+    x => x.ExecuteWithLockAsync(
+        It.IsAny<Guid>(),
+        It.IsAny<Func<CancellationToken, Task<Guid>>>(),
+        It.IsAny<CancellationToken>()
+    ),
+    Times.Once
+);
+_repositoryMock.Verify(x => x.CreateAsync(It.IsAny<Entity>(), It.IsAny<CancellationToken>()), Times.Never);
+_unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+```
 
 ## UnitOfWork Verification on Success
 
