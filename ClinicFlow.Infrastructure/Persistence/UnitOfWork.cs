@@ -47,34 +47,10 @@ public sealed class UnitOfWork(ApplicationDbContext dbContext, IPublisher publis
         return result;
     }
 
-    public Task<TResult> ExecuteWithLockAsync<TResult>(
+    public async Task<TResult> ExecuteWithLockAsync<TResult>(
         Guid lockKey,
         Func<CancellationToken, Task<TResult>> operation,
         CancellationToken cancellationToken = default
-    ) =>
-        ExecuteWithLockCoreAsync(
-            cancellationToken => AcquireLockAsync(ToStableLong(lockKey), cancellationToken),
-            operation,
-            cancellationToken
-        );
-
-    public Task<TResult> ExecuteWithLockAsync<TResult>(
-        Guid lockKeyPart1,
-        int lockKeyPart2,
-        Func<CancellationToken, Task<TResult>> operation,
-        CancellationToken cancellationToken = default
-    ) =>
-        ExecuteWithLockCoreAsync(
-            cancellationToken =>
-                AcquireLockAsync(ToStableInt(lockKeyPart1), lockKeyPart2, cancellationToken),
-            operation,
-            cancellationToken
-        );
-
-    private async Task<TResult> ExecuteWithLockCoreAsync<TResult>(
-        Func<CancellationToken, Task> acquireLock,
-        Func<CancellationToken, Task<TResult>> operation,
-        CancellationToken cancellationToken
     )
     {
         var strategy = dbContext.Database.CreateExecutionStrategy();
@@ -88,7 +64,7 @@ public sealed class UnitOfWork(ApplicationDbContext dbContext, IPublisher publis
                     cancellationToken
                 );
 
-                await acquireLock(cancellationToken);
+                await AcquireLockAsync(ToStableLong(lockKey), cancellationToken);
 
                 var operationResult = await operation(cancellationToken);
 
@@ -110,12 +86,6 @@ public sealed class UnitOfWork(ApplicationDbContext dbContext, IPublisher publis
             cancellationToken
         );
 
-    private Task<int> AcquireLockAsync(int key1, int key2, CancellationToken cancellationToken) =>
-        dbContext.Database.ExecuteSqlInterpolatedAsync(
-            $"SELECT pg_advisory_xact_lock({key1}, {key2})",
-            cancellationToken
-        );
-
     private static INotification BuildNotification(object domainEvent)
     {
         var notificationType = typeof(DomainEventNotification<>).MakeGenericType(
@@ -131,12 +101,5 @@ public sealed class UnitOfWork(ApplicationDbContext dbContext, IPublisher publis
         var high = BitConverter.ToInt64(bytes[..8]);
         var low = BitConverter.ToInt64(bytes[8..]);
         return high ^ low;
-    }
-
-    private static int ToStableInt(Guid guid)
-    {
-        var value = ToStableLong(guid);
-
-        return unchecked((int)(value ^ (value >> 32)));
     }
 }

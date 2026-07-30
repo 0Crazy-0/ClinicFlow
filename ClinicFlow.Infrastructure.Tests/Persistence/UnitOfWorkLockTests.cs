@@ -56,24 +56,6 @@ public class UnitOfWorkLockTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task ExecuteWithLockAsync_ShouldExecuteOperationAndReturnResult_WithDualLockKey()
-    {
-        // Arrange
-        var lockKeyPart1 = Guid.CreateVersion7();
-
-        // Act
-        var result = await _sut.ExecuteWithLockAsync(
-            lockKeyPart1,
-            42,
-            _ => Task.FromResult(100),
-            TestContext.Current.CancellationToken
-        );
-
-        // Assert
-        result.Should().Be(100);
-    }
-
-    [Fact]
     public async Task ExecuteWithLockAsync_ShouldCommitDatabaseChanges_WhenOperationSucceeds()
     {
         // Arrange
