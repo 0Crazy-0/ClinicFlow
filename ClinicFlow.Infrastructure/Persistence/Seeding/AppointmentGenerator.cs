@@ -9,6 +9,7 @@ namespace ClinicFlow.Infrastructure.Persistence.Seeding;
 /// </summary>
 public class AppointmentGenerator(AppointmentSeedingArgs args, DateTime baseDate)
 {
+    private readonly Dictionary<Guid, int> _doctorFutureOccurrenceCount = [];
     private readonly IReadOnlyList<Doctor> _activeDoctors =
     [
         .. args.Doctors.Where(d => !d.IsDeleted),
@@ -40,7 +41,8 @@ public class AppointmentGenerator(AppointmentSeedingArgs args, DateTime baseDate
         var doctor = GetEligibleDoctor(apptType, index);
         var patient = GetEligiblePatient(apptType, index);
         var schedule = GetDoctorSchedule(doctor.Id, index);
-        var apptDate = ResolveAppointmentDate(schedule, status, index, baseDate);
+        var doctorOccurrence = IsActiveStatus(status) ? GetNextDoctorOccurrence(doctor.Id) : 0;
+        var apptDate = ResolveAppointmentDate(schedule, status, index, doctorOccurrence, baseDate);
         var timeRange = GetTimeRangeForAppointment(schedule, apptType, index);
         var patientNotes = GetPatientNotes(apptType.Name, index);
 
@@ -175,12 +177,10 @@ public class AppointmentGenerator(AppointmentSeedingArgs args, DateTime baseDate
         Schedule schedule,
         AppointmentStatus status,
         int index,
+        int doctorOccurrence,
         DateTime baseDate
     )
     {
-        var date = GetNextWeekday(baseDate, schedule.DayOfWeek);
-        var dateOnly = DateOnly.FromDateTime(date);
-
         bool isPast =
             status
             is AppointmentStatus.Completed
@@ -190,13 +190,29 @@ public class AppointmentGenerator(AppointmentSeedingArgs args, DateTime baseDate
 
         if (isPast)
         {
+            var date = GetNextWeekday(baseDate, schedule.DayOfWeek);
+            var dateOnly = DateOnly.FromDateTime(date);
             var weeksBack = (index * 17 % 26) + 1;
             return dateOnly.AddDays(-7 * weeksBack);
         }
 
-        var weeksAhead = (index * 3 % 4) + 1;
+        var baseDateOnly = DateOnly.FromDateTime(baseDate);
+        var currentWeekStart = baseDateOnly.AddDays(-(int)baseDateOnly.DayOfWeek);
+        var futureWeekStart = currentWeekStart.AddDays(7 * (doctorOccurrence + 1));
+        return futureWeekStart.AddDays((int)schedule.DayOfWeek);
+    }
 
-        return dateOnly.AddDays(7 * weeksAhead);
+    private static bool IsActiveStatus(AppointmentStatus status) =>
+        status
+            is AppointmentStatus.Scheduled
+                or AppointmentStatus.CheckedIn
+                or AppointmentStatus.InProgress;
+
+    private int GetNextDoctorOccurrence(Guid doctorId)
+    {
+        var occurrence = _doctorFutureOccurrenceCount.GetValueOrDefault(doctorId);
+        _doctorFutureOccurrenceCount[doctorId] = occurrence + 1;
+        return occurrence;
     }
 
     private static void TransitionAppointmentToStatus(
