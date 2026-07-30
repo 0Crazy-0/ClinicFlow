@@ -123,6 +123,15 @@ public class AddFamilyMemberCommandHandlerTests
         var result = await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
+        _unitOfWorkMock.Verify(
+            x =>
+                x.ExecuteWithLockAsync(
+                    command.UserId,
+                    It.IsAny<Func<CancellationToken, Task<Guid>>>(),
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Once
+        );
         _patientRepositoryMock.Verify(
             r => r.CreateAsync(It.IsAny<Patient>(), It.IsAny<CancellationToken>()),
             Times.Never
@@ -161,6 +170,15 @@ public class AddFamilyMemberCommandHandlerTests
         await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
+        _unitOfWorkMock.Verify(
+            x =>
+                x.ExecuteWithLockAsync(
+                    command.UserId,
+                    It.IsAny<Func<CancellationToken, Task<Guid>>>(),
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Once
+        );
         _patientRepositoryMock.Verify(
             x => x.CreateAsync(It.IsAny<Patient>(), It.IsAny<CancellationToken>()),
             Times.Once
