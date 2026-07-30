@@ -20,6 +20,23 @@ public class SetupWeeklyScheduleCommandHandlerTests
     {
         _scheduleRepositoryMock = new Mock<IScheduleRepository>();
         _unitOfWorkMock = new Mock<IUnitOfWork>();
+
+        _unitOfWorkMock
+            .Setup(x =>
+                x.ExecuteWithLockAsync(
+                    It.IsAny<Guid>(),
+                    It.IsAny<Func<CancellationToken, Task<IReadOnlyList<Guid>>>>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .Returns(
+                (
+                    Guid _,
+                    Func<CancellationToken, Task<IReadOnlyList<Guid>>> operation,
+                    CancellationToken cancellationToken
+                ) => operation(cancellationToken)
+            );
+
         _sut = new SetupWeeklyScheduleCommandHandler(
             _scheduleRepositoryMock.Object,
             _unitOfWorkMock.Object
@@ -104,6 +121,15 @@ public class SetupWeeklyScheduleCommandHandlerTests
         await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
+        _unitOfWorkMock.Verify(
+            x =>
+                x.ExecuteWithLockAsync(
+                    command.DoctorId,
+                    It.IsAny<Func<CancellationToken, Task<IReadOnlyList<Guid>>>>(),
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Once
+        );
         _scheduleRepositoryMock.Verify(
             x =>
                 x.CreateRangeAsync(
@@ -146,6 +172,15 @@ public class SetupWeeklyScheduleCommandHandlerTests
             .ThrowAsync<ScheduleAlreadyExistsException>()
             .WithMessage(DomainErrors.Schedule.ScheduleAlreadyExists);
 
+        _unitOfWorkMock.Verify(
+            x =>
+                x.ExecuteWithLockAsync(
+                    It.IsAny<Guid>(),
+                    It.IsAny<Func<CancellationToken, Task<IReadOnlyList<Guid>>>>(),
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Once
+        );
         _scheduleRepositoryMock.Verify(
             x =>
                 x.CreateRangeAsync(

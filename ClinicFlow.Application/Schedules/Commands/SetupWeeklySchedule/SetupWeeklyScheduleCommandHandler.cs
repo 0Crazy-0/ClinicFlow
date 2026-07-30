@@ -17,22 +17,29 @@ public sealed class SetupWeeklyScheduleCommandHandler(
         CancellationToken cancellationToken
     )
     {
-        var existingSchedules = await scheduleRepository.GetByDoctorIdAsync(
+        return await unitOfWork.ExecuteWithLockAsync<IReadOnlyList<Guid>>(
             request.DoctorId,
+            async cancellationToken =>
+            {
+                var existingSchedules = await scheduleRepository.GetByDoctorIdAsync(
+                    request.DoctorId,
+                    cancellationToken
+                );
+
+                var slots = request
+                    .Slots.Select(s => new WeeklyScheduleSlot(s.DayOfWeek, s.StartTime, s.EndTime))
+                    .ToList();
+
+                var schedules = WeeklyScheduleSetupService
+                    .SetupWeeklySchedule(request.DoctorId, existingSchedules, slots)
+                    .ToList();
+
+                await scheduleRepository.CreateRangeAsync(schedules, cancellationToken);
+                await unitOfWork.SaveChangesAsync(cancellationToken);
+
+                return [.. schedules.Select(s => s.Id)];
+            },
             cancellationToken
         );
-
-        var slots = request
-            .Slots.Select(s => new WeeklyScheduleSlot(s.DayOfWeek, s.StartTime, s.EndTime))
-            .ToList();
-
-        var schedules = WeeklyScheduleSetupService
-            .SetupWeeklySchedule(request.DoctorId, existingSchedules, slots)
-            .ToList();
-
-        await scheduleRepository.CreateRangeAsync(schedules, cancellationToken);
-        await unitOfWork.SaveChangesAsync(cancellationToken);
-
-        return [.. schedules.Select(s => s.Id)];
     }
 }
