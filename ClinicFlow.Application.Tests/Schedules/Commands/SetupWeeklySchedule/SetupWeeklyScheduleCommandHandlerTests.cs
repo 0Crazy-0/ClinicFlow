@@ -20,6 +20,23 @@ public class SetupWeeklyScheduleCommandHandlerTests
     {
         _scheduleRepositoryMock = new Mock<IScheduleRepository>();
         _unitOfWorkMock = new Mock<IUnitOfWork>();
+
+        _unitOfWorkMock
+            .Setup(x =>
+                x.ExecuteWithLockAsync(
+                    It.IsAny<Guid>(),
+                    It.IsAny<Func<CancellationToken, Task<IReadOnlyList<Guid>>>>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .Returns(
+                (
+                    Guid _,
+                    Func<CancellationToken, Task<IReadOnlyList<Guid>>> operation,
+                    CancellationToken cancellationToken
+                ) => operation(cancellationToken)
+            );
+
         _sut = new SetupWeeklyScheduleCommandHandler(
             _scheduleRepositoryMock.Object,
             _unitOfWorkMock.Object
