@@ -181,9 +181,6 @@ public class AppointmentGenerator(AppointmentSeedingArgs args, DateTime baseDate
         DateTime baseDate
     )
     {
-        var date = GetNextWeekday(baseDate, schedule.DayOfWeek);
-        var dateOnly = DateOnly.FromDateTime(date);
-
         bool isPast =
             status
             is AppointmentStatus.Completed
@@ -193,12 +190,16 @@ public class AppointmentGenerator(AppointmentSeedingArgs args, DateTime baseDate
 
         if (isPast)
         {
+            var date = GetNextWeekday(baseDate, schedule.DayOfWeek);
+            var dateOnly = DateOnly.FromDateTime(date);
             var weeksBack = (index * 17 % 26) + 1;
             return dateOnly.AddDays(-7 * weeksBack);
         }
 
-        var weeksAhead = doctorOccurrence + 1;
-        return dateOnly.AddDays(7 * weeksAhead);
+        var baseDateOnly = DateOnly.FromDateTime(baseDate);
+        var currentWeekStart = baseDateOnly.AddDays(-(int)baseDateOnly.DayOfWeek);
+        var futureWeekStart = currentWeekStart.AddDays(7 * (doctorOccurrence + 1));
+        return futureWeekStart.AddDays((int)schedule.DayOfWeek);
     }
 
     private static bool IsActiveStatus(AppointmentStatus status) =>
