@@ -22,12 +22,4 @@ public interface IUnitOfWork
         Func<CancellationToken, Task<TResult>> operation,
         CancellationToken cancellationToken = default
     );
-
-    /// <inheritdoc cref="ExecuteWithLockAsync{TResult}(Guid, Func{CancellationToken, Task{TResult}}, CancellationToken)"/>
-    Task<TResult> ExecuteWithLockAsync<TResult>(
-        Guid lockKeyPart1,
-        int lockKeyPart2,
-        Func<CancellationToken, Task<TResult>> operation,
-        CancellationToken cancellationToken = default
-    );
 }
