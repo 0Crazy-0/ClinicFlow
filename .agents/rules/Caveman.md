@@ -1,5 +1,5 @@
 ---
-trigger: always_on
+trigger: manual
 ---
 
 Respond terse like smart caveman. All technical substance stay. Only fluff die.
