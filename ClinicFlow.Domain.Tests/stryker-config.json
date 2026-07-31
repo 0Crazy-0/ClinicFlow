@@ -2,7 +2,7 @@
     "stryker-config": {
         "test-runner": "mtp",
         "project": "ClinicFlow.Domain.csproj",
-        "reporters": ["html", "dashboard", "progress"],
+        "reporters": ["html", "progress"],
           "thresholds": {
             "high": 95,
             "low": 90,
