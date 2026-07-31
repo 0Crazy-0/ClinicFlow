@@ -1,6 +1,7 @@
-using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
+using ClinicFlow.Domain.Services;
+using ClinicFlow.Domain.Services.Args.Registration;
 using ClinicFlow.Domain.ValueObjects;
 using MediatR;
 
@@ -19,27 +20,56 @@ public sealed class AddCompleteFamilyMemberCommandHandler(
     )
     {
         var fullName = PersonName.Create($"{request.FirstName} {request.LastName}");
-
-        var familyMember = Patient.CreateFamilyMember(
-            request.UserId,
-            fullName,
-            request.Relationship,
-            request.DateOfBirth,
-            timeProvider.GetUtcNow().UtcDateTime
-        );
-
         var bloodType = BloodType.Create(request.BloodType);
         var emergencyContact = EmergencyContact.Create(
             request.EmergencyContactName,
             request.EmergencyContactPhone
         );
 
-        familyMember.UpdateMedicalProfile(bloodType, request.Allergies, request.ChronicConditions);
-        familyMember.UpdateEmergencyContact(emergencyContact);
+        return await unitOfWork.ExecuteWithLockAsync(
+            request.UserId,
+            async cancellationToken =>
+            {
+                var existingProfile = await patientRepository.GetIncludingDeletedByNameAndDobAsync(
+                    request.UserId,
+                    fullName,
+                    request.DateOfBirth,
+                    cancellationToken
+                );
 
-        await patientRepository.CreateAsync(familyMember, cancellationToken);
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+                var activeCount = await patientRepository.CountActiveFamilyMembersAsync(
+                    request.UserId,
+                    cancellationToken
+                );
 
-        return familyMember.Id;
+                var patient = FamilyMemberRegistrationService.Register(
+                    existingProfile,
+                    activeCount,
+                    new FamilyMemberRegistrationArgs
+                    {
+                        UserId = request.UserId,
+                        FullName = fullName,
+                        Relationship = request.Relationship,
+                        DateOfBirth = request.DateOfBirth,
+                        ReferenceTime = timeProvider.GetUtcNow().UtcDateTime,
+                    }
+                );
+
+                patient.UpdateMedicalProfile(
+                    bloodType,
+                    request.Allergies,
+                    request.ChronicConditions
+                );
+                patient.UpdateEmergencyContact(emergencyContact);
+
+                if (existingProfile is null)
+                    await patientRepository.CreateAsync(patient, cancellationToken);
+
+                await unitOfWork.SaveChangesAsync(cancellationToken);
+
+                return patient.Id;
+            },
+            cancellationToken
+        );
     }
 }
