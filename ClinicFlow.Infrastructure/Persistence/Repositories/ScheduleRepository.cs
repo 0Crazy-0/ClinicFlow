@@ -11,7 +11,9 @@ public sealed class ScheduleRepository(ApplicationDbContext dbContext) : ISchedu
 {
     public Task CreateAsync(Schedule schedule, CancellationToken cancellationToken = default)
     {
-        dbContext.Schedules.Add(schedule);
+        if (dbContext.Entry(schedule).State is EntityState.Detached)
+            dbContext.Schedules.Add(schedule);
+
         return Task.CompletedTask;
     }
 
@@ -20,7 +22,13 @@ public sealed class ScheduleRepository(ApplicationDbContext dbContext) : ISchedu
         CancellationToken cancellationToken = default
     )
     {
-        dbContext.Schedules.AddRange(schedules);
+        var detachedSchedules = schedules
+            .Where(s => dbContext.Entry(s).State is EntityState.Detached)
+            .ToList();
+
+        if (detachedSchedules.Count > 0)
+            dbContext.Schedules.AddRange(detachedSchedules);
+
         return Task.CompletedTask;
     }
 

@@ -12,7 +12,9 @@ public sealed class DoctorRepository(ApplicationDbContext dbContext) : IDoctorRe
 {
     public Task CreateAsync(Doctor doctor, CancellationToken cancellationToken = default)
     {
-        dbContext.Doctors.Add(doctor);
+        if (dbContext.Entry(doctor).State is EntityState.Detached)
+            dbContext.Doctors.Add(doctor);
+
         return Task.CompletedTask;
     }
 

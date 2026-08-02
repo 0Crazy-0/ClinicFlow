@@ -15,7 +15,9 @@ public sealed class MedicalRecordRepository(ApplicationDbContext dbContext)
         CancellationToken cancellationToken = default
     )
     {
-        dbContext.MedicalRecords.Add(medicalRecord);
+        if (dbContext.Entry(medicalRecord).State is EntityState.Detached)
+            dbContext.MedicalRecords.Add(medicalRecord);
+
         return Task.CompletedTask;
     }
 

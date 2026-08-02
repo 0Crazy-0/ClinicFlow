@@ -15,7 +15,9 @@ public sealed class MedicalSpecialtyRepository(ApplicationDbContext dbContext)
         CancellationToken cancellationToken = default
     )
     {
-        dbContext.MedicalSpecialties.Add(specialty);
+        if (dbContext.Entry(specialty).State is EntityState.Detached)
+            dbContext.MedicalSpecialties.Add(specialty);
+
         return Task.CompletedTask;
     }
 

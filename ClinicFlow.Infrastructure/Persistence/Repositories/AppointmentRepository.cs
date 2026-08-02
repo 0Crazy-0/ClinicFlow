@@ -14,7 +14,9 @@ public sealed class AppointmentRepository(ApplicationDbContext dbContext, TimePr
 {
     public Task CreateAsync(Appointment appointment, CancellationToken cancellationToken = default)
     {
-        dbContext.Appointments.Add(appointment);
+        if (dbContext.Entry(appointment).State is EntityState.Detached)
+            dbContext.Appointments.Add(appointment);
+
         return Task.CompletedTask;
     }
 

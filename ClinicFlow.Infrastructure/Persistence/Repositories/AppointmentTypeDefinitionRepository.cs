@@ -16,7 +16,9 @@ public sealed class AppointmentTypeDefinitionRepository(ApplicationDbContext dbC
         CancellationToken cancellationToken = default
     )
     {
-        dbContext.AppointmentTypes.Add(appointmentType);
+        if (dbContext.Entry(appointmentType).State is EntityState.Detached)
+            dbContext.AppointmentTypes.Add(appointmentType);
+
         return Task.CompletedTask;
     }
 

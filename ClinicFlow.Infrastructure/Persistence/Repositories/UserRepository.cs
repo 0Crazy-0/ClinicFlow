@@ -13,7 +13,9 @@ public sealed class UserRepository(ApplicationDbContext dbContext) : IUserReposi
 {
     public Task CreateAsync(User user, CancellationToken cancellationToken = default)
     {
-        dbContext.Users.Add(user);
+        if (dbContext.Entry(user).State is EntityState.Detached)
+            dbContext.Users.Add(user);
+
         return Task.CompletedTask;
     }
 

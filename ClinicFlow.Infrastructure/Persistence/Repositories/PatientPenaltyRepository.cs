@@ -13,7 +13,9 @@ public sealed class PatientPenaltyRepository(ApplicationDbContext dbContext)
 {
     public Task CreateAsync(PatientPenalty penalty, CancellationToken cancellationToken = default)
     {
-        dbContext.PatientPenalties.Add(penalty);
+        if (dbContext.Entry(penalty).State is EntityState.Detached)
+            dbContext.PatientPenalties.Add(penalty);
+
         return Task.CompletedTask;
     }
 
@@ -22,7 +24,13 @@ public sealed class PatientPenaltyRepository(ApplicationDbContext dbContext)
         CancellationToken cancellationToken = default
     )
     {
-        dbContext.PatientPenalties.AddRange(penalties);
+        var detachedPenalties = penalties
+            .Where(p => dbContext.Entry(p).State is EntityState.Detached)
+            .ToList();
+
+        if (detachedPenalties.Count > 0)
+            dbContext.PatientPenalties.AddRange(detachedPenalties);
+
         return Task.CompletedTask;
     }
 
