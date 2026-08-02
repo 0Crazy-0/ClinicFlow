@@ -38,9 +38,7 @@ public sealed class CreatePatientProfileCommandHandler(
             }
         );
 
-        if (existingProfile is null)
-            await patientRepository.CreateAsync(patient, cancellationToken);
-
+        await patientRepository.CreateAsync(patient, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return patient.Id;
