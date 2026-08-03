@@ -57,6 +57,26 @@ public class UserRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
     }
 
     [Fact]
+    public async Task CreateAsync_ShouldNotReAdd_WhenEntityIsAlreadyTracked()
+    {
+        // Arrange
+        var user = User.Create(
+            EmailAddress.Create("new.user@clinic.com"),
+            "hashedpassword123",
+            PhoneNumber.Create("+15550000001"),
+            UserRole.Patient
+        );
+
+        Context.Users.Add(user);
+
+        // Act
+        await _sut.CreateAsync(user, TestContext.Current.CancellationToken);
+
+        // Assert
+        Context.Entry(user).State.Should().Be(EntityState.Added);
+    }
+
+    [Fact]
     public async Task GetByIdAsync_ShouldReturnUser_WhenExists()
     {
         // Arrange

@@ -48,6 +48,22 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
     }
 
     [Fact]
+    public async Task CreateAsync_ShouldNotReAdd_WhenEntityIsAlreadyTracked()
+    {
+        // Arrange
+        var (doctor, patient, appointment) = await SeedCommonEntitiesAsync();
+        var record = MedicalRecord.Create(patient.Id, doctor.Id, appointment.Id, "chiefComplaint");
+
+        Context.MedicalRecords.Add(record);
+
+        // Act
+        await _sut.CreateAsync(record, TestContext.Current.CancellationToken);
+
+        // Assert
+        Context.Entry(record).State.Should().Be(EntityState.Added);
+    }
+
+    [Fact]
     public async Task GetByIdAsync_ShouldReturnMedicalRecord_WhenExists()
     {
         // Arrange

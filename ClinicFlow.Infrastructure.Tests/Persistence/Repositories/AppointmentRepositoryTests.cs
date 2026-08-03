@@ -61,6 +61,23 @@ public class AppointmentRepositoryTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task CreateAsync_ShouldNotReAdd_WhenEntityIsAlreadyTracked()
+    {
+        // Arrange
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var timeRange = TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0));
+        var (appointment, _, _) = await CreateAppointmentDraftAsync(scheduledDate, timeRange);
+
+        Context.Appointments.Add(appointment);
+
+        // Act
+        await _sut.CreateAsync(appointment, TestContext.Current.CancellationToken);
+
+        // Assert
+        Context.Entry(appointment).State.Should().Be(EntityState.Added);
+    }
+
+    [Fact]
     public async Task GetByIdAsync_ShouldReturnAppointment_WhenExists()
     {
         // Arrange

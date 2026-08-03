@@ -45,6 +45,21 @@ public class MedicalSpecialtyRepositoryTests(PostgresFixture fixture) : IAsyncLi
     }
 
     [Fact]
+    public async Task CreateAsync_ShouldNotReAdd_WhenEntityIsAlreadyTracked()
+    {
+        // Arrange
+        var specialty = MedicalSpecialty.Create("Ophthalmology", "Description", 30, 24);
+
+        Context.MedicalSpecialties.Add(specialty);
+
+        // Act
+        await _sut.CreateAsync(specialty, TestContext.Current.CancellationToken);
+
+        // Assert
+        Context.Entry(specialty).State.Should().Be(EntityState.Added);
+    }
+
+    [Fact]
     public async Task GetByIdAsync_ShouldReturnSpecialty_WhenExistsAndActive()
     {
         // Arrange

@@ -55,6 +55,27 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
     }
 
     [Fact]
+    public async Task CreateAsync_ShouldNotReAdd_WhenEntityIsAlreadyTracked()
+    {
+        // Arrange
+        var patient = await CreatePatientAsync();
+        var appointment = await CreateAppointmentAsync(patient.Id);
+        var warning = PatientPenalty.CreateAutomaticWarning(
+            patient.Id,
+            appointment.Id,
+            "Automatic warning"
+        );
+
+        Context.PatientPenalties.Add(warning);
+
+        // Act
+        await _sut.CreateAsync(warning, TestContext.Current.CancellationToken);
+
+        // Assert
+        Context.Entry(warning).State.Should().Be(EntityState.Added);
+    }
+
+    [Fact]
     public async Task CreateRangeAsync_ShouldAddMultiplePenaltiesToContext()
     {
         // Arrange
@@ -85,6 +106,27 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
             .ToListAsync(TestContext.Current.CancellationToken);
 
         dbResults.Should().BeEquivalentTo([warning, block]);
+    }
+
+    [Fact]
+    public async Task CreateRangeAsync_ShouldNotReAdd_WhenEntitiesAreAlreadyTracked()
+    {
+        // Arrange
+        var patient = await CreatePatientAsync();
+        var appointment = await CreateAppointmentAsync(patient.Id);
+        var warning = PatientPenalty.CreateAutomaticWarning(
+            patient.Id,
+            appointment.Id,
+            "Automatic warning"
+        );
+
+        Context.PatientPenalties.Add(warning);
+
+        // Act
+        await _sut.CreateRangeAsync([warning], TestContext.Current.CancellationToken);
+
+        // Assert
+        Context.Entry(warning).State.Should().Be(EntityState.Added);
     }
 
     [Fact]

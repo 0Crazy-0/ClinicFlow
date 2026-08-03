@@ -58,6 +58,30 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
     }
 
     [Fact]
+    public async Task CreateAsync_ShouldNotReAdd_WhenEntityIsAlreadyTracked()
+    {
+        // Arrange
+        var user = await CreateUserAsync();
+        var patient = Patient.CreateSelf(
+            user.Id,
+            PersonName.Create("New Patient"),
+            new DateOnly(1990, 1, 1),
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
+        patient.UpdateEmergencyContact(EmergencyContact.Create("Contact", "555-9999"));
+
+        Context.Patients.Add(patient);
+
+        // Act
+        await _sut.CreateAsync(patient, TestContext.Current.CancellationToken);
+
+        // Assert
+        Context.Entry(patient).State.Should().Be(EntityState.Added);
+    }
+
+    [Fact]
     public async Task GetByIdAsync_ShouldReturnPatient_WhenExistsAndActive()
     {
         // Arrange
