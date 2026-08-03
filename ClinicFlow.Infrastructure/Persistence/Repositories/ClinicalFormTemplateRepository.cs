@@ -15,7 +15,9 @@ public sealed class ClinicalFormTemplateRepository(ApplicationDbContext dbContex
         CancellationToken cancellationToken = default
     )
     {
-        dbContext.ClinicalFormTemplates.Add(template);
+        if (dbContext.Entry(template).State is EntityState.Detached)
+            dbContext.ClinicalFormTemplates.Add(template);
+
         return Task.CompletedTask;
     }
 

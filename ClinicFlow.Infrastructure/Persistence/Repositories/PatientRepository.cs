@@ -11,6 +11,14 @@ namespace ClinicFlow.Infrastructure.Persistence.Repositories;
 /// </summary>
 public sealed class PatientRepository(ApplicationDbContext dbContext) : IPatientRepository
 {
+    public Task CreateAsync(Patient patient, CancellationToken cancellationToken = default)
+    {
+        if (dbContext.Entry(patient).State is EntityState.Detached)
+            dbContext.Patients.Add(patient);
+
+        return Task.CompletedTask;
+    }
+
     public async Task<Patient?> GetByIdAsync(
         Guid id,
         CancellationToken cancellationToken = default
@@ -56,10 +64,4 @@ public sealed class PatientRepository(ApplicationDbContext dbContext) : IPatient
                 p => p.UserId == userId && p.FullName == fullName && p.DateOfBirth == dateOfBirth,
                 cancellationToken
             );
-
-    public Task CreateAsync(Patient patient, CancellationToken cancellationToken = default)
-    {
-        dbContext.Patients.Add(patient);
-        return Task.CompletedTask;
-    }
 }

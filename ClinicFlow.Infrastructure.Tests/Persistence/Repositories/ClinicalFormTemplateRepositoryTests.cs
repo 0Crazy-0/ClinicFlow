@@ -55,6 +55,27 @@ public class ClinicalFormTemplateRepositoryTests(PostgresFixture fixture) : IAsy
     }
 
     [Fact]
+    public async Task CreateAsync_ShouldNotReAdd_WhenEntityIsAlreadyTracked()
+    {
+        // Arrange
+        var template = ClinicalFormTemplate.Create(
+            "TEMP99",
+            "Default Template",
+            "Default Description",
+            """{"type": "object"}"""
+        );
+
+        Context.ClinicalFormTemplates.Add(template);
+        Context.Entry(template).State = EntityState.Unchanged;
+
+        // Act
+        await _sut.CreateAsync(template, TestContext.Current.CancellationToken);
+
+        // Assert
+        Context.Entry(template).State.Should().Be(EntityState.Unchanged);
+    }
+
+    [Fact]
     public async Task GetByIdAsync_ShouldReturnTemplate_WhenExistsAndActive()
     {
         // Arrange

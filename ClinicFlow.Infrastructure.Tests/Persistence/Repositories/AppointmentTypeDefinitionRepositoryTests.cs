@@ -56,6 +56,28 @@ public class AppointmentTypeDefinitionRepositoryTests(PostgresFixture fixture) :
     }
 
     [Fact]
+    public async Task CreateAsync_ShouldNotReAdd_WhenEntityIsAlreadyTracked()
+    {
+        // Arrange
+        var appointmentType = AppointmentTypeDefinition.Create(
+            AppointmentCategory.FirstConsultation,
+            "Name",
+            "Description",
+            EncounterDuration.FromMinutes(20),
+            AgeEligibilityPolicy.NoRestriction
+        );
+
+        Context.AppointmentTypes.Add(appointmentType);
+        Context.Entry(appointmentType).State = EntityState.Unchanged;
+
+        // Act
+        await _sut.CreateAsync(appointmentType, TestContext.Current.CancellationToken);
+
+        // Assert
+        Context.Entry(appointmentType).State.Should().Be(EntityState.Unchanged);
+    }
+
+    [Fact]
     public async Task GetByIdAsync_ShouldReturnAppointmentType_WhenExistsAndActive()
     {
         // Arrange

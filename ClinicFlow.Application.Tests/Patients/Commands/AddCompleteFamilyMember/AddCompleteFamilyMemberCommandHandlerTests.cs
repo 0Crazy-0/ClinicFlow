@@ -153,8 +153,12 @@ public class AddCompleteFamilyMemberCommandHandlerTests
             Times.Once
         );
         _patientRepositoryMock.Verify(
-            r => r.CreateAsync(It.IsAny<Patient>(), It.IsAny<CancellationToken>()),
-            Times.Never
+            r =>
+                r.CreateAsync(
+                    It.Is<Patient>(p => ReferenceEquals(p, deletedMember)),
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Once
         );
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
 

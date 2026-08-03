@@ -52,6 +52,27 @@ public class ScheduleRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
     }
 
     [Fact]
+    public async Task CreateAsync_ShouldNotReAdd_WhenEntityIsAlreadyTracked()
+    {
+        // Arrange
+        var doctor = await CreateDoctorAsync();
+        var schedule = Schedule.Create(
+            doctor.Id,
+            DayOfWeek.Monday,
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+        );
+
+        Context.Schedules.Add(schedule);
+        Context.Entry(schedule).State = EntityState.Unchanged;
+
+        // Act
+        await _sut.CreateAsync(schedule, TestContext.Current.CancellationToken);
+
+        // Assert
+        Context.Entry(schedule).State.Should().Be(EntityState.Unchanged);
+    }
+
+    [Fact]
     public async Task CreateRangeAsync_ShouldAddMultipleSchedulesToContext()
     {
         // Arrange
@@ -79,6 +100,27 @@ public class ScheduleRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
             .ToListAsync(TestContext.Current.CancellationToken);
 
         dbResults.Should().BeEquivalentTo([schedule1, schedule2]);
+    }
+
+    [Fact]
+    public async Task CreateRangeAsync_ShouldNotReAdd_WhenEntitiesAreAlreadyTracked()
+    {
+        // Arrange
+        var doctor = await CreateDoctorAsync();
+        var schedule = Schedule.Create(
+            doctor.Id,
+            DayOfWeek.Monday,
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+        );
+
+        Context.Schedules.Add(schedule);
+        Context.Entry(schedule).State = EntityState.Unchanged;
+
+        // Act
+        await _sut.CreateRangeAsync([schedule], TestContext.Current.CancellationToken);
+
+        // Assert
+        Context.Entry(schedule).State.Should().Be(EntityState.Unchanged);
     }
 
     [Fact]
