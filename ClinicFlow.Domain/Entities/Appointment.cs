@@ -156,7 +156,7 @@ public class Appointment : BaseEntity
         AddDomainEvent(new AppointmentStartedEvent(this, startedAt));
     }
 
-    public void Complete(DateTime completedAt)
+    internal void Complete(DateTime completedAt)
     {
         if (Status is not AppointmentStatus.InProgress)
             throw new DomainValidationException(DomainErrors.Appointment.CannotComplete);

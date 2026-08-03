@@ -42,7 +42,7 @@ public class Doctor : SoftDeletableEntity
         ConsultationRoom = consultationRoom;
     }
 
-    public static Doctor Create(
+    internal static Doctor Create(
         Guid userId,
         PersonName fullName,
         MedicalLicenseNumber licenseNumber,

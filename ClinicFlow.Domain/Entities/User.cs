@@ -73,7 +73,7 @@ public class User : BaseEntity
         IsPhoneVerified = true;
     }
 
-    public void RecordLogin(DateTime loginTime)
+    internal void RecordLogin(DateTime loginTime)
     {
         if (!IsActive)
             throw new BusinessRuleValidationException(DomainErrors.User.AccountInactive);
@@ -86,7 +86,7 @@ public class User : BaseEntity
         LastLoginAt = loginTime;
     }
 
-    public void RecordFailedLogin(DateTime referenceTime)
+    internal void RecordFailedLogin(DateTime referenceTime)
     {
         if (!IsActive)
             throw new BusinessRuleValidationException(DomainErrors.User.AccountInactive);
