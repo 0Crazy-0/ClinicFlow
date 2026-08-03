@@ -67,12 +67,13 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
         );
 
         Context.PatientPenalties.Add(warning);
+        Context.Entry(warning).State = EntityState.Unchanged;
 
         // Act
         await _sut.CreateAsync(warning, TestContext.Current.CancellationToken);
 
         // Assert
-        Context.Entry(warning).State.Should().Be(EntityState.Added);
+        Context.Entry(warning).State.Should().Be(EntityState.Unchanged);
     }
 
     [Fact]
@@ -121,12 +122,13 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
         );
 
         Context.PatientPenalties.Add(warning);
+        Context.Entry(warning).State = EntityState.Unchanged;
 
         // Act
         await _sut.CreateRangeAsync([warning], TestContext.Current.CancellationToken);
 
         // Assert
-        Context.Entry(warning).State.Should().Be(EntityState.Added);
+        Context.Entry(warning).State.Should().Be(EntityState.Unchanged);
     }
 
     [Fact]

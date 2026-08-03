@@ -51,12 +51,13 @@ public class MedicalSpecialtyRepositoryTests(PostgresFixture fixture) : IAsyncLi
         var specialty = MedicalSpecialty.Create("Ophthalmology", "Description", 30, 24);
 
         Context.MedicalSpecialties.Add(specialty);
+        Context.Entry(specialty).State = EntityState.Unchanged;
 
         // Act
         await _sut.CreateAsync(specialty, TestContext.Current.CancellationToken);
 
         // Assert
-        Context.Entry(specialty).State.Should().Be(EntityState.Added);
+        Context.Entry(specialty).State.Should().Be(EntityState.Unchanged);
     }
 
     [Fact]

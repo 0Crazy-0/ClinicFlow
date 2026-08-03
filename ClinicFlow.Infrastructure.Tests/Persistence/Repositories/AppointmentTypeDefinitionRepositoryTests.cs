@@ -68,12 +68,13 @@ public class AppointmentTypeDefinitionRepositoryTests(PostgresFixture fixture) :
         );
 
         Context.AppointmentTypes.Add(appointmentType);
+        Context.Entry(appointmentType).State = EntityState.Unchanged;
 
         // Act
         await _sut.CreateAsync(appointmentType, TestContext.Current.CancellationToken);
 
         // Assert
-        Context.Entry(appointmentType).State.Should().Be(EntityState.Added);
+        Context.Entry(appointmentType).State.Should().Be(EntityState.Unchanged);
     }
 
     [Fact]

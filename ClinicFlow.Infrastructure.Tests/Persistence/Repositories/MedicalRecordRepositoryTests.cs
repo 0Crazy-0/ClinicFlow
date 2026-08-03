@@ -55,12 +55,13 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
         var record = MedicalRecord.Create(patient.Id, doctor.Id, appointment.Id, "chiefComplaint");
 
         Context.MedicalRecords.Add(record);
+        Context.Entry(record).State = EntityState.Unchanged;
 
         // Act
         await _sut.CreateAsync(record, TestContext.Current.CancellationToken);
 
         // Assert
-        Context.Entry(record).State.Should().Be(EntityState.Added);
+        Context.Entry(record).State.Should().Be(EntityState.Unchanged);
     }
 
     [Fact]

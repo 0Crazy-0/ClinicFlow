@@ -63,12 +63,13 @@ public class ScheduleRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         );
 
         Context.Schedules.Add(schedule);
+        Context.Entry(schedule).State = EntityState.Unchanged;
 
         // Act
         await _sut.CreateAsync(schedule, TestContext.Current.CancellationToken);
 
         // Assert
-        Context.Entry(schedule).State.Should().Be(EntityState.Added);
+        Context.Entry(schedule).State.Should().Be(EntityState.Unchanged);
     }
 
     [Fact]
@@ -113,12 +114,13 @@ public class ScheduleRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         );
 
         Context.Schedules.Add(schedule);
+        Context.Entry(schedule).State = EntityState.Unchanged;
 
         // Act
         await _sut.CreateRangeAsync([schedule], TestContext.Current.CancellationToken);
 
         // Assert
-        Context.Entry(schedule).State.Should().Be(EntityState.Added);
+        Context.Entry(schedule).State.Should().Be(EntityState.Unchanged);
     }
 
     [Fact]

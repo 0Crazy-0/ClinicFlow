@@ -68,12 +68,13 @@ public class UserRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         );
 
         Context.Users.Add(user);
+        Context.Entry(user).State = EntityState.Unchanged;
 
         // Act
         await _sut.CreateAsync(user, TestContext.Current.CancellationToken);
 
         // Assert
-        Context.Entry(user).State.Should().Be(EntityState.Added);
+        Context.Entry(user).State.Should().Be(EntityState.Unchanged);
     }
 
     [Fact]

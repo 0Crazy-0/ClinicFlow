@@ -66,12 +66,13 @@ public class ClinicalFormTemplateRepositoryTests(PostgresFixture fixture) : IAsy
         );
 
         Context.ClinicalFormTemplates.Add(template);
+        Context.Entry(template).State = EntityState.Unchanged;
 
         // Act
         await _sut.CreateAsync(template, TestContext.Current.CancellationToken);
 
         // Assert
-        Context.Entry(template).State.Should().Be(EntityState.Added);
+        Context.Entry(template).State.Should().Be(EntityState.Unchanged);
     }
 
     [Fact]

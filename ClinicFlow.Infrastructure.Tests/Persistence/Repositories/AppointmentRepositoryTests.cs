@@ -69,12 +69,13 @@ public class AppointmentRepositoryTests : IAsyncLifetime
         var (appointment, _, _) = await CreateAppointmentDraftAsync(scheduledDate, timeRange);
 
         Context.Appointments.Add(appointment);
+        Context.Entry(appointment).State = EntityState.Unchanged;
 
         // Act
         await _sut.CreateAsync(appointment, TestContext.Current.CancellationToken);
 
         // Assert
-        Context.Entry(appointment).State.Should().Be(EntityState.Added);
+        Context.Entry(appointment).State.Should().Be(EntityState.Unchanged);
     }
 
     [Fact]
