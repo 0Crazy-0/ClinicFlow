@@ -229,6 +229,48 @@ public async Task CreateRangeAsync_ShouldAddMultipleEntitiesToContext()
 }
 ```
 
+### Entity State Tracking Verification (`ShouldNotReAdd`)
+
+Every repository test class that tests `CreateAsync` must include a test verifying that calling `CreateAsync` when the entity is already tracked by `DbContext` (e.g., state set to `EntityState.Unchanged`) does not re-add or alter tracker state:
+
+```csharp
+[Fact]
+public async Task CreateAsync_ShouldNotReAdd_WhenEntityIsAlreadyTracked()
+{
+    // Arrange
+    var entity = Entity.Create(/* params */);
+
+    Context.EntitySet.Add(entity);
+    Context.Entry(entity).State = EntityState.Unchanged;
+
+    // Act
+    await _sut.CreateAsync(entity, TestContext.Current.CancellationToken);
+
+    // Assert
+    Context.Entry(entity).State.Should().Be(EntityState.Unchanged);
+}
+```
+
+When the repository exposes `CreateRangeAsync`, include the equivalent test for tracked collections:
+
+```csharp
+[Fact]
+public async Task CreateRangeAsync_ShouldNotReAdd_WhenEntitiesAreAlreadyTracked()
+{
+    // Arrange
+    var entity = Entity.Create(/* params */);
+
+    Context.EntitySet.Add(entity);
+    Context.Entry(entity).State = EntityState.Unchanged;
+
+    // Act
+    await _sut.CreateRangeAsync([entity], TestContext.Current.CancellationToken);
+
+    // Assert
+    Context.Entry(entity).State.Should().Be(EntityState.Unchanged);
+}
+```
+
 ## Soft-Delete Testing Triad
 
 For every query method that respects the global query filter (`IsDeleted`), always write these three tests as a group:
