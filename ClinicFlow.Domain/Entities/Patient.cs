@@ -49,7 +49,7 @@ public class Patient : SoftDeletableEntity
     /// <summary>
     /// Creates a new patient entity for the primary user of an account.
     /// </summary>
-    public static Patient CreateSelf(
+    internal static Patient CreateSelf(
         Guid userId,
         PersonName fullName,
         DateOnly dateOfBirth,
@@ -69,7 +69,7 @@ public class Patient : SoftDeletableEntity
     /// <summary>
     /// Creates a new patient entity representing a family member dependent of a primary user.
     /// </summary>
-    public static Patient CreateFamilyMember(
+    internal static Patient CreateFamilyMember(
         Guid userId,
         PersonName fullName,
         PatientRelationship relationshipToUser,
