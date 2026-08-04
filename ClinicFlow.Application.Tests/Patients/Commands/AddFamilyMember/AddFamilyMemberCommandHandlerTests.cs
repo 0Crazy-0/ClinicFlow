@@ -1,7 +1,9 @@
 using AwesomeAssertions;
 using ClinicFlow.Application.Patients.Commands.AddFamilyMember;
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
+using ClinicFlow.Domain.Exceptions.Patients;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.ValueObjects;
@@ -22,6 +24,12 @@ public class AddFamilyMemberCommandHandlerTests
         _patientRepositoryMock = new Mock<IPatientRepository>();
         _unitOfWorkMock = new Mock<IUnitOfWork>();
         _fakeTime = new FakeTimeProvider();
+
+        _patientRepositoryMock
+            .Setup(x =>
+                x.HasActiveSelfPatientAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())
+            )
+            .ReturnsAsync(true);
 
         _unitOfWorkMock
             .Setup(x =>
@@ -188,5 +196,46 @@ public class AddFamilyMemberCommandHandlerTests
             Times.Once
         );
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldThrowPrimaryPatientRequiredException_WhenSelfPatientDoesNotExist()
+    {
+        // Arrange
+        var command = new AddFamilyMemberCommand(
+            Guid.CreateVersion7(),
+            "Child",
+            "Doe",
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-5)),
+            PatientRelationship.Child
+        );
+
+        _patientRepositoryMock
+            .Setup(x => x.HasActiveSelfPatientAsync(command.UserId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(false);
+
+        // Act
+        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
+
+        // Assert
+        var exceptionAssertion = await act.Should()
+            .ThrowAsync<PrimaryPatientRequiredException>()
+            .WithMessage(DomainErrors.Patient.PrimaryPatientRequired);
+        exceptionAssertion.Which.UserId.Should().Be(command.UserId);
+
+        _unitOfWorkMock.Verify(
+            x =>
+                x.ExecuteWithLockAsync(
+                    It.IsAny<Guid>(),
+                    It.IsAny<Func<CancellationToken, Task<Guid>>>(),
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Once
+        );
+        _patientRepositoryMock.Verify(
+            x => x.CreateAsync(It.IsAny<Patient>(), It.IsAny<CancellationToken>()),
+            Times.Never
+        );
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 }
