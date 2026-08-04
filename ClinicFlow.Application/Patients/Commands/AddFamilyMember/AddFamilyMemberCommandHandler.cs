@@ -1,3 +1,5 @@
+using ClinicFlow.Domain.Common;
+using ClinicFlow.Domain.Exceptions.Patients;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.Services;
@@ -25,6 +27,19 @@ public sealed class AddFamilyMemberCommandHandler(
             request.UserId,
             async cancellationToken =>
             {
+                if (
+                    !await patientRepository.HasActiveSelfPatientAsync(
+                        request.UserId,
+                        cancellationToken
+                    )
+                )
+                {
+                    throw new PrimaryPatientRequiredException(
+                        DomainErrors.Patient.PrimaryPatientRequired,
+                        request.UserId
+                    );
+                }
+
                 var existingProfile = await patientRepository.GetIncludingDeletedByNameAndDobAsync(
                     request.UserId,
                     fullName,
