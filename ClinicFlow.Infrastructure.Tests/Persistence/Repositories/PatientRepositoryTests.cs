@@ -197,6 +197,92 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
     }
 
     [Fact]
+    public async Task GetSelfPatientByUserIdAsync_ShouldReturnNull_WhenUserHasOnlyFamilyMembers()
+    {
+        // Arrange
+        var user = await CreateUserAsync();
+        await CreateFamilyMemberPatientAsync(user.Id);
+
+        // Act
+        var result = await _sut.GetSelfPatientByUserIdAsync(
+            user.Id,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task HasActiveSelfPatientAsync_ShouldReturnTrue_WhenActiveSelfPatientExists()
+    {
+        // Arrange
+        var patient = await CreateSelfPatientAsync();
+
+        // Act
+        var result = await _sut.HasActiveSelfPatientAsync(
+            patient.UserId,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task HasActiveSelfPatientAsync_ShouldReturnFalse_WhenSoftDeleted()
+    {
+        // Arrange
+        var patient = await CreateSelfPatientAsync();
+
+        patient.CloseAccount(false);
+
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var result = await _sut.HasActiveSelfPatientAsync(
+            patient.UserId,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task HasActiveSelfPatientAsync_ShouldReturnFalse_WhenDoesNotExist()
+    {
+        // Arrange
+        var nonExistentUserId = Guid.CreateVersion7();
+
+        // Act
+        var result = await _sut.HasActiveSelfPatientAsync(
+            nonExistentUserId,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task HasActiveSelfPatientAsync_ShouldReturnFalse_WhenUserHasOnlyFamilyMembers()
+    {
+        // Arrange
+        var user = await CreateUserAsync();
+        await CreateFamilyMemberPatientAsync(user.Id);
+
+        // Act
+        var result = await _sut.HasActiveSelfPatientAsync(
+            user.Id,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [Fact]
     public async Task GetAllByUserIdAsync_ShouldReturnAllPatients_WhenUserHasMultiple()
     {
         // Arrange
