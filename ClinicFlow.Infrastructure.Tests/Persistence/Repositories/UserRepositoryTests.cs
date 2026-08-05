@@ -341,6 +341,52 @@ public class UserRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
     }
 
     [Fact]
+    public async Task GetPaginatedAsync_ShouldTreatPercentInSearchTermAsLiteralCharacter()
+    {
+        // Arrange
+        var matchingUser = await CreateUserAsync("100%discount@clinic.com");
+        await CreateUserAsync("100xdiscount@clinic.com");
+
+        // Act
+        var (items, totalCount) = await _sut.GetPaginatedAsync(
+            pageNumber: 1,
+            pageSize: 10,
+            null,
+            null,
+            "100%discount",
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        totalCount.Should().Be(1);
+
+        items.Should().ContainSingle().Which.Should().BeEquivalentTo(matchingUser);
+    }
+
+    [Fact]
+    public async Task GetPaginatedAsync_ShouldTreatUnderscoreInSearchTermAsLiteralCharacter()
+    {
+        // Arrange
+        var matchingUser = await CreateUserAsync("user_name@clinic.com");
+        await CreateUserAsync("userxname@clinic.com");
+
+        // Act
+        var (items, totalCount) = await _sut.GetPaginatedAsync(
+            pageNumber: 1,
+            pageSize: 10,
+            null,
+            null,
+            "user_name",
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        totalCount.Should().Be(1);
+
+        items.Should().ContainSingle().Which.Should().BeEquivalentTo(matchingUser);
+    }
+
+    [Fact]
     public async Task GetLockedOutUsersPaginatedAsync_ShouldReturnUsersWithActiveLockout()
     {
         // Arrange
