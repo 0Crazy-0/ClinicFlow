@@ -42,6 +42,17 @@ public sealed class PatientRepository(ApplicationDbContext dbContext) : IPatient
             cancellationToken
         );
 
+    public async Task<bool> HasActiveFamilyMembersAsync(
+        Guid userId,
+        CancellationToken cancellationToken = default
+    ) =>
+        await dbContext
+            .Patients.AsNoTracking()
+            .AnyAsync(
+                p => p.UserId == userId && p.RelationshipToUser != PatientRelationship.Self,
+                cancellationToken
+            );
+
     public async Task<int> CountActiveFamilyMembersAsync(
         Guid userId,
         CancellationToken cancellationToken = default
