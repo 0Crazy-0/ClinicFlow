@@ -87,7 +87,7 @@ public class CreatePatientProfileCommandHandlerTests
             command.DateOfBirth,
             _fakeTime.GetUtcNow().UtcDateTime
         );
-        deletedPatient.CloseAccount(false);
+        deletedPatient.CloseAccount();
 
         _patientRepositoryMock
             .Setup(x =>

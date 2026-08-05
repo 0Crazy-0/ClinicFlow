@@ -101,7 +101,7 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         // Arrange
         var patient = await CreateSelfPatientAsync();
 
-        patient.CloseAccount(false);
+        patient.CloseAccount();
 
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
@@ -147,7 +147,7 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         // Arrange
         var patient = await CreateSelfPatientAsync();
 
-        patient.CloseAccount(false);
+        patient.CloseAccount();
 
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
@@ -235,7 +235,7 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         // Arrange
         var patient = await CreateSelfPatientAsync();
 
-        patient.CloseAccount(false);
+        patient.CloseAccount();
 
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
@@ -506,7 +506,7 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         // Arrange
         var patient = await CreateSelfPatientAsync();
 
-        patient.CloseAccount(false);
+        patient.CloseAccount();
 
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 

@@ -290,13 +290,13 @@ public class PatientTests
     }
 
     [Fact]
-    public void CloseAccount_ShouldMarkAsDeleted_WhenPrimaryUserHasNoPendingAppointments()
+    public void CloseAccount_ShouldMarkAsDeleted_WhenPatientIsPrimaryUser()
     {
         // Arrange
         var patient = CreatePatient();
 
         // Act
-        patient.CloseAccount(false);
+        patient.CloseAccount();
 
         // Assert
         patient.IsDeleted.Should().BeTrue();
@@ -309,7 +309,7 @@ public class PatientTests
         var patient = CreateFamilyMember();
 
         // Act
-        var act = () => patient.CloseAccount(false);
+        var act = () => patient.CloseAccount();
 
         // Assert
         act.Should()
@@ -318,26 +318,11 @@ public class PatientTests
     }
 
     [Fact]
-    public void CloseAccount_ShouldThrowException_WhenPrimaryUserHasPendingAppointments()
-    {
-        // Arrange
-        var patient = CreatePatient();
-
-        // Act
-        var act = () => patient.CloseAccount(true);
-
-        // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.Patient.CannotCloseAccountWithPendingAppointments);
-    }
-
-    [Fact]
     public void ReactivateAsPrimary_ShouldUndoDeletionAndRestoreSelfRelationship_WhenCalled()
     {
         // Arrange
         var patient = CreatePatient();
-        patient.CloseAccount(false);
+        patient.CloseAccount();
 
         // Act
         patient.ReactivateAsPrimary();
@@ -352,7 +337,7 @@ public class PatientTests
     {
         // Arrange
         var patient = CreatePatient();
-        patient.CloseAccount(false);
+        patient.CloseAccount();
         patient.ClearDomainEvents();
 
         // Act
