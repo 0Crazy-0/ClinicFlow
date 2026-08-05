@@ -80,6 +80,36 @@ public sealed class UnitOfWork(ApplicationDbContext dbContext, IPublisher publis
         return result;
     }
 
+    public async Task ExecuteWithLockAsync(
+        Guid lockKey,
+        Func<CancellationToken, Task> operation,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var strategy = dbContext.Database.CreateExecutionStrategy();
+
+        await strategy.ExecuteAsync(
+            async (cancellationToken) =>
+            {
+                _pendingNotifications.Clear();
+
+                await using var transaction = await dbContext.Database.BeginTransactionAsync(
+                    cancellationToken
+                );
+
+                await AcquireLockAsync(ToStableLong(lockKey), cancellationToken);
+
+                await operation(cancellationToken);
+
+                await transaction.CommitAsync(cancellationToken);
+            },
+            cancellationToken
+        );
+
+        foreach (var notification in _pendingNotifications)
+            await publisher.Publish(notification, cancellationToken);
+    }
+
     private Task<int> AcquireLockAsync(long key, CancellationToken cancellationToken) =>
         dbContext.Database.ExecuteSqlInterpolatedAsync(
             $"SELECT pg_advisory_xact_lock({key})",
