@@ -205,11 +205,34 @@ var appointment =
         request.AppointmentId
     );
 ```
-
 ### Conditional Logic Prohibition
+**Branching logic that decides between multiple business outcomes must live in the Domain layer.** The Application layer only orchestrates: fetch → delegate to domain → persist.
 
-**No `if` statements or conditional logic in the Application layer.** If there is decision logic, it belongs in the Domain layer. The Application layer only orchestrates: fetch → delegate to domain → persist.
+Guard clauses are the accepted exception to this rule. A guard clause evaluates a single condition, once, (a `null` check on an entity, or a `bool` returned by a repository, evaluated directly) and either throws a domain exception or lets execution continue. It does not branch into multiple business outcomes, it only decides whether to proceed or fail fast.
 
+```csharp
+// ✅ Allowed: single condition, evaluated once, throws or continues
+if (await appointmentRepository.HasConflictAsync(doctorId, scheduledDate, timeRange, cancellationToken))
+    throw new AppointmentConflictException(
+        DomainErrors.Appointment.Conflict,
+        doctorId,
+        scheduledDate.ToDateTime(timeRange.Start)
+    );
+```
+
+```csharp
+// ❌ Forbidden: branching that decides between multiple business outcomes
+if (specialty.IsCancellationAllowed(appointmentDateTime, referenceTime))
+{
+    appointment.Cancel(userId, reason, cancelledDate);
+}
+else
+{
+    appointment.CancelLate(userId, reason, cancelledDate);
+}
+```
+
+The second example is decision logic (it picks *what to do*) and belongs in the Domain layer, as already implemented in `AppointmentCancellationService.CancelByPatient`.
 ### Time Abstraction
 
 Always use `TimeProvider` (abstract class) instead of `DateTime.UtcNow` or `DateTimeOffset.UtcNow`. Inject `TimeProvider` via the primary constructor and call `timeProvider.GetUtcNow().UtcDateTime`.
@@ -281,7 +304,7 @@ internal void MarkAsNoShow() { }
 ### Prohibited Actions
 
 - Never install packages in `ClinicFlow.Domain`.
-- Never add conditional/decision logic in the Application layer handlers.
+- Never add branching logic (multiple business outcomes) in the Application layer handlers. Single-condition guard clauses are allowed: they either throw a domain exception or let execution continue (see [Conditional Logic Prohibition](#conditional-logic-prohibition)).
 - Never create test helpers with conditional logic.
 - Never use `DateTime.UtcNow` / `DateTimeOffset.UtcNow` directly. Always use `TimeProvider`.
 - Never skip writing tests for new features.
