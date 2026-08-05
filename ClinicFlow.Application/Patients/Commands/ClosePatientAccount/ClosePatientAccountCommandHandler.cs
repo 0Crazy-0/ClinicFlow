@@ -1,4 +1,7 @@
-using ClinicFlow.Domain.Enums;
+using ClinicFlow.Domain.Common;
+using ClinicFlow.Domain.Entities;
+using ClinicFlow.Domain.Exceptions.Base;
+using ClinicFlow.Domain.Exceptions.Patients;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using MediatR;
@@ -17,24 +20,47 @@ public sealed class ClosePatientAccountCommandHandler(
         CancellationToken cancellationToken
     )
     {
-        var patients = await patientRepository.GetAllByUserIdAsync(
+        await unitOfWork.ExecuteWithLockAsync(
             request.UserId,
+            async cancellationToken =>
+            {
+                if (
+                    await appointmentRepository.HasActiveAppointmentsForUserAsync(
+                        request.UserId,
+                        cancellationToken
+                    )
+                )
+                    throw new DomainValidationException(
+                        DomainErrors.Patient.CannotCloseAccountWithPendingAppointments
+                    );
+
+                if (
+                    await patientRepository.HasActiveFamilyMembersAsync(
+                        request.UserId,
+                        cancellationToken
+                    )
+                )
+                    throw new ActiveFamilyMembersExistException(
+                        DomainErrors.Patient.CannotCloseAccountWithActiveFamilyMembers,
+                        request.UserId
+                    );
+
+                var primaryPatient =
+                    await patientRepository.GetSelfPatientByUserIdAsync(
+                        request.UserId,
+                        cancellationToken
+                    )
+                    ?? throw new EntityNotFoundException(
+                        DomainErrors.General.NotFound,
+                        nameof(Patient),
+                        request.UserId
+                    );
+
+                primaryPatient.CloseAccount();
+
+                await unitOfWork.SaveChangesAsync(cancellationToken);
+            },
             cancellationToken
         );
-
-        var primaryPatient = patients.Single(p => p.RelationshipToUser is PatientRelationship.Self);
-        var familyMembers = patients
-            .Where(p => p.RelationshipToUser is not PatientRelationship.Self)
-            .ToList();
-
-        var hasPendingAppointments = await appointmentRepository.HasActiveAppointmentsForUserAsync(
-            request.UserId,
-            cancellationToken
-        );
-
-        primaryPatient.CloseAccount(hasPendingAppointments);
-        familyMembers.ForEach(member => member.RemoveFamilyMember(request.UserId));
-
-        await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }

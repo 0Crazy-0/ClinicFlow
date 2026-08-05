@@ -515,7 +515,7 @@ public static class DbSeeder
 
         // Close 5 self patient accounts.
         for (int i = 100; i < 105; i++)
-            patients[i].CloseAccount(hasPendingAppointments: false);
+            patients[i].CloseAccount();
 
         // Remove 8 family member patients.
         for (int i = 120; i < 128; i++)

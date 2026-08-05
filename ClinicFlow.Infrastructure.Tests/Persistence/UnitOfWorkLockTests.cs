@@ -409,6 +409,349 @@ public class UnitOfWorkLockTests : IAsyncLifetime
         await task1;
     }
 
+    [Fact]
+    public async Task ExecuteWithLockAsync_ShouldExecuteVoidOperation_WithSingleGuidLockKey()
+    {
+        // Arrange
+        var lockKey = Guid.CreateVersion7();
+        var wasExecuted = false;
+
+        // Act
+        await _sut.ExecuteWithLockAsync(
+            lockKey,
+            _ =>
+            {
+                wasExecuted = true;
+                return Task.CompletedTask;
+            },
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        wasExecuted.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task ExecuteWithLockAsync_ShouldCommitDatabaseChanges_WhenVoidOperationSucceeds()
+    {
+        // Arrange
+        var lockKey = Guid.CreateVersion7();
+        var user = CreateUser();
+
+        // Act
+        await _sut.ExecuteWithLockAsync(
+            lockKey,
+            async cancellationToken =>
+            {
+                Context.Users.Add(user);
+                await _sut.SaveChangesAsync(cancellationToken);
+            },
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        var dbUser = await Context
+            .Users.AsNoTracking()
+            .FirstOrDefaultAsync(u => u.Id == user.Id, TestContext.Current.CancellationToken);
+
+        dbUser.Should().BeEquivalentTo(user);
+    }
+
+    [Fact]
+    public async Task ExecuteWithLockAsync_ShouldRollbackDatabaseChanges_WhenVoidOperationThrowsException()
+    {
+        // Arrange
+        var lockKey = Guid.CreateVersion7();
+        var user = CreateUser();
+
+        // Act
+        var act = () =>
+            _sut.ExecuteWithLockAsync(
+                lockKey,
+                async cancellationToken =>
+                {
+                    Context.Users.Add(user);
+                    await _sut.SaveChangesAsync(cancellationToken);
+                    throw new InvalidOperationException();
+                },
+                TestContext.Current.CancellationToken
+            );
+
+        // Assert
+        await act.Should().ThrowAsync<InvalidOperationException>();
+
+        var dbUser = await Context
+            .Users.AsNoTracking()
+            .FirstOrDefaultAsync(u => u.Id == user.Id, TestContext.Current.CancellationToken);
+
+        dbUser.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task ExecuteWithLockAsync_ShouldDeferDomainEvents_UntilTransactionCommits_ForVoidOperation()
+    {
+        // Arrange
+        var lockKey = Guid.CreateVersion7();
+        var user = CreateUser();
+
+        var domainEvent = new TestDomainEvent();
+        user.AddDomainEvent(domainEvent);
+
+        Context.Users.Add(user);
+
+        var wasPublishedDuringSave = false;
+
+        // Act
+        await _sut.ExecuteWithLockAsync(
+            lockKey,
+            async cancellationToken =>
+            {
+                await _sut.SaveChangesAsync(cancellationToken);
+
+                wasPublishedDuringSave = _publisherMock.Invocations.Count > 0;
+            },
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        wasPublishedDuringSave.Should().BeFalse();
+
+        _publisherMock.Verify(
+            x =>
+                x.Publish(
+                    It.Is<INotification>(n =>
+                        n is DomainEventNotification<TestDomainEvent>
+                        && ((DomainEventNotification<TestDomainEvent>)n).DomainEvent == domainEvent
+                    ),
+                    TestContext.Current.CancellationToken
+                ),
+            Times.Once
+        );
+    }
+
+    [Fact]
+    public async Task ExecuteWithLockAsync_ShouldNotPublishDomainEvents_WhenVoidOperationFails()
+    {
+        // Arrange
+        var lockKey = Guid.CreateVersion7();
+        var user = CreateUser();
+
+        var domainEvent = new TestDomainEvent();
+        user.AddDomainEvent(domainEvent);
+
+        Context.Users.Add(user);
+
+        // Act
+        var act = () =>
+            _sut.ExecuteWithLockAsync(
+                lockKey,
+                async cancellationToken =>
+                {
+                    await _sut.SaveChangesAsync(cancellationToken);
+                    throw new InvalidOperationException();
+                },
+                TestContext.Current.CancellationToken
+            );
+
+        // Assert
+        await act.Should().ThrowAsync<InvalidOperationException>();
+
+        _publisherMock.Verify(
+            x => x.Publish(It.IsAny<INotification>(), It.IsAny<CancellationToken>()),
+            Times.Never
+        );
+    }
+
+    [Fact]
+    public async Task ExecuteWithLockAsync_ShouldClearLeftoverPendingNotifications_FromPreviousFailedOperations_ForVoidOperation()
+    {
+        // Arrange
+        var lockKey1 = Guid.CreateVersion7();
+        var lockKey2 = Guid.CreateVersion7();
+        var user1 = CreateUser();
+
+        var domainEvent1 = new TestDomainEvent();
+        user1.AddDomainEvent(domainEvent1);
+
+        Context.Users.Add(user1);
+
+        var failedAct = () =>
+            _sut.ExecuteWithLockAsync(
+                lockKey1,
+                async cancellationToken =>
+                {
+                    await _sut.SaveChangesAsync(cancellationToken);
+                    throw new InvalidOperationException();
+                },
+                TestContext.Current.CancellationToken
+            );
+
+        await failedAct.Should().ThrowAsync<InvalidOperationException>();
+
+        _publisherMock.Verify(
+            x => x.Publish(It.IsAny<INotification>(), It.IsAny<CancellationToken>()),
+            Times.Never
+        );
+
+        // Act
+        await _sut.ExecuteWithLockAsync(
+            lockKey2,
+            _ => Task.CompletedTask,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        _publisherMock.Verify(
+            x => x.Publish(It.IsAny<INotification>(), It.IsAny<CancellationToken>()),
+            Times.Never
+        );
+    }
+
+    [Fact]
+    public async Task ExecuteWithLockAsync_ShouldClearPendingNotifications_AfterPublishing_ForVoidOperation()
+    {
+        // Arrange
+        var lockKey1 = Guid.CreateVersion7();
+        var lockKey2 = Guid.CreateVersion7();
+        var user = CreateUser();
+
+        var domainEvent = new TestDomainEvent();
+        user.AddDomainEvent(domainEvent);
+
+        Context.Users.Add(user);
+
+        await _sut.ExecuteWithLockAsync(
+            lockKey1,
+            async cancellationToken =>
+            {
+                await _sut.SaveChangesAsync(cancellationToken);
+            },
+            TestContext.Current.CancellationToken
+        );
+
+        _publisherMock.Verify(
+            x => x.Publish(It.IsAny<INotification>(), It.IsAny<CancellationToken>()),
+            Times.Once
+        );
+
+        // Act
+        await _sut.ExecuteWithLockAsync(
+            lockKey2,
+            _ => Task.CompletedTask,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        _publisherMock.Verify(
+            x => x.Publish(It.IsAny<INotification>(), It.IsAny<CancellationToken>()),
+            Times.Once
+        );
+    }
+
+    [Fact]
+    public async Task ExecuteWithLockAsync_ShouldBlockConcurrentExecution_WhenSameLockKeyIsUsed_ForVoidOperation()
+    {
+        // Arrange
+        var lockKey = Guid.CreateVersion7();
+
+        using var secondaryContext = CreateSecondaryDbContext();
+
+        var secondaryPublisherMock = new Mock<IPublisher>();
+        var secondarySut = new UnitOfWork(secondaryContext, secondaryPublisherMock.Object);
+
+        var task1Started = new TaskCompletionSource();
+        var task1Release = new TaskCompletionSource();
+        var task2Executed = false;
+
+        // Act
+        var task1 = _sut.ExecuteWithLockAsync(
+            lockKey,
+            async cancellationToken =>
+            {
+                task1Started.SetResult();
+                await task1Release.Task;
+            },
+            TestContext.Current.CancellationToken
+        );
+
+        await task1Started.Task;
+
+        var task2 = Task.Run(
+            async () =>
+            {
+                await secondarySut.ExecuteWithLockAsync(
+                    lockKey,
+                    _ =>
+                    {
+                        task2Executed = true;
+                        return Task.CompletedTask;
+                    },
+                    TestContext.Current.CancellationToken
+                );
+            },
+            TestContext.Current.CancellationToken
+        );
+
+        await Task.Delay(150, TestContext.Current.CancellationToken);
+
+        // Assert
+        task2Executed.Should().BeFalse();
+
+        task1Release.SetResult();
+        await task1;
+        await task2;
+
+        task2Executed.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task ExecuteWithLockAsync_ShouldAllowConcurrentExecution_WhenDifferentLockKeysAreUsed_ForVoidOperation()
+    {
+        // Arrange
+        var lockKey1 = Guid.CreateVersion7();
+        var lockKey2 = Guid.CreateVersion7();
+
+        using var secondaryContext = CreateSecondaryDbContext();
+
+        var secondaryPublisherMock = new Mock<IPublisher>();
+        var secondarySut = new UnitOfWork(secondaryContext, secondaryPublisherMock.Object);
+
+        var task1Started = new TaskCompletionSource();
+        var task1Release = new TaskCompletionSource();
+        var task2Executed = false;
+
+        var task1 = _sut.ExecuteWithLockAsync(
+            lockKey1,
+            async cancellationToken =>
+            {
+                task1Started.SetResult();
+                await task1Release.Task;
+            },
+            TestContext.Current.CancellationToken
+        );
+
+        await task1Started.Task;
+
+        // Act
+        var task2 = secondarySut.ExecuteWithLockAsync(
+            lockKey2,
+            _ =>
+            {
+                task2Executed = true;
+                return Task.CompletedTask;
+            },
+            TestContext.Current.CancellationToken
+        );
+
+        await task2;
+
+        // Assert
+        task2Executed.Should().BeTrue();
+
+        task1Release.SetResult();
+        await task1;
+    }
+
     private ApplicationDbContext CreateSecondaryDbContext()
     {
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()

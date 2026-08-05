@@ -2,8 +2,8 @@ using AwesomeAssertions;
 using ClinicFlow.Application.Patients.Commands.ClosePatientAccount;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
-using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Base;
+using ClinicFlow.Domain.Exceptions.Patients;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.ValueObjects;
@@ -26,6 +26,23 @@ public class ClosePatientAccountCommandHandlerTests
         _appointmentRepositoryMock = new Mock<IAppointmentRepository>();
         _unitOfWorkMock = new Mock<IUnitOfWork>();
         _fakeTime = new FakeTimeProvider();
+
+        _unitOfWorkMock
+            .Setup(x =>
+                x.ExecuteWithLockAsync(
+                    It.IsAny<Guid>(),
+                    It.IsAny<Func<CancellationToken, Task>>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .Returns(
+                (
+                    Guid _,
+                    Func<CancellationToken, Task> operation,
+                    CancellationToken cancellationToken
+                ) => operation(cancellationToken)
+            );
+
         _sut = new ClosePatientAccountCommandHandler(
             _patientRepositoryMock.Object,
             _appointmentRepositoryMock.Object,
@@ -34,7 +51,7 @@ public class ClosePatientAccountCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ShouldCloseAccountAndRemoveFamilyMembers_WhenNoPendingAppointments()
+    public async Task Handle_ShouldCloseAccountSuccessfully_WhenNoFamilyMembersAndNoPendingAppointments()
     {
         // Arrange
         var userId = Guid.CreateVersion7();
@@ -47,65 +64,69 @@ public class ClosePatientAccountCommandHandlerTests
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
-        var familyMember = Patient.CreateFamilyMember(
-            userId,
-            PersonName.Create("Child User"),
-            PatientRelationship.Child,
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-5)),
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
-
-        var patients = new List<Patient> { primaryPatient, familyMember };
-
-        _patientRepositoryMock
-            .Setup(x => x.GetAllByUserIdAsync(userId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(patients);
-
         _appointmentRepositoryMock
             .Setup(x => x.HasActiveAppointmentsForUserAsync(userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(false);
+
+        _patientRepositoryMock
+            .Setup(x => x.HasActiveFamilyMembersAsync(userId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(false);
+
+        _patientRepositoryMock
+            .Setup(x => x.GetSelfPatientByUserIdAsync(userId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(primaryPatient);
 
         // Act
         await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         primaryPatient.IsDeleted.Should().BeTrue();
-        familyMember.IsDeleted.Should().BeTrue();
 
+        _unitOfWorkMock.Verify(
+            x =>
+                x.ExecuteWithLockAsync(
+                    command.UserId,
+                    It.IsAny<Func<CancellationToken, Task>>(),
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Once
+        );
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
-    public async Task Handle_ShouldCloseAccountSuccessfully_WhenNoFamilyMembers()
+    public async Task Handle_ShouldThrowActiveFamilyMembersExistException_WhenActiveFamilyMembersExist()
     {
         // Arrange
         var userId = Guid.CreateVersion7();
         var command = new ClosePatientAccountCommand(userId);
 
-        var primaryPatient = Patient.CreateSelf(
-            userId,
-            PersonName.Create("Primary User"),
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
-
-        var patients = new List<Patient> { primaryPatient };
-
-        _patientRepositoryMock
-            .Setup(x => x.GetAllByUserIdAsync(userId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(patients);
-
         _appointmentRepositoryMock
             .Setup(x => x.HasActiveAppointmentsForUserAsync(userId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(false);
 
+        _patientRepositoryMock
+            .Setup(x => x.HasActiveFamilyMembersAsync(userId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
+
         // Act
-        await _sut.Handle(command, TestContext.Current.CancellationToken);
+        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
-        primaryPatient.IsDeleted.Should().BeTrue();
+        await act.Should()
+            .ThrowAsync<ActiveFamilyMembersExistException>()
+            .WithMessage(DomainErrors.Patient.CannotCloseAccountWithActiveFamilyMembers);
 
-        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        _unitOfWorkMock.Verify(
+            x =>
+                x.ExecuteWithLockAsync(
+                    It.IsAny<Guid>(),
+                    It.IsAny<Func<CancellationToken, Task>>(),
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Once
+        );
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
@@ -114,19 +135,6 @@ public class ClosePatientAccountCommandHandlerTests
         // Arrange
         var userId = Guid.CreateVersion7();
         var command = new ClosePatientAccountCommand(userId);
-
-        var primaryPatient = Patient.CreateSelf(
-            userId,
-            PersonName.Create("Primary User"),
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
-
-        var patients = new List<Patient> { primaryPatient };
-
-        _patientRepositoryMock
-            .Setup(x => x.GetAllByUserIdAsync(userId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(patients);
 
         _appointmentRepositoryMock
             .Setup(x => x.HasActiveAppointmentsForUserAsync(userId, It.IsAny<CancellationToken>()))
@@ -140,6 +148,52 @@ public class ClosePatientAccountCommandHandlerTests
             .ThrowAsync<DomainValidationException>()
             .WithMessage(DomainErrors.Patient.CannotCloseAccountWithPendingAppointments);
 
+        _unitOfWorkMock.Verify(
+            x =>
+                x.ExecuteWithLockAsync(
+                    It.IsAny<Guid>(),
+                    It.IsAny<Func<CancellationToken, Task>>(),
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Once
+        );
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldThrowEntityNotFoundException_WhenSelfPatientDoesNotExist()
+    {
+        // Arrange
+        var userId = Guid.CreateVersion7();
+        var command = new ClosePatientAccountCommand(userId);
+
+        _appointmentRepositoryMock
+            .Setup(x => x.HasActiveAppointmentsForUserAsync(userId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(false);
+
+        _patientRepositoryMock
+            .Setup(x => x.HasActiveFamilyMembersAsync(userId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(false);
+
+        _patientRepositoryMock
+            .Setup(x => x.GetSelfPatientByUserIdAsync(userId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Patient?)null);
+
+        // Act
+        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
+
+        // Assert
+        await act.Should().ThrowAsync<EntityNotFoundException>();
+
+        _unitOfWorkMock.Verify(
+            x =>
+                x.ExecuteWithLockAsync(
+                    It.IsAny<Guid>(),
+                    It.IsAny<Func<CancellationToken, Task>>(),
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Once
+        );
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 }

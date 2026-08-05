@@ -101,7 +101,7 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         // Arrange
         var patient = await CreateSelfPatientAsync();
 
-        patient.CloseAccount(false);
+        patient.CloseAccount();
 
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
@@ -147,7 +147,7 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         // Arrange
         var patient = await CreateSelfPatientAsync();
 
-        patient.CloseAccount(false);
+        patient.CloseAccount();
 
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
@@ -235,7 +235,7 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         // Arrange
         var patient = await CreateSelfPatientAsync();
 
-        patient.CloseAccount(false);
+        patient.CloseAccount();
 
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
@@ -429,6 +429,60 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
     }
 
     [Fact]
+    public async Task HasActiveFamilyMembersAsync_ShouldReturnTrue_WhenUserHasActiveFamilyMember()
+    {
+        // Arrange
+        var user = await CreateUserAsync();
+        await CreateFamilyMemberPatientAsync(user.Id);
+
+        // Act
+        var result = await _sut.HasActiveFamilyMembersAsync(
+            user.Id,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task HasActiveFamilyMembersAsync_ShouldReturnFalse_WhenFamilyMemberIsSoftDeleted()
+    {
+        // Arrange
+        var user = await CreateUserAsync();
+        var familyMember = await CreateFamilyMemberPatientAsync(user.Id);
+
+        familyMember.RemoveFamilyMember(user.Id);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var result = await _sut.HasActiveFamilyMembersAsync(
+            user.Id,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task HasActiveFamilyMembersAsync_ShouldReturnFalse_WhenUserHasOnlySelfPatient()
+    {
+        // Arrange
+        var user = await CreateUserAsync();
+        await CreateSelfPatientAsync(user.Id);
+
+        // Act
+        var result = await _sut.HasActiveFamilyMembersAsync(
+            user.Id,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [Fact]
     public async Task GetIncludingDeletedByNameAndDobAsync_ShouldReturnPatient_WhenExistsAndActive()
     {
         // Arrange
@@ -452,7 +506,7 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         // Arrange
         var patient = await CreateSelfPatientAsync();
 
-        patient.CloseAccount(false);
+        patient.CloseAccount();
 
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 

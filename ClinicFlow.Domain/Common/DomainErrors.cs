@@ -99,6 +99,8 @@ public static class DomainErrors
         public const string UnauthorizedAccess = "PATIENT_UNAUTHORIZED_ACCESS";
         public const string FamilyMemberLimitExceeded = "PATIENT_FAMILY_MEMBER_LIMIT_EXCEEDED";
         public const string PrimaryPatientRequired = "PRIMARY_PATIENT_REQUIRED";
+        public const string CannotCloseAccountWithActiveFamilyMembers =
+            "CANNOT_CLOSE_ACCOUNT_WITH_ACTIVE_FAMILY_MEMBERS";
     }
 
     public static class Doctor

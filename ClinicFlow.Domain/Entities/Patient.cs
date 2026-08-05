@@ -100,17 +100,11 @@ public class Patient : SoftDeletableEntity
         MarkAsDeleted();
     }
 
-    /// <param name="hasPendingAppointments">Indicates if the patient has any active, future appointments.</param>
-    public void CloseAccount(bool hasPendingAppointments)
+    public void CloseAccount()
     {
         if (RelationshipToUser is not PatientRelationship.Self)
             throw new DomainValidationException(
                 DomainErrors.Patient.OnlyPrimaryUserCanCloseAccount
-            );
-
-        if (hasPendingAppointments)
-            throw new DomainValidationException(
-                DomainErrors.Patient.CannotCloseAccountWithPendingAppointments
             );
 
         MarkAsDeleted();

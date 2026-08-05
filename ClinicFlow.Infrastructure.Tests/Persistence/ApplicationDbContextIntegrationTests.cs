@@ -33,7 +33,7 @@ public class ApplicationDbContextIntegrationTests(PostgresFixture fixture) : IAs
         var user = await CreateUserAsync();
         var patient = await CreatePatientAsync(user.Id);
 
-        patient.CloseAccount(hasPendingAppointments: false);
+        patient.CloseAccount();
         await _sut.SaveChangesAsync(TestContext.Current.CancellationToken);
         _sut.ChangeTracker.Clear();
 
@@ -71,7 +71,7 @@ public class ApplicationDbContextIntegrationTests(PostgresFixture fixture) : IAs
         // Arrange
         var user = await CreateUserAsync();
         var patient = await CreatePatientAsync(user.Id);
-        patient.CloseAccount(hasPendingAppointments: false);
+        patient.CloseAccount();
 
         await _sut.SaveChangesAsync(TestContext.Current.CancellationToken);
 
