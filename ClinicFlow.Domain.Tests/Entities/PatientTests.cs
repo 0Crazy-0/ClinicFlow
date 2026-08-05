@@ -308,11 +308,10 @@ public class PatientTests
         // Arrange
         var patient = CreateFamilyMember();
 
-        // Act
-        var act = () => patient.CloseAccount();
-
-        // Assert
-        act.Should()
+        //Act && Assert
+        patient
+            .Invoking(p => p.CloseAccount())
+            .Should()
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.Patient.OnlyPrimaryUserCanCloseAccount);
     }
