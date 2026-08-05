@@ -208,7 +208,7 @@ var appointment =
 ### Conditional Logic Prohibition
 **Branching logic that decides between multiple business outcomes must live in the Domain layer.** The Application layer only orchestrates: fetch → delegate to domain → persist.
 
-Guard clauses are the accepted exception to this rule. A guard clause evaluates a single pre-fetched condition (a `null` check on an entity, or a `bool` returned by a repository) and either throws a domain exception or lets execution continue. It does not branch into multiple business outcomes, it only decides whether to proceed or fail fast.
+Guard clauses are the accepted exception to this rule. A guard clause evaluates a single condition, once, (a `null` check on an entity, or a `bool` returned by a repository, evaluated directly) and either throws a domain exception or lets execution continue. It does not branch into multiple business outcomes, it only decides whether to proceed or fail fast.
 
 ```csharp
 // ✅ Allowed: single condition, evaluated once, throws or continues
@@ -304,7 +304,7 @@ internal void MarkAsNoShow() { }
 ### Prohibited Actions
 
 - Never install packages in `ClinicFlow.Domain`.
-- Never add branching logic (multiple business outcomes) in the Application layer handlers. Single-condition guard clauses that throw a domain exception are allowed (see [Conditional Logic Prohibition](#conditional-logic-prohibition)).
+- Never add branching logic (multiple business outcomes) in the Application layer handlers. Single-condition guard clauses are allowed: they either throw a domain exception or let execution continue (see [Conditional Logic Prohibition](#conditional-logic-prohibition)).
 - Never create test helpers with conditional logic.
 - Never use `DateTime.UtcNow` / `DateTimeOffset.UtcNow` directly. Always use `TimeProvider`.
 - Never skip writing tests for new features.
