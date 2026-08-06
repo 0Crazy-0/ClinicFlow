@@ -100,6 +100,30 @@ public class Patient : SoftDeletableEntity
         return new Patient(userId, fullName, relationshipToUser, dateOfBirth);
     }
 
+    public void LeaveFamilyAccount(Guid initiatorUserId, DateOnly referenceDate)
+    {
+        if (UserId != initiatorUserId)
+            throw new DomainValidationException(DomainErrors.Patient.UnauthorizedRemoval);
+
+        if (RelationshipToUser is PatientRelationship.Self)
+            throw new DomainValidationException(DomainErrors.Patient.CannotLeaveOwnAccount);
+
+        if (GetAge(referenceDate) < MinimumAgeForFamilyAccountAutonomy)
+            throw new DomainValidationException(
+                DomainErrors.Patient.UnderageCannotLeaveFamilyAccount
+            );
+
+        if (OriginalUserId is not null)
+        {
+            UserId = OriginalUserId.Value;
+            RelationshipToUser = PatientRelationship.Self;
+            OriginalUserId = null;
+            return;
+        }
+
+        AddDomainEvent(new PatientRequiresOwnAccountToLeaveFamilyEvent(Id));
+    }
+
     public void RemoveFamilyMember(Guid initiatorUserId, PatientRelationship initiatorRelationship)
     {
         if (UserId != initiatorUserId)
