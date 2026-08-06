@@ -1,3 +1,4 @@
+using System.Reflection;
 using AwesomeAssertions;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
@@ -240,7 +241,7 @@ public class PatientTests
     }
 
     [Fact]
-    public void RemoveFamilyMember_ShouldMarkAsDeleted_WhenPatientIsFamilyMember()
+    public void RemoveFamilyMember_ShouldMarkAsDeleted_WhenInitiatorIsSelfAndPatientHasNoOriginalUserId()
     {
         // Arrange
         var userId = Guid.CreateVersion7();
@@ -254,10 +255,59 @@ public class PatientTests
         );
 
         // Act
-        patient.RemoveFamilyMember(userId);
+        patient.RemoveFamilyMember(userId, PatientRelationship.Self);
 
         // Assert
         patient.IsDeleted.Should().BeTrue();
+    }
+
+    [Fact]
+    public void RemoveFamilyMember_ShouldRestoreOriginalUser_WhenInitiatorIsSelfAndPatientHasOriginalUserId()
+    {
+        // Arrange
+        var familyUserId = Guid.CreateVersion7();
+        var originalUserId = Guid.CreateVersion7();
+
+        var patient = Patient.CreateFamilyMember(
+            familyUserId,
+            PersonName.Create("Family Member"),
+            PatientRelationship.Spouse,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-25)),
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        SetOriginalUserId(patient, originalUserId);
+
+        // Act
+        patient.RemoveFamilyMember(familyUserId, PatientRelationship.Self);
+
+        // Assert
+        patient.UserId.Should().Be(originalUserId);
+        patient.RelationshipToUser.Should().Be(PatientRelationship.Self);
+        patient.OriginalUserId.Should().BeNull();
+        patient.IsDeleted.Should().BeFalse();
+    }
+
+    [Fact]
+    public void RemoveFamilyMember_ShouldThrowException_WhenInitiatorRelationshipIsNotSelf()
+    {
+        // Arrange
+        var userId = Guid.CreateVersion7();
+
+        var patient = Patient.CreateFamilyMember(
+            userId,
+            PersonName.Create("Family Member"),
+            PatientRelationship.Child,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10)),
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        // Act & Assert
+        patient
+            .Invoking(p => p.RemoveFamilyMember(userId, PatientRelationship.Child))
+            .Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Patient.UnauthorizedRemoval);
     }
 
     [Fact]
@@ -266,24 +316,24 @@ public class PatientTests
         // Arrange
         var patient = CreatePatient();
 
-        //Act && Assert
+        // Act & Assert
         patient
-            .Invoking(p => p.RemoveFamilyMember(patient.UserId))
+            .Invoking(p => p.RemoveFamilyMember(patient.UserId, PatientRelationship.Self))
             .Should()
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.Patient.CannotRemovePrimaryUser);
     }
 
     [Fact]
-    public void RemoveFamilyMember_ShouldThrowException_WhenInitiatorIsUnauthorized()
+    public void RemoveFamilyMember_ShouldThrowException_WhenInitiatorUserIdDoesNotMatch()
     {
         // Arrange
         var patient = CreateFamilyMember();
         var anotherUserId = Guid.CreateVersion7();
 
-        //Act && Assert
+        // Act & Assert
         patient
-            .Invoking(p => p.RemoveFamilyMember(anotherUserId))
+            .Invoking(p => p.RemoveFamilyMember(anotherUserId, PatientRelationship.Self))
             .Should()
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.Patient.UnauthorizedRemoval);
@@ -351,7 +401,7 @@ public class PatientTests
     {
         // Arrange
         var patient = CreateFamilyMember();
-        patient.RemoveFamilyMember(patient.UserId);
+        patient.RemoveFamilyMember(patient.UserId, PatientRelationship.Self);
 
         // Act
         patient.ReactivateAsFamilyMember(PatientRelationship.Sibling);
@@ -366,7 +416,7 @@ public class PatientTests
     {
         // Arrange
         var patient = CreateFamilyMember();
-        patient.RemoveFamilyMember(patient.UserId);
+        patient.RemoveFamilyMember(patient.UserId, PatientRelationship.Self);
         patient.ClearDomainEvents();
 
         // Act
@@ -381,7 +431,7 @@ public class PatientTests
     {
         // Arrange
         var patient = CreateFamilyMember();
-        patient.RemoveFamilyMember(patient.UserId);
+        patient.RemoveFamilyMember(patient.UserId, PatientRelationship.Self);
 
         // Act
         var act = () => patient.ReactivateAsFamilyMember(PatientRelationship.Self);
@@ -550,4 +600,14 @@ public class PatientTests
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
+
+    private static void SetOriginalUserId(Patient patient, Guid originalUserId)
+    {
+        var property = typeof(Patient).GetProperty(
+            nameof(Patient.OriginalUserId),
+            BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic
+        );
+
+        property?.SetValue(patient, originalUserId);
+    }
 }

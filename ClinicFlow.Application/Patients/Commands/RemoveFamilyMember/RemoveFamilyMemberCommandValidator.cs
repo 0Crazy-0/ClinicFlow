@@ -9,6 +9,11 @@ public sealed class RemoveFamilyMemberCommandValidator
     public RemoveFamilyMemberCommandValidator()
     {
         RuleFor(x => x.PatientId).NotEmpty().WithMessage(DomainErrors.Validation.InvalidValue);
-        RuleFor(x => x.UserId).NotEmpty().WithMessage(DomainErrors.Validation.InvalidValue);
+        RuleFor(x => x.InitiatorUserId)
+            .NotEmpty()
+            .WithMessage(DomainErrors.Validation.InvalidValue);
+        RuleFor(x => x.InitiatorRelationship)
+            .IsInEnum()
+            .WithMessage(DomainErrors.Validation.InvalidEnumValue);
     }
 }

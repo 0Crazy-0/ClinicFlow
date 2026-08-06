@@ -519,7 +519,7 @@ public static class DbSeeder
 
         // Remove 8 family member patients.
         for (int i = 120; i < 128; i++)
-            patients[i].RemoveFamilyMember(patients[i].UserId);
+            patients[i].RemoveFamilyMember(patients[i].UserId, PatientRelationship.Self);
 
         await context.Patients.AddRangeAsync(patients, cancellationToken);
         await context.SaveChangesAsync(cancellationToken);

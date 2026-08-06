@@ -23,7 +23,7 @@ public sealed class RemoveFamilyMemberCommandHandler(
                 request.PatientId
             );
 
-        patient.RemoveFamilyMember(request.UserId);
+        patient.RemoveFamilyMember(request.InitiatorUserId, request.InitiatorRelationship);
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }

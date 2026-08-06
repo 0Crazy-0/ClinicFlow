@@ -13,7 +13,18 @@ namespace ClinicFlow.Domain.Entities;
 /// </summary>
 public class Patient : SoftDeletableEntity
 {
-    public Guid UserId { get; init; }
+    private const int MinimumAgeForFamilyAccountAutonomy = 18;
+
+    public Guid UserId { get; private set; }
+
+    /// <summary>
+    /// Stores the original user identifier associated with this patient before joining a family account.
+    /// </summary>
+    /// <remarks>
+    /// Null when the patient was created directly as a family member without an independent account.
+    /// Used during account removal or departure to restore original primary account ownership.
+    /// </remarks>
+    public Guid? OriginalUserId { get; private set; }
 
     public PersonName FullName { get; private set; } = null!;
 
@@ -89,13 +100,24 @@ public class Patient : SoftDeletableEntity
         return new Patient(userId, fullName, relationshipToUser, dateOfBirth);
     }
 
-    public void RemoveFamilyMember(Guid initiatorUserId)
+    public void RemoveFamilyMember(Guid initiatorUserId, PatientRelationship initiatorRelationship)
     {
         if (UserId != initiatorUserId)
             throw new DomainValidationException(DomainErrors.Patient.UnauthorizedRemoval);
 
+        if (initiatorRelationship is not PatientRelationship.Self)
+            throw new DomainValidationException(DomainErrors.Patient.UnauthorizedRemoval);
+
         if (RelationshipToUser is PatientRelationship.Self)
             throw new DomainValidationException(DomainErrors.Patient.CannotRemovePrimaryUser);
+
+        if (OriginalUserId is not null)
+        {
+            UserId = OriginalUserId.Value;
+            RelationshipToUser = PatientRelationship.Self;
+            OriginalUserId = null;
+            return;
+        }
 
         MarkAsDeleted();
     }

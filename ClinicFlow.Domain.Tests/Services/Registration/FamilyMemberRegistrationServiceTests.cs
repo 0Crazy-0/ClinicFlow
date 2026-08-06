@@ -173,7 +173,7 @@ public class FamilyMemberRegistrationServiceTests
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
-        patient.RemoveFamilyMember(userId);
+        patient.RemoveFamilyMember(userId, PatientRelationship.Self);
 
         return patient;
     }
