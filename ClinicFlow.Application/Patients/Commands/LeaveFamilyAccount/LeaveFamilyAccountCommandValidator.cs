@@ -1,12 +1,12 @@
 using ClinicFlow.Domain.Common;
 using FluentValidation;
 
-namespace ClinicFlow.Application.Patients.Commands.RemoveFamilyMember;
+namespace ClinicFlow.Application.Patients.Commands.LeaveFamilyAccount;
 
-public sealed class RemoveFamilyMemberCommandValidator
-    : AbstractValidator<RemoveFamilyMemberCommand>
+public sealed class LeaveFamilyAccountCommandValidator
+    : AbstractValidator<LeaveFamilyAccountCommand>
 {
-    public RemoveFamilyMemberCommandValidator()
+    public LeaveFamilyAccountCommandValidator()
     {
         RuleFor(x => x.PatientId).NotEmpty().WithMessage(DomainErrors.Validation.InvalidValue);
         RuleFor(x => x.InitiatorUserId)

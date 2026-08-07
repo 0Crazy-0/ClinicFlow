@@ -23,7 +23,18 @@ public sealed class RemoveFamilyMemberCommandHandler(
                 request.PatientId
             );
 
-        patient.RemoveFamilyMember(request.UserId);
+        var initiatorPatient =
+            await patientRepository.GetSelfPatientByUserIdAsync(
+                request.InitiatorUserId,
+                cancellationToken
+            )
+            ?? throw new EntityNotFoundException(
+                DomainErrors.General.NotFound,
+                nameof(Patient),
+                request.InitiatorUserId
+            );
+
+        patient.RemoveFamilyMember(request.InitiatorUserId, initiatorPatient.RelationshipToUser);
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }

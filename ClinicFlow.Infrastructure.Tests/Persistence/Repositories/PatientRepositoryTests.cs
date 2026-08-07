@@ -318,7 +318,7 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         var active = await CreateSelfPatientAsync(user.Id);
         var deleted = await CreateFamilyMemberPatientAsync(user.Id);
 
-        deleted.RemoveFamilyMember(deleted.UserId);
+        deleted.RemoveFamilyMember(deleted.UserId, PatientRelationship.Self);
 
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
@@ -377,7 +377,7 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
 
         var deletedChild = await CreateFamilyMemberPatientAsync(user.Id);
 
-        deletedChild.RemoveFamilyMember(deletedChild.UserId);
+        deletedChild.RemoveFamilyMember(deletedChild.UserId, PatientRelationship.Self);
 
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
@@ -452,7 +452,7 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         var user = await CreateUserAsync();
         var familyMember = await CreateFamilyMemberPatientAsync(user.Id);
 
-        familyMember.RemoveFamilyMember(user.Id);
+        familyMember.RemoveFamilyMember(user.Id, PatientRelationship.Self);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Act

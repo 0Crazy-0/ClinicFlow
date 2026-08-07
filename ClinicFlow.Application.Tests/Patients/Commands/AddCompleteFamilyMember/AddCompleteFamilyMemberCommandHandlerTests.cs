@@ -134,7 +134,7 @@ public class AddCompleteFamilyMemberCommandHandlerTests
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
-        deletedMember.RemoveFamilyMember(command.UserId);
+        deletedMember.RemoveFamilyMember(command.UserId, PatientRelationship.Self);
 
         _patientRepositoryMock
             .Setup(x =>
