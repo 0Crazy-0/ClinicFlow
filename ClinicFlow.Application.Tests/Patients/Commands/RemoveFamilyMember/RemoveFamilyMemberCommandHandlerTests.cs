@@ -36,8 +36,7 @@ public class RemoveFamilyMemberCommandHandlerTests
         // Arrange
         var command = new RemoveFamilyMemberCommand(
             Guid.CreateVersion7(),
-            Guid.CreateVersion7(),
-            PatientRelationship.Self
+            Guid.CreateVersion7()
         );
 
         var familyMember = Patient.CreateFamilyMember(
@@ -48,9 +47,20 @@ public class RemoveFamilyMemberCommandHandlerTests
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
+        var initiatorPatient = Patient.CreateSelf(
+            command.InitiatorUserId,
+            PersonName.Create("Initiator User"),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
         _patientRepositoryMock
             .Setup(x => x.GetByIdAsync(command.PatientId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(familyMember);
+
+        _patientRepositoryMock
+            .Setup(x => x.GetSelfPatientByUserIdAsync(command.InitiatorUserId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(initiatorPatient);
 
         // Act
         await _sut.Handle(command, TestContext.Current.CancellationToken);
@@ -67,12 +77,48 @@ public class RemoveFamilyMemberCommandHandlerTests
         // Arrange
         var command = new RemoveFamilyMemberCommand(
             Guid.CreateVersion7(),
-            Guid.CreateVersion7(),
-            PatientRelationship.Self
+            Guid.CreateVersion7()
         );
 
         _patientRepositoryMock
             .Setup(x => x.GetByIdAsync(command.PatientId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Patient?)null);
+
+        // Act
+        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
+
+        // Assert
+        var exceptionAssertion = await act.Should()
+            .ThrowAsync<EntityNotFoundException>()
+            .WithMessage(DomainErrors.General.NotFound);
+        exceptionAssertion.Which.EntityName.Should().Be(nameof(Patient));
+
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldThrowException_WhenInitiatorPatientNotFound()
+    {
+        // Arrange
+        var command = new RemoveFamilyMemberCommand(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7()
+        );
+
+        var familyMember = Patient.CreateFamilyMember(
+            command.InitiatorUserId,
+            PersonName.Create("Family Member"),
+            PatientRelationship.Child,
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10)),
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        _patientRepositoryMock
+            .Setup(x => x.GetByIdAsync(command.PatientId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(familyMember);
+
+        _patientRepositoryMock
+            .Setup(x => x.GetSelfPatientByUserIdAsync(command.InitiatorUserId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((Patient?)null);
 
         // Act

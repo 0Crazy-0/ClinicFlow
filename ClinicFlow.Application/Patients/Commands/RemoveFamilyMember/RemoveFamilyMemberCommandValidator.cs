@@ -12,8 +12,5 @@ public sealed class RemoveFamilyMemberCommandValidator
         RuleFor(x => x.InitiatorUserId)
             .NotEmpty()
             .WithMessage(DomainErrors.Validation.InvalidValue);
-        RuleFor(x => x.InitiatorRelationship)
-            .IsInEnum()
-            .WithMessage(DomainErrors.Validation.InvalidEnumValue);
     }
 }
