@@ -49,6 +49,7 @@ public sealed class FamilyMembership : SoftDeletableEntity
     {
         if (patientId == Guid.Empty)
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+
         if (userId == Guid.Empty)
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
 
@@ -67,8 +68,13 @@ public sealed class FamilyMembership : SoftDeletableEntity
     {
         if (patientId == Guid.Empty)
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+
         if (ownerUserId == Guid.Empty)
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+
+        if (!Enum.IsDefined(role))
+            throw new DomainValidationException(DomainErrors.Validation.InvalidEnumValue);
+
         if (role is PatientRelationship.Self)
             throw new DomainValidationException(DomainErrors.FamilyMembership.CannotBeSelf);
 
@@ -80,7 +86,7 @@ public sealed class FamilyMembership : SoftDeletableEntity
         if (Status is not FamilyMembershipStatus.Active)
             throw new DomainValidationException(DomainErrors.FamilyMembership.AlreadyTerminated);
 
-        if (referenceTime < StartedAt)
+        if (referenceTime <= StartedAt)
             throw new DomainValidationException(
                 DomainErrors.Validation.EndTimeMustBeAfterStartTime
             );
@@ -94,7 +100,7 @@ public sealed class FamilyMembership : SoftDeletableEntity
         if (Status is not FamilyMembershipStatus.Active)
             throw new DomainValidationException(DomainErrors.FamilyMembership.AlreadyTerminated);
 
-        if (referenceTime < StartedAt)
+        if (referenceTime <= StartedAt)
             throw new DomainValidationException(
                 DomainErrors.Validation.EndTimeMustBeAfterStartTime
             );
