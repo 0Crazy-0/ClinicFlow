@@ -195,10 +195,13 @@ public class FamilyMembershipTests
             PatientRelationship.Child,
             _fakeTime.GetUtcNow().UtcDateTime
         );
-        membership.Revoke(_fakeTime.GetUtcNow().UtcDateTime);
+        _fakeTime.Advance(TimeSpan.FromDays(1));
+
+        var actionTime = _fakeTime.GetUtcNow().UtcDateTime;
+        membership.Revoke(actionTime);
 
         // Act
-        var act = () => membership.Revoke(_fakeTime.GetUtcNow().UtcDateTime);
+        var act = () => membership.Revoke(actionTime);
 
         // Assert
         act.Should()
@@ -216,10 +219,13 @@ public class FamilyMembershipTests
             PatientRelationship.Child,
             _fakeTime.GetUtcNow().UtcDateTime
         );
-        membership.Leave(_fakeTime.GetUtcNow().UtcDateTime);
+        _fakeTime.Advance(TimeSpan.FromDays(1));
+
+        var actionTime = _fakeTime.GetUtcNow().UtcDateTime;
+        membership.Leave(actionTime);
 
         // Act
-        var act = () => membership.Revoke(_fakeTime.GetUtcNow().UtcDateTime);
+        var act = () => membership.Revoke(actionTime);
 
         // Assert
         act.Should()
@@ -302,11 +308,13 @@ public class FamilyMembershipTests
             PatientRelationship.Child,
             _fakeTime.GetUtcNow().UtcDateTime
         );
+        _fakeTime.Advance(TimeSpan.FromDays(1));
 
-        membership.Leave(_fakeTime.GetUtcNow().UtcDateTime);
+        var actionTime = _fakeTime.GetUtcNow().UtcDateTime;
+        membership.Leave(actionTime);
 
         // Act
-        var act = () => membership.Leave(_fakeTime.GetUtcNow().UtcDateTime);
+        var act = () => membership.Leave(actionTime);
 
         // Assert
         act.Should()
@@ -324,10 +332,13 @@ public class FamilyMembershipTests
             PatientRelationship.Child,
             _fakeTime.GetUtcNow().UtcDateTime
         );
-        membership.Revoke(_fakeTime.GetUtcNow().UtcDateTime);
+        _fakeTime.Advance(TimeSpan.FromDays(1));
+
+        var actionTime = _fakeTime.GetUtcNow().UtcDateTime;
+        membership.Revoke(actionTime);
 
         // Act
-        var act = () => membership.Leave(_fakeTime.GetUtcNow().UtcDateTime);
+        var act = () => membership.Leave(actionTime);
 
         // Assert
         act.Should()
