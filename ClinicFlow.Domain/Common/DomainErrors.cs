@@ -159,4 +159,10 @@ public static class DomainErrors
         public const string DetailAlreadyExists = "CLINICAL_DETAIL_ALREADY_EXISTS";
         public const string AppointmentNotInProgress = "APPOINTMENT_NOT_IN_PROGRESS";
     }
+
+    public static class FamilyMembership
+    {
+        public const string CannotBeSelf = "INVALID_FAMILY_RELATIONSHIP";
+        public const string AlreadyTerminated = "FAMILY_MEMBERSHIP_ALREADY_TERMINATED";
+    }
 }
