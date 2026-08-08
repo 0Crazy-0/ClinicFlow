@@ -128,6 +128,24 @@ public class FamilyMembershipTests
     }
 
     [Fact]
+    public void CreateFamilyMember_ShouldThrowException_WhenRoleIsInvalid()
+    {
+        // Arrange & Act
+        var act = () =>
+            FamilyMembership.CreateFamilyMember(
+                Guid.CreateVersion7(),
+                Guid.CreateVersion7(),
+                (PatientRelationship)999,
+                _fakeTime.GetUtcNow().UtcDateTime
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.InvalidEnumValue);
+    }
+
+    [Fact]
     public void CreateFamilyMember_ShouldThrowException_WhenRoleIsSelf()
     {
         // Arrange & Act
@@ -231,6 +249,27 @@ public class FamilyMembershipTests
     }
 
     [Fact]
+    public void Revoke_ShouldThrowException_WhenReferenceTimeIsEqualToStartedAt()
+    {
+        // Arrange
+        var startedAt = _fakeTime.GetUtcNow().UtcDateTime;
+        var membership = FamilyMembership.CreateFamilyMember(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            PatientRelationship.Child,
+            startedAt
+        );
+
+        // Act
+        var act = () => membership.Revoke(startedAt);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.EndTimeMustBeAfterStartTime);
+    }
+
+    [Fact]
     public void Leave_ShouldTransitionToLeft_WhenStatusIsActive()
     {
         // Arrange
@@ -310,6 +349,27 @@ public class FamilyMembershipTests
 
         // Act
         var act = () => membership.Leave(startedAt.AddSeconds(-1));
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.EndTimeMustBeAfterStartTime);
+    }
+
+    [Fact]
+    public void Leave_ShouldThrowException_WhenReferenceTimeIsEqualToStartedAt()
+    {
+        // Arrange
+        var startedAt = _fakeTime.GetUtcNow().UtcDateTime;
+        var membership = FamilyMembership.CreateFamilyMember(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            PatientRelationship.Child,
+            startedAt
+        );
+
+        // Act
+        var act = () => membership.Leave(startedAt);
 
         // Assert
         act.Should()
