@@ -14,6 +14,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<User> Users => Set<User>();
     public DbSet<Doctor> Doctors => Set<Doctor>();
     public DbSet<Patient> Patients => Set<Patient>();
+    public DbSet<FamilyMembership> FamilyMemberships => Set<FamilyMembership>();
     public DbSet<PatientPenalty> PatientPenalties => Set<PatientPenalty>();
     public DbSet<Appointment> Appointments => Set<Appointment>();
     public DbSet<AppointmentTypeDefinition> AppointmentTypes => Set<AppointmentTypeDefinition>();
