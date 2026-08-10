@@ -7,7 +7,7 @@ namespace ClinicFlow.Domain.Entities;
 /// <summary>
 /// Represents the temporal membership relationship between a user account and a patient profile.
 /// </summary>
-public sealed class FamilyMembership : SoftDeletableEntity
+public class FamilyMembership : BaseEntity
 {
     public Guid PatientId { get; private set; }
 
