@@ -2,7 +2,6 @@ using AwesomeAssertions;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
-using ClinicFlow.Domain.Events.Patients;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Args.Registration;
@@ -16,93 +15,89 @@ public class PrimaryProfileRegistrationServiceTests
     private readonly FakeTimeProvider _fakeTime = new();
 
     [Fact]
-    public void Register_ShouldCreateSelfProfile_WhenNoExistingProfile()
+    public void Register_ShouldCreatePatientAndSelfMembership_WhenNoExistingPatientOrMembership()
     {
         // Arrange
-        var args = CreateArgs(Guid.CreateVersion7());
+        var userId = Guid.CreateVersion7();
+        var args = CreateArgs(userId);
 
         // Act
-        var result = PrimaryProfileRegistrationService.Register(null, args);
+        var (patient, membership) = PrimaryProfileRegistrationService.Register(args);
 
         // Assert
-        result.Should().NotBeNull();
-        result.UserId.Should().Be(args.UserId);
-        result.FullName.Should().Be(args.FullName);
-        result.DateOfBirth.Should().Be(args.DateOfBirth);
-        result.RelationshipToUser.Should().Be(PatientRelationship.Self);
+        patient.FullName.Should().Be(args.FullName);
+        patient.DateOfBirth.Should().Be(args.DateOfBirth);
+
+        membership.PatientId.Should().Be(patient.Id);
+        membership.UserId.Should().Be(userId);
+        membership.Role.Should().Be(PatientRelationship.Self);
+        membership.Status.Should().Be(FamilyMembershipStatus.Active);
+        membership.StartedAt.Should().Be(args.ReferenceTime);
     }
 
     [Fact]
-    public void Register_ShouldThrowAlreadyExists_WhenActiveProfileExists()
+    public void Register_ShouldReusePatientAndCreateSelfMembership_WhenExistingPatientProvidedAndNotDeleted()
     {
         // Arrange
-        var existingProfile = Patient.CreateSelf(
-            Guid.CreateVersion7(),
+        var existingPatient = Patient.CreateProfile(
             PersonName.Create("Test Patient"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
-        var args = CreateArgs(existingProfile.UserId);
+
+        var userId = Guid.CreateVersion7();
+        var args = CreateArgs(userId) with { ExistingPatient = existingPatient };
 
         // Act
-        var act = () => PrimaryProfileRegistrationService.Register(existingProfile, args);
+        var (patient, membership) = PrimaryProfileRegistrationService.Register(args);
+
+        // Assert
+        patient.Should().BeEquivalentTo(existingPatient);
+
+        membership.PatientId.Should().Be(existingPatient.Id);
+        membership.UserId.Should().Be(userId);
+        membership.Role.Should().Be(PatientRelationship.Self);
+        membership.Status.Should().Be(FamilyMembershipStatus.Active);
+        membership.StartedAt.Should().Be(args.ReferenceTime);
+    }
+
+    [Fact]
+    public void Register_ShouldThrowProfileRequiresAdministrativeClaim_WhenExistingPatientIsDeleted()
+    {
+        // Arrange
+        var deletedPatient = Patient.CreateProfile(
+            PersonName.Create("Test Patient"),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        deletedPatient.CloseAccount();
+
+        var args = CreateArgs(Guid.CreateVersion7()) with { ExistingPatient = deletedPatient };
+
+        // Act
+        var act = () => PrimaryProfileRegistrationService.Register(args);
 
         // Assert
         act.Should()
             .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.Patient.ActiveProfileAlreadyExists);
+            .WithMessage(DomainErrors.Patient.ProfileRequiresAdministrativeClaim);
     }
 
     [Fact]
-    public void Register_ShouldThrowUserIdMismatch_WhenUserIdsDoNotMatch()
+    public void Register_ShouldThrowPatientAlreadyHasActiveMembership_WhenHasExistingSelfMembershipIsTrue()
     {
         // Arrange
-        var existingProfile = CreateDeletedPatient();
-        var args = new PrimaryProfileRegistrationArgs
-        {
-            UserId = Guid.CreateVersion7(),
-            FullName = PersonName.Create("Test Patient"),
-            DateOfBirth = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
-            ReferenceTime = _fakeTime.GetUtcNow().UtcDateTime,
-        };
+        var userId = Guid.CreateVersion7();
+        var args = CreateArgs(userId) with { HasExistingSelfMembership = true };
 
         // Act
-        var act = () => PrimaryProfileRegistrationService.Register(existingProfile, args);
+        var act = () => PrimaryProfileRegistrationService.Register(args);
 
         // Assert
         act.Should()
             .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.Patient.UserIdMismatch);
-    }
-
-    [Fact]
-    public void Register_ShouldReactivateProfile_WhenDeletedProfileExists()
-    {
-        // Arrange
-        var deletedProfile = CreateDeletedPatient();
-        var args = CreateArgs(deletedProfile.UserId);
-
-        // Act
-        var result = PrimaryProfileRegistrationService.Register(deletedProfile, args);
-
-        // Assert
-        result.Should().BeSameAs(deletedProfile);
-        result.IsDeleted.Should().BeFalse();
-        result.RelationshipToUser.Should().Be(PatientRelationship.Self);
-    }
-
-    [Fact]
-    public void Register_ShouldEmitReactivatedEvent_WhenDeletedProfileExists()
-    {
-        // Arrange
-        var deletedProfile = CreateDeletedPatient();
-        var args = CreateArgs(deletedProfile.UserId);
-
-        // Act
-        PrimaryProfileRegistrationService.Register(deletedProfile, args);
-
-        // Assert
-        deletedProfile.DomainEvents.OfType<PatientReactivatedEvent>().Should().ContainSingle();
+            .WithMessage(DomainErrors.FamilyMembership.PatientAlreadyHasActiveMembership);
     }
 
     private PrimaryProfileRegistrationArgs CreateArgs(Guid userId) =>
@@ -113,16 +108,4 @@ public class PrimaryProfileRegistrationServiceTests
             DateOfBirth = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             ReferenceTime = _fakeTime.GetUtcNow().UtcDateTime,
         };
-
-    private Patient CreateDeletedPatient()
-    {
-        var patient = Patient.CreateSelf(
-            Guid.CreateVersion7(),
-            PersonName.Create("Test Patient"),
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
-        patient.CloseAccount();
-        return patient;
-    }
 }

@@ -26,12 +26,23 @@ public class RescheduleByPatientCommandHandlerTests
     private readonly Mock<IScheduleRepository> _scheduleRepositoryMock = new();
     private readonly Mock<IPatientPenaltyRepository> _penaltyRepositoryMock = new();
     private readonly Mock<IUserRepository> _userRepositoryMock = new();
+    private readonly Mock<IFamilyMembershipRepository> _familyMembershipRepositoryMock = new();
     private readonly Mock<IRegionalSchedulingService> _regionalSchedulingServiceMock = new();
     private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
     private readonly RescheduleByPatientCommandHandler _sut;
 
     public RescheduleByPatientCommandHandlerTests()
     {
+        _familyMembershipRepositoryMock
+            .Setup(r =>
+                r.HasActiveMembershipAsync(
+                    It.IsAny<Guid>(),
+                    It.IsAny<Guid>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(true);
+
         _sut = new RescheduleByPatientCommandHandler(
             _appointmentRepositoryMock.Object,
             _patientRepositoryMock.Object,
@@ -40,6 +51,7 @@ public class RescheduleByPatientCommandHandlerTests
             _scheduleRepositoryMock.Object,
             _penaltyRepositoryMock.Object,
             _userRepositoryMock.Object,
+            _familyMembershipRepositoryMock.Object,
             _regionalSchedulingServiceMock.Object,
             _unitOfWorkMock.Object
         );
@@ -631,8 +643,7 @@ public class RescheduleByPatientCommandHandlerTests
 
     private Patient CreatePatient(Guid id, Guid userId)
     {
-        var patient = Patient.CreateSelf(
-            userId,
+        var patient = Patient.CreateProfile(
             PersonName.Create("Test"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime

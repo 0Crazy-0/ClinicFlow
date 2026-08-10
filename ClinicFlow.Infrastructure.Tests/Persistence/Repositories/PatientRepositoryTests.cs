@@ -35,12 +35,12 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
     {
         // Arrange
         var user = await CreateUserAsync();
-        var patient = Patient.CreateSelf(
-            user.Id,
+        var patient = Patient.CreateProfile(
             PersonName.Create("New Patient"),
             new DateOnly(1990, 1, 1),
             _fakeTime.GetUtcNow().UtcDateTime
         );
+        typeof(Patient).GetProperty(nameof(Patient.UserId))?.SetValue(patient, user.Id);
 
         patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
         patient.UpdateEmergencyContact(EmergencyContact.Create("Contact", "555-9999"));
@@ -62,12 +62,12 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
     {
         // Arrange
         var user = await CreateUserAsync();
-        var patient = Patient.CreateSelf(
-            user.Id,
+        var patient = Patient.CreateProfile(
             PersonName.Create("New Patient"),
             new DateOnly(1990, 1, 1),
             _fakeTime.GetUtcNow().UtcDateTime
         );
+        typeof(Patient).GetProperty(nameof(Patient.UserId))?.SetValue(patient, user.Id);
 
         patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
         patient.UpdateEmergencyContact(EmergencyContact.Create("Contact", "555-9999"));
@@ -211,75 +211,6 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
 
         // Assert
         result.Should().BeNull();
-    }
-
-    [Fact]
-    public async Task HasActiveSelfPatientAsync_ShouldReturnTrue_WhenActiveSelfPatientExists()
-    {
-        // Arrange
-        var patient = await CreateSelfPatientAsync();
-
-        // Act
-        var result = await _sut.HasActiveSelfPatientAsync(
-            patient.UserId,
-            TestContext.Current.CancellationToken
-        );
-
-        // Assert
-        result.Should().BeTrue();
-    }
-
-    [Fact]
-    public async Task HasActiveSelfPatientAsync_ShouldReturnFalse_WhenSoftDeleted()
-    {
-        // Arrange
-        var patient = await CreateSelfPatientAsync();
-
-        patient.CloseAccount();
-
-        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
-
-        // Act
-        var result = await _sut.HasActiveSelfPatientAsync(
-            patient.UserId,
-            TestContext.Current.CancellationToken
-        );
-
-        // Assert
-        result.Should().BeFalse();
-    }
-
-    [Fact]
-    public async Task HasActiveSelfPatientAsync_ShouldReturnFalse_WhenDoesNotExist()
-    {
-        // Arrange
-        var nonExistentUserId = Guid.CreateVersion7();
-
-        // Act
-        var result = await _sut.HasActiveSelfPatientAsync(
-            nonExistentUserId,
-            TestContext.Current.CancellationToken
-        );
-
-        // Assert
-        result.Should().BeFalse();
-    }
-
-    [Fact]
-    public async Task HasActiveSelfPatientAsync_ShouldReturnFalse_WhenUserHasOnlyFamilyMembers()
-    {
-        // Arrange
-        var user = await CreateUserAsync();
-        await CreateFamilyMemberPatientAsync(user.Id);
-
-        // Act
-        var result = await _sut.HasActiveSelfPatientAsync(
-            user.Id,
-            TestContext.Current.CancellationToken
-        );
-
-        // Assert
-        result.Should().BeFalse();
     }
 
     [Fact]
@@ -490,7 +421,6 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
 
         // Act
         var result = await _sut.GetIncludingDeletedByNameAndDobAsync(
-            patient.UserId,
             patient.FullName,
             patient.DateOfBirth,
             TestContext.Current.CancellationToken
@@ -512,7 +442,6 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
 
         // Act
         var result = await _sut.GetIncludingDeletedByNameAndDobAsync(
-            patient.UserId,
             patient.FullName,
             patient.DateOfBirth,
             TestContext.Current.CancellationToken
@@ -530,7 +459,6 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
 
         // Act
         var result = await _sut.GetIncludingDeletedByNameAndDobAsync(
-            patient.UserId,
             PersonName.Create("Nonexistent Name"),
             patient.DateOfBirth,
             TestContext.Current.CancellationToken
@@ -565,12 +493,15 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
 
     private async Task<Patient> CreateSelfPatientAsync(Guid userId)
     {
-        var patient = Patient.CreateSelf(
-            userId,
+        var patient = Patient.CreateProfile(
             PersonName.Create("fullName"),
             new DateOnly(1990, 1, 1),
             _fakeTime.GetUtcNow().UtcDateTime
         );
+        typeof(Patient).GetProperty(nameof(Patient.UserId))?.SetValue(patient, userId);
+        typeof(Patient)
+            .GetProperty(nameof(Patient.RelationshipToUser))
+            ?.SetValue(patient, PatientRelationship.Self);
 
         patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
         patient.UpdateEmergencyContact(EmergencyContact.Create("Contact", "555-9999"));
@@ -584,13 +515,15 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
 
     private async Task<Patient> CreateFamilyMemberPatientAsync(Guid userId)
     {
-        var patient = Patient.CreateFamilyMember(
-            userId,
+        var patient = Patient.CreateProfile(
             PersonName.Create("fullName"),
-            PatientRelationship.Child,
             new DateOnly(1990, 1, 1),
             _fakeTime.GetUtcNow().UtcDateTime
         );
+        typeof(Patient).GetProperty(nameof(Patient.UserId))?.SetValue(patient, userId);
+        typeof(Patient)
+            .GetProperty(nameof(Patient.RelationshipToUser))
+            ?.SetValue(patient, PatientRelationship.Child);
 
         patient.UpdateMedicalProfile(BloodType.Create("A+"), "None", "None");
         patient.UpdateEmergencyContact(EmergencyContact.Create("Contact", "555-9999"));

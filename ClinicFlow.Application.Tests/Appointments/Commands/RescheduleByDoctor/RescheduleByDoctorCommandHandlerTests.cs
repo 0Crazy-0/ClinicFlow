@@ -438,8 +438,7 @@ public class RescheduleByDoctorCommandHandlerTests
     }
 
     private Patient CreatePatient() =>
-        Patient.CreateSelf(
-            Guid.CreateVersion7(),
+        Patient.CreateProfile(
             PersonName.Create("Test"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime

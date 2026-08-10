@@ -616,12 +616,13 @@ public class AppointmentCancellationServiceTests
     private Patient CreateSelfPatient(Guid id, Guid userId, int age)
     {
         var dateOfBirth = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-age));
-        var patient = Patient.CreateSelf(
-            userId,
+        var patient = Patient.CreateProfile(
             PersonName.Create("Test"),
             dateOfBirth,
             _fakeTime.GetUtcNow().UtcDateTime
         );
+        SetUserId(patient, userId);
+        SetRelationshipToUser(patient, PatientRelationship.Self);
         patient.SetId(id);
         return patient;
     }
@@ -634,16 +635,37 @@ public class AppointmentCancellationServiceTests
     )
     {
         var dateOfBirth = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-age));
-        var patient = Patient.CreateFamilyMember(
-            userId,
+        var patient = Patient.CreateProfile(
             PersonName.Create("Test"),
-            relationship,
             dateOfBirth,
             _fakeTime.GetUtcNow().UtcDateTime
         );
-
+        SetUserId(patient, userId);
+        SetRelationshipToUser(patient, relationship);
         patient.SetId(id);
         return patient;
+    }
+
+    private static void SetUserId(Patient patient, Guid userId)
+    {
+        var property = typeof(Patient).GetProperty(
+            nameof(Patient.UserId),
+            System.Reflection.BindingFlags.Public
+                | System.Reflection.BindingFlags.Instance
+                | System.Reflection.BindingFlags.NonPublic
+        );
+        property?.SetValue(patient, userId);
+    }
+
+    private static void SetRelationshipToUser(Patient patient, PatientRelationship relationship)
+    {
+        var property = typeof(Patient).GetProperty(
+            nameof(Patient.RelationshipToUser),
+            System.Reflection.BindingFlags.Public
+                | System.Reflection.BindingFlags.Instance
+                | System.Reflection.BindingFlags.NonPublic
+        );
+        property?.SetValue(patient, relationship);
     }
 
     private PatientCancellationArgs CreateValidPatientCancellationArgs()

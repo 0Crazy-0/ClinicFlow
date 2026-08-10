@@ -164,8 +164,7 @@ public class ScheduleByDoctorTests
         );
 
         var doctor = CreateDoctor();
-        var target = Patient.CreateSelf(
-            Guid.CreateVersion7(),
+        var target = Patient.CreateProfile(
             PersonName.Create("Test"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-15)),
             _fakeTime.GetUtcNow().UtcDateTime
@@ -331,8 +330,7 @@ public class ScheduleByDoctorTests
 
     private Patient CreateSelfPatient()
     {
-        var patient = Patient.CreateSelf(
-            Guid.CreateVersion7(),
+        var patient = Patient.CreateProfile(
             PersonName.Create("Test"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime

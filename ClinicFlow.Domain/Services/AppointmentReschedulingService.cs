@@ -47,7 +47,7 @@ public static class AppointmentReschedulingService
         if (args.TargetPatient.Id != appointment.PatientId)
             throw new DomainValidationException(DomainErrors.Appointment.DataMismatch);
 
-        PatientAccessService.VerifyAccess(args.InitiatorPatient, args.TargetPatient);
+        PatientAccessService.VerifyAccess(context.InitiatorHasAccessToTarget);
 
         if (!args.IsInitiatorPhoneVerified)
             throw new AppointmentSchedulingUnauthorizedException(

@@ -136,8 +136,7 @@ public class ScheduleByStaffTests
     {
         // Arrange
         var appointmentType = CreateAppointmentType();
-        var incompletePatient = Patient.CreateSelf(
-            Guid.CreateVersion7(),
+        var incompletePatient = Patient.CreateProfile(
             PersonName.Create("Test"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
@@ -182,8 +181,7 @@ public class ScheduleByStaffTests
             AgeEligibilityPolicy.Create(18, null, false)
         );
 
-        var target = Patient.CreateSelf(
-            Guid.CreateVersion7(),
+        var target = Patient.CreateProfile(
             PersonName.Create("Test"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-15)),
             _fakeTime.GetUtcNow().UtcDateTime
@@ -348,8 +346,7 @@ public class ScheduleByStaffTests
 
     private Patient CreateSelfPatient()
     {
-        var patient = Patient.CreateSelf(
-            Guid.CreateVersion7(),
+        var patient = Patient.CreateProfile(
             PersonName.Create("Test"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime

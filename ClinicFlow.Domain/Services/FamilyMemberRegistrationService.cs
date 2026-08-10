@@ -6,43 +6,51 @@ using ClinicFlow.Domain.Services.Args.Registration;
 namespace ClinicFlow.Domain.Services;
 
 /// <summary>
-/// Registers a family member by creating a new profile or reactivating a soft-deleted one.
+/// Registers a family member patient profile, either by reusing an existing
+/// clinical record or creating a new one, and links it to the owner's account
+/// via a new FamilyMembership.
 /// </summary>
 /// <remarks>
-/// Encapsulates the business rule that prevents duplicate active profiles while
-/// allowing soft-deleted profiles to be safely restored.
+/// Encapsulates three independent business rules: soft-deleted patients cannot
+/// be reused directly and must go through the administrative claim process, an
+/// owner cannot link the same patient twice while a FamilyMembership between
+/// them is still active, and an owner cannot exceed the maximum number of
+/// active family members.
 /// </remarks>
 public static class FamilyMemberRegistrationService
 {
     public const int MaxActiveFamilyMembers = 15;
 
-    public static Patient Register(
-        Patient? existingProfile,
-        int activeFamilyMemberCount,
+    public static (Patient Patient, FamilyMembership Membership) Register(
         FamilyMemberRegistrationArgs args
     )
     {
-        if (existingProfile is not null && existingProfile.UserId != args.UserId)
-            throw new DomainValidationException(DomainErrors.Patient.UserIdMismatch);
-
-        if (existingProfile is not null && !existingProfile.IsDeleted)
-            throw new DomainValidationException(DomainErrors.Patient.ActiveProfileAlreadyExists);
-
-        if (activeFamilyMemberCount >= MaxActiveFamilyMembers)
-            throw new DomainValidationException(DomainErrors.Patient.FamilyMemberLimitExceeded);
-
-        if (existingProfile is null)
-        {
-            return Patient.CreateFamilyMember(
-                args.UserId,
-                args.FullName,
-                args.Relationship,
-                args.DateOfBirth,
-                args.ReferenceTime
+        if (args.ExistingPatient is not null && args.ExistingPatient.IsDeleted)
+            throw new DomainValidationException(
+                DomainErrors.Patient.ProfileRequiresAdministrativeClaim
             );
-        }
 
-        existingProfile.ReactivateAsFamilyMember(args.Relationship);
-        return existingProfile;
+        if (args.HasExistingMembershipWithOwner)
+            throw new DomainValidationException(
+                DomainErrors.FamilyMembership.PatientAlreadyHasActiveMembership
+            );
+
+        if (args.ActiveFamilyMemberCount >= MaxActiveFamilyMembers)
+            throw new DomainValidationException(
+                DomainErrors.FamilyMembership.MaxActiveFamilyMembersExceeded
+            );
+
+        var patient =
+            args.ExistingPatient
+            ?? Patient.CreateProfile(args.FullName, args.DateOfBirth, args.ReferenceTime);
+
+        var membership = FamilyMembership.CreateFamilyMember(
+            patient.Id,
+            args.OwnerUserId,
+            args.Role,
+            args.ReferenceTime
+        );
+
+        return (patient, membership);
     }
 }

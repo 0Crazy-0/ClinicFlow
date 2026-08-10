@@ -24,6 +24,7 @@ public sealed class ScheduleByPatientCommandHandler(
     IScheduleRepository scheduleRepository,
     IAppointmentRepository appointmentRepository,
     IUserRepository userRepository,
+    IFamilyMembershipRepository familyMembershipRepository,
     IRegionalSchedulingService regionalSchedulingService,
     IUnitOfWork unitOfWork
 ) : IRequestHandler<ScheduleByPatientCommand, Guid>
@@ -120,6 +121,23 @@ public sealed class ScheduleByPatientCommandHandler(
             appointmentType
         );
 
+        var initiatorHasAccessToTarget = await familyMembershipRepository.HasActiveMembershipAsync(
+            request.InitiatorUserId,
+            request.TargetPatientId,
+            cancellationToken
+        );
+        var initiatorHasOwnSelfMembership =
+            await familyMembershipRepository.HasActiveSelfMembershipByUserIdAsync(
+                request.InitiatorUserId,
+                cancellationToken
+            );
+
+        var targetHasOwnSelfMembership =
+            await familyMembershipRepository.HasActiveSelfMembershipByPatientIdAsync(
+                request.TargetPatientId,
+                cancellationToken
+            );
+
         var appointment = AppointmentSchedulingService.ScheduleByPatient(
             appointmentType,
             new PatientSchedulingArgs
@@ -132,7 +150,14 @@ public sealed class ScheduleByPatientCommandHandler(
                 IsInitiatorPhoneVerified = user.IsPhoneVerified,
                 PatientNotes = request.PatientNotes,
             },
-            new PatientSchedulingContext { Penalties = penalties, DoctorSchedule = doctorSchedule },
+            new PatientSchedulingContext
+            {
+                Penalties = penalties,
+                DoctorSchedule = doctorSchedule,
+                InitiatorHasAccessToTarget = initiatorHasAccessToTarget,
+                InitiatorHasOwnSelfMembership = initiatorHasOwnSelfMembership,
+                TargetHasOwnSelfMembership = targetHasOwnSelfMembership,
+            },
             clearance
         );
 

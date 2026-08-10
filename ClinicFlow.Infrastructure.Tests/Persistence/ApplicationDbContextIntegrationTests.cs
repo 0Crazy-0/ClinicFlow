@@ -105,12 +105,12 @@ public class ApplicationDbContextIntegrationTests(PostgresFixture fixture) : IAs
 
     private async Task<Patient> CreatePatientAsync(Guid userId)
     {
-        var patient = Patient.CreateSelf(
-            userId,
+        var patient = Patient.CreateProfile(
             PersonName.Create("John Doe"),
             new DateOnly(1990, 1, 1),
             _fakeTime.GetUtcNow().UtcDateTime
         );
+        typeof(Patient).GetProperty(nameof(Patient.UserId))?.SetValue(patient, userId);
         patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
         patient.UpdateEmergencyContact(EmergencyContact.Create("Contact", "555-9999"));
 

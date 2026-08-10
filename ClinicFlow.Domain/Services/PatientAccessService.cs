@@ -1,28 +1,16 @@
 using ClinicFlow.Domain.Common;
-using ClinicFlow.Domain.Entities;
-using ClinicFlow.Domain.Enums;
-using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Exceptions.Patients;
 
 namespace ClinicFlow.Domain.Services;
 
 /// <summary>
-/// Domain service responsible for verifying patient relationship and access permissions.
+/// Verifies patient access permissions based on pre-resolved membership evaluation.
 /// </summary>
 public static class PatientAccessService
 {
-    public static void VerifyAccess(Patient initiator, Patient target)
+    public static void VerifyAccess(bool initiatorHasAccessToTarget)
     {
-        if (initiator is null || target is null)
-            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
-
-        if (initiator.UserId != target.UserId)
-            throw new PatientAccessUnauthorizedException(DomainErrors.Patient.UnauthorizedAccess);
-
-        if (
-            initiator.RelationshipToUser is not PatientRelationship.Self
-            && initiator.Id != target.Id
-        )
+        if (!initiatorHasAccessToTarget)
             throw new PatientAccessUnauthorizedException(DomainErrors.Patient.UnauthorizedAccess);
     }
 }

@@ -1,6 +1,7 @@
-using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
+using ClinicFlow.Domain.Services;
+using ClinicFlow.Domain.Services.Args.Registration;
 using ClinicFlow.Domain.ValueObjects;
 using MediatR;
 
@@ -9,6 +10,7 @@ namespace ClinicFlow.Application.Patients.Commands.CreateCompletePatientProfile;
 public sealed class CreateCompletePatientProfileCommandHandler(
     TimeProvider timeProvider,
     IPatientRepository patientRepository,
+    IFamilyMembershipRepository familyMembershipRepository,
     IUnitOfWork unitOfWork
 ) : IRequestHandler<CreateCompletePatientProfileCommand, Guid>
 {
@@ -19,26 +21,59 @@ public sealed class CreateCompletePatientProfileCommandHandler(
     )
     {
         var fullName = PersonName.Create($"{request.FirstName} {request.LastName}");
-
-        var patient = Patient.CreateSelf(
-            request.UserId,
-            fullName,
-            request.DateOfBirth,
-            timeProvider.GetUtcNow().UtcDateTime
-        );
-
         var bloodType = BloodType.Create(request.BloodType);
         var emergencyContact = EmergencyContact.Create(
             request.EmergencyContactName,
             request.EmergencyContactPhone
         );
 
-        patient.UpdateMedicalProfile(bloodType, request.Allergies, request.ChronicConditions);
-        patient.UpdateEmergencyContact(emergencyContact);
+        return await unitOfWork.ExecuteWithLockAsync(
+            request.UserId,
+            async cancellationToken =>
+            {
+                var existingProfile = await patientRepository.GetIncludingDeletedByNameAndDobAsync(
+                    fullName,
+                    request.DateOfBirth,
+                    cancellationToken
+                );
 
-        await patientRepository.CreateAsync(patient, cancellationToken);
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+                var hasExistingSelfMembership =
+                    existingProfile is not null
+                    && await familyMembershipRepository.HasActiveSelfMembershipByPatientIdAsync(
+                        existingProfile.Id,
+                        cancellationToken
+                    );
 
-        return patient.Id;
+                var (patient, membership) = PrimaryProfileRegistrationService.Register(
+                    new PrimaryProfileRegistrationArgs
+                    {
+                        ExistingPatient = existingProfile,
+                        HasExistingSelfMembership = hasExistingSelfMembership,
+                        UserId = request.UserId,
+                        FullName = fullName,
+                        DateOfBirth = request.DateOfBirth,
+                        ReferenceTime = timeProvider.GetUtcNow().UtcDateTime,
+                    }
+                );
+
+                if (existingProfile is null)
+                {
+                    patient.UpdateMedicalProfile(
+                        bloodType,
+                        request.Allergies,
+                        request.ChronicConditions
+                    );
+
+                    patient.UpdateEmergencyContact(emergencyContact);
+                }
+
+                await patientRepository.CreateAsync(patient, cancellationToken);
+                await familyMembershipRepository.CreateAsync(membership, cancellationToken);
+                await unitOfWork.SaveChangesAsync(cancellationToken);
+
+                return patient.Id;
+            },
+            cancellationToken
+        );
     }
 }

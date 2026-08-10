@@ -2,7 +2,6 @@ using AwesomeAssertions;
 using ClinicFlow.Application.Patients.Queries.DTOs;
 using ClinicFlow.Application.Patients.Queries.GetPatientsByUserId;
 using ClinicFlow.Domain.Entities;
-using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.ValueObjects;
 using Microsoft.Extensions.Time.Testing;
@@ -28,8 +27,7 @@ public class GetPatientsByUserIdQueryHandlerTests
     {
         // Arrange
         var userId = Guid.CreateVersion7();
-        var patient1 = Patient.CreateSelf(
-            userId,
+        var patient1 = Patient.CreateProfile(
             PersonName.Create("John Doe"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
@@ -37,10 +35,8 @@ public class GetPatientsByUserIdQueryHandlerTests
         patient1.UpdateMedicalProfile(BloodType.Create("A+"), "None", "None");
         patient1.UpdateEmergencyContact(EmergencyContact.Create("Jane", "555-1234"));
 
-        var patient2 = Patient.CreateFamilyMember(
-            userId,
+        var patient2 = Patient.CreateProfile(
             PersonName.Create("Child Doe"),
-            PatientRelationship.Child,
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-5)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
@@ -85,16 +81,13 @@ public class GetPatientsByUserIdQueryHandlerTests
     {
         // Arrange
         var userId = Guid.CreateVersion7();
-        var patient1 = Patient.CreateSelf(
-            userId,
+        var patient1 = Patient.CreateProfile(
             PersonName.Create("John Doe"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
-        var patient2 = Patient.CreateFamilyMember(
-            userId,
+        var patient2 = Patient.CreateProfile(
             PersonName.Create("Child Doe"),
-            PatientRelationship.Child,
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-5)),
             _fakeTime.GetUtcNow().UtcDateTime
         );

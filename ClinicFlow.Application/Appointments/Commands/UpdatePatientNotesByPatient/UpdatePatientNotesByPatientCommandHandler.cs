@@ -10,7 +10,7 @@ namespace ClinicFlow.Application.Appointments.Commands.UpdatePatientNotesByPatie
 
 public sealed class UpdatePatientNotesByPatientCommandHandler(
     IAppointmentRepository appointmentRepository,
-    IPatientRepository patientRepository,
+    IFamilyMembershipRepository familyMembershipRepository,
     IUnitOfWork unitOfWork
 ) : IRequestHandler<UpdatePatientNotesByPatientCommand>
 {
@@ -28,26 +28,13 @@ public sealed class UpdatePatientNotesByPatientCommandHandler(
                 request.AppointmentId
             );
 
-        var targetPatient =
-            await patientRepository.GetByIdAsync(appointment.PatientId, cancellationToken)
-            ?? throw new EntityNotFoundException(
-                DomainErrors.General.NotFound,
-                nameof(Patient),
-                appointment.PatientId
-            );
+        var hasAccess = await familyMembershipRepository.HasActiveMembershipAsync(
+            request.InitiatorUserId,
+            appointment.PatientId,
+            cancellationToken
+        );
 
-        var initiatorPatient =
-            await patientRepository.GetSelfPatientByUserIdAsync(
-                request.InitiatorUserId,
-                cancellationToken
-            )
-            ?? throw new EntityNotFoundException(
-                DomainErrors.General.NotFound,
-                nameof(Patient),
-                request.InitiatorUserId
-            );
-
-        PatientAccessService.VerifyAccess(initiatorPatient, targetPatient);
+        PatientAccessService.VerifyAccess(hasAccess);
 
         appointment.UpdatePatientNotes(request.Notes);
 

@@ -97,13 +97,14 @@ public static class DomainErrors
         public const string ActiveProfileAlreadyExists = "PATIENT_ACTIVE_PROFILE_ALREADY_EXISTS";
         public const string UserIdMismatch = "PATIENT_USER_ID_MISMATCH";
         public const string UnauthorizedAccess = "PATIENT_UNAUTHORIZED_ACCESS";
-        public const string FamilyMemberLimitExceeded = "PATIENT_FAMILY_MEMBER_LIMIT_EXCEEDED";
         public const string PrimaryPatientRequired = "PRIMARY_PATIENT_REQUIRED";
         public const string CannotCloseAccountWithActiveFamilyMembers =
             "CANNOT_CLOSE_ACCOUNT_WITH_ACTIVE_FAMILY_MEMBERS";
         public const string UnderageCannotLeaveFamilyAccount =
             "UNDERAGE_CANNOT_LEAVE_FAMILY_ACCOUNT";
         public const string CannotLeaveOwnAccount = "CANNOT_LEAVE_OWN_ACCOUNT";
+        public const string ProfileRequiresAdministrativeClaim =
+            "PATIENT_PROFILE_REQUIRES_ADMINISTRATIVE_CLAIM";
     }
 
     public static class Doctor
@@ -164,5 +165,8 @@ public static class DomainErrors
     {
         public const string CannotBeSelf = "INVALID_FAMILY_RELATIONSHIP";
         public const string AlreadyTerminated = "FAMILY_MEMBERSHIP_ALREADY_TERMINATED";
+        public const string PatientAlreadyHasActiveMembership =
+            "PATIENT_ALREADY_HAS_ACTIVE_MEMBERSHIP";
+        public const string MaxActiveFamilyMembersExceeded = "MAX_ACTIVE_FAMILY_MEMBERS_EXCEEDED";
     }
 }

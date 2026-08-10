@@ -16,6 +16,7 @@ namespace ClinicFlow.Application.Tests.Patients.Commands.AddCompleteFamilyMember
 public class AddCompleteFamilyMemberCommandHandlerTests
 {
     private readonly Mock<IPatientRepository> _patientRepositoryMock;
+    private readonly Mock<IFamilyMembershipRepository> _familyMembershipRepositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly FakeTimeProvider _fakeTime;
     private readonly AddCompleteFamilyMemberCommandHandler _sut;
@@ -23,14 +24,9 @@ public class AddCompleteFamilyMemberCommandHandlerTests
     public AddCompleteFamilyMemberCommandHandlerTests()
     {
         _patientRepositoryMock = new Mock<IPatientRepository>();
+        _familyMembershipRepositoryMock = new Mock<IFamilyMembershipRepository>();
         _unitOfWorkMock = new Mock<IUnitOfWork>();
         _fakeTime = new FakeTimeProvider();
-
-        _patientRepositoryMock
-            .Setup(x =>
-                x.HasActiveSelfPatientAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>())
-            )
-            .ReturnsAsync(true);
 
         _unitOfWorkMock
             .Setup(x =>
@@ -51,6 +47,7 @@ public class AddCompleteFamilyMemberCommandHandlerTests
         _sut = new AddCompleteFamilyMemberCommandHandler(
             _fakeTime,
             _patientRepositoryMock.Object,
+            _familyMembershipRepositoryMock.Object,
             _unitOfWorkMock.Object
         );
     }
@@ -72,10 +69,18 @@ public class AddCompleteFamilyMemberCommandHandlerTests
             PatientRelationship.Child
         );
 
+        _familyMembershipRepositoryMock
+            .Setup(x =>
+                x.HasActiveSelfMembershipByUserIdAsync(
+                    command.UserId,
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(true);
+
         _patientRepositoryMock
             .Setup(x =>
                 x.GetIncludingDeletedByNameAndDobAsync(
-                    command.UserId,
                     It.IsAny<PersonName>(),
                     command.DateOfBirth,
                     It.IsAny<CancellationToken>()
@@ -88,15 +93,18 @@ public class AddCompleteFamilyMemberCommandHandlerTests
             .Setup(x => x.CreateAsync(It.IsAny<Patient>(), It.IsAny<CancellationToken>()))
             .Callback<Patient, CancellationToken>((p, _) => capturedPatient = p);
 
+        FamilyMembership? capturedMembership = null;
+        _familyMembershipRepositoryMock
+            .Setup(x => x.CreateAsync(It.IsAny<FamilyMembership>(), It.IsAny<CancellationToken>()))
+            .Callback<FamilyMembership, CancellationToken>((m, _) => capturedMembership = m);
+
         // Act
         var result = await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().NotBeEmpty();
         capturedPatient.Should().NotBeNull();
-        capturedPatient.UserId.Should().Be(command.UserId);
         capturedPatient.FullName.ToString().Should().Be($"{command.FirstName} {command.LastName}");
-        capturedPatient.RelationshipToUser.Should().Be(command.Relationship);
         capturedPatient.DateOfBirth.Should().Be(command.DateOfBirth);
         capturedPatient.BloodType.ToString().Should().Be(command.BloodType);
         capturedPatient.Allergies.Should().Be(command.Allergies);
@@ -106,81 +114,11 @@ public class AddCompleteFamilyMemberCommandHandlerTests
             .EmergencyContact.PhoneNumber.ToString()
             .Should()
             .Be(command.EmergencyContactPhone);
-    }
 
-    [Fact]
-    public async Task Handle_ShouldReactivateFamilyMemberAndUpdateMedicalProfile_WhenDeletedProfileExists()
-    {
-        // Arrange
-        var command = new AddCompleteFamilyMemberCommand(
-            Guid.CreateVersion7(),
-            "Child",
-            "Doe",
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-5)),
-            "O+",
-            "Pollen",
-            "None",
-            "Dad",
-            "555-9999",
-            PatientRelationship.Child
-        );
-        var personName = PersonName.Create($"{command.FirstName} {command.LastName}");
-
-        var deletedMember = Patient.CreateFamilyMember(
-            command.UserId,
-            personName,
-            PatientRelationship.Sibling,
-            command.DateOfBirth,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
-
-        deletedMember.RemoveFamilyMember(command.UserId, PatientRelationship.Self);
-
-        _patientRepositoryMock
-            .Setup(x =>
-                x.GetIncludingDeletedByNameAndDobAsync(
-                    command.UserId,
-                    personName,
-                    command.DateOfBirth,
-                    It.IsAny<CancellationToken>()
-                )
-            )
-            .ReturnsAsync(deletedMember);
-
-        // Act
-        var result = await _sut.Handle(command, TestContext.Current.CancellationToken);
-
-        // Assert
-        _unitOfWorkMock.Verify(
-            x =>
-                x.ExecuteWithLockAsync(
-                    command.UserId,
-                    It.IsAny<Func<CancellationToken, Task<Guid>>>(),
-                    It.IsAny<CancellationToken>()
-                ),
-            Times.Once
-        );
-        _patientRepositoryMock.Verify(
-            r =>
-                r.CreateAsync(
-                    It.Is<Patient>(p => ReferenceEquals(p, deletedMember)),
-                    It.IsAny<CancellationToken>()
-                ),
-            Times.Once
-        );
-        _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
-
-        result.Should().Be(deletedMember.Id);
-        deletedMember.IsDeleted.Should().BeFalse();
-        deletedMember.RelationshipToUser.Should().Be(PatientRelationship.Child);
-        deletedMember.BloodType.ToString().Should().Be(command.BloodType);
-        deletedMember.Allergies.Should().Be(command.Allergies);
-        deletedMember.ChronicConditions.Should().Be(command.ChronicConditions);
-        deletedMember.EmergencyContact.Name.ToString().Should().Be(command.EmergencyContactName);
-        deletedMember
-            .EmergencyContact.PhoneNumber.ToString()
-            .Should()
-            .Be(command.EmergencyContactPhone);
+        capturedMembership.Should().NotBeNull();
+        capturedMembership.PatientId.Should().Be(capturedPatient.Id);
+        capturedMembership.UserId.Should().Be(command.UserId);
+        capturedMembership.Role.Should().Be(command.Relationship);
     }
 
     [Fact]
@@ -201,10 +139,18 @@ public class AddCompleteFamilyMemberCommandHandlerTests
         );
         var personName = PersonName.Create($"{command.FirstName} {command.LastName}");
 
+        _familyMembershipRepositoryMock
+            .Setup(x =>
+                x.HasActiveSelfMembershipByUserIdAsync(
+                    command.UserId,
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(true);
+
         _patientRepositoryMock
             .Setup(x =>
                 x.GetIncludingDeletedByNameAndDobAsync(
-                    command.UserId,
                     personName,
                     command.DateOfBirth,
                     It.IsAny<CancellationToken>()
@@ -229,11 +175,89 @@ public class AddCompleteFamilyMemberCommandHandlerTests
             x => x.CreateAsync(It.IsAny<Patient>(), It.IsAny<CancellationToken>()),
             Times.Once
         );
+        _familyMembershipRepositoryMock.Verify(
+            x => x.CreateAsync(It.IsAny<FamilyMembership>(), It.IsAny<CancellationToken>()),
+            Times.Once
+        );
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
-    public async Task Handle_ShouldThrowPrimaryPatientRequiredException_WhenSelfPatientDoesNotExist()
+    public async Task Handle_ShouldThrowDomainValidationException_WhenDeletedProfileExists()
+    {
+        // Arrange
+        var command = new AddCompleteFamilyMemberCommand(
+            Guid.CreateVersion7(),
+            "Child",
+            "Doe",
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-5)),
+            "O+",
+            "Pollen",
+            "None",
+            "Dad",
+            "555-9999",
+            PatientRelationship.Child
+        );
+
+        var personName = PersonName.Create($"{command.FirstName} {command.LastName}");
+
+        _familyMembershipRepositoryMock
+            .Setup(x =>
+                x.HasActiveSelfMembershipByUserIdAsync(
+                    command.UserId,
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(true);
+
+        var deletedMember = Patient.CreateProfile(
+            personName,
+            command.DateOfBirth,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        deletedMember.CloseAccount();
+
+        _patientRepositoryMock
+            .Setup(x =>
+                x.GetIncludingDeletedByNameAndDobAsync(
+                    personName,
+                    command.DateOfBirth,
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(deletedMember);
+
+        // Act
+        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
+
+        // Assert
+        await act.Should()
+            .ThrowAsync<DomainValidationException>()
+            .WithMessage(DomainErrors.Patient.ProfileRequiresAdministrativeClaim);
+
+        _unitOfWorkMock.Verify(
+            x =>
+                x.ExecuteWithLockAsync(
+                    It.IsAny<Guid>(),
+                    It.IsAny<Func<CancellationToken, Task<Guid>>>(),
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Once
+        );
+        _patientRepositoryMock.Verify(
+            x => x.CreateAsync(It.IsAny<Patient>(), It.IsAny<CancellationToken>()),
+            Times.Never
+        );
+        _familyMembershipRepositoryMock.Verify(
+            x => x.CreateAsync(It.IsAny<FamilyMembership>(), It.IsAny<CancellationToken>()),
+            Times.Never
+        );
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldThrowPrimaryPatientRequiredException_WhenActiveSelfMembershipDoesNotExist()
     {
         // Arrange
         var command = new AddCompleteFamilyMemberCommand(
@@ -249,8 +273,13 @@ public class AddCompleteFamilyMemberCommandHandlerTests
             PatientRelationship.Child
         );
 
-        _patientRepositoryMock
-            .Setup(x => x.HasActiveSelfPatientAsync(command.UserId, It.IsAny<CancellationToken>()))
+        _familyMembershipRepositoryMock
+            .Setup(x =>
+                x.HasActiveSelfMembershipByUserIdAsync(
+                    command.UserId,
+                    It.IsAny<CancellationToken>()
+                )
+            )
             .ReturnsAsync(false);
 
         // Act
@@ -275,42 +304,8 @@ public class AddCompleteFamilyMemberCommandHandlerTests
             x => x.CreateAsync(It.IsAny<Patient>(), It.IsAny<CancellationToken>()),
             Times.Never
         );
-        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
-    }
-
-    [Fact]
-    public async Task Handle_ShouldThrowException_WhenRelationshipIsSelf()
-    {
-        // Arrange
-        var command = new AddCompleteFamilyMemberCommand(
-            Guid.CreateVersion7(),
-            "Self",
-            "Doe",
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
-            "A+",
-            "None",
-            "None",
-            "Mom",
-            "555-5555",
-            PatientRelationship.Self
-        );
-
-        // Act
-        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
-
-        // Assert
-        await act.Should().ThrowAsync<DomainValidationException>();
-        _unitOfWorkMock.Verify(
-            x =>
-                x.ExecuteWithLockAsync(
-                    It.IsAny<Guid>(),
-                    It.IsAny<Func<CancellationToken, Task<Guid>>>(),
-                    It.IsAny<CancellationToken>()
-                ),
-            Times.Once
-        );
-        _patientRepositoryMock.Verify(
-            x => x.CreateAsync(It.IsAny<Patient>(), It.IsAny<CancellationToken>()),
+        _familyMembershipRepositoryMock.Verify(
+            x => x.CreateAsync(It.IsAny<FamilyMembership>(), It.IsAny<CancellationToken>()),
             Times.Never
         );
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);

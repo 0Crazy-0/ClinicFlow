@@ -639,12 +639,12 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
     private async Task<Patient> CreatePatientAsync()
     {
         var user = await CreateUserAsync(UserRole.Patient);
-        var patient = Patient.CreateSelf(
-            user.Id,
+        var patient = Patient.CreateProfile(
             PersonName.Create("John Doe"),
             DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-30)),
             DateTime.UtcNow
         );
+        typeof(Patient).GetProperty(nameof(Patient.UserId))?.SetValue(patient, user.Id);
 
         patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
         patient.UpdateEmergencyContact(EmergencyContact.Create("Contact", "555-9999"));

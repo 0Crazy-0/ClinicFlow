@@ -34,32 +34,43 @@ public class RemoveFamilyMemberCommandHandlerTests
     public async Task Handle_ShouldMarkAsDeleted_WhenPatientIsFamilyMember()
     {
         // Arrange
-        var command = new RemoveFamilyMemberCommand(
-            Guid.CreateVersion7(),
-            Guid.CreateVersion7()
-        );
+        var command = new RemoveFamilyMemberCommand(Guid.CreateVersion7(), Guid.CreateVersion7());
 
-        var familyMember = Patient.CreateFamilyMember(
-            command.InitiatorUserId,
+        var familyMember = Patient.CreateProfile(
             PersonName.Create("Family Member"),
-            PatientRelationship.Child,
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
+        typeof(Patient)
+            .GetProperty(nameof(Patient.UserId))
+            ?.SetValue(familyMember, command.InitiatorUserId);
+        typeof(Patient)
+            .GetProperty(nameof(Patient.RelationshipToUser))
+            ?.SetValue(familyMember, PatientRelationship.Child);
 
-        var initiatorPatient = Patient.CreateSelf(
-            command.InitiatorUserId,
+        var initiatorPatient = Patient.CreateProfile(
             PersonName.Create("Initiator User"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
+        typeof(Patient)
+            .GetProperty(nameof(Patient.UserId))
+            ?.SetValue(initiatorPatient, command.InitiatorUserId);
+        typeof(Patient)
+            .GetProperty(nameof(Patient.RelationshipToUser))
+            ?.SetValue(initiatorPatient, PatientRelationship.Self);
 
         _patientRepositoryMock
             .Setup(x => x.GetByIdAsync(command.PatientId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(familyMember);
 
         _patientRepositoryMock
-            .Setup(x => x.GetSelfPatientByUserIdAsync(command.InitiatorUserId, It.IsAny<CancellationToken>()))
+            .Setup(x =>
+                x.GetSelfPatientByUserIdAsync(
+                    command.InitiatorUserId,
+                    It.IsAny<CancellationToken>()
+                )
+            )
             .ReturnsAsync(initiatorPatient);
 
         // Act
@@ -67,7 +78,6 @@ public class RemoveFamilyMemberCommandHandlerTests
 
         // Assert
         familyMember.IsDeleted.Should().BeTrue();
-
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -75,10 +85,7 @@ public class RemoveFamilyMemberCommandHandlerTests
     public async Task Handle_ShouldThrowException_WhenPatientNotFound()
     {
         // Arrange
-        var command = new RemoveFamilyMemberCommand(
-            Guid.CreateVersion7(),
-            Guid.CreateVersion7()
-        );
+        var command = new RemoveFamilyMemberCommand(Guid.CreateVersion7(), Guid.CreateVersion7());
 
         _patientRepositoryMock
             .Setup(x => x.GetByIdAsync(command.PatientId, It.IsAny<CancellationToken>()))
@@ -100,15 +107,10 @@ public class RemoveFamilyMemberCommandHandlerTests
     public async Task Handle_ShouldThrowException_WhenInitiatorPatientNotFound()
     {
         // Arrange
-        var command = new RemoveFamilyMemberCommand(
-            Guid.CreateVersion7(),
-            Guid.CreateVersion7()
-        );
+        var command = new RemoveFamilyMemberCommand(Guid.CreateVersion7(), Guid.CreateVersion7());
 
-        var familyMember = Patient.CreateFamilyMember(
-            command.InitiatorUserId,
+        var familyMember = Patient.CreateProfile(
             PersonName.Create("Family Member"),
-            PatientRelationship.Child,
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
@@ -118,7 +120,12 @@ public class RemoveFamilyMemberCommandHandlerTests
             .ReturnsAsync(familyMember);
 
         _patientRepositoryMock
-            .Setup(x => x.GetSelfPatientByUserIdAsync(command.InitiatorUserId, It.IsAny<CancellationToken>()))
+            .Setup(x =>
+                x.GetSelfPatientByUserIdAsync(
+                    command.InitiatorUserId,
+                    It.IsAny<CancellationToken>()
+                )
+            )
             .ReturnsAsync((Patient?)null);
 
         // Act

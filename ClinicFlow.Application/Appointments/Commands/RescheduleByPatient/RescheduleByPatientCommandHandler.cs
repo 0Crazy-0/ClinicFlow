@@ -24,6 +24,7 @@ public sealed class RescheduleByPatientCommandHandler(
     IScheduleRepository scheduleRepository,
     IPatientPenaltyRepository penaltyRepository,
     IUserRepository userRepository,
+    IFamilyMembershipRepository familyMembershipRepository,
     IRegionalSchedulingService regionalSchedulingService,
     IUnitOfWork unitOfWork
 ) : IRequestHandler<RescheduleByPatientCommand>
@@ -129,6 +130,12 @@ public sealed class RescheduleByPatientCommandHandler(
             appointmentType
         );
 
+        var initiatorHasAccessToTarget = await familyMembershipRepository.HasActiveMembershipAsync(
+            request.InitiatorUserId,
+            appointment.PatientId,
+            cancellationToken
+        );
+
         AppointmentReschedulingService.RescheduleByPatient(
             appointment,
             new PatientReschedulingArgs
@@ -144,6 +151,7 @@ public sealed class RescheduleByPatientCommandHandler(
             {
                 Penalties = penalties,
                 DoctorSchedule = doctorSchedule,
+                InitiatorHasAccessToTarget = initiatorHasAccessToTarget,
             },
             clearance
         );

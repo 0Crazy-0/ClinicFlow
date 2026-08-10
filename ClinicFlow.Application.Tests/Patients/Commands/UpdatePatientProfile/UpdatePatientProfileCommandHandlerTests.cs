@@ -41,8 +41,7 @@ public class UpdatePatientProfileCommandHandlerTests
             "Dad",
             "555-1234"
         );
-        var patient = Patient.CreateSelf(
-            command.PatientId,
+        var patient = Patient.CreateProfile(
             PersonName.Create("John Doe"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime

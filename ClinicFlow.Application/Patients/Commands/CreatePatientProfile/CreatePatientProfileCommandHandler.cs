@@ -10,6 +10,7 @@ namespace ClinicFlow.Application.Patients.Commands.CreatePatientProfile;
 public sealed class CreatePatientProfileCommandHandler(
     TimeProvider timeProvider,
     IPatientRepository patientRepository,
+    IFamilyMembershipRepository familyMembershipRepository,
     IUnitOfWork unitOfWork
 ) : IRequestHandler<CreatePatientProfileCommand, Guid>
 {
@@ -20,27 +21,43 @@ public sealed class CreatePatientProfileCommandHandler(
     )
     {
         var fullName = PersonName.Create($"{request.FirstName} {request.LastName}");
-        var existingProfile = await patientRepository.GetIncludingDeletedByNameAndDobAsync(
+
+        return await unitOfWork.ExecuteWithLockAsync(
             request.UserId,
-            fullName,
-            request.DateOfBirth,
+            async cancellationToken =>
+            {
+                var existingProfile = await patientRepository.GetIncludingDeletedByNameAndDobAsync(
+                    fullName,
+                    request.DateOfBirth,
+                    cancellationToken
+                );
+
+                var hasExistingSelfMembership =
+                    existingProfile is not null
+                    && await familyMembershipRepository.HasActiveSelfMembershipByPatientIdAsync(
+                        existingProfile.Id,
+                        cancellationToken
+                    );
+
+                var (patient, membership) = PrimaryProfileRegistrationService.Register(
+                    new PrimaryProfileRegistrationArgs
+                    {
+                        ExistingPatient = existingProfile,
+                        HasExistingSelfMembership = hasExistingSelfMembership,
+                        UserId = request.UserId,
+                        FullName = fullName,
+                        DateOfBirth = request.DateOfBirth,
+                        ReferenceTime = timeProvider.GetUtcNow().UtcDateTime,
+                    }
+                );
+
+                await patientRepository.CreateAsync(patient, cancellationToken);
+                await familyMembershipRepository.CreateAsync(membership, cancellationToken);
+                await unitOfWork.SaveChangesAsync(cancellationToken);
+
+                return patient.Id;
+            },
             cancellationToken
         );
-
-        var patient = PrimaryProfileRegistrationService.Register(
-            existingProfile,
-            new PrimaryProfileRegistrationArgs
-            {
-                UserId = request.UserId,
-                FullName = fullName,
-                DateOfBirth = request.DateOfBirth,
-                ReferenceTime = timeProvider.GetUtcNow().UtcDateTime,
-            }
-        );
-
-        await patientRepository.CreateAsync(patient, cancellationToken);
-        await unitOfWork.SaveChangesAsync(cancellationToken);
-
-        return patient.Id;
     }
 }

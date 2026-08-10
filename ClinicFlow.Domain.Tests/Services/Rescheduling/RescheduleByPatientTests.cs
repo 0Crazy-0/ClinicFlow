@@ -169,7 +169,11 @@ public class RescheduleByPatientTests
             IsInitiatorPhoneVerified = true,
         };
 
-        var context = new PatientReschedulingContext { DoctorSchedule = CreateSchedule() };
+        var context = new PatientReschedulingContext
+        {
+            DoctorSchedule = CreateSchedule(),
+            InitiatorHasAccessToTarget = true,
+        };
 
         // Act
         var act = () =>
@@ -187,7 +191,7 @@ public class RescheduleByPatientTests
     }
 
     [Fact]
-    public void RescheduleByPatient_ShouldThrowUnauthorized_WhenUserIdMismatches()
+    public void RescheduleByPatient_ShouldThrowUnauthorized_WhenInitiatorHasAccessToTargetIsFalse()
     {
         // Arrange
         var target = CreateSelfPatient();
@@ -202,47 +206,11 @@ public class RescheduleByPatientTests
             IsInitiatorPhoneVerified = true,
         };
 
-        var context = new PatientReschedulingContext { DoctorSchedule = CreateSchedule() };
-
-        // Act
-        var act = () =>
-            AppointmentReschedulingService.RescheduleByPatient(
-                appointment,
-                args,
-                context,
-                SchedulingClearance.Granted()
-            );
-
-        // Assert
-        act.Should()
-            .Throw<PatientAccessUnauthorizedException>()
-            .WithMessage(DomainErrors.Patient.UnauthorizedAccess);
-    }
-
-    [Fact]
-    public void RescheduleByPatient_ShouldThrowUnauthorized_WhenNonSelfReschedulesForDifferentPatient()
-    {
-        // same UserId but different Patient.Id → must still throw Unauthorized
-        var initiator = Patient.CreateFamilyMember(
-            Guid.CreateVersion7(),
-            PersonName.Create("Child"),
-            PatientRelationship.Child,
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10)),
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
-
-        var target = CreateSelfPatient();
-        var appointment = CreateAppointment(target.Id);
-        var args = new PatientReschedulingArgs
+        var context = new PatientReschedulingContext
         {
-            InitiatorPatient = initiator,
-            TargetPatient = target,
-            NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
-            NewTimeRange = CreateTimeRange(),
-            IsInitiatorPhoneVerified = true,
+            DoctorSchedule = CreateSchedule(),
+            InitiatorHasAccessToTarget = false,
         };
-
-        var context = new PatientReschedulingContext { DoctorSchedule = CreateSchedule() };
 
         // Act
         var act = () =>
@@ -274,7 +242,11 @@ public class RescheduleByPatientTests
             IsInitiatorPhoneVerified = false,
         };
 
-        var context = new PatientReschedulingContext { DoctorSchedule = CreateSchedule() };
+        var context = new PatientReschedulingContext
+        {
+            DoctorSchedule = CreateSchedule(),
+            InitiatorHasAccessToTarget = true,
+        };
 
         // Act
         var act = () =>
@@ -320,6 +292,7 @@ public class RescheduleByPatientTests
         {
             Penalties = penalties,
             DoctorSchedule = CreateSchedule(),
+            InitiatorHasAccessToTarget = true,
         };
 
         // Act
@@ -353,6 +326,7 @@ public class RescheduleByPatientTests
         var context = new PatientReschedulingContext
         {
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek),
+            InitiatorHasAccessToTarget = true,
         };
 
         // Act
@@ -388,6 +362,7 @@ public class RescheduleByPatientTests
         var context = new PatientReschedulingContext
         {
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek),
+            InitiatorHasAccessToTarget = true,
         };
 
         // Act
@@ -426,6 +401,7 @@ public class RescheduleByPatientTests
         var context = new PatientReschedulingContext
         {
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek),
+            InitiatorHasAccessToTarget = true,
         };
 
         // Act
@@ -462,6 +438,7 @@ public class RescheduleByPatientTests
         var context = new PatientReschedulingContext
         {
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek),
+            InitiatorHasAccessToTarget = true,
         };
 
         // Act
@@ -505,17 +482,40 @@ public class RescheduleByPatientTests
     private Patient CreateSelfPatient()
     {
         var dateOfBirth = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30));
-        var patient = Patient.CreateSelf(
-            Guid.CreateVersion7(),
+        var patient = Patient.CreateProfile(
             PersonName.Create("Test"),
             dateOfBirth,
             _fakeTime.GetUtcNow().UtcDateTime
         );
+        SetUserId(patient, Guid.CreateVersion7());
+        SetRelationshipToUser(patient, PatientRelationship.Self);
 
         patient.UpdateMedicalProfile(BloodType.Create("A+"), "", "");
         patient.UpdateEmergencyContact(EmergencyContact.Create("Name", "1234567890"));
 
         return patient;
+    }
+
+    private static void SetUserId(Patient patient, Guid userId)
+    {
+        var property = typeof(Patient).GetProperty(
+            nameof(Patient.UserId),
+            System.Reflection.BindingFlags.Public
+                | System.Reflection.BindingFlags.Instance
+                | System.Reflection.BindingFlags.NonPublic
+        );
+        property?.SetValue(patient, userId);
+    }
+
+    private static void SetRelationshipToUser(Patient patient, PatientRelationship relationship)
+    {
+        var property = typeof(Patient).GetProperty(
+            nameof(Patient.RelationshipToUser),
+            System.Reflection.BindingFlags.Public
+                | System.Reflection.BindingFlags.Instance
+                | System.Reflection.BindingFlags.NonPublic
+        );
+        property?.SetValue(patient, relationship);
     }
 
     private Appointment CreateAppointment(Guid patientId)

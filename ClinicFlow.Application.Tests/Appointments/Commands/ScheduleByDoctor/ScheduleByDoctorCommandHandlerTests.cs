@@ -481,8 +481,7 @@ public class ScheduleByDoctorCommandHandlerTests
         );
 
     private Patient CreateTargetPatient(Guid userId) =>
-        Patient.CreateSelf(
-            userId,
+        Patient.CreateProfile(
             PersonName.Create("Test"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
