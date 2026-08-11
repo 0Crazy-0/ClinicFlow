@@ -33,16 +33,6 @@ public class RescheduleByPatientCommandHandlerTests
 
     public RescheduleByPatientCommandHandlerTests()
     {
-        _familyMembershipRepositoryMock
-            .Setup(r =>
-                r.HasActiveMembershipAsync(
-                    It.IsAny<Guid>(),
-                    It.IsAny<Guid>(),
-                    It.IsAny<CancellationToken>()
-                )
-            )
-            .ReturnsAsync(true);
-
         _sut = new RescheduleByPatientCommandHandler(
             _appointmentRepositoryMock.Object,
             _patientRepositoryMock.Object,
@@ -150,6 +140,15 @@ public class RescheduleByPatientCommandHandlerTests
         _userRepositoryMock
             .Setup(r => r.GetByIdAsync(command.InitiatorUserId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
+        _familyMembershipRepositoryMock
+            .Setup(r =>
+                r.HasActiveMembershipAsync(
+                    It.IsAny<Guid>(),
+                    It.IsAny<Guid>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(true);
 
         // Act
         await _sut.Handle(command, TestContext.Current.CancellationToken);
