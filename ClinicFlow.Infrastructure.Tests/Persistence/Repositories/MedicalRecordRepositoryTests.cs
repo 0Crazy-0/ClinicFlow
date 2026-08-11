@@ -6,11 +6,13 @@ using ClinicFlow.Infrastructure.Persistence;
 using ClinicFlow.Infrastructure.Persistence.Repositories;
 using ClinicFlow.Infrastructure.Tests.Shared;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Time.Testing;
 
 namespace ClinicFlow.Infrastructure.Tests.Persistence.Repositories;
 
 public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
 {
+    private readonly FakeTimeProvider _fakeTime = new();
     private readonly MedicalRecordRepository _sut = new(fixture.Context);
     private ApplicationDbContext Context => fixture.Context;
 
@@ -641,8 +643,8 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
         var user = await CreateUserAsync(UserRole.Patient);
         var patient = Patient.CreateProfile(
             PersonName.Create("John Doe"),
-            DateOnly.FromDateTime(DateTime.UtcNow.AddYears(-30)),
-            DateTime.UtcNow
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            _fakeTime.GetUtcNow().UtcDateTime
         );
         typeof(Patient).GetProperty(nameof(Patient.UserId))?.SetValue(patient, user.Id);
 
@@ -674,7 +676,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
             patientId,
             doctorId,
             apptType.Id,
-            DateOnly.FromDateTime(DateTime.UtcNow.AddDays(1)),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange.Create(
                 new TimeOnly(8, 0).AddMinutes(startMinute),
                 new TimeOnly(8, 0).AddMinutes(startMinute + 30)
