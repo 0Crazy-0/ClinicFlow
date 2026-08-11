@@ -1,4 +1,5 @@
 using AwesomeAssertions;
+using ClinicFlow.Application.Common.Utilities;
 using ClinicFlow.Application.Patients.Commands.CreatePatientProfile;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
@@ -124,10 +125,16 @@ public class CreatePatientProfileCommandHandlerTests
         await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
+        var fullName = PersonName.Create($"{command.FirstName} {command.LastName}");
+        var expectedLockKey = DeterministicKeyGenerator.FromComposite(
+            fullName.FullName.Trim().ToUpperInvariant(),
+            command.DateOfBirth.ToString("yyyy-MM-dd")
+        );
+
         _unitOfWorkMock.Verify(
             x =>
                 x.ExecuteWithLockAsync(
-                    command.UserId,
+                    expectedLockKey,
                     It.IsAny<Func<CancellationToken, Task<Guid>>>(),
                     It.IsAny<CancellationToken>()
                 ),

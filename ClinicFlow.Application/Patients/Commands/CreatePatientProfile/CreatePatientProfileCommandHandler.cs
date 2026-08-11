@@ -1,3 +1,4 @@
+using ClinicFlow.Application.Common.Utilities;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.Services;
@@ -21,9 +22,13 @@ public sealed class CreatePatientProfileCommandHandler(
     )
     {
         var fullName = PersonName.Create($"{request.FirstName} {request.LastName}");
+        var lockKey = DeterministicKeyGenerator.FromComposite(
+            fullName.FullName.Trim().ToUpperInvariant(),
+            request.DateOfBirth.ToString("yyyy-MM-dd")
+        );
 
         return await unitOfWork.ExecuteWithLockAsync(
-            request.UserId,
+            lockKey,
             async cancellationToken =>
             {
                 var existingProfile = await patientRepository.GetIncludingDeletedByNameAndDobAsync(
