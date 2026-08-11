@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -13,7 +14,10 @@ public static class DeterministicKeyGenerator
 {
     public static Guid FromComposite(string first, string second)
     {
-        var normalized = $"{first}|{second}";
+        var normalized = string.Create(
+            CultureInfo.InvariantCulture,
+            $"{first.Length}:{first}{second.Length}:{second}"
+        );
         var hash = SHA256.HashData(Encoding.UTF8.GetBytes(normalized));
         return new Guid(hash[..16]);
     }

@@ -51,4 +51,22 @@ public class DeterministicKeyGeneratorTests
         // Assert
         key1.Should().NotBe(key2);
     }
+
+    [Fact]
+    public void FromComposite_ShouldReturnDifferentGuid_ForInputsWithOverlappingBoundaries()
+    {
+        // Arrange
+        var first1 = "AB";
+        var second1 = "C";
+
+        var first2 = "A";
+        var second2 = "BC";
+
+        // Act
+        var key1 = DeterministicKeyGenerator.FromComposite(first1, second1);
+        var key2 = DeterministicKeyGenerator.FromComposite(first2, second2);
+
+        // Assert
+        key1.Should().NotBe(key2);
+    }
 }
