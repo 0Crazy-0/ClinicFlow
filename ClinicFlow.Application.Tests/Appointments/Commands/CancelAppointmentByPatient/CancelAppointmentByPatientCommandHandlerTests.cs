@@ -289,13 +289,13 @@ public class CancelAppointmentByPatientCommandHandlerTests
 
     private Patient CreatePatient(Guid id, Guid userId)
     {
-        var patient = Patient.CreateSelf(
-            userId,
+        var patient = Patient.CreateProfile(
             PersonName.Create("Test"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
+        typeof(Patient).GetProperty(nameof(Patient.UserId))?.SetValue(patient, userId);
         patient.SetId(id);
 
         return patient;

@@ -37,13 +37,17 @@ public class LeaveFamilyAccountCommandHandlerTests
         // Arrange
         var command = new LeaveFamilyAccountCommand(Guid.CreateVersion7(), Guid.CreateVersion7());
 
-        var familyMember = Patient.CreateFamilyMember(
-            command.InitiatorUserId,
+        var familyMember = Patient.CreateProfile(
             PersonName.Create("Adult Member"),
-            PatientRelationship.Spouse,
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-25)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
+        typeof(Patient)
+            .GetProperty(nameof(Patient.UserId))
+            ?.SetValue(familyMember, command.InitiatorUserId);
+        typeof(Patient)
+            .GetProperty(nameof(Patient.RelationshipToUser))
+            ?.SetValue(familyMember, PatientRelationship.Spouse);
 
         _patientRepositoryMock
             .Setup(x => x.GetByIdAsync(command.PatientId, It.IsAny<CancellationToken>()))
@@ -84,13 +88,17 @@ public class LeaveFamilyAccountCommandHandlerTests
         // Arrange
         var command = new LeaveFamilyAccountCommand(Guid.CreateVersion7(), Guid.CreateVersion7());
 
-        var underageMember = Patient.CreateFamilyMember(
-            command.InitiatorUserId,
+        var underageMember = Patient.CreateProfile(
             PersonName.Create("Underage Member"),
-            PatientRelationship.Child,
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
+        typeof(Patient)
+            .GetProperty(nameof(Patient.UserId))
+            ?.SetValue(underageMember, command.InitiatorUserId);
+        typeof(Patient)
+            .GetProperty(nameof(Patient.RelationshipToUser))
+            ?.SetValue(underageMember, PatientRelationship.Child);
 
         _patientRepositoryMock
             .Setup(x => x.GetByIdAsync(command.PatientId, It.IsAny<CancellationToken>()))

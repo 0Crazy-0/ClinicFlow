@@ -28,8 +28,7 @@ public class GetPatientByIdQueryHandlerTests
     public async Task Handle_ShouldReturnPatient_WhenPatientExists()
     {
         // Arrange
-        var patient = Patient.CreateSelf(
-            Guid.CreateVersion7(),
+        var patient = Patient.CreateProfile(
             PersonName.Create("John Doe"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
@@ -75,8 +74,7 @@ public class GetPatientByIdQueryHandlerTests
     public async Task Handle_ShouldReturnPatient_WhenProfileIsIncomplete()
     {
         // Arrange
-        var patient = Patient.CreateSelf(
-            Guid.CreateVersion7(),
+        var patient = Patient.CreateProfile(
             PersonName.Create("John Doe"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime

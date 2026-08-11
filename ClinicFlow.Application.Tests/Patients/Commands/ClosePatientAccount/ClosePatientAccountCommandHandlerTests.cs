@@ -57,8 +57,7 @@ public class ClosePatientAccountCommandHandlerTests
         var userId = Guid.CreateVersion7();
         var command = new ClosePatientAccountCommand(userId);
 
-        var primaryPatient = Patient.CreateSelf(
-            userId,
+        var primaryPatient = Patient.CreateProfile(
             PersonName.Create("Primary User"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime

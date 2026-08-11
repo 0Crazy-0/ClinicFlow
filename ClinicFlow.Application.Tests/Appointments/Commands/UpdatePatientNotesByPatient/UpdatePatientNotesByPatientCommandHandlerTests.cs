@@ -15,7 +15,7 @@ namespace ClinicFlow.Application.Tests.Appointments.Commands.UpdatePatientNotesB
 public class UpdatePatientNotesByPatientCommandHandlerTests
 {
     private readonly Mock<IAppointmentRepository> _appointmentRepositoryMock = new();
-    private readonly Mock<IPatientRepository> _patientRepositoryMock = new();
+    private readonly Mock<IFamilyMembershipRepository> _familyMembershipRepositoryMock = new();
     private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
     private readonly FakeTimeProvider _fakeTime = new();
     private readonly UpdatePatientNotesByPatientCommandHandler _sut;
@@ -24,13 +24,13 @@ public class UpdatePatientNotesByPatientCommandHandlerTests
     {
         _sut = new UpdatePatientNotesByPatientCommandHandler(
             _appointmentRepositoryMock.Object,
-            _patientRepositoryMock.Object,
+            _familyMembershipRepositoryMock.Object,
             _unitOfWorkMock.Object
         );
     }
 
     [Fact]
-    public async Task Handle_ShouldUpdatePatientNotes_WhenInitiatorIsSelf()
+    public async Task Handle_ShouldUpdatePatientNotes_WhenInitiatorHasAccess()
     {
         // Arrange
         var userId = Guid.CreateVersion7();
@@ -40,25 +40,21 @@ public class UpdatePatientNotesByPatientCommandHandlerTests
             "Updated patient notes"
         );
 
-        var targetPatient = CreatePatientSelf(userId);
-        var appointment = CreateAppointment(targetPatient.Id);
+        var appointment = CreateAppointment(Guid.CreateVersion7());
 
         _appointmentRepositoryMock
             .Setup(r => r.GetByIdAsync(command.AppointmentId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(appointment);
 
-        _patientRepositoryMock
-            .Setup(r => r.GetByIdAsync(appointment.PatientId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(targetPatient);
-
-        _patientRepositoryMock
+        _familyMembershipRepositoryMock
             .Setup(r =>
-                r.GetSelfPatientByUserIdAsync(
+                r.HasActiveMembershipAsync(
                     command.InitiatorUserId,
+                    appointment.PatientId,
                     It.IsAny<CancellationToken>()
                 )
             )
-            .ReturnsAsync(targetPatient);
+            .ReturnsAsync(true);
 
         // Act
         await _sut.Handle(command, TestContext.Current.CancellationToken);
@@ -96,117 +92,31 @@ public class UpdatePatientNotesByPatientCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ShouldThrowEntityNotFoundException_WhenPatientNotFound()
-    {
-        // Arrange
-        var command = new UpdatePatientNotesByPatientCommand(
-            Guid.CreateVersion7(),
-            Guid.CreateVersion7(),
-            "Notes"
-        );
-        var appointment = CreateAppointment(Guid.CreateVersion7());
-
-        _appointmentRepositoryMock
-            .Setup(r => r.GetByIdAsync(command.AppointmentId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(appointment);
-
-        _patientRepositoryMock
-            .Setup(r => r.GetByIdAsync(appointment.PatientId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Patient?)null);
-
-        _patientRepositoryMock
-            .Setup(r =>
-                r.GetSelfPatientByUserIdAsync(
-                    command.InitiatorUserId,
-                    It.IsAny<CancellationToken>()
-                )
-            )
-            .ReturnsAsync(CreatePatientSelf(command.InitiatorUserId));
-
-        // Act
-        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
-
-        // Assert
-        var exceptionAssertion = await act.Should()
-            .ThrowAsync<EntityNotFoundException>()
-            .WithMessage(DomainErrors.General.NotFound);
-        exceptionAssertion.Which.EntityName.Should().Be(nameof(Patient));
-
-        _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
-    }
-
-    [Fact]
-    public async Task Handle_ShouldThrowEntityNotFoundException_WhenInitiatorPatientNotFound()
-    {
-        // Arrange
-        var userId = Guid.CreateVersion7();
-        var command = new UpdatePatientNotesByPatientCommand(
-            Guid.CreateVersion7(),
-            userId,
-            "Notes"
-        );
-        var targetPatient = CreatePatientSelf(userId);
-        var appointment = CreateAppointment(targetPatient.Id);
-
-        _appointmentRepositoryMock
-            .Setup(r => r.GetByIdAsync(command.AppointmentId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(appointment);
-        _patientRepositoryMock
-            .Setup(r => r.GetByIdAsync(appointment.PatientId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(targetPatient);
-        _patientRepositoryMock
-            .Setup(r =>
-                r.GetSelfPatientByUserIdAsync(
-                    command.InitiatorUserId,
-                    It.IsAny<CancellationToken>()
-                )
-            )
-            .ReturnsAsync((Patient?)null);
-
-        // Act
-        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
-
-        // Assert
-        var exceptionAssertion = await act.Should()
-            .ThrowAsync<EntityNotFoundException>()
-            .WithMessage(DomainErrors.General.NotFound);
-        exceptionAssertion.Which.EntityName.Should().Be(nameof(Patient));
-
-        _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
-    }
-
-    [Fact]
     public async Task Handle_ShouldThrowPatientAccessUnauthorizedException_WhenInitiatorHasNoAccess()
     {
         // Arrange
         var initiatorUserId = Guid.CreateVersion7();
-        var targetUserId = Guid.CreateVersion7();
         var command = new UpdatePatientNotesByPatientCommand(
             Guid.CreateVersion7(),
             initiatorUserId,
             "Notes"
         );
 
-        var initiatorPatient = CreatePatientSelf(initiatorUserId);
-        var targetPatient = CreatePatientSelf(targetUserId);
-        var appointment = CreateAppointment(targetPatient.Id);
+        var appointment = CreateAppointment(Guid.CreateVersion7());
 
         _appointmentRepositoryMock
             .Setup(r => r.GetByIdAsync(command.AppointmentId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(appointment);
 
-        _patientRepositoryMock
-            .Setup(r => r.GetByIdAsync(appointment.PatientId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(targetPatient);
-
-        _patientRepositoryMock
+        _familyMembershipRepositoryMock
             .Setup(r =>
-                r.GetSelfPatientByUserIdAsync(
+                r.HasActiveMembershipAsync(
                     command.InitiatorUserId,
+                    appointment.PatientId,
                     It.IsAny<CancellationToken>()
                 )
             )
-            .ReturnsAsync(initiatorPatient);
+            .ReturnsAsync(false);
 
         // Act
         var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
@@ -218,14 +128,6 @@ public class UpdatePatientNotesByPatientCommandHandlerTests
 
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
-
-    private Patient CreatePatientSelf(Guid userId) =>
-        Patient.CreateSelf(
-            userId,
-            PersonName.Create("Test Patient"),
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
 
     private Appointment CreateAppointment(Guid patientId) =>
         Appointment.Schedule(

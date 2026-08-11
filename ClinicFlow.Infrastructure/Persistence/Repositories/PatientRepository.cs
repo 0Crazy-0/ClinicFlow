@@ -33,15 +33,6 @@ public sealed class PatientRepository(ApplicationDbContext dbContext) : IPatient
             cancellationToken
         );
 
-    public async Task<bool> HasActiveSelfPatientAsync(
-        Guid userId,
-        CancellationToken cancellationToken = default
-    ) =>
-        await dbContext.Patients.AnyAsync(
-            p => p.UserId == userId && p.RelationshipToUser == PatientRelationship.Self,
-            cancellationToken
-        );
-
     public async Task<bool> HasActiveFamilyMembersAsync(
         Guid userId,
         CancellationToken cancellationToken = default
@@ -73,7 +64,6 @@ public sealed class PatientRepository(ApplicationDbContext dbContext) : IPatient
     ) => await dbContext.Patients.Where(p => p.UserId == userId).ToListAsync(cancellationToken);
 
     public async Task<Patient?> GetIncludingDeletedByNameAndDobAsync(
-        Guid userId,
         PersonName fullName,
         DateOnly dateOfBirth,
         CancellationToken cancellationToken = default
@@ -81,7 +71,7 @@ public sealed class PatientRepository(ApplicationDbContext dbContext) : IPatient
         await dbContext
             .Patients.IgnoreQueryFilters()
             .FirstOrDefaultAsync(
-                p => p.UserId == userId && p.FullName == fullName && p.DateOfBirth == dateOfBirth,
+                p => p.FullName == fullName && p.DateOfBirth == dateOfBirth,
                 cancellationToken
             );
 }

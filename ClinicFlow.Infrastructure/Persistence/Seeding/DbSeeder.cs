@@ -420,16 +420,21 @@ public static class DbSeeder
             "Chronic Kidney Disease",
         ];
 
+        var familyMemberships = new List<FamilyMembership>();
+
         // Self
         for (int i = 0; i < 105; i++)
         {
             var pUser = patientUsers[i];
-            var patient = Patient.CreateSelf(
-                pUser.Id,
+            var patient = Patient.CreateProfile(
                 PersonName.Create(faker.Name.FullName()),
                 DateOnly.FromDateTime(faker.Date.Past(21, refTime.AddYears(-18))),
                 refTime
             );
+            typeof(Patient).GetProperty(nameof(Patient.UserId))?.SetValue(patient, pUser.Id);
+            typeof(Patient)
+                .GetProperty(nameof(Patient.RelationshipToUser))
+                ?.SetValue(patient, PatientRelationship.Self);
             patient.UpdateMedicalProfile(
                 BloodType.Create(faker.PickRandom(bloodTypes)),
                 faker.PickRandom(allergyPool),
@@ -442,18 +447,22 @@ public static class DbSeeder
                 )
             );
             patients.Add(patient);
+            familyMemberships.Add(FamilyMembership.CreateSelf(patient.Id, pUser.Id, refTime));
         }
 
         // Self old
         for (int i = 105; i < 120; i++)
         {
             var pUser = patientUsers[i];
-            var patient = Patient.CreateSelf(
-                pUser.Id,
+            var patient = Patient.CreateProfile(
                 PersonName.Create(faker.Name.FullName()),
                 DateOnly.FromDateTime(faker.Date.Past(40, refTime.AddYears(-40))),
                 refTime
             );
+            typeof(Patient).GetProperty(nameof(Patient.UserId))?.SetValue(patient, pUser.Id);
+            typeof(Patient)
+                .GetProperty(nameof(Patient.RelationshipToUser))
+                ?.SetValue(patient, PatientRelationship.Self);
             patient.UpdateMedicalProfile(
                 BloodType.Create(faker.PickRandom(bloodTypes)),
                 faker.PickRandom(allergyPool),
@@ -466,6 +475,7 @@ public static class DbSeeder
                 )
             );
             patients.Add(patient);
+            familyMemberships.Add(FamilyMembership.CreateSelf(patient.Id, pUser.Id, refTime));
         }
 
         // Family Members (80 dependents)
@@ -492,13 +502,15 @@ public static class DbSeeder
                 PatientRelationship.Spouse => faker.Random.Number(25, 45),
                 _ => faker.Random.Number(18, 65),
             };
-            var patient = Patient.CreateFamilyMember(
-                pUser.Id,
+            var patient = Patient.CreateProfile(
                 PersonName.Create(faker.Name.FullName()),
-                relationship,
                 DateOnly.FromDateTime(faker.Date.Past(age, refTime.AddYears(-age))),
                 refTime
             );
+            typeof(Patient).GetProperty(nameof(Patient.UserId))?.SetValue(patient, pUser.Id);
+            typeof(Patient)
+                .GetProperty(nameof(Patient.RelationshipToUser))
+                ?.SetValue(patient, relationship);
             patient.UpdateMedicalProfile(
                 BloodType.Create(faker.PickRandom(bloodTypes)),
                 faker.PickRandom(allergyPool),
@@ -511,6 +523,9 @@ public static class DbSeeder
                 )
             );
             patients.Add(patient);
+            familyMemberships.Add(
+                FamilyMembership.CreateFamilyMember(patient.Id, pUser.Id, relationship, refTime)
+            );
         }
 
         // Close 5 self patient accounts.
@@ -522,6 +537,7 @@ public static class DbSeeder
             patients[i].RemoveFamilyMember(patients[i].UserId, PatientRelationship.Self);
 
         await context.Patients.AddRangeAsync(patients, cancellationToken);
+        await context.FamilyMemberships.AddRangeAsync(familyMemberships, cancellationToken);
         await context.SaveChangesAsync(cancellationToken);
         return patients;
     }

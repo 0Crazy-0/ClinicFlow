@@ -25,6 +25,7 @@ public class ScheduleByPatientCommandHandlerTests
     private readonly Mock<IScheduleRepository> _scheduleRepositoryMock = new();
     private readonly Mock<IAppointmentRepository> _appointmentRepositoryMock = new();
     private readonly Mock<IUserRepository> _userRepositoryMock = new();
+    private readonly Mock<IFamilyMembershipRepository> _familyMembershipRepositoryMock = new();
     private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
     private readonly FakeTimeProvider _fakeTime = new();
     private readonly ScheduleByPatientCommandHandler _sut;
@@ -39,6 +40,7 @@ public class ScheduleByPatientCommandHandlerTests
             _scheduleRepositoryMock.Object,
             _appointmentRepositoryMock.Object,
             _userRepositoryMock.Object,
+            _familyMembershipRepositoryMock.Object,
             _regionalSchedulingServiceMock.Object,
             _unitOfWorkMock.Object
         );
@@ -136,6 +138,31 @@ public class ScheduleByPatientCommandHandlerTests
         _userRepositoryMock
             .Setup(r => r.GetByIdAsync(command.InitiatorUserId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
+        _familyMembershipRepositoryMock
+            .Setup(r =>
+                r.HasActiveMembershipAsync(
+                    It.IsAny<Guid>(),
+                    It.IsAny<Guid>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(true);
+        _familyMembershipRepositoryMock
+            .Setup(r =>
+                r.HasActiveSelfMembershipByUserIdAsync(
+                    It.IsAny<Guid>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(true);
+        _familyMembershipRepositoryMock
+            .Setup(r =>
+                r.HasActiveSelfMembershipByPatientIdAsync(
+                    It.IsAny<Guid>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(true);
 
         Appointment? capturedAppointment = null;
         _appointmentRepositoryMock
@@ -246,6 +273,31 @@ public class ScheduleByPatientCommandHandlerTests
         _userRepositoryMock
             .Setup(r => r.GetByIdAsync(command.InitiatorUserId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(user);
+        _familyMembershipRepositoryMock
+            .Setup(r =>
+                r.HasActiveMembershipAsync(
+                    It.IsAny<Guid>(),
+                    It.IsAny<Guid>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(true);
+        _familyMembershipRepositoryMock
+            .Setup(r =>
+                r.HasActiveSelfMembershipByUserIdAsync(
+                    It.IsAny<Guid>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(true);
+        _familyMembershipRepositoryMock
+            .Setup(r =>
+                r.HasActiveSelfMembershipByPatientIdAsync(
+                    It.IsAny<Guid>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(true);
 
         // Act
         await _sut.Handle(command, TestContext.Current.CancellationToken);
@@ -694,8 +746,7 @@ public class ScheduleByPatientCommandHandlerTests
 
     private Patient CreateTargetPatient(Guid userId)
     {
-        var patient = Patient.CreateSelf(
-            userId,
+        var patient = Patient.CreateProfile(
             PersonName.Create("Test Patient"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime

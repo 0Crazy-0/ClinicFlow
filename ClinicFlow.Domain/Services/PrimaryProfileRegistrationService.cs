@@ -6,33 +6,38 @@ using ClinicFlow.Domain.Services.Args.Registration;
 namespace ClinicFlow.Domain.Services;
 
 /// <summary>
-/// Registers a primary patient profile by creating a new one or reactivating a soft-deleted one.
+/// Registers a primary patient profile, either by reusing an existing clinical
+/// record or creating a new one, and links it to the account via a new
+/// self-referencing FamilyMembership.
 /// </summary>
 /// <remarks>
-/// Encapsulates the business rule that prevents duplicate active profiles while
-/// allowing soft-deleted profiles to be safely restored.
+/// Encapsulates two independent business rules: soft-deleted patients cannot be
+/// reused directly and must go through the administrative claim process, and a
+/// patient cannot be linked as Self while another Self FamilyMembership for
+/// that patient is still active.
 /// </remarks>
 public static class PrimaryProfileRegistrationService
 {
-    public static Patient Register(Patient? existingProfile, PrimaryProfileRegistrationArgs args)
+    public static (Patient Patient, FamilyMembership Membership) Register(
+        PrimaryProfileRegistrationArgs args
+    )
     {
-        if (existingProfile is null)
-        {
-            return Patient.CreateSelf(
-                args.UserId,
-                args.FullName,
-                args.DateOfBirth,
-                args.ReferenceTime
+        if (args.ExistingPatient is not null && args.ExistingPatient.IsDeleted)
+            throw new DomainValidationException(
+                DomainErrors.Patient.ProfileRequiresAdministrativeClaim
             );
-        }
 
-        if (existingProfile.UserId != args.UserId)
-            throw new DomainValidationException(DomainErrors.Patient.UserIdMismatch);
+        if (args.HasExistingSelfMembership)
+            throw new DomainValidationException(
+                DomainErrors.FamilyMembership.PatientAlreadyHasActiveMembership
+            );
 
-        if (!existingProfile.IsDeleted)
-            throw new DomainValidationException(DomainErrors.Patient.ActiveProfileAlreadyExists);
+        var patient =
+            args.ExistingPatient
+            ?? Patient.CreateProfile(args.FullName, args.DateOfBirth, args.ReferenceTime);
 
-        existingProfile.ReactivateAsPrimary();
-        return existingProfile;
+        var membership = FamilyMembership.CreateSelf(patient.Id, args.UserId, args.ReferenceTime);
+
+        return (patient, membership);
     }
 }

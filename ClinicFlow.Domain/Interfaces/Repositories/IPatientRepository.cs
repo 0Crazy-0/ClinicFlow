@@ -17,11 +17,6 @@ public interface IPatientRepository
         CancellationToken cancellationToken = default
     );
 
-    Task<bool> HasActiveSelfPatientAsync(
-        Guid userId,
-        CancellationToken cancellationToken = default
-    );
-
     Task<bool> HasActiveFamilyMembersAsync(
         Guid userId,
         CancellationToken cancellationToken = default
@@ -38,7 +33,6 @@ public interface IPatientRepository
     );
 
     Task<Patient?> GetIncludingDeletedByNameAndDobAsync(
-        Guid userId,
         PersonName fullName,
         DateOnly dateOfBirth,
         CancellationToken cancellationToken = default

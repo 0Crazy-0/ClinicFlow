@@ -1,6 +1,5 @@
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
-using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Appointments;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Services.Args.Scheduling;
@@ -44,7 +43,7 @@ public static class AppointmentSchedulingService
         if (clearance is null)
             throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
 
-        PatientAccessService.VerifyAccess(args.InitiatorPatient, args.TargetPatient);
+        PatientAccessService.VerifyAccess(context.InitiatorHasAccessToTarget);
 
         if (!args.IsInitiatorPhoneVerified)
             throw new AppointmentSchedulingUnauthorizedException(
@@ -56,8 +55,7 @@ public static class AppointmentSchedulingService
         new PenaltyHistory(context.Penalties).EnsureNotBlocked(args.ScheduledDate);
 
         bool isGuardianScheduling =
-            args.InitiatorPatient.RelationshipToUser is PatientRelationship.Self
-            && args.TargetPatient.RelationshipToUser is not PatientRelationship.Self;
+            context.InitiatorHasOwnSelfMembership && !context.TargetHasOwnSelfMembership;
 
         appointmentType.ValidatePatientEligibility(
             args.TargetPatient.GetAge(args.ScheduledDate),

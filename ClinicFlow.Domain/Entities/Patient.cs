@@ -43,61 +43,24 @@ public class Patient : SoftDeletableEntity
     // EF Core constructor
     private Patient() { }
 
-    private Patient(
-        Guid userId,
-        PersonName fullName,
-        PatientRelationship relationshipToUser,
-        DateOnly dateOfBirth
-    )
+    private Patient(PersonName fullName, DateOnly dateOfBirth)
         : this()
     {
-        UserId = userId;
         FullName = fullName;
-        RelationshipToUser = relationshipToUser;
         DateOfBirth = dateOfBirth;
     }
 
-    /// <summary>
-    /// Creates a new patient entity for the primary user of an account.
-    /// </summary>
-    internal static Patient CreateSelf(
-        Guid userId,
+    internal static Patient CreateProfile(
         PersonName fullName,
         DateOnly dateOfBirth,
         DateTime referenceTime
     )
     {
-        if (userId == Guid.Empty)
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
         if (fullName is null)
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
         if (dateOfBirth > DateOnly.FromDateTime(referenceTime))
             throw new DomainValidationException(DomainErrors.Validation.ValueCannotBeInFuture);
-
-        return new Patient(userId, fullName, PatientRelationship.Self, dateOfBirth);
-    }
-
-    /// <summary>
-    /// Creates a new patient entity representing a family member dependent of a primary user.
-    /// </summary>
-    internal static Patient CreateFamilyMember(
-        Guid userId,
-        PersonName fullName,
-        PatientRelationship relationshipToUser,
-        DateOnly dateOfBirth,
-        DateTime referenceTime
-    )
-    {
-        if (relationshipToUser is PatientRelationship.Self)
-            throw new DomainValidationException(DomainErrors.Patient.CannotBeSelf);
-        if (userId == Guid.Empty)
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-        if (fullName is null)
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-        if (dateOfBirth > DateOnly.FromDateTime(referenceTime))
-            throw new DomainValidationException(DomainErrors.Validation.ValueCannotBeInFuture);
-
-        return new Patient(userId, fullName, relationshipToUser, dateOfBirth);
+        return new Patient(fullName, dateOfBirth);
     }
 
     public void LeaveFamilyAccount(Guid initiatorUserId, DateOnly referenceDate)

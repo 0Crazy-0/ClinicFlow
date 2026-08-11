@@ -9,4 +9,7 @@ public sealed record class PatientSchedulingContext
 {
     public IReadOnlyList<PatientPenalty> Penalties { get; init; } = [];
     public required Schedule DoctorSchedule { get; init; }
+    public bool InitiatorHasAccessToTarget { get; init; }
+    public bool InitiatorHasOwnSelfMembership { get; init; }
+    public bool TargetHasOwnSelfMembership { get; init; }
 }

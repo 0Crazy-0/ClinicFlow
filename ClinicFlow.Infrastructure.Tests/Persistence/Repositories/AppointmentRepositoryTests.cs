@@ -1375,12 +1375,12 @@ public class AppointmentRepositoryTests : IAsyncLifetime
     private async Task<Patient> CreatePatientAsync(Guid userId)
     {
         var refTime = _fakeTime.GetUtcNow().UtcDateTime;
-        var patient = Patient.CreateSelf(
-            userId,
+        var patient = Patient.CreateProfile(
             PersonName.Create("John Doe"),
             DateOnly.FromDateTime(refTime.AddYears(-30)),
             refTime
         );
+        typeof(Patient).GetProperty(nameof(Patient.UserId))?.SetValue(patient, userId);
 
         patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
         patient.UpdateEmergencyContact(EmergencyContact.Create("Contact", "555-9999"));

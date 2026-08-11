@@ -155,7 +155,7 @@ public class ScheduleByPatientTests
     }
 
     [Fact]
-    public void ScheduleByPatient_ShouldThrowUnauthorized_WhenUserIdMismatches()
+    public void ScheduleByPatient_ShouldThrowUnauthorized_WhenInitiatorHasAccessToTargetIsFalse()
     {
         // Arrange
         var appointmentType = CreateAppointmentType();
@@ -171,49 +171,11 @@ public class ScheduleByPatientTests
             IsInitiatorPhoneVerified = true,
         };
 
-        var context = new PatientSchedulingContext { DoctorSchedule = CreateSchedule() };
-
-        // Act
-        var act = () =>
-            AppointmentSchedulingService.ScheduleByPatient(
-                appointmentType,
-                args,
-                context,
-                SchedulingClearance.Granted()
-            );
-
-        // Assert
-        act.Should()
-            .Throw<PatientAccessUnauthorizedException>()
-            .WithMessage(DomainErrors.Patient.UnauthorizedAccess);
-    }
-
-    [Fact]
-    public void ScheduleByPatient_ShouldThrowUnauthorized_WhenNonSelfSchedulesForDifferentPatient()
-    {
-        // Arrange, family member tries to schedule for a different patient → should be unauthorized
-        var userId = Guid.CreateVersion7();
-        var appointmentType = CreateAppointmentType();
-        var initiator = Patient.CreateFamilyMember(
-            userId,
-            PersonName.Create("Child"),
-            PatientRelationship.Child,
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10)),
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
-
-        var target = CreateSelfPatient();
-        var args = new PatientSchedulingArgs
+        var context = new PatientSchedulingContext
         {
-            InitiatorPatient = initiator,
-            TargetPatient = target,
-            DoctorId = Guid.CreateVersion7(),
-            ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
-            TimeRange = CreateTimeRange(),
-            IsInitiatorPhoneVerified = true,
+            DoctorSchedule = CreateSchedule(),
+            InitiatorHasAccessToTarget = false,
         };
-
-        var context = new PatientSchedulingContext { DoctorSchedule = CreateSchedule() };
 
         // Act
         var act = () =>
@@ -237,13 +199,13 @@ public class ScheduleByPatientTests
         var userId = Guid.CreateVersion7();
         var appointmentType = CreateAppointmentType();
 
-        var familyMember = Patient.CreateFamilyMember(
-            userId,
+        var familyMember = Patient.CreateProfile(
             PersonName.Create("Spouse"),
-            PatientRelationship.Spouse,
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
+        SetUserId(familyMember, userId);
+        SetRelationshipToUser(familyMember, PatientRelationship.Spouse);
 
         familyMember.UpdateMedicalProfile(BloodType.Create("A+"), "", "");
         familyMember.UpdateEmergencyContact(EmergencyContact.Create("Name", "1234567890"));
@@ -264,7 +226,11 @@ public class ScheduleByPatientTests
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(17, 0))
         );
 
-        var context = new PatientSchedulingContext { DoctorSchedule = doctorSchedule };
+        var context = new PatientSchedulingContext
+        {
+            DoctorSchedule = doctorSchedule,
+            InitiatorHasAccessToTarget = true,
+        };
 
         // Act
         var appointment = AppointmentSchedulingService.ScheduleByPatient(
@@ -278,6 +244,9 @@ public class ScheduleByPatientTests
         appointment.DomainEvents.OfType<AppointmentScheduledEvent>().Should().ContainSingle();
         appointment.Should().NotBeNull();
         appointment.PatientId.Should().Be(familyMember.Id);
+        appointment.DoctorId.Should().Be(args.DoctorId);
+        appointment.ScheduledDate.Should().Be(args.ScheduledDate);
+        appointment.TimeRange.Should().Be(args.TimeRange);
         appointment.Status.Should().Be(AppointmentStatus.Scheduled);
     }
 
@@ -297,7 +266,11 @@ public class ScheduleByPatientTests
             IsInitiatorPhoneVerified = false,
         };
 
-        var context = new PatientSchedulingContext { DoctorSchedule = CreateSchedule() };
+        var context = new PatientSchedulingContext
+        {
+            DoctorSchedule = CreateSchedule(),
+            InitiatorHasAccessToTarget = true,
+        };
 
         // Act
         var act = () =>
@@ -320,12 +293,13 @@ public class ScheduleByPatientTests
         // Arrange
         var userId = Guid.CreateVersion7();
         var appointmentType = CreateAppointmentType();
-        var incompletePatient = Patient.CreateSelf(
-            userId,
+        var incompletePatient = Patient.CreateProfile(
             PersonName.Create("Test"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
+        SetUserId(incompletePatient, userId);
+        SetRelationshipToUser(incompletePatient, PatientRelationship.Self);
 
         var args = new PatientSchedulingArgs
         {
@@ -337,7 +311,11 @@ public class ScheduleByPatientTests
             IsInitiatorPhoneVerified = true,
         };
 
-        var context = new PatientSchedulingContext { DoctorSchedule = CreateSchedule() };
+        var context = new PatientSchedulingContext
+        {
+            DoctorSchedule = CreateSchedule(),
+            InitiatorHasAccessToTarget = true,
+        };
 
         // Act
         var act = () =>
@@ -384,6 +362,7 @@ public class ScheduleByPatientTests
         {
             Penalties = penalties,
             DoctorSchedule = CreateSchedule(),
+            InitiatorHasAccessToTarget = true,
         };
 
         // Act
@@ -411,12 +390,13 @@ public class ScheduleByPatientTests
             AgeEligibilityPolicy.Create(18, null, false)
         );
 
-        var target = Patient.CreateSelf(
-            Guid.CreateVersion7(),
+        var target = Patient.CreateProfile(
             PersonName.Create("Test"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-15)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
+        SetUserId(target, Guid.CreateVersion7());
+        SetRelationshipToUser(target, PatientRelationship.Self);
 
         target.UpdateMedicalProfile(BloodType.Create("A+"), "", "");
         target.UpdateEmergencyContact(EmergencyContact.Create("Name", "1234567890"));
@@ -431,7 +411,11 @@ public class ScheduleByPatientTests
             IsInitiatorPhoneVerified = true,
         };
 
-        var context = new PatientSchedulingContext { DoctorSchedule = CreateSchedule() };
+        var context = new PatientSchedulingContext
+        {
+            DoctorSchedule = CreateSchedule(),
+            InitiatorHasAccessToTarget = true,
+        };
 
         // Act
         var act = () =>
@@ -446,6 +430,135 @@ public class ScheduleByPatientTests
         act.Should()
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.AppointmentType.MinimumAgeNotMet);
+    }
+
+    [Fact]
+    public void ScheduleByPatient_ShouldSucceed_WhenIsGuardianSchedulingIsTrueAndTargetIsMinor()
+    {
+        // Arrange
+        var appointmentType = AppointmentTypeDefinition.Create(
+            AppointmentCategory.Checkup,
+            "Pediatric Checkup",
+            "Description",
+            EncounterDuration.FromMinutes(30),
+            AgeEligibilityPolicy.Create(0, 17, requiresLegalGuardian: true)
+        );
+
+        var initiator = CreateSelfPatient();
+        var target = Patient.CreateProfile(
+            PersonName.Create("Child"),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10)),
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        SetUserId(target, Guid.CreateVersion7());
+        SetRelationshipToUser(target, PatientRelationship.Child);
+
+        target.UpdateMedicalProfile(BloodType.Create("A+"), "", "");
+        target.UpdateEmergencyContact(EmergencyContact.Create("Name", "1234567890"));
+
+        var args = new PatientSchedulingArgs
+        {
+            InitiatorPatient = initiator,
+            TargetPatient = target,
+            DoctorId = Guid.CreateVersion7(),
+            ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
+            TimeRange = CreateTimeRange(),
+            IsInitiatorPhoneVerified = true,
+        };
+
+        var doctorSchedule = Schedule.Create(
+            args.DoctorId,
+            args.ScheduledDate.DayOfWeek,
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(17, 0))
+        );
+
+        var context = new PatientSchedulingContext
+        {
+            DoctorSchedule = doctorSchedule,
+            InitiatorHasAccessToTarget = true,
+            InitiatorHasOwnSelfMembership = true,
+            TargetHasOwnSelfMembership = false,
+        };
+
+        // Act
+        var appointment = AppointmentSchedulingService.ScheduleByPatient(
+            appointmentType,
+            args,
+            context,
+            SchedulingClearance.Granted()
+        );
+
+        // Assert
+        appointment.DomainEvents.OfType<AppointmentScheduledEvent>().Should().ContainSingle();
+        appointment.Should().NotBeNull();
+        appointment.PatientId.Should().Be(target.Id);
+        appointment.DoctorId.Should().Be(args.DoctorId);
+        appointment.ScheduledDate.Should().Be(args.ScheduledDate);
+        appointment.TimeRange.Should().Be(args.TimeRange);
+        appointment.Status.Should().Be(AppointmentStatus.Scheduled);
+    }
+
+    [Fact]
+    public void ScheduleByPatient_ShouldThrowDomainValidationException_WhenIsGuardianSchedulingIsFalseAndTargetIsMinor()
+    {
+        // Arrange
+        var appointmentType = AppointmentTypeDefinition.Create(
+            AppointmentCategory.Checkup,
+            "Pediatric Checkup",
+            "Description",
+            EncounterDuration.FromMinutes(30),
+            AgeEligibilityPolicy.Create(0, 17, requiresLegalGuardian: true)
+        );
+
+        var initiator = CreateSelfPatient();
+        var target = Patient.CreateProfile(
+            PersonName.Create("Child"),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10)),
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+        SetUserId(target, Guid.CreateVersion7());
+        SetRelationshipToUser(target, PatientRelationship.Child);
+        target.UpdateMedicalProfile(BloodType.Create("A+"), "", "");
+        target.UpdateEmergencyContact(EmergencyContact.Create("Name", "1234567890"));
+
+        var args = new PatientSchedulingArgs
+        {
+            InitiatorPatient = initiator,
+            TargetPatient = target,
+            DoctorId = Guid.CreateVersion7(),
+            ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
+            TimeRange = CreateTimeRange(),
+            IsInitiatorPhoneVerified = true,
+        };
+
+        var doctorSchedule = Schedule.Create(
+            args.DoctorId,
+            args.ScheduledDate.DayOfWeek,
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(17, 0))
+        );
+
+        var context = new PatientSchedulingContext
+        {
+            DoctorSchedule = doctorSchedule,
+            InitiatorHasAccessToTarget = true,
+            InitiatorHasOwnSelfMembership = false,
+            TargetHasOwnSelfMembership = false,
+        };
+
+        // Act
+        var act = () =>
+            AppointmentSchedulingService.ScheduleByPatient(
+                appointmentType,
+                args,
+                context,
+                SchedulingClearance.Granted()
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.AppointmentType.LegalGuardianRequired);
     }
 
     [Fact]
@@ -466,7 +579,11 @@ public class ScheduleByPatientTests
 
         var scheduleForDifferentDoctor = CreateSchedule();
 
-        var context = new PatientSchedulingContext { DoctorSchedule = scheduleForDifferentDoctor };
+        var context = new PatientSchedulingContext
+        {
+            DoctorSchedule = scheduleForDifferentDoctor,
+            InitiatorHasAccessToTarget = true,
+        };
 
         // Act
         var act = () =>
@@ -505,7 +622,11 @@ public class ScheduleByPatientTests
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(17, 0))
         );
 
-        var context = new PatientSchedulingContext { DoctorSchedule = doctorSchedule };
+        var context = new PatientSchedulingContext
+        {
+            DoctorSchedule = doctorSchedule,
+            InitiatorHasAccessToTarget = true,
+        };
 
         // Act
         var appointment = AppointmentSchedulingService.ScheduleByPatient(
@@ -555,16 +676,39 @@ public class ScheduleByPatientTests
 
     private Patient CreateSelfPatient()
     {
-        var patient = Patient.CreateSelf(
-            Guid.CreateVersion7(),
+        var patient = Patient.CreateProfile(
             PersonName.Create("Test"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
+        SetUserId(patient, Guid.CreateVersion7());
+        SetRelationshipToUser(patient, PatientRelationship.Self);
 
         patient.UpdateMedicalProfile(BloodType.Create("A+"), "", "");
         patient.UpdateEmergencyContact(EmergencyContact.Create("Name", "1234567890"));
 
         return patient;
+    }
+
+    private static void SetUserId(Patient patient, Guid userId)
+    {
+        var property = typeof(Patient).GetProperty(
+            nameof(Patient.UserId),
+            System.Reflection.BindingFlags.Public
+                | System.Reflection.BindingFlags.Instance
+                | System.Reflection.BindingFlags.NonPublic
+        );
+        property?.SetValue(patient, userId);
+    }
+
+    private static void SetRelationshipToUser(Patient patient, PatientRelationship relationship)
+    {
+        var property = typeof(Patient).GetProperty(
+            nameof(Patient.RelationshipToUser),
+            System.Reflection.BindingFlags.Public
+                | System.Reflection.BindingFlags.Instance
+                | System.Reflection.BindingFlags.NonPublic
+        );
+        property?.SetValue(patient, relationship);
     }
 }

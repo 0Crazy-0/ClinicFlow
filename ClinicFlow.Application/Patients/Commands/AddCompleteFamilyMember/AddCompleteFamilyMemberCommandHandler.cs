@@ -12,6 +12,7 @@ namespace ClinicFlow.Application.Patients.Commands.AddCompleteFamilyMember;
 public sealed class AddCompleteFamilyMemberCommandHandler(
     TimeProvider timeProvider,
     IPatientRepository patientRepository,
+    IFamilyMembershipRepository familyMembershipRepository,
     IUnitOfWork unitOfWork
 ) : IRequestHandler<AddCompleteFamilyMemberCommand, Guid>
 {
@@ -33,7 +34,7 @@ public sealed class AddCompleteFamilyMemberCommandHandler(
             async cancellationToken =>
             {
                 if (
-                    !await patientRepository.HasActiveSelfPatientAsync(
+                    !await familyMembershipRepository.HasActiveSelfMembershipByUserIdAsync(
                         request.UserId,
                         cancellationToken
                     )
@@ -46,25 +47,33 @@ public sealed class AddCompleteFamilyMemberCommandHandler(
                 }
 
                 var existingProfile = await patientRepository.GetIncludingDeletedByNameAndDobAsync(
-                    request.UserId,
                     fullName,
                     request.DateOfBirth,
                     cancellationToken
                 );
 
-                var activeCount = await patientRepository.CountActiveFamilyMembersAsync(
+                var activeCount = await familyMembershipRepository.CountActiveFamilyMembersAsync(
                     request.UserId,
                     cancellationToken
                 );
 
-                var patient = FamilyMemberRegistrationService.Register(
-                    existingProfile,
-                    activeCount,
+                var hasExistingMembershipWithOwner =
+                    existingProfile is not null
+                    && await familyMembershipRepository.HasActiveMembershipAsync(
+                        request.UserId,
+                        existingProfile.Id,
+                        cancellationToken
+                    );
+
+                var (patient, membership) = FamilyMemberRegistrationService.Register(
                     new FamilyMemberRegistrationArgs
                     {
-                        UserId = request.UserId,
+                        ExistingPatient = existingProfile,
+                        HasExistingMembershipWithOwner = hasExistingMembershipWithOwner,
+                        ActiveFamilyMemberCount = activeCount,
+                        OwnerUserId = request.UserId,
+                        Role = request.Relationship,
                         FullName = fullName,
-                        Relationship = request.Relationship,
                         DateOfBirth = request.DateOfBirth,
                         ReferenceTime = timeProvider.GetUtcNow().UtcDateTime,
                     }
@@ -78,6 +87,7 @@ public sealed class AddCompleteFamilyMemberCommandHandler(
                 patient.UpdateEmergencyContact(emergencyContact);
 
                 await patientRepository.CreateAsync(patient, cancellationToken);
+                await familyMembershipRepository.CreateAsync(membership, cancellationToken);
                 await unitOfWork.SaveChangesAsync(cancellationToken);
 
                 return patient.Id;

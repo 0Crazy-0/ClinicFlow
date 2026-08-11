@@ -522,8 +522,7 @@ public class ScheduleByStaffCommandHandlerTests
 
     private Patient CreateTargetPatient()
     {
-        var patient = Patient.CreateSelf(
-            Guid.CreateVersion7(),
+        var patient = Patient.CreateProfile(
             PersonName.Create("Test Patient"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
