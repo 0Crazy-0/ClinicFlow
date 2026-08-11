@@ -50,9 +50,6 @@ public class Patient : SoftDeletableEntity
         DateOfBirth = dateOfBirth;
     }
 
-    /// <summary>
-    /// Creates a new patient entity for the primary user of an account.
-    /// </summary>
     internal static Patient CreateProfile(
         PersonName fullName,
         DateOnly dateOfBirth,
