@@ -1,10 +1,8 @@
 using AwesomeAssertions;
 using ClinicFlow.Application.Common.Utilities;
 using ClinicFlow.Application.Patients.Commands.CreatePatientProfile;
-using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
-using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.ValueObjects;
@@ -149,61 +147,5 @@ public class CreatePatientProfileCommandHandlerTests
             Times.Once
         );
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
-    }
-
-    [Fact]
-    public async Task Handle_ShouldThrowException_WhenDeletedProfileExists()
-    {
-        // Arrange
-        var command = new CreatePatientProfileCommand(
-            Guid.CreateVersion7(),
-            "John",
-            "Doe",
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30))
-        );
-
-        var deletedPatient = Patient.CreateProfile(
-            PersonName.Create($"{command.FirstName} {command.LastName}"),
-            command.DateOfBirth,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
-        deletedPatient.CloseAccount();
-
-        _patientRepositoryMock
-            .Setup(x =>
-                x.GetIncludingDeletedByNameAndDobAsync(
-                    It.IsAny<PersonName>(),
-                    command.DateOfBirth,
-                    It.IsAny<CancellationToken>()
-                )
-            )
-            .ReturnsAsync(deletedPatient);
-
-        // Act
-        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
-
-        // Assert
-        await act.Should()
-            .ThrowAsync<DomainValidationException>()
-            .WithMessage(DomainErrors.Patient.ProfileRequiresAdministrativeClaim);
-
-        _unitOfWorkMock.Verify(
-            x =>
-                x.ExecuteWithLockAsync(
-                    It.IsAny<Guid>(),
-                    It.IsAny<Func<CancellationToken, Task<Guid>>>(),
-                    It.IsAny<CancellationToken>()
-                ),
-            Times.Once
-        );
-        _patientRepositoryMock.Verify(
-            x => x.CreateAsync(It.IsAny<Patient>(), It.IsAny<CancellationToken>()),
-            Times.Never
-        );
-        _familyMembershipRepositoryMock.Verify(
-            x => x.CreateAsync(It.IsAny<FamilyMembership>(), It.IsAny<CancellationToken>()),
-            Times.Never
-        );
-        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 }

@@ -22,11 +22,6 @@ public static class PrimaryProfileRegistrationService
         PrimaryProfileRegistrationArgs args
     )
     {
-        if (args.ExistingPatient is not null && args.ExistingPatient.IsDeleted)
-            throw new DomainValidationException(
-                DomainErrors.Patient.ProfileRequiresAdministrativeClaim
-            );
-
         if (args.HasExistingSelfMembership)
             throw new DomainValidationException(
                 DomainErrors.FamilyMembership.PatientAlreadyHasActiveMembership

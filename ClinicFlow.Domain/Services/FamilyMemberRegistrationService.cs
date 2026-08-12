@@ -25,11 +25,6 @@ public static class FamilyMemberRegistrationService
         FamilyMemberRegistrationArgs args
     )
     {
-        if (args.ExistingPatient is not null && args.ExistingPatient.IsDeleted)
-            throw new DomainValidationException(
-                DomainErrors.Patient.ProfileRequiresAdministrativeClaim
-            );
-
         if (args.HasExistingMembershipWithOwner)
             throw new DomainValidationException(
                 DomainErrors.FamilyMembership.PatientAlreadyHasActiveMembership

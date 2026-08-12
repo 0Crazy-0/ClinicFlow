@@ -3,7 +3,6 @@ using ClinicFlow.Application.Patients.Commands.AddFamilyMember;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
-using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Exceptions.Patients;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
@@ -161,73 +160,6 @@ public class AddFamilyMemberCommandHandlerTests
             Times.Once
         );
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
-    }
-
-    [Fact]
-    public async Task Handle_ShouldThrowDomainValidationException_WhenDeletedProfileExists()
-    {
-        // Arrange
-        var command = new AddFamilyMemberCommand(
-            Guid.CreateVersion7(),
-            "Child",
-            "Doe",
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-5)),
-            PatientRelationship.Child
-        );
-
-        _familyMembershipRepositoryMock
-            .Setup(x =>
-                x.HasActiveSelfMembershipByUserIdAsync(
-                    command.UserId,
-                    It.IsAny<CancellationToken>()
-                )
-            )
-            .ReturnsAsync(true);
-
-        var deletedMember = Patient.CreateProfile(
-            PersonName.Create($"{command.FirstName} {command.LastName}"),
-            command.DateOfBirth,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
-
-        deletedMember.CloseAccount();
-
-        _patientRepositoryMock
-            .Setup(x =>
-                x.GetIncludingDeletedByNameAndDobAsync(
-                    It.IsAny<PersonName>(),
-                    command.DateOfBirth,
-                    It.IsAny<CancellationToken>()
-                )
-            )
-            .ReturnsAsync(deletedMember);
-
-        // Act
-        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
-
-        // Assert
-        await act.Should()
-            .ThrowAsync<DomainValidationException>()
-            .WithMessage(DomainErrors.Patient.ProfileRequiresAdministrativeClaim);
-
-        _unitOfWorkMock.Verify(
-            x =>
-                x.ExecuteWithLockAsync(
-                    It.IsAny<Guid>(),
-                    It.IsAny<Func<CancellationToken, Task<Guid>>>(),
-                    It.IsAny<CancellationToken>()
-                ),
-            Times.Once
-        );
-        _patientRepositoryMock.Verify(
-            x => x.CreateAsync(It.IsAny<Patient>(), It.IsAny<CancellationToken>()),
-            Times.Never
-        );
-        _familyMembershipRepositoryMock.Verify(
-            x => x.CreateAsync(It.IsAny<FamilyMembership>(), It.IsAny<CancellationToken>()),
-            Times.Never
-        );
-        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]

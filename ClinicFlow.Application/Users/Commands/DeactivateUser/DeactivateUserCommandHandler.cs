@@ -9,6 +9,8 @@ namespace ClinicFlow.Application.Users.Commands.DeactivateUser;
 
 public sealed class DeactivateUserCommandHandler(
     IUserRepository userRepository,
+    IFamilyMembershipRepository familyMembershipRepository,
+    TimeProvider timeProvider,
     IUnitOfWork unitOfWork
 ) : IRequestHandler<DeactivateUserCommand>
 {
@@ -23,7 +25,29 @@ public sealed class DeactivateUserCommandHandler(
                 request.UserId
             );
 
+        var selfMembership =
+            await familyMembershipRepository.GetActiveSelfMembershipByUserIdAsync(
+                request.UserId,
+                cancellationToken
+            )
+            ?? throw new EntityNotFoundException(
+                DomainErrors.General.NotFound,
+                nameof(FamilyMembership),
+                request.UserId
+            );
+
+        if (
+            await familyMembershipRepository.CountActiveFamilyMembersAsync(
+                request.UserId,
+                cancellationToken
+            ) > 0
+        )
+            throw new DomainValidationException(
+                DomainErrors.User.CannotCloseAccountWithActiveFamilyMembers
+            );
+
         user.Deactivate();
+        selfMembership.Leave(timeProvider.GetUtcNow().UtcDateTime);
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
