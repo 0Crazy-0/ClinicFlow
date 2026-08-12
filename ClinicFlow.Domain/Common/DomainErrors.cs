@@ -98,8 +98,7 @@ public static class DomainErrors
         public const string UserIdMismatch = "PATIENT_USER_ID_MISMATCH";
         public const string UnauthorizedAccess = "PATIENT_UNAUTHORIZED_ACCESS";
         public const string PrimaryPatientRequired = "PRIMARY_PATIENT_REQUIRED";
-        public const string CannotCloseAccountWithActiveFamilyMembers =
-            "CANNOT_CLOSE_ACCOUNT_WITH_ACTIVE_FAMILY_MEMBERS";
+
         public const string UnderageCannotLeaveFamilyAccount =
             "UNDERAGE_CANNOT_LEAVE_FAMILY_ACCOUNT";
         public const string CannotLeaveOwnAccount = "CANNOT_LEAVE_OWN_ACCOUNT";
@@ -138,6 +137,8 @@ public static class DomainErrors
         public const string InvalidVerificationCode = "INVALID_VERIFICATION_CODE";
         public const string AccountInactive = "ACCOUNT_INACTIVE";
         public const string AccountLockedOut = "ACCOUNT_LOCKED_OUT";
+        public const string CannotCloseAccountWithActiveFamilyMembers =
+            "CANNOT_CLOSE_ACCOUNT_WITH_ACTIVE_FAMILY_MEMBERS";
         public const string AlreadyActive = "USER_ALREADY_ACTIVE";
         public const string AlreadyInactive = "USER_ALREADY_INACTIVE";
         public const string InvalidCredentials = "INVALID_CREDENTIALS";

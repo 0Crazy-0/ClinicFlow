@@ -41,7 +41,7 @@ public sealed class ClosePatientAccountCommandHandler(
                     )
                 )
                     throw new ActiveFamilyMembersExistException(
-                        DomainErrors.Patient.CannotCloseAccountWithActiveFamilyMembers,
+                        DomainErrors.User.CannotCloseAccountWithActiveFamilyMembers,
                         request.UserId
                     );
 

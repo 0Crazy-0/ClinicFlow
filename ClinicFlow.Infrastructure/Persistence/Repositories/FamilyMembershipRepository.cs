@@ -22,6 +22,18 @@ public sealed class FamilyMembershipRepository(ApplicationDbContext dbContext)
         return Task.CompletedTask;
     }
 
+    public async Task<FamilyMembership?> GetActiveSelfMembershipByUserIdAsync(
+        Guid userId,
+        CancellationToken cancellationToken = default
+    ) =>
+        await dbContext.FamilyMemberships.FirstOrDefaultAsync(
+            m =>
+                m.UserId == userId
+                && m.Status == FamilyMembershipStatus.Active
+                && m.Role == PatientRelationship.Self,
+            cancellationToken
+        );
+
     public async Task<bool> HasActiveSelfMembershipByUserIdAsync(
         Guid userId,
         CancellationToken cancellationToken = default

@@ -77,6 +77,105 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
     }
 
     [Fact]
+    public async Task GetActiveSelfMembershipByUserIdAsync_ShouldReturnMembership_WhenExistsAndActive()
+    {
+        // Arrange
+        var user = await CreateUserAsync();
+        var patient = await CreatePatientAsync();
+        var membership = FamilyMembership.CreateSelf(
+            patient.Id,
+            user.Id,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        Context.FamilyMemberships.Add(membership);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var result = await _sut.GetActiveSelfMembershipByUserIdAsync(
+            user.Id,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().BeEquivalentTo(membership);
+    }
+
+    [Fact]
+    public async Task GetActiveSelfMembershipByUserIdAsync_ShouldReturnNull_WhenMembershipIsTerminated()
+    {
+        // Arrange
+        var user = await CreateUserAsync();
+        var patient = await CreatePatientAsync();
+        var membership = FamilyMembership.CreateSelf(
+            patient.Id,
+            user.Id,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        membership.Leave(_fakeTime.GetUtcNow().UtcDateTime.AddHours(1));
+
+        Context.FamilyMemberships.Add(membership);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var result = await _sut.GetActiveSelfMembershipByUserIdAsync(
+            user.Id,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task GetActiveSelfMembershipByUserIdAsync_ShouldReturnNull_WhenDoesNotExist()
+    {
+        // Arrange
+        var nonExistentUserId = Guid.CreateVersion7();
+
+        // Act
+        var result = await _sut.GetActiveSelfMembershipByUserIdAsync(
+            nonExistentUserId,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task GetActiveSelfMembershipByUserIdAsync_ShouldReturnNull_WhenUserHasOnlyFamilyMember()
+    {
+        // Arrange
+        var user = await CreateUserAsync();
+        var patient = await CreatePatientAsync();
+
+        // in production, a FamilyMember membership always requires the owner
+        // to already have an active Self membership (enforced by PrimaryPatientRequired
+        // upstream). It's created here in isolation, without the corresponding Self,
+        // solely to verify that the query correctly filters by Role == Self.
+        var membership = FamilyMembership.CreateFamilyMember(
+            patient.Id,
+            user.Id,
+            PatientRelationship.Child,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        Context.FamilyMemberships.Add(membership);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var result = await _sut.GetActiveSelfMembershipByUserIdAsync(
+            user.Id,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Fact]
     public async Task HasActiveSelfMembershipByUserIdAsync_ShouldReturnTrue_WhenActiveSelfMembershipExists()
     {
         // Arrange

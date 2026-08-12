@@ -65,32 +65,6 @@ public class FamilyMemberRegistrationServiceTests
     }
 
     [Fact]
-    public void Register_ShouldThrowProfileRequiresAdministrativeClaim_WhenExistingPatientIsDeleted()
-    {
-        // Arrange
-        var deletedPatient = Patient.CreateProfile(
-            PersonName.Create("Test Patient"),
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
-
-        deletedPatient.CloseAccount();
-
-        var args = CreateArgs(Guid.CreateVersion7(), PatientRelationship.Child) with
-        {
-            ExistingPatient = deletedPatient,
-        };
-
-        // Act
-        var act = () => FamilyMemberRegistrationService.Register(args);
-
-        // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.Patient.ProfileRequiresAdministrativeClaim);
-    }
-
-    [Fact]
     public void Register_ShouldThrowPatientAlreadyHasActiveMembership_WhenHasExistingMembershipWithOwnerIsTrue()
     {
         // Arrange

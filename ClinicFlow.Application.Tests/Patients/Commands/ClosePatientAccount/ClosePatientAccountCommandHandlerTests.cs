@@ -114,7 +114,7 @@ public class ClosePatientAccountCommandHandlerTests
         // Assert
         await act.Should()
             .ThrowAsync<ActiveFamilyMembersExistException>()
-            .WithMessage(DomainErrors.Patient.CannotCloseAccountWithActiveFamilyMembers);
+            .WithMessage(DomainErrors.User.CannotCloseAccountWithActiveFamilyMembers);
 
         _unitOfWorkMock.Verify(
             x =>
