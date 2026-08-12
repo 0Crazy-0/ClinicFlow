@@ -22,6 +22,22 @@ public class DeactivateUserCommandHandlerTests
 
     public DeactivateUserCommandHandlerTests()
     {
+        _unitOfWorkMock
+            .Setup(x =>
+                x.ExecuteWithLockAsync(
+                    It.IsAny<Guid>(),
+                    It.IsAny<Func<CancellationToken, Task>>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .Returns(
+                (
+                    Guid _,
+                    Func<CancellationToken, Task> operation,
+                    CancellationToken cancellationToken
+                ) => operation(cancellationToken)
+            );
+
         _sut = new DeactivateUserCommandHandler(
             _userRepositoryMock.Object,
             _familyMembershipRepositoryMock.Object,
@@ -59,6 +75,15 @@ public class DeactivateUserCommandHandlerTests
         await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
+        _unitOfWorkMock.Verify(
+            x =>
+                x.ExecuteWithLockAsync(
+                    command.UserId,
+                    It.IsAny<Func<CancellationToken, Task>>(),
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Once
+        );
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
 
         user.IsActive.Should().BeFalse();
@@ -84,6 +109,15 @@ public class DeactivateUserCommandHandlerTests
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(User));
 
+        _unitOfWorkMock.Verify(
+            x =>
+                x.ExecuteWithLockAsync(
+                    It.IsAny<Guid>(),
+                    It.IsAny<Func<CancellationToken, Task>>(),
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Once
+        );
         _familyMembershipRepositoryMock.Verify(
             x =>
                 x.GetActiveSelfMembershipByUserIdAsync(
@@ -121,6 +155,15 @@ public class DeactivateUserCommandHandlerTests
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(FamilyMembership));
 
+        _unitOfWorkMock.Verify(
+            x =>
+                x.ExecuteWithLockAsync(
+                    It.IsAny<Guid>(),
+                    It.IsAny<Func<CancellationToken, Task>>(),
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Once
+        );
         _familyMembershipRepositoryMock.Verify(
             x => x.CountActiveFamilyMembersAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()),
             Times.Never
@@ -158,6 +201,15 @@ public class DeactivateUserCommandHandlerTests
             .ThrowAsync<DomainValidationException>()
             .WithMessage(DomainErrors.User.CannotCloseAccountWithActiveFamilyMembers);
 
+        _unitOfWorkMock.Verify(
+            x =>
+                x.ExecuteWithLockAsync(
+                    It.IsAny<Guid>(),
+                    It.IsAny<Func<CancellationToken, Task>>(),
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Once
+        );
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
