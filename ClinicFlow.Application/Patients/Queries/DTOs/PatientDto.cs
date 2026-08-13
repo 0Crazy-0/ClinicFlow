@@ -1,5 +1,3 @@
-using ClinicFlow.Domain.Enums;
-
 namespace ClinicFlow.Application.Patients.Queries.DTOs;
 
 /// <param name="UserId">The unique identifier of the user account owning this patient profile.</param>
@@ -7,9 +5,7 @@ namespace ClinicFlow.Application.Patients.Queries.DTOs;
 /// <param name="BloodType">The patient's blood type (e.g. "O+", "AB-").</param>
 public sealed record PatientDto(
     Guid Id,
-    Guid UserId,
     string FullName,
-    PatientRelationship RelationshipToUser,
     DateOnly DateOfBirth,
     string? BloodType,
     string? Allergies,

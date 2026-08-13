@@ -51,9 +51,7 @@ public class GetPatientByIdQueryHandlerTests
         // Assert
         var expectedDto = new PatientDto(
             patient.Id,
-            patient.UserId,
             patient.FullName.FullName,
-            patient.RelationshipToUser,
             patient.DateOfBirth,
             patient.BloodType?.Value,
             patient.Allergies,
@@ -93,9 +91,7 @@ public class GetPatientByIdQueryHandlerTests
         // Assert
         var expectedDto = new PatientDto(
             patient.Id,
-            patient.UserId,
             patient.FullName.FullName,
-            patient.RelationshipToUser,
             patient.DateOfBirth,
             patient.BloodType?.Value,
             patient.Allergies,
