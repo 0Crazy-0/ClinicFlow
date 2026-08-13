@@ -176,6 +176,136 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
     }
 
     [Fact]
+    public async Task GetActiveMembershipAsync_ShouldReturnMembership_WhenExistsAndActive()
+    {
+        // Arrange
+        var user = await CreateUserAsync();
+        var patient = await CreatePatientAsync();
+        var membership = FamilyMembership.CreateFamilyMember(
+            patient.Id,
+            user.Id,
+            PatientRelationship.Spouse,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        Context.FamilyMemberships.Add(membership);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var result = await _sut.GetActiveMembershipAsync(
+            user.Id,
+            patient.Id,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().BeEquivalentTo(membership);
+    }
+
+    [Fact]
+    public async Task GetActiveMembershipAsync_ShouldReturnNull_WhenUserIdDoesNotMatch()
+    {
+        // Arrange
+        var ownerUser = await CreateUserAsync();
+        var otherUser = await CreateUserAsync();
+        var patient = await CreatePatientAsync();
+        var membership = FamilyMembership.CreateFamilyMember(
+            patient.Id,
+            ownerUser.Id,
+            PatientRelationship.Spouse,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        Context.FamilyMemberships.Add(membership);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var result = await _sut.GetActiveMembershipAsync(
+            otherUser.Id,
+            patient.Id,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task GetActiveMembershipAsync_ShouldReturnNull_WhenPatientIdDoesNotMatch()
+    {
+        // Arrange
+        var user = await CreateUserAsync();
+        var patient1 = await CreatePatientAsync();
+        var patient2 = await CreatePatientAsync();
+        var membership = FamilyMembership.CreateFamilyMember(
+            patient1.Id,
+            user.Id,
+            PatientRelationship.Child,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        Context.FamilyMemberships.Add(membership);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var result = await _sut.GetActiveMembershipAsync(
+            user.Id,
+            patient2.Id,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task GetActiveMembershipAsync_ShouldReturnNull_WhenMembershipIsTerminated()
+    {
+        // Arrange
+        var user = await CreateUserAsync();
+        var patient = await CreatePatientAsync();
+        var membership = FamilyMembership.CreateFamilyMember(
+            patient.Id,
+            user.Id,
+            PatientRelationship.Child,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        membership.Leave(_fakeTime.GetUtcNow().UtcDateTime.AddHours(1));
+
+        Context.FamilyMemberships.Add(membership);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var result = await _sut.GetActiveMembershipAsync(
+            user.Id,
+            patient.Id,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task GetActiveMembershipAsync_ShouldReturnNull_WhenDoesNotExist()
+    {
+        // Arrange
+        var nonExistentUserId = Guid.CreateVersion7();
+        var nonExistentPatientId = Guid.CreateVersion7();
+
+        // Act
+        var result = await _sut.GetActiveMembershipAsync(
+            nonExistentUserId,
+            nonExistentPatientId,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Fact]
     public async Task HasActiveSelfMembershipByUserIdAsync_ShouldReturnTrue_WhenActiveSelfMembershipExists()
     {
         // Arrange
