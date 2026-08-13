@@ -301,6 +301,7 @@ public class AppointmentCancellationServiceTests
         {
             Category = category,
             Specialty = CreateSpecialty(),
+            IsInitiatorSelfOfTarget = true,
         };
 
         var args = new PatientCancellationArgs
@@ -341,6 +342,8 @@ public class AppointmentCancellationServiceTests
         {
             Category = category,
             Specialty = CreateSpecialty(),
+            IsInitiatorSelfOfTarget = false,
+            IsInitiatorGuardianOfMinorTarget = relationship is PatientRelationship.Child,
         };
 
         var args = new PatientCancellationArgs
@@ -372,6 +375,7 @@ public class AppointmentCancellationServiceTests
         {
             Category = AppointmentCategory.Procedure,
             Specialty = CreateSpecialty(),
+            IsInitiatorSelfOfTarget = true,
         };
 
         var args = new PatientCancellationArgs
@@ -393,6 +397,7 @@ public class AppointmentCancellationServiceTests
 
     [Theory]
     [InlineData(PatientRelationship.Child, 10, AppointmentCategory.Procedure)]
+    [InlineData(PatientRelationship.Child, 18, AppointmentCategory.Emergency)]
     [InlineData(PatientRelationship.Child, 20, AppointmentCategory.Emergency)]
     [InlineData(PatientRelationship.Spouse, 30, AppointmentCategory.Emergency)]
     [InlineData(PatientRelationship.Spouse, 30, AppointmentCategory.Procedure)]
@@ -414,6 +419,8 @@ public class AppointmentCancellationServiceTests
         {
             Category = category,
             Specialty = CreateSpecialty(),
+            IsInitiatorSelfOfTarget = false,
+            IsInitiatorGuardianOfMinorTarget = relationship is PatientRelationship.Child,
         };
 
         var args = new PatientCancellationArgs
@@ -431,40 +438,6 @@ public class AppointmentCancellationServiceTests
         act.Should()
             .Throw<AppointmentCancellationUnauthorizedException>()
             .WithMessage(DomainErrors.Appointment.CannotCancel);
-    }
-
-    [Fact]
-    public void CancelByPatient_ShouldThrowUnauthorized_WhenPatientDoesNotBelongToUser()
-    {
-        // Arrange
-        var initiatorUserId = Guid.CreateVersion7();
-        var anotherUserId = Guid.CreateVersion7();
-        var patientId = Guid.CreateVersion7();
-        var patient = CreateSelfPatient(patientId, anotherUserId, 30);
-        var initiatorPatient = CreateSelfPatient(Guid.CreateVersion7(), initiatorUserId, 30);
-        var appointment = CreateAppointment(patientId);
-
-        var context = new AppointmentCancellationContext
-        {
-            Category = AppointmentCategory.Checkup,
-            Specialty = CreateSpecialty(),
-        };
-
-        var args = new PatientCancellationArgs
-        {
-            TargetPatient = patient,
-            InitiatorUserId = initiatorPatient.UserId,
-            Reason = "Patient reason",
-            CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
-        };
-
-        // Act
-        var act = () => AppointmentCancellationService.CancelByPatient(appointment, context, args);
-
-        // Assert
-        act.Should()
-            .Throw<AppointmentCancellationUnauthorizedException>()
-            .WithMessage(DomainErrors.Appointment.UnauthorizedCancellation);
     }
 
     [Fact]

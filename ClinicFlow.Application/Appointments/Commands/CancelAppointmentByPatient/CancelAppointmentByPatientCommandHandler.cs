@@ -1,5 +1,7 @@
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
+using ClinicFlow.Domain.Enums;
+using ClinicFlow.Domain.Exceptions.Appointments;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
@@ -17,6 +19,7 @@ public sealed class CancelAppointmentByPatientCommandHandler(
     IAppointmentTypeDefinitionRepository appointmentTypeRepository,
     IMedicalSpecialtyRepository specialtyRepository,
     IDoctorRepository doctorRepository,
+    IFamilyMembershipRepository familyMembershipRepository,
     IUnitOfWork unitOfWork
 ) : IRequestHandler<CancelAppointmentByPatientCommand>
 {
@@ -32,6 +35,16 @@ public sealed class CancelAppointmentByPatientCommandHandler(
                 DomainErrors.General.NotFound,
                 nameof(Appointment),
                 request.AppointmentId
+            );
+
+        var initiatorMembership =
+            await familyMembershipRepository.GetActiveMembershipAsync(
+                request.InitiatorUserId,
+                appointment.PatientId,
+                cancellationToken
+            )
+            ?? throw new AppointmentCancellationUnauthorizedException(
+                DomainErrors.Appointment.UnauthorizedCancellation
             );
 
         var targetPatient =
@@ -75,6 +88,9 @@ public sealed class CancelAppointmentByPatientCommandHandler(
             {
                 Specialty = specialty,
                 Category = appointmentType.Category,
+                IsInitiatorSelfOfTarget = initiatorMembership.Role is PatientRelationship.Self,
+                IsInitiatorGuardianOfMinorTarget =
+                    initiatorMembership.Role is PatientRelationship.Child,
             },
             new PatientCancellationArgs
             {

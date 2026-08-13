@@ -37,11 +37,6 @@ public static class AppointmentCancellationService
         if (appointment.PatientId != args.TargetPatient.Id)
             throw new DomainValidationException(DomainErrors.Appointment.DataMismatch);
 
-        if (args.TargetPatient.UserId != args.InitiatorUserId)
-            throw new AppointmentCancellationUnauthorizedException(
-                DomainErrors.Appointment.UnauthorizedCancellation
-            );
-
         if (context.Category is AppointmentCategory.Procedure)
             throw new AppointmentCancellationUnauthorizedException(
                 DomainErrors.Appointment.CannotCancel
@@ -50,6 +45,8 @@ public static class AppointmentCancellationService
         if (context.Category is AppointmentCategory.Emergency)
             ValidateEmergencyCancellation(
                 args.TargetPatient,
+                context.IsInitiatorSelfOfTarget,
+                context.IsInitiatorGuardianOfMinorTarget,
                 DateOnly.FromDateTime(args.CancelledAt)
             );
 
@@ -116,15 +113,17 @@ public static class AppointmentCancellationService
     /// <remarks>
     /// Emergency appointments can only be cancelled by the patients themselves or by a parent if the patient is under 18.
     /// </remarks>
-    private static void ValidateEmergencyCancellation(Patient patient, DateOnly referenceDate)
+    private static void ValidateEmergencyCancellation(
+        Patient patient,
+        bool isInitiatorSelfOfTarget,
+        bool isInitiatorGuardianOfMinorTarget,
+        DateOnly referenceDate
+    )
     {
-        if (patient.RelationshipToUser is PatientRelationship.Self)
+        if (isInitiatorSelfOfTarget)
             return;
 
-        if (
-            patient.RelationshipToUser is PatientRelationship.Child
-            && patient.GetAge(referenceDate) < 18
-        )
+        if (isInitiatorGuardianOfMinorTarget && patient.GetAge(referenceDate) < 18)
             return;
 
         throw new AppointmentCancellationUnauthorizedException(
