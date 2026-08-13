@@ -107,13 +107,13 @@ Change type of field '_patientUsersById' from 'IReadOnlyDictionary' to 'Dictiona
 
 ### `S107`. Too many constructor parameters
 
-**Files:** `RescheduleByPatientCommandHandler.cs`, `ScheduleByPatientCommandHandler.cs` (Application)
+**Files:** `CancelAppointmentByPatientCommandHandler.cs`, `RescheduleByPatientCommandHandler.cs`, `ScheduleByPatientCommandHandler.cs` (Application)
 
 ```
-Constructor has 9 parameters, which is greater than the 7 authorized.
+Constructor has 8 or 9 parameters, which is greater than the 7 authorized.
 ```
 
-**Resolution:** Intentional by design. These are CQRS orchestration handlers where each of the 9 dependencies serves a distinct, non-mergeable responsibility. Refactoring into facade or aggregate services would obscure dependencies without reducing actual complexity.
+**Resolution:** Intentional by design. These are CQRS orchestration handlers where each of the dependencies serves a distinct, non-mergeable responsibility. Refactoring into facade or aggregate services would obscure dependencies without reducing actual complexity.
 
 ### `S4144`. Identical method implementations
 
