@@ -37,7 +37,7 @@ public sealed class CreateCompletePatientProfileCommandHandler(
             lockKey,
             async cancellationToken =>
             {
-                var existingProfile = await patientRepository.GetIncludingDeletedByNameAndDobAsync(
+                var existingProfile = await patientRepository.GetByNameAndDobAsync(
                     fullName,
                     request.DateOfBirth,
                     cancellationToken

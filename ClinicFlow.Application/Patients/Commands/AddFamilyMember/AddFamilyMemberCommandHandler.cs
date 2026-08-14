@@ -41,7 +41,7 @@ public sealed class AddFamilyMemberCommandHandler(
                     );
                 }
 
-                var existingProfile = await patientRepository.GetIncludingDeletedByNameAndDobAsync(
+                var existingProfile = await patientRepository.GetByNameAndDobAsync(
                     fullName,
                     request.DateOfBirth,
                     cancellationToken

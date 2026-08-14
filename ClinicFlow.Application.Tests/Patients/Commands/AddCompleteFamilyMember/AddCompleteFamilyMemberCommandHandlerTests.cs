@@ -3,7 +3,6 @@ using ClinicFlow.Application.Patients.Commands.AddCompleteFamilyMember;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
-using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Exceptions.Patients;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
@@ -80,7 +79,7 @@ public class AddCompleteFamilyMemberCommandHandlerTests
 
         _patientRepositoryMock
             .Setup(x =>
-                x.GetIncludingDeletedByNameAndDobAsync(
+                x.GetByNameAndDobAsync(
                     It.IsAny<PersonName>(),
                     command.DateOfBirth,
                     It.IsAny<CancellationToken>()
@@ -150,7 +149,7 @@ public class AddCompleteFamilyMemberCommandHandlerTests
 
         _patientRepositoryMock
             .Setup(x =>
-                x.GetIncludingDeletedByNameAndDobAsync(
+                x.GetByNameAndDobAsync(
                     personName,
                     command.DateOfBirth,
                     It.IsAny<CancellationToken>()

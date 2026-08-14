@@ -63,7 +63,7 @@ public class CreatePatientProfileCommandHandlerTests
 
         _patientRepositoryMock
             .Setup(x =>
-                x.GetIncludingDeletedByNameAndDobAsync(
+                x.GetByNameAndDobAsync(
                     It.IsAny<PersonName>(),
                     command.DateOfBirth,
                     It.IsAny<CancellationToken>()
@@ -111,7 +111,7 @@ public class CreatePatientProfileCommandHandlerTests
 
         _patientRepositoryMock
             .Setup(x =>
-                x.GetIncludingDeletedByNameAndDobAsync(
+                x.GetByNameAndDobAsync(
                     It.IsAny<PersonName>(),
                     command.DateOfBirth,
                     It.IsAny<CancellationToken>()
