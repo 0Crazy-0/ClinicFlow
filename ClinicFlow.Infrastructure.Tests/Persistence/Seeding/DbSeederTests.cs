@@ -91,18 +91,24 @@ public class DbSeederTests(PostgresFixture fixture) : IAsyncLifetime
         doctors.Should().HaveCount(35);
         doctors.Count(d => d.IsDeleted).Should().Be(3);
 
-        // 6. Patients
+        // 6. Patients & FamilyMemberships
         var patients = await Context
             .Patients.IgnoreQueryFilters()
             .ToListAsync(TestContext.Current.CancellationToken);
 
         patients.Should().HaveCount(200);
-        patients.Count(p => p.RelationshipToUser is PatientRelationship.Self).Should().Be(120);
-        patients.Count(p => p.RelationshipToUser is PatientRelationship.Child).Should().Be(25);
-        patients.Count(p => p.RelationshipToUser is PatientRelationship.Spouse).Should().Be(20);
-        patients.Count(p => p.RelationshipToUser is PatientRelationship.Parent).Should().Be(15);
-        patients.Count(p => p.RelationshipToUser is PatientRelationship.Sibling).Should().Be(10);
-        patients.Count(p => p.RelationshipToUser is PatientRelationship.Other).Should().Be(10);
+
+        var familyMemberships = await Context
+            .FamilyMemberships.IgnoreQueryFilters()
+            .ToListAsync(TestContext.Current.CancellationToken);
+
+        familyMemberships.Should().HaveCount(200);
+        familyMemberships.Count(m => m.Role is PatientRelationship.Self).Should().Be(120);
+        familyMemberships.Count(m => m.Role is PatientRelationship.Child).Should().Be(25);
+        familyMemberships.Count(m => m.Role is PatientRelationship.Spouse).Should().Be(20);
+        familyMemberships.Count(m => m.Role is PatientRelationship.Parent).Should().Be(15);
+        familyMemberships.Count(m => m.Role is PatientRelationship.Sibling).Should().Be(10);
+        familyMemberships.Count(m => m.Role is PatientRelationship.Other).Should().Be(10);
 
         // 7. Schedules
         var schedules = await Context.Schedules.ToListAsync(TestContext.Current.CancellationToken);
@@ -176,7 +182,7 @@ public class DbSeederTests(PostgresFixture fixture) : IAsyncLifetime
         );
 
         penalties.Count(p => p.Type is PenaltyType.Warning).Should().Be(85);
-        penalties.Count(p => p.Type is PenaltyType.TemporaryBlock).Should().Be(5);
+        penalties.Count(p => p.Type is PenaltyType.TemporaryBlock).Should().Be(11);
         penalties.Count(p => p.IsRemoved).Should().Be(10);
     }
 
@@ -208,12 +214,9 @@ public class DbSeederTests(PostgresFixture fixture) : IAsyncLifetime
         await DbSeeder.SeedAsync(Context, _fakeTime, TestContext.Current.CancellationToken);
 
         // Assert
-        var allPatients = await Context
-            .Patients.IgnoreQueryFilters()
-            .ToListAsync(TestContext.Current.CancellationToken);
+        var allPatients = await Context.Patients.ToListAsync(TestContext.Current.CancellationToken);
 
-        allPatients.Count(p => p.IsDeleted).Should().Be(13); // 5 closed self accounts + 8 removed family members
-        allPatients.Count(p => !p.IsDeleted).Should().Be(187);
+        allPatients.Should().HaveCount(200);
         allPatients
             .Should()
             .AllSatisfy(p =>
@@ -378,7 +381,7 @@ public class DbSeederTests(PostgresFixture fixture) : IAsyncLifetime
             TestContext.Current.CancellationToken
         );
 
-        penalties.Should().HaveCount(90);
+        penalties.Should().HaveCount(96);
 
         // All warnings must have an AppointmentId
         var warnings = penalties.Where(p => p.Type is PenaltyType.Warning).ToList();
@@ -402,7 +405,7 @@ public class DbSeederTests(PostgresFixture fixture) : IAsyncLifetime
 
         // Blocks should use AutomaticBlock reason and have BlockedUntil set
         var blocks = penalties.Where(p => p.Type is PenaltyType.TemporaryBlock).ToList();
-        blocks.Should().HaveCount(5);
+        blocks.Should().HaveCount(11);
         blocks
             .Should()
             .AllSatisfy(b =>

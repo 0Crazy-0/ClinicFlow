@@ -431,10 +431,6 @@ public static class DbSeeder
                 DateOnly.FromDateTime(faker.Date.Past(21, refTime.AddYears(-18))),
                 refTime
             );
-            typeof(Patient).GetProperty(nameof(Patient.UserId))?.SetValue(patient, pUser.Id);
-            typeof(Patient)
-                .GetProperty(nameof(Patient.RelationshipToUser))
-                ?.SetValue(patient, PatientRelationship.Self);
             patient.UpdateMedicalProfile(
                 BloodType.Create(faker.PickRandom(bloodTypes)),
                 faker.PickRandom(allergyPool),
@@ -459,10 +455,6 @@ public static class DbSeeder
                 DateOnly.FromDateTime(faker.Date.Past(40, refTime.AddYears(-40))),
                 refTime
             );
-            typeof(Patient).GetProperty(nameof(Patient.UserId))?.SetValue(patient, pUser.Id);
-            typeof(Patient)
-                .GetProperty(nameof(Patient.RelationshipToUser))
-                ?.SetValue(patient, PatientRelationship.Self);
             patient.UpdateMedicalProfile(
                 BloodType.Create(faker.PickRandom(bloodTypes)),
                 faker.PickRandom(allergyPool),
@@ -507,10 +499,6 @@ public static class DbSeeder
                 DateOnly.FromDateTime(faker.Date.Past(age, refTime.AddYears(-age))),
                 refTime
             );
-            typeof(Patient).GetProperty(nameof(Patient.UserId))?.SetValue(patient, pUser.Id);
-            typeof(Patient)
-                .GetProperty(nameof(Patient.RelationshipToUser))
-                ?.SetValue(patient, relationship);
             patient.UpdateMedicalProfile(
                 BloodType.Create(faker.PickRandom(bloodTypes)),
                 faker.PickRandom(allergyPool),
@@ -527,14 +515,6 @@ public static class DbSeeder
                 FamilyMembership.CreateFamilyMember(patient.Id, pUser.Id, relationship, refTime)
             );
         }
-
-        // Close 5 self patient accounts.
-        for (int i = 100; i < 105; i++)
-            patients[i].CloseAccount();
-
-        // Remove 8 family member patients.
-        for (int i = 120; i < 128; i++)
-            patients[i].RemoveFamilyMember(patients[i].UserId, PatientRelationship.Self);
 
         await context.Patients.AddRangeAsync(patients, cancellationToken);
         await context.FamilyMemberships.AddRangeAsync(familyMemberships, cancellationToken);

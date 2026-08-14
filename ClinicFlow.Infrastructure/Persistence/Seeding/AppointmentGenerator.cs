@@ -15,10 +15,7 @@ public class AppointmentGenerator(AppointmentSeedingArgs args, DateTime baseDate
         .. args.Doctors.Where(d => !d.IsDeleted),
     ];
 
-    private readonly IReadOnlyList<Patient> _activePatients =
-    [
-        .. args.Patients.Where(p => !p.IsDeleted),
-    ];
+    private readonly IReadOnlyList<Patient> _activePatients = [.. args.Patients];
 
     private readonly IReadOnlyDictionary<Guid, User> _patientUsersById =
         args.PatientUsers.ToDictionary(u => u.Id);
@@ -87,7 +84,7 @@ public class AppointmentGenerator(AppointmentSeedingArgs args, DateTime baseDate
             appointment,
             status,
             doctor.Id,
-            _patientUsersById[patient.UserId].Id,
+            args.PatientUsers[index % args.PatientUsers.Count].Id,
             actionTime,
             receptionistNotes,
             index
