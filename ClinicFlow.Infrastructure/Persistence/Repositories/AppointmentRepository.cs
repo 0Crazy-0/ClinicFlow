@@ -109,8 +109,10 @@ public sealed class AppointmentRepository(ApplicationDbContext dbContext, TimePr
         return await dbContext.Appointments.AnyAsync(
             a =>
                 dbContext
-                    .Patients.Where(p => p.UserId == userId)
-                    .Select(p => p.Id)
+                    .FamilyMemberships.Where(m =>
+                        m.UserId == userId && m.Status == FamilyMembershipStatus.Active
+                    )
+                    .Select(m => m.PatientId)
                     .Contains(a.PatientId)
                 && (
                     a.Status == AppointmentStatus.Scheduled
