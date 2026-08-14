@@ -1,5 +1,6 @@
 using AwesomeAssertions;
 using ClinicFlow.Application.Appointments.Commands.ScheduleByPatient;
+using ClinicFlow.Application.Tests.Shared;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
@@ -93,14 +94,20 @@ public class ScheduleByPatientCommandHandlerTests
         _patientRepositoryMock
             .Setup(r => r.GetByIdAsync(command.TargetPatientId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(targetPatient);
-        _patientRepositoryMock
+        _familyMembershipRepositoryMock
             .Setup(r =>
-                r.GetSelfPatientByUserIdAsync(
+                r.GetActiveSelfMembershipByUserIdAsync(
                     command.InitiatorUserId,
                     It.IsAny<CancellationToken>()
                 )
             )
-            .ReturnsAsync(targetPatient);
+            .ReturnsAsync(
+                FamilyMembership.CreateSelf(
+                    command.TargetPatientId,
+                    command.InitiatorUserId,
+                    _fakeTime.GetUtcNow().UtcDateTime
+                )
+            );
         _doctorRepositoryMock
             .Setup(r => r.GetByIdAsync(command.DoctorId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(doctor);
@@ -228,14 +235,20 @@ public class ScheduleByPatientCommandHandlerTests
         _patientRepositoryMock
             .Setup(r => r.GetByIdAsync(command.TargetPatientId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(targetPatient);
-        _patientRepositoryMock
+        _familyMembershipRepositoryMock
             .Setup(r =>
-                r.GetSelfPatientByUserIdAsync(
+                r.GetActiveSelfMembershipByUserIdAsync(
                     command.InitiatorUserId,
                     It.IsAny<CancellationToken>()
                 )
             )
-            .ReturnsAsync(targetPatient);
+            .ReturnsAsync(
+                FamilyMembership.CreateSelf(
+                    command.TargetPatientId,
+                    command.InitiatorUserId,
+                    _fakeTime.GetUtcNow().UtcDateTime
+                )
+            );
         _doctorRepositoryMock
             .Setup(r => r.GetByIdAsync(command.DoctorId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(doctor);
@@ -364,13 +377,22 @@ public class ScheduleByPatientCommandHandlerTests
             .Setup(r => r.GetByIdAsync(command.TargetPatientId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(targetPatient);
 
-        _patientRepositoryMock
+        _familyMembershipRepositoryMock
             .Setup(r =>
-                r.GetSelfPatientByUserIdAsync(
+                r.GetActiveSelfMembershipByUserIdAsync(
                     command.InitiatorUserId,
                     It.IsAny<CancellationToken>()
                 )
             )
+            .ReturnsAsync(
+                FamilyMembership.CreateSelf(
+                    initiatorPatient.Id,
+                    command.InitiatorUserId,
+                    _fakeTime.GetUtcNow().UtcDateTime
+                )
+            );
+        _patientRepositoryMock
+            .Setup(r => r.GetByIdAsync(initiatorPatient.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(initiatorPatient);
 
         _doctorRepositoryMock
@@ -385,51 +407,6 @@ public class ScheduleByPatientCommandHandlerTests
             .ThrowAsync<EntityNotFoundException>()
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(Doctor));
-
-        _appointmentRepositoryMock.Verify(
-            r => r.CreateAsync(It.IsAny<Appointment>(), It.IsAny<CancellationToken>()),
-            Times.Never
-        );
-        _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
-    }
-
-    [Fact]
-    public async Task Handle_ShouldThrowEntityNotFoundException_WhenInitiatorPatientNotFound()
-    {
-        // Arrange
-        var command = new ScheduleByPatientCommand(
-            Guid.CreateVersion7(),
-            Guid.CreateVersion7(),
-            Guid.CreateVersion7(),
-            Guid.CreateVersion7(),
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
-            new TimeOnly(10, 0),
-            new TimeOnly(11, 0)
-        );
-
-        var targetPatient = CreateTargetPatient(command.TargetPatientId);
-
-        _patientRepositoryMock
-            .Setup(r => r.GetByIdAsync(command.TargetPatientId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(targetPatient);
-
-        _patientRepositoryMock
-            .Setup(r =>
-                r.GetSelfPatientByUserIdAsync(
-                    command.InitiatorUserId,
-                    It.IsAny<CancellationToken>()
-                )
-            )
-            .ReturnsAsync((Patient?)null);
-
-        // Act
-        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
-
-        // Assert
-        var exceptionAssertion = await act.Should()
-            .ThrowAsync<EntityNotFoundException>()
-            .WithMessage(DomainErrors.General.NotFound);
-        exceptionAssertion.Which.EntityName.Should().Be(nameof(Patient));
 
         _appointmentRepositoryMock.Verify(
             r => r.CreateAsync(It.IsAny<Appointment>(), It.IsAny<CancellationToken>()),
@@ -467,13 +444,22 @@ public class ScheduleByPatientCommandHandlerTests
             .Setup(r => r.GetByIdAsync(command.TargetPatientId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(targetPatient);
 
-        _patientRepositoryMock
+        _familyMembershipRepositoryMock
             .Setup(r =>
-                r.GetSelfPatientByUserIdAsync(
+                r.GetActiveSelfMembershipByUserIdAsync(
                     command.InitiatorUserId,
                     It.IsAny<CancellationToken>()
                 )
             )
+            .ReturnsAsync(
+                FamilyMembership.CreateSelf(
+                    initiatorPatient.Id,
+                    command.InitiatorUserId,
+                    _fakeTime.GetUtcNow().UtcDateTime
+                )
+            );
+        _patientRepositoryMock
+            .Setup(r => r.GetByIdAsync(initiatorPatient.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(initiatorPatient);
 
         _doctorRepositoryMock
@@ -542,13 +528,22 @@ public class ScheduleByPatientCommandHandlerTests
         _patientRepositoryMock
             .Setup(r => r.GetByIdAsync(command.TargetPatientId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(targetPatient);
-        _patientRepositoryMock
+        _familyMembershipRepositoryMock
             .Setup(r =>
-                r.GetSelfPatientByUserIdAsync(
+                r.GetActiveSelfMembershipByUserIdAsync(
                     command.InitiatorUserId,
                     It.IsAny<CancellationToken>()
                 )
             )
+            .ReturnsAsync(
+                FamilyMembership.CreateSelf(
+                    initiatorPatient.Id,
+                    command.InitiatorUserId,
+                    _fakeTime.GetUtcNow().UtcDateTime
+                )
+            );
+        _patientRepositoryMock
+            .Setup(r => r.GetByIdAsync(initiatorPatient.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(initiatorPatient);
         _doctorRepositoryMock
             .Setup(r => r.GetByIdAsync(command.DoctorId, It.IsAny<CancellationToken>()))
@@ -631,13 +626,22 @@ public class ScheduleByPatientCommandHandlerTests
             .Setup(r => r.GetByIdAsync(command.TargetPatientId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(targetPatient);
 
-        _patientRepositoryMock
+        _familyMembershipRepositoryMock
             .Setup(r =>
-                r.GetSelfPatientByUserIdAsync(
+                r.GetActiveSelfMembershipByUserIdAsync(
                     command.InitiatorUserId,
                     It.IsAny<CancellationToken>()
                 )
             )
+            .ReturnsAsync(
+                FamilyMembership.CreateSelf(
+                    initiatorPatient.Id,
+                    command.InitiatorUserId,
+                    _fakeTime.GetUtcNow().UtcDateTime
+                )
+            );
+        _patientRepositoryMock
+            .Setup(r => r.GetByIdAsync(initiatorPatient.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(initiatorPatient);
 
         _doctorRepositoryMock
@@ -701,13 +705,22 @@ public class ScheduleByPatientCommandHandlerTests
         _patientRepositoryMock
             .Setup(r => r.GetByIdAsync(command.TargetPatientId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(targetPatient);
-        _patientRepositoryMock
+        _familyMembershipRepositoryMock
             .Setup(r =>
-                r.GetSelfPatientByUserIdAsync(
+                r.GetActiveSelfMembershipByUserIdAsync(
                     command.InitiatorUserId,
                     It.IsAny<CancellationToken>()
                 )
             )
+            .ReturnsAsync(
+                FamilyMembership.CreateSelf(
+                    initiatorPatient.Id,
+                    command.InitiatorUserId,
+                    _fakeTime.GetUtcNow().UtcDateTime
+                )
+            );
+        _patientRepositoryMock
+            .Setup(r => r.GetByIdAsync(initiatorPatient.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(initiatorPatient);
         _doctorRepositoryMock
             .Setup(r => r.GetByIdAsync(command.DoctorId, It.IsAny<CancellationToken>()))
@@ -744,7 +757,7 @@ public class ScheduleByPatientCommandHandlerTests
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
-    private Patient CreateTargetPatient(Guid userId)
+    private Patient CreateTargetPatient(Guid id)
     {
         var patient = Patient.CreateProfile(
             PersonName.Create("Test Patient"),
@@ -752,6 +765,7 @@ public class ScheduleByPatientCommandHandlerTests
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
+        patient.SetId(id);
         patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
         patient.UpdateEmergencyContact(EmergencyContact.Create("Emergency Name", "555-1234567"));
 

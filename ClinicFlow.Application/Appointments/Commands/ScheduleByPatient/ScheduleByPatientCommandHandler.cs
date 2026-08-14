@@ -43,17 +43,6 @@ public sealed class ScheduleByPatientCommandHandler(
                 request.TargetPatientId
             );
 
-        var initiatorPatient =
-            await patientRepository.GetSelfPatientByUserIdAsync(
-                request.InitiatorUserId,
-                cancellationToken
-            )
-            ?? throw new EntityNotFoundException(
-                DomainErrors.General.NotFound,
-                nameof(Patient),
-                request.InitiatorUserId
-            );
-
         var targetDoctor =
             await doctorRepository.GetByIdAsync(request.DoctorId, cancellationToken)
             ?? throw new EntityNotFoundException(
@@ -143,7 +132,6 @@ public sealed class ScheduleByPatientCommandHandler(
             new PatientSchedulingArgs
             {
                 TargetPatient = targetPatient,
-                InitiatorPatient = initiatorPatient,
                 DoctorId = request.DoctorId,
                 ScheduledDate = request.ScheduledDate,
                 TimeRange = timeRange,

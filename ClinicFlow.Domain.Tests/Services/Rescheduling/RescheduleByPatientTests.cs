@@ -95,27 +95,6 @@ public class RescheduleByPatientTests
     }
 
     [Fact]
-    public void RescheduleByPatient_ShouldThrowDomainValidationException_WhenInitiatorPatientIsNull()
-    {
-        // Arrange & Act
-        var act = () =>
-            AppointmentReschedulingService.RescheduleByPatient(
-                CreateAppointment(),
-                CreateValidPatientReschedulingArgs() with
-                {
-                    InitiatorPatient = null!,
-                },
-                new PatientReschedulingContext { DoctorSchedule = CreateSchedule() },
-                SchedulingClearance.Granted()
-            );
-
-        // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.General.RequiredFieldNull);
-    }
-
-    [Fact]
     public void RescheduleByPatient_ShouldThrowDomainValidationException_WhenNewTimeRangeIsNull()
     {
         // Arrange & Act
@@ -162,7 +141,6 @@ public class RescheduleByPatientTests
         var target = CreateSelfPatient();
         var args = new PatientReschedulingArgs
         {
-            InitiatorPatient = target,
             TargetPatient = target,
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
             NewTimeRange = CreateTimeRange(),
@@ -199,7 +177,6 @@ public class RescheduleByPatientTests
         var appointment = CreateAppointment(target.Id);
         var args = new PatientReschedulingArgs
         {
-            InitiatorPatient = initiator,
             TargetPatient = target,
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
             NewTimeRange = CreateTimeRange(),
@@ -235,7 +212,6 @@ public class RescheduleByPatientTests
         var appointment = CreateAppointment(target.Id);
         var args = new PatientReschedulingArgs
         {
-            InitiatorPatient = target,
             TargetPatient = target,
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
             NewTimeRange = CreateTimeRange(),
@@ -271,7 +247,6 @@ public class RescheduleByPatientTests
         var appointment = CreateAppointment(target.Id);
         var args = new PatientReschedulingArgs
         {
-            InitiatorPatient = target,
             TargetPatient = target,
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
             NewTimeRange = CreateTimeRange(),
@@ -316,7 +291,6 @@ public class RescheduleByPatientTests
         var appointment = CreateAppointment(target.Id);
         var args = new PatientReschedulingArgs
         {
-            InitiatorPatient = target,
             TargetPatient = target,
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
             NewTimeRange = TimeRange.Create(new TimeOnly(18, 0), new TimeOnly(19, 0)),
@@ -352,7 +326,6 @@ public class RescheduleByPatientTests
         var appointment = CreateAppointment(target.Id);
         var args = new PatientReschedulingArgs
         {
-            InitiatorPatient = target,
             TargetPatient = target,
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
             NewTimeRange = CreateTimeRange(),
@@ -390,7 +363,6 @@ public class RescheduleByPatientTests
 
         var args = new PatientReschedulingArgs
         {
-            InitiatorPatient = target,
             TargetPatient = target,
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
             NewTimeRange = CreateTimeRange(),
@@ -427,7 +399,6 @@ public class RescheduleByPatientTests
 
         var args = new PatientReschedulingArgs
         {
-            InitiatorPatient = target,
             TargetPatient = target,
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
             NewTimeRange = CreateTimeRange(),
@@ -457,7 +428,6 @@ public class RescheduleByPatientTests
         new()
         {
             TargetPatient = CreateSelfPatient(),
-            InitiatorPatient = CreateSelfPatient(),
             NewTimeRange = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
         };
@@ -487,35 +457,10 @@ public class RescheduleByPatientTests
             dateOfBirth,
             _fakeTime.GetUtcNow().UtcDateTime
         );
-        SetUserId(patient, Guid.CreateVersion7());
-        SetRelationshipToUser(patient, PatientRelationship.Self);
-
         patient.UpdateMedicalProfile(BloodType.Create("A+"), "", "");
         patient.UpdateEmergencyContact(EmergencyContact.Create("Name", "1234567890"));
 
         return patient;
-    }
-
-    private static void SetUserId(Patient patient, Guid userId)
-    {
-        var property = typeof(Patient).GetProperty(
-            nameof(Patient.UserId),
-            System.Reflection.BindingFlags.Public
-                | System.Reflection.BindingFlags.Instance
-                | System.Reflection.BindingFlags.NonPublic
-        );
-        property?.SetValue(patient, userId);
-    }
-
-    private static void SetRelationshipToUser(Patient patient, PatientRelationship relationship)
-    {
-        var property = typeof(Patient).GetProperty(
-            nameof(Patient.RelationshipToUser),
-            System.Reflection.BindingFlags.Public
-                | System.Reflection.BindingFlags.Instance
-                | System.Reflection.BindingFlags.NonPublic
-        );
-        property?.SetValue(patient, relationship);
     }
 
     private Appointment CreateAppointment(Guid patientId)

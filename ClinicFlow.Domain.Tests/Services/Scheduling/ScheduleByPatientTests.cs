@@ -95,27 +95,6 @@ public class ScheduleByPatientTests
     }
 
     [Fact]
-    public void ScheduleByPatient_ShouldThrowDomainValidationException_WhenInitiatorPatientIsNull()
-    {
-        // Arrange & Act
-        var act = () =>
-            AppointmentSchedulingService.ScheduleByPatient(
-                CreateAppointmentType(),
-                CreateValidPatientSchedulingArgs() with
-                {
-                    InitiatorPatient = null!,
-                },
-                new PatientSchedulingContext { DoctorSchedule = CreateSchedule() },
-                SchedulingClearance.Granted()
-            );
-
-        // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.General.RequiredFieldNull);
-    }
-
-    [Fact]
     public void ScheduleByPatient_ShouldThrowDomainValidationException_WhenTimeRangeIsNull()
     {
         // Arrange & Act
@@ -163,7 +142,6 @@ public class ScheduleByPatientTests
         var target = CreateSelfPatient();
         var args = new PatientSchedulingArgs
         {
-            InitiatorPatient = initiator,
             TargetPatient = target,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
@@ -196,7 +174,6 @@ public class ScheduleByPatientTests
     public void ScheduleByPatient_ShouldSucceed_WhenNonSelfSchedulesForThemselves()
     {
         // Arrange, family member schedules for themselves → should be allowed
-        var userId = Guid.CreateVersion7();
         var appointmentType = CreateAppointmentType();
 
         var familyMember = Patient.CreateProfile(
@@ -204,15 +181,11 @@ public class ScheduleByPatientTests
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
-        SetUserId(familyMember, userId);
-        SetRelationshipToUser(familyMember, PatientRelationship.Spouse);
-
         familyMember.UpdateMedicalProfile(BloodType.Create("A+"), "", "");
         familyMember.UpdateEmergencyContact(EmergencyContact.Create("Name", "1234567890"));
 
         var args = new PatientSchedulingArgs
         {
-            InitiatorPatient = familyMember,
             TargetPatient = familyMember,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
@@ -258,7 +231,6 @@ public class ScheduleByPatientTests
         var target = CreateSelfPatient();
         var args = new PatientSchedulingArgs
         {
-            InitiatorPatient = target,
             TargetPatient = target,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
@@ -298,12 +270,8 @@ public class ScheduleByPatientTests
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
-        SetUserId(incompletePatient, userId);
-        SetRelationshipToUser(incompletePatient, PatientRelationship.Self);
-
         var args = new PatientSchedulingArgs
         {
-            InitiatorPatient = incompletePatient,
             TargetPatient = incompletePatient,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
@@ -340,7 +308,6 @@ public class ScheduleByPatientTests
         var target = CreateSelfPatient();
         var args = new PatientSchedulingArgs
         {
-            InitiatorPatient = target,
             TargetPatient = target,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
@@ -395,15 +362,11 @@ public class ScheduleByPatientTests
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-15)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
-        SetUserId(target, Guid.CreateVersion7());
-        SetRelationshipToUser(target, PatientRelationship.Self);
-
         target.UpdateMedicalProfile(BloodType.Create("A+"), "", "");
         target.UpdateEmergencyContact(EmergencyContact.Create("Name", "1234567890"));
 
         var args = new PatientSchedulingArgs
         {
-            InitiatorPatient = target,
             TargetPatient = target,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
@@ -444,22 +407,17 @@ public class ScheduleByPatientTests
             AgeEligibilityPolicy.Create(0, 17, requiresLegalGuardian: true)
         );
 
-        var initiator = CreateSelfPatient();
         var target = Patient.CreateProfile(
             PersonName.Create("Child"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
-        SetUserId(target, Guid.CreateVersion7());
-        SetRelationshipToUser(target, PatientRelationship.Child);
-
         target.UpdateMedicalProfile(BloodType.Create("A+"), "", "");
         target.UpdateEmergencyContact(EmergencyContact.Create("Name", "1234567890"));
 
         var args = new PatientSchedulingArgs
         {
-            InitiatorPatient = initiator,
             TargetPatient = target,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
@@ -517,14 +475,11 @@ public class ScheduleByPatientTests
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
-        SetUserId(target, Guid.CreateVersion7());
-        SetRelationshipToUser(target, PatientRelationship.Child);
         target.UpdateMedicalProfile(BloodType.Create("A+"), "", "");
         target.UpdateEmergencyContact(EmergencyContact.Create("Name", "1234567890"));
 
         var args = new PatientSchedulingArgs
         {
-            InitiatorPatient = initiator,
             TargetPatient = target,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
@@ -569,7 +524,6 @@ public class ScheduleByPatientTests
         var target = CreateSelfPatient();
         var args = new PatientSchedulingArgs
         {
-            InitiatorPatient = target,
             TargetPatient = target,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
@@ -608,7 +562,6 @@ public class ScheduleByPatientTests
         var target = CreateSelfPatient();
         var args = new PatientSchedulingArgs
         {
-            InitiatorPatient = target,
             TargetPatient = target,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
@@ -650,7 +603,6 @@ public class ScheduleByPatientTests
         new()
         {
             TargetPatient = CreateSelfPatient(),
-            InitiatorPatient = CreateSelfPatient(),
             TimeRange = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
         };
@@ -681,34 +633,9 @@ public class ScheduleByPatientTests
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
-        SetUserId(patient, Guid.CreateVersion7());
-        SetRelationshipToUser(patient, PatientRelationship.Self);
-
         patient.UpdateMedicalProfile(BloodType.Create("A+"), "", "");
         patient.UpdateEmergencyContact(EmergencyContact.Create("Name", "1234567890"));
 
         return patient;
-    }
-
-    private static void SetUserId(Patient patient, Guid userId)
-    {
-        var property = typeof(Patient).GetProperty(
-            nameof(Patient.UserId),
-            System.Reflection.BindingFlags.Public
-                | System.Reflection.BindingFlags.Instance
-                | System.Reflection.BindingFlags.NonPublic
-        );
-        property?.SetValue(patient, userId);
-    }
-
-    private static void SetRelationshipToUser(Patient patient, PatientRelationship relationship)
-    {
-        var property = typeof(Patient).GetProperty(
-            nameof(Patient.RelationshipToUser),
-            System.Reflection.BindingFlags.Public
-                | System.Reflection.BindingFlags.Instance
-                | System.Reflection.BindingFlags.NonPublic
-        );
-        property?.SetValue(patient, relationship);
     }
 }

@@ -6,7 +6,7 @@ namespace ClinicFlow.Domain.Services.Args.Scheduling;
 public sealed record PatientSchedulingArgs
 {
     public required Patient TargetPatient { get; init; }
-    public required Patient InitiatorPatient { get; init; }
+
     public Guid DoctorId { get; init; }
     public DateOnly ScheduledDate { get; init; }
     public required TimeRange TimeRange { get; init; }
