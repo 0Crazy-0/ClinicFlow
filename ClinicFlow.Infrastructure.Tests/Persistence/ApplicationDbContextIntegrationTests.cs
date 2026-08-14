@@ -30,93 +30,88 @@ public class ApplicationDbContextIntegrationTests(PostgresFixture fixture) : IAs
     public async Task QueryFilter_ShouldFilterOutSoftDeletedEntities_ByDefault()
     {
         // Arrange
-        var user = await CreateUserAsync();
-        var patient = await CreatePatientAsync(user.Id);
-
-        patient.CloseAccount();
+        var doctor = await CreateDoctorAsync();
+        doctor.Suspend();
         await _sut.SaveChangesAsync(TestContext.Current.CancellationToken);
         _sut.ChangeTracker.Clear();
 
         // Act
-        var activePatients = await _sut
-            .Patients.Where(p => p.Id == patient.Id)
+        var activeDoctors = await _sut
+            .Doctors.Where(d => d.Id == doctor.Id)
             .ToListAsync(TestContext.Current.CancellationToken);
 
         // Assert
-        activePatients.Should().BeEmpty();
+        activeDoctors.Should().BeEmpty();
     }
 
     [Fact]
     public async Task QueryFilter_ShouldReturnActiveEntities_ByDefault()
     {
         // Arrange
-        var user = await CreateUserAsync();
-        var patient = await CreatePatientAsync(user.Id);
+        var doctor = await CreateDoctorAsync();
 
         _sut.ChangeTracker.Clear();
 
         // Act
-        var activePatients = await _sut
-            .Patients.Where(p => p.Id == patient.Id)
+        var activeDoctors = await _sut
+            .Doctors.Where(d => d.Id == doctor.Id)
             .ToListAsync(TestContext.Current.CancellationToken);
 
         // Assert
-        activePatients.Should().ContainSingle().Which.Should().BeEquivalentTo(patient);
-        activePatients[0].IsDeleted.Should().BeFalse();
+        activeDoctors.Should().ContainSingle().Which.Should().BeEquivalentTo(doctor);
     }
 
     [Fact]
     public async Task QueryFilter_ShouldReturnSoftDeletedEntities_WhenIgnoreQueryFiltersIsUsed()
     {
         // Arrange
-        var user = await CreateUserAsync();
-        var patient = await CreatePatientAsync(user.Id);
-        patient.CloseAccount();
+        var doctor = await CreateDoctorAsync();
+        doctor.Suspend();
 
         await _sut.SaveChangesAsync(TestContext.Current.CancellationToken);
 
+        doctor.ClearDomainEvents();
         _sut.ChangeTracker.Clear();
 
         // Act
-        var allPatients = await _sut
-            .Patients.IgnoreQueryFilters()
-            .Where(p => p.Id == patient.Id)
+        var allDoctors = await _sut
+            .Doctors.IgnoreQueryFilters()
+            .Where(d => d.Id == doctor.Id)
             .ToListAsync(TestContext.Current.CancellationToken);
 
         // Assert
-        allPatients.Should().ContainSingle().Which.Should().BeEquivalentTo(patient);
-        allPatients[0].IsDeleted.Should().BeTrue();
+        allDoctors.Should().ContainSingle().Which.Should().BeEquivalentTo(doctor);
     }
 
-    private async Task<User> CreateUserAsync()
+    private async Task<Doctor> CreateDoctorAsync()
     {
         var user = User.Create(
             EmailAddress.Create($"{Guid.NewGuid()}@clinic.com"),
             "password",
             PhoneNumber.Create($"+1555{Random.Shared.Next(1000000, 9999999)}"),
-            UserRole.Patient
+            UserRole.Doctor
         );
 
         _sut.Users.Add(user);
         await _sut.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        return user;
-    }
+        var specialty = MedicalSpecialty.Create("Cardiology", "Desc", 30, 24);
 
-    private async Task<Patient> CreatePatientAsync(Guid userId)
-    {
-        var patient = Patient.CreateProfile(
-            PersonName.Create("John Doe"),
-            new DateOnly(1990, 1, 1),
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
-        typeof(Patient).GetProperty(nameof(Patient.UserId))?.SetValue(patient, userId);
-        patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
-        patient.UpdateEmergencyContact(EmergencyContact.Create("Contact", "555-9999"));
-
-        _sut.Patients.Add(patient);
+        _sut.MedicalSpecialties.Add(specialty);
         await _sut.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        return patient;
+        var doctor = Doctor.Create(
+            user.Id,
+            PersonName.Create("Dr. Watson"),
+            MedicalLicenseNumber.Create("LicenseNumber"),
+            specialty.Id,
+            "Bio",
+            ConsultationRoom.Create(10, "Room 10", 1)
+        );
+
+        _sut.Doctors.Add(doctor);
+        await _sut.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        return doctor;
     }
 }
