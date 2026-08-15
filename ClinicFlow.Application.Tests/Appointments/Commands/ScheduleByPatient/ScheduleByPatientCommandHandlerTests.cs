@@ -1,6 +1,5 @@
 using AwesomeAssertions;
 using ClinicFlow.Application.Appointments.Commands.ScheduleByPatient;
-using ClinicFlow.Application.Tests.Shared;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
@@ -65,7 +64,7 @@ public class ScheduleByPatientCommandHandlerTests
             "Patient schedule notes"
         );
 
-        var targetPatient = CreateTargetPatient(command.InitiatorUserId);
+        var targetPatient = CreateTargetPatient();
         var appointmentType = AppointmentTypeDefinition.Create(
             AppointmentCategory.Checkup,
             "Checkup",
@@ -206,7 +205,7 @@ public class ScheduleByPatientCommandHandlerTests
             endTime
         );
 
-        var targetPatient = CreateTargetPatient(command.InitiatorUserId);
+        var targetPatient = CreateTargetPatient();
         var appointmentType = AppointmentTypeDefinition.Create(
             AppointmentCategory.Checkup,
             "Checkup",
@@ -370,8 +369,8 @@ public class ScheduleByPatientCommandHandlerTests
             new TimeOnly(11, 0)
         );
 
-        var targetPatient = CreateTargetPatient(command.TargetPatientId);
-        var initiatorPatient = CreateTargetPatient(command.InitiatorUserId);
+        var targetPatient = CreateTargetPatient();
+        var initiatorPatient = CreateTargetPatient();
 
         _patientRepositoryMock
             .Setup(r => r.GetByIdAsync(command.TargetPatientId, It.IsAny<CancellationToken>()))
@@ -429,8 +428,8 @@ public class ScheduleByPatientCommandHandlerTests
             new TimeOnly(11, 0)
         );
 
-        var targetPatient = CreateTargetPatient(command.TargetPatientId);
-        var initiatorPatient = CreateTargetPatient(command.InitiatorUserId);
+        var targetPatient = CreateTargetPatient();
+        var initiatorPatient = CreateTargetPatient();
         var doctor = Doctor.Create(
             Guid.CreateVersion7(),
             PersonName.Create("Test Doctor"),
@@ -506,8 +505,8 @@ public class ScheduleByPatientCommandHandlerTests
             new TimeOnly(11, 0)
         );
 
-        var targetPatient = CreateTargetPatient(command.TargetPatientId);
-        var initiatorPatient = CreateTargetPatient(command.InitiatorUserId);
+        var targetPatient = CreateTargetPatient();
+        var initiatorPatient = CreateTargetPatient();
         var doctor = Doctor.Create(
             Guid.CreateVersion7(),
             PersonName.Create("Test Doctor"),
@@ -610,8 +609,8 @@ public class ScheduleByPatientCommandHandlerTests
             new TimeOnly(11, 0)
         );
 
-        var targetPatient = CreateTargetPatient(command.TargetPatientId);
-        var initiatorPatient = CreateTargetPatient(command.InitiatorUserId);
+        var targetPatient = CreateTargetPatient();
+        var initiatorPatient = CreateTargetPatient();
 
         var doctor = Doctor.Create(
             Guid.CreateVersion7(),
@@ -683,8 +682,8 @@ public class ScheduleByPatientCommandHandlerTests
             new TimeOnly(11, 0)
         );
 
-        var targetPatient = CreateTargetPatient(command.TargetPatientId);
-        var initiatorPatient = CreateTargetPatient(command.InitiatorUserId);
+        var targetPatient = CreateTargetPatient();
+        var initiatorPatient = CreateTargetPatient();
         var doctor = Doctor.Create(
             Guid.CreateVersion7(),
             PersonName.Create("Test Doctor"),
@@ -757,7 +756,7 @@ public class ScheduleByPatientCommandHandlerTests
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
-    private Patient CreateTargetPatient(Guid id)
+    private Patient CreateTargetPatient()
     {
         var patient = Patient.CreateProfile(
             PersonName.Create("Test Patient"),
@@ -765,7 +764,6 @@ public class ScheduleByPatientCommandHandlerTests
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
-        patient.SetId(id);
         patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
         patient.UpdateEmergencyContact(EmergencyContact.Create("Emergency Name", "555-1234567"));
 
