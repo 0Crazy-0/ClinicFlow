@@ -17,9 +17,6 @@ public class AppointmentGenerator(AppointmentSeedingArgs args, DateTime baseDate
 
     private readonly IReadOnlyList<Patient> _activePatients = [.. args.Patients];
 
-    private readonly IReadOnlyDictionary<Guid, User> _patientUsersById =
-        args.PatientUsers.ToDictionary(u => u.Id);
-
     private static readonly IReadOnlyList<AppointmentStatus> TargetStatuses =
     [
         .. Enumerable.Repeat(AppointmentStatus.Completed, 250),
