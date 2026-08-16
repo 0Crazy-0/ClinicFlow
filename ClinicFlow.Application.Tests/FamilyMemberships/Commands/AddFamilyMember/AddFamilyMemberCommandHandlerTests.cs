@@ -1,5 +1,5 @@
 using AwesomeAssertions;
-using ClinicFlow.Application.Patients.Commands.AddFamilyMember;
+using ClinicFlow.Application.FamilyMemberships.Commands.AddFamilyMember;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
@@ -10,7 +10,7 @@ using ClinicFlow.Domain.ValueObjects;
 using Microsoft.Extensions.Time.Testing;
 using Moq;
 
-namespace ClinicFlow.Application.Tests.Patients.Commands.AddFamilyMember;
+namespace ClinicFlow.Application.Tests.FamilyMemberships.Commands.AddFamilyMember;
 
 public class AddFamilyMemberCommandHandlerTests
 {

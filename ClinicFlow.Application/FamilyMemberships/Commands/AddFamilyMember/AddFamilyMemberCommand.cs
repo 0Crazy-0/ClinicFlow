@@ -1,7 +1,7 @@
 using ClinicFlow.Domain.Enums;
 using MediatR;
 
-namespace ClinicFlow.Application.Patients.Commands.AddFamilyMember;
+namespace ClinicFlow.Application.FamilyMemberships.Commands.AddFamilyMember;
 
 public sealed record AddFamilyMemberCommand(
     Guid UserId,

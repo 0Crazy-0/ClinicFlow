@@ -1,11 +1,11 @@
-using ClinicFlow.Application.Patients.Commands.AddFamilyMember;
+using ClinicFlow.Application.FamilyMemberships.Commands.AddFamilyMember;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.ValueObjects;
 using FluentValidation.TestHelper;
 using Microsoft.Extensions.Time.Testing;
 
-namespace ClinicFlow.Application.Tests.Patients.Commands.AddFamilyMember;
+namespace ClinicFlow.Application.Tests.FamilyMemberships.Commands.AddFamilyMember;
 
 public class AddFamilyMemberCommandValidatorTests
 {
