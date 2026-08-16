@@ -2,7 +2,7 @@ using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.ValueObjects;
 using FluentValidation;
 
-namespace ClinicFlow.Application.Patients.Commands.AddCompleteFamilyMember;
+namespace ClinicFlow.Application.FamilyMemberships.Commands.AddCompleteFamilyMember;
 
 public sealed class AddCompleteFamilyMemberCommandValidator
     : AbstractValidator<AddCompleteFamilyMemberCommand>

@@ -7,22 +7,27 @@ using ClinicFlow.Domain.Services.Args.Registration;
 using ClinicFlow.Domain.ValueObjects;
 using MediatR;
 
-namespace ClinicFlow.Application.Patients.Commands.AddFamilyMember;
+namespace ClinicFlow.Application.FamilyMemberships.Commands.AddCompleteFamilyMember;
 
-public sealed class AddFamilyMemberCommandHandler(
+public sealed class AddCompleteFamilyMemberCommandHandler(
     TimeProvider timeProvider,
     IPatientRepository patientRepository,
     IFamilyMembershipRepository familyMembershipRepository,
     IUnitOfWork unitOfWork
-) : IRequestHandler<AddFamilyMemberCommand, Guid>
+) : IRequestHandler<AddCompleteFamilyMemberCommand, Guid>
 {
     /// <inheritdoc />
     public async Task<Guid> Handle(
-        AddFamilyMemberCommand request,
+        AddCompleteFamilyMemberCommand request,
         CancellationToken cancellationToken
     )
     {
         var fullName = PersonName.Create($"{request.FirstName} {request.LastName}");
+        var bloodType = BloodType.Create(request.BloodType);
+        var emergencyContact = EmergencyContact.Create(
+            request.EmergencyContactName,
+            request.EmergencyContactPhone
+        );
 
         return await unitOfWork.ExecuteWithLockAsync(
             request.UserId,
@@ -73,6 +78,13 @@ public sealed class AddFamilyMemberCommandHandler(
                         ReferenceTime = timeProvider.GetUtcNow().UtcDateTime,
                     }
                 );
+
+                patient.UpdateMedicalProfile(
+                    bloodType,
+                    request.Allergies,
+                    request.ChronicConditions
+                );
+                patient.UpdateEmergencyContact(emergencyContact);
 
                 await patientRepository.CreateAsync(patient, cancellationToken);
                 await familyMembershipRepository.CreateAsync(membership, cancellationToken);

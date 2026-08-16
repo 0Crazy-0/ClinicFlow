@@ -3,7 +3,7 @@ using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.ValueObjects;
 using FluentValidation;
 
-namespace ClinicFlow.Application.Patients.Commands.AddFamilyMember;
+namespace ClinicFlow.Application.FamilyMemberships.Commands.AddFamilyMember;
 
 public sealed class AddFamilyMemberCommandValidator : AbstractValidator<AddFamilyMemberCommand>
 {
