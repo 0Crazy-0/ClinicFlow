@@ -617,6 +617,15 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
     {
         var user = await CreateUserAsync(UserRole.Doctor);
         var specialty = MedicalSpecialty.Create("Cardiology", "Desc", 30, 24);
+        var roomNumber = Random.Shared.Next(
+            ConsultationRoom.MinimumNumber,
+            ConsultationRoom.MaximumNumber + 1
+        );
+
+        var floor = Random.Shared.Next(
+            ConsultationRoom.MinimumFloor,
+            ConsultationRoom.MaximumFloor + 1
+        );
 
         Context.MedicalSpecialties.Add(specialty);
 
@@ -625,10 +634,10 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
         var doctor = Doctor.Create(
             user.Id,
             PersonName.Create("Dr. Watson"),
-            MedicalLicenseNumber.Create("CMP-" + Guid.CreateVersion7().ToString("N")[..5]),
+            MedicalLicenseNumber.Create("LicenseNumber"),
             specialty.Id,
             "Desc",
-            ConsultationRoom.Create(10, "Room 10", 1)
+            ConsultationRoom.Create(roomNumber, $"Room {roomNumber}", floor)
         );
 
         Context.Doctors.Add(doctor);
@@ -640,13 +649,11 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
 
     private async Task<Patient> CreatePatientAsync()
     {
-        var user = await CreateUserAsync(UserRole.Patient);
         var patient = Patient.CreateProfile(
             PersonName.Create("John Doe"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
-        typeof(Patient).GetProperty(nameof(Patient.UserId))?.SetValue(patient, user.Id);
 
         patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
         patient.UpdateEmergencyContact(EmergencyContact.Create("Contact", "555-9999"));
@@ -662,7 +669,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
     {
         var apptType = AppointmentTypeDefinition.Create(
             AppointmentCategory.FirstConsultation,
-            $"Consultation-{Guid.CreateVersion7():N}",
+            "name",
             "Desc",
             EncounterDuration.FromMinutes(20)
         );

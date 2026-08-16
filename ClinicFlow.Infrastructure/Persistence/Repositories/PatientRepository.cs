@@ -1,5 +1,4 @@
 using ClinicFlow.Domain.Entities;
-using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
@@ -24,54 +23,13 @@ public sealed class PatientRepository(ApplicationDbContext dbContext) : IPatient
         CancellationToken cancellationToken = default
     ) => await dbContext.Patients.FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
 
-    public async Task<Patient?> GetSelfPatientByUserIdAsync(
-        Guid userId,
-        CancellationToken cancellationToken = default
-    ) =>
-        await dbContext.Patients.FirstOrDefaultAsync(
-            p => p.UserId == userId && p.RelationshipToUser == PatientRelationship.Self,
-            cancellationToken
-        );
-
-    public async Task<bool> HasActiveFamilyMembersAsync(
-        Guid userId,
-        CancellationToken cancellationToken = default
-    ) =>
-        await dbContext
-            .Patients.AsNoTracking()
-            .AnyAsync(
-                p => p.UserId == userId && p.RelationshipToUser != PatientRelationship.Self,
-                cancellationToken
-            );
-
-    public async Task<int> CountActiveFamilyMembersAsync(
-        Guid userId,
-        CancellationToken cancellationToken = default
-    ) =>
-        await dbContext
-            .Patients.AsNoTracking()
-            .CountAsync(
-                patient =>
-                    patient.UserId == userId
-                    && patient.RelationshipToUser != PatientRelationship.Self
-                    && !patient.IsDeleted,
-                cancellationToken
-            );
-
-    public async Task<IReadOnlyList<Patient>> GetAllByUserIdAsync(
-        Guid userId,
-        CancellationToken cancellationToken = default
-    ) => await dbContext.Patients.Where(p => p.UserId == userId).ToListAsync(cancellationToken);
-
-    public async Task<Patient?> GetIncludingDeletedByNameAndDobAsync(
+    public async Task<Patient?> GetByNameAndDobAsync(
         PersonName fullName,
         DateOnly dateOfBirth,
         CancellationToken cancellationToken = default
     ) =>
-        await dbContext
-            .Patients.IgnoreQueryFilters()
-            .FirstOrDefaultAsync(
-                p => p.FullName == fullName && p.DateOfBirth == dateOfBirth,
-                cancellationToken
-            );
+        await dbContext.Patients.FirstOrDefaultAsync(
+            p => p.FullName == fullName && p.DateOfBirth == dateOfBirth,
+            cancellationToken
+        );
 }

@@ -12,27 +12,7 @@ public interface IPatientRepository
 
     Task<Patient?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
-    Task<Patient?> GetSelfPatientByUserIdAsync(
-        Guid userId,
-        CancellationToken cancellationToken = default
-    );
-
-    Task<bool> HasActiveFamilyMembersAsync(
-        Guid userId,
-        CancellationToken cancellationToken = default
-    );
-
-    Task<int> CountActiveFamilyMembersAsync(
-        Guid userId,
-        CancellationToken cancellationToken = default
-    );
-
-    Task<IReadOnlyList<Patient>> GetAllByUserIdAsync(
-        Guid userId,
-        CancellationToken cancellationToken = default
-    );
-
-    Task<Patient?> GetIncludingDeletedByNameAndDobAsync(
+    Task<Patient?> GetByNameAndDobAsync(
         PersonName fullName,
         DateOnly dateOfBirth,
         CancellationToken cancellationToken = default

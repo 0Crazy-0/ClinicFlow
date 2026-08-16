@@ -1,6 +1,4 @@
 using ClinicFlow.Domain.Common;
-using ClinicFlow.Domain.Enums;
-using ClinicFlow.Domain.Events.Patients;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Exceptions.Patients;
 using ClinicFlow.Domain.ValueObjects;
@@ -8,27 +6,12 @@ using ClinicFlow.Domain.ValueObjects;
 namespace ClinicFlow.Domain.Entities;
 
 /// <summary>
-/// Represents a patient registered in the clinic, linked to a user account.
+/// Represents a patient registered in the clinic.
 /// Contains medical profile data and booking-eligibility rules.
 /// </summary>
-public class Patient : SoftDeletableEntity
+public class Patient : BaseEntity
 {
-    private const int MinimumAgeForFamilyAccountAutonomy = 18;
-
-    public Guid UserId { get; private set; }
-
-    /// <summary>
-    /// Stores the original user identifier associated with this patient before joining a family account.
-    /// </summary>
-    /// <remarks>
-    /// Null when the patient was created directly as a family member without an independent account.
-    /// Used during account removal or departure to restore original primary account ownership.
-    /// </remarks>
-    public Guid? OriginalUserId { get; private set; }
-
     public PersonName FullName { get; private set; } = null!;
-
-    public PatientRelationship RelationshipToUser { get; private set; }
 
     public DateOnly DateOfBirth { get; private set; }
 
@@ -61,81 +44,6 @@ public class Patient : SoftDeletableEntity
         if (dateOfBirth > DateOnly.FromDateTime(referenceTime))
             throw new DomainValidationException(DomainErrors.Validation.ValueCannotBeInFuture);
         return new Patient(fullName, dateOfBirth);
-    }
-
-    public void LeaveFamilyAccount(Guid initiatorUserId, DateOnly referenceDate)
-    {
-        if (UserId != initiatorUserId)
-            throw new DomainValidationException(DomainErrors.Patient.UnauthorizedRemoval);
-
-        if (RelationshipToUser is PatientRelationship.Self)
-            throw new DomainValidationException(DomainErrors.Patient.CannotLeaveOwnAccount);
-
-        if (GetAge(referenceDate) < MinimumAgeForFamilyAccountAutonomy)
-            throw new DomainValidationException(
-                DomainErrors.Patient.UnderageCannotLeaveFamilyAccount
-            );
-
-        if (OriginalUserId is not null)
-        {
-            UserId = OriginalUserId.Value;
-            RelationshipToUser = PatientRelationship.Self;
-            OriginalUserId = null;
-            return;
-        }
-
-        AddDomainEvent(new PatientRequiresOwnAccountToLeaveFamilyEvent(Id));
-    }
-
-    public void RemoveFamilyMember(Guid initiatorUserId, PatientRelationship initiatorRelationship)
-    {
-        if (UserId != initiatorUserId)
-            throw new DomainValidationException(DomainErrors.Patient.UnauthorizedRemoval);
-
-        if (initiatorRelationship is not PatientRelationship.Self)
-            throw new DomainValidationException(DomainErrors.Patient.UnauthorizedRemoval);
-
-        if (RelationshipToUser is PatientRelationship.Self)
-            throw new DomainValidationException(DomainErrors.Patient.CannotRemovePrimaryUser);
-
-        if (OriginalUserId is not null)
-        {
-            UserId = OriginalUserId.Value;
-            RelationshipToUser = PatientRelationship.Self;
-            OriginalUserId = null;
-            return;
-        }
-
-        MarkAsDeleted();
-    }
-
-    public void CloseAccount()
-    {
-        if (RelationshipToUser is not PatientRelationship.Self)
-            throw new DomainValidationException(
-                DomainErrors.Patient.OnlyPrimaryUserCanCloseAccount
-            );
-
-        MarkAsDeleted();
-    }
-
-    internal void ReactivateAsPrimary()
-    {
-        UndoDeletion();
-
-        RelationshipToUser = PatientRelationship.Self;
-        AddDomainEvent(new PatientReactivatedEvent(Id));
-    }
-
-    internal void ReactivateAsFamilyMember(PatientRelationship newRelationship)
-    {
-        if (newRelationship is PatientRelationship.Self)
-            throw new DomainValidationException(DomainErrors.Patient.CannotBeSelf);
-
-        UndoDeletion();
-
-        RelationshipToUser = newRelationship;
-        AddDomainEvent(new PatientReactivatedEvent(Id));
     }
 
     public void UpdateMedicalProfile(

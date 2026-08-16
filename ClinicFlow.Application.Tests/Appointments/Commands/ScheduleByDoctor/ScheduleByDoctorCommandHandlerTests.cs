@@ -59,7 +59,7 @@ public class ScheduleByDoctorCommandHandlerTests
         );
 
         var doctor = CreateDoctor(command.InitiatorUserId);
-        var targetPatient = CreateTargetPatient(command.TargetPatientId);
+        var targetPatient = CreateTargetPatient();
         var appointmentType = AppointmentTypeDefinition.Create(
             AppointmentCategory.FollowUp,
             "FollowUp",
@@ -148,7 +148,7 @@ public class ScheduleByDoctorCommandHandlerTests
         );
 
         var doctor = CreateDoctor(command.InitiatorUserId);
-        var targetPatient = CreateTargetPatient(command.TargetPatientId);
+        var targetPatient = CreateTargetPatient();
         var appointmentType = AppointmentTypeDefinition.Create(
             AppointmentCategory.FollowUp,
             "FollowUp",
@@ -303,7 +303,7 @@ public class ScheduleByDoctorCommandHandlerTests
         );
 
         var doctor = CreateDoctor(command.InitiatorUserId);
-        var targetPatient = CreateTargetPatient(command.TargetPatientId);
+        var targetPatient = CreateTargetPatient();
 
         _doctorRepositoryMock
             .Setup(r => r.GetByUserIdAsync(command.InitiatorUserId, It.IsAny<CancellationToken>()))
@@ -349,7 +349,7 @@ public class ScheduleByDoctorCommandHandlerTests
         );
 
         var doctor = CreateDoctor(command.InitiatorUserId);
-        var targetPatient = CreateTargetPatient(command.TargetPatientId);
+        var targetPatient = CreateTargetPatient();
         var appointmentType = AppointmentTypeDefinition.Create(
             AppointmentCategory.Checkup,
             "Checkup",
@@ -426,7 +426,7 @@ public class ScheduleByDoctorCommandHandlerTests
         );
 
         var doctor = CreateDoctor(command.InitiatorUserId);
-        var targetPatient = CreateTargetPatient(command.TargetPatientId);
+        var targetPatient = CreateTargetPatient();
         var appointmentType = AppointmentTypeDefinition.Create(
             AppointmentCategory.Checkup,
             "Checkup",
@@ -480,7 +480,7 @@ public class ScheduleByDoctorCommandHandlerTests
             ConsultationRoom.Create(1, "Room A", 1)
         );
 
-    private Patient CreateTargetPatient(Guid userId) =>
+    private Patient CreateTargetPatient() =>
         Patient.CreateProfile(
             PersonName.Create("Test"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),

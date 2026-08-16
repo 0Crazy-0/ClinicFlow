@@ -7,5 +7,5 @@ public record AppointmentSeedingArgs(
     IReadOnlyList<Doctor> Doctors,
     IReadOnlyList<AppointmentTypeDefinition> AppointmentTypes,
     IReadOnlyList<Schedule> Schedules,
-    IReadOnlyList<User> PatientUsers
+    IReadOnlyList<FamilyMembership> FamilyMemberships
 );

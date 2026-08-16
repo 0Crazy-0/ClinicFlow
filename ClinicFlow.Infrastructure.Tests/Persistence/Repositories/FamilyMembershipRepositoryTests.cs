@@ -642,13 +642,11 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
 
     private async Task<Patient> CreatePatientAsync()
     {
-        var user = await CreateUserAsync();
         var patient = Patient.CreateProfile(
-            PersonName.Create($"Patient"),
+            PersonName.Create("Patient"),
             new DateOnly(1990, 1, 1),
             _fakeTime.GetUtcNow().UtcDateTime
         );
-        typeof(Patient).GetProperty(nameof(Patient.UserId))?.SetValue(patient, user.Id);
 
         patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
         patient.UpdateEmergencyContact(EmergencyContact.Create("Contact", "555-9999"));

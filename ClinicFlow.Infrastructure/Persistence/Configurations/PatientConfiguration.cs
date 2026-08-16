@@ -15,7 +15,6 @@ public sealed class PatientConfiguration : IEntityTypeConfiguration<Patient>
             .HasConversion(name => name.FullName, val => PersonName.Create(val))
             .HasMaxLength(PersonName.MaximumLength);
 
-        builder.Property(p => p.RelationshipToUser).HasConversion<string>();
         builder
             .Property(p => p.BloodType)
             .HasConversion(bt => bt.Value, val => BloodType.Create(val))
@@ -37,11 +36,5 @@ public sealed class PatientConfiguration : IEntityTypeConfiguration<Patient>
                     .HasMaxLength(PhoneNumber.MaximumLength);
             }
         );
-
-        builder
-            .HasOne<User>()
-            .WithMany()
-            .HasForeignKey(p => p.UserId)
-            .OnDelete(DeleteBehavior.Restrict);
     }
 }

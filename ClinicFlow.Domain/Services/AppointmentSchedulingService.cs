@@ -29,12 +29,7 @@ public static class AppointmentSchedulingService
         if (appointmentType is null)
             throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
 
-        if (
-            args is null
-            || args.TargetPatient is null
-            || args.InitiatorPatient is null
-            || args.TimeRange is null
-        )
+        if (args is null || args.TargetPatient is null || args.TimeRange is null)
             throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
 
         if (context is null)

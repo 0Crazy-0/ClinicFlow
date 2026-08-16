@@ -61,7 +61,7 @@ public static class DbSeeder
             cancellationToken
         );
 
-        var patients = await SeedPatientsAsync(
+        var (patients, familyMemberships) = await SeedPatientsAsync(
             context,
             patientUsers,
             seederContext,
@@ -75,7 +75,7 @@ public static class DbSeeder
             doctors,
             appointmentTypes,
             schedules,
-            patientUsers
+            familyMemberships
         );
 
         var appointments = await SeedAppointmentsAsync(
@@ -364,7 +364,10 @@ public static class DbSeeder
         return doctors;
     }
 
-    private static async Task<IReadOnlyList<Patient>> SeedPatientsAsync(
+    private static async Task<(
+        IReadOnlyList<Patient>,
+        IReadOnlyList<FamilyMembership> FamilyMemberships
+    )> SeedPatientsAsync(
         ApplicationDbContext context,
         IReadOnlyList<User> patientUsers,
         SeederContext seederContext,
@@ -431,10 +434,6 @@ public static class DbSeeder
                 DateOnly.FromDateTime(faker.Date.Past(21, refTime.AddYears(-18))),
                 refTime
             );
-            typeof(Patient).GetProperty(nameof(Patient.UserId))?.SetValue(patient, pUser.Id);
-            typeof(Patient)
-                .GetProperty(nameof(Patient.RelationshipToUser))
-                ?.SetValue(patient, PatientRelationship.Self);
             patient.UpdateMedicalProfile(
                 BloodType.Create(faker.PickRandom(bloodTypes)),
                 faker.PickRandom(allergyPool),
@@ -459,10 +458,6 @@ public static class DbSeeder
                 DateOnly.FromDateTime(faker.Date.Past(40, refTime.AddYears(-40))),
                 refTime
             );
-            typeof(Patient).GetProperty(nameof(Patient.UserId))?.SetValue(patient, pUser.Id);
-            typeof(Patient)
-                .GetProperty(nameof(Patient.RelationshipToUser))
-                ?.SetValue(patient, PatientRelationship.Self);
             patient.UpdateMedicalProfile(
                 BloodType.Create(faker.PickRandom(bloodTypes)),
                 faker.PickRandom(allergyPool),
@@ -507,10 +502,6 @@ public static class DbSeeder
                 DateOnly.FromDateTime(faker.Date.Past(age, refTime.AddYears(-age))),
                 refTime
             );
-            typeof(Patient).GetProperty(nameof(Patient.UserId))?.SetValue(patient, pUser.Id);
-            typeof(Patient)
-                .GetProperty(nameof(Patient.RelationshipToUser))
-                ?.SetValue(patient, relationship);
             patient.UpdateMedicalProfile(
                 BloodType.Create(faker.PickRandom(bloodTypes)),
                 faker.PickRandom(allergyPool),
@@ -528,18 +519,10 @@ public static class DbSeeder
             );
         }
 
-        // Close 5 self patient accounts.
-        for (int i = 100; i < 105; i++)
-            patients[i].CloseAccount();
-
-        // Remove 8 family member patients.
-        for (int i = 120; i < 128; i++)
-            patients[i].RemoveFamilyMember(patients[i].UserId, PatientRelationship.Self);
-
         await context.Patients.AddRangeAsync(patients, cancellationToken);
         await context.FamilyMemberships.AddRangeAsync(familyMemberships, cancellationToken);
         await context.SaveChangesAsync(cancellationToken);
-        return patients;
+        return (patients, familyMemberships);
     }
 
     private static async Task<IReadOnlyList<Schedule>> SeedSchedulesAsync(

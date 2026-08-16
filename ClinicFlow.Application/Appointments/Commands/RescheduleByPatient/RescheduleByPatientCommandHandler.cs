@@ -51,17 +51,6 @@ public sealed class RescheduleByPatientCommandHandler(
                 appointment.PatientId
             );
 
-        var initiatorPatient =
-            await patientRepository.GetSelfPatientByUserIdAsync(
-                request.InitiatorUserId,
-                cancellationToken
-            )
-            ?? throw new EntityNotFoundException(
-                DomainErrors.General.NotFound,
-                nameof(Patient),
-                request.InitiatorUserId
-            );
-
         var targetDoctor =
             await doctorRepository.GetByIdAsync(appointment.DoctorId, cancellationToken)
             ?? throw new EntityNotFoundException(
@@ -141,7 +130,6 @@ public sealed class RescheduleByPatientCommandHandler(
             new PatientReschedulingArgs
             {
                 TargetPatient = targetPatient,
-                InitiatorPatient = initiatorPatient,
                 NewDate = request.NewDate,
                 NewTimeRange = newTimeRange,
                 IsInitiatorPhoneVerified = user.IsPhoneVerified,

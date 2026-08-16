@@ -56,7 +56,7 @@ public class CancelAppointmentByPatientCommandHandlerTests
         var specialtyId = Guid.CreateVersion7();
         var typeId = Guid.CreateVersion7();
         var appointment = CreateAppointment(patientId, doctorId, typeId);
-        var patient = CreatePatient(patientId, command.InitiatorUserId);
+        var patient = CreatePatient(patientId);
         var typeDef = CreateAppointmentType();
         var doctor = CreateDoctor(command.InitiatorUserId, specialtyId);
         var specialty = MedicalSpecialty.Create("Test Specialty", "Test Description", 30, 24);
@@ -227,7 +227,7 @@ public class CancelAppointmentByPatientCommandHandlerTests
         var doctorId = Guid.CreateVersion7();
         var typeId = Guid.CreateVersion7();
         var appointment = CreateAppointment(patientId, doctorId, typeId);
-        var patient = CreatePatient(patientId, command.InitiatorUserId);
+        var patient = CreatePatient(patientId);
         var membership = FamilyMembership.CreateSelf(
             patientId,
             command.InitiatorUserId,
@@ -279,7 +279,7 @@ public class CancelAppointmentByPatientCommandHandlerTests
         var doctorId = Guid.CreateVersion7();
         var typeId = Guid.CreateVersion7();
         var appointment = CreateAppointment(patientId, doctorId, typeId);
-        var patient = CreatePatient(patientId, command.InitiatorUserId);
+        var patient = CreatePatient(patientId);
         var typeDef = CreateAppointmentType();
         var membership = FamilyMembership.CreateSelf(
             patientId,
@@ -336,7 +336,7 @@ public class CancelAppointmentByPatientCommandHandlerTests
         var specialtyId = Guid.CreateVersion7();
         var typeId = Guid.CreateVersion7();
         var appointment = CreateAppointment(patientId, doctorId, typeId);
-        var patient = CreatePatient(patientId, command.InitiatorUserId);
+        var patient = CreatePatient(patientId);
         var typeDef = CreateAppointmentType();
         var doctor = CreateDoctor(command.InitiatorUserId, specialtyId);
         var membership = FamilyMembership.CreateSelf(
@@ -391,7 +391,7 @@ public class CancelAppointmentByPatientCommandHandlerTests
             TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0))
         );
 
-    private Patient CreatePatient(Guid id, Guid userId)
+    private Patient CreatePatient(Guid id)
     {
         var patient = Patient.CreateProfile(
             PersonName.Create("Test"),
@@ -399,7 +399,6 @@ public class CancelAppointmentByPatientCommandHandlerTests
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
-        typeof(Patient).GetProperty(nameof(Patient.UserId))?.SetValue(patient, userId);
         patient.SetId(id);
 
         return patient;

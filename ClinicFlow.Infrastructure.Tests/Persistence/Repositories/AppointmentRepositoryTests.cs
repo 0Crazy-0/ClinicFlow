@@ -518,8 +518,7 @@ public class AppointmentRepositoryTests : IAsyncLifetime
     {
         // Arrange
         var (doctor, patient1, apptType) = await SeedCommonEntitiesAsync();
-        var patientUser2 = await CreateUserAsync(UserRole.Patient);
-        var patient2 = await CreatePatientAsync(patientUser2.Id);
+        var patient2 = await CreatePatientAsync();
         var baseDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
 
         var appointment1 = Appointment.Schedule(
@@ -590,8 +589,7 @@ public class AppointmentRepositoryTests : IAsyncLifetime
     {
         // Arrange
         var (doctor, patient1, apptType) = await SeedCommonEntitiesAsync();
-        var patientUser2 = await CreateUserAsync(UserRole.Patient);
-        var patient2 = await CreatePatientAsync(patientUser2.Id);
+        var patient2 = await CreatePatientAsync();
         var baseDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
 
         var appointment1 = Appointment.Schedule(
@@ -718,7 +716,10 @@ public class AppointmentRepositoryTests : IAsyncLifetime
         // Arrange
         var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
         var timeRange = TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0));
-        var (appointment, _, patient) = await CreateAppointmentDraftAsync(scheduledDate, timeRange);
+        var (appointment, patientUser) = await CreateAppointmentDraftWithUserAsync(
+            scheduledDate,
+            timeRange
+        );
 
         Context.Appointments.Add(appointment);
 
@@ -726,7 +727,7 @@ public class AppointmentRepositoryTests : IAsyncLifetime
 
         // Act
         var result = await _sut.HasActiveAppointmentsForUserAsync(
-            patient.UserId,
+            patientUser.Id,
             TestContext.Current.CancellationToken
         );
 
@@ -740,7 +741,10 @@ public class AppointmentRepositoryTests : IAsyncLifetime
         // Arrange
         var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(-1));
         var timeRange = TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0));
-        var (appointment, _, patient) = await CreateAppointmentDraftAsync(scheduledDate, timeRange);
+        var (appointment, patientUser) = await CreateAppointmentDraftWithUserAsync(
+            scheduledDate,
+            timeRange
+        );
 
         Context.Appointments.Add(appointment);
 
@@ -748,7 +752,7 @@ public class AppointmentRepositoryTests : IAsyncLifetime
 
         // Act
         var result = await _sut.HasActiveAppointmentsForUserAsync(
-            patient.UserId,
+            patientUser.Id,
             TestContext.Current.CancellationToken
         );
 
@@ -762,7 +766,10 @@ public class AppointmentRepositoryTests : IAsyncLifetime
         // Arrange
         var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
         var timeRange = TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0));
-        var (appointment, _, patient) = await CreateAppointmentDraftAsync(scheduledDate, timeRange);
+        var (appointment, patientUser) = await CreateAppointmentDraftWithUserAsync(
+            scheduledDate,
+            timeRange
+        );
         appointment.CheckIn(scheduledDate);
 
         Context.Appointments.Add(appointment);
@@ -771,7 +778,7 @@ public class AppointmentRepositoryTests : IAsyncLifetime
 
         // Act
         var result = await _sut.HasActiveAppointmentsForUserAsync(
-            patient.UserId,
+            patientUser.Id,
             TestContext.Current.CancellationToken
         );
 
@@ -785,7 +792,10 @@ public class AppointmentRepositoryTests : IAsyncLifetime
         // Arrange
         var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
         var timeRange = TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0));
-        var (appointment, _, patient) = await CreateAppointmentDraftAsync(scheduledDate, timeRange);
+        var (appointment, patientUser) = await CreateAppointmentDraftWithUserAsync(
+            scheduledDate,
+            timeRange
+        );
         appointment.MarkAsRequiresReassignment();
 
         Context.Appointments.Add(appointment);
@@ -794,7 +804,7 @@ public class AppointmentRepositoryTests : IAsyncLifetime
 
         // Act
         var result = await _sut.HasActiveAppointmentsForUserAsync(
-            patient.UserId,
+            patientUser.Id,
             TestContext.Current.CancellationToken
         );
 
@@ -807,11 +817,11 @@ public class AppointmentRepositoryTests : IAsyncLifetime
     {
         // Arrange
         var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
-        var (appointment, _, patient) = await CreateAppointmentDraftAsync(
+        var (appointment, patientUser) = await CreateAppointmentDraftWithUserAsync(
             scheduledDate,
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
-        appointment.Cancel(patient.UserId, null, scheduledDate);
+        appointment.Cancel(patientUser.Id, null, scheduledDate);
 
         Context.Appointments.Add(appointment);
 
@@ -819,7 +829,7 @@ public class AppointmentRepositoryTests : IAsyncLifetime
 
         // Act
         var result = await _sut.HasActiveAppointmentsForUserAsync(
-            patient.UserId,
+            patientUser.Id,
             TestContext.Current.CancellationToken
         );
 
@@ -835,7 +845,7 @@ public class AppointmentRepositoryTests : IAsyncLifetime
         var today = DateOnly.FromDateTime(now);
         var nowTime = TimeOnly.FromDateTime(now);
 
-        var (appointment, _, patient) = await CreateAppointmentDraftAsync(
+        var (appointment, patientUser) = await CreateAppointmentDraftWithUserAsync(
             today,
             TimeRange.Create(nowTime, nowTime.AddHours(1))
         );
@@ -846,7 +856,7 @@ public class AppointmentRepositoryTests : IAsyncLifetime
 
         // Act
         var result = await _sut.HasActiveAppointmentsForUserAsync(
-            patient.UserId,
+            patientUser.Id,
             TestContext.Current.CancellationToken
         );
 
@@ -865,7 +875,7 @@ public class AppointmentRepositoryTests : IAsyncLifetime
 
         _fakeTime.SetUtcNow(tomorrowNoon);
 
-        var (appointment, _, patient) = await CreateAppointmentDraftAsync(
+        var (appointment, patientUser) = await CreateAppointmentDraftWithUserAsync(
             DateOnly.FromDateTime(tomorrowNoon.UtcDateTime),
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(9, 30))
         );
@@ -876,7 +886,7 @@ public class AppointmentRepositoryTests : IAsyncLifetime
 
         // Act
         var result = await _sut.HasActiveAppointmentsForUserAsync(
-            patient.UserId,
+            patientUser.Id,
             TestContext.Current.CancellationToken
         );
 
@@ -1030,11 +1040,11 @@ public class AppointmentRepositoryTests : IAsyncLifetime
         // Arrange
         var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
 
-        var (existingAppointment, doctor, patient) = await CreateAppointmentDraftAsync(
+        var (existingAppointment, doctor, _) = await CreateAppointmentDraftAsync(
             scheduledDate,
             TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0))
         );
-        existingAppointment.Cancel(patient.UserId, "Reason", scheduledDate);
+        existingAppointment.Cancel(Guid.CreateVersion7(), "Reason", scheduledDate);
 
         Context.Appointments.Add(existingAppointment);
 
@@ -1058,12 +1068,12 @@ public class AppointmentRepositoryTests : IAsyncLifetime
         // Arrange
         var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
 
-        var (existingAppointment, doctor, patient) = await CreateAppointmentDraftAsync(
+        var (existingAppointment, doctor, _) = await CreateAppointmentDraftAsync(
             scheduledDate,
             TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0))
         );
 
-        existingAppointment.CancelLate(patient.UserId, "Late Cancelled", scheduledDate);
+        existingAppointment.CancelLate(Guid.CreateVersion7(), "Late Cancelled", scheduledDate);
 
         Context.Appointments.Add(existingAppointment);
 
@@ -1312,6 +1322,34 @@ public class AppointmentRepositoryTests : IAsyncLifetime
     }
 
     private async Task<(
+        Appointment Appointment,
+        User PatientUser
+    )> CreateAppointmentDraftWithUserAsync(DateOnly scheduledDate, TimeRange timeRange)
+    {
+        var (doctor, patient, apptType) = await SeedCommonEntitiesAsync();
+        var patientUser = await CreateUserAsync(UserRole.Patient);
+        var membership = FamilyMembership.CreateSelf(
+            patient.Id,
+            patientUser.Id,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        Context.FamilyMemberships.Add(membership);
+        await Context.SaveChangesAsync();
+
+        var appointment = Appointment.Schedule(
+            patient.Id,
+            doctor.Id,
+            apptType.Id,
+            scheduledDate,
+            timeRange
+        );
+        appointment.ClearDomainEvents();
+
+        return (appointment, patientUser);
+    }
+
+    private async Task<(
         Doctor Doctor,
         Patient Patient,
         AppointmentTypeDefinition AppointmentType
@@ -1319,8 +1357,7 @@ public class AppointmentRepositoryTests : IAsyncLifetime
     {
         var doctorUser = await CreateUserAsync(UserRole.Doctor);
         var doctor = await CreateDoctorAsync(doctorUser.Id);
-        var patientUser = await CreateUserAsync(UserRole.Patient);
-        var patient = await CreatePatientAsync(patientUser.Id);
+        var patient = await CreatePatientAsync();
         var apptType = AppointmentTypeDefinition.Create(
             AppointmentCategory.FirstConsultation,
             "Standard Consultation",
@@ -1351,6 +1388,15 @@ public class AppointmentRepositoryTests : IAsyncLifetime
     private async Task<Doctor> CreateDoctorAsync(Guid userId)
     {
         var specialty = MedicalSpecialty.Create("Cardiology", "Desc", 30, 24);
+        var roomNumber = Random.Shared.Next(
+            ConsultationRoom.MinimumNumber,
+            ConsultationRoom.MaximumNumber + 1
+        );
+
+        var floor = Random.Shared.Next(
+            ConsultationRoom.MinimumFloor,
+            ConsultationRoom.MaximumFloor + 1
+        );
 
         Context.MedicalSpecialties.Add(specialty);
 
@@ -1359,10 +1405,10 @@ public class AppointmentRepositoryTests : IAsyncLifetime
         var doctor = Doctor.Create(
             userId,
             PersonName.Create("Dr. Watson"),
-            MedicalLicenseNumber.Create("CMP-" + Guid.CreateVersion7().ToString("N")[..5]),
+            MedicalLicenseNumber.Create("licenseNumber"),
             specialty.Id,
             "Desc",
-            ConsultationRoom.Create(10, "Room 10", 1)
+            ConsultationRoom.Create(roomNumber, $"Room {roomNumber}", floor)
         );
 
         Context.Doctors.Add(doctor);
@@ -1372,7 +1418,7 @@ public class AppointmentRepositoryTests : IAsyncLifetime
         return doctor;
     }
 
-    private async Task<Patient> CreatePatientAsync(Guid userId)
+    private async Task<Patient> CreatePatientAsync()
     {
         var refTime = _fakeTime.GetUtcNow().UtcDateTime;
         var patient = Patient.CreateProfile(
@@ -1380,7 +1426,6 @@ public class AppointmentRepositoryTests : IAsyncLifetime
             DateOnly.FromDateTime(refTime.AddYears(-30)),
             refTime
         );
-        typeof(Patient).GetProperty(nameof(Patient.UserId))?.SetValue(patient, userId);
 
         patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
         patient.UpdateEmergencyContact(EmergencyContact.Create("Contact", "555-9999"));
