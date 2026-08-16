@@ -16,6 +16,8 @@ public class AppointmentGenerator(AppointmentSeedingArgs args, DateTime baseDate
     ];
 
     private readonly IReadOnlyList<Patient> _activePatients = [.. args.Patients];
+    private readonly Dictionary<Guid, Guid> _ownerUserIdByPatientId =
+        args.FamilyMemberships.ToDictionary(m => m.PatientId, m => m.UserId);
 
     private static readonly IReadOnlyList<AppointmentStatus> TargetStatuses =
     [
@@ -81,7 +83,7 @@ public class AppointmentGenerator(AppointmentSeedingArgs args, DateTime baseDate
             appointment,
             status,
             doctor.Id,
-            args.PatientUsers[index % args.PatientUsers.Count].Id,
+            _ownerUserIdByPatientId[patient.Id],
             actionTime,
             receptionistNotes,
             index

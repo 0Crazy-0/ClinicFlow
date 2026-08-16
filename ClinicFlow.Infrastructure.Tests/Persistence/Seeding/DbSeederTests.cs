@@ -457,6 +457,45 @@ public class DbSeederTests(PostgresFixture fixture) : IAsyncLifetime
     }
 
     [Fact]
+    public async Task SeedAsync_CancelledAppointments_ShouldBeCancelledByOwnerOfPatient()
+    {
+        // Arrange & Act
+        await DbSeeder.SeedAsync(Context, _fakeTime, TestContext.Current.CancellationToken);
+
+        // Assert
+        var appointments = await Context.Appointments.ToListAsync(
+            TestContext.Current.CancellationToken
+        );
+        var familyMemberships = await Context
+            .FamilyMemberships.IgnoreQueryFilters()
+            .ToListAsync(TestContext.Current.CancellationToken);
+
+        var membershipByPatientId = familyMemberships.ToDictionary(m => m.PatientId, m => m.UserId);
+
+        var patientCancelled = appointments
+            .Where(a =>
+                a.Status is AppointmentStatus.Cancelled or AppointmentStatus.LateCancellation
+                && a.CancelledByUserId is not null
+            )
+            .ToList();
+
+        patientCancelled
+            .Should()
+            .AllSatisfy(a =>
+            {
+                membershipByPatientId.Should().ContainKey(a.PatientId);
+                var actualOwnerUserId = membershipByPatientId[a.PatientId];
+
+                a.CancelledByUserId.Should()
+                    .Be(
+                        actualOwnerUserId,
+                        $"appointment {a.Id} for patient {a.PatientId} was cancelled by "
+                            + $"{a.CancelledByUserId}, but the real owner (per FamilyMembership) is {actualOwnerUserId}"
+                    );
+            });
+    }
+
+    [Fact]
     public void ClinicalDetailSampleData_ShouldHaveEntriesForAllTemplateCodes()
     {
         // Arrange

@@ -61,7 +61,7 @@ public static class DbSeeder
             cancellationToken
         );
 
-        var patients = await SeedPatientsAsync(
+        var (patients, familyMemberships) = await SeedPatientsAsync(
             context,
             patientUsers,
             seederContext,
@@ -75,7 +75,7 @@ public static class DbSeeder
             doctors,
             appointmentTypes,
             schedules,
-            patientUsers
+            familyMemberships
         );
 
         var appointments = await SeedAppointmentsAsync(
@@ -364,7 +364,10 @@ public static class DbSeeder
         return doctors;
     }
 
-    private static async Task<IReadOnlyList<Patient>> SeedPatientsAsync(
+    private static async Task<(
+        IReadOnlyList<Patient>,
+        IReadOnlyList<FamilyMembership> FamilyMemberships
+    )> SeedPatientsAsync(
         ApplicationDbContext context,
         IReadOnlyList<User> patientUsers,
         SeederContext seederContext,
@@ -519,7 +522,7 @@ public static class DbSeeder
         await context.Patients.AddRangeAsync(patients, cancellationToken);
         await context.FamilyMemberships.AddRangeAsync(familyMemberships, cancellationToken);
         await context.SaveChangesAsync(cancellationToken);
-        return patients;
+        return (patients, familyMemberships);
     }
 
     private static async Task<IReadOnlyList<Schedule>> SeedSchedulesAsync(
