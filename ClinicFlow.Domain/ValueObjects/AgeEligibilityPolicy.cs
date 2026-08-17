@@ -63,4 +63,7 @@ public record AgeEligibilityPolicy
         if (RequiresLegalGuardian && patientAgeInYears < LegalAdultAge && !hasGuardianConsent)
             throw new DomainValidationException(DomainErrors.AppointmentType.LegalGuardianRequired);
     }
+
+    public bool RequiresGuardianForAge(int patientAgeInYears) =>
+        RequiresLegalGuardian && patientAgeInYears < LegalAdultAge;
 }
