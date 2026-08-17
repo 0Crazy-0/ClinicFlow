@@ -895,6 +895,433 @@ public class AppointmentRepositoryTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task HasUpcomingAppointmentRequiringGuardianForMinorAsync_ShouldReturnTrue_WhenMinorHasFutureAppointmentRequiringGuardian()
+    {
+        // Arrange
+        var refTime = _fakeTime.GetUtcNow().UtcDateTime;
+        var (doctor, _, _) = await SeedCommonEntitiesAsync();
+
+        var guardianApptType = AppointmentTypeDefinition.Create(
+            AppointmentCategory.FirstConsultation,
+            "Pediatric Consultation",
+            "Desc",
+            EncounterDuration.FromMinutes(20),
+            AgeEligibilityPolicy.Create(0, 17, true)
+        );
+
+        Context.AppointmentTypes.Add(guardianApptType);
+
+        var minorPatient = Patient.CreateProfile(
+            PersonName.Create("Minor Child"),
+            DateOnly.FromDateTime(refTime.AddYears(-5)),
+            refTime
+        );
+        minorPatient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
+        minorPatient.UpdateEmergencyContact(EmergencyContact.Create("Contact", "555-9999"));
+        Context.Patients.Add(minorPatient);
+
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var scheduledDate = DateOnly.FromDateTime(refTime.AddDays(1));
+        var appointment = Appointment.Schedule(
+            minorPatient.Id,
+            doctor.Id,
+            guardianApptType.Id,
+            scheduledDate,
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+        );
+        Context.Appointments.Add(appointment);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var result = await _sut.HasUpcomingAppointmentRequiringGuardianForMinorAsync(
+            minorPatient.Id,
+            refTime,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task HasUpcomingAppointmentRequiringGuardianForMinorAsync_ShouldReturnTrue_WhenMinorHasTodayFutureAppointmentRequiringGuardian()
+    {
+        // Arrange
+        var noonToday = new DateTimeOffset(
+            _fakeTime.GetUtcNow().UtcDateTime.Date.AddHours(10),
+            TimeSpan.Zero
+        );
+        _fakeTime.SetUtcNow(noonToday);
+        var refTime = noonToday.UtcDateTime;
+
+        var (doctor, _, _) = await SeedCommonEntitiesAsync();
+
+        var guardianApptType = AppointmentTypeDefinition.Create(
+            AppointmentCategory.FirstConsultation,
+            "Pediatric Consultation",
+            "Desc",
+            EncounterDuration.FromMinutes(20),
+            AgeEligibilityPolicy.Create(0, 17, true)
+        );
+        Context.AppointmentTypes.Add(guardianApptType);
+
+        var minorPatient = Patient.CreateProfile(
+            PersonName.Create("Minor Child"),
+            DateOnly.FromDateTime(refTime.AddYears(-5)),
+            refTime
+        );
+        minorPatient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
+        minorPatient.UpdateEmergencyContact(EmergencyContact.Create("Contact", "555-9999"));
+        Context.Patients.Add(minorPatient);
+
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var scheduledDate = DateOnly.FromDateTime(refTime);
+        var appointment = Appointment.Schedule(
+            minorPatient.Id,
+            doctor.Id,
+            guardianApptType.Id,
+            scheduledDate,
+            TimeRange.Create(new TimeOnly(14, 0), new TimeOnly(15, 0))
+        );
+        Context.Appointments.Add(appointment);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var result = await _sut.HasUpcomingAppointmentRequiringGuardianForMinorAsync(
+            minorPatient.Id,
+            refTime,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task HasUpcomingAppointmentRequiringGuardianForMinorAsync_ShouldReturnFalse_WhenPatientIsAdultOnScheduledDate()
+    {
+        // Arrange
+        var refTime = _fakeTime.GetUtcNow().UtcDateTime;
+        var (doctor, _, _) = await SeedCommonEntitiesAsync();
+
+        var guardianApptType = AppointmentTypeDefinition.Create(
+            AppointmentCategory.FirstConsultation,
+            "General Consultation",
+            "Desc",
+            EncounterDuration.FromMinutes(20),
+            AgeEligibilityPolicy.Create(18, 65, true)
+        );
+        Context.AppointmentTypes.Add(guardianApptType);
+
+        var adultPatient = Patient.CreateProfile(
+            PersonName.Create("Adult Patient"),
+            DateOnly.FromDateTime(refTime.AddYears(-25)),
+            refTime
+        );
+
+        adultPatient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
+        adultPatient.UpdateEmergencyContact(EmergencyContact.Create("Contact", "555-9999"));
+        Context.Patients.Add(adultPatient);
+
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var scheduledDate = DateOnly.FromDateTime(refTime.AddDays(1));
+        var appointment = Appointment.Schedule(
+            adultPatient.Id,
+            doctor.Id,
+            guardianApptType.Id,
+            scheduledDate,
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+        );
+        Context.Appointments.Add(appointment);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var result = await _sut.HasUpcomingAppointmentRequiringGuardianForMinorAsync(
+            adultPatient.Id,
+            refTime,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task HasUpcomingAppointmentRequiringGuardianForMinorAsync_ShouldReturnFalse_WhenAppointmentTypeDoesNotRequireGuardian()
+    {
+        // Arrange
+        var refTime = _fakeTime.GetUtcNow().UtcDateTime;
+        var (doctor, _, standardApptType) = await SeedCommonEntitiesAsync();
+
+        var minorPatient = Patient.CreateProfile(
+            PersonName.Create("Minor Child"),
+            DateOnly.FromDateTime(refTime.AddYears(-5)),
+            refTime
+        );
+        minorPatient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
+        minorPatient.UpdateEmergencyContact(EmergencyContact.Create("Contact", "555-9999"));
+        Context.Patients.Add(minorPatient);
+
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var scheduledDate = DateOnly.FromDateTime(refTime.AddDays(1));
+        var appointment = Appointment.Schedule(
+            minorPatient.Id,
+            doctor.Id,
+            standardApptType.Id,
+            scheduledDate,
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+        );
+        Context.Appointments.Add(appointment);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var result = await _sut.HasUpcomingAppointmentRequiringGuardianForMinorAsync(
+            minorPatient.Id,
+            refTime,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task HasUpcomingAppointmentRequiringGuardianForMinorAsync_ShouldReturnFalse_WhenAppointmentIsCancelled()
+    {
+        // Arrange
+        var refTime = _fakeTime.GetUtcNow().UtcDateTime;
+        var (doctor, _, _) = await SeedCommonEntitiesAsync();
+
+        var guardianApptType = AppointmentTypeDefinition.Create(
+            AppointmentCategory.FirstConsultation,
+            "Pediatric Consultation",
+            "Desc",
+            EncounterDuration.FromMinutes(20),
+            AgeEligibilityPolicy.Create(0, 17, true)
+        );
+        Context.AppointmentTypes.Add(guardianApptType);
+
+        var minorPatient = Patient.CreateProfile(
+            PersonName.Create("Minor Child"),
+            DateOnly.FromDateTime(refTime.AddYears(-5)),
+            refTime
+        );
+        minorPatient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
+        minorPatient.UpdateEmergencyContact(EmergencyContact.Create("Contact", "555-9999"));
+        Context.Patients.Add(minorPatient);
+
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var scheduledDate = DateOnly.FromDateTime(refTime.AddDays(1));
+        var appointment = Appointment.Schedule(
+            minorPatient.Id,
+            doctor.Id,
+            guardianApptType.Id,
+            scheduledDate,
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+        );
+        appointment.Cancel(Guid.CreateVersion7(), "Reason", scheduledDate);
+        Context.Appointments.Add(appointment);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var result = await _sut.HasUpcomingAppointmentRequiringGuardianForMinorAsync(
+            minorPatient.Id,
+            refTime,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task HasUpcomingAppointmentRequiringGuardianForMinorAsync_ShouldReturnFalse_WhenAppointmentIsEarlierToday()
+    {
+        // Arrange
+        var noonToday = new DateTimeOffset(
+            _fakeTime.GetUtcNow().UtcDateTime.Date.AddHours(14),
+            TimeSpan.Zero
+        );
+        _fakeTime.SetUtcNow(noonToday);
+        var refTime = noonToday.UtcDateTime;
+
+        var (doctor, _, _) = await SeedCommonEntitiesAsync();
+
+        var guardianApptType = AppointmentTypeDefinition.Create(
+            AppointmentCategory.FirstConsultation,
+            "Pediatric Consultation",
+            "Desc",
+            EncounterDuration.FromMinutes(20),
+            AgeEligibilityPolicy.Create(0, 17, true)
+        );
+        Context.AppointmentTypes.Add(guardianApptType);
+
+        var minorPatient = Patient.CreateProfile(
+            PersonName.Create("Minor Child"),
+            DateOnly.FromDateTime(refTime.AddYears(-5)),
+            refTime
+        );
+        minorPatient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
+        minorPatient.UpdateEmergencyContact(EmergencyContact.Create("Contact", "555-9999"));
+        Context.Patients.Add(minorPatient);
+
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var scheduledDate = DateOnly.FromDateTime(refTime);
+        var appointment = Appointment.Schedule(
+            minorPatient.Id,
+            doctor.Id,
+            guardianApptType.Id,
+            scheduledDate,
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+        );
+        Context.Appointments.Add(appointment);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var result = await _sut.HasUpcomingAppointmentRequiringGuardianForMinorAsync(
+            minorPatient.Id,
+            refTime,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task HasUpcomingAppointmentRequiringGuardianForMinorAsync_ShouldReturnFalse_WhenAppointmentWasInPastDayWithLaterStartTime()
+    {
+        // Arrange
+        var noonToday = new DateTimeOffset(
+            _fakeTime.GetUtcNow().UtcDateTime.Date.AddHours(10),
+            TimeSpan.Zero
+        );
+        _fakeTime.SetUtcNow(noonToday);
+        var refTime = noonToday.UtcDateTime;
+
+        var (doctor, _, _) = await SeedCommonEntitiesAsync();
+
+        var guardianApptType = AppointmentTypeDefinition.Create(
+            AppointmentCategory.FirstConsultation,
+            "Pediatric Consultation",
+            "Desc",
+            EncounterDuration.FromMinutes(20),
+            AgeEligibilityPolicy.Create(0, 17, true)
+        );
+        Context.AppointmentTypes.Add(guardianApptType);
+
+        var minorPatient = Patient.CreateProfile(
+            PersonName.Create("Minor Child"),
+            DateOnly.FromDateTime(refTime.AddYears(-5)),
+            refTime
+        );
+        minorPatient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
+        minorPatient.UpdateEmergencyContact(EmergencyContact.Create("Contact", "555-9999"));
+        Context.Patients.Add(minorPatient);
+
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var scheduledDate = DateOnly.FromDateTime(refTime.AddDays(-1));
+        var appointment = Appointment.Schedule(
+            minorPatient.Id,
+            doctor.Id,
+            guardianApptType.Id,
+            scheduledDate,
+            TimeRange.Create(new TimeOnly(14, 0), new TimeOnly(15, 0))
+        );
+        Context.Appointments.Add(appointment);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var result = await _sut.HasUpcomingAppointmentRequiringGuardianForMinorAsync(
+            minorPatient.Id,
+            refTime,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task HasUpcomingAppointmentRequiringGuardianForMinorAsync_ShouldReturnFalse_WhenAppointmentStartsAtExactReferenceTimeToday()
+    {
+        // Arrange
+        var noonToday = new DateTimeOffset(
+            _fakeTime.GetUtcNow().UtcDateTime.Date.AddHours(10),
+            TimeSpan.Zero
+        );
+        _fakeTime.SetUtcNow(noonToday);
+        var refTime = noonToday.UtcDateTime;
+
+        var (doctor, _, _) = await SeedCommonEntitiesAsync();
+
+        var guardianApptType = AppointmentTypeDefinition.Create(
+            AppointmentCategory.FirstConsultation,
+            "Pediatric Consultation",
+            "Desc",
+            EncounterDuration.FromMinutes(20),
+            AgeEligibilityPolicy.Create(0, 17, true)
+        );
+        Context.AppointmentTypes.Add(guardianApptType);
+
+        var minorPatient = Patient.CreateProfile(
+            PersonName.Create("Minor Child"),
+            DateOnly.FromDateTime(refTime.AddYears(-5)),
+            refTime
+        );
+        minorPatient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
+        minorPatient.UpdateEmergencyContact(EmergencyContact.Create("Contact", "555-9999"));
+        Context.Patients.Add(minorPatient);
+
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var scheduledDate = DateOnly.FromDateTime(refTime);
+        var appointment = Appointment.Schedule(
+            minorPatient.Id,
+            doctor.Id,
+            guardianApptType.Id,
+            scheduledDate,
+            TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0))
+        );
+        Context.Appointments.Add(appointment);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var result = await _sut.HasUpcomingAppointmentRequiringGuardianForMinorAsync(
+            minorPatient.Id,
+            refTime,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task HasUpcomingAppointmentRequiringGuardianForMinorAsync_ShouldReturnFalse_WhenNoAppointmentsExist()
+    {
+        // Arrange
+        var patient = await CreatePatientAsync();
+
+        // Act
+        var result = await _sut.HasUpcomingAppointmentRequiringGuardianForMinorAsync(
+            patient.Id,
+            _fakeTime.GetUtcNow().UtcDateTime,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [Fact]
     public async Task HasConflictAsync_ShouldReturnTrue_WhenOverlappingAppointmentExists()
     {
         // Arrange
