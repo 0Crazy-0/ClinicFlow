@@ -81,10 +81,27 @@ public class FamilyMembership : BaseEntity
         return new FamilyMembership(patientId, ownerUserId, role, referenceTime);
     }
 
-    public void Revoke(DateTime referenceTime)
+    public void Revoke(
+        bool patientHasOwnSelfMembership,
+        bool hasUpcomingAppointmentRequiringGuardianForMinor,
+        DateTime referenceTime
+    )
     {
+        if (Role is PatientRelationship.Self)
+            throw new DomainValidationException(DomainErrors.FamilyMembership.CannotRemoveSelf);
+
         if (Status is not FamilyMembershipStatus.Active)
             throw new DomainValidationException(DomainErrors.FamilyMembership.AlreadyTerminated);
+
+        if (!patientHasOwnSelfMembership)
+            throw new DomainValidationException(
+                DomainErrors.FamilyMembership.CannotRemoveWithoutOwnSelf
+            );
+
+        if (hasUpcomingAppointmentRequiringGuardianForMinor)
+            throw new DomainValidationException(
+                DomainErrors.FamilyMembership.CannotRemoveWithUpcomingAppointments
+            );
 
         if (referenceTime <= StartedAt)
             throw new DomainValidationException(

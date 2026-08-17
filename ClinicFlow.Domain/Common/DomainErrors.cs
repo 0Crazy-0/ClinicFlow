@@ -169,5 +169,9 @@ public static class DomainErrors
         public const string PatientAlreadyHasActiveMembership =
             "PATIENT_ALREADY_HAS_ACTIVE_MEMBERSHIP";
         public const string MaxActiveFamilyMembersExceeded = "MAX_ACTIVE_FAMILY_MEMBERS_EXCEEDED";
+        public const string CannotRemoveSelf = "CANNOT_REMOVE_SELF_MEMBERSHIP";
+        public const string CannotRemoveWithoutOwnSelf = "PATIENT_HAS_NO_OWN_SELF_MEMBERSHIP";
+        public const string CannotRemoveWithUpcomingAppointments =
+            "CANNOT_REMOVE_WITH_UPCOMING_APPOINTMENTS";
     }
 }

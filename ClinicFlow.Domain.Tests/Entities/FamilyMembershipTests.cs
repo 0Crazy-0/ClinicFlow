@@ -164,7 +164,7 @@ public class FamilyMembershipTests
     }
 
     [Fact]
-    public void Revoke_ShouldTransitionToRevoked_WhenStatusIsActive()
+    public void Revoke_ShouldTransitionToRevoked_WhenValidParameters()
     {
         // Arrange
         var membership = FamilyMembership.CreateFamilyMember(
@@ -178,11 +178,42 @@ public class FamilyMembershipTests
         var revokeTime = _fakeTime.GetUtcNow().UtcDateTime;
 
         // Act
-        membership.Revoke(revokeTime);
+        membership.Revoke(
+            patientHasOwnSelfMembership: true,
+            hasUpcomingAppointmentRequiringGuardianForMinor: false,
+            referenceTime: revokeTime
+        );
 
         // Assert
         membership.Status.Should().Be(FamilyMembershipStatus.Revoked);
         membership.EndedAt.Should().Be(revokeTime);
+    }
+
+    [Fact]
+    public void Revoke_ShouldThrowException_WhenRoleIsSelf()
+    {
+        // Arrange
+        var membership = FamilyMembership.CreateSelf(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        _fakeTime.Advance(TimeSpan.FromDays(1));
+        var revokeTime = _fakeTime.GetUtcNow().UtcDateTime;
+
+        // Act
+        var act = () =>
+            membership.Revoke(
+                patientHasOwnSelfMembership: true,
+                hasUpcomingAppointmentRequiringGuardianForMinor: false,
+                referenceTime: revokeTime
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.FamilyMembership.CannotRemoveSelf);
     }
 
     [Fact]
@@ -198,10 +229,19 @@ public class FamilyMembershipTests
         _fakeTime.Advance(TimeSpan.FromDays(1));
 
         var actionTime = _fakeTime.GetUtcNow().UtcDateTime;
-        membership.Revoke(actionTime);
+        membership.Revoke(
+            patientHasOwnSelfMembership: true,
+            hasUpcomingAppointmentRequiringGuardianForMinor: false,
+            referenceTime: actionTime
+        );
 
         // Act
-        var act = () => membership.Revoke(actionTime);
+        var act = () =>
+            membership.Revoke(
+                patientHasOwnSelfMembership: true,
+                hasUpcomingAppointmentRequiringGuardianForMinor: false,
+                referenceTime: actionTime
+            );
 
         // Assert
         act.Should()
@@ -225,12 +265,73 @@ public class FamilyMembershipTests
         membership.Leave(actionTime);
 
         // Act
-        var act = () => membership.Revoke(actionTime);
+        var act = () =>
+            membership.Revoke(
+                patientHasOwnSelfMembership: true,
+                hasUpcomingAppointmentRequiringGuardianForMinor: false,
+                referenceTime: actionTime
+            );
 
         // Assert
         act.Should()
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.FamilyMembership.AlreadyTerminated);
+    }
+
+    [Fact]
+    public void Revoke_ShouldThrowException_WhenPatientHasUpcomingAppointmentRequiringGuardianForMinor()
+    {
+        // Arrange
+        var membership = FamilyMembership.CreateFamilyMember(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            PatientRelationship.Child,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+        _fakeTime.Advance(TimeSpan.FromDays(1));
+
+        var revokeTime = _fakeTime.GetUtcNow().UtcDateTime;
+
+        // Act
+        var act = () =>
+            membership.Revoke(
+                patientHasOwnSelfMembership: true,
+                hasUpcomingAppointmentRequiringGuardianForMinor: true,
+                referenceTime: revokeTime
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.FamilyMembership.CannotRemoveWithUpcomingAppointments);
+    }
+
+    [Fact]
+    public void Revoke_ShouldThrowException_WhenPatientHasNoOwnSelfMembership()
+    {
+        // Arrange
+        var membership = FamilyMembership.CreateFamilyMember(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            PatientRelationship.Child,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+        _fakeTime.Advance(TimeSpan.FromDays(1));
+
+        var revokeTime = _fakeTime.GetUtcNow().UtcDateTime;
+
+        // Act
+        var act = () =>
+            membership.Revoke(
+                patientHasOwnSelfMembership: false,
+                hasUpcomingAppointmentRequiringGuardianForMinor: false,
+                referenceTime: revokeTime
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.FamilyMembership.CannotRemoveWithoutOwnSelf);
     }
 
     [Fact]
@@ -246,7 +347,12 @@ public class FamilyMembershipTests
         );
 
         // Act
-        var act = () => membership.Revoke(startedAt.AddSeconds(-1));
+        var act = () =>
+            membership.Revoke(
+                patientHasOwnSelfMembership: true,
+                hasUpcomingAppointmentRequiringGuardianForMinor: false,
+                referenceTime: startedAt.AddSeconds(-1)
+            );
 
         // Assert
         act.Should()
@@ -267,7 +373,12 @@ public class FamilyMembershipTests
         );
 
         // Act
-        var act = () => membership.Revoke(startedAt);
+        var act = () =>
+            membership.Revoke(
+                patientHasOwnSelfMembership: true,
+                hasUpcomingAppointmentRequiringGuardianForMinor: false,
+                referenceTime: startedAt
+            );
 
         // Assert
         act.Should()
@@ -335,7 +446,11 @@ public class FamilyMembershipTests
         _fakeTime.Advance(TimeSpan.FromDays(1));
 
         var actionTime = _fakeTime.GetUtcNow().UtcDateTime;
-        membership.Revoke(actionTime);
+        membership.Revoke(
+            patientHasOwnSelfMembership: true,
+            hasUpcomingAppointmentRequiringGuardianForMinor: false,
+            referenceTime: actionTime
+        );
 
         // Act
         var act = () => membership.Leave(actionTime);
