@@ -9,8 +9,7 @@ namespace ClinicFlow.Infrastructure.Persistence.Repositories;
 /// <summary>
 /// Provides the repository implementation for <see cref="Appointment"/> persistence operations.
 /// </summary>
-public sealed class AppointmentRepository(ApplicationDbContext dbContext, TimeProvider timeProvider)
-    : IAppointmentRepository
+public sealed class AppointmentRepository(ApplicationDbContext dbContext) : IAppointmentRepository
 {
     public Task CreateAsync(Appointment appointment, CancellationToken cancellationToken = default)
     {
@@ -96,35 +95,6 @@ public sealed class AppointmentRepository(ApplicationDbContext dbContext, TimePr
             .ToListAsync(cancellationToken);
 
         return (items, totalCount);
-    }
-
-    public async Task<bool> HasActiveAppointmentsForUserAsync(
-        Guid userId,
-        CancellationToken cancellationToken = default
-    )
-    {
-        var today = DateOnly.FromDateTime(timeProvider.GetUtcNow().UtcDateTime);
-        var nowTime = TimeOnly.FromDateTime(timeProvider.GetUtcNow().UtcDateTime);
-
-        return await dbContext.Appointments.AnyAsync(
-            a =>
-                dbContext
-                    .FamilyMemberships.Where(m =>
-                        m.UserId == userId && m.Status == FamilyMembershipStatus.Active
-                    )
-                    .Select(m => m.PatientId)
-                    .Contains(a.PatientId)
-                && (
-                    a.Status == AppointmentStatus.Scheduled
-                    || a.Status == AppointmentStatus.CheckedIn
-                    || a.Status == AppointmentStatus.RequiresReassignment
-                )
-                && (
-                    a.ScheduledDate > today
-                    || (a.ScheduledDate == today && a.TimeRange.Start > nowTime)
-                ),
-            cancellationToken
-        );
     }
 
     public async Task<bool> HasUpcomingAppointmentRequiringGuardianForMinorAsync(
