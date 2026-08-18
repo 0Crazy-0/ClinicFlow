@@ -1,8 +1,10 @@
 using ClinicFlow.Infrastructure.Tests.Shared;
+using Xunit.Sdk;
+using Xunit.v3;
 
 // Disable parallel execution of tests within this assembly because they share a static PostgreSQL Testcontainer
 // and use Bogus with a static seed (Randomizer.Seed), which are not thread-safe.
-[assembly: CollectionBehavior(DisableTestParallelization = true)]
+[assembly: Parallelization(Mode = ParallelMode.None)]
 
 // Registers a single shared PostgreSQL Testcontainer fixture for the entire test assembly.
 // All test classes receive the same DbSeederFixture instance via constructor injection,
