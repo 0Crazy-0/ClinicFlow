@@ -88,7 +88,7 @@ public class RevokeFamilyMemberCommandHandlerTests
         _unitOfWorkMock.Verify(
             x =>
                 x.ExecuteWithLockAsync(
-                    command.OwnerUserId,
+                    command.PatientId,
                     It.IsAny<Func<CancellationToken, Task>>(),
                     It.IsAny<CancellationToken>()
                 ),

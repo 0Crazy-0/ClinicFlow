@@ -18,7 +18,7 @@ public sealed class RevokeFamilyMemberCommandHandler(
     public async Task Handle(RevokeFamilyMemberCommand request, CancellationToken cancellationToken)
     {
         await unitOfWork.ExecuteWithLockAsync(
-            request.OwnerUserId,
+            request.PatientId,
             async cancellationToken =>
             {
                 var membership =
