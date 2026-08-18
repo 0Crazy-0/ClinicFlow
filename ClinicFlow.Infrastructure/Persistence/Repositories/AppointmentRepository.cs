@@ -127,6 +127,46 @@ public sealed class AppointmentRepository(ApplicationDbContext dbContext, TimePr
         );
     }
 
+    public async Task<bool> HasUpcomingAppointmentRequiringGuardianForMinorAsync(
+        Guid patientId,
+        DateTime referenceTime,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var today = DateOnly.FromDateTime(referenceTime);
+        var nowTime = TimeOnly.FromDateTime(referenceTime);
+
+        var candidates = await dbContext
+            .Appointments.AsNoTracking()
+            .Where(a =>
+                a.PatientId == patientId
+                && (
+                    a.Status == AppointmentStatus.Scheduled
+                    || a.Status == AppointmentStatus.CheckedIn
+                    || a.Status == AppointmentStatus.RequiresReassignment
+                )
+                && (
+                    a.ScheduledDate > today
+                    || (a.ScheduledDate == today && a.TimeRange.Start > nowTime)
+                )
+            )
+            .Join(
+                dbContext.AppointmentTypes.Where(t => t.AgePolicy.RequiresLegalGuardian),
+                a => a.AppointmentTypeId,
+                t => t.Id,
+                (a, t) => new { a.ScheduledDate, t.AgePolicy }
+            )
+            .ToListAsync(cancellationToken);
+
+        var patient = await dbContext
+            .Patients.AsNoTracking()
+            .SingleAsync(p => p.Id == patientId, cancellationToken);
+
+        return candidates.Any(c =>
+            c.AgePolicy.RequiresGuardianForAge(patient.GetAge(c.ScheduledDate))
+        );
+    }
+
     public async Task<bool> HasConflictAsync(
         Guid doctorId,
         DateOnly scheduledDate,

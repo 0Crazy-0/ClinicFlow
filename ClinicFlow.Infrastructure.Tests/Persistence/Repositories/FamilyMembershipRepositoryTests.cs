@@ -331,7 +331,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
     }
 
     [Fact]
-    public async Task HasActiveSelfMembershipByUserIdAsync_ShouldReturnFalse_WhenMembershipIsRevoked()
+    public async Task HasActiveSelfMembershipByUserIdAsync_ShouldReturnFalse_WhenMembershipIsLeft()
     {
         // Arrange
         var user = await CreateUserAsync();
@@ -342,7 +342,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
-        membership.Revoke(_fakeTime.GetUtcNow().UtcDateTime.AddHours(1));
+        membership.Leave(_fakeTime.GetUtcNow().UtcDateTime.AddHours(1));
 
         Context.FamilyMemberships.Add(membership);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -430,7 +430,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
     }
 
     [Fact]
-    public async Task HasActiveSelfMembershipByPatientIdAsync_ShouldReturnFalse_WhenMembershipIsRevoked()
+    public async Task HasActiveSelfMembershipByPatientIdAsync_ShouldReturnFalse_WhenMembershipIsLeft()
     {
         // Arrange
         var user = await CreateUserAsync();
@@ -441,7 +441,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
-        membership.Revoke(_fakeTime.GetUtcNow().UtcDateTime.AddHours(1));
+        membership.Leave(_fakeTime.GetUtcNow().UtcDateTime.AddHours(1));
 
         Context.FamilyMemberships.Add(membership);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -602,7 +602,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
 
         var oldMembership = FamilyMembership.CreateSelf(patient.Id, user1.Id, startTime);
 
-        oldMembership.Revoke(startTime.AddDays(1));
+        oldMembership.Leave(startTime.AddDays(1));
 
         Context.FamilyMemberships.Add(oldMembership);
 

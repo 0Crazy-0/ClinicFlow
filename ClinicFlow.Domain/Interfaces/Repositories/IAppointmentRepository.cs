@@ -40,6 +40,11 @@ public interface IAppointmentRepository
         CancellationToken cancellationToken = default
     );
 
+    Task<bool> HasUpcomingAppointmentRequiringGuardianForMinorAsync(
+        Guid patientId,
+        DateTime referenceTime,
+        CancellationToken cancellationToken = default
+    );
     Task<bool> HasConflictAsync(
         Guid doctorId,
         DateOnly scheduledDate,

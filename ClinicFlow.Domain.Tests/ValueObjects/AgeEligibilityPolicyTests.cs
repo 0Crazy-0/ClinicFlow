@@ -293,4 +293,38 @@ public class AgeEligibilityPolicyTests
         // Assert
         act.Should().NotThrow();
     }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(6)]
+    [InlineData(14)]
+    [InlineData(17)]
+    public void RequiresGuardianForAge_ShouldReturnTrue_WhenRequiresLegalGuardianIsTrue(int age)
+    {
+        // Arrange
+        var policy = AgeEligibilityPolicy.Create(null, null, true);
+
+        // Act
+        var result = policy.RequiresGuardianForAge(age);
+
+        // Assert
+        result.Should().BeTrue();
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(15)]
+    [InlineData(18)]
+    [InlineData(30)]
+    public void RequiresGuardianForAge_ShouldReturnFalse_WhenRequiresLegalGuardianIsFalse(int age)
+    {
+        // Arrange
+        var policy = AgeEligibilityPolicy.Create(null, null, false);
+
+        // Act
+        var result = policy.RequiresGuardianForAge(age);
+
+        // Assert
+        result.Should().BeFalse();
+    }
 }

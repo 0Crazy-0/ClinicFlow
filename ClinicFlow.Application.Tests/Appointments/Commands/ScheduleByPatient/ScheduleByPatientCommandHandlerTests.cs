@@ -32,6 +32,22 @@ public class ScheduleByPatientCommandHandlerTests
 
     public ScheduleByPatientCommandHandlerTests()
     {
+        _unitOfWorkMock
+            .Setup(x =>
+                x.ExecuteWithLockAsync(
+                    It.IsAny<Guid>(),
+                    It.IsAny<Func<CancellationToken, Task<Guid>>>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .Returns(
+                (
+                    Guid _,
+                    Func<CancellationToken, Task<Guid>> operation,
+                    CancellationToken cancellationToken
+                ) => operation(cancellationToken)
+            );
+
         _sut = new ScheduleByPatientCommandHandler(
             _penaltyRepositoryMock.Object,
             _patientRepositoryMock.Object,
@@ -315,6 +331,15 @@ public class ScheduleByPatientCommandHandlerTests
         await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
+        _unitOfWorkMock.Verify(
+            x =>
+                x.ExecuteWithLockAsync(
+                    command.TargetPatientId,
+                    It.IsAny<Func<CancellationToken, Task<Guid>>>(),
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Once
+        );
         _appointmentRepositoryMock.Verify(
             r => r.CreateAsync(It.IsAny<Appointment>(), It.IsAny<CancellationToken>()),
             Times.Once
@@ -348,6 +373,15 @@ public class ScheduleByPatientCommandHandlerTests
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(Patient));
 
+        _unitOfWorkMock.Verify(
+            x =>
+                x.ExecuteWithLockAsync(
+                    It.IsAny<Guid>(),
+                    It.IsAny<Func<CancellationToken, Task<Guid>>>(),
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Never
+        );
         _appointmentRepositoryMock.Verify(
             r => r.CreateAsync(It.IsAny<Appointment>(), It.IsAny<CancellationToken>()),
             Times.Never
@@ -407,6 +441,15 @@ public class ScheduleByPatientCommandHandlerTests
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(Doctor));
 
+        _unitOfWorkMock.Verify(
+            x =>
+                x.ExecuteWithLockAsync(
+                    It.IsAny<Guid>(),
+                    It.IsAny<Func<CancellationToken, Task<Guid>>>(),
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Never
+        );
         _appointmentRepositoryMock.Verify(
             r => r.CreateAsync(It.IsAny<Appointment>(), It.IsAny<CancellationToken>()),
             Times.Never
@@ -484,6 +527,15 @@ public class ScheduleByPatientCommandHandlerTests
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(AppointmentTypeDefinition));
 
+        _unitOfWorkMock.Verify(
+            x =>
+                x.ExecuteWithLockAsync(
+                    It.IsAny<Guid>(),
+                    It.IsAny<Func<CancellationToken, Task<Guid>>>(),
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Never
+        );
         _appointmentRepositoryMock.Verify(
             r => r.CreateAsync(It.IsAny<Appointment>(), It.IsAny<CancellationToken>()),
             Times.Never
@@ -588,6 +640,15 @@ public class ScheduleByPatientCommandHandlerTests
             .ThrowAsync<AppointmentConflictException>()
             .WithMessage(DomainErrors.Appointment.Conflict);
 
+        _unitOfWorkMock.Verify(
+            x =>
+                x.ExecuteWithLockAsync(
+                    It.IsAny<Guid>(),
+                    It.IsAny<Func<CancellationToken, Task<Guid>>>(),
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Once
+        );
         _appointmentRepositoryMock.Verify(
             r => r.CreateAsync(It.IsAny<Appointment>(), It.IsAny<CancellationToken>()),
             Times.Never
@@ -660,6 +721,15 @@ public class ScheduleByPatientCommandHandlerTests
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(User));
 
+        _unitOfWorkMock.Verify(
+            x =>
+                x.ExecuteWithLockAsync(
+                    It.IsAny<Guid>(),
+                    It.IsAny<Func<CancellationToken, Task<Guid>>>(),
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Never
+        );
         _appointmentRepositoryMock.Verify(
             r => r.CreateAsync(It.IsAny<Appointment>(), It.IsAny<CancellationToken>()),
             Times.Never
@@ -749,6 +819,15 @@ public class ScheduleByPatientCommandHandlerTests
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(Schedule));
 
+        _unitOfWorkMock.Verify(
+            x =>
+                x.ExecuteWithLockAsync(
+                    It.IsAny<Guid>(),
+                    It.IsAny<Func<CancellationToken, Task<Guid>>>(),
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Never
+        );
         _appointmentRepositoryMock.Verify(
             r => r.CreateAsync(It.IsAny<Appointment>(), It.IsAny<CancellationToken>()),
             Times.Never
