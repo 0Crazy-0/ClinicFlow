@@ -97,53 +97,61 @@ public sealed class RescheduleByPatientCommandHandler(
                 appointment.DoctorId
             );
 
-        if (
-            await appointmentRepository.HasConflictAsync(
-                appointment.DoctorId,
-                request.NewDate,
-                newTimeRange,
-                cancellationToken
-            )
-        )
-        {
-            throw new AppointmentConflictException(
-                DomainErrors.Appointment.Conflict,
-                appointment.DoctorId,
-                request.NewDate.ToDateTime(newTimeRange.Start)
-            );
-        }
-
-        var clearance = regionalSchedulingService.EnforceSchedulingRegulations(
-            targetDoctor,
-            targetPatient,
-            appointmentType
-        );
-
-        var initiatorHasAccessToTarget = await familyMembershipRepository.HasActiveMembershipAsync(
-            request.InitiatorUserId,
+        await unitOfWork.ExecuteWithLockAsync(
             appointment.PatientId,
+            async cancellationToken =>
+            {
+                if (
+                    await appointmentRepository.HasConflictAsync(
+                        appointment.DoctorId,
+                        request.NewDate,
+                        newTimeRange,
+                        cancellationToken
+                    )
+                )
+                {
+                    throw new AppointmentConflictException(
+                        DomainErrors.Appointment.Conflict,
+                        appointment.DoctorId,
+                        request.NewDate.ToDateTime(newTimeRange.Start)
+                    );
+                }
+
+                var clearance = regionalSchedulingService.EnforceSchedulingRegulations(
+                    targetDoctor,
+                    targetPatient,
+                    appointmentType
+                );
+
+                var initiatorHasAccessToTarget =
+                    await familyMembershipRepository.HasActiveMembershipAsync(
+                        request.InitiatorUserId,
+                        appointment.PatientId,
+                        cancellationToken
+                    );
+
+                AppointmentReschedulingService.RescheduleByPatient(
+                    appointment,
+                    new PatientReschedulingArgs
+                    {
+                        TargetPatient = targetPatient,
+                        NewDate = request.NewDate,
+                        NewTimeRange = newTimeRange,
+                        IsInitiatorPhoneVerified = user.IsPhoneVerified,
+                        NewPatientNotes = request.NewPatientNotes,
+                    },
+                    new PatientReschedulingContext
+                    {
+                        Penalties = penalties,
+                        DoctorSchedule = doctorSchedule,
+                        InitiatorHasAccessToTarget = initiatorHasAccessToTarget,
+                    },
+                    clearance
+                );
+
+                await unitOfWork.SaveChangesAsync(cancellationToken);
+            },
             cancellationToken
         );
-
-        AppointmentReschedulingService.RescheduleByPatient(
-            appointment,
-            new PatientReschedulingArgs
-            {
-                TargetPatient = targetPatient,
-                NewDate = request.NewDate,
-                NewTimeRange = newTimeRange,
-                IsInitiatorPhoneVerified = user.IsPhoneVerified,
-                NewPatientNotes = request.NewPatientNotes,
-            },
-            new PatientReschedulingContext
-            {
-                Penalties = penalties,
-                DoctorSchedule = doctorSchedule,
-                InitiatorHasAccessToTarget = initiatorHasAccessToTarget,
-            },
-            clearance
-        );
-
-        await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }

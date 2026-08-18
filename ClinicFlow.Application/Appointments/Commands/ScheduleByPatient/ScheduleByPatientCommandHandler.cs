@@ -88,70 +88,78 @@ public sealed class ScheduleByPatientCommandHandler(
                 request.DoctorId
             );
 
-        if (
-            await appointmentRepository.HasConflictAsync(
-                request.DoctorId,
-                request.ScheduledDate,
-                timeRange,
-                cancellationToken
-            )
-        )
-        {
-            throw new AppointmentConflictException(
-                DomainErrors.Appointment.Conflict,
-                request.DoctorId,
-                request.ScheduledDate.ToDateTime(timeRange.Start)
-            );
-        }
-
-        var clearance = regionalSchedulingService.EnforceSchedulingRegulations(
-            targetDoctor,
-            targetPatient,
-            appointmentType
-        );
-
-        var initiatorHasAccessToTarget = await familyMembershipRepository.HasActiveMembershipAsync(
-            request.InitiatorUserId,
+        return await unitOfWork.ExecuteWithLockAsync(
             request.TargetPatientId,
+            async cancellationToken =>
+            {
+                if (
+                    await appointmentRepository.HasConflictAsync(
+                        request.DoctorId,
+                        request.ScheduledDate,
+                        timeRange,
+                        cancellationToken
+                    )
+                )
+                {
+                    throw new AppointmentConflictException(
+                        DomainErrors.Appointment.Conflict,
+                        request.DoctorId,
+                        request.ScheduledDate.ToDateTime(timeRange.Start)
+                    );
+                }
+
+                var clearance = regionalSchedulingService.EnforceSchedulingRegulations(
+                    targetDoctor,
+                    targetPatient,
+                    appointmentType
+                );
+
+                var initiatorHasAccessToTarget =
+                    await familyMembershipRepository.HasActiveMembershipAsync(
+                        request.InitiatorUserId,
+                        request.TargetPatientId,
+                        cancellationToken
+                    );
+                var initiatorHasOwnSelfMembership =
+                    await familyMembershipRepository.HasActiveSelfMembershipByUserIdAsync(
+                        request.InitiatorUserId,
+                        cancellationToken
+                    );
+
+                var targetHasOwnSelfMembership =
+                    await familyMembershipRepository.HasActiveSelfMembershipByPatientIdAsync(
+                        request.TargetPatientId,
+                        cancellationToken
+                    );
+
+                var appointment = AppointmentSchedulingService.ScheduleByPatient(
+                    appointmentType,
+                    new PatientSchedulingArgs
+                    {
+                        TargetPatient = targetPatient,
+                        DoctorId = request.DoctorId,
+                        ScheduledDate = request.ScheduledDate,
+                        TimeRange = timeRange,
+                        IsInitiatorPhoneVerified = user.IsPhoneVerified,
+                        PatientNotes = request.PatientNotes,
+                    },
+                    new PatientSchedulingContext
+                    {
+                        Penalties = penalties,
+                        DoctorSchedule = doctorSchedule,
+                        InitiatorHasAccessToTarget = initiatorHasAccessToTarget,
+                        InitiatorHasOwnSelfMembership = initiatorHasOwnSelfMembership,
+                        TargetHasOwnSelfMembership = targetHasOwnSelfMembership,
+                    },
+                    clearance
+                );
+
+                await appointmentRepository.CreateAsync(appointment, cancellationToken);
+                await unitOfWork.SaveChangesAsync(cancellationToken);
+
+                return appointment.Id;
+            },
             cancellationToken
         );
-        var initiatorHasOwnSelfMembership =
-            await familyMembershipRepository.HasActiveSelfMembershipByUserIdAsync(
-                request.InitiatorUserId,
-                cancellationToken
-            );
-
-        var targetHasOwnSelfMembership =
-            await familyMembershipRepository.HasActiveSelfMembershipByPatientIdAsync(
-                request.TargetPatientId,
-                cancellationToken
-            );
-
-        var appointment = AppointmentSchedulingService.ScheduleByPatient(
-            appointmentType,
-            new PatientSchedulingArgs
-            {
-                TargetPatient = targetPatient,
-                DoctorId = request.DoctorId,
-                ScheduledDate = request.ScheduledDate,
-                TimeRange = timeRange,
-                IsInitiatorPhoneVerified = user.IsPhoneVerified,
-                PatientNotes = request.PatientNotes,
-            },
-            new PatientSchedulingContext
-            {
-                Penalties = penalties,
-                DoctorSchedule = doctorSchedule,
-                InitiatorHasAccessToTarget = initiatorHasAccessToTarget,
-                InitiatorHasOwnSelfMembership = initiatorHasOwnSelfMembership,
-                TargetHasOwnSelfMembership = targetHasOwnSelfMembership,
-            },
-            clearance
-        );
-
-        await appointmentRepository.CreateAsync(appointment, cancellationToken);
-        await unitOfWork.SaveChangesAsync(cancellationToken);
-
-        return appointment.Id;
     }
 }
