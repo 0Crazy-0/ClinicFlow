@@ -68,7 +68,7 @@ docs: update README with setup instructions
 
 **Forbidden formats**: never use branch-style casing:
 
-```
+```text
 ❌ Feat/appointment context objects
 ❌ Test/medical encounter domain validation
 ```
@@ -85,11 +85,11 @@ docs: update README with setup instructions
 
 Good:
 
-```
+```text
 Introduces the complete command lifecycle (Create, Update, Delete) for `ClinicalFormTemplate` entities. This implementation extends the domain repository contracts, introduces a JSON schema validation policy, and establishes the necessary application handlers and validation rules to support the robust management of dynamic clinical forms.
 ```
 
-```
+```text
 Added comprehensive unit tests for `AppointmentSchedulingService` and `AppointmentReschedulingService`. These test suites ensure that the core domain logic for handling appointments works perfectly, specifically covering authorization guards, doctor availability enforcement, and schedule conflict detection. The tests also comprehensively validate other essential business rules, including incomplete profiles, data mismatches, age eligibility, patient penalty blocking, and overbooking bypass conditions for staff and doctors.
 ```
 
@@ -127,44 +127,120 @@ Mark only what applies; do not over-select.
 2. **Tie tests to the change (when applicable)**: when the PR refactors production code or existing test code, each affected test class description must explain what it verifies *in relation to the specific change made*, not just describe the class's general purpose. E.g. instead of "Verifies the cancellation logic", write "Verifies the cancellation logic passes successfully with the newly modified object initializers for patient, doctor, and staff arguments."
    - This does NOT apply when the PR adds brand-new test classes/methods for previously uncovered scenarios; in that case, simply describe what the new test verifies, since there is no prior behavior to tie it to.
 
-3. **Layer separation**: only separate into "Domain" and "Application" sections when the PR has meaningful, testable changes in **both** layers. If changes are concentrated in a single layer, list the test classes directly without section headers.
+3. **Formatting styles (Individual, Grouped, and Hybrid)**:
+   - **Individual pattern (`` `TestClass: Description` ``)**: use strictly for single test classes verifying distinct, specialized behaviors. Do not combine multiple test classes with `&` in a single bullet.
+   - **Grouped pattern (Description header + bulleted test classes)**: use whenever 2 or more test classes share the same conceptual verification objective (e.g., query handlers mapping DTOs, paginated queries asserting metadata, repository persistence tracking, batch refactorings, or shared validation logic removals). State an overarching description starting with an active verb (e.g., "Verifies that...", "Confirms that...", "Ensures that...") ending with a colon, followed by the bulleted list of test classes.
+   - **Hybrid pattern**: combine individual and grouped entries naturally within the same PR description or under layer sections when different tests require different levels of grouping.
 
-4. **No method-level instructions**: reference test classes, not individual test methods. Do not say "test the `Cancel` method".
+4. **Layer separation**: only separate into "Domain", "Application", or "Infrastructure" sections when the PR has meaningful, testable changes in multiple layers (e.g., `**Domain**:`, `**Application**:`, `**Infrastructure**:`). If changes are concentrated in a single layer, list the test classes or groups directly without layer section headers.
 
-5. **Documentation-only PRs**: when the PR exclusively modifies XML documentation (`/// <summary>`, `/// <remarks>`, `/// <exception>`, etc.) with zero functional code changes, use this exact message instead of listing test classes:
+5. **No method-level instructions**: reference test classes, not individual test methods. Do not say "test the `Cancel` method".
 
-```
+6. **Documentation-only PRs**: when the PR exclusively modifies XML documentation (`/// <summary>`, `/// <remarks>`, `/// <exception>`, etc.) with zero functional code changes, use this exact message instead of listing test classes:
+
+```text
 No functional tests are required as these changes are strictly limited to XML documentation updates.
 ```
 
-6. **AGENTS.md-only PRs**: when the PR exclusively modifies the `AGENTS.md` file, use this exact message:
+7. **AGENTS.md-only PRs**: when the PR exclusively modifies the `AGENTS.md` file, use this exact message:
 
-```
+```text
 No functional tests are required as these changes are strictly limited to project documentation updates in AGENTS.md.
 ```
 
-Single-layer example:
+### Individual pattern example (Single layer)
 
 ```markdown
 ## How to test
-- `ClinicalFormTemplateCommandValidatorBaseTests`: Verifies the shared validation rules, ensuring properties like `Name`, `Description`, and `JsonSchemaDefinition` conform to domain limits and formatting requirements.
+- `PatientTests`: Confirms that the simplified `CloseAccount` method correctly marks the primary user as deleted and enforces the rule that only primary users can close their accounts, reflecting the removal of the appointment state parameter.
 
-- `CreateClinicalFormTemplateCommandHandlerTests` & `CreateClinicalFormTemplateCommandValidatorTests`: Verifies the end-to-end creation flow for new templates, ensuring repository interactions and validations are executed correctly.
+- `PatientAccessServiceTests`: Validates that access verification now relies on pre-resolved boolean membership flags instead of direct entity relationship comparisons.
+
+- `AppointmentCancellationServiceTests`: Verifies the emergency cancellation logic passes successfully using the newly introduced `IsInitiatorSelfOfTarget` and `IsInitiatorGuardianOfMinorTarget` flags instead of direct patient relationship properties.
+
+- `ScheduleTests`: Verifies the `EnsureDoctorIsAvailable` validation logic on `Schedule` and the simplified schedule creation helpers.
 ```
 
-Multi-layer example:
+### Grouped pattern example (Single layer)
+
+```markdown
+## How to test
+Verifies that handlers returning a single data transfer object correctly map all properties, including nested value objects, without requiring redundant null checks:
+- `GetAppointmentByIdQueryHandlerTests`
+- `GetClinicalFormTemplateByCodeQueryHandlerTests`
+- `GetDoctorByIdQueryHandlerTests`
+- `GetPatientByIdQueryHandlerTests`
+
+Verifies that handlers returning paginated results correctly assert structural equivalence for the inner items collection and explicitly validate all pagination metadata fields in both populated and empty scenarios:
+- `GetAppointmentsByDateRangeQueryHandlerTests`
+- `GetAppointmentsByDoctorIdAndDateQueryHandlerTests`
+- `GetDoctorsBySpecialtyIdQueryHandlerTests`
+- `GetMedicalRecordsByDoctorIdQueryHandlerTests`
+```
+
+### Multi-layer examples (Domain, Application & Infrastructure)
 
 ```markdown
 ## How to test
 **Domain**:
-- `AppointmentCancellationServiceTests`: Verifies the cancellation logic passes successfully with the newly modified object initializers for patient, doctor, and staff arguments.
+- `FamilyMemberRegistrationServiceTests`: Verifies that registration throws `DomainValidationException` with the `FamilyMemberLimitExceeded` code when the active count reaches `MaxActiveFamilyMembers`, and confirms existing scenarios pass with the updated method signature.
 
 ---
 
 **Application**:
-- `CancelAppointmentByDoctorCommandHandler`: Ensures the cancellation flow respects the new `init`-only property requirements.
-- `CancelAppointmentByPatientCommandHandler`: Verifies the argument mapping is correctly formed for patient-initiated cancellations.
-- `CancelAppointmentByStaffCommandHandler`: Verifies the argument mapping is correctly formed for staff-initiated cancellations.
+- `AddFamilyMemberCommandHandlerTests`: Verifies the registration flow executes correctly through the new `ExecuteWithLockAsync` pass-through mock, ensuring the handler delegates to the lock wrapper without altering existing creation behavior.
+
+---
+
+**Infrastructure**:
+- `PatientRepositoryTests`: Verifies that `CountActiveFamilyMembersAsync` correctly counts only active family members, excluding self patients, soft-deleted records, and family members belonging to other users.
+
+- `UnitOfWorkLockTests`: Verifies advisory lock acquisition with single and dual keys, transaction commit and rollback behavior, domain event deferral until commit, suppression of events on failure, pending notification cleanup across successive operations, immediate publication when no active transaction exists, and concurrency blocking with identical versus distinct lock keys.
+```
+
+```markdown
+## How to test
+**Domain**:
+- `FamilyMembershipTests`: Verifies the revocation domain rules, ensuring exceptions are thrown when attempting to revoke self-memberships, when the patient lacks an active self-membership, or when the minor has upcoming guardian-required appointments.
+
+- `AgeEligibilityPolicyTests`: Verifies the new `RequiresGuardianForAge` method correctly evaluates guardian requirements based on the patient's age and policy configuration.
+
+---
+
+**Application**:
+- `RevokeFamilyMemberCommandHandlerTests`: Verifies the end-to-end revocation flow, ensuring the handler correctly orchestrates repository checks, applies domain rules, and throws appropriate exceptions when business constraints are violated.
+
+- `RevokeFamilyMemberCommandValidatorTests`: Verifies that the command validator enforces non-empty identifiers for both the owner user and the patient.
+
+---
+
+**Infrastructure**:
+- `AppointmentRepositoryTests`: Verifies the new `HasUpcomingAppointmentRequiringGuardianForMinorAsync` query accurately identifies future appointments requiring a guardian while correctly excluding past, cancelled, or non-guardian appointments.
+
+- `FamilyMembershipRepositoryTests`: Verifies repository interactions using the updated `Leave` method for self-memberships instead of `Revoke`.
+```
+
+### Hybrid & Multi-layer example
+
+```markdown
+## How to test
+**Domain**:
+Validates that the registration services no longer enforce the administrative claim rule for deleted patients, aligning with the updated domain model:
+- `FamilyMemberRegistrationServiceTests`
+- `PrimaryProfileRegistrationServiceTests`
+
+---
+
+**Application**:
+- `DeactivateUserCommandHandlerTests`: Verifies the deactivation flow correctly terminates the self membership, enforces the active self membership requirement, and blocks deactivation when active family members exist.
+
+- `ClosePatientAccountCommandHandlerTests`: Ensures the error message correctly references the user domain when active family members prevent account closure.
+
+Confirms the removal of the deleted profile validation logic without affecting the remaining creation flows:
+- `AddCompleteFamilyMemberCommandHandlerTests`
+- `AddFamilyMemberCommandHandlerTests`
+- `CreateCompletePatientProfileCommandHandlerTests`
+- `CreatePatientProfileCommandHandlerTests`
 ```
 
 ## Checklist
