@@ -68,7 +68,7 @@ docs: update README with setup instructions
 
 **Forbidden formats**: never use branch-style casing:
 
-```
+```text
 ❌ Feat/appointment context objects
 ❌ Test/medical encounter domain validation
 ```
@@ -85,11 +85,11 @@ docs: update README with setup instructions
 
 Good:
 
-```
+```text
 Introduces the complete command lifecycle (Create, Update, Delete) for `ClinicalFormTemplate` entities. This implementation extends the domain repository contracts, introduces a JSON schema validation policy, and establishes the necessary application handlers and validation rules to support the robust management of dynamic clinical forms.
 ```
 
-```
+```text
 Added comprehensive unit tests for `AppointmentSchedulingService` and `AppointmentReschedulingService`. These test suites ensure that the core domain logic for handling appointments works perfectly, specifically covering authorization guards, doctor availability enforcement, and schedule conflict detection. The tests also comprehensively validate other essential business rules, including incomplete profiles, data mismatches, age eligibility, patient penalty blocking, and overbooking bypass conditions for staff and doctors.
 ```
 
@@ -128,7 +128,7 @@ Mark only what applies; do not over-select.
    - This does NOT apply when the PR adds brand-new test classes/methods for previously uncovered scenarios; in that case, simply describe what the new test verifies, since there is no prior behavior to tie it to.
 
 3. **Formatting styles (Individual, Grouped, and Hybrid)**:
-   - **Individual pattern (`- `TestClass`: Description`)**: use strictly for single test classes verifying distinct, specialized behaviors. Do not combine multiple test classes with `&` in a single bullet.
+   - **Individual pattern (`` `TestClass: Description` ``)**: use strictly for single test classes verifying distinct, specialized behaviors. Do not combine multiple test classes with `&` in a single bullet.
    - **Grouped pattern (Description header + bulleted test classes)**: use whenever 2 or more test classes share the same conceptual verification objective (e.g., query handlers mapping DTOs, paginated queries asserting metadata, repository persistence tracking, batch refactorings, or shared validation logic removals). State an overarching description starting with an active verb (e.g., "Verifies that...", "Confirms that...", "Ensures that...") ending with a colon, followed by the bulleted list of test classes.
    - **Hybrid pattern**: combine individual and grouped entries naturally within the same PR description or under layer sections when different tests require different levels of grouping.
 
@@ -138,13 +138,13 @@ Mark only what applies; do not over-select.
 
 6. **Documentation-only PRs**: when the PR exclusively modifies XML documentation (`/// <summary>`, `/// <remarks>`, `/// <exception>`, etc.) with zero functional code changes, use this exact message instead of listing test classes:
 
-```
+```text
 No functional tests are required as these changes are strictly limited to XML documentation updates.
 ```
 
 7. **AGENTS.md-only PRs**: when the PR exclusively modifies the `AGENTS.md` file, use this exact message:
 
-```
+```text
 No functional tests are required as these changes are strictly limited to project documentation updates in AGENTS.md.
 ```
 
