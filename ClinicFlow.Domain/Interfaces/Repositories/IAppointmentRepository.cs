@@ -35,11 +35,6 @@ public interface IAppointmentRepository
         CancellationToken cancellationToken = default
     );
 
-    Task<bool> HasActiveAppointmentsForUserAsync(
-        Guid userId,
-        CancellationToken cancellationToken = default
-    );
-
     Task<bool> HasUpcomingAppointmentRequiringGuardianForMinorAsync(
         Guid patientId,
         DateTime referenceTime,

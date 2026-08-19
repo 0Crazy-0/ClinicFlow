@@ -35,40 +35,6 @@ public class XRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
 
 `InitializeAsync` always does two things in order: Respawner reset, then `ChangeTracker.Clear()`. This guarantees each test starts with a clean database and no stale tracked entities.
 
-## Constructor with Extra Dependencies
-
-When the repository requires dependencies beyond `ApplicationDbContext` (e.g., `TimeProvider`), use a traditional constructor instead of a primary constructor. The rest of the pattern remains identical:
-
-```csharp
-public class AppointmentRepositoryTests : IAsyncLifetime
-{
-    private readonly PostgresFixture _fixture;
-    private readonly FakeTimeProvider _fakeTime = new();
-    private readonly AppointmentRepository _sut;
-    private ApplicationDbContext Context => _fixture.Context;
-
-    public AppointmentRepositoryTests(PostgresFixture fixture)
-    {
-        _fixture = fixture;
-        _sut = new AppointmentRepository(fixture.Context, _fakeTime);
-    }
-
-    public async ValueTask InitializeAsync()
-    {
-        await _fixture.Respawner.ResetAsync(_fixture.DbConnection);
-
-        _fixture.Context.ChangeTracker.Clear();
-    }
-
-    public ValueTask DisposeAsync()
-    {
-        GC.SuppressFinalize(this);
-
-        return ValueTask.CompletedTask;
-    }
-}
-```
-
 ## Test Data Seeding
 
 The standard pattern for repository tests is **`private async Task<T>` helpers** that both create and persist the entity. Each helper adds the entity with `Context.EntitySet.Add(entity)` followed by `await Context.SaveChangesAsync()`. Never use `AddRange`:

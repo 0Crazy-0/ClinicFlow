@@ -10,24 +10,17 @@ using Microsoft.Extensions.Time.Testing;
 
 namespace ClinicFlow.Infrastructure.Tests.Persistence.Repositories;
 
-public class AppointmentRepositoryTests : IAsyncLifetime
+public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
 {
-    private readonly PostgresFixture _fixture;
     private readonly FakeTimeProvider _fakeTime = new();
-    private readonly AppointmentRepository _sut;
-    private ApplicationDbContext Context => _fixture.Context;
-
-    public AppointmentRepositoryTests(PostgresFixture fixture)
-    {
-        _fixture = fixture;
-        _sut = new AppointmentRepository(fixture.Context, _fakeTime);
-    }
+    private readonly AppointmentRepository _sut = new(fixture.Context);
+    private ApplicationDbContext Context => fixture.Context;
 
     public async ValueTask InitializeAsync()
     {
-        await _fixture.Respawner.ResetAsync(_fixture.DbConnection);
+        await fixture.Respawner.ResetAsync(fixture.DbConnection);
 
-        _fixture.Context.ChangeTracker.Clear();
+        fixture.Context.ChangeTracker.Clear();
     }
 
     public ValueTask DisposeAsync()
@@ -708,190 +701,6 @@ public class AppointmentRepositoryTests : IAsyncLifetime
                 [appointment1, appointment2, appointment3],
                 options => options.WithStrictOrdering().Excluding(a => a.DomainEvents)
             );
-    }
-
-    [Fact]
-    public async Task HasActiveAppointmentsForUserAsync_ShouldReturnTrue_WhenActiveFutureAppointmentExists()
-    {
-        // Arrange
-        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
-        var timeRange = TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0));
-        var (appointment, patientUser) = await CreateAppointmentDraftWithUserAsync(
-            scheduledDate,
-            timeRange
-        );
-
-        Context.Appointments.Add(appointment);
-
-        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
-
-        // Act
-        var result = await _sut.HasActiveAppointmentsForUserAsync(
-            patientUser.Id,
-            TestContext.Current.CancellationToken
-        );
-
-        // Assert
-        result.Should().BeTrue();
-    }
-
-    [Fact]
-    public async Task HasActiveAppointmentsForUserAsync_ShouldReturnFalse_WhenNoFutureAppointments()
-    {
-        // Arrange
-        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(-1));
-        var timeRange = TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0));
-        var (appointment, patientUser) = await CreateAppointmentDraftWithUserAsync(
-            scheduledDate,
-            timeRange
-        );
-
-        Context.Appointments.Add(appointment);
-
-        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
-
-        // Act
-        var result = await _sut.HasActiveAppointmentsForUserAsync(
-            patientUser.Id,
-            TestContext.Current.CancellationToken
-        );
-
-        // Assert
-        result.Should().BeFalse();
-    }
-
-    [Fact]
-    public async Task HasActiveAppointmentsForUserAsync_ShouldReturnTrue_WhenAppointmentIsCheckedIn()
-    {
-        // Arrange
-        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
-        var timeRange = TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0));
-        var (appointment, patientUser) = await CreateAppointmentDraftWithUserAsync(
-            scheduledDate,
-            timeRange
-        );
-        appointment.CheckIn(scheduledDate);
-
-        Context.Appointments.Add(appointment);
-
-        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
-
-        // Act
-        var result = await _sut.HasActiveAppointmentsForUserAsync(
-            patientUser.Id,
-            TestContext.Current.CancellationToken
-        );
-
-        // Assert
-        result.Should().BeTrue();
-    }
-
-    [Fact]
-    public async Task HasActiveAppointmentsForUserAsync_ShouldReturnTrue_WhenAppointmentRequiresReassignment()
-    {
-        // Arrange
-        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
-        var timeRange = TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0));
-        var (appointment, patientUser) = await CreateAppointmentDraftWithUserAsync(
-            scheduledDate,
-            timeRange
-        );
-        appointment.MarkAsRequiresReassignment();
-
-        Context.Appointments.Add(appointment);
-
-        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
-
-        // Act
-        var result = await _sut.HasActiveAppointmentsForUserAsync(
-            patientUser.Id,
-            TestContext.Current.CancellationToken
-        );
-
-        // Assert
-        result.Should().BeTrue();
-    }
-
-    [Fact]
-    public async Task HasActiveAppointmentsForUserAsync_ShouldReturnFalse_WhenAppointmentIsCancelled()
-    {
-        // Arrange
-        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
-        var (appointment, patientUser) = await CreateAppointmentDraftWithUserAsync(
-            scheduledDate,
-            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
-        );
-        appointment.Cancel(patientUser.Id, null, scheduledDate);
-
-        Context.Appointments.Add(appointment);
-
-        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
-
-        // Act
-        var result = await _sut.HasActiveAppointmentsForUserAsync(
-            patientUser.Id,
-            TestContext.Current.CancellationToken
-        );
-
-        // Assert
-        result.Should().BeFalse();
-    }
-
-    [Fact]
-    public async Task HasActiveAppointmentsForUserAsync_ShouldReturnFalse_WhenAppointmentStartsExactlyNow()
-    {
-        // Arrange
-        var now = _fakeTime.GetUtcNow().UtcDateTime;
-        var today = DateOnly.FromDateTime(now);
-        var nowTime = TimeOnly.FromDateTime(now);
-
-        var (appointment, patientUser) = await CreateAppointmentDraftWithUserAsync(
-            today,
-            TimeRange.Create(nowTime, nowTime.AddHours(1))
-        );
-
-        Context.Appointments.Add(appointment);
-
-        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
-
-        // Act
-        var result = await _sut.HasActiveAppointmentsForUserAsync(
-            patientUser.Id,
-            TestContext.Current.CancellationToken
-        );
-
-        // Assert
-        result.Should().BeFalse();
-    }
-
-    [Fact]
-    public async Task HasActiveAppointmentsForUserAsync_ShouldReturnFalse_WhenAppointmentStartsInPastToday()
-    {
-        // Arrange
-        var tomorrowNoon = new DateTimeOffset(
-            _fakeTime.GetUtcNow().UtcDateTime.Date.AddDays(1).AddHours(12),
-            TimeSpan.Zero
-        );
-
-        _fakeTime.SetUtcNow(tomorrowNoon);
-
-        var (appointment, patientUser) = await CreateAppointmentDraftWithUserAsync(
-            DateOnly.FromDateTime(tomorrowNoon.UtcDateTime),
-            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(9, 30))
-        );
-
-        Context.Appointments.Add(appointment);
-
-        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
-
-        // Act
-        var result = await _sut.HasActiveAppointmentsForUserAsync(
-            patientUser.Id,
-            TestContext.Current.CancellationToken
-        );
-
-        // Assert
-        result.Should().BeFalse();
     }
 
     [Fact]
