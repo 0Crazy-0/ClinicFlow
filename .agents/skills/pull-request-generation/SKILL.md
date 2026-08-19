@@ -178,16 +178,56 @@ Verifies that handlers returning paginated results correctly assert structural e
 - `GetMedicalRecordsByDoctorIdQueryHandlerTests`
 ```
 
+### Multi-layer examples (Domain, Application & Infrastructure)
+
+```markdown
+## How to test
+**Domain**:
+- `FamilyMemberRegistrationServiceTests`: Verifies that registration throws `DomainValidationException` with the `FamilyMemberLimitExceeded` code when the active count reaches `MaxActiveFamilyMembers`, and confirms existing scenarios pass with the updated method signature.
+
+---
+
+**Application**:
+- `AddFamilyMemberCommandHandlerTests`: Verifies the registration flow executes correctly through the new `ExecuteWithLockAsync` pass-through mock, ensuring the handler delegates to the lock wrapper without altering existing creation behavior.
+
+---
+
+**Infrastructure**:
+- `PatientRepositoryTests`: Verifies that `CountActiveFamilyMembersAsync` correctly counts only active family members, excluding self patients, soft-deleted records, and family members belonging to other users.
+
+- `UnitOfWorkLockTests`: Verifies advisory lock acquisition with single and dual keys, transaction commit and rollback behavior, domain event deferral until commit, suppression of events on failure, pending notification cleanup across successive operations, immediate publication when no active transaction exists, and concurrency blocking with identical versus distinct lock keys.
+```
+
+```markdown
+## How to test
+**Domain**:
+- `FamilyMembershipTests`: Verifies the revocation domain rules, ensuring exceptions are thrown when attempting to revoke self-memberships, when the patient lacks an active self-membership, or when the minor has upcoming guardian-required appointments.
+
+- `AgeEligibilityPolicyTests`: Verifies the new `RequiresGuardianForAge` method correctly evaluates guardian requirements based on the patient's age and policy configuration.
+
+---
+
+**Application**:
+- `RevokeFamilyMemberCommandHandlerTests`: Verifies the end-to-end revocation flow, ensuring the handler correctly orchestrates repository checks, applies domain rules, and throws appropriate exceptions when business constraints are violated.
+
+- `RevokeFamilyMemberCommandValidatorTests`: Verifies that the command validator enforces non-empty identifiers for both the owner user and the patient.
+
+---
+
+**Infrastructure**:
+- `AppointmentRepositoryTests`: Verifies the new `HasUpcomingAppointmentRequiringGuardianForMinorAsync` query accurately identifies future appointments requiring a guardian while correctly excluding past, cancelled, or non-guardian appointments.
+
+- `FamilyMembershipRepositoryTests`: Verifies repository interactions using the updated `Leave` method for self-memberships instead of `Revoke`.
+```
+
 ### Hybrid & Multi-layer example
 
 ```markdown
 ## How to test
 **Domain**:
-Verifies that domain entity factory methods, lifecycle state transitions, and authentication tracking operations function correctly with internal accessibility:
-- `AppointmentTests`
-- `DoctorTests`
-- `PatientTests`
-- `UserTests`
+Validates that the registration services no longer enforce the administrative claim rule for deleted patients, aligning with the updated domain model:
+- `FamilyMemberRegistrationServiceTests`
+- `PrimaryProfileRegistrationServiceTests`
 
 ---
 
