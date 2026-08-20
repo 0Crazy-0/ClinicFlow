@@ -100,8 +100,7 @@ public Task CreateRangeAsync(
 }
 ```
 
-#### Mathematical and Operational Proof of Equivalence
-
+#### Mathematical and Operational Proof of Equivalence (Scoped to Real EF Core Behavior)
 Stryker mutates the relational operator from `Count > 0` to `Count >= 0`.
 
 1. **Behavior for `Count > 0` (1, 2, 3...):**
@@ -112,16 +111,17 @@ Stryker mutates the relational operator from `Count > 0` to `Count >= 0`.
    - **Original (`Count > 0`):** Evaluates to `false`. `AddRange(...)` is not invoked.
    - **Mutant (`Count >= 0`):** Evaluates to `true`. `AddRange([])` is invoked with an empty list.
 
-3. **Indistinguishable Side Effects:**
-   In Entity Framework Core, calling `AddRange` with an empty collection is an absolute no-op:
+3. **Indistinguishable Side Effects (Real EF Core Implementation Only):**
+   In the real Entity Framework Core implementation, calling `AddRange` with an empty collection is an absolute no-op:
    - The `ChangeTracker` attaches zero entries.
    - No entity state changes occur.
    - No SQL is generated or queued.
    - No internal state is altered.
 
-4. **Conclusion:**
-   Because calling `AddRange([])` and not calling `AddRange` produce the exact same final state, there is no observable outcome or assertion in any unit or integration test that can differentiate the original code from the mutant. The mutant is an **equivalent mutant** and cannot be killed.
+   Note: `DbSet<TEntity>.AddRange(IEnumerable<TEntity>)` is virtual in EF Core 10.0.11. This equivalence claim holds only for tests exercising the real EF Core implementation. A mock or derived `DbSet` could still observe the call itself (e.g. via `Verify(x => x.AddRange(...))`), even though no tracked or persisted state changes.
 
+4. **Conclusion:**
+   Restricted to tests that use the real EF Core implementation and assert only tracked or persisted state, `AddRange([])` and not calling `AddRange` produce the exact same observable outcome. Within that scope, the mutant is an **equivalent mutant** and cannot be killed by any assertion on tracked entities, persisted state, or generated SQL.
 ---
 
 ### 2. `ApplicationDbContext` Infrastructure Setup
@@ -131,16 +131,23 @@ Stryker mutates the relational operator from `Count > 0` to `Count >= 0`.
 ```csharp
 protected override void OnModelCreating(ModelBuilder modelBuilder)
 {
+    // Stryker statement mutation: removes base.OnModelCreating(modelBuilder)
     base.OnModelCreating(modelBuilder);
 
-    // Stryker mutates the extension name or removes the invocation
+    // Stryker string/statement mutation: mutates or removes extension registration
     modelBuilder.HasPostgresExtension("btree_gist");
     
     // Dynamic soft-delete filter expressions and sequence number conventions...
 }
 ```
 
-Mutants generated inside `OnModelCreating` target database engine extensions and model metadata bindings. These configurations are exercised during database schema creation and integration migrations, but have no branchable business logic to verify in isolated unit tests.
+Mutants generated inside `OnModelCreating` survive due to the following characteristics:
+
+1. **`base.OnModelCreating(modelBuilder)` Statement Removal:**
+   In EF Core's base `DbContext` class, the virtual `OnModelCreating` method is an empty method (a complete no-op). When Stryker mutates this line by removing the invocation, calling an empty base method versus omitting the call produces zero side effects and leaves the model in an identical state. This makes the statement removal an **equivalent mutant** that cannot be distinguished by tests.
+
+2. **Model Metadata and Engine Extensions:**
+   Invocations such as `modelBuilder.HasPostgresExtension("btree_gist")` and dynamic query filter / row version metadata bindings target database engine extensions and ORM conventions. These configurations are exercised when applying database migrations against PostgreSQL, but have no branchable domain logic to verify in isolated unit or repository tests.
 
 ---
 
