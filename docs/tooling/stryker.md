@@ -50,6 +50,7 @@ Certain file patterns and namespaces are globally excluded from mutation analysi
 - **`**/Enums/**`:** Enum declarations.
 - **`**/Interfaces/**`:** Interface definitions.
 - **`**/Events/**`:** Simple data-carrying domain event records.
+- **`**/Properties/**`:** Assembly-level attributes and metadata (`AssemblyInfo.cs`).
 - **`**/Services/Args/**`:** Method argument encapsulation records.
 - **`**/Services/Contexts/**`:** Domain service validation context records.
 - **`**/Common/IDomainEvent.cs`:** Domain event marker interface.
