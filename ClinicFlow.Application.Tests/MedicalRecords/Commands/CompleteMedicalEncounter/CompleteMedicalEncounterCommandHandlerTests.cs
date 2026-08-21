@@ -101,6 +101,10 @@ public class CompleteMedicalEncounterCommandHandlerTests
         capturedRecord.DoctorId.Should().Be(doctorId);
         capturedRecord.AppointmentId.Should().Be(appointmentId);
         capturedRecord.ChiefComplaint.Should().Be(command.ChiefComplaint);
+        capturedRecord.ClinicalDetails.Should().ContainSingle();
+        capturedRecord.ClinicalDetails.First().TemplateCode.Should().Be("vital-signs");
+        capturedRecord.ClinicalDetails.First().JsonDataPayload.Should().Be("{}");
+        appointment.Status.Should().Be(AppointmentStatus.Completed);
     }
 
     [Fact]
