@@ -9,7 +9,7 @@ The ClinicFlow software is licensed under the MIT License (see the LICENSE file 
 THIRD-PARTY COMPONENTS
 ================================================================================
 
-1. AwesomeAssertions (v9.4.0)
+1. AwesomeAssertions (v9.5.0)
    - Authors: AwesomeAssertions, Dennis Doomen, Jonas Nyrup and contributors
    - Project: https://github.com/AwesomeAssertions/AwesomeAssertions
    - License: Apache-2.0
@@ -20,13 +20,13 @@ THIRD-PARTY COMPONENTS
    - Project: https://github.com/bchavez/Bogus
    - License: MIT
 
-3. coverlet.collector (v10.0.1)
+3. coverlet.MTP (v10.0.1)
    - Authors: tonerdo
    - Project: https://github.com/coverlet-coverage/coverlet
    - License: MIT
     - Copyright: (c) 2018 Toni Solarin-Sodara
 
-4. EFCore.ComplexIndexes (v4.0.0)
+4. EFCore.ComplexIndexes (v5.0.3)
    - Authors: Ricardo Groß
    - Project: https://github.com/CaffeinatedCoder/EFCore.ComplexIndexes
    - License: MIT
@@ -37,7 +37,7 @@ THIRD-PARTY COMPONENTS
    - License: Apache-2.0
    - Copyright: Copyright (c) Jeremy Skinner, .NET Foundation, and contributors 2008-2025
 
-6. MediatR (v14.1.0)
+6. MediatR (v14.2.0)
    - Authors: Jimmy Bogard / Lucky Penny Software
    - Project: https://mediatr.io/
    - License: Reciprocal Public License 1.5 (RPL-1.5) or Commercial
@@ -46,49 +46,49 @@ THIRD-PARTY COMPONENTS
      organizations with less than $5,000,000 USD in annual revenue
      under RPL-1.5; commercial license required above that threshold.
 
-7. Microsoft.EntityFrameworkCore (v10.0.8)
+7. Microsoft.EntityFrameworkCore (v10.0.11)
    - Authors: Microsoft
    - Project: https://docs.microsoft.com/ef/core/
    - License: MIT
    - Copyright: © Microsoft Corporation. All rights reserved.
 
-8. Microsoft.EntityFrameworkCore.Design (v10.0.8)
+8. Microsoft.EntityFrameworkCore.Design (v10.0.11)
    - Authors: Microsoft
    - Project: https://docs.microsoft.com/ef/core/
    - License: MIT
    - Copyright: © Microsoft Corporation. All rights reserved.
 
-9. Microsoft.EntityFrameworkCore.InMemory (v10.0.8)
+9. Microsoft.EntityFrameworkCore.InMemory (v10.0.11)
    - Authors: Microsoft
    - Project: https://docs.microsoft.com/ef/core/
    - License: MIT
    - Copyright: © Microsoft Corporation. All rights reserved.
 
-10. Microsoft.EntityFrameworkCore.Relational (v10.0.8)
+10. Microsoft.EntityFrameworkCore.Relational (v10.0.11)
    - Authors: Microsoft
    - Project: https://docs.microsoft.com/ef/core/
    - License: MIT
    - Copyright: © Microsoft Corporation. All rights reserved.
 
-11. Microsoft.Extensions.Configuration.Binder (v10.0.8)
+11. Microsoft.Extensions.Configuration.Binder (v10.0.11)
     - Authors: Microsoft
     - Project: https://dot.net/
     - License: MIT
     - Copyright: © Microsoft Corporation. All rights reserved.
 
-12. Microsoft.Extensions.DependencyInjection.Abstractions (v10.0.8)
+12. Microsoft.Extensions.DependencyInjection.Abstractions (v10.0.11)
     - Authors: Microsoft
     - Project: https://dot.net/
     - License: MIT
     - Copyright: © Microsoft Corporation. All rights reserved.
 
-13. Microsoft.Extensions.TimeProvider.Testing (v10.6.0)
+13. Microsoft.Extensions.TimeProvider.Testing (v10.9.0)
     - Authors: Microsoft
     - Project: https://dot.net/
     - License: MIT
     - Copyright: © Microsoft Corporation. All rights reserved.
 
-14. Microsoft.NET.Test.Sdk (v18.6.0)
+14. Microsoft.NET.Test.Sdk (v18.9.0)
     - Authors: Microsoft
     - Project: https://github.com/microsoft/vstest
     - License: MIT
@@ -100,7 +100,7 @@ THIRD-PARTY COMPONENTS
     - License: BSD-3-Clause
     - Copyright: Copyright (c) 2007, Clarius Consulting, Manas Technology Solutions, InSTEDD, and Contributors. All rights reserved.
 
-16. Npgsql.EntityFrameworkCore.PostgreSQL (v10.0.2)
+16. Npgsql.EntityFrameworkCore.PostgreSQL (v10.0.3)
     - Authors: Shay Rojansky, Austin Drenski, Yoh Deadfall
     - Project: https://github.com/npgsql/efcore.pg
     - License: PostgreSQL License
@@ -112,19 +112,19 @@ THIRD-PARTY COMPONENTS
     - License: Apache-2.0
     - Copyright: Copyright Jimmy Bogard
 
-18. Testcontainers.PostgreSql (v4.12.0)
+18. Testcontainers.PostgreSql (v4.14.0)
     - Authors: Andre Hofmeister and contributors
     - Project: https://dotnet.testcontainers.org/
     - License: MIT
     - Copyright: Copyright (c) 2019 - 2026 Andre Hofmeister and other authors
 
-19. xunit.v3 (v3.2.2)
+19. xunit.v3 (v4.0.0)
     - Authors: xunit
     - Project: https://github.com/xunit/xunit
     - License: Apache-2.0
     - Copyright: Copyright (c) .NET Foundation and Contributors
 
-20. xunit.runner.visualstudio (v3.1.5)
+20. xunit.runner.visualstudio (v4.0.0)
     - Authors: xunit
     - Project: https://github.com/xunit/xunit
     - License: Apache-2.0
@@ -387,7 +387,7 @@ PROVIDE MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 --------------------------------------------------------------------------------
 Reciprocal Public License 1.5 (RPL-1.5)
 --------------------------------------------------------------------------------
-MediatR (v14.1.0) is dual-licensed under the Reciprocal Public License 1.5
+MediatR (v14.2.0) is dual-licensed under the Reciprocal Public License 1.5
 (RPL-1.5) and a Commercial License from Lucky Penny Software.
 
 Free usage (including this project) is permitted for individuals and
