@@ -26,10 +26,7 @@ public class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidator<TReq
                 validators.Select(v => v.ValidateAsync(context, cancellationToken))
             );
 
-            var failures = validationResults
-                .Where(r => r.Errors.Count > 0)
-                .SelectMany(r => r.Errors)
-                .ToList();
+            var failures = validationResults.SelectMany(r => r.Errors).ToList();
 
             if (failures.Count > 0)
                 throw new ValidationException(failures);
