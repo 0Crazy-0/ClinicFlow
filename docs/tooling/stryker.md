@@ -24,12 +24,16 @@ Stryker mutation testing runs in CI via GitHub Actions, but **it is intentionall
 This decision was made due to recurring false positives and tooling limitations in incremental baseline mode:
 
 1. **Pure Configuration Lines in `ApplicationDbContext`:**
-   Lines in EF Core configuration such as `modelBuilder.HasPostgresExtension("btree_gist")` or metadata loops configure database extensions and entity conventions. Mutants generated on string literals or method calls in these configuration sections have no observable branching logic to test via unit assertions, yet Stryker reports them as survived mutants (0% score).
+   Mutants surviving in `OnModelCreating` fall into two distinct categories:
+   - **`base.OnModelCreating(modelBuilder)` statement removal:** EF Core's base `DbContext.OnModelCreating` is an empty no-op, so removing this call produces zero side effects and leaves the model in an identical state — an **equivalent mutant** that cannot be distinguished by any test.
+   - **`modelBuilder.HasPostgresExtension("btree_gist")` registration:** This single line registers a PostgreSQL database extension and has no observable branching logic to verify in isolated unit or repository tests; mutants on its string literal are false positives.
+   
+   This exception is strictly limited to the two lines above. It does **not** extend to the `foreach` loops configuring `SequenceNumber`/`Version` (`BaseEntity`) or the dynamically-built soft-delete query filter (`SoftDeletableEntity`) — both are exercised by `ApplicationDbContextModelTests` and `ApplicationDbContextIntegrationTests` respectively, and any survived mutants there represent real gaps.
 
 2. **Baseline Reset on Accumulated Edits:**
    Stryker's `--with-baseline` mode operates by only evaluating mutants within changed code and comparing against a base commit. When a file accumulates modifications across multiple commits or refactorings, Stryker resets the baseline status for all mutants in the modified blocks. Consequently, previously killed or benign configuration mutants can lose their baseline status and resurface as survived mutants in CI reports without any real regression in business logic.
 
-Due to these false positives and baseline inconsistencies, Stryker is not a required gating check in PRs. Instead, developers verify mutation results locally before pushing, confirming that no new unkilled mutants are introduced into actual business logic.
+Due to these false positives and baseline inconsistencies, Stryker is not a required gating check in PRs. Instead, developers verify mutation results locally before pushing. Local runs execute a full (non-baseline) analysis, so new mutants are not automatically isolated from pre-existing ones. Developers should review any survived mutants and confirm they fall into a known false-positive category (see above) rather than representing a real gap in business logic before merging.
 
 ### 3. Mutation Score Thresholds
 Each project defines three mutation score thresholds in its `stryker-config.json`:
