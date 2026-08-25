@@ -42,11 +42,11 @@ Each project defines three mutation score thresholds in its `stryker-config.json
 |---|---|---|---|---|
 | **Domain** | ≥ 95% | 90% | < 85% | **100% (0 surviving mutants)** |
 | **Application** | ≥ 95% | 90% | < 80% | **100% (0 surviving mutants)** |
-| **Infrastructure** | ≥ 95% | 90% | < 85% | Permitted equivalent mutants only |
+| **Infrastructure** | ≥ 95% | 90% | < 85% | [Documented exceptions only](#documented-survived--equivalent-mutants) |
 
 Both **Domain** and **Application** layers achieve and maintain a **100% mutation score with zero surviving mutants**. Every mutation generated across domain entities, value objects, domain services, CQRS command/query handlers, and validators is killed by their corresponding test suites.
 
-The **Infrastructure** layer similarly kills all mutations across repository implementations, persistence logic, and policies, with surviving mutants strictly confined to the documented equivalent mutants and infrastructure-level exceptions below. Outside of these documented cases, Infrastructure is expected to remain completely free of surviving mutants.
+The **Infrastructure** layer similarly kills all mutations across repository implementations, persistence logic, and policies, with surviving mutants strictly confined to the four documented exceptions below (repository `CreateRangeAsync` boundary check, `ApplicationDbContext` model registration, `UnitOfWork` events filter, and `ToStableLong` bitwise helper). Outside of these documented cases, Infrastructure is expected to remain completely free of surviving mutants.
 
 ---
 
@@ -89,7 +89,7 @@ Certain file patterns and namespaces are globally excluded from mutation analysi
 > **Infrastructure Baseline & Zero-Mutant Expectation:**
 > The survived and equivalent mutants documented below occur **exclusively within the Infrastructure layer** (`ClinicFlow.Infrastructure`). Outside of these documented exceptions, the Infrastructure layer is expected to be completely free of surviving mutants.
 
-The following survived mutants are intentionally permitted because they represent **equivalent mutants** (mutants whose behavior is mathematically and operationally indistinguishable from the original code), pure configuration lines, or low-level internal helpers where killing the mutant would require reflection or excessive test complexity without practical benefit.
+The following survived mutants are intentionally permitted. Each is documented below with either a proof of behavioral equivalence or a rationale for why killing it would require disproportionate test complexity (e.g., reflection against private members) without practical benefit. No other Infrastructure mutant is permitted to survive outside this list; any new survivor must either be killed or added here with equivalent proof/rationale and reviewed.
 
 ### 1. Repository `CreateRangeAsync` Empty Check (`Count > 0` vs `Count >= 0`)
 
