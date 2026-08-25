@@ -3,6 +3,7 @@ using ClinicFlow.Application.FamilyMemberships.Commands.AddCompleteFamilyMember;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
+using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Exceptions.Patients;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
@@ -68,14 +69,30 @@ public class AddCompleteFamilyMemberCommandHandlerTests
             PatientRelationship.Child
         );
 
+        var ownerPatient = Patient.CreateProfile(
+            PersonName.Create("Parent Doe"),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-35)),
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        var ownerMembership = FamilyMembership.CreateSelf(
+            ownerPatient.Id,
+            command.UserId,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
         _familyMembershipRepositoryMock
             .Setup(x =>
-                x.HasActiveSelfMembershipByUserIdAsync(
+                x.GetActiveSelfMembershipByUserIdAsync(
                     command.UserId,
                     It.IsAny<CancellationToken>()
                 )
             )
-            .ReturnsAsync(true);
+            .ReturnsAsync(ownerMembership);
+
+        _patientRepositoryMock
+            .Setup(x => x.GetByIdAsync(ownerPatient.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(ownerPatient);
 
         _patientRepositoryMock
             .Setup(x =>
@@ -138,14 +155,30 @@ public class AddCompleteFamilyMemberCommandHandlerTests
         );
         var personName = PersonName.Create($"{command.FirstName} {command.LastName}");
 
+        var ownerPatient = Patient.CreateProfile(
+            PersonName.Create("Parent Doe"),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-35)),
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        var ownerMembership = FamilyMembership.CreateSelf(
+            ownerPatient.Id,
+            command.UserId,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
         _familyMembershipRepositoryMock
             .Setup(x =>
-                x.HasActiveSelfMembershipByUserIdAsync(
+                x.GetActiveSelfMembershipByUserIdAsync(
                     command.UserId,
                     It.IsAny<CancellationToken>()
                 )
             )
-            .ReturnsAsync(true);
+            .ReturnsAsync(ownerMembership);
+
+        _patientRepositoryMock
+            .Setup(x => x.GetByIdAsync(ownerPatient.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(ownerPatient);
 
         _patientRepositoryMock
             .Setup(x =>
@@ -200,12 +233,12 @@ public class AddCompleteFamilyMemberCommandHandlerTests
 
         _familyMembershipRepositoryMock
             .Setup(x =>
-                x.HasActiveSelfMembershipByUserIdAsync(
+                x.GetActiveSelfMembershipByUserIdAsync(
                     command.UserId,
                     It.IsAny<CancellationToken>()
                 )
             )
-            .ReturnsAsync(false);
+            .ReturnsAsync((FamilyMembership?)null);
 
         // Act
         var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
@@ -215,6 +248,73 @@ public class AddCompleteFamilyMemberCommandHandlerTests
             .ThrowAsync<PrimaryPatientRequiredException>()
             .WithMessage(DomainErrors.Patient.PrimaryPatientRequired);
         exceptionAssertion.Which.UserId.Should().Be(command.UserId);
+
+        _unitOfWorkMock.Verify(
+            x =>
+                x.ExecuteWithLockAsync(
+                    It.IsAny<Guid>(),
+                    It.IsAny<Func<CancellationToken, Task<Guid>>>(),
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Once
+        );
+        _patientRepositoryMock.Verify(
+            x => x.CreateAsync(It.IsAny<Patient>(), It.IsAny<CancellationToken>()),
+            Times.Never
+        );
+        _familyMembershipRepositoryMock.Verify(
+            x => x.CreateAsync(It.IsAny<FamilyMembership>(), It.IsAny<CancellationToken>()),
+            Times.Never
+        );
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldThrowEntityNotFoundException_WhenOwnerPatientDoesNotExist()
+    {
+        // Arrange
+        var command = new AddCompleteFamilyMemberCommand(
+            Guid.CreateVersion7(),
+            "Child",
+            "Doe",
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-5)),
+            "A+",
+            "Peanuts",
+            "Asthma",
+            "Mom",
+            "555-5555",
+            PatientRelationship.Child
+        );
+
+        var ownerPatientId = Guid.CreateVersion7();
+
+        var ownerMembership = FamilyMembership.CreateSelf(
+            ownerPatientId,
+            command.UserId,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        _familyMembershipRepositoryMock
+            .Setup(x =>
+                x.GetActiveSelfMembershipByUserIdAsync(
+                    command.UserId,
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(ownerMembership);
+
+        _patientRepositoryMock
+            .Setup(x => x.GetByIdAsync(ownerPatientId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Patient?)null);
+
+        // Act
+        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
+
+        // Assert
+        var exceptionAssertion = await act.Should()
+            .ThrowAsync<EntityNotFoundException>()
+            .WithMessage(DomainErrors.General.NotFound);
+        exceptionAssertion.Which.EntityName.Should().Be(nameof(Patient));
 
         _unitOfWorkMock.Verify(
             x =>

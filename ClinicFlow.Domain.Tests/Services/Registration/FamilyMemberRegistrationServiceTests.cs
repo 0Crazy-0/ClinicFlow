@@ -65,6 +65,40 @@ public class FamilyMemberRegistrationServiceTests
     }
 
     [Fact]
+    public void Register_ShouldSucceed_WhenOwnerAgeInYearsIsExactly18()
+    {
+        // Arrange
+        var ownerUserId = Guid.CreateVersion7();
+        var args = CreateArgs(ownerUserId, PatientRelationship.Child) with { OwnerAgeInYears = 18 };
+
+        // Act
+        var (patient, membership) = FamilyMemberRegistrationService.Register(args);
+
+        // Assert
+        membership.PatientId.Should().Be(patient.Id);
+        membership.UserId.Should().Be(ownerUserId);
+        membership.Role.Should().Be(PatientRelationship.Child);
+        membership.Status.Should().Be(FamilyMembershipStatus.Active);
+        membership.StartedAt.Should().Be(args.ReferenceTime);
+    }
+
+    [Fact]
+    public void Register_ShouldThrowOwnerMustBeAdult_WhenOwnerAgeInYearsIsLessThan18()
+    {
+        // Arrange
+        var ownerUserId = Guid.CreateVersion7();
+        var args = CreateArgs(ownerUserId, PatientRelationship.Child) with { OwnerAgeInYears = 17 };
+
+        // Act
+        var act = () => FamilyMemberRegistrationService.Register(args);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.FamilyMembership.OwnerMustBeAdult);
+    }
+
+    [Fact]
     public void Register_ShouldThrowPatientAlreadyHasActiveMembership_WhenHasExistingMembershipWithOwnerIsTrue()
     {
         // Arrange
@@ -105,6 +139,7 @@ public class FamilyMemberRegistrationServiceTests
     private FamilyMemberRegistrationArgs CreateArgs(Guid ownerUserId, PatientRelationship role) =>
         new()
         {
+            OwnerAgeInYears = 25,
             OwnerUserId = ownerUserId,
             Role = role,
             FullName = PersonName.Create("Test Patient"),

@@ -168,6 +168,9 @@ public static class DomainErrors
         public const string AlreadyTerminated = "FAMILY_MEMBERSHIP_ALREADY_TERMINATED";
         public const string PatientAlreadyHasActiveMembership =
             "PATIENT_ALREADY_HAS_ACTIVE_MEMBERSHIP";
+        public const string PatientTooYoungForSelfMembership =
+            "PATIENT_TOO_YOUNG_FOR_SELF_MEMBERSHIP";
+        public const string OwnerMustBeAdult = "OWNER_MUST_BE_ADULT";
         public const string MaxActiveFamilyMembersExceeded = "MAX_ACTIVE_FAMILY_MEMBERS_EXCEEDED";
         public const string CannotRemoveSelf = "CANNOT_REMOVE_SELF_MEMBERSHIP";
         public const string CannotRemoveWithoutOwnSelf = "PATIENT_HAS_NO_OWN_SELF_MEMBERSHIP";

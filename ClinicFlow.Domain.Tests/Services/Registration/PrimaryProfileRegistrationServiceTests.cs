@@ -62,6 +62,27 @@ public class PrimaryProfileRegistrationServiceTests
     }
 
     [Fact]
+    public void Register_ShouldSucceed_WhenPatientAgeIsExactly13()
+    {
+        // Arrange
+        var userId = Guid.CreateVersion7();
+        var args = CreateArgs(userId) with
+        {
+            DateOfBirth = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-13)),
+        };
+
+        // Act
+        var (patient, membership) = PrimaryProfileRegistrationService.Register(args);
+
+        // Assert
+        membership.PatientId.Should().Be(patient.Id);
+        membership.UserId.Should().Be(userId);
+        membership.Role.Should().Be(PatientRelationship.Self);
+        membership.Status.Should().Be(FamilyMembershipStatus.Active);
+        membership.StartedAt.Should().Be(args.ReferenceTime);
+    }
+
+    [Fact]
     public void Register_ShouldThrowPatientAlreadyHasActiveMembership_WhenHasExistingSelfMembershipIsTrue()
     {
         // Arrange
@@ -75,6 +96,47 @@ public class PrimaryProfileRegistrationServiceTests
         act.Should()
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.FamilyMembership.PatientAlreadyHasActiveMembership);
+    }
+
+    [Fact]
+    public void Register_ShouldThrowPatientTooYoungForSelfMembership_WhenNewPatientAgeIsLessThan13()
+    {
+        // Arrange
+        var userId = Guid.CreateVersion7();
+        var args = CreateArgs(userId) with
+        {
+            DateOfBirth = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-12)),
+        };
+
+        // Act
+        var act = () => PrimaryProfileRegistrationService.Register(args);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.FamilyMembership.PatientTooYoungForSelfMembership);
+    }
+
+    [Fact]
+    public void Register_ShouldThrowPatientTooYoungForSelfMembership_WhenExistingPatientAgeIsLessThan13()
+    {
+        // Arrange
+        var existingPatient = Patient.CreateProfile(
+            PersonName.Create("Test Patient"),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-12)),
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        var userId = Guid.CreateVersion7();
+        var args = CreateArgs(userId) with { ExistingPatient = existingPatient };
+
+        // Act
+        var act = () => PrimaryProfileRegistrationService.Register(args);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.FamilyMembership.PatientTooYoungForSelfMembership);
     }
 
     private PrimaryProfileRegistrationArgs CreateArgs(Guid userId) =>

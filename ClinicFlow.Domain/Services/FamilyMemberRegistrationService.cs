@@ -20,11 +20,15 @@ namespace ClinicFlow.Domain.Services;
 public static class FamilyMemberRegistrationService
 {
     public const int MaxActiveFamilyMembers = 15;
+    public const int MinimumOwnerAge = 18;
 
     public static (Patient Patient, FamilyMembership Membership) Register(
         FamilyMemberRegistrationArgs args
     )
     {
+        if (args.OwnerAgeInYears < MinimumOwnerAge)
+            throw new DomainValidationException(DomainErrors.FamilyMembership.OwnerMustBeAdult);
+
         if (args.HasExistingMembershipWithOwner)
             throw new DomainValidationException(
                 DomainErrors.FamilyMembership.PatientAlreadyHasActiveMembership
