@@ -198,14 +198,14 @@ Stryker mutates `x.Entity.DomainEvents.Count > 0` to `x.Entity.DomainEvents.Coun
    - **Original (`Count > 0`):** Evaluates to `false`. Entities with zero domain events are excluded from `domainEntities`.
    - **Mutant (`Count >= 0`):** Evaluates to `true`. Entities with an empty `DomainEvents` list are included in `domainEntities`.
 
-3. **Indistinguishable Side Effects:**
+3. **Indistinguishable Side Effects (Persistence & Notifications):**
    When an entity with 0 events is included:
    - `domainEntities.SelectMany(x => x.Entity.DomainEvents)` produces 0 items (no extra events added to `domainEvents`).
-   - `entity.Entity.ClearDomainEvents()` on an already empty collection is an absolute no-op.
+   - `entity.Entity.ClearDomainEvents()` on an already empty collection produces no observable difference in persisted data or published notifications. Note: internally,        `List<T>.Clear()` still increments the list's version counter even when empty, which could invalidate a concurrent enumerator over that same `DomainEvents` instance. No such concurrent enumeration occurs within the current `SaveChangesAsync` flow.
    - Dispatched notifications, database persistence, and entity states remain completely identical.
 
 4. **Conclusion:**
-   The output collection of events, the published MediatR notifications, and the database changes are identical. This is an **equivalent mutant** that cannot be distinguished by tests.
+   The output collection of events, the published MediatR notifications, and the database changes are identical. This is an **equivalent mutant** for the purposes of persisted state and published notifications, and cannot be distinguished by tests covering those concerns.
 
 ---
 
