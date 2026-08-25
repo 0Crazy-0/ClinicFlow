@@ -67,9 +67,14 @@ These patterns are excluded from coverage analysis because they do not contain t
 These patterns are excluded from Copy-Paste Detection because their structural similarity is intentional by design:
 
 - **Reschedule Command Handlers:** `RescheduleByDoctorCommandHandler.cs`, `RescheduleByStaffCommandHandler.cs`, `RescheduleByPatientCommandHandler.cs`. These handlers orchestrate the same rescheduling workflow but intentionally remain separate. Each delegates to a distinct domain service method that enforces different authorization and business rules depending on who initiates the reschedule (doctor, staff, or patient). A generic handler was explicitly rejected to keep each handler readable and independently evolvable as requirements grow.
+
 - **AppointmentType Query Handlers:** `GetAllActiveAppointmentTypesQueryHandler.cs`, `GetAppointmentTypeByIdQueryHandler.cs`, `GetAppointmentTypesByCategoryQueryHandler.cs`, `GetEligibleAppointmentTypesQueryHandler.cs`. These handlers follow the same CQRS orchestration pattern (fetch → project → return). Their structural similarity is a natural consequence of consistent handler design, not duplication.
+
+- **Family Member Command Handlers:** `AddFamilyMemberCommandHandler.cs`, `AddCompleteFamilyMemberCommandHandler.cs`. These handlers orchestrate family member registration (basic vs. complete with medical profile and emergency contact). Both share nearly identical concurrency locking, pre-validation checks, and domain service calls before persisting. Keeping them as distinct handlers maintains clean CQRS command boundaries and independent evolution without introducing artificial coupling or shared base handlers.
+
 - **Command Validators (`**/Commands/**/*Validator.cs`):** Validators were originally built on shared base classes and interfaces (e.g., `RegisterUserCommandValidatorBase<T>`, `CancelCommandValidatorBase<T>`). These abstractions were removed in favor of standalone validators to eliminate unnecessary coupling and forced property contracts. The resulting validators share structural patterns inherent to the FluentValidation API, which triggers the duplication detector despite each validator being independently authored.
 - **`PatientPenalty.cs`:** Contains intentionally duplicated factory methods (`CreateAutomaticBlock` / `CreateManualBlock`) that preserve explicit domain intent despite identical implementations.
+
 - **EF Core Configurations (`**/Configurations/**`):** Fluent API configurations with repetitive structural patterns.
 - **`ApplicationDbContextFactory.cs` / `ApplicationDbContext.cs`:** Infrastructure boilerplate.
 - **Seeding (`**/Seeding/**`):** Data seeding code with repetitive builder patterns.
