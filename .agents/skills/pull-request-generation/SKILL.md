@@ -132,7 +132,7 @@ Mark only what applies; do not over-select.
    - **Grouped pattern (Description header + bulleted test classes)**: use whenever 2 or more test classes share the same conceptual verification objective (e.g., query handlers mapping DTOs, paginated queries asserting metadata, repository persistence tracking, batch refactorings, or shared validation logic removals). State an overarching description starting with an active verb (e.g., "Verifies that...", "Confirms that...", "Ensures that...") ending with a colon, followed by the bulleted list of test classes.
    - **Hybrid pattern**: combine individual and grouped entries naturally within the same PR description or under layer sections when different tests require different levels of grouping.
 
-4. **Layer separation**: only separate into "Domain", "Application", or "Infrastructure" sections when the PR has meaningful, testable changes in multiple layers (e.g., `**Domain**:`, `**Application**:`, `**Infrastructure**:`). If changes are concentrated in a single layer, list the test classes or groups directly without layer section headers.
+4. **Layer separation**: only separate into "Domain", "Application", or "Infrastructure" sections when the PR has meaningful, testable changes in multiple layers (e.g., `**Domain**:`, `**Application**:`, `**Infrastructure:`). When multiple layers are present, separate each layer section with a horizontal rule (`---`). If changes are concentrated in a single layer, list the test classes or groups directly without layer section headers or horizontal rule separators.
 
 5. **No method-level instructions**: reference test classes, not individual test methods. Do not say "test the `Cancel` method".
 
@@ -218,6 +218,22 @@ Verifies that handlers returning paginated results correctly assert structural e
 - `AppointmentRepositoryTests`: Verifies the new `HasUpcomingAppointmentRequiringGuardianForMinorAsync` query accurately identifies future appointments requiring a guardian while correctly excluding past, cancelled, or non-guardian appointments.
 
 - `FamilyMembershipRepositoryTests`: Verifies repository interactions using the updated `Leave` method for self-memberships instead of `Revoke`.
+```
+
+```markdown
+## How to test
+**Domain**:
+- `FamilyMembershipTests`: Verifies the updated `Leave` method enforces adult age requirements and blocks self memberships, while validating the new `CloseSelfMembership` transitions and time constraints.
+
+---
+
+**Application**:
+- `DeactivateUserCommandHandlerTests`: Verifies the deactivation flow correctly invokes the new closure logic for self memberships and asserts the resulting `Closed` status.
+
+---
+
+**Infrastructure**:
+- `FamilyMembershipRepositoryTests`: Verifies repository persistence and active membership queries accurately reflect the new `Closed` status and the updated `Leave` signature requiring age parameters.
 ```
 
 ### Hybrid & Multi-layer example
