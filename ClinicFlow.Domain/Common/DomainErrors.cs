@@ -171,9 +171,12 @@ public static class DomainErrors
         public const string PatientTooYoungForSelfMembership =
             "PATIENT_TOO_YOUNG_FOR_SELF_MEMBERSHIP";
         public const string OwnerMustBeAdult = "OWNER_MUST_BE_ADULT";
+        public const string MemberMustBeAdultToLeave = "MEMBER_MUST_BE_ADULT_TO_LEAVE";
         public const string MaxActiveFamilyMembersExceeded = "MAX_ACTIVE_FAMILY_MEMBERS_EXCEEDED";
         public const string CannotRemoveSelf = "CANNOT_REMOVE_SELF_MEMBERSHIP";
+        public const string CannotLeaveSelf = "CANNOT_LEAVE_SELF_MEMBERSHIP";
         public const string CannotRemoveWithoutOwnSelf = "PATIENT_HAS_NO_OWN_SELF_MEMBERSHIP";
+        public const string CanOnlyCloseSelfMembership = "CAN_ONLY_CLOSE_SELF_MEMBERSHIP";
         public const string CannotRemoveWithUpcomingAppointments =
             "CANNOT_REMOVE_WITH_UPCOMING_APPOINTMENTS";
     }

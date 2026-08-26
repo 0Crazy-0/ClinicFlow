@@ -5,4 +5,5 @@ public enum FamilyMembershipStatus
     Active,
     Revoked,
     Left,
+    Closed,
 }

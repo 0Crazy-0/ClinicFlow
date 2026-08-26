@@ -47,7 +47,7 @@ public class DeactivateUserCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ShouldDeactivateUserAndLeaveSelfMembership_WhenValidRequest()
+    public async Task Handle_ShouldDeactivateUserAndCloseSelfMembership_WhenValidRequest()
     {
         // Arrange
         var user = CreateUser();
@@ -87,7 +87,7 @@ public class DeactivateUserCommandHandlerTests
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
 
         user.IsActive.Should().BeFalse();
-        selfMembership.Status.Should().Be(FamilyMembershipStatus.Left);
+        selfMembership.Status.Should().Be(FamilyMembershipStatus.Closed);
     }
 
     [Fact]

@@ -113,7 +113,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
-        membership.Leave(_fakeTime.GetUtcNow().UtcDateTime.AddHours(1));
+        membership.CloseSelfMembership(_fakeTime.GetUtcNow().UtcDateTime.AddHours(1));
 
         Context.FamilyMemberships.Add(membership);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -271,7 +271,10 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
-        membership.Leave(_fakeTime.GetUtcNow().UtcDateTime.AddHours(1));
+        membership.Leave(
+            FamilyMembership.MinimumAgeToLeave,
+            _fakeTime.GetUtcNow().UtcDateTime.AddHours(1)
+        );
 
         Context.FamilyMemberships.Add(membership);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -331,7 +334,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
     }
 
     [Fact]
-    public async Task HasActiveSelfMembershipByUserIdAsync_ShouldReturnFalse_WhenMembershipIsLeft()
+    public async Task HasActiveSelfMembershipByUserIdAsync_ShouldReturnFalse_WhenMembershipIsClosed()
     {
         // Arrange
         var user = await CreateUserAsync();
@@ -342,7 +345,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
-        membership.Leave(_fakeTime.GetUtcNow().UtcDateTime.AddHours(1));
+        membership.CloseSelfMembership(_fakeTime.GetUtcNow().UtcDateTime.AddHours(1));
 
         Context.FamilyMemberships.Add(membership);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -430,7 +433,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
     }
 
     [Fact]
-    public async Task HasActiveSelfMembershipByPatientIdAsync_ShouldReturnFalse_WhenMembershipIsLeft()
+    public async Task HasActiveSelfMembershipByPatientIdAsync_ShouldReturnFalse_WhenMembershipIsClosed()
     {
         // Arrange
         var user = await CreateUserAsync();
@@ -441,7 +444,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
-        membership.Leave(_fakeTime.GetUtcNow().UtcDateTime.AddHours(1));
+        membership.CloseSelfMembership(_fakeTime.GetUtcNow().UtcDateTime.AddHours(1));
 
         Context.FamilyMemberships.Add(membership);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -524,7 +527,10 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
-        membership.Leave(_fakeTime.GetUtcNow().UtcDateTime.AddHours(1));
+        membership.Leave(
+            FamilyMembership.MinimumAgeToLeave,
+            _fakeTime.GetUtcNow().UtcDateTime.AddHours(1)
+        );
 
         Context.FamilyMemberships.Add(membership);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -602,7 +608,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
 
         var oldMembership = FamilyMembership.CreateSelf(patient.Id, user1.Id, startTime);
 
-        oldMembership.Leave(startTime.AddDays(1));
+        oldMembership.CloseSelfMembership(startTime.AddDays(1));
 
         Context.FamilyMemberships.Add(oldMembership);
 
