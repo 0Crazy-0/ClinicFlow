@@ -262,7 +262,7 @@ public class FamilyMembershipTests
         _fakeTime.Advance(TimeSpan.FromDays(1));
 
         var actionTime = _fakeTime.GetUtcNow().UtcDateTime;
-        membership.Leave(actionTime);
+        membership.Leave(FamilyMembership.MinimumAgeToLeave, actionTime);
 
         // Act
         var act = () =>
@@ -402,11 +402,56 @@ public class FamilyMembershipTests
         var leaveTime = _fakeTime.GetUtcNow().UtcDateTime;
 
         // Act
-        membership.Leave(leaveTime);
+        membership.Leave(FamilyMembership.MinimumAgeToLeave, leaveTime);
 
         // Assert
         membership.Status.Should().Be(FamilyMembershipStatus.Left);
         membership.EndedAt.Should().Be(leaveTime);
+    }
+
+    [Fact]
+    public void Leave_ShouldThrowException_WhenRoleIsSelf()
+    {
+        // Arrange
+        var membership = FamilyMembership.CreateSelf(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+        _fakeTime.Advance(TimeSpan.FromDays(1));
+
+        var actionTime = _fakeTime.GetUtcNow().UtcDateTime;
+
+        // Act
+        var act = () => membership.Leave(FamilyMembership.MinimumAgeToLeave, actionTime);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.FamilyMembership.CannotLeaveSelf);
+    }
+
+    [Fact]
+    public void Leave_ShouldThrowException_WhenMemberIsUnderage()
+    {
+        // Arrange
+        var membership = FamilyMembership.CreateFamilyMember(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            PatientRelationship.Child,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+        _fakeTime.Advance(TimeSpan.FromDays(1));
+
+        var actionTime = _fakeTime.GetUtcNow().UtcDateTime;
+
+        // Act
+        var act = () => membership.Leave(FamilyMembership.MinimumAgeToLeave - 1, actionTime);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.FamilyMembership.MemberMustBeAdultToLeave);
     }
 
     [Fact]
@@ -422,10 +467,10 @@ public class FamilyMembershipTests
         _fakeTime.Advance(TimeSpan.FromDays(1));
 
         var actionTime = _fakeTime.GetUtcNow().UtcDateTime;
-        membership.Leave(actionTime);
+        membership.Leave(FamilyMembership.MinimumAgeToLeave, actionTime);
 
         // Act
-        var act = () => membership.Leave(actionTime);
+        var act = () => membership.Leave(FamilyMembership.MinimumAgeToLeave, actionTime);
 
         // Assert
         act.Should()
@@ -453,7 +498,7 @@ public class FamilyMembershipTests
         );
 
         // Act
-        var act = () => membership.Leave(actionTime);
+        var act = () => membership.Leave(FamilyMembership.MinimumAgeToLeave, actionTime);
 
         // Assert
         act.Should()
@@ -474,7 +519,8 @@ public class FamilyMembershipTests
         );
 
         // Act
-        var act = () => membership.Leave(startedAt.AddSeconds(-1));
+        var act = () =>
+            membership.Leave(FamilyMembership.MinimumAgeToLeave, startedAt.AddSeconds(-1));
 
         // Assert
         act.Should()
@@ -495,7 +541,115 @@ public class FamilyMembershipTests
         );
 
         // Act
-        var act = () => membership.Leave(startedAt);
+        var act = () => membership.Leave(FamilyMembership.MinimumAgeToLeave, startedAt);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.EndTimeMustBeAfterStartTime);
+    }
+
+    [Fact]
+    public void CloseSelfMembership_ShouldTransitionToClosed_WhenStatusIsActiveAndRoleIsSelf()
+    {
+        // Arrange
+        var membership = FamilyMembership.CreateSelf(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        _fakeTime.Advance(TimeSpan.FromDays(5));
+
+        var closeTime = _fakeTime.GetUtcNow().UtcDateTime;
+
+        // Act
+        membership.CloseSelfMembership(closeTime);
+
+        // Assert
+        membership.Status.Should().Be(FamilyMembershipStatus.Closed);
+        membership.EndedAt.Should().Be(closeTime);
+    }
+
+    [Fact]
+    public void CloseSelfMembership_ShouldThrowException_WhenRoleIsNotSelf()
+    {
+        // Arrange
+        var membership = FamilyMembership.CreateFamilyMember(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            PatientRelationship.Child,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+        _fakeTime.Advance(TimeSpan.FromDays(1));
+
+        var actionTime = _fakeTime.GetUtcNow().UtcDateTime;
+
+        // Act
+        var act = () => membership.CloseSelfMembership(actionTime);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.FamilyMembership.CanOnlyCloseSelfMembership);
+    }
+
+    [Fact]
+    public void CloseSelfMembership_ShouldThrowException_WhenStatusIsAlreadyClosed()
+    {
+        // Arrange
+        var membership = FamilyMembership.CreateSelf(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+        _fakeTime.Advance(TimeSpan.FromDays(1));
+
+        var actionTime = _fakeTime.GetUtcNow().UtcDateTime;
+        membership.CloseSelfMembership(actionTime);
+
+        // Act
+        var act = () => membership.CloseSelfMembership(actionTime);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.FamilyMembership.AlreadyTerminated);
+    }
+
+    [Fact]
+    public void CloseSelfMembership_ShouldThrowException_WhenReferenceTimeIsBeforeStartedAt()
+    {
+        // Arrange
+        var startedAt = _fakeTime.GetUtcNow().UtcDateTime;
+        var membership = FamilyMembership.CreateSelf(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            startedAt
+        );
+
+        // Act
+        var act = () => membership.CloseSelfMembership(startedAt.AddSeconds(-1));
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.EndTimeMustBeAfterStartTime);
+    }
+
+    [Fact]
+    public void CloseSelfMembership_ShouldThrowException_WhenReferenceTimeIsEqualToStartedAt()
+    {
+        // Arrange
+        var startedAt = _fakeTime.GetUtcNow().UtcDateTime;
+        var membership = FamilyMembership.CreateSelf(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            startedAt
+        );
+
+        // Act
+        var act = () => membership.CloseSelfMembership(startedAt);
 
         // Assert
         act.Should()

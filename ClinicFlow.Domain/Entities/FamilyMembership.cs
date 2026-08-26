@@ -9,6 +9,7 @@ namespace ClinicFlow.Domain.Entities;
 /// </summary>
 public class FamilyMembership : BaseEntity
 {
+    public const int MinimumAgeToLeave = 18;
     public Guid PatientId { get; private set; }
 
     public Guid UserId { get; private set; }
@@ -20,7 +21,7 @@ public class FamilyMembership : BaseEntity
     public DateTime StartedAt { get; private set; }
 
     /// <remarks>
-    /// Null while the membership is Active. Populated when the membership transitions to Revoked or Left.
+    /// Null while the membership is Active. Populated when the membership transitions to Revoked, Left, or Closed.
     /// </remarks>
     public DateTime? EndedAt { get; private set; }
 
@@ -112,8 +113,35 @@ public class FamilyMembership : BaseEntity
         EndedAt = referenceTime;
     }
 
-    public void Leave(DateTime referenceTime)
+    public void Leave(int memberAge, DateTime referenceTime)
     {
+        if (Role is PatientRelationship.Self)
+            throw new DomainValidationException(DomainErrors.FamilyMembership.CannotLeaveSelf);
+
+        if (Status is not FamilyMembershipStatus.Active)
+            throw new DomainValidationException(DomainErrors.FamilyMembership.AlreadyTerminated);
+
+        if (memberAge < MinimumAgeToLeave)
+            throw new DomainValidationException(
+                DomainErrors.FamilyMembership.MemberMustBeAdultToLeave
+            );
+
+        if (referenceTime <= StartedAt)
+            throw new DomainValidationException(
+                DomainErrors.Validation.EndTimeMustBeAfterStartTime
+            );
+
+        Status = FamilyMembershipStatus.Left;
+        EndedAt = referenceTime;
+    }
+
+    public void CloseSelfMembership(DateTime referenceTime)
+    {
+        if (Role is not PatientRelationship.Self)
+            throw new DomainValidationException(
+                DomainErrors.FamilyMembership.CanOnlyCloseSelfMembership
+            );
+
         if (Status is not FamilyMembershipStatus.Active)
             throw new DomainValidationException(DomainErrors.FamilyMembership.AlreadyTerminated);
 
@@ -122,7 +150,7 @@ public class FamilyMembership : BaseEntity
                 DomainErrors.Validation.EndTimeMustBeAfterStartTime
             );
 
-        Status = FamilyMembershipStatus.Left;
+        Status = FamilyMembershipStatus.Closed;
         EndedAt = referenceTime;
     }
 }

@@ -51,7 +51,7 @@ public sealed class DeactivateUserCommandHandler(
                     );
 
                 user.Deactivate();
-                selfMembership.Leave(timeProvider.GetUtcNow().UtcDateTime);
+                selfMembership.CloseSelfMembership(timeProvider.GetUtcNow().UtcDateTime);
 
                 await unitOfWork.SaveChangesAsync(cancellationToken);
             },
