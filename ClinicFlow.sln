@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClinicFlow.Infrastructure",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClinicFlow.Infrastructure.Tests", "ClinicFlow.Infrastructure.Tests\ClinicFlow.Infrastructure.Tests.csproj", "{C2DC0CF7-FFF3-4883-8DB9-0074D51A9B78}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClinicFlow.Architecture.Tests", "ClinicFlow.Architecture.Tests\ClinicFlow.Architecture.Tests.csproj", "{B9AF7433-0121-48FC-98B1-95721EF20BE5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -97,6 +99,18 @@ Global
 		{C2DC0CF7-FFF3-4883-8DB9-0074D51A9B78}.Release|x64.Build.0 = Release|Any CPU
 		{C2DC0CF7-FFF3-4883-8DB9-0074D51A9B78}.Release|x86.ActiveCfg = Release|Any CPU
 		{C2DC0CF7-FFF3-4883-8DB9-0074D51A9B78}.Release|x86.Build.0 = Release|Any CPU
+		{B9AF7433-0121-48FC-98B1-95721EF20BE5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9AF7433-0121-48FC-98B1-95721EF20BE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9AF7433-0121-48FC-98B1-95721EF20BE5}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B9AF7433-0121-48FC-98B1-95721EF20BE5}.Debug|x64.Build.0 = Debug|Any CPU
+		{B9AF7433-0121-48FC-98B1-95721EF20BE5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B9AF7433-0121-48FC-98B1-95721EF20BE5}.Debug|x86.Build.0 = Debug|Any CPU
+		{B9AF7433-0121-48FC-98B1-95721EF20BE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9AF7433-0121-48FC-98B1-95721EF20BE5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9AF7433-0121-48FC-98B1-95721EF20BE5}.Release|x64.ActiveCfg = Release|Any CPU
+		{B9AF7433-0121-48FC-98B1-95721EF20BE5}.Release|x64.Build.0 = Release|Any CPU
+		{B9AF7433-0121-48FC-98B1-95721EF20BE5}.Release|x86.ActiveCfg = Release|Any CPU
+		{B9AF7433-0121-48FC-98B1-95721EF20BE5}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
