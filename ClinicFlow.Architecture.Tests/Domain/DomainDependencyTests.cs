@@ -6,7 +6,10 @@ namespace ClinicFlow.Architecture.Tests.Domain;
 
 public class DomainDependencyTests
 {
-    private static readonly ArchUnitArchitecture Architecture = ArchitectureContext.ProductionArchitecture;
+    private static readonly ArchUnitArchitecture ProductionArchitecture =
+        ArchitectureContext.ProductionArchitecture;
+    private static readonly ArchUnitArchitecture TestsArchitecture =
+        ArchitectureContext.TestsArchitecture;
 
     [Fact]
     public void DomainLayer_ShouldNotDependOn_ApplicationLayer()
@@ -18,7 +21,7 @@ public class DomainDependencyTests
             .Because("the domain layer must be completely decoupled from the application layer");
 
         // Act & Assert
-        rule.Check(Architecture);
+        rule.Check(ProductionArchitecture);
     }
 
     [Fact]
@@ -31,6 +34,36 @@ public class DomainDependencyTests
             .Because("the domain layer must be completely decoupled from the infrastructure layer");
 
         // Act & Assert
-        rule.Check(Architecture);
+        rule.Check(ProductionArchitecture);
+    }
+
+    [Fact]
+    public void DomainTestsLayer_ShouldNotDependOn_ApplicationTestsLayer()
+    {
+        // Arrange
+        var rule = ArchitectureLayers
+            .DomainTestsLayer.Should()
+            .NotDependOnAny(ArchitectureLayers.ApplicationTestsLayer)
+            .Because(
+                "the domain tests layer must be completely decoupled from the application tests layer"
+            );
+
+        // Act & Assert
+        rule.Check(TestsArchitecture);
+    }
+
+    [Fact]
+    public void DomainTestsLayer_ShouldNotDependOn_InfrastructureTestsLayer()
+    {
+        // Arrange
+        var rule = ArchitectureLayers
+            .DomainTestsLayer.Should()
+            .NotDependOnAny(ArchitectureLayers.InfrastructureTestsLayer)
+            .Because(
+                "the domain tests layer must be completely decoupled from the infrastructure tests layer"
+            );
+
+        // Act & Assert
+        rule.Check(TestsArchitecture);
     }
 }

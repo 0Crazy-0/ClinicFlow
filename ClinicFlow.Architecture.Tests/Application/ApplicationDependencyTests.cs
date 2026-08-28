@@ -6,7 +6,10 @@ namespace ClinicFlow.Architecture.Tests.Application;
 
 public class ApplicationDependencyTests
 {
-    private static readonly ArchUnitArchitecture Architecture = ArchitectureContext.ProductionArchitecture;
+    private static readonly ArchUnitArchitecture ProductionArchitecture =
+        ArchitectureContext.ProductionArchitecture;
+    private static readonly ArchUnitArchitecture TestsArchitecture =
+        ArchitectureContext.TestsArchitecture;
 
     [Fact]
     public void ApplicationLayer_ShouldNotDependOn_InfrastructureLayer()
@@ -20,6 +23,21 @@ public class ApplicationDependencyTests
             );
 
         // Act & Assert
-        rule.Check(Architecture);
+        rule.Check(ProductionArchitecture);
+    }
+
+    [Fact]
+    public void ApplicationTestsLayer_ShouldNotDependOn_InfrastructureTestsLayer()
+    {
+        // Arrange
+        var rule = ArchitectureLayers
+            .ApplicationTestsLayer.Should()
+            .NotDependOnAny(ArchitectureLayers.InfrastructureTestsLayer)
+            .Because(
+                "the application tests layer must be completely decoupled from the infrastructure tests layer"
+            );
+
+        // Act & Assert
+        rule.Check(TestsArchitecture);
     }
 }
