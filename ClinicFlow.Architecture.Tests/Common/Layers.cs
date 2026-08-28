@@ -7,21 +7,21 @@ public static class Layers
 {
     public static readonly IObjectProvider<IType> ClinicFlowTypes = Types()
         .That()
-        .ResideInNamespaceMatching("^ClinicFlow")
+        .ResideInNamespaceMatching(@"^ClinicFlow(?:\.|$)")
         .As("ClinicFlow Types");
 
     public static readonly IObjectProvider<IType> DomainTypes = Types()
         .That()
-        .ResideInNamespaceMatching("^ClinicFlow.Domain")
+        .ResideInNamespaceMatching(@"^ClinicFlow\.Domain(?:\.|$)")
         .As("Domain Layer");
 
     public static readonly IObjectProvider<IType> ApplicationTypes = Types()
         .That()
-        .ResideInNamespaceMatching("^ClinicFlow.Application")
+        .ResideInNamespaceMatching(@"^ClinicFlow\.Application(?:\.|$)")
         .As("Application Layer");
 
     public static readonly IObjectProvider<IType> InfrastructureTypes = Types()
         .That()
-        .ResideInNamespaceMatching("^ClinicFlow.Infrastructure")
+        .ResideInNamespaceMatching(@"^ClinicFlow\.Infrastructure(?:\.|$)")
         .As("Infrastructure Layer");
 }
