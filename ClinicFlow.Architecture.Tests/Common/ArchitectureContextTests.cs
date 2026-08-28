@@ -11,4 +11,8 @@ public class ArchitectureContextTests
     [Fact]
     public void ProductionArchitecture_ShouldLoad_AllExpectedAssemblies() =>
         ArchitectureContext.ProductionArchitecture.Should().NotBeNull();
+
+    [Fact]
+    public void TestsArchitecture_ShouldLoad_AllExpectedAssemblies() =>
+        ArchitectureContext.TestsArchitecture.Should().NotBeNull();
 }
