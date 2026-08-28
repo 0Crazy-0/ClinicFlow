@@ -6,7 +6,7 @@ namespace ClinicFlow.Architecture.Tests.Domain;
 
 public class DomainDependencyTests
 {
-    private static readonly ArchUnitArchitecture Architecture = ArchitectureContext.Architecture;
+    private static readonly ArchUnitArchitecture Architecture = ArchitectureContext.ProductionArchitecture;
 
     [Fact]
     public void DomainLayer_ShouldNotDependOn_ApplicationLayer()

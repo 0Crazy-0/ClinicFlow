@@ -7,7 +7,7 @@ namespace ClinicFlow.Architecture.Tests.General;
 
 public class GuidUsageTests
 {
-    private static readonly ArchUnitArchitecture Architecture = ArchitectureContext.Architecture;
+    private static readonly ArchUnitArchitecture Architecture = ArchitectureContext.FullSolutionArchitecture;
 
     [Fact]
     public void GuidNewGuid_ShouldNotBeCalled_ByAnyClass()

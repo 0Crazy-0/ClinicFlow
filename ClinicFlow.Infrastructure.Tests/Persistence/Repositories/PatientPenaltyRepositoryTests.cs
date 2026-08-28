@@ -150,7 +150,7 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
     public async Task GetByIdAsync_ShouldReturnNull_WhenDoesNotExist()
     {
         // Arrange
-        var nonExistentId = Guid.NewGuid();
+        var nonExistentId = Guid.CreateVersion7();
 
         // Act
         var result = await _sut.GetByIdAsync(nonExistentId, TestContext.Current.CancellationToken);
@@ -194,7 +194,7 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
     public async Task GetHistoryByPatientIdAsync_ShouldReturnEmpty_WhenNoPenaltiesForPatient()
     {
         // Arrange
-        var nonExistentPatientId = Guid.NewGuid();
+        var nonExistentPatientId = Guid.CreateVersion7();
 
         // Act
         var result = await _sut.GetHistoryByPatientIdAsync(
@@ -283,7 +283,7 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
     public async Task GetHistoryByPatientIdPaginatedAsync_ShouldReturnEmpty_WhenNoPenaltiesForPatient()
     {
         // Arrange
-        var nonExistentPatientId = Guid.NewGuid();
+        var nonExistentPatientId = Guid.CreateVersion7();
 
         // Act
         var (items, totalCount) = await _sut.GetHistoryByPatientIdPaginatedAsync(
@@ -419,7 +419,7 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
     public async Task GetActiveBlocksByPatientIdAsync_ShouldReturnEmpty_WhenNoPenaltiesForPatient()
     {
         // Arrange
-        var nonExistentPatientId = Guid.NewGuid();
+        var nonExistentPatientId = Guid.CreateVersion7();
         var referenceDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
 
         // Act
@@ -788,7 +788,7 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
 
     private async Task<User> CreateUserAsync(UserRole role)
     {
-        var email = EmailAddress.Create($"{Guid.NewGuid()}@clinic.com");
+        var email = EmailAddress.Create($"{Guid.CreateVersion7()}@clinic.com");
         var phone = PhoneNumber.Create($"+1555{Random.Shared.Next(1000000, 9999999)}");
         var user = User.Create(email, "password", phone, role);
 
@@ -857,7 +857,7 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
 
         var apptType = AppointmentTypeDefinition.Create(
             AppointmentCategory.FirstConsultation,
-            $"Consultation-{Guid.NewGuid():N}",
+            $"Consultation-{Guid.CreateVersion7():N}",
             "Desc",
             EncounterDuration.FromMinutes(20)
         );

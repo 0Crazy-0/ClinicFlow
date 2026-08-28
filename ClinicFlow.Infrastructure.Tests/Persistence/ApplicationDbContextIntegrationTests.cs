@@ -86,7 +86,7 @@ public class ApplicationDbContextIntegrationTests(PostgresFixture fixture) : IAs
     private async Task<Doctor> CreateDoctorAsync()
     {
         var user = User.Create(
-            EmailAddress.Create($"{Guid.NewGuid()}@clinic.com"),
+            EmailAddress.Create($"{Guid.CreateVersion7()}@clinic.com"),
             "password",
             PhoneNumber.Create($"+1555{Random.Shared.Next(1000000, 9999999)}"),
             UserRole.Doctor
