@@ -26,12 +26,10 @@ flags:
       - ClinicFlow.Application/
 
 ignore:
-  - "**/Migrations/**"
-  - "**/*.Designer.cs"
-  - "**/*.Tests/**"
-  - "**/Events/**"
-  - "ClinicFlow.Infrastructure/DependencyInjection.cs"
-  - "ClinicFlow.Application/DependencyInjection.cs"
+  - "ClinicFlow.Domain.Tests/**"
+  - "ClinicFlow.Application.Tests/**"
+  - "ClinicFlow.Infrastructure.Tests/**"
+  - "ClinicFlow.Architecture.Tests/**"
   
 comment:
   layout: "reach,diff,flags,tree"
