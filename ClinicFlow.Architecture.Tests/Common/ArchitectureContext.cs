@@ -26,4 +26,12 @@ public static class ArchitectureContext
             Assembly.Load("ClinicFlow.Infrastructure")
         )
         .Build();
+
+    public static readonly ArchUnitArchitecture TestsArchitecture = new ArchLoader()
+        .LoadAssemblies(
+            Assembly.Load("ClinicFlow.Domain.Tests"),
+            Assembly.Load("ClinicFlow.Application.Tests"),
+            Assembly.Load("ClinicFlow.Infrastructure.Tests")
+        )
+        .Build();
 }
