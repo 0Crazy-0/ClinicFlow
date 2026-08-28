@@ -13,7 +13,7 @@ public class ApplicationDbContextModelTests
     public ApplicationDbContextModelTests()
     {
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-            .UseInMemoryDatabase(Guid.NewGuid().ToString())
+            .UseInMemoryDatabase(Guid.CreateVersion7().ToString())
             .Options;
 
         _sut = new ApplicationDbContext(options);

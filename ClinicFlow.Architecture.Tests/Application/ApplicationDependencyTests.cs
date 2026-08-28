@@ -6,7 +6,7 @@ namespace ClinicFlow.Architecture.Tests.Application;
 
 public class ApplicationDependencyTests
 {
-    private static readonly ArchUnitArchitecture Architecture = ArchitectureContext.Architecture;
+    private static readonly ArchUnitArchitecture Architecture = ArchitectureContext.ProductionArchitecture;
 
     [Fact]
     public void ApplicationLayer_ShouldNotDependOn_InfrastructureLayer()
