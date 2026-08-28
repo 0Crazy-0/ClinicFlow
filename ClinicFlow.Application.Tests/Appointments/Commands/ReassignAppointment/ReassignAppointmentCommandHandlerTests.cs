@@ -115,7 +115,7 @@ public class ReassignAppointmentCommandHandlerTests
         var command = new ReassignAppointmentCommand(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
-            DateOnly.FromDateTime(DateTime.UtcNow).AddDays(1),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime).AddDays(1),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0)
         );
@@ -144,7 +144,7 @@ public class ReassignAppointmentCommandHandlerTests
         var command = new ReassignAppointmentCommand(
             appointment.Id,
             Guid.CreateVersion7(),
-            DateOnly.FromDateTime(DateTime.UtcNow).AddDays(1),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime).AddDays(1),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0)
         );

@@ -13,7 +13,7 @@ namespace ClinicFlow.Infrastructure.Tests.Persistence.Seeding;
 
 public class DbSeederTests(PostgresFixture fixture) : IAsyncLifetime
 {
-    private readonly FakeTimeProvider _fakeTime = new(DateTimeOffset.UtcNow);
+    private readonly FakeTimeProvider _fakeTime = new();
 
     public async ValueTask InitializeAsync()
     {
