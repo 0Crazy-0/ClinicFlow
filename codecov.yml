@@ -28,7 +28,7 @@ flags:
 ignore:
   - "**/Migrations/**"
   - "**/*.Designer.cs"
-  - "tests/**/*"
+  - "**/*.Tests/**"
   - "**/Events/**"
   - "ClinicFlow.Infrastructure/DependencyInjection.cs"
   - "ClinicFlow.Application/DependencyInjection.cs"
