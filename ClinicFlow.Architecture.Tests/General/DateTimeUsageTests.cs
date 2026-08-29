@@ -11,22 +11,26 @@ public class DateTimeUsageTests
         ArchitectureContext.FullSolutionArchitecture;
 
     [Fact]
-    public void DateTimeUtcNow_ShouldNotBeCalled_ByAnyClass()
+    public void UtcNow_ShouldNotBeCalled_ByAnyClass()
     {
         // Arrange
-        var forbiddenMethod = MethodMembers()
+        var forbiddenMethods = MethodMembers()
             .That()
             .AreDeclaredIn(typeof(DateTime))
             .And()
-            .HaveNameStartingWith("get_" + nameof(DateTime.UtcNow));
+            .HaveNameStartingWith("get_" + nameof(DateTime.UtcNow))
+            .Or()
+            .AreDeclaredIn(typeof(DateTimeOffset))
+            .And()
+            .HaveNameStartingWith("get_" + nameof(DateTimeOffset.UtcNow));
 
         var rule = Types()
             .That()
             .Are(Layers.ClinicFlowTypes)
             .Should()
-            .NotCallAny(forbiddenMethod)
+            .NotCallAny(forbiddenMethods)
             .Because(
-                "TimeProvider must always be used instead of DateTime.UtcNow to remain decoupled from the real-world clock"
+                "TimeProvider must always be used instead of DateTime.UtcNow or DateTimeOffset.UtcNow to remain decoupled from the real-world clock"
             );
 
         // Act & Assert
