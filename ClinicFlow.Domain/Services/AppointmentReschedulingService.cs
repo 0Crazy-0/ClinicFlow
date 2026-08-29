@@ -23,17 +23,15 @@ public static class AppointmentReschedulingService
         SchedulingClearance clearance
     )
     {
-        if (appointment is null)
-            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
-
-        if (args is null || args.TargetPatient is null || args.NewTimeRange is null)
-            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
-
-        if (context is null)
-            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+        ArgumentNullException.ThrowIfNull(appointment);
+        ArgumentNullException.ThrowIfNull(args);
+        ArgumentNullException.ThrowIfNull(args.TargetPatient);
+        ArgumentNullException.ThrowIfNull(args.NewTimeRange);
+        ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(context.DoctorSchedule);
 
         if (clearance is null)
-            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+            throw new BusinessRuleValidationException(DomainErrors.Reschedule.MissingClearance);
 
         if (args.TargetPatient.Id != appointment.PatientId)
             throw new DomainValidationException(DomainErrors.Appointment.DataMismatch);
@@ -66,17 +64,14 @@ public static class AppointmentReschedulingService
         SchedulingClearance clearance
     )
     {
-        if (appointment is null)
-            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
-
-        if (args is null || args.InitiatorDoctor is null || args.NewTimeRange is null)
-            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
-
-        if (doctorSchedule is null)
-            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+        ArgumentNullException.ThrowIfNull(appointment);
+        ArgumentNullException.ThrowIfNull(args);
+        ArgumentNullException.ThrowIfNull(args.InitiatorDoctor);
+        ArgumentNullException.ThrowIfNull(args.NewTimeRange);
+        ArgumentNullException.ThrowIfNull(doctorSchedule);
 
         if (clearance is null)
-            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+            throw new BusinessRuleValidationException(DomainErrors.Reschedule.MissingClearance);
 
         if (args.InitiatorDoctor.Id != appointment.DoctorId)
             throw new AppointmentSchedulingUnauthorizedException(
@@ -100,17 +95,13 @@ public static class AppointmentReschedulingService
         SchedulingClearance clearance
     )
     {
-        if (appointment is null)
-            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
-
-        if (args is null || args.NewTimeRange is null)
-            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
-
-        if (doctorSchedule is null)
-            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+        ArgumentNullException.ThrowIfNull(appointment);
+        ArgumentNullException.ThrowIfNull(args);
+        ArgumentNullException.ThrowIfNull(args.NewTimeRange);
+        ArgumentNullException.ThrowIfNull(doctorSchedule);
 
         if (clearance is null)
-            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+            throw new BusinessRuleValidationException(DomainErrors.Reschedule.MissingClearance);
 
         if (!args.IsOverbook)
             doctorSchedule.EnsureDoctorIsAvailable(

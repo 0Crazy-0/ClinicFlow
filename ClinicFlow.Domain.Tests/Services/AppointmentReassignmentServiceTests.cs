@@ -2,7 +2,6 @@ using AwesomeAssertions;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Events.Appointments;
-using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Exceptions.Scheduling;
 using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Args.Reassignment;
@@ -44,7 +43,7 @@ public class AppointmentReassignmentServiceTests
     }
 
     [Fact]
-    public void Reassign_ShouldThrowDomainValidationException_WhenAppointmentIsNull()
+    public void Reassign_ShouldThrowArgumentNullException_WhenAppointmentIsNull()
     {
         // Arrange & Act
         var act = () =>
@@ -60,35 +59,11 @@ public class AppointmentReassignmentServiceTests
             );
 
         // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.General.RequiredFieldNull);
+        act.Should().Throw<ArgumentNullException>();
     }
 
     [Fact]
-    public void Reassign_ShouldThrowDomainValidationException_WhenScheduleIsNull()
-    {
-        // Arrange & Act
-        var act = () =>
-            AppointmentReassignmentService.Reassign(
-                CreateDisplacedAppointment(),
-                new AppointmentReassignmentArgs
-                {
-                    NewDoctorId = Guid.CreateVersion7(),
-                    NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime).AddDays(1),
-                    NewTimeRange = CreateTimeRange(10, 11),
-                },
-                null!
-            );
-
-        // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.General.RequiredFieldNull);
-    }
-
-    [Fact]
-    public void Reassign_ShouldThrowDomainValidationException_WhenArgsIsNull()
+    public void Reassign_ShouldThrowArgumentNullException_WhenArgsIsNull()
     {
         // Arrange & Act
         var act = () =>
@@ -99,13 +74,11 @@ public class AppointmentReassignmentServiceTests
             );
 
         // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.General.RequiredFieldNull);
+        act.Should().Throw<ArgumentNullException>();
     }
 
     [Fact]
-    public void Reassign_ShouldThrowDomainValidationException_WhenTimeRangeIsNull()
+    public void Reassign_ShouldThrowArgumentNullException_WhenTimeRangeIsNull()
     {
         // Arrange & Act
         var act = () =>
@@ -121,9 +94,27 @@ public class AppointmentReassignmentServiceTests
             );
 
         // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.General.RequiredFieldNull);
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void Reassign_ShouldThrowArgumentNullException_WhenNewDoctorScheduleIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentReassignmentService.Reassign(
+                CreateDisplacedAppointment(),
+                new AppointmentReassignmentArgs
+                {
+                    NewDoctorId = Guid.CreateVersion7(),
+                    NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime).AddDays(1),
+                    NewTimeRange = CreateTimeRange(10, 11),
+                },
+                null!
+            );
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>();
     }
 
     [Fact]

@@ -19,14 +19,11 @@ public static class AppointmentCancellationService
         PatientCancellationArgs args
     )
     {
-        if (appointment is null)
-            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
-
-        if (args is null || args.TargetPatient is null)
-            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
-
-        if (context is null || context.Specialty is null)
-            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+        ArgumentNullException.ThrowIfNull(appointment);
+        ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(context.Specialty);
+        ArgumentNullException.ThrowIfNull(args);
+        ArgumentNullException.ThrowIfNull(args.TargetPatient);
 
         if (appointment.PatientId != args.TargetPatient.Id)
             throw new DomainValidationException(DomainErrors.Appointment.DataMismatch);
@@ -69,8 +66,8 @@ public static class AppointmentCancellationService
 
     public static void CancelByDoctor(Appointment appointment, DoctorCancellationArgs args)
     {
-        if (appointment is null)
-            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+        ArgumentNullException.ThrowIfNull(appointment);
+        ArgumentNullException.ThrowIfNull(args);
 
         if (args.InitiatorDoctorId != appointment.DoctorId)
             throw new AppointmentCancellationUnauthorizedException(
@@ -86,8 +83,9 @@ public static class AppointmentCancellationService
 
     public static void CancelByStaff(Appointment appointment, StaffCancellationArgs args)
     {
-        if (appointment is null)
-            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+        ArgumentNullException.ThrowIfNull(appointment);
+        ArgumentNullException.ThrowIfNull(args);
+        ArgumentNullException.ThrowIfNull(args.Reason);
 
         if (string.IsNullOrWhiteSpace(args.Reason))
             throw new BusinessRuleValidationException(

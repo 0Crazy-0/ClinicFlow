@@ -23,17 +23,15 @@ public static class AppointmentSchedulingService
         SchedulingClearance clearance
     )
     {
-        if (appointmentType is null)
-            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
-
-        if (args is null || args.TargetPatient is null || args.TimeRange is null)
-            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
-
-        if (context is null)
-            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+        ArgumentNullException.ThrowIfNull(appointmentType);
+        ArgumentNullException.ThrowIfNull(args);
+        ArgumentNullException.ThrowIfNull(args.TargetPatient);
+        ArgumentNullException.ThrowIfNull(args.TimeRange);
+        ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(context.DoctorSchedule);
 
         if (clearance is null)
-            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+            throw new BusinessRuleValidationException(DomainErrors.Scheduling.MissingClearance);
 
         PatientAccessService.VerifyAccess(context.InitiatorHasAccessToTarget);
 
@@ -77,22 +75,15 @@ public static class AppointmentSchedulingService
         SchedulingClearance clearance
     )
     {
-        if (appointmentType is null)
-            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
-
-        if (
-            args is null
-            || args.InitiatorDoctor is null
-            || args.TargetPatient is null
-            || args.TimeRange is null
-        )
-            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
-
-        if (doctorSchedule is null)
-            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+        ArgumentNullException.ThrowIfNull(appointmentType);
+        ArgumentNullException.ThrowIfNull(args);
+        ArgumentNullException.ThrowIfNull(args.InitiatorDoctor);
+        ArgumentNullException.ThrowIfNull(args.TargetPatient);
+        ArgumentNullException.ThrowIfNull(args.TimeRange);
+        ArgumentNullException.ThrowIfNull(doctorSchedule);
 
         if (clearance is null)
-            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+            throw new BusinessRuleValidationException(DomainErrors.Scheduling.MissingClearance);
 
         appointmentType.ValidatePatientEligibility(
             args.TargetPatient.GetAge(args.ScheduledDate),
@@ -122,17 +113,14 @@ public static class AppointmentSchedulingService
         SchedulingClearance clearance
     )
     {
-        if (appointmentType is null)
-            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
-
-        if (args is null || args.TargetPatient is null || args.TimeRange is null)
-            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
-
-        if (doctorSchedule is null)
-            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+        ArgumentNullException.ThrowIfNull(appointmentType);
+        ArgumentNullException.ThrowIfNull(args);
+        ArgumentNullException.ThrowIfNull(args.TargetPatient);
+        ArgumentNullException.ThrowIfNull(args.TimeRange);
+        ArgumentNullException.ThrowIfNull(doctorSchedule);
 
         if (clearance is null)
-            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+            throw new BusinessRuleValidationException(DomainErrors.Scheduling.MissingClearance);
 
         args.TargetPatient.EnsureCompleteProfile();
 

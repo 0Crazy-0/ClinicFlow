@@ -16,10 +16,8 @@ public class MetadataFormValidationPolicy(IJsonSchemaValidator jsonSchemaValidat
         IEnumerable<DynamicClinicalDetail> providedDetails
     )
     {
-        if (appointmentType is null)
-            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
-        if (providedDetails is null)
-            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+        ArgumentNullException.ThrowIfNull(appointmentType);
+        ArgumentNullException.ThrowIfNull(providedDetails);
 
         var providedTemplateCodes = providedDetails.Select(d => d.TemplateCode).ToHashSet();
 

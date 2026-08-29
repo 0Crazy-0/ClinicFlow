@@ -35,15 +35,13 @@ public class MedicalEncounterServiceTests
     }
 
     [Fact]
-    public void InitiateMedicalRecord_ShouldThrowDomainValidationException_WhenAppointmentIsNull()
+    public void InitiateMedicalRecord_ShouldThrowArgumentNullException_WhenAppointmentIsNull()
     {
         //Arrange & Act
         var act = () => MedicalEncounterService.InitiateMedicalRecord(null!, "Chief complaint");
 
         // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.General.RequiredFieldNull);
+        act.Should().Throw<ArgumentNullException>();
     }
 
     [Fact]
@@ -87,19 +85,17 @@ public class MedicalEncounterServiceTests
     }
 
     [Fact]
-    public void ValidateAndCompleteRecord_ShouldThrowDomainValidationException_WhenRecordIsNull()
+    public void ValidateAndCompleteRecord_ShouldThrowArgumentNullException_WhenRecordIsNull()
     {
         // Act
         var act = () => _sut.ValidateAndCompleteRecord(null!, CreateValidContext());
 
         // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.General.RequiredFieldNull);
+        act.Should().Throw<ArgumentNullException>();
     }
 
     [Fact]
-    public void ValidateAndCompleteRecord_ShouldThrowDomainValidationException_WhenContextIsNull()
+    public void ValidateAndCompleteRecord_ShouldThrowArgumentNullException_WhenContextIsNull()
     {
         // Arrange
         var record = CreateMedicalRecord();
@@ -108,13 +104,11 @@ public class MedicalEncounterServiceTests
         var act = () => _sut.ValidateAndCompleteRecord(record, null!);
 
         // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.General.RequiredFieldNull);
+        act.Should().Throw<ArgumentNullException>();
     }
 
     [Fact]
-    public void ValidateAndCompleteRecord_ShouldThrowDomainValidationException_WhenExpectedDoctorIsNull()
+    public void ValidateAndCompleteRecord_ShouldThrowArgumentNullException_WhenExpectedDoctorIsNull()
     {
         // Arrange
         var record = CreateMedicalRecord();
@@ -130,13 +124,11 @@ public class MedicalEncounterServiceTests
             );
 
         // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.General.RequiredFieldNull);
+        act.Should().Throw<ArgumentNullException>();
     }
 
     [Fact]
-    public void ValidateAndCompleteRecord_ShouldThrowDomainValidationException_WhenAppointmentIsNull()
+    public void ValidateAndCompleteRecord_ShouldThrowArgumentNullException_WhenAppointmentIsNull()
     {
         // Arrange
         var record = CreateMedicalRecord();
@@ -152,13 +144,11 @@ public class MedicalEncounterServiceTests
             );
 
         // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.General.RequiredFieldNull);
+        act.Should().Throw<ArgumentNullException>();
     }
 
     [Fact]
-    public void ValidateAndCompleteRecord_ShouldThrowDomainValidationException_WhenAppointmentTypeDefinitionIsNull()
+    public void ValidateAndCompleteRecord_ShouldThrowArgumentNullException_WhenAppointmentTypeDefinitionIsNull()
     {
         // Arrange
         var record = CreateMedicalRecord();
@@ -174,9 +164,7 @@ public class MedicalEncounterServiceTests
             );
 
         // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.General.RequiredFieldNull);
+        act.Should().Throw<ArgumentNullException>();
     }
 
     [Fact]
@@ -261,7 +249,7 @@ public class MedicalEncounterServiceTests
     }
 
     [Fact]
-    public void AppendClinicalDetail_ShouldThrowDomainValidationException_WhenRecordIsNull()
+    public void AppendClinicalDetail_ShouldThrowArgumentNullException_WhenRecordIsNull()
     {
         // Arrange & Act
         var act = () =>
@@ -271,13 +259,11 @@ public class MedicalEncounterServiceTests
                 CreateFormTemplate()
             );
         // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.General.RequiredFieldNull);
+        act.Should().Throw<ArgumentNullException>();
     }
 
     [Fact]
-    public void AppendClinicalDetail_ShouldThrowDomainValidationException_WhenDetailIsNull()
+    public void AppendClinicalDetail_ShouldThrowArgumentNullException_WhenDetailIsNull()
     {
         // Arrange
         var record = CreateMedicalRecord();
@@ -286,13 +272,11 @@ public class MedicalEncounterServiceTests
         var act = () => _sut.AppendClinicalDetail(record, null!, CreateFormTemplate());
 
         // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.General.RequiredFieldNull);
+        act.Should().Throw<ArgumentNullException>();
     }
 
     [Fact]
-    public void AppendClinicalDetail_ShouldThrowDomainValidationException_WhenTemplateIsNull()
+    public void AppendClinicalDetail_ShouldThrowArgumentNullException_WhenTemplateIsNull()
     {
         // Arrange
         var record = CreateMedicalRecord();
@@ -301,9 +285,7 @@ public class MedicalEncounterServiceTests
         var act = () =>
             _sut.AppendClinicalDetail(record, DynamicClinicalDetail.Create("Test1", "{}"), null!);
         // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.General.RequiredFieldNull);
+        act.Should().Throw<ArgumentNullException>();
     }
 
     [Fact]

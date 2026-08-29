@@ -54,6 +54,16 @@ public static class DomainErrors
         public const string CannotUpdateNotes = "UPDATE_NOTES_NOT_ALLOWED";
     }
 
+    public static class Scheduling
+    {
+        public const string MissingClearance = "MISSING_SCHEDULING_CLEARANCE";
+    }
+
+    public static class Reschedule
+    {
+        public const string MissingClearance = "MISSING_RESCHEDULING_CLEARANCE";
+    }
+
     public static class AppointmentType
     {
         public const string NameAlreadyExists = "APPOINTMENT_TYPE_NAME_ALREADY_EXISTS";
