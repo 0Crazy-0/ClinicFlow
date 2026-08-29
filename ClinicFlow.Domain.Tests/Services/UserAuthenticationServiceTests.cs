@@ -14,7 +14,7 @@ public class UserAuthenticationServiceTests
     private readonly FakeTimeProvider _fakeTime = new();
 
     [Fact]
-    public void TryAuthenticate_ShouldThrowDomainValidationException_WhenUserIsNull()
+    public void TryAuthenticate_ShouldThrowArgumentNullException_WhenUserIsNull()
     {
         // Arrange
         var loginTime = _fakeTime.GetUtcNow().UtcDateTime;
@@ -23,9 +23,7 @@ public class UserAuthenticationServiceTests
         var act = () => UserAuthenticationService.TryAuthenticate(null!, true, loginTime);
 
         // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.General.RequiredFieldNull);
+        act.Should().Throw<ArgumentNullException>();
     }
 
     [Fact]

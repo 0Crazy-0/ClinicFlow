@@ -20,27 +20,23 @@ public class MetadataFormValidationPolicyTests
     }
 
     [Fact]
-    public void Validate_ShouldThrowDomainValidationException_WhenAppointmentTypeIsNull()
+    public void Validate_ShouldThrowArgumentNullException_WhenAppointmentTypeIsNull()
     {
         // Arrange & Act
         var act = () => _sut.Validate(null!, []);
 
         // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.General.RequiredFieldNull);
+        act.Should().Throw<ArgumentNullException>();
     }
 
     [Fact]
-    public void Validate_ShouldThrowDomainValidationException_WhenProvidedDetailsIsNull()
+    public void Validate_ShouldThrowArgumentNullException_WhenProvidedDetailsIsNull()
     {
         // Arrange & Act
         var act = () => _sut.Validate(CreateAppointmentTypeWithTemplates(), null!);
 
         // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.General.RequiredFieldNull);
+        act.Should().Throw<ArgumentNullException>();
     }
 
     [Fact]

@@ -1,6 +1,4 @@
-using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
-using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Services.Args.Reassignment;
 
 namespace ClinicFlow.Domain.Services;
@@ -18,14 +16,10 @@ public static class AppointmentReassignmentService
         Schedule newDoctorSchedule
     )
     {
-        if (appointment is null)
-            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
-
-        if (newDoctorSchedule is null)
-            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
-
-        if (args is null || args.NewTimeRange is null)
-            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+        ArgumentNullException.ThrowIfNull(appointment);
+        ArgumentNullException.ThrowIfNull(args);
+        ArgumentNullException.ThrowIfNull(args.NewTimeRange);
+        ArgumentNullException.ThrowIfNull(newDoctorSchedule);
 
         newDoctorSchedule.EnsureDoctorIsAvailable(
             args.NewDoctorId,

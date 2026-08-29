@@ -19,7 +19,7 @@ public class AppointmentCancellationServiceTests
     private readonly FakeTimeProvider _fakeTime = new();
 
     [Fact]
-    public void CancelByStaff_ShouldThrowDomainValidationException_WhenAppointmentIsNull()
+    public void CancelByStaff_ShouldThrowArgumentNullException_WhenAppointmentIsNull()
     {
         // Arrange & Act
         var act = () =>
@@ -34,9 +34,39 @@ public class AppointmentCancellationServiceTests
             );
 
         // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.General.RequiredFieldNull);
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void CancelByStaff_ShouldThrowArgumentNullException_WhenArgsIsNull()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+
+        // Act
+        var act = () => AppointmentCancellationService.CancelByStaff(appointment, null!);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void CancelByStaff_ShouldThrowArgumentNullException_WhenReasonIsNull()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        var args = new StaffCancellationArgs
+        {
+            InitiatorUserId = Guid.CreateVersion7(),
+            Reason = null!,
+            CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
+        };
+
+        // Act
+        var act = () => AppointmentCancellationService.CancelByStaff(appointment, args);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>();
     }
 
     [Fact]
@@ -83,9 +113,8 @@ public class AppointmentCancellationServiceTests
     [Theory]
     [InlineData("")]
     [InlineData("   ")]
-    [InlineData(null)]
     public void CancelByStaff_ShouldThrowBusinessRuleValidationException_WhenReasonIsMissing(
-        string? reason
+        string reason
     )
     {
         // Arrange
@@ -107,7 +136,7 @@ public class AppointmentCancellationServiceTests
     }
 
     [Fact]
-    public void CancelByDoctor_ShouldThrowDomainValidationException_WhenAppointmentIsNull()
+    public void CancelByDoctor_ShouldThrowArgumentNullException_WhenAppointmentIsNull()
     {
         // Arrange & Act
         var act = () =>
@@ -123,9 +152,20 @@ public class AppointmentCancellationServiceTests
             );
 
         // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.General.RequiredFieldNull);
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void CancelByDoctor_ShouldThrowArgumentNullException_WhenArgsIsNull()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+
+        // Act
+        var act = () => AppointmentCancellationService.CancelByDoctor(appointment, null!);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>();
     }
 
     [Fact]
@@ -194,7 +234,7 @@ public class AppointmentCancellationServiceTests
     }
 
     [Fact]
-    public void CancelByPatient_ShouldThrowDomainValidationException_WhenAppointmentIsNull()
+    public void CancelByPatient_ShouldThrowArgumentNullException_WhenAppointmentIsNull()
     {
         // Arrange & Act
         var act = () =>
@@ -205,50 +245,11 @@ public class AppointmentCancellationServiceTests
             );
 
         // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.General.RequiredFieldNull);
+        act.Should().Throw<ArgumentNullException>();
     }
 
     [Fact]
-    public void CancelByPatient_ShouldThrowDomainValidationException_WhenArgsIsNull()
-    {
-        // Arrange & Act
-        var act = () =>
-            AppointmentCancellationService.CancelByPatient(
-                CreateAppointment(),
-                CreateValidCancellationContext(),
-                null!
-            );
-
-        // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.General.RequiredFieldNull);
-    }
-
-    [Fact]
-    public void CancelByPatient_ShouldThrowDomainValidationException_WhenTargetPatientIsNull()
-    {
-        // Arrange & Act
-        var act = () =>
-            AppointmentCancellationService.CancelByPatient(
-                CreateAppointment(),
-                CreateValidCancellationContext(),
-                CreateValidPatientCancellationArgs() with
-                {
-                    TargetPatient = null!,
-                }
-            );
-
-        // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.General.RequiredFieldNull);
-    }
-
-    [Fact]
-    public void CancelByPatient_ShouldThrowDomainValidationException_WhenContextIsNull()
+    public void CancelByPatient_ShouldThrowArgumentNullException_WhenContextIsNull()
     {
         // Arrange & Act
         var act = () =>
@@ -259,13 +260,11 @@ public class AppointmentCancellationServiceTests
             );
 
         // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.General.RequiredFieldNull);
+        act.Should().Throw<ArgumentNullException>();
     }
 
     [Fact]
-    public void CancelByPatient_ShouldThrowDomainValidationException_WhenContextSpecialtyIsNull()
+    public void CancelByPatient_ShouldThrowArgumentNullException_WhenContextSpecialtyIsNull()
     {
         // Arrange & Act
         var act = () =>
@@ -279,9 +278,40 @@ public class AppointmentCancellationServiceTests
             );
 
         // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.General.RequiredFieldNull);
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void CancelByPatient_ShouldThrowArgumentNullException_WhenArgsIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentCancellationService.CancelByPatient(
+                CreateAppointment(),
+                CreateValidCancellationContext(),
+                null!
+            );
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void CancelByPatient_ShouldThrowArgumentNullException_WhenTargetPatientIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentCancellationService.CancelByPatient(
+                CreateAppointment(),
+                CreateValidCancellationContext(),
+                CreateValidPatientCancellationArgs() with
+                {
+                    TargetPatient = null!,
+                }
+            );
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>();
     }
 
     [Theory]

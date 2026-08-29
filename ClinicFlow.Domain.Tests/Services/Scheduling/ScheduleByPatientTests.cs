@@ -20,7 +20,7 @@ public class ScheduleByPatientTests
     private readonly FakeTimeProvider _fakeTime = new();
 
     [Fact]
-    public void ScheduleByPatient_ShouldThrowDomainValidationException_WhenAppointmentTypeIsNull()
+    public void ScheduleByPatient_ShouldThrowArgumentNullException_WhenAppointmentTypeIsNull()
     {
         // Arrange & Act
         var act = () =>
@@ -32,13 +32,11 @@ public class ScheduleByPatientTests
             );
 
         // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.General.RequiredFieldNull);
+        act.Should().Throw<ArgumentNullException>();
     }
 
     [Fact]
-    public void ScheduleByPatient_ShouldThrowDomainValidationException_WhenArgsIsNull()
+    public void ScheduleByPatient_ShouldThrowArgumentNullException_WhenArgsIsNull()
     {
         // Arrange & Act
         var act = () =>
@@ -50,31 +48,11 @@ public class ScheduleByPatientTests
             );
 
         // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.General.RequiredFieldNull);
+        act.Should().Throw<ArgumentNullException>();
     }
 
     [Fact]
-    public void ScheduleByPatient_ShouldThrowDomainValidationException_WhenContextIsNull()
-    {
-        // Arrange & Act
-        var act = () =>
-            AppointmentSchedulingService.ScheduleByPatient(
-                CreateAppointmentType(),
-                CreateValidPatientSchedulingArgs(),
-                null!,
-                SchedulingClearance.Granted()
-            );
-
-        // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.General.RequiredFieldNull);
-    }
-
-    [Fact]
-    public void ScheduleByPatient_ShouldThrowDomainValidationException_WhenTargetPatientIsNull()
+    public void ScheduleByPatient_ShouldThrowArgumentNullException_WhenTargetPatientIsNull()
     {
         // Arrange & Act
         var act = () =>
@@ -89,13 +67,11 @@ public class ScheduleByPatientTests
             );
 
         // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.General.RequiredFieldNull);
+        act.Should().Throw<ArgumentNullException>();
     }
 
     [Fact]
-    public void ScheduleByPatient_ShouldThrowDomainValidationException_WhenTimeRangeIsNull()
+    public void ScheduleByPatient_ShouldThrowArgumentNullException_WhenTimeRangeIsNull()
     {
         // Arrange & Act
         var act = () =>
@@ -110,13 +86,43 @@ public class ScheduleByPatientTests
             );
 
         // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.General.RequiredFieldNull);
+        act.Should().Throw<ArgumentNullException>();
     }
 
     [Fact]
-    public void ScheduleByPatient_ShouldThrowDomainValidationException_WhenClearanceIsNull()
+    public void ScheduleByPatient_ShouldThrowArgumentNullException_WhenContextIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentSchedulingService.ScheduleByPatient(
+                CreateAppointmentType(),
+                CreateValidPatientSchedulingArgs(),
+                null!,
+                SchedulingClearance.Granted()
+            );
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void ScheduleByPatient_ShouldThrowArgumentNullException_WhenContextDoctorScheduleIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentSchedulingService.ScheduleByPatient(
+                CreateAppointmentType(),
+                CreateValidPatientSchedulingArgs(),
+                new PatientSchedulingContext { DoctorSchedule = null! },
+                SchedulingClearance.Granted()
+            );
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void ScheduleByPatient_ShouldThrowBusinessRuleValidationException_WhenClearanceIsNull()
     {
         // Arrange & Act
         var act = () =>
@@ -129,8 +135,8 @@ public class ScheduleByPatientTests
 
         // Assert
         act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.General.RequiredFieldNull);
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.Scheduling.MissingClearance);
     }
 
     [Fact]

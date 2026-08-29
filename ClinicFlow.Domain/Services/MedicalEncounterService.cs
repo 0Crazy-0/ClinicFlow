@@ -19,8 +19,7 @@ public class MedicalEncounterService(
         string chiefComplaint
     )
     {
-        if (appointment is null)
-            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+        ArgumentNullException.ThrowIfNull(appointment);
 
         if (appointment.Status is not Enums.AppointmentStatus.InProgress)
             throw new BusinessRuleValidationException(
@@ -37,16 +36,11 @@ public class MedicalEncounterService(
 
     public void ValidateAndCompleteRecord(MedicalRecord record, MedicalEncounterContext context)
     {
-        if (record is null)
-            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
-
-        if (
-            context is null
-            || context.ExpectedDoctor is null
-            || context.Appointment is null
-            || context.AppointmentTypeDefinition is null
-        )
-            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+        ArgumentNullException.ThrowIfNull(record);
+        ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(context.ExpectedDoctor);
+        ArgumentNullException.ThrowIfNull(context.Appointment);
+        ArgumentNullException.ThrowIfNull(context.AppointmentTypeDefinition);
 
         if (record.DoctorId != context.ExpectedDoctor.Id)
             throw new BusinessRuleValidationException(DomainErrors.MedicalEncounter.DoctorMismatch);
@@ -71,8 +65,9 @@ public class MedicalEncounterService(
         ClinicalFormTemplate template
     )
     {
-        if (record is null || newDetail is null || template is null)
-            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+        ArgumentNullException.ThrowIfNull(record);
+        ArgumentNullException.ThrowIfNull(newDetail);
+        ArgumentNullException.ThrowIfNull(template);
 
         if (newDetail.TemplateCode != template.Code)
             throw new BusinessRuleValidationException(DomainErrors.MedicalEncounter.CodeMismatch);

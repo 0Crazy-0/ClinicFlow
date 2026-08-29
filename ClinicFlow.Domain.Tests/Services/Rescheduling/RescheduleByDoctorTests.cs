@@ -18,7 +18,7 @@ public class RescheduleByDoctorTests
     private readonly FakeTimeProvider _fakeTime = new();
 
     [Fact]
-    public void RescheduleByDoctor_ShouldThrowDomainValidationException_WhenAppointmentIsNull()
+    public void RescheduleByDoctor_ShouldThrowArgumentNullException_WhenAppointmentIsNull()
     {
         // Arrange & Act
         var act = () =>
@@ -30,13 +30,11 @@ public class RescheduleByDoctorTests
             );
 
         // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.General.RequiredFieldNull);
+        act.Should().Throw<ArgumentNullException>();
     }
 
     [Fact]
-    public void RescheduleByDoctor_ShouldThrowDomainValidationException_WhenArgsIsNull()
+    public void RescheduleByDoctor_ShouldThrowArgumentNullException_WhenArgsIsNull()
     {
         // Arrange & Act
         var act = () =>
@@ -48,31 +46,11 @@ public class RescheduleByDoctorTests
             );
 
         // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.General.RequiredFieldNull);
+        act.Should().Throw<ArgumentNullException>();
     }
 
     [Fact]
-    public void RescheduleByDoctor_ShouldThrowDomainValidationException_WhenDoctorScheduleIsNull()
-    {
-        // Arrange & Act
-        var act = () =>
-            AppointmentReschedulingService.RescheduleByDoctor(
-                CreateAppointment(),
-                CreateValidDoctorReschedulingArgs(),
-                null!,
-                SchedulingClearance.Granted()
-            );
-
-        // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.General.RequiredFieldNull);
-    }
-
-    [Fact]
-    public void RescheduleByDoctor_ShouldThrowDomainValidationException_WhenInitiatorDoctorIsNull()
+    public void RescheduleByDoctor_ShouldThrowArgumentNullException_WhenInitiatorDoctorIsNull()
     {
         // Arrange & Act
         var act = () =>
@@ -87,13 +65,11 @@ public class RescheduleByDoctorTests
             );
 
         // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.General.RequiredFieldNull);
+        act.Should().Throw<ArgumentNullException>();
     }
 
     [Fact]
-    public void RescheduleByDoctor_ShouldThrowDomainValidationException_WhenNewTimeRangeIsNull()
+    public void RescheduleByDoctor_ShouldThrowArgumentNullException_WhenNewTimeRangeIsNull()
     {
         // Arrange & Act
         var act = () =>
@@ -108,13 +84,27 @@ public class RescheduleByDoctorTests
             );
 
         // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.General.RequiredFieldNull);
+        act.Should().Throw<ArgumentNullException>();
     }
 
     [Fact]
-    public void RescheduleByDoctor_ShouldThrowDomainValidationException_WhenClearanceIsNull()
+    public void RescheduleByDoctor_ShouldThrowArgumentNullException_WhenDoctorScheduleIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentReschedulingService.RescheduleByDoctor(
+                CreateAppointment(),
+                CreateValidDoctorReschedulingArgs(),
+                null!,
+                SchedulingClearance.Granted()
+            );
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void RescheduleByDoctor_ShouldThrowBusinessRuleValidationException_WhenClearanceIsNull()
     {
         // Arrange & Act
         var act = () =>
@@ -127,8 +117,8 @@ public class RescheduleByDoctorTests
 
         // Assert
         act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.General.RequiredFieldNull);
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.Reschedule.MissingClearance);
     }
 
     [Fact]
