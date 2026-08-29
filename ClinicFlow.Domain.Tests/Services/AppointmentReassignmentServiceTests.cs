@@ -53,7 +53,7 @@ public class AppointmentReassignmentServiceTests
                 new AppointmentReassignmentArgs
                 {
                     NewDoctorId = Guid.CreateVersion7(),
-                    NewDate = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(1),
+                    NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime).AddDays(1),
                     NewTimeRange = CreateTimeRange(10, 11),
                 },
                 CreateSchedule(Guid.CreateVersion7(), DayOfWeek.Monday, 9, 17)
@@ -75,7 +75,7 @@ public class AppointmentReassignmentServiceTests
                 new AppointmentReassignmentArgs
                 {
                     NewDoctorId = Guid.CreateVersion7(),
-                    NewDate = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(1),
+                    NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime).AddDays(1),
                     NewTimeRange = CreateTimeRange(10, 11),
                 },
                 null!
@@ -114,7 +114,7 @@ public class AppointmentReassignmentServiceTests
                 new AppointmentReassignmentArgs
                 {
                     NewDoctorId = Guid.CreateVersion7(),
-                    NewDate = DateOnly.FromDateTime(DateTime.UtcNow).AddDays(1),
+                    NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime).AddDays(1),
                     NewTimeRange = null!,
                 },
                 CreateSchedule(Guid.CreateVersion7(), DayOfWeek.Monday, 9, 17)
