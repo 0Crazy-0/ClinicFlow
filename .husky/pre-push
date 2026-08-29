@@ -1,0 +1,38 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+# Formats the C#-related files touched by the commits about to be pushed,
+# and folds any formatting fix into the last commit (--amend) instead of
+# creating a separate "style: formatting" commit in the history.
+#
+# Note: amending rewrites the last commit's hash. If that commit was
+# already pushed to the remote before (e.g. a retried push after a
+# dropped connection), Git will reject the push afterward and you'll
+# need to run `git push --force-with-lease` once to resolve it.
+
+remote_ref=$(git rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null)
+
+if [ -n "$remote_ref" ]; then
+  base="$remote_ref"
+else
+  base=$(git merge-base HEAD origin/HEAD 2>/dev/null || git merge-base HEAD origin/main 2>/dev/null)
+fi
+
+if [ -z "$base" ]; then
+  echo "csharpier: no upstream or base found, skipping pre-push format check"
+  exit 0
+fi
+
+changed_files=$(git diff --name-only --diff-filter=ACMR "$base"...HEAD -- '*.cs' '*.csx' '*.csproj' '*.xaml')
+
+if [ -z "$changed_files" ]; then
+  exit 0
+fi
+
+echo "$changed_files" | xargs dotnet csharpier format
+
+if ! git diff --quiet -- $changed_files; then
+  echo "csharpier: formatting applied, amending into the last commit..."
+  echo "$changed_files" | xargs git add
+  git commit --amend --no-edit --no-verify
+fi
