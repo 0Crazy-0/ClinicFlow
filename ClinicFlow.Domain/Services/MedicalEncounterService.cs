@@ -35,10 +35,6 @@ public class MedicalEncounterService(
         );
     }
 
-    /// <summary>
-    /// Executes dynamic validation policies against the clinical details, populates the medical record,
-    /// and advances the appointment lifecycle status to Completed.
-    /// </summary>
     public void ValidateAndCompleteRecord(MedicalRecord record, MedicalEncounterContext context)
     {
         if (record is null)
@@ -69,9 +65,6 @@ public class MedicalEncounterService(
         context.Appointment.Complete(context.CompletedAt);
     }
 
-    /// <summary>
-    /// Enforces that the clinical detail's JSON structure complies with the template schema before appending it to the record.
-    /// </summary>
     public void AppendClinicalDetail(
         MedicalRecord record,
         DynamicClinicalDetail newDetail,

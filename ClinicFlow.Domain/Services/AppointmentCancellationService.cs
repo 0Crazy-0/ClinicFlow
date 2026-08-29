@@ -13,12 +13,6 @@ namespace ClinicFlow.Domain.Services;
 /// </summary>
 public static class AppointmentCancellationService
 {
-    /// <summary>
-    /// Executes patient-initiated cancellation.
-    /// </summary>
-    /// <remarks>
-    /// Enforces authorization, restricts procedure cancellations, and automatically applies late cancellation if notice period is insufficient.
-    /// </remarks>
     public static void CancelByPatient(
         Appointment appointment,
         AppointmentCancellationContext context,
@@ -110,9 +104,6 @@ public static class AppointmentCancellationService
     /// <summary>
     /// Validates if an emergency appointment can be cancelled based on the relationship between the patient and the initiator user.
     /// </summary>
-    /// <remarks>
-    /// Emergency appointments can only be cancelled by the patients themselves or by a parent if the patient is under 18.
-    /// </remarks>
     private static void ValidateEmergencyCancellation(
         Patient patient,
         bool isInitiatorSelfOfTarget,

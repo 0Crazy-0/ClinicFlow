@@ -9,14 +9,10 @@ using ClinicFlow.Domain.ValueObjects;
 namespace ClinicFlow.Domain.Services;
 
 /// <summary>
-/// Domain service that orchestrates appointment rescheduling,
-/// enforcing regional scheduling regulations, availability, and conflict rules for different actors.
+/// Domain service that orchestrates appointment rescheduling for different actors.
 /// </summary>
 /// <remarks>
-/// All rescheduling requests must be accompanied by a valid scheduling clearance to ensure compliance
-/// with regional policies. Overbooking requests (bypassing availability and conflict checks) are strictly
-/// restricted to Doctor and Staff roles. Patient-initiated rescheduling must always
-/// pass availability checks and penalty validations.
+/// All rescheduling requests must be accompanied by a valid scheduling clearance to ensure compliance with regional scheduling regulations.
 /// </remarks>
 public static class AppointmentReschedulingService
 {
