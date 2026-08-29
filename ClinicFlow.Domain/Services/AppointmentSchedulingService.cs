@@ -9,7 +9,7 @@ using ClinicFlow.Domain.ValueObjects;
 namespace ClinicFlow.Domain.Services;
 
 /// <summary>
-/// Domain service that orchestrates appointment scheduling for different actors.
+/// Orchestrates appointment scheduling for different actors (Patient, Doctor, Staff).
 /// </summary>
 /// <remarks>
 /// All scheduling requests must be accompanied by a valid scheduling clearance to ensure compliance with regional scheduling regulations.
