@@ -1,0 +1,10 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+# Get only staged .cs files (Added, Copied, Modified — excludes Deleted)
+staged_files=$(git diff --cached --name-only --diff-filter=ACM -- '*.cs')
+
+if [ -n "$staged_files" ]; then
+  echo "$staged_files" | xargs dotnet csharpier format
+  echo "$staged_files" | xargs git add
+fi
