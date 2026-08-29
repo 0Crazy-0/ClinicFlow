@@ -10,12 +10,6 @@ namespace ClinicFlow.Domain.Services;
 /// record or creating a new one, and links it to the account via a new
 /// self-referencing FamilyMembership.
 /// </summary>
-/// <remarks>
-/// Encapsulates two independent business rules: soft-deleted patients cannot be
-/// reused directly and must go through the administrative claim process, and a
-/// patient cannot be linked as Self while another Self FamilyMembership for
-/// that patient is still active.
-/// </remarks>
 public static class PrimaryProfileRegistrationService
 {
     public const int MinimumSelfAge = 13;

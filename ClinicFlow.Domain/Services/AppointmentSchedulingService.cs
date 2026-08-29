@@ -9,13 +9,10 @@ using ClinicFlow.Domain.ValueObjects;
 namespace ClinicFlow.Domain.Services;
 
 /// <summary>
-/// Domain service that orchestrates appointment scheduling,
-/// enforcing regional scheduling regulations, actor-specific rules, and constraints.
+/// Orchestrates appointment scheduling for different actors (Patient, Doctor, Staff).
 /// </summary>
 /// <remarks>
-/// All scheduling requests must be accompanied by a valid scheduling clearance to ensure compliance
-/// with regional policies. Overbooking requests (bypassing availability and conflict checks) are permitted
-/// exclusively for Doctor and Staff roles.
+/// All scheduling requests must be accompanied by a valid scheduling clearance to ensure compliance with regional scheduling regulations.
 /// </remarks>
 public static class AppointmentSchedulingService
 {

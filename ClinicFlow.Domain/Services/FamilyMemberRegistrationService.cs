@@ -10,13 +10,6 @@ namespace ClinicFlow.Domain.Services;
 /// clinical record or creating a new one, and links it to the owner's account
 /// via a new FamilyMembership.
 /// </summary>
-/// <remarks>
-/// Encapsulates three independent business rules: soft-deleted patients cannot
-/// be reused directly and must go through the administrative claim process, an
-/// owner cannot link the same patient twice while a FamilyMembership between
-/// them is still active, and an owner cannot exceed the maximum number of
-/// active family members.
-/// </remarks>
 public static class FamilyMemberRegistrationService
 {
     public const int MaxActiveFamilyMembers = 15;
