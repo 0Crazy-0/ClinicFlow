@@ -31,4 +31,3 @@
     <ProjectReference Include="..\ClinicFlow.Infrastructure.Tests\ClinicFlow.Infrastructure.Tests.csproj" />
   </ItemGroup>
 </Project>
-
