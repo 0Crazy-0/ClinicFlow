@@ -35,7 +35,12 @@ public class PaginatedListTests
     )
     {
         // Arrange & Act
-        var sut = new PaginatedList<string>([], totalCount: 50, pageNumber: pageNumber, pageSize: 10);
+        var sut = new PaginatedList<string>(
+            [],
+            totalCount: 50,
+            pageNumber: pageNumber,
+            pageSize: 10
+        );
 
         // Assert
         sut.HasPreviousPage.Should().Be(expectedHasPreviousPage);
