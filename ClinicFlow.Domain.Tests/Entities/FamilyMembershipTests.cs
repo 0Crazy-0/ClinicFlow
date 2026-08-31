@@ -70,11 +70,7 @@ public class FamilyMembershipTests
     {
         // Arrange & Act
         var act = () =>
-            FamilyMembership.CreateSelf(
-                Guid.CreateVersion7(),
-                Guid.CreateVersion7(),
-                default
-            );
+            FamilyMembership.CreateSelf(Guid.CreateVersion7(), Guid.CreateVersion7(), default);
 
         // Assert
         act.Should()
