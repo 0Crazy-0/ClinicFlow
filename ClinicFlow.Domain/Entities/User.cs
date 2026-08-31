@@ -88,6 +88,9 @@ public class User : BaseEntity
 
     internal void RecordFailedLogin(DateTime referenceTime)
     {
+        if (referenceTime == default)
+            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+
         if (!IsActive)
             throw new BusinessRuleValidationException(DomainErrors.User.AccountInactive);
 

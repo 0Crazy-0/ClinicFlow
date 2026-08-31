@@ -54,6 +54,9 @@ public class FamilyMembership : BaseEntity
         if (userId == Guid.Empty)
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
 
+        if (referenceTime == default)
+            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+
         return new FamilyMembership(patientId, userId, PatientRelationship.Self, referenceTime);
     }
 
@@ -71,6 +74,9 @@ public class FamilyMembership : BaseEntity
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
 
         if (ownerUserId == Guid.Empty)
+            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+
+        if (referenceTime == default)
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
 
         if (!Enum.IsDefined(role))

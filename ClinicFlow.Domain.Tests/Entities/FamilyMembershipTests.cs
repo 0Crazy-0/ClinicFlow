@@ -66,6 +66,19 @@ public class FamilyMembershipTests
     }
 
     [Fact]
+    public void CreateSelf_ShouldThrowException_WhenReferenceTimeIsDefault()
+    {
+        // Arrange & Act
+        var act = () =>
+            FamilyMembership.CreateSelf(Guid.CreateVersion7(), Guid.CreateVersion7(), default);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
     public void CreateFamilyMember_ShouldCreateActiveMembership_WhenValidParameters()
     {
         // Arrange
@@ -119,6 +132,24 @@ public class FamilyMembershipTests
                 Guid.Empty,
                 PatientRelationship.Sibling,
                 _fakeTime.GetUtcNow().UtcDateTime
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void CreateFamilyMember_ShouldThrowException_WhenReferenceTimeIsDefault()
+    {
+        // Arrange & Act
+        var act = () =>
+            FamilyMembership.CreateFamilyMember(
+                Guid.CreateVersion7(),
+                Guid.CreateVersion7(),
+                PatientRelationship.Child,
+                default
             );
 
         // Assert

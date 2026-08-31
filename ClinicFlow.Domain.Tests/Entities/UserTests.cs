@@ -226,6 +226,24 @@ public class UserTests
     }
 
     [Fact]
+    public void RecordFailedLogin_ShouldThrowException_WhenReferenceTimeIsDefault()
+    {
+        // Arrange
+        var user = CreateUser();
+
+        // Act
+        var act = () => user.RecordFailedLogin(default);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+
+        user.FailedLoginAttempts.Should().Be(0);
+        user.LockoutEnd.Should().BeNull();
+    }
+
+    [Fact]
     public void RecordFailedLogin_ShouldThrowException_WhenAccountIsInactive()
     {
         // Arrange
