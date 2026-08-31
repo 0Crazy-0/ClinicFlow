@@ -133,6 +133,9 @@ public class Appointment : BaseEntity
 
     public void CheckIn(DateOnly checkedInAt, string? receptionistNotes = null)
     {
+        if (checkedInAt < ScheduledDate)
+            throw new DomainValidationException(DomainErrors.Appointment.InvalidCheckInDate);
+
         if (Status is not AppointmentStatus.Scheduled)
             throw new DomainValidationException(DomainErrors.Appointment.CannotCheckIn);
 
@@ -145,6 +148,9 @@ public class Appointment : BaseEntity
 
     public void Start(Guid initiatorDoctorId, DateTime startedAt)
     {
+        if (startedAt < ScheduledDate.ToDateTime(TimeRange.Start))
+            throw new DomainValidationException(DomainErrors.Appointment.InvalidStartDate);
+
         if (initiatorDoctorId != DoctorId)
             throw new DomainValidationException(DomainErrors.Appointment.UnauthorizedDoctor);
 
@@ -158,6 +164,9 @@ public class Appointment : BaseEntity
 
     internal void Complete(DateTime completedAt)
     {
+        if (completedAt < ScheduledDate.ToDateTime(TimeRange.Start))
+            throw new DomainValidationException(DomainErrors.Appointment.InvalidCompletionDate);
+
         if (Status is not AppointmentStatus.InProgress)
             throw new DomainValidationException(DomainErrors.Appointment.CannotComplete);
 

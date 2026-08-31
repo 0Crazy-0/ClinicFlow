@@ -225,7 +225,7 @@ public class AppointmentGenerator(AppointmentSeedingArgs args, DateTime baseDate
         {
             case AppointmentStatus.Completed:
                 appointment.CheckIn(DateOnly.FromDateTime(actionTime), receptionistNotes);
-                appointment.Start(doctorId, actionTime.AddMinutes(5));
+                appointment.Start(doctorId, actionTime.AddMinutes(15));
                 appointment.Complete(actionTime.AddMinutes(35));
                 break;
 
@@ -267,7 +267,7 @@ public class AppointmentGenerator(AppointmentSeedingArgs args, DateTime baseDate
 
             case AppointmentStatus.InProgress:
                 appointment.CheckIn(DateOnly.FromDateTime(actionTime), receptionistNotes);
-                appointment.Start(doctorId, actionTime.AddMinutes(5));
+                appointment.Start(doctorId, actionTime.AddMinutes(15));
                 break;
         }
     }

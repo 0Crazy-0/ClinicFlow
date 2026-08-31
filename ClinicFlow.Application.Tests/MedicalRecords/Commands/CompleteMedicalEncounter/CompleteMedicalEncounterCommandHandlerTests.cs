@@ -297,8 +297,8 @@ public class CompleteMedicalEncounterCommandHandlerTests
             patientId,
             doctorId,
             appointmentTypeId,
-            DateOnly.FromDateTime(referenceDate.AddDays(1)),
-            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+            DateOnly.FromDateTime(referenceDate.AddDays(-2)),
+            TimeRange.Create(new TimeOnly(9), new TimeOnly(10))
         );
 
         appointment.SetId(id);

@@ -22,7 +22,7 @@ public class AppointmentTests
         var doctorId = Guid.CreateVersion7();
         var appointmentTypeId = Guid.CreateVersion7();
         var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
-        var timeRange = TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0));
+        var timeRange = TimeRange.Create(new TimeOnly(9), new TimeOnly(10));
 
         // Act
         var appointment = Appointment.Schedule(
@@ -79,7 +79,7 @@ public class AppointmentTests
                 Guid.Parse(doctorIdStr),
                 Guid.Parse(appointmentTypeIdStr),
                 DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
-                TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+                TimeRange.Create(new TimeOnly(9), new TimeOnly(10))
             );
 
         // Assert
@@ -113,7 +113,7 @@ public class AppointmentTests
         var doctorId = Guid.CreateVersion7();
         var appointmentTypeId = Guid.CreateVersion7();
         var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
-        var timeRange = TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0));
+        var timeRange = TimeRange.Create(new TimeOnly(9), new TimeOnly(10));
         var patientNotes = "Test patient notes";
 
         // Act
@@ -138,7 +138,7 @@ public class AppointmentTests
         var doctorId = Guid.CreateVersion7();
         var appointmentTypeId = Guid.CreateVersion7();
         var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
-        var timeRange = TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0));
+        var timeRange = TimeRange.Create(new TimeOnly(9), new TimeOnly(10));
 
         // Act
         var appointment = Appointment.Schedule(
@@ -320,7 +320,7 @@ public class AppointmentTests
         // Arrange
         var appointment = CreateAppointment();
         var newDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2));
-        var newTimeRange = TimeRange.Create(new TimeOnly(14, 0), new TimeOnly(15, 0));
+        var newTimeRange = TimeRange.Create(new TimeOnly(14), new TimeOnly(15));
 
         // Act
         appointment.Reschedule(newDate, newTimeRange);
@@ -336,12 +336,12 @@ public class AppointmentTests
         // Arrange
         var appointment = CreateAppointment();
         var newDate1 = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2));
-        var newTimeRange1 = TimeRange.Create(new TimeOnly(14, 0), new TimeOnly(15, 0));
+        var newTimeRange1 = TimeRange.Create(new TimeOnly(14), new TimeOnly(15));
 
         appointment.Reschedule(newDate1, newTimeRange1);
 
         var newDate2 = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3));
-        var newTimeRange2 = TimeRange.Create(new TimeOnly(16, 0), new TimeOnly(17, 0));
+        var newTimeRange2 = TimeRange.Create(new TimeOnly(16), new TimeOnly(17));
 
         // Act
         var act = () => appointment.Reschedule(newDate2, newTimeRange2);
@@ -365,7 +365,7 @@ public class AppointmentTests
         );
 
         var newDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2));
-        var newTimeRange = TimeRange.Create(new TimeOnly(14, 0), new TimeOnly(15, 0));
+        var newTimeRange = TimeRange.Create(new TimeOnly(14), new TimeOnly(15));
 
         // Act
         var act = () => appointment.Reschedule(newDate, newTimeRange);
@@ -383,15 +383,32 @@ public class AppointmentTests
         var appointment = CreateAppointment();
 
         // Act
-        appointment.CheckIn(DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime));
+        appointment.CheckIn(appointment.ScheduledDate);
 
         // Assert
         appointment.Status.Should().Be(AppointmentStatus.CheckedIn);
-        appointment
-            .CheckedInAt.Should()
-            .Be(DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime));
+        appointment.CheckedInAt.Should().Be(appointment.ScheduledDate);
         appointment.ReceptionistNotes.Should().BeEmpty();
         appointment.DomainEvents.OfType<AppointmentCheckedInEvent>().Should().ContainSingle();
+    }
+
+    [Fact]
+    public void CheckIn_ShouldThrowException_WhenCheckedInAtIsBeforeScheduledDate()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        var checkedInAt = appointment.ScheduledDate.AddDays(-1);
+
+        // Act
+        var act = () => appointment.CheckIn(checkedInAt);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Appointment.InvalidCheckInDate);
+
+        appointment.Status.Should().Be(AppointmentStatus.Scheduled);
+        appointment.CheckedInAt.Should().BeNull();
     }
 
     [Fact]
@@ -401,7 +418,7 @@ public class AppointmentTests
         var appointment = CreateAppointment();
 
         // Act
-        appointment.CheckIn(DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime), null);
+        appointment.CheckIn(appointment.ScheduledDate, null);
 
         // Assert
         appointment.ReceptionistNotes.Should().BeEmpty();
@@ -420,8 +437,7 @@ public class AppointmentTests
         );
 
         // Act
-        var act = () =>
-            appointment.CheckIn(DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime));
+        var act = () => appointment.CheckIn(appointment.ScheduledDate);
 
         // Assert
         act.Should()
@@ -437,10 +453,7 @@ public class AppointmentTests
         var receptionistNotes = "Test receptionist notes";
 
         // Act
-        appointment.CheckIn(
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime),
-            receptionistNotes
-        );
+        appointment.CheckIn(appointment.ScheduledDate, receptionistNotes);
 
         // Assert
         appointment.ReceptionistNotes.Should().Be(receptionistNotes);
@@ -452,14 +465,41 @@ public class AppointmentTests
         // Arrange
         var appointment = CreateAppointment();
 
-        appointment.CheckIn(DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime));
+        appointment.CheckIn(appointment.ScheduledDate);
 
         // Act
-        appointment.Start(appointment.DoctorId, _fakeTime.GetUtcNow().UtcDateTime);
+        appointment.Start(
+            appointment.DoctorId,
+            appointment.ScheduledDate.ToDateTime(appointment.TimeRange.Start)
+        );
 
         // Assert
         appointment.Status.Should().Be(AppointmentStatus.InProgress);
         appointment.DomainEvents.OfType<AppointmentStartedEvent>().Should().ContainSingle();
+    }
+
+    [Fact]
+    public void Start_ShouldThrowException_WhenStartedAtIsBeforeAppointmentStart()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+
+        appointment.CheckIn(appointment.ScheduledDate);
+
+        // Act
+        var act = () =>
+            appointment.Start(
+                appointment.DoctorId,
+                appointment.ScheduledDate.ToDateTime(appointment.TimeRange.Start).AddSeconds(-1)
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Appointment.InvalidStartDate);
+
+        appointment.Status.Should().Be(AppointmentStatus.CheckedIn);
+        appointment.DomainEvents.OfType<AppointmentStartedEvent>().Should().BeEmpty();
     }
 
     [Fact]
@@ -468,10 +508,14 @@ public class AppointmentTests
         // Arrange
         var appointment = CreateAppointment();
 
-        appointment.CheckIn(DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime));
+        appointment.CheckIn(appointment.ScheduledDate);
 
         // Act
-        var act = () => appointment.Start(Guid.CreateVersion7(), _fakeTime.GetUtcNow().UtcDateTime);
+        var act = () =>
+            appointment.Start(
+                Guid.CreateVersion7(),
+                appointment.ScheduledDate.ToDateTime(appointment.TimeRange.Start)
+            );
 
         // Assert
         act.Should()
@@ -486,7 +530,11 @@ public class AppointmentTests
         var appointment = CreateAppointment();
 
         // Act
-        var act = () => appointment.Start(appointment.DoctorId, _fakeTime.GetUtcNow().UtcDateTime);
+        var act = () =>
+            appointment.Start(
+                appointment.DoctorId,
+                appointment.ScheduledDate.ToDateTime(appointment.TimeRange.Start)
+            );
 
         // Assert
         act.Should()
@@ -498,17 +546,43 @@ public class AppointmentTests
     public void Complete_ShouldSetStatusToCompleted_WhenStatusIsInProgress()
     {
         // Arrange
-        var appointment = CreateAppointment();
+        var appointment = CreateAppointment(); // TimeRange: 9:00 - 10:00
 
-        appointment.CheckIn(DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime));
-        appointment.Start(appointment.DoctorId, _fakeTime.GetUtcNow().UtcDateTime);
+        appointment.CheckIn(appointment.ScheduledDate);
+        appointment.Start(
+            appointment.DoctorId,
+            appointment.ScheduledDate.ToDateTime(appointment.TimeRange.Start)
+        );
 
         // Act
-        appointment.Complete(_fakeTime.GetUtcNow().UtcDateTime);
+        appointment.Complete(appointment.ScheduledDate.ToDateTime(new TimeOnly(9, 30)));
 
         // Assert
         appointment.Status.Should().Be(AppointmentStatus.Completed);
         appointment.DomainEvents.OfType<AppointmentCompletedEvent>().Should().ContainSingle();
+    }
+
+    [Fact]
+    public void Complete_ShouldThrowException_WhenCompletedAtIsBeforeAppointmentStart()
+    {
+        // Arrange
+        var appointment = CreateAppointment(); // TimeRange: 9:00 - 10:00
+
+        appointment.CheckIn(appointment.ScheduledDate);
+        appointment.Start(
+            appointment.DoctorId,
+            appointment.ScheduledDate.ToDateTime(appointment.TimeRange.Start)
+        );
+
+        // Act
+        var act = () => appointment.Complete(appointment.ScheduledDate.ToDateTime(new TimeOnly(8)));
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Appointment.InvalidCompletionDate);
+
+        appointment.Status.Should().Be(AppointmentStatus.InProgress);
     }
 
     [Fact]
@@ -518,7 +592,8 @@ public class AppointmentTests
         var appointment = CreateAppointment();
 
         // Act
-        var act = () => appointment.Complete(_fakeTime.GetUtcNow().UtcDateTime);
+        var act = () =>
+            appointment.Complete(appointment.ScheduledDate.ToDateTime(new TimeOnly(9, 30)));
 
         // Assert
         act.Should()
@@ -569,7 +644,7 @@ public class AppointmentTests
 
         var newDoctorId = Guid.CreateVersion7();
         var newDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3));
-        var newTimeRange = TimeRange.Create(new TimeOnly(14, 0), new TimeOnly(15, 0));
+        var newTimeRange = TimeRange.Create(new TimeOnly(14), new TimeOnly(15));
 
         // Act
         appointment.Reassign(newDoctorId, newDate, newTimeRange);
@@ -617,7 +692,7 @@ public class AppointmentTests
             appointment.Reassign(
                 Guid.Empty,
                 DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
-                TimeRange.Create(new TimeOnly(14, 0), new TimeOnly(15, 0))
+                TimeRange.Create(new TimeOnly(14), new TimeOnly(15))
             );
 
         // Assert
@@ -637,7 +712,7 @@ public class AppointmentTests
             appointment.Reassign(
                 Guid.CreateVersion7(),
                 DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
-                TimeRange.Create(new TimeOnly(14, 0), new TimeOnly(15, 0))
+                TimeRange.Create(new TimeOnly(14), new TimeOnly(15))
             );
 
         // Assert
@@ -735,7 +810,7 @@ public class AppointmentTests
         // Arrange
         var appointment = CreateAppointment();
 
-        appointment.CheckIn(DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime));
+        appointment.CheckIn(appointment.ScheduledDate);
 
         // Act
         var act = () => appointment.UpdatePatientNotes("New notes");
@@ -751,7 +826,7 @@ public class AppointmentTests
     {
         // Arrange
         var appointment = CreateAppointment();
-        appointment.CheckIn(DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime));
+        appointment.CheckIn(appointment.ScheduledDate);
         var newNotes = "New receptionist notes";
 
         // Act
@@ -766,7 +841,7 @@ public class AppointmentTests
     {
         // Arrange
         var appointment = CreateAppointment();
-        appointment.CheckIn(DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime));
+        appointment.CheckIn(appointment.ScheduledDate);
         appointment.UpdateReceptionistNotes("Initial notes");
 
         // Act
