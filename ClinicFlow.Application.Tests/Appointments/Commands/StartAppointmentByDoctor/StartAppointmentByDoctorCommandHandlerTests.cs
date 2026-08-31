@@ -49,11 +49,11 @@ public class StartAppointmentByDoctorCommandHandlerTests
             Guid.CreateVersion7(),
             doctor.Id,
             Guid.CreateVersion7(),
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
-            TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0))
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime),
+            TimeRange.Create(new TimeOnly(0), new TimeOnly(1))
         );
 
-        appointment.CheckIn(DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime));
+        appointment.CheckIn(appointment.ScheduledDate);
 
         _appointmentRepositoryMock
             .Setup(r => r.GetByIdAsync(command.AppointmentId, It.IsAny<CancellationToken>()))
@@ -109,7 +109,7 @@ public class StartAppointmentByDoctorCommandHandlerTests
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
-            TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0))
+            TimeRange.Create(new TimeOnly(10), new TimeOnly(11))
         );
 
         _appointmentRepositoryMock

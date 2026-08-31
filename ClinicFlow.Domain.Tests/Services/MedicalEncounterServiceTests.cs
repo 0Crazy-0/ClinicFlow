@@ -53,7 +53,7 @@ public class MedicalEncounterServiceTests
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
-            TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0))
+            TimeRange.Create(new TimeOnly(10), new TimeOnly(11))
         );
 
         // Act
@@ -420,8 +420,8 @@ public class MedicalEncounterServiceTests
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
-            TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0))
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(-1)),
+            TimeRange.Create(new TimeOnly(10), new TimeOnly(11))
         );
 
         appointment.SetId(id);
