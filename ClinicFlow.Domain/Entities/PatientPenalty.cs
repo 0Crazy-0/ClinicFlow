@@ -75,8 +75,13 @@ public class PatientPenalty : BaseEntity
     {
         if (patientId == Guid.Empty)
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+
+        if (referenceTime == default)
+            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+
         if (string.IsNullOrWhiteSpace(reason))
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+
         if (!Enum.IsDefined(duration))
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
 
@@ -98,8 +103,13 @@ public class PatientPenalty : BaseEntity
     {
         if (patientId == Guid.Empty)
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+
+        if (referenceTime == default)
+            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+
         if (string.IsNullOrWhiteSpace(reason))
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+
         if (!Enum.IsDefined(duration))
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
 
