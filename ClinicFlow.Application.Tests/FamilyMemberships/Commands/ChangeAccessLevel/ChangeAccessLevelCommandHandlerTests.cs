@@ -90,6 +90,129 @@ public class ChangeAccessLevelCommandHandlerTests
     }
 
     [Fact]
+    public async Task Handle_ShouldChangeAccessLevelAndSaveChanges_WhenRequesterIsPatientsSelf()
+    {
+        // Arrange
+        var requesterUserId = Guid.CreateVersion7();
+        var targetUserId = Guid.CreateVersion7();
+        var patient = Patient.CreateProfile(
+            PersonName.Create("Jane Doe"),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-25)),
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+        var membership = CreateFamilyMembership(patient.Id, targetUserId);
+
+        var command = new ChangeAccessLevelCommand(
+            requesterUserId,
+            targetUserId,
+            patient.Id,
+            FamilyMembershipAccessLevel.Restricted
+        );
+
+        _familyMembershipRepositoryMock
+            .Setup(x =>
+                x.GetActiveMembershipAsync(targetUserId, patient.Id, It.IsAny<CancellationToken>())
+            )
+            .ReturnsAsync(membership);
+
+        _patientRepositoryMock
+            .Setup(x => x.GetByIdAsync(patient.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(patient);
+
+        _familyMembershipRepositoryMock
+            .Setup(x =>
+                x.HasActiveSelfMembershipByUserIdAsync(
+                    requesterUserId,
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(true);
+
+        var requesterMembership = FamilyMembership.CreateSelf(
+            patient.Id,
+            requesterUserId,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        _familyMembershipRepositoryMock
+            .Setup(x =>
+                x.GetActiveMembershipAsync(
+                    requesterUserId,
+                    patient.Id,
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(requesterMembership);
+
+        // Act
+        await _sut.Handle(command, TestContext.Current.CancellationToken);
+
+        // Assert
+        membership.AccessLevel.Should().Be(FamilyMembershipAccessLevel.Restricted);
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldThrowDomainValidationException_WhenRequesterHasNoActiveMembershipWithPatient()
+    {
+        // Arrange
+        var requesterUserId = Guid.CreateVersion7();
+        var targetUserId = Guid.CreateVersion7();
+        var patient = Patient.CreateProfile(
+            PersonName.Create("John Doe"),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10)),
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+        var membership = CreateFamilyMembership(patient.Id, targetUserId);
+
+        var command = new ChangeAccessLevelCommand(
+            requesterUserId,
+            targetUserId,
+            patient.Id,
+            FamilyMembershipAccessLevel.Restricted
+        );
+
+        _familyMembershipRepositoryMock
+            .Setup(x =>
+                x.GetActiveMembershipAsync(targetUserId, patient.Id, It.IsAny<CancellationToken>())
+            )
+            .ReturnsAsync(membership);
+
+        _patientRepositoryMock
+            .Setup(x => x.GetByIdAsync(patient.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(patient);
+
+        _familyMembershipRepositoryMock
+            .Setup(x =>
+                x.HasActiveSelfMembershipByUserIdAsync(
+                    requesterUserId,
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(true);
+
+        _familyMembershipRepositoryMock
+            .Setup(x =>
+                x.GetActiveMembershipAsync(
+                    requesterUserId,
+                    patient.Id,
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync((FamilyMembership?)null);
+
+        // Act
+        var act = () => _sut.Handle(command, TestContext.Current.CancellationToken);
+
+        // Assert
+        await act.Should()
+            .ThrowAsync<DomainValidationException>()
+            .WithMessage(DomainErrors.FamilyMembership.UnauthorizedAccessLevelChange);
+
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
     public async Task Handle_ShouldThrowEntityNotFoundException_WhenTargetMembershipDoesNotExist()
     {
         // Arrange
