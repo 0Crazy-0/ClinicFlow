@@ -150,6 +150,7 @@ public class LeaveFamilyMembershipCommandHandlerTests
             patientId,
             ownerUserId,
             PatientRelationship.Child,
+            FamilyMembershipAccessLevel.Full,
             startedAt
         );
 }

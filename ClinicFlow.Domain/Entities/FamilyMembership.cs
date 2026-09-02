@@ -18,6 +18,8 @@ public class FamilyMembership : BaseEntity
 
     public FamilyMembershipStatus Status { get; private set; }
 
+    public FamilyMembershipAccessLevel AccessLevel { get; private set; }
+
     public DateTime StartedAt { get; private set; }
 
     /// <remarks>
@@ -32,6 +34,7 @@ public class FamilyMembership : BaseEntity
         Guid patientId,
         Guid userId,
         PatientRelationship role,
+        FamilyMembershipAccessLevel accessLevel,
         DateTime startedAt
     )
         : this()
@@ -39,6 +42,7 @@ public class FamilyMembership : BaseEntity
         PatientId = patientId;
         UserId = userId;
         Role = role;
+        AccessLevel = accessLevel;
         Status = FamilyMembershipStatus.Active;
         StartedAt = startedAt;
     }
@@ -57,7 +61,13 @@ public class FamilyMembership : BaseEntity
         if (referenceTime == default)
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
 
-        return new FamilyMembership(patientId, userId, PatientRelationship.Self, referenceTime);
+        return new FamilyMembership(
+            patientId,
+            userId,
+            PatientRelationship.Self,
+            FamilyMembershipAccessLevel.Full,
+            referenceTime
+        );
     }
 
     /// <summary>
@@ -67,6 +77,7 @@ public class FamilyMembership : BaseEntity
         Guid patientId,
         Guid ownerUserId,
         PatientRelationship role,
+        FamilyMembershipAccessLevel accessLevel,
         DateTime referenceTime
     )
     {
@@ -85,7 +96,31 @@ public class FamilyMembership : BaseEntity
         if (role is PatientRelationship.Self)
             throw new DomainValidationException(DomainErrors.FamilyMembership.CannotBeSelf);
 
-        return new FamilyMembership(patientId, ownerUserId, role, referenceTime);
+        if (!Enum.IsDefined(accessLevel))
+            throw new DomainValidationException(DomainErrors.Validation.InvalidEnumValue);
+
+        return new FamilyMembership(patientId, ownerUserId, role, accessLevel, referenceTime);
+    }
+
+    public void ChangeAccessLevel(
+        FamilyMembershipAccessLevel newAccessLevel,
+        bool requesterIsAuthorized
+    )
+    {
+        if (Role is PatientRelationship.Self)
+            throw new DomainValidationException(
+                DomainErrors.FamilyMembership.CannotChangeAccessLevelOfSelf
+            );
+
+        if (!requesterIsAuthorized)
+            throw new DomainValidationException(
+                DomainErrors.FamilyMembership.UnauthorizedAccessLevelChange
+            );
+
+        if (AccessLevel == newAccessLevel)
+            throw new DomainValidationException(DomainErrors.FamilyMembership.AccessLevelUnchanged);
+
+        AccessLevel = newAccessLevel;
     }
 
     public void Revoke(

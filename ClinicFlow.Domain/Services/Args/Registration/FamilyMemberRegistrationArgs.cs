@@ -10,8 +10,9 @@ public sealed record FamilyMemberRegistrationArgs
     public bool HasExistingMembershipWithOwner { get; init; }
     public int ActiveFamilyMemberCount { get; init; }
     public int OwnerAgeInYears { get; init; }
-    public required Guid OwnerUserId { get; init; }
-    public required PatientRelationship Role { get; init; }
+    public Guid OwnerUserId { get; init; }
+    public PatientRelationship Role { get; init; }
+    public FamilyMembershipAccessLevel AccessLevel { get; init; }
     public required PersonName FullName { get; init; }
     public DateOnly DateOfBirth { get; init; }
     public DateTime ReferenceTime { get; init; }

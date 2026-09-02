@@ -142,6 +142,7 @@ public class FamilyMemberRegistrationServiceTests
             OwnerAgeInYears = 25,
             OwnerUserId = ownerUserId,
             Role = role,
+            AccessLevel = FamilyMembershipAccessLevel.Full,
             FullName = PersonName.Create("Test Patient"),
             DateOfBirth = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             ReferenceTime = _fakeTime.GetUtcNow().UtcDateTime,

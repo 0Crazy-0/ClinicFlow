@@ -474,6 +474,8 @@ public static class DbSeeder
         }
 
         // Family Members (80 dependents)
+        var accessLevels = (FamilyMembershipAccessLevel[])
+            Enum.GetValues(typeof(FamilyMembershipAccessLevel));
         var dependentsToCreate = new List<PatientRelationship>();
         for (int i = 0; i < 25; i++)
             dependentsToCreate.Add(PatientRelationship.Child);
@@ -515,7 +517,13 @@ public static class DbSeeder
             );
             patients.Add(patient);
             familyMemberships.Add(
-                FamilyMembership.CreateFamilyMember(patient.Id, pUser.Id, relationship, refTime)
+                FamilyMembership.CreateFamilyMember(
+                    patient.Id,
+                    pUser.Id,
+                    relationship,
+                    accessLevels[i % accessLevels.Length],
+                    refTime
+                )
             );
         }
 
