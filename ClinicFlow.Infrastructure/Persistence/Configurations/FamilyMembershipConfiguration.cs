@@ -11,6 +11,7 @@ public sealed class FamilyMembershipConfiguration : IEntityTypeConfiguration<Fam
     {
         builder.Property(m => m.Role).HasConversion<string>();
         builder.Property(m => m.Status).HasConversion<string>();
+        builder.Property(m => m.AccessLevel).HasConversion<string>();
 
         builder
             .HasOne<Patient>()
