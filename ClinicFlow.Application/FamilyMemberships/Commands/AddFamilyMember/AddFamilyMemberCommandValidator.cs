@@ -36,5 +36,8 @@ public sealed class AddFamilyMemberCommandValidator : AbstractValidator<AddFamil
                     .NotEqual(PatientRelationship.Self)
                     .WithMessage(DomainErrors.Patient.CannotBeSelf);
             });
+        RuleFor(x => x.AccessLevel)
+            .IsInEnum()
+            .WithMessage(DomainErrors.Validation.InvalidEnumValue);
     }
 }

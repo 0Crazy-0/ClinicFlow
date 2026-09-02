@@ -45,5 +45,8 @@ public sealed class AddCompleteFamilyMemberCommandValidator
         RuleFor(x => x.Relationship)
             .IsInEnum()
             .WithMessage(DomainErrors.Validation.InvalidEnumValue);
+        RuleFor(x => x.AccessLevel)
+            .IsInEnum()
+            .WithMessage(DomainErrors.Validation.InvalidEnumValue);
     }
 }

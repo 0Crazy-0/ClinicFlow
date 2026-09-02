@@ -61,7 +61,8 @@ public class AddFamilyMemberCommandHandlerTests
             "Child",
             "Doe",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-5)),
-            PatientRelationship.Child
+            PatientRelationship.Child,
+            FamilyMembershipAccessLevel.Full
         );
 
         var ownerPatient = Patient.CreateProfile(
@@ -133,7 +134,8 @@ public class AddFamilyMemberCommandHandlerTests
             "Child",
             "Doe",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-5)),
-            PatientRelationship.Child
+            PatientRelationship.Child,
+            FamilyMembershipAccessLevel.Full
         );
 
         var ownerPatient = Patient.CreateProfile(
@@ -204,7 +206,8 @@ public class AddFamilyMemberCommandHandlerTests
             "Child",
             "Doe",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-5)),
-            PatientRelationship.Child
+            PatientRelationship.Child,
+            FamilyMembershipAccessLevel.Full
         );
 
         _familyMembershipRepositoryMock
@@ -254,7 +257,8 @@ public class AddFamilyMemberCommandHandlerTests
             "Child",
             "Doe",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-5)),
-            PatientRelationship.Child
+            PatientRelationship.Child,
+            FamilyMembershipAccessLevel.Full
         );
 
         var ownerPatientId = Guid.CreateVersion7();
