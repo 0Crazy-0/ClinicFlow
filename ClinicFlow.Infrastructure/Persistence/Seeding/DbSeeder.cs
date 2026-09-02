@@ -474,8 +474,7 @@ public static class DbSeeder
         }
 
         // Family Members (80 dependents)
-        var accessLevels = (FamilyMembershipAccessLevel[])
-            Enum.GetValues(typeof(FamilyMembershipAccessLevel));
+        var accessLevels = Enum.GetValues<FamilyMembershipAccessLevel>();
         var dependentsToCreate = new List<PatientRelationship>();
         for (int i = 0; i < 25; i++)
             dependentsToCreate.Add(PatientRelationship.Child);
