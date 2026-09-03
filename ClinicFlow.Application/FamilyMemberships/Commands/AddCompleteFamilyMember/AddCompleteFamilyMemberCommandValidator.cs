@@ -1,4 +1,5 @@
 using ClinicFlow.Domain.Common;
+using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.ValueObjects;
 using FluentValidation;
 
@@ -45,5 +46,10 @@ public sealed class AddCompleteFamilyMemberCommandValidator
         RuleFor(x => x.Relationship)
             .IsInEnum()
             .WithMessage(DomainErrors.Validation.InvalidEnumValue);
+        RuleFor(x => x.AccessLevel)
+            .IsInEnum()
+            .WithMessage(DomainErrors.Validation.InvalidEnumValue)
+            .NotEqual(FamilyMembershipAccessLevel.Unspecified)
+            .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 }

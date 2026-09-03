@@ -92,6 +92,7 @@ public class FamilyMembershipTests
             patientId,
             ownerUserId,
             role,
+            FamilyMembershipAccessLevel.Full,
             referenceTime
         );
 
@@ -99,6 +100,7 @@ public class FamilyMembershipTests
         membership.PatientId.Should().Be(patientId);
         membership.UserId.Should().Be(ownerUserId);
         membership.Role.Should().Be(role);
+        membership.AccessLevel.Should().Be(FamilyMembershipAccessLevel.Full);
         membership.Status.Should().Be(FamilyMembershipStatus.Active);
         membership.StartedAt.Should().Be(referenceTime);
         membership.EndedAt.Should().BeNull();
@@ -113,6 +115,7 @@ public class FamilyMembershipTests
                 Guid.Empty,
                 Guid.CreateVersion7(),
                 PatientRelationship.Spouse,
+                FamilyMembershipAccessLevel.Full,
                 _fakeTime.GetUtcNow().UtcDateTime
             );
 
@@ -131,6 +134,7 @@ public class FamilyMembershipTests
                 Guid.CreateVersion7(),
                 Guid.Empty,
                 PatientRelationship.Sibling,
+                FamilyMembershipAccessLevel.Full,
                 _fakeTime.GetUtcNow().UtcDateTime
             );
 
@@ -149,6 +153,7 @@ public class FamilyMembershipTests
                 Guid.CreateVersion7(),
                 Guid.CreateVersion7(),
                 PatientRelationship.Child,
+                FamilyMembershipAccessLevel.Full,
                 default
             );
 
@@ -167,6 +172,7 @@ public class FamilyMembershipTests
                 Guid.CreateVersion7(),
                 Guid.CreateVersion7(),
                 (PatientRelationship)999,
+                FamilyMembershipAccessLevel.Full,
                 _fakeTime.GetUtcNow().UtcDateTime
             );
 
@@ -185,6 +191,7 @@ public class FamilyMembershipTests
                 Guid.CreateVersion7(),
                 Guid.CreateVersion7(),
                 PatientRelationship.Self,
+                FamilyMembershipAccessLevel.Full,
                 _fakeTime.GetUtcNow().UtcDateTime
             );
 
@@ -195,6 +202,214 @@ public class FamilyMembershipTests
     }
 
     [Fact]
+    public void CreateFamilyMember_ShouldThrowException_WhenAccessLevelIsInvalid()
+    {
+        // Arrange & Act
+        var act = () =>
+            FamilyMembership.CreateFamilyMember(
+                Guid.CreateVersion7(),
+                Guid.CreateVersion7(),
+                PatientRelationship.Child,
+                (FamilyMembershipAccessLevel)999,
+                _fakeTime.GetUtcNow().UtcDateTime
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.InvalidEnumValue);
+    }
+
+    [Fact]
+    public void CreateFamilyMember_ShouldThrowException_WhenAccessLevelIsUnspecified()
+    {
+        // Arrange & Act
+        var act = () =>
+            FamilyMembership.CreateFamilyMember(
+                Guid.CreateVersion7(),
+                Guid.CreateVersion7(),
+                PatientRelationship.Child,
+                FamilyMembershipAccessLevel.Unspecified,
+                _fakeTime.GetUtcNow().UtcDateTime
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void ChangeAccessLevel_ShouldThrowException_WhenAccessLevelIsInvalid()
+    {
+        // Arrange
+        var membership = FamilyMembership.CreateFamilyMember(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            PatientRelationship.Child,
+            FamilyMembershipAccessLevel.Full,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        // Act
+        var act = () =>
+            membership.ChangeAccessLevel(
+                (FamilyMembershipAccessLevel)999,
+                requesterIsAuthorized: true
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.InvalidEnumValue);
+    }
+
+    [Fact]
+    public void ChangeAccessLevel_ShouldThrowException_WhenNewAccessLevelIsUnspecified()
+    {
+        // Arrange
+        var membership = FamilyMembership.CreateFamilyMember(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            PatientRelationship.Child,
+            FamilyMembershipAccessLevel.Full,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        // Act
+        var act = () =>
+            membership.ChangeAccessLevel(
+                FamilyMembershipAccessLevel.Unspecified,
+                requesterIsAuthorized: true
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void ChangeAccessLevel_ShouldThrowException_WhenNewAccessLevelIsDefault()
+    {
+        // Arrange
+        var membership = FamilyMembership.CreateFamilyMember(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            PatientRelationship.Child,
+            FamilyMembershipAccessLevel.Full,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        // Act
+        var act = () =>
+            membership.ChangeAccessLevel(
+                default(FamilyMembershipAccessLevel),
+                requesterIsAuthorized: true
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void ChangeAccessLevel_ShouldUpdateAccessLevel_WhenRequesterIsAuthorizedAndAccessLevelIsDifferent()
+    {
+        // Arrange
+        var membership = FamilyMembership.CreateFamilyMember(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            PatientRelationship.Child,
+            FamilyMembershipAccessLevel.Full,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        // Act
+        membership.ChangeAccessLevel(
+            FamilyMembershipAccessLevel.ViewOnly,
+            requesterIsAuthorized: true
+        );
+
+        // Assert
+        membership.AccessLevel.Should().Be(FamilyMembershipAccessLevel.ViewOnly);
+    }
+
+    [Fact]
+    public void ChangeAccessLevel_ShouldThrowException_WhenRoleIsSelf()
+    {
+        // Arrange
+        var membership = FamilyMembership.CreateSelf(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        // Act
+        var act = () =>
+            membership.ChangeAccessLevel(
+                FamilyMembershipAccessLevel.ViewOnly,
+                requesterIsAuthorized: true
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.FamilyMembership.CannotChangeAccessLevelOfSelf);
+    }
+
+    [Fact]
+    public void ChangeAccessLevel_ShouldThrowException_WhenRequesterIsNotAuthorized()
+    {
+        // Arrange
+        var membership = FamilyMembership.CreateFamilyMember(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            PatientRelationship.Child,
+            FamilyMembershipAccessLevel.Full,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        // Act
+        var act = () =>
+            membership.ChangeAccessLevel(
+                FamilyMembershipAccessLevel.ViewOnly,
+                requesterIsAuthorized: false
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.FamilyMembership.UnauthorizedAccessLevelChange);
+    }
+
+    [Fact]
+    public void ChangeAccessLevel_ShouldThrowException_WhenAccessLevelIsUnchanged()
+    {
+        // Arrange
+        var membership = FamilyMembership.CreateFamilyMember(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            PatientRelationship.Child,
+            FamilyMembershipAccessLevel.ViewOnly,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        // Act
+        var act = () =>
+            membership.ChangeAccessLevel(
+                FamilyMembershipAccessLevel.ViewOnly,
+                requesterIsAuthorized: true
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.FamilyMembership.AccessLevelUnchanged);
+    }
+
+    [Fact]
     public void Revoke_ShouldTransitionToRevoked_WhenValidParameters()
     {
         // Arrange
@@ -202,6 +417,7 @@ public class FamilyMembershipTests
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             PatientRelationship.Child,
+            FamilyMembershipAccessLevel.Full,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -255,6 +471,7 @@ public class FamilyMembershipTests
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             PatientRelationship.Child,
+            FamilyMembershipAccessLevel.Full,
             _fakeTime.GetUtcNow().UtcDateTime
         );
         _fakeTime.Advance(TimeSpan.FromDays(1));
@@ -288,6 +505,7 @@ public class FamilyMembershipTests
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             PatientRelationship.Child,
+            FamilyMembershipAccessLevel.Full,
             _fakeTime.GetUtcNow().UtcDateTime
         );
         _fakeTime.Advance(TimeSpan.FromDays(1));
@@ -317,6 +535,7 @@ public class FamilyMembershipTests
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             PatientRelationship.Child,
+            FamilyMembershipAccessLevel.Full,
             _fakeTime.GetUtcNow().UtcDateTime
         );
         _fakeTime.Advance(TimeSpan.FromDays(1));
@@ -345,6 +564,7 @@ public class FamilyMembershipTests
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             PatientRelationship.Child,
+            FamilyMembershipAccessLevel.Full,
             _fakeTime.GetUtcNow().UtcDateTime
         );
         _fakeTime.Advance(TimeSpan.FromDays(1));
@@ -374,6 +594,7 @@ public class FamilyMembershipTests
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             PatientRelationship.Child,
+            FamilyMembershipAccessLevel.Full,
             startedAt
         );
 
@@ -400,6 +621,7 @@ public class FamilyMembershipTests
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             PatientRelationship.Child,
+            FamilyMembershipAccessLevel.Full,
             startedAt
         );
 
@@ -425,6 +647,7 @@ public class FamilyMembershipTests
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             PatientRelationship.Child,
+            FamilyMembershipAccessLevel.Full,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -470,6 +693,7 @@ public class FamilyMembershipTests
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             PatientRelationship.Child,
+            FamilyMembershipAccessLevel.Full,
             _fakeTime.GetUtcNow().UtcDateTime
         );
         _fakeTime.Advance(TimeSpan.FromDays(1));
@@ -493,6 +717,7 @@ public class FamilyMembershipTests
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             PatientRelationship.Child,
+            FamilyMembershipAccessLevel.Full,
             _fakeTime.GetUtcNow().UtcDateTime
         );
         _fakeTime.Advance(TimeSpan.FromDays(1));
@@ -517,6 +742,7 @@ public class FamilyMembershipTests
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             PatientRelationship.Child,
+            FamilyMembershipAccessLevel.Full,
             _fakeTime.GetUtcNow().UtcDateTime
         );
         _fakeTime.Advance(TimeSpan.FromDays(1));
@@ -546,6 +772,7 @@ public class FamilyMembershipTests
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             PatientRelationship.Child,
+            FamilyMembershipAccessLevel.Full,
             startedAt
         );
 
@@ -568,6 +795,7 @@ public class FamilyMembershipTests
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             PatientRelationship.Child,
+            FamilyMembershipAccessLevel.Full,
             startedAt
         );
 
@@ -610,6 +838,7 @@ public class FamilyMembershipTests
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             PatientRelationship.Child,
+            FamilyMembershipAccessLevel.Full,
             _fakeTime.GetUtcNow().UtcDateTime
         );
         _fakeTime.Advance(TimeSpan.FromDays(1));

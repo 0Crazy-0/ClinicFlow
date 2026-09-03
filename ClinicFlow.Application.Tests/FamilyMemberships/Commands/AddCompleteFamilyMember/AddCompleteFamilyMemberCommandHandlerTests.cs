@@ -66,7 +66,8 @@ public class AddCompleteFamilyMemberCommandHandlerTests
             "Asthma",
             "Mom",
             "555-5555",
-            PatientRelationship.Child
+            PatientRelationship.Child,
+            FamilyMembershipAccessLevel.Full
         );
 
         var ownerPatient = Patient.CreateProfile(
@@ -135,6 +136,7 @@ public class AddCompleteFamilyMemberCommandHandlerTests
         capturedMembership.PatientId.Should().Be(capturedPatient.Id);
         capturedMembership.UserId.Should().Be(command.UserId);
         capturedMembership.Role.Should().Be(command.Relationship);
+        capturedMembership.AccessLevel.Should().Be(command.AccessLevel);
     }
 
     [Fact]
@@ -151,7 +153,8 @@ public class AddCompleteFamilyMemberCommandHandlerTests
             "None",
             "Mom",
             "555-5555",
-            PatientRelationship.Child
+            PatientRelationship.Child,
+            FamilyMembershipAccessLevel.Full
         );
         var personName = PersonName.Create($"{command.FirstName} {command.LastName}");
 
@@ -228,7 +231,8 @@ public class AddCompleteFamilyMemberCommandHandlerTests
             "Asthma",
             "Mom",
             "555-5555",
-            PatientRelationship.Child
+            PatientRelationship.Child,
+            FamilyMembershipAccessLevel.Full
         );
 
         _familyMembershipRepositoryMock
@@ -283,7 +287,8 @@ public class AddCompleteFamilyMemberCommandHandlerTests
             "Asthma",
             "Mom",
             "555-5555",
-            PatientRelationship.Child
+            PatientRelationship.Child,
+            FamilyMembershipAccessLevel.Full
         );
 
         var ownerPatientId = Guid.CreateVersion7();

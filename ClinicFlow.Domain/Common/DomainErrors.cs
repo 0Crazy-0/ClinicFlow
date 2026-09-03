@@ -163,6 +163,12 @@ public static class DomainErrors
         public const string AlreadyRemoved = "PENALTY_ALREADY_REMOVED";
     }
 
+    public static class MedicalRecord
+    {
+        public const string UnauthorizedAccess = "MEDICAL_RECORD_UNAUTHORIZED_ACCESS";
+        public const string ProtectedByMinorConsent = "MEDICAL_RECORD_PROTECTED_BY_MINOR_CONSENT";
+    }
+
     public static class MedicalEncounter
     {
         public const string DoctorMismatch = "DOCTOR_MISMATCH";
@@ -183,6 +189,12 @@ public static class DomainErrors
             "PATIENT_ALREADY_HAS_ACTIVE_MEMBERSHIP";
         public const string PatientTooYoungForSelfMembership =
             "PATIENT_TOO_YOUNG_FOR_SELF_MEMBERSHIP";
+
+        public const string CannotChangeAccessLevelOfSelf =
+            "FAMILY_MEMBERSHIP_CANNOT_CHANGE_ACCESS_LEVEL_OF_SELF";
+        public const string UnauthorizedAccessLevelChange =
+            "FAMILY_MEMBERSHIP_UNAUTHORIZED_ACCESS_LEVEL_CHANGE";
+        public const string AccessLevelUnchanged = "FAMILY_MEMBERSHIP_ACCESS_LEVEL_UNCHANGED";
         public const string OwnerMustBeAdult = "OWNER_MUST_BE_ADULT";
         public const string MemberMustBeAdultToLeave = "MEMBER_MUST_BE_ADULT_TO_LEAVE";
         public const string MaxActiveFamilyMembersExceeded = "MAX_ACTIVE_FAMILY_MEMBERS_EXCEEDED";

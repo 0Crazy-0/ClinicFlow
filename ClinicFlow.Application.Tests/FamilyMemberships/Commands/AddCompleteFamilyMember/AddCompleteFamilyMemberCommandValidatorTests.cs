@@ -31,7 +31,8 @@ public class AddCompleteFamilyMemberCommandValidatorTests
             "Asthma",
             "Jane Doe",
             "555-0199",
-            PatientRelationship.Spouse
+            PatientRelationship.Spouse,
+            FamilyMembershipAccessLevel.Full
         );
 
         // Act
@@ -55,7 +56,8 @@ public class AddCompleteFamilyMemberCommandValidatorTests
             "Asthma",
             "Jane Doe",
             "555-0199",
-            PatientRelationship.Spouse
+            PatientRelationship.Spouse,
+            FamilyMembershipAccessLevel.Full
         );
 
         // Act
@@ -84,7 +86,8 @@ public class AddCompleteFamilyMemberCommandValidatorTests
             "Asthma",
             "Jane Doe",
             "555-0199",
-            PatientRelationship.Spouse
+            PatientRelationship.Spouse,
+            FamilyMembershipAccessLevel.Full
         );
 
         // Act
@@ -110,7 +113,8 @@ public class AddCompleteFamilyMemberCommandValidatorTests
             "Asthma",
             "Jane Doe",
             "555-0199",
-            PatientRelationship.Spouse
+            PatientRelationship.Spouse,
+            FamilyMembershipAccessLevel.Full
         );
 
         // Act
@@ -137,7 +141,8 @@ public class AddCompleteFamilyMemberCommandValidatorTests
             "Asthma",
             "Jane Doe",
             "555-0199",
-            PatientRelationship.Spouse
+            PatientRelationship.Spouse,
+            FamilyMembershipAccessLevel.Full
         );
 
         // Act
@@ -166,7 +171,8 @@ public class AddCompleteFamilyMemberCommandValidatorTests
             "Asthma",
             "Jane Doe",
             "555-0199",
-            PatientRelationship.Spouse
+            PatientRelationship.Spouse,
+            FamilyMembershipAccessLevel.Full
         );
 
         // Act
@@ -192,7 +198,8 @@ public class AddCompleteFamilyMemberCommandValidatorTests
             "Asthma",
             "Jane Doe",
             "555-0199",
-            PatientRelationship.Spouse
+            PatientRelationship.Spouse,
+            FamilyMembershipAccessLevel.Full
         );
 
         // Act
@@ -219,7 +226,8 @@ public class AddCompleteFamilyMemberCommandValidatorTests
             "Asthma",
             "Jane Doe",
             "555-0199",
-            PatientRelationship.Spouse
+            PatientRelationship.Spouse,
+            FamilyMembershipAccessLevel.Full
         );
 
         // Act
@@ -245,7 +253,8 @@ public class AddCompleteFamilyMemberCommandValidatorTests
             "Asthma",
             "Jane Doe",
             "555-0199",
-            PatientRelationship.Spouse
+            PatientRelationship.Spouse,
+            FamilyMembershipAccessLevel.Full
         );
 
         // Act
@@ -274,7 +283,8 @@ public class AddCompleteFamilyMemberCommandValidatorTests
             "Asthma",
             "Jane Doe",
             "555-0199",
-            PatientRelationship.Spouse
+            PatientRelationship.Spouse,
+            FamilyMembershipAccessLevel.Full
         );
 
         // Act
@@ -303,7 +313,8 @@ public class AddCompleteFamilyMemberCommandValidatorTests
             "Asthma",
             name!,
             "555-0199",
-            PatientRelationship.Spouse
+            PatientRelationship.Spouse,
+            FamilyMembershipAccessLevel.Full
         );
 
         // Act
@@ -330,7 +341,8 @@ public class AddCompleteFamilyMemberCommandValidatorTests
             "Asthma",
             emergencyContactName,
             "555-0199",
-            PatientRelationship.Spouse
+            PatientRelationship.Spouse,
+            FamilyMembershipAccessLevel.Full
         );
 
         // Act
@@ -357,7 +369,8 @@ public class AddCompleteFamilyMemberCommandValidatorTests
             "Asthma",
             emergencyContactName,
             "555-0199",
-            PatientRelationship.Spouse
+            PatientRelationship.Spouse,
+            FamilyMembershipAccessLevel.Full
         );
 
         // Act
@@ -386,7 +399,8 @@ public class AddCompleteFamilyMemberCommandValidatorTests
             "Asthma",
             "Jane Doe",
             phone!,
-            PatientRelationship.Spouse
+            PatientRelationship.Spouse,
+            FamilyMembershipAccessLevel.Full
         );
 
         // Act
@@ -413,7 +427,8 @@ public class AddCompleteFamilyMemberCommandValidatorTests
             "Asthma",
             "Jane Doe",
             emergencyContactPhone,
-            PatientRelationship.Spouse
+            PatientRelationship.Spouse,
+            FamilyMembershipAccessLevel.Full
         );
 
         // Act
@@ -440,7 +455,8 @@ public class AddCompleteFamilyMemberCommandValidatorTests
             "Asthma",
             "Jane Doe",
             emergencyContactPhone,
-            PatientRelationship.Spouse
+            PatientRelationship.Spouse,
+            FamilyMembershipAccessLevel.Full
         );
 
         // Act
@@ -466,7 +482,8 @@ public class AddCompleteFamilyMemberCommandValidatorTests
             "Asthma",
             "Jane Doe",
             "555-0199",
-            (PatientRelationship)999
+            (PatientRelationship)999,
+            FamilyMembershipAccessLevel.Full
         );
 
         // Act
@@ -476,5 +493,59 @@ public class AddCompleteFamilyMemberCommandValidatorTests
         result
             .ShouldHaveValidationErrorFor(x => x.Relationship)
             .WithErrorMessage(DomainErrors.Validation.InvalidEnumValue);
+    }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenAccessLevelIsInvalid()
+    {
+        // Arrange
+        var command = new AddCompleteFamilyMemberCommand(
+            Guid.CreateVersion7(),
+            "John",
+            "Doe",
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            "O+",
+            "Peanut allergy",
+            "Asthma",
+            "Jane Doe",
+            "555-0199",
+            PatientRelationship.Spouse,
+            (FamilyMembershipAccessLevel)667
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.AccessLevel)
+            .WithErrorMessage(DomainErrors.Validation.InvalidEnumValue);
+    }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenAccessLevelIsUnspecified()
+    {
+        // Arrange
+        var command = new AddCompleteFamilyMemberCommand(
+            Guid.CreateVersion7(),
+            "John",
+            "Doe",
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            "O+",
+            "Peanut allergy",
+            "Asthma",
+            "Jane Doe",
+            "555-0199",
+            PatientRelationship.Spouse,
+            FamilyMembershipAccessLevel.Unspecified
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.AccessLevel)
+            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
     }
 }

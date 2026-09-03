@@ -13,5 +13,6 @@ public sealed record AddCompleteFamilyMemberCommand(
     string ChronicConditions,
     string EmergencyContactName,
     string EmergencyContactPhone,
-    PatientRelationship Relationship
+    PatientRelationship Relationship,
+    FamilyMembershipAccessLevel AccessLevel
 ) : IRequest<Guid>;

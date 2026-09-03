@@ -32,6 +32,7 @@ public class FamilyMemberRegistrationServiceTests
         membership.UserId.Should().Be(ownerUserId);
         membership.Role.Should().Be(PatientRelationship.Child);
         membership.Status.Should().Be(FamilyMembershipStatus.Active);
+        membership.AccessLevel.Should().Be(FamilyMembershipAccessLevel.Full);
         membership.StartedAt.Should().Be(args.ReferenceTime);
     }
 
@@ -61,6 +62,7 @@ public class FamilyMemberRegistrationServiceTests
         membership.UserId.Should().Be(ownerUserId);
         membership.Role.Should().Be(PatientRelationship.Spouse);
         membership.Status.Should().Be(FamilyMembershipStatus.Active);
+        membership.AccessLevel.Should().Be(FamilyMembershipAccessLevel.Full);
         membership.StartedAt.Should().Be(args.ReferenceTime);
     }
 
@@ -79,6 +81,7 @@ public class FamilyMemberRegistrationServiceTests
         membership.UserId.Should().Be(ownerUserId);
         membership.Role.Should().Be(PatientRelationship.Child);
         membership.Status.Should().Be(FamilyMembershipStatus.Active);
+        membership.AccessLevel.Should().Be(FamilyMembershipAccessLevel.Full);
         membership.StartedAt.Should().Be(args.ReferenceTime);
     }
 
@@ -142,6 +145,7 @@ public class FamilyMemberRegistrationServiceTests
             OwnerAgeInYears = 25,
             OwnerUserId = ownerUserId,
             Role = role,
+            AccessLevel = FamilyMembershipAccessLevel.Full,
             FullName = PersonName.Create("Test Patient"),
             DateOfBirth = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             ReferenceTime = _fakeTime.GetUtcNow().UtcDateTime,

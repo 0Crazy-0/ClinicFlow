@@ -40,6 +40,7 @@ public static class FamilyMemberRegistrationService
             patient.Id,
             args.OwnerUserId,
             args.Role,
+            args.AccessLevel,
             args.ReferenceTime
         );
 
