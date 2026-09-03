@@ -99,6 +99,9 @@ public class FamilyMembership : BaseEntity
         if (!Enum.IsDefined(accessLevel))
             throw new DomainValidationException(DomainErrors.Validation.InvalidEnumValue);
 
+        if (accessLevel is FamilyMembershipAccessLevel.Unspecified)
+            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+
         return new FamilyMembership(patientId, ownerUserId, role, accessLevel, referenceTime);
     }
 
@@ -109,6 +112,9 @@ public class FamilyMembership : BaseEntity
     {
         if (!Enum.IsDefined(newAccessLevel))
             throw new DomainValidationException(DomainErrors.Validation.InvalidEnumValue);
+
+        if (newAccessLevel is FamilyMembershipAccessLevel.Unspecified)
+            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
 
         if (Role is PatientRelationship.Self)
             throw new DomainValidationException(

@@ -286,4 +286,26 @@ public class AddFamilyMemberCommandValidatorTests
             .ShouldHaveValidationErrorFor(x => x.AccessLevel)
             .WithErrorMessage(DomainErrors.Validation.InvalidEnumValue);
     }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenAccessLevelIsUnspecified()
+    {
+        // Arrange
+        var command = new AddFamilyMemberCommand(
+            Guid.CreateVersion7(),
+            "John",
+            "Doe",
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            PatientRelationship.Spouse,
+            FamilyMembershipAccessLevel.Unspecified
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.AccessLevel)
+            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
+    }
 }

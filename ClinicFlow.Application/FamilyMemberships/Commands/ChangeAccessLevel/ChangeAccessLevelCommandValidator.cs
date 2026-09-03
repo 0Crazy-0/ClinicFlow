@@ -1,4 +1,5 @@
 using ClinicFlow.Domain.Common;
+using ClinicFlow.Domain.Enums;
 using FluentValidation;
 
 namespace ClinicFlow.Application.FamilyMemberships.Commands.ChangeAccessLevel;
@@ -14,6 +15,8 @@ public sealed class ChangeAccessLevelCommandValidator : AbstractValidator<Change
         RuleFor(x => x.PatientId).NotEmpty().WithMessage(DomainErrors.Validation.InvalidValue);
         RuleFor(x => x.NewAccessLevel)
             .IsInEnum()
-            .WithMessage(DomainErrors.Validation.InvalidEnumValue);
+            .WithMessage(DomainErrors.Validation.InvalidEnumValue)
+            .NotEqual(FamilyMembershipAccessLevel.Unspecified)
+            .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 }

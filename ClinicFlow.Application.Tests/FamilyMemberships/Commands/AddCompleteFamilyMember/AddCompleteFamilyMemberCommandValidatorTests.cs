@@ -521,4 +521,31 @@ public class AddCompleteFamilyMemberCommandValidatorTests
             .ShouldHaveValidationErrorFor(x => x.AccessLevel)
             .WithErrorMessage(DomainErrors.Validation.InvalidEnumValue);
     }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenAccessLevelIsUnspecified()
+    {
+        // Arrange
+        var command = new AddCompleteFamilyMemberCommand(
+            Guid.CreateVersion7(),
+            "John",
+            "Doe",
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            "O+",
+            "Peanut allergy",
+            "Asthma",
+            "Jane Doe",
+            "555-0199",
+            PatientRelationship.Spouse,
+            FamilyMembershipAccessLevel.Unspecified
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.AccessLevel)
+            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
+    }
 }

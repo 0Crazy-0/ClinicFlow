@@ -221,6 +221,25 @@ public class FamilyMembershipTests
     }
 
     [Fact]
+    public void CreateFamilyMember_ShouldThrowException_WhenAccessLevelIsUnspecified()
+    {
+        // Arrange & Act
+        var act = () =>
+            FamilyMembership.CreateFamilyMember(
+                Guid.CreateVersion7(),
+                Guid.CreateVersion7(),
+                PatientRelationship.Child,
+                FamilyMembershipAccessLevel.Unspecified,
+                _fakeTime.GetUtcNow().UtcDateTime
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
     public void ChangeAccessLevel_ShouldThrowException_WhenAccessLevelIsInvalid()
     {
         // Arrange
@@ -243,6 +262,56 @@ public class FamilyMembershipTests
         act.Should()
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.Validation.InvalidEnumValue);
+    }
+
+    [Fact]
+    public void ChangeAccessLevel_ShouldThrowException_WhenNewAccessLevelIsUnspecified()
+    {
+        // Arrange
+        var membership = FamilyMembership.CreateFamilyMember(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            PatientRelationship.Child,
+            FamilyMembershipAccessLevel.Full,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        // Act
+        var act = () =>
+            membership.ChangeAccessLevel(
+                FamilyMembershipAccessLevel.Unspecified,
+                requesterIsAuthorized: true
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void ChangeAccessLevel_ShouldThrowException_WhenNewAccessLevelIsDefault()
+    {
+        // Arrange
+        var membership = FamilyMembership.CreateFamilyMember(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            PatientRelationship.Child,
+            FamilyMembershipAccessLevel.Full,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        // Act
+        var act = () =>
+            membership.ChangeAccessLevel(
+                default(FamilyMembershipAccessLevel),
+                requesterIsAuthorized: true
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Fact]

@@ -106,4 +106,24 @@ public class ChangeAccessLevelCommandValidatorTests
             .ShouldHaveValidationErrorFor(x => x.NewAccessLevel)
             .WithErrorMessage(DomainErrors.Validation.InvalidEnumValue);
     }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenNewAccessLevelIsUnspecified()
+    {
+        // Arrange
+        var command = new ChangeAccessLevelCommand(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            FamilyMembershipAccessLevel.Unspecified
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.NewAccessLevel)
+            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
+    }
 }
