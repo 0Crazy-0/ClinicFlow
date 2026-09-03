@@ -475,8 +475,7 @@ public static class DbSeeder
 
         // Family Members (80 dependents)
         // Exclude the Unspecified sentinel, which is rejected by the domain.
-        var accessLevels = Enum
-            .GetValues<FamilyMembershipAccessLevel>()
+        var accessLevels = Enum.GetValues<FamilyMembershipAccessLevel>()
             .Where(level => level is not FamilyMembershipAccessLevel.Unspecified)
             .ToArray();
         var dependentsToCreate = new List<PatientRelationship>();
