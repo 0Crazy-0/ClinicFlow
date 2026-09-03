@@ -136,6 +136,7 @@ public class AddCompleteFamilyMemberCommandHandlerTests
         capturedMembership.PatientId.Should().Be(capturedPatient.Id);
         capturedMembership.UserId.Should().Be(command.UserId);
         capturedMembership.Role.Should().Be(command.Relationship);
+        capturedMembership.AccessLevel.Should().Be(command.AccessLevel);
     }
 
     [Fact]

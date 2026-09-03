@@ -32,6 +32,7 @@ public class FamilyMemberRegistrationServiceTests
         membership.UserId.Should().Be(ownerUserId);
         membership.Role.Should().Be(PatientRelationship.Child);
         membership.Status.Should().Be(FamilyMembershipStatus.Active);
+        membership.AccessLevel.Should().Be(FamilyMembershipAccessLevel.Full);
         membership.StartedAt.Should().Be(args.ReferenceTime);
     }
 
@@ -61,6 +62,7 @@ public class FamilyMemberRegistrationServiceTests
         membership.UserId.Should().Be(ownerUserId);
         membership.Role.Should().Be(PatientRelationship.Spouse);
         membership.Status.Should().Be(FamilyMembershipStatus.Active);
+        membership.AccessLevel.Should().Be(FamilyMembershipAccessLevel.Full);
         membership.StartedAt.Should().Be(args.ReferenceTime);
     }
 
@@ -79,6 +81,7 @@ public class FamilyMemberRegistrationServiceTests
         membership.UserId.Should().Be(ownerUserId);
         membership.Role.Should().Be(PatientRelationship.Child);
         membership.Status.Should().Be(FamilyMembershipStatus.Active);
+        membership.AccessLevel.Should().Be(FamilyMembershipAccessLevel.Full);
         membership.StartedAt.Should().Be(args.ReferenceTime);
     }
 
