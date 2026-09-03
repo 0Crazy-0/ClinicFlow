@@ -221,6 +221,31 @@ public class FamilyMembershipTests
     }
 
     [Fact]
+    public void ChangeAccessLevel_ShouldThrowException_WhenAccessLevelIsInvalid()
+    {
+        // Arrange
+        var membership = FamilyMembership.CreateFamilyMember(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            PatientRelationship.Child,
+            FamilyMembershipAccessLevel.Full,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        // Act
+        var act = () =>
+            membership.ChangeAccessLevel(
+                (FamilyMembershipAccessLevel)999,
+                requesterIsAuthorized: true
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.InvalidEnumValue);
+    }
+
+    [Fact]
     public void ChangeAccessLevel_ShouldUpdateAccessLevel_WhenRequesterIsAuthorizedAndAccessLevelIsDifferent()
     {
         // Arrange

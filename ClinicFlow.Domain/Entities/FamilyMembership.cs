@@ -107,6 +107,9 @@ public class FamilyMembership : BaseEntity
         bool requesterIsAuthorized
     )
     {
+        if (!Enum.IsDefined(newAccessLevel))
+            throw new DomainValidationException(DomainErrors.Validation.InvalidEnumValue);
+
         if (Role is PatientRelationship.Self)
             throw new DomainValidationException(
                 DomainErrors.FamilyMembership.CannotChangeAccessLevelOfSelf
