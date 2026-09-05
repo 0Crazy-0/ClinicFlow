@@ -1,5 +1,6 @@
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
+using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Services.Contexts;
 using ClinicFlow.Domain.Services.Policies;
@@ -16,12 +17,13 @@ public class MedicalEncounterService(
 {
     public static MedicalRecord InitiateMedicalRecord(
         Appointment appointment,
-        string chiefComplaint
+        string chiefComplaint,
+        ProtectedCategory? protectedCategory = null
     )
     {
         ArgumentNullException.ThrowIfNull(appointment);
 
-        if (appointment.Status is not Enums.AppointmentStatus.InProgress)
+        if (appointment.Status is not AppointmentStatus.InProgress)
             throw new BusinessRuleValidationException(
                 DomainErrors.MedicalEncounter.AppointmentNotInProgress
             );
@@ -30,7 +32,8 @@ public class MedicalEncounterService(
             appointment.PatientId,
             appointment.DoctorId,
             appointment.Id,
-            chiefComplaint
+            chiefComplaint,
+            protectedCategory
         );
     }
 

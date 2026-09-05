@@ -1,4 +1,5 @@
 using ClinicFlow.Domain.Common;
+using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Base;
 
 namespace ClinicFlow.Domain.Entities;
@@ -14,6 +15,8 @@ public class MedicalRecord : BaseEntity
     public Guid DoctorId { get; init; }
 
     public Guid AppointmentId { get; init; }
+
+    public ProtectedCategory? ProtectedCategory { get; init; }
 
     /// <summary>
     /// Primary symptom or reason for the visit as reported by the patient.
@@ -31,11 +34,18 @@ public class MedicalRecord : BaseEntity
     // EF Core constructor
     private MedicalRecord() { }
 
-    private MedicalRecord(Guid patientId, Guid doctorId, Guid appointmentId, string chiefComplaint)
+    private MedicalRecord(
+        Guid patientId,
+        Guid doctorId,
+        Guid appointmentId,
+        string chiefComplaint,
+        ProtectedCategory? protectedCategory
+    )
     {
         PatientId = patientId;
         DoctorId = doctorId;
         AppointmentId = appointmentId;
+        ProtectedCategory = protectedCategory;
         ChiefComplaint = chiefComplaint;
     }
 
@@ -43,19 +53,32 @@ public class MedicalRecord : BaseEntity
         Guid patientId,
         Guid doctorId,
         Guid appointmentId,
-        string chiefComplaint
+        string chiefComplaint,
+        ProtectedCategory? protectedCategory
     )
     {
         if (patientId == Guid.Empty)
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+
         if (doctorId == Guid.Empty)
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+
         if (appointmentId == Guid.Empty)
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+
+        if (protectedCategory is not null && !Enum.IsDefined(protectedCategory.Value))
+            throw new DomainValidationException(DomainErrors.Validation.InvalidEnumValue);
+
         if (string.IsNullOrWhiteSpace(chiefComplaint))
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
 
-        var record = new MedicalRecord(patientId, doctorId, appointmentId, chiefComplaint);
+        var record = new MedicalRecord(
+            patientId,
+            doctorId,
+            appointmentId,
+            chiefComplaint,
+            protectedCategory
+        );
 
         return record;
     }

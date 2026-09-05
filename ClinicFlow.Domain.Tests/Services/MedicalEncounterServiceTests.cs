@@ -390,14 +390,15 @@ public class MedicalEncounterServiceTests
         };
 
     private static MedicalRecord CreateMedicalRecord(Guid doctorId, Guid appointmentId) =>
-        MedicalRecord.Create(Guid.CreateVersion7(), doctorId, appointmentId, "Headache");
+        MedicalRecord.Create(Guid.CreateVersion7(), doctorId, appointmentId, "Headache", null);
 
     private static MedicalRecord CreateMedicalRecord() =>
         MedicalRecord.Create(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
-            "Headache"
+            "Headache",
+            null
         );
 
     private static Doctor CreateDoctor(Guid id)

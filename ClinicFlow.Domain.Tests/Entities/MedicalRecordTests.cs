@@ -1,6 +1,7 @@
 using AwesomeAssertions;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
+using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Base;
 
 namespace ClinicFlow.Domain.Tests.Entities;
@@ -17,7 +18,7 @@ public class MedicalRecordTests
         var chiefComplaint = "Headache and fever";
 
         // Act
-        var record = MedicalRecord.Create(patientId, doctorId, appointmentId, chiefComplaint);
+        var record = MedicalRecord.Create(patientId, doctorId, appointmentId, chiefComplaint, null);
 
         // Assert
         record.Should().NotBeNull();
@@ -26,6 +27,50 @@ public class MedicalRecordTests
         record.AppointmentId.Should().Be(appointmentId);
         record.ChiefComplaint.Should().Be(chiefComplaint);
         record.ClinicalDetails.Should().BeEmpty();
+        record.ProtectedCategory.Should().BeNull();
+    }
+
+    [Fact]
+    public void Create_ShouldAssignProtectedCategory_WhenValidProtectedCategoryProvided()
+    {
+        // Arrange
+        var patientId = Guid.CreateVersion7();
+        var doctorId = Guid.CreateVersion7();
+        var appointmentId = Guid.CreateVersion7();
+        var chiefComplaint = "Headache and fever";
+
+        // Act
+        var record = MedicalRecord.Create(
+            patientId,
+            doctorId,
+            appointmentId,
+            chiefComplaint,
+            ProtectedCategory.MentalHealthCounseling
+        );
+
+        // Assert
+        record.ProtectedCategory.Should().Be(ProtectedCategory.MentalHealthCounseling);
+    }
+
+    [Fact]
+    public void Create_ShouldThrowException_WhenProtectedCategoryIsNotDefined()
+    {
+        //
+
+        // Arrange & Act
+        var act = () =>
+            MedicalRecord.Create(
+                Guid.CreateVersion7(),
+                Guid.CreateVersion7(),
+                Guid.CreateVersion7(),
+                "Headache and fever",
+                (ProtectedCategory)999
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.InvalidEnumValue);
     }
 
     [Theory]
@@ -85,7 +130,8 @@ public class MedicalRecordTests
                 Guid.Parse(patientIdStr),
                 Guid.Parse(doctorIdStr),
                 Guid.Parse(appointmentIdStr),
-                chiefComplaint!
+                chiefComplaint!,
+                null
             );
 
         // Assert
@@ -146,6 +192,7 @@ public class MedicalRecordTests
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
-            "General checkup"
+            "General checkup",
+            null
         );
 }

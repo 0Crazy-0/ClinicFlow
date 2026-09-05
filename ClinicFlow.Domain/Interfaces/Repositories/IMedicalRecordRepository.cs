@@ -1,4 +1,5 @@
 using ClinicFlow.Domain.Entities;
+using ClinicFlow.Domain.Enums;
 
 namespace ClinicFlow.Domain.Interfaces.Repositories;
 
@@ -13,6 +14,22 @@ public interface IMedicalRecordRepository
 
     Task<(IReadOnlyList<MedicalRecord> Items, int TotalCount)> GetByPatientIdPaginatedAsync(
         Guid patientId,
+        int pageNumber,
+        int pageSize,
+        CancellationToken cancellationToken = default
+    );
+
+    /// <summary>
+    /// Retrieves the patient's medical records paginated, excluding the ones whose protected
+    /// category is blocked for the requester. Records without a protected category are never
+    /// excluded.
+    /// </summary>
+    Task<(
+        IReadOnlyList<MedicalRecord> Items,
+        int TotalCount
+    )> GetByPatientIdPaginatedExcludingCategoriesAsync(
+        Guid patientId,
+        IReadOnlyCollection<ProtectedCategory> excludedCategories,
         int pageNumber,
         int pageSize,
         CancellationToken cancellationToken = default
