@@ -409,6 +409,51 @@ public class FamilyMembershipTests
             .WithMessage(DomainErrors.FamilyMembership.AccessLevelUnchanged);
     }
 
+    [Theory]
+    [InlineData(FamilyMembershipAccessLevel.Full)]
+    [InlineData(FamilyMembershipAccessLevel.ViewOnly)]
+    public void EnsureMedicalRecordsAccess_ShouldNotThrow_WhenAccessLevelAllowsClinicalDataAccess(
+        FamilyMembershipAccessLevel accessLevel
+    )
+    {
+        // Arrange
+        var membership = FamilyMembership.CreateFamilyMember(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            PatientRelationship.Child,
+            accessLevel,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        // Act & Assert
+        membership.Invoking(m => m.EnsureMedicalRecordsAccess()).Should().NotThrow();
+    }
+
+    [Theory]
+    [InlineData(FamilyMembershipAccessLevel.Restricted)]
+    [InlineData(FamilyMembershipAccessLevel.EmergencyOnly)]
+    [InlineData(FamilyMembershipAccessLevel.AppointmentOnly)]
+    public void EnsureMedicalRecordsAccess_ShouldThrowException_WhenAccessLevelDeniesClinicalDataAccess(
+        FamilyMembershipAccessLevel accessLevel
+    )
+    {
+        // Arrange
+        var membership = FamilyMembership.CreateFamilyMember(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            PatientRelationship.Child,
+            accessLevel,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        // Act & Assert
+        membership
+            .Invoking(m => m.EnsureMedicalRecordsAccess())
+            .Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.MedicalRecord.UnauthorizedAccess);
+    }
+
     [Fact]
     public void Revoke_ShouldTransitionToRevoked_WhenValidParameters()
     {
@@ -915,54 +960,5 @@ public class FamilyMembershipTests
         act.Should()
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.Validation.EndTimeMustBeAfterStartTime);
-    }
-
-    [Theory]
-    [InlineData(FamilyMembershipAccessLevel.Full)]
-    [InlineData(FamilyMembershipAccessLevel.ViewOnly)]
-    public void EnsureMedicalRecordsAccess_ShouldNotThrow_WhenAccessLevelAllowsClinicalDataAccess(
-        FamilyMembershipAccessLevel accessLevel
-    )
-    {
-        // Arrange
-        var membership = FamilyMembership.CreateFamilyMember(
-            Guid.CreateVersion7(),
-            Guid.CreateVersion7(),
-            PatientRelationship.Child,
-            accessLevel,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
-
-        // Act
-        var act = () => membership.EnsureMedicalRecordsAccess();
-
-        // Assert
-        act.Should().NotThrow();
-    }
-
-    [Theory]
-    [InlineData(FamilyMembershipAccessLevel.Restricted)]
-    [InlineData(FamilyMembershipAccessLevel.EmergencyOnly)]
-    [InlineData(FamilyMembershipAccessLevel.AppointmentOnly)]
-    public void EnsureMedicalRecordsAccess_ShouldThrowException_WhenAccessLevelDeniesClinicalDataAccess(
-        FamilyMembershipAccessLevel accessLevel
-    )
-    {
-        // Arrange
-        var membership = FamilyMembership.CreateFamilyMember(
-            Guid.CreateVersion7(),
-            Guid.CreateVersion7(),
-            PatientRelationship.Child,
-            accessLevel,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
-
-        // Act
-        var act = () => membership.EnsureMedicalRecordsAccess();
-
-        // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.MedicalRecord.UnauthorizedAccess);
     }
 }
