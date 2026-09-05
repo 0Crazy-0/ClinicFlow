@@ -132,6 +132,20 @@ public class FamilyMembership : BaseEntity
         AccessLevel = newAccessLevel;
     }
 
+    /// <summary>
+    /// Validates that the membership access level allows reading the linked patient's medical records.
+    /// Only Full or ViewOnly access levels are authorized, so a family member can consult records
+    /// of related patients; otherwise throws a validation exception.
+    /// </summary>
+    public void EnsureMedicalRecordsAccess()
+    {
+        if (
+            AccessLevel
+            is not (FamilyMembershipAccessLevel.Full or FamilyMembershipAccessLevel.ViewOnly)
+        )
+            throw new DomainValidationException(DomainErrors.MedicalRecord.UnauthorizedAccess);
+    }
+
     public void Revoke(
         bool patientHasOwnSelfMembership,
         bool hasUpcomingAppointmentRequiringGuardianForMinor,

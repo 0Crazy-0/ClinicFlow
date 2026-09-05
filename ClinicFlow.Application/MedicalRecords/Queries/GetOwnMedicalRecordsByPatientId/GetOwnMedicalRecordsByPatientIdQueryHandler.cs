@@ -1,20 +1,33 @@
 using ClinicFlow.Application.Common.Models;
 using ClinicFlow.Application.MedicalRecords.Queries.DTOs;
+using ClinicFlow.Domain.Common;
+using ClinicFlow.Domain.Enums;
+using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using MediatR;
 
-namespace ClinicFlow.Application.MedicalRecords.Queries.GetMedicalRecordsByPatientId;
+namespace ClinicFlow.Application.MedicalRecords.Queries.GetOwnMedicalRecordsByPatientId;
 
-public sealed class GetMedicalRecordsByPatientIdQueryHandler(
+public sealed class GetOwnMedicalRecordsByPatientIdQueryHandler(
+    IFamilyMembershipRepository familyMembershipRepository,
     IMedicalRecordRepository medicalRecordRepository
-) : IRequestHandler<GetMedicalRecordsByPatientIdQuery, PaginatedList<MedicalRecordDto>>
+) : IRequestHandler<GetOwnMedicalRecordsByPatientIdQuery, PaginatedList<MedicalRecordDto>>
 {
     /// <inheritdoc />
     public async Task<PaginatedList<MedicalRecordDto>> Handle(
-        GetMedicalRecordsByPatientIdQuery request,
+        GetOwnMedicalRecordsByPatientIdQuery request,
         CancellationToken cancellationToken
     )
     {
+        var membership = await familyMembershipRepository.GetActiveMembershipAsync(
+            request.RequesterUserId,
+            request.PatientId,
+            cancellationToken
+        );
+
+        if (membership?.Role is not PatientRelationship.Self)
+            throw new DomainValidationException(DomainErrors.MedicalRecord.UnauthorizedAccess);
+
         var (items, totalCount) = await medicalRecordRepository.GetByPatientIdPaginatedAsync(
             request.PatientId,
             request.PageNumber,

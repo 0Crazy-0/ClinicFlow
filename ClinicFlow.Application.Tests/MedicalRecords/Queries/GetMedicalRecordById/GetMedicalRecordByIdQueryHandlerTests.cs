@@ -29,7 +29,7 @@ public class GetMedicalRecordByIdQueryHandlerTests
         var doctorId = Guid.CreateVersion7();
         var appointmentId = Guid.CreateVersion7();
         var request = new GetMedicalRecordByIdQuery(id);
-        var record = MedicalRecord.Create(patientId, doctorId, appointmentId, "Headache");
+        var record = MedicalRecord.Create(patientId, doctorId, appointmentId, "Headache", null);
         var clinicalDetail = DynamicClinicalDetail.Create("vital-signs", "{}");
 
         record.AddClinicalDetail(clinicalDetail);
