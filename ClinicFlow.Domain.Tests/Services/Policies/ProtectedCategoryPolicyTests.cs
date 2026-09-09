@@ -250,6 +250,21 @@ public class ProtectedCategoryPolicyTests
     }
 
     [Fact]
+    public void IsProtectedForPatient_ShouldReturnTrue_WhenSubstanceAbuseTreatmentHasNoGuardianInitiationData()
+    {
+        // Act & Assert
+        ProtectedCategoryPolicy
+            .IsProtectedForPatient(
+                category: ProtectedCategory.SubstanceAbuseTreatment,
+                patientAge: 15,
+                guardianInitiatedTreatment: null,
+                guardianInvolvementDeemedAppropriate: null
+            )
+            .Should()
+            .BeTrue();
+    }
+
+    [Fact]
     public void IsProtectedForPatient_ShouldReturnFalse_WhenMentalHealthCounselingGuardianInvolvementWasDeemedAppropriate()
     {
         // Act & Assert
