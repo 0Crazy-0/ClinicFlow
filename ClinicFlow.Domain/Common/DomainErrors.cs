@@ -167,6 +167,12 @@ public static class DomainErrors
     {
         public const string UnauthorizedAccess = "MEDICAL_RECORD_UNAUTHORIZED_ACCESS";
         public const string ProtectedByMinorConsent = "MEDICAL_RECORD_PROTECTED_BY_MINOR_CONSENT";
+        public const string GuardianInitiatedTreatmentRequired =
+            "GUARDIAN_INITIATED_TREATMENT_REQUIRED";
+        public const string GuardianInitiatedTreatmentNotApplicable =
+            "GUARDIAN_INITIATED_TREATMENT_NOT_APPLICABLE";
+        public const string GuardianInvolvementFlagNotApplicable =
+            "GUARDIAN_INVOLVEMENT_FLAG_NOT_APPLICABLE";
     }
 
     public static class MedicalEncounter
@@ -179,6 +185,8 @@ public static class DomainErrors
         public const string MissingRequiredTemplate = "MISSING_REQUIRED_TEMPLATE";
         public const string DetailAlreadyExists = "CLINICAL_DETAIL_ALREADY_EXISTS";
         public const string AppointmentNotInProgress = "APPOINTMENT_NOT_IN_PROGRESS";
+        public const string AppointmentNotInProgressOrCompleted =
+            "APPOINTMENT_NOT_IN_PROGRESS_OR_COMPLETED";
     }
 
     public static class FamilyMembership

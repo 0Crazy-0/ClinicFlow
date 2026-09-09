@@ -632,6 +632,7 @@ public static class DbSeeder
                 appt.DoctorId,
                 appt.Id,
                 ResolveChiefComplaint(appt, apptTypeById, specialtyById, faker),
+                null,
                 null
             );
 

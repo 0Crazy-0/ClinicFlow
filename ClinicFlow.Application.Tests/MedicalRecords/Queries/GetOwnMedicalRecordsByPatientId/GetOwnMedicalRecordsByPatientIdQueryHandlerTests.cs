@@ -226,6 +226,7 @@ public class GetOwnMedicalRecordsByPatientIdQueryHandlerTests
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             "chiefComplaint",
+            null,
             null
         );
 }

@@ -18,7 +18,8 @@ public class MedicalEncounterService(
     public static MedicalRecord InitiateMedicalRecord(
         Appointment appointment,
         string chiefComplaint,
-        ProtectedCategory? protectedCategory = null
+        ProtectedCategory? protectedCareCategory = null,
+        bool? guardianInitiatedTreatment = null
     )
     {
         ArgumentNullException.ThrowIfNull(appointment);
@@ -33,7 +34,8 @@ public class MedicalEncounterService(
             appointment.DoctorId,
             appointment.Id,
             chiefComplaint,
-            protectedCategory
+            protectedCareCategory,
+            guardianInitiatedTreatment
         );
     }
 
@@ -94,5 +96,22 @@ public class MedicalEncounterService(
         }
 
         record.AddClinicalDetail(newDetail);
+    }
+
+    public static void RecordGuardianInvolvementDetermination(
+        MedicalRecord record,
+        Appointment appointment,
+        bool guardianInvolvementDeemedAppropriate
+    )
+    {
+        ArgumentNullException.ThrowIfNull(record);
+        ArgumentNullException.ThrowIfNull(appointment);
+
+        if (appointment.Status is not (AppointmentStatus.InProgress or AppointmentStatus.Completed))
+            throw new BusinessRuleValidationException(
+                DomainErrors.MedicalEncounter.AppointmentNotInProgressOrCompleted
+            );
+
+        record.SetGuardianInvolvementDetermination(guardianInvolvementDeemedAppropriate);
     }
 }

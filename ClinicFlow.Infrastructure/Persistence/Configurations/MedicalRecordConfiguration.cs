@@ -9,7 +9,7 @@ public sealed class MedicalRecordConfiguration : IEntityTypeConfiguration<Medica
     /// <inheritdoc />
     public void Configure(EntityTypeBuilder<MedicalRecord> builder)
     {
-        builder.Property(m => m.ProtectedCategory).HasConversion<string>();
+        builder.Property(m => m.ProtectedCareCategory).HasConversion<string>();
         builder
             .Navigation(m => m.ClinicalDetails)
             .HasField("_clinicalDetails")

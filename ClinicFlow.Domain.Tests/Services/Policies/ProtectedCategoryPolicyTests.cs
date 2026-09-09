@@ -53,7 +53,15 @@ public class ProtectedCategoryPolicyTests
     public void IsProtectedForPatient_ShouldReturnFalse_WhenCategoryIsNull()
     {
         // Act & Assert
-        ProtectedCategoryPolicy.IsProtectedForPatient(null, 10).Should().BeFalse();
+        ProtectedCategoryPolicy
+            .IsProtectedForPatient(
+                category: null,
+                patientAge: 10,
+                guardianInitiatedTreatment: null,
+                guardianInvolvementDeemedAppropriate: null
+            )
+            .Should()
+            .BeFalse();
     }
 
     [Fact]
@@ -61,11 +69,22 @@ public class ProtectedCategoryPolicyTests
     {
         // Act & Assert
         ProtectedCategoryPolicy
-            .IsProtectedForPatient(ProtectedCategory.MentalHealthCounseling, 11)
+            .IsProtectedForPatient(
+                category: ProtectedCategory.MentalHealthCounseling,
+                patientAge: 11,
+                guardianInitiatedTreatment: null,
+                guardianInvolvementDeemedAppropriate: null
+            )
             .Should()
             .BeFalse();
+
         ProtectedCategoryPolicy
-            .IsProtectedForPatient(ProtectedCategory.BuprenorphineOpioidTreatment, 15)
+            .IsProtectedForPatient(
+                category: ProtectedCategory.BuprenorphineOpioidTreatment,
+                patientAge: 15,
+                guardianInitiatedTreatment: null,
+                guardianInvolvementDeemedAppropriate: null
+            )
             .Should()
             .BeFalse();
     }
@@ -75,11 +94,22 @@ public class ProtectedCategoryPolicyTests
     {
         // Act & Assert
         ProtectedCategoryPolicy
-            .IsProtectedForPatient(ProtectedCategory.MentalHealthCounseling, 12)
+            .IsProtectedForPatient(
+                category: ProtectedCategory.MentalHealthCounseling,
+                patientAge: 12,
+                guardianInitiatedTreatment: null,
+                guardianInvolvementDeemedAppropriate: null
+            )
             .Should()
             .BeTrue();
+
         ProtectedCategoryPolicy
-            .IsProtectedForPatient(ProtectedCategory.BuprenorphineOpioidTreatment, 16)
+            .IsProtectedForPatient(
+                category: ProtectedCategory.BuprenorphineOpioidTreatment,
+                patientAge: 16,
+                guardianInitiatedTreatment: null,
+                guardianInvolvementDeemedAppropriate: null
+            )
             .Should()
             .BeTrue();
     }
@@ -89,11 +119,22 @@ public class ProtectedCategoryPolicyTests
     {
         // Act & Assert
         ProtectedCategoryPolicy
-            .IsProtectedForPatient(ProtectedCategory.MentalHealthCounseling, 13)
+            .IsProtectedForPatient(
+                category: ProtectedCategory.MentalHealthCounseling,
+                patientAge: 13,
+                guardianInitiatedTreatment: null,
+                guardianInvolvementDeemedAppropriate: null
+            )
             .Should()
             .BeTrue();
+
         ProtectedCategoryPolicy
-            .IsProtectedForPatient(ProtectedCategory.BuprenorphineOpioidTreatment, 17)
+            .IsProtectedForPatient(
+                category: ProtectedCategory.BuprenorphineOpioidTreatment,
+                patientAge: 17,
+                guardianInitiatedTreatment: null,
+                guardianInvolvementDeemedAppropriate: null
+            )
             .Should()
             .BeTrue();
     }
@@ -103,11 +144,22 @@ public class ProtectedCategoryPolicyTests
     {
         // Act & Assert
         ProtectedCategoryPolicy
-            .IsProtectedForPatient(ProtectedCategory.PregnancyPrevention, 0)
+            .IsProtectedForPatient(
+                category: ProtectedCategory.PregnancyPrevention,
+                patientAge: 0,
+                guardianInitiatedTreatment: null,
+                guardianInvolvementDeemedAppropriate: null
+            )
             .Should()
             .BeTrue();
+
         ProtectedCategoryPolicy
-            .IsProtectedForPatient(ProtectedCategory.SexualAssaultCare, 0)
+            .IsProtectedForPatient(
+                category: ProtectedCategory.SexualAssaultCare,
+                patientAge: 0,
+                guardianInitiatedTreatment: null,
+                guardianInvolvementDeemedAppropriate: null
+            )
             .Should()
             .BeTrue();
     }
@@ -117,7 +169,12 @@ public class ProtectedCategoryPolicyTests
     {
         // Act & Assert
         ProtectedCategoryPolicy
-            .IsProtectedForPatient(ProtectedCategory.PregnancyPrevention, 40)
+            .IsProtectedForPatient(
+                category: ProtectedCategory.PregnancyPrevention,
+                patientAge: 40,
+                guardianInitiatedTreatment: null,
+                guardianInvolvementDeemedAppropriate: null
+            )
             .Should()
             .BeFalse();
     }
@@ -127,7 +184,12 @@ public class ProtectedCategoryPolicyTests
     {
         // Act & Assert
         ProtectedCategoryPolicy
-            .IsProtectedForPatient(ProtectedCategory.MentalHealthCounseling, 17)
+            .IsProtectedForPatient(
+                category: ProtectedCategory.MentalHealthCounseling,
+                patientAge: 17,
+                guardianInitiatedTreatment: null,
+                guardianInvolvementDeemedAppropriate: null
+            )
             .Should()
             .BeTrue();
     }
@@ -137,13 +199,114 @@ public class ProtectedCategoryPolicyTests
     {
         // Act & Assert
         ProtectedCategoryPolicy
-            .IsProtectedForPatient(ProtectedCategory.MentalHealthCounseling, 18)
+            .IsProtectedForPatient(
+                category: ProtectedCategory.MentalHealthCounseling,
+                patientAge: 18,
+                guardianInitiatedTreatment: null,
+                guardianInvolvementDeemedAppropriate: null
+            )
             .Should()
             .BeFalse();
+
         ProtectedCategoryPolicy
-            .IsProtectedForPatient(ProtectedCategory.PregnancyPrevention, 18)
+            .IsProtectedForPatient(
+                category: ProtectedCategory.PregnancyPrevention,
+                patientAge: 18,
+                guardianInitiatedTreatment: null,
+                guardianInvolvementDeemedAppropriate: null
+            )
             .Should()
             .BeFalse();
+    }
+
+    [Fact]
+    public void IsProtectedForPatient_ShouldReturnFalse_WhenSubstanceAbuseTreatmentWasGuardianInitiated()
+    {
+        // Act & Assert
+        ProtectedCategoryPolicy
+            .IsProtectedForPatient(
+                category: ProtectedCategory.SubstanceAbuseTreatment,
+                patientAge: 15,
+                guardianInitiatedTreatment: true,
+                guardianInvolvementDeemedAppropriate: null
+            )
+            .Should()
+            .BeFalse();
+    }
+
+    [Fact]
+    public void IsProtectedForPatient_ShouldReturnTrue_WhenSubstanceAbuseTreatmentWasNotGuardianInitiated()
+    {
+        // Act & Assert
+        ProtectedCategoryPolicy
+            .IsProtectedForPatient(
+                category: ProtectedCategory.SubstanceAbuseTreatment,
+                patientAge: 15,
+                guardianInitiatedTreatment: false,
+                guardianInvolvementDeemedAppropriate: null
+            )
+            .Should()
+            .BeTrue();
+    }
+
+    [Fact]
+    public void IsProtectedForPatient_ShouldReturnFalse_WhenMentalHealthCounselingGuardianInvolvementWasDeemedAppropriate()
+    {
+        // Act & Assert
+        ProtectedCategoryPolicy
+            .IsProtectedForPatient(
+                category: ProtectedCategory.MentalHealthCounseling,
+                patientAge: 15,
+                guardianInitiatedTreatment: null,
+                guardianInvolvementDeemedAppropriate: true
+            )
+            .Should()
+            .BeFalse();
+    }
+
+    [Fact]
+    public void IsProtectedForPatient_ShouldReturnTrue_WhenMentalHealthCounselingGuardianInvolvementWasNotDeemedAppropriate()
+    {
+        // Act & Assert
+        ProtectedCategoryPolicy
+            .IsProtectedForPatient(
+                category: ProtectedCategory.MentalHealthCounseling,
+                patientAge: 15,
+                guardianInitiatedTreatment: null,
+                guardianInvolvementDeemedAppropriate: false
+            )
+            .Should()
+            .BeTrue();
+    }
+
+    [Fact]
+    public void IsProtectedForPatient_ShouldReturnFalse_WhenResidentialShelterGuardianInvolvementWasDeemedAppropriate()
+    {
+        // Act & Assert
+        ProtectedCategoryPolicy
+            .IsProtectedForPatient(
+                category: ProtectedCategory.ResidentialShelter,
+                patientAge: 15,
+                guardianInitiatedTreatment: null,
+                guardianInvolvementDeemedAppropriate: true
+            )
+            .Should()
+            .BeFalse();
+    }
+
+    [Fact]
+    public void IsProtectedForPatient_ShouldReturnTrue_WhenGuardianFlagsAreIrrelevantForOtherCategories()
+    {
+        // Act & Assert
+        ProtectedCategoryPolicy
+            .IsProtectedForPatient(
+                category: ProtectedCategory.PregnancyPrevention,
+                patientAge: 10,
+                guardianInitiatedTreatment: true,
+                guardianInvolvementDeemedAppropriate: true
+            )
+            .Should()
+            .BeTrue();
     }
 
     [Fact]
@@ -241,4 +404,143 @@ public class ProtectedCategoryPolicyTests
         // Assert
         protectedCategories.Should().BeEmpty();
     }
+
+    [Fact]
+    public void IsVisibleToFamilyMember_ShouldReturnTrue_WhenRecordHasNoProtectedCategory()
+    {
+        // Arrange
+        var record = CreateMedicalRecord(
+            protectedCareCategory: null,
+            guardianInitiatedTreatment: null
+        );
+
+        // Act & Assert
+        IsVisibleToFamilyMember(record, [ProtectedCategory.MentalHealthCounseling])
+            .Should()
+            .BeTrue();
+    }
+
+    [Fact]
+    public void IsVisibleToFamilyMember_ShouldReturnFalse_WhenRecordCategoryIsExcludedAndNoGuardianFlags()
+    {
+        // Arrange
+        var record = CreateMedicalRecord(
+            protectedCareCategory: ProtectedCategory.MentalHealthCounseling,
+            guardianInitiatedTreatment: null
+        );
+
+        // Act & Assert
+        IsVisibleToFamilyMember(record, [ProtectedCategory.MentalHealthCounseling])
+            .Should()
+            .BeFalse();
+    }
+
+    [Fact]
+    public void IsVisibleToFamilyMember_ShouldReturnTrue_WhenRecordCategoryIsNotExcluded()
+    {
+        // Arrange
+        var record = CreateMedicalRecord(
+            protectedCareCategory: ProtectedCategory.PregnancyPrevention,
+            guardianInitiatedTreatment: null
+        );
+
+        // Act & Assert
+        IsVisibleToFamilyMember(record, [ProtectedCategory.MentalHealthCounseling])
+            .Should()
+            .BeTrue();
+    }
+
+    [Fact]
+    public void IsVisibleToFamilyMember_ShouldReturnTrue_WhenExcludedSubstanceAbuseTreatmentWasGuardianInitiated()
+    {
+        // Arrange
+        var record = CreateMedicalRecord(
+            protectedCareCategory: ProtectedCategory.SubstanceAbuseTreatment,
+            guardianInitiatedTreatment: true
+        );
+
+        // Act & Assert
+        IsVisibleToFamilyMember(record, [ProtectedCategory.SubstanceAbuseTreatment])
+            .Should()
+            .BeTrue();
+    }
+
+    [Fact]
+    public void IsVisibleToFamilyMember_ShouldReturnFalse_WhenExcludedSubstanceAbuseTreatmentWasNotGuardianInitiated()
+    {
+        // Arrange
+        var record = CreateMedicalRecord(
+            protectedCareCategory: ProtectedCategory.SubstanceAbuseTreatment,
+            guardianInitiatedTreatment: false
+        );
+
+        // Act & Assert
+        IsVisibleToFamilyMember(record, [ProtectedCategory.SubstanceAbuseTreatment])
+            .Should()
+            .BeFalse();
+    }
+
+    [Fact]
+    public void IsVisibleToFamilyMember_ShouldReturnTrue_WhenExcludedMentalHealthCounselingHadGuardianInvolvementDeemedAppropriate()
+    {
+        // Arrange
+        var record = CreateMedicalRecord(
+            protectedCareCategory: ProtectedCategory.MentalHealthCounseling,
+            guardianInitiatedTreatment: null
+        );
+
+        record.SetGuardianInvolvementDetermination(true);
+
+        // Act & Assert
+        IsVisibleToFamilyMember(record, [ProtectedCategory.MentalHealthCounseling])
+            .Should()
+            .BeTrue();
+    }
+
+    [Fact]
+    public void IsVisibleToFamilyMember_ShouldReturnFalse_WhenExcludedMentalHealthCounselingHadGuardianInvolvementDeemedInappropriate()
+    {
+        // Arrange
+        var record = CreateMedicalRecord(
+            protectedCareCategory: ProtectedCategory.MentalHealthCounseling,
+            guardianInitiatedTreatment: null
+        );
+        record.SetGuardianInvolvementDetermination(false);
+
+        // Act & Assert
+        IsVisibleToFamilyMember(record, [ProtectedCategory.MentalHealthCounseling])
+            .Should()
+            .BeFalse();
+    }
+
+    [Fact]
+    public void IsVisibleToFamilyMember_ShouldReturnFalse_WhenExcludedResidentialShelterHadNoDetermination()
+    {
+        // Arrange
+        var record = CreateMedicalRecord(
+            protectedCareCategory: ProtectedCategory.ResidentialShelter,
+            guardianInitiatedTreatment: null
+        );
+
+        // Act & Assert
+        IsVisibleToFamilyMember(record, [ProtectedCategory.ResidentialShelter]).Should().BeFalse();
+    }
+
+    private static bool IsVisibleToFamilyMember(
+        MedicalRecord record,
+        IReadOnlyCollection<ProtectedCategory> excludedCategories
+    ) => ProtectedCategoryPolicy.IsVisibleToFamilyMember(excludedCategories).Compile()(record);
+
+    private static MedicalRecord CreateMedicalRecord(
+        ProtectedCategory? protectedCareCategory,
+        bool? guardianInitiatedTreatment
+    ) =>
+        MedicalRecord.Create(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            "General checkup",
+            protectedCareCategory,
+            guardianInitiatedTreatment
+        );
 }

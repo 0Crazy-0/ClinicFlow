@@ -40,6 +40,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
             doctor.Id,
             appointment.Id,
             "chiefComplaint",
+            null,
             null
         );
 
@@ -65,6 +66,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
             doctor.Id,
             appointment.Id,
             "chiefComplaint",
+            null,
             null
         );
 
@@ -88,6 +90,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
             doctor.Id,
             appointment.Id,
             "chiefComplaint",
+            null,
             null
         );
 
@@ -130,6 +133,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
             doctor.Id,
             appointment1.Id,
             "chiefComplaint 1",
+            null,
             null
         );
 
@@ -142,6 +146,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
             doctor.Id,
             appointment2.Id,
             "chiefComplaint 2",
+            null,
             null
         );
 
@@ -154,6 +159,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
             doctor.Id,
             appointment3.Id,
             "chiefComplaint 3",
+            null,
             null
         );
 
@@ -190,6 +196,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
             doctor.Id,
             appointment1.Id,
             "chiefComplaint 1",
+            null,
             null
         );
 
@@ -201,6 +208,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
             doctor.Id,
             appointment2.Id,
             "chiefComplaint 2",
+            null,
             null
         );
 
@@ -212,6 +220,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
             doctor.Id,
             appointment3.Id,
             "chiefComplaint 3",
+            null,
             null
         );
 
@@ -247,6 +256,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
             doctor.Id,
             appointment1.Id,
             "Patient 1 complaint",
+            null,
             null
         );
 
@@ -258,6 +268,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
             doctor.Id,
             appointment2.Id,
             "Patient 2 complaint",
+            null,
             null
         );
 
@@ -299,50 +310,36 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
     }
 
     [Fact]
-    public async Task GetByPatientIdPaginatedExcludingCategoriesAsync_ShouldExcludeBlockedCategories_AndKeepUnprotectedRecords()
+    public async Task GetByPatientIdPaginatedExcludingCategoriesAsync_ShouldTranslateVisibilityFilterToSql_AndReturnVisibleRecordsOrdered()
     {
         // Arrange
-        // The seeded patient is an adult (30), so in production ProtectedCategoryPolicy
-        // .GetProtectedCategoriesFor would return an empty exclusion list and no category
-        // would ever be blocked. A blocked category is seeded here only to test the
-        // repository's exclusion logic in isolation.
         var (doctor, patient, _) = await SeedCommonEntitiesAsync();
 
         var appointment1 = await CreateAppointmentAsync(patient.Id, doctor.Id);
         var appointment2 = await CreateAppointmentAsync(patient.Id, doctor.Id);
-        var appointment3 = await CreateAppointmentAsync(patient.Id, doctor.Id);
 
-        var unprotectedRecord = MedicalRecord.Create(
+        var visibleRecord = MedicalRecord.Create(
             patient.Id,
             doctor.Id,
             appointment1.Id,
-            "unprotected complaint",
+            "visible complaint",
+            null,
             null
         );
 
-        var blockedRecord = MedicalRecord.Create(
+        var excludedRecord = MedicalRecord.Create(
             patient.Id,
             doctor.Id,
             appointment2.Id,
-            "blocked complaint",
-            ProtectedCategory.MentalHealthCounseling
+            "excluded complaint",
+            ProtectedCategory.MentalHealthCounseling,
+            null
         );
 
-        var allowedProtectedRecord = MedicalRecord.Create(
-            patient.Id,
-            doctor.Id,
-            appointment3.Id,
-            "allowed protected complaint",
-            ProtectedCategory.BuprenorphineOpioidTreatment
-        );
-
-        Context.MedicalRecords.Add(unprotectedRecord);
+        Context.MedicalRecords.Add(visibleRecord);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        Context.MedicalRecords.Add(blockedRecord);
-        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
-
-        Context.MedicalRecords.Add(allowedProtectedRecord);
+        Context.MedicalRecords.Add(excludedRecord);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Act
@@ -350,69 +347,18 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
             patient.Id,
             [ProtectedCategory.MentalHealthCounseling],
             pageNumber: 1,
-            pageSize: 10,
-            TestContext.Current.CancellationToken
-        );
-
-        // Assert
-        totalCount.Should().Be(2);
-
-        items
-            .Should()
-            .BeEquivalentTo(
-                [allowedProtectedRecord, unprotectedRecord],
-                options => options.WithStrictOrdering()
-            );
-    }
-
-    [Fact]
-    public async Task GetByPatientIdPaginatedExcludingCategoriesAsync_ShouldPaginateExcludedResults()
-    {
-        // Arrange
-        var (doctor, patient, _) = await SeedCommonEntitiesAsync();
-
-        var appointment1 = await CreateAppointmentAsync(patient.Id, doctor.Id);
-        var appointment2 = await CreateAppointmentAsync(patient.Id, doctor.Id);
-
-        var record1 = MedicalRecord.Create(
-            patient.Id,
-            doctor.Id,
-            appointment1.Id,
-            "chiefComplaint 1",
-            null
-        );
-
-        var record2 = MedicalRecord.Create(
-            patient.Id,
-            doctor.Id,
-            appointment2.Id,
-            "chiefComplaint 2",
-            null
-        );
-
-        Context.MedicalRecords.Add(record1);
-        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
-
-        Context.MedicalRecords.Add(record2);
-        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
-
-        // Act
-        var (items, totalCount) = await _sut.GetByPatientIdPaginatedExcludingCategoriesAsync(
-            patient.Id,
-            [ProtectedCategory.MentalHealthCounseling],
-            pageNumber: 2,
             pageSize: 1,
             TestContext.Current.CancellationToken
         );
 
         // Assert
-        totalCount.Should().Be(2);
+        totalCount.Should().Be(1);
 
-        items.Should().ContainSingle().Which.Should().BeEquivalentTo(record1);
+        items.Should().ContainSingle().Which.Should().BeEquivalentTo(visibleRecord);
     }
 
     [Fact]
-    public async Task GetByPatientIdPaginatedExcludingCategoriesAsync_ShouldSkipFullPages_WhenRequestingLaterPage()
+    public async Task GetByPatientIdPaginatedExcludingCategoriesAsync_ShouldReturnVisibleRecordsOrderedDescending_AndPaginateCorrectly()
     {
         // Arrange
         var (doctor, patient, _) = await SeedCommonEntitiesAsync();
@@ -420,13 +366,13 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
         var appointment1 = await CreateAppointmentAsync(patient.Id, doctor.Id);
         var appointment2 = await CreateAppointmentAsync(patient.Id, doctor.Id);
         var appointment3 = await CreateAppointmentAsync(patient.Id, doctor.Id);
-        var appointment4 = await CreateAppointmentAsync(patient.Id, doctor.Id);
 
         var record1 = MedicalRecord.Create(
             patient.Id,
             doctor.Id,
             appointment1.Id,
-            "chiefComplaint 1",
+            "complaint 1",
+            null,
             null
         );
 
@@ -434,7 +380,8 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
             patient.Id,
             doctor.Id,
             appointment2.Id,
-            "chiefComplaint 2",
+            "complaint 2",
+            null,
             null
         );
 
@@ -442,15 +389,8 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
             patient.Id,
             doctor.Id,
             appointment3.Id,
-            "chiefComplaint 3",
-            null
-        );
-
-        var record4 = MedicalRecord.Create(
-            patient.Id,
-            doctor.Id,
-            appointment4.Id,
-            "chiefComplaint 4",
+            "complaint 3",
+            null,
             null
         );
 
@@ -463,9 +403,6 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
         Context.MedicalRecords.Add(record3);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        Context.MedicalRecords.Add(record4);
-        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
-
         // Act
         var (items, totalCount) = await _sut.GetByPatientIdPaginatedExcludingCategoriesAsync(
             patient.Id,
@@ -476,43 +413,9 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
         );
 
         // Assert
-        totalCount.Should().Be(4);
+        totalCount.Should().Be(3);
 
-        items.Should().BeEquivalentTo([record2, record1], options => options.WithStrictOrdering());
-    }
-
-    [Fact]
-    public async Task GetByPatientIdPaginatedExcludingCategoriesAsync_ShouldReturnEmpty_WhenEveryRecordIsBlocked()
-    {
-        // Arrange
-        var (doctor, patient, _) = await SeedCommonEntitiesAsync();
-
-        var appointment = await CreateAppointmentAsync(patient.Id, doctor.Id);
-
-        var record = MedicalRecord.Create(
-            patient.Id,
-            doctor.Id,
-            appointment.Id,
-            "blocked complaint",
-            ProtectedCategory.MentalHealthCounseling
-        );
-
-        Context.MedicalRecords.Add(record);
-        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
-
-        // Act
-        var (items, totalCount) = await _sut.GetByPatientIdPaginatedExcludingCategoriesAsync(
-            patient.Id,
-            [ProtectedCategory.MentalHealthCounseling],
-            pageNumber: 1,
-            pageSize: 10,
-            TestContext.Current.CancellationToken
-        );
-
-        // Assert
-        totalCount.Should().Be(0);
-
-        items.Should().BeEmpty();
+        items.Should().ContainSingle().Which.Should().BeEquivalentTo(record1);
     }
 
     [Fact]
@@ -529,6 +432,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
             doctor.Id,
             appointment1.Id,
             "chiefComplaint 1",
+            null,
             null
         );
 
@@ -540,6 +444,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
             doctor.Id,
             appointment2.Id,
             "chiefComplaint 2",
+            null,
             null
         );
 
@@ -551,6 +456,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
             doctor.Id,
             appointment3.Id,
             "chiefComplaint 3",
+            null,
             null
         );
 
@@ -586,6 +492,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
             doctor.Id,
             appointment1.Id,
             "chiefComplaint 1",
+            null,
             null
         );
 
@@ -597,6 +504,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
             doctor.Id,
             appointment2.Id,
             "chiefComplaint 2",
+            null,
             null
         );
 
@@ -608,6 +516,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
             doctor.Id,
             appointment3.Id,
             "chiefComplaint 3",
+            null,
             null
         );
 
@@ -643,6 +552,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
             doctor.Id,
             appointment1.Id,
             "chiefComplaint 1",
+            null,
             null
         );
 
@@ -654,6 +564,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
             doctor.Id,
             appointment2.Id,
             "chiefComplaint 2",
+            null,
             null
         );
 
@@ -665,6 +576,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
             doctor.Id,
             appointment3.Id,
             "chiefComplaint 3",
+            null,
             null
         );
 
@@ -700,6 +612,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
             doctor1.Id,
             appointment1.Id,
             "chiefComplaint 1",
+            null,
             null
         );
 
@@ -711,6 +624,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
             doctor2.Id,
             appointment2.Id,
             "chiefComplaint 2",
+            null,
             null
         );
 
@@ -765,6 +679,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
             doctor.Id,
             appointment1.Id,
             "chiefComplaint 1",
+            null,
             null
         );
 
@@ -776,6 +691,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
             doctor.Id,
             appointment2.Id,
             "chiefComplaint 2",
+            null,
             null
         );
 
@@ -787,6 +703,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
             doctor.Id,
             appointment3.Id,
             "chiefComplaint 3",
+            null,
             null
         );
 
@@ -817,6 +734,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
             doctor.Id,
             appointment.Id,
             "chiefComplaint",
+            null,
             null
         );
 

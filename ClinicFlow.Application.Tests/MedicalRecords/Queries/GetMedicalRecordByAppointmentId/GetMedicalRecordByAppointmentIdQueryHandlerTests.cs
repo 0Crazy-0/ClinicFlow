@@ -30,6 +30,7 @@ public class GetMedicalRecordByAppointmentIdQueryHandlerTests
             Guid.CreateVersion7(),
             appointmentId,
             "Headache",
+            null,
             null
         );
 

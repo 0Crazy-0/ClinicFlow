@@ -1,6 +1,7 @@
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Interfaces.Repositories;
+using ClinicFlow.Domain.Services.Policies;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClinicFlow.Infrastructure.Persistence.Repositories;
@@ -69,13 +70,8 @@ public sealed class MedicalRecordRepository(ApplicationDbContext dbContext)
         var query = dbContext
             .MedicalRecords.Include(m => m.ClinicalDetails)
             .AsNoTracking()
-            .Where(m =>
-                m.PatientId == patientId
-                && (
-                    m.ProtectedCategory == null
-                    || !excludedCategories.Contains(m.ProtectedCategory.Value)
-                )
-            );
+            .Where(m => m.PatientId == patientId)
+            .Where(ProtectedCategoryPolicy.IsVisibleToFamilyMember(excludedCategories));
 
         var totalCount = await query.CountAsync(cancellationToken);
         var items = await query

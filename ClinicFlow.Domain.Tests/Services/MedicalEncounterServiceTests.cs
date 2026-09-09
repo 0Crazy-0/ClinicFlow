@@ -1,6 +1,7 @@
 using AwesomeAssertions;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
+using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Contexts;
@@ -380,6 +381,104 @@ public class MedicalEncounterServiceTests
         record.ClinicalDetails.Should().Contain(detail);
     }
 
+    [Fact]
+    public void RecordGuardianInvolvementDetermination_ShouldThrowArgumentNullException_WhenRecordIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            MedicalEncounterService.RecordGuardianInvolvementDetermination(
+                null!,
+                CreateAppointment(Guid.CreateVersion7()),
+                true
+            );
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void RecordGuardianInvolvementDetermination_ShouldThrowArgumentNullException_WhenAppointmentIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            MedicalEncounterService.RecordGuardianInvolvementDetermination(
+                CreateMedicalRecord(),
+                null!,
+                true
+            );
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void RecordGuardianInvolvementDetermination_ShouldThrowBusinessRuleValidationException_WhenAppointmentIsNotInProgressOrCompleted()
+    {
+        // Arrange
+        var scheduledAppointment = Appointment.Schedule(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
+            TimeRange.Create(new TimeOnly(10), new TimeOnly(11))
+        );
+        var record = CreateMedicalRecordWithCategory(ProtectedCategory.MentalHealthCounseling);
+
+        // Act
+        var act = () =>
+            MedicalEncounterService.RecordGuardianInvolvementDetermination(
+                record,
+                scheduledAppointment,
+                true
+            );
+
+        // Assert
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.MedicalEncounter.AppointmentNotInProgressOrCompleted);
+    }
+
+    [Fact]
+    public void RecordGuardianInvolvementDetermination_ShouldSetDetermination_WhenAppointmentIsInProgress()
+    {
+        // Arrange
+        var appointment = CreateAppointment(Guid.CreateVersion7());
+        var record = CreateMedicalRecordWithCategory(ProtectedCategory.MentalHealthCounseling);
+
+        // Act
+        MedicalEncounterService.RecordGuardianInvolvementDetermination(record, appointment, true);
+
+        // Assert
+        record.GuardianInvolvementDeemedAppropriate.Should().BeTrue();
+    }
+
+    [Fact]
+    public void RecordGuardianInvolvementDetermination_ShouldSetDetermination_WhenAppointmentIsCompleted()
+    {
+        // Arrange
+        var appointment = CreateAppointment(Guid.CreateVersion7());
+        appointment.Complete(_fakeTime.GetUtcNow().UtcDateTime);
+        var record = CreateMedicalRecordWithCategory(ProtectedCategory.ResidentialShelter);
+
+        // Act
+        MedicalEncounterService.RecordGuardianInvolvementDetermination(record, appointment, false);
+
+        // Assert
+        record.GuardianInvolvementDeemedAppropriate.Should().BeFalse();
+    }
+
+    private static MedicalRecord CreateMedicalRecordWithCategory(
+        ProtectedCategory protectedCareCategory
+    ) =>
+        MedicalRecord.Create(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            "Headache",
+            protectedCareCategory,
+            null
+        );
+
     private MedicalEncounterContext CreateValidContext() =>
         new()
         {
@@ -390,7 +489,14 @@ public class MedicalEncounterServiceTests
         };
 
     private static MedicalRecord CreateMedicalRecord(Guid doctorId, Guid appointmentId) =>
-        MedicalRecord.Create(Guid.CreateVersion7(), doctorId, appointmentId, "Headache", null);
+        MedicalRecord.Create(
+            Guid.CreateVersion7(),
+            doctorId,
+            appointmentId,
+            "Headache",
+            null,
+            null
+        );
 
     private static MedicalRecord CreateMedicalRecord() =>
         MedicalRecord.Create(
@@ -398,6 +504,7 @@ public class MedicalEncounterServiceTests
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             "Headache",
+            null,
             null
         );
 

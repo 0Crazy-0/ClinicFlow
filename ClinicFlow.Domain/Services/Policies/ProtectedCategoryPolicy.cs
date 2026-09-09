@@ -138,24 +138,123 @@ public static class ProtectedCategoryPolicy
     /// must have reached the statutory minimum consent age for the category and must still be
     /// younger than the age of majority. A category with a minimum age of zero is protected for
     /// patients of any age under the age of majority. A null category is never protected because
-    /// no protected consent regime applies to ordinary care.
+    /// no protected consent regime applies to ordinary care. Even when the age conditions hold,
+    /// two guardian based exceptions lift the protection: substance abuse treatment sought by
+    /// the parent or guardian themselves, and mental health counseling or residential shelter
+    /// where the treating professional deemed guardian involvement appropriate.
     /// </summary>
+    /// <param name="category">The protected care category to evaluate, or null for ordinary care.</param>
+    /// <param name="guardianInitiatedTreatment">
+    /// Whether the parent or guardian initiated this substance abuse treatment episode. Only
+    /// meaningful when the category is <see cref="ProtectedCategory.SubstanceAbuseTreatment"/>;
+    /// ignored otherwise. When true, the guardian holds an unconditional right to the record
+    /// under <see href="https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=FAM&sectionNum=6929">Cal. Fam. Code § 6929(g)</see>,
+    /// so the category is not protected.
+    /// </param>
+    /// <param name="guardianInvolvementDeemedAppropriate">
+    /// Whether the treating professional deemed involving the guardian appropriate. Only
+    /// meaningful when the category is <see cref="ProtectedCategory.MentalHealthCounseling"/>
+    /// or <see cref="ProtectedCategory.ResidentialShelter"/>; ignored otherwise. When true,
+    /// the documented determination supports guardian access under
+    /// <see href="https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=FAM&amp;sectionNum=6924">Cal. Fam. Code § 6924(d)</see>,
+    /// so the category is not protected.
+    /// </param>
     /// <seealso cref="MinimumConsentAge"/>
-    public static bool IsProtectedForPatient(ProtectedCategory? category, int patientAge) =>
-        category is not null
-        && patientAge >= MinimumConsentAge(category.Value)
-        && patientAge < PrivateConsentAgeOfMajority;
+    public static bool IsProtectedForPatient(
+        ProtectedCategory? category,
+        int patientAge,
+        bool? guardianInitiatedTreatment,
+        bool? guardianInvolvementDeemedAppropriate
+    )
+    {
+        if (category is null)
+            return false;
+
+        if (
+            patientAge < MinimumConsentAge(category.Value)
+            || patientAge >= PrivateConsentAgeOfMajority
+        )
+            return false;
+
+        if (
+            category is ProtectedCategory.SubstanceAbuseTreatment
+            && guardianInitiatedTreatment is true
+        )
+            return false;
+
+        if (
+            category
+                is (
+                    ProtectedCategory.MentalHealthCounseling
+                    or ProtectedCategory.ResidentialShelter
+                )
+            && guardianInvolvementDeemedAppropriate is true
+        )
+            return false;
+
+        return true;
+    }
 
     /// <summary>
     /// Collects every protected care category whose statutory minimum consent age is reached by
-    /// the patient's age, meaning the category is shielded from family member access. Returns an
-    /// empty list once the patient has reached the age of majority, because consent reverts
-    /// entirely to the patient and no category is protected anymore.
+    /// the patient's age and who is still younger than the age of majority. Applies the age
+    /// criterion only: the guardian based exceptions modeled by
+    /// <see cref="IsProtectedForPatient"/> are deliberately not evaluated here because they
+    /// depend on per record state, so callers must combine this result with those exceptions
+    /// when deciding access to a specific record. Returns an empty list once the patient has
+    /// reached the age of majority, because consent reverts entirely to the patient and no
+    /// category is protected anymore.
     /// </summary>
-    /// <seealso cref="IsProtectedForPatient"/>
+    /// <seealso cref="IsVisibleToFamilyMember"/>
     public static IReadOnlyList<ProtectedCategory> GetProtectedCategoriesFor(int patientAge) =>
         [
             .. Enum.GetValues<ProtectedCategory>()
-                .Where(category => IsProtectedForPatient(category, patientAge)),
+                .Where(category =>
+                    patientAge >= MinimumConsentAge(category)
+                    && patientAge < PrivateConsentAgeOfMajority
+                ),
         ];
+
+    /// <summary>
+    /// Builds the predicate determining whether a medical record is visible to a family member
+    /// given the categories excluded by the patient's age. A record is visible when it holds no
+    /// protected category, when its category is not excluded, or when a guardian based exception
+    /// lifts the protection: substance abuse treatment initiated by the guardian themselves,
+    /// or mental health counseling or residential shelter where the treating professional
+    /// deemed guardian involvement appropriate.
+    /// </summary>
+    /// <param name="excludedCategories">
+    /// The protected categories to hide, typically obtained from
+    /// <see cref="GetProtectedCategoriesFor"/> for the patient's age.
+    /// </param>
+    /// <returns>
+    /// A predicate translatable to SQL by EF Core, so this critical access logic lives in the
+    /// domain instead of being replicated inside infrastructure queries. The guardian based
+    /// exceptions follow <see href="https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=FAM&amp;sectionNum=6929">Cal. Fam. Code § 6929(g)</see>
+    /// and <see href="https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=FAM&amp;sectionNum=6924">§ 6924(d)</see>.
+    /// </returns>
+    /// <remarks>
+    /// Duplicates by necessity the guardian based exceptions of
+    /// <see cref="IsProtectedForPatient"/>: an <see cref="Expression"/> is required so EF Core
+    /// can translate the predicate to SQL, whereas that method evaluates in memory over
+    /// pre-fetched data. Changes to one must be mirrored in the other.
+    /// </remarks>
+    /// <seealso cref="IsProtectedForPatient"/>
+    public static Expression<Func<MedicalRecord, bool>> IsVisibleToFamilyMember(
+        IReadOnlyCollection<ProtectedCategory> excludedCategories
+    ) =>
+        m =>
+            m.ProtectedCareCategory == null
+            || !excludedCategories.Contains(m.ProtectedCareCategory.Value)
+            || (
+                m.ProtectedCareCategory == ProtectedCategory.SubstanceAbuseTreatment
+                && m.GuardianInitiatedTreatment == true
+            )
+            || (
+                (
+                    m.ProtectedCareCategory == ProtectedCategory.MentalHealthCounseling
+                    || m.ProtectedCareCategory == ProtectedCategory.ResidentialShelter
+                )
+                && m.GuardianInvolvementDeemedAppropriate == true
+            );
 }

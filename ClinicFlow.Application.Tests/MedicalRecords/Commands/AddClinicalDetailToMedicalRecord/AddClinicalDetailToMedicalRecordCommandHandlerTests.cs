@@ -153,6 +153,7 @@ public class AddClinicalDetailToMedicalRecordCommandHandlerTests
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             "Checkup",
+            null,
             null
         );
 }

@@ -111,6 +111,7 @@ public class GetMedicalRecordsByDoctorIdQueryHandlerTests
             doctorId,
             Guid.CreateVersion7(),
             "chiefComplaint",
+            null,
             null
         );
 }
