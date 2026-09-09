@@ -62,7 +62,7 @@ Domain ← Application ← Infrastructure ← API
 ### Absolute Prohibitions
 
 1. **No external NuGet packages**. The domain layer must have zero `PackageReference` entries.
-2. **No external namespaces**. No `using` statements referencing anything outside `ClinicFlow.Domain`.
+2. **No external namespaces**. Only `using` statements referencing `ClinicFlow.Domain` namespaces or the **Base Class Library (BCL)**, e.g. `System.*` namespaces that ship with the .NET SDK itself, are allowed. No `using` referencing any external NuGet package namespace.
 3. **No infrastructure queries**. Domain services never inject repositories or make database calls. They receive pre-fetched data from the Application layer.
 4. **No interfaces injected**. Domain services must not depend on injected interfaces. The single exception is infrastructure validation policies (see [Policy Pattern](#policy-pattern)).
 
