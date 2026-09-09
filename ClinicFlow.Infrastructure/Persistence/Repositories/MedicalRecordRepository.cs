@@ -56,6 +56,7 @@ public sealed class MedicalRecordRepository(ApplicationDbContext dbContext)
         return (items, totalCount);
     }
 
+    /// <inheritdoc />
     public async Task<(
         IReadOnlyList<MedicalRecord> Items,
         int TotalCount
