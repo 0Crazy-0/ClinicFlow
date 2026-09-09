@@ -20,10 +20,11 @@ public interface IMedicalRecordRepository
     );
 
     /// <summary>
-    /// Retrieves the patient's medical records paginated, excluding the ones whose protected
-    /// category is blocked for the requester. Records without a protected category are never
-    /// excluded.
+    /// Retrieves the patient's medical records paginated, filtered for family member access.
     /// </summary>
+    /// <remarks>
+    /// Visibility of each record is determined by <see cref="ProtectedCategoryPolicy.IsVisibleToFamilyMember"/>.
+    /// </remarks>
     Task<(
         IReadOnlyList<MedicalRecord> Items,
         int TotalCount
