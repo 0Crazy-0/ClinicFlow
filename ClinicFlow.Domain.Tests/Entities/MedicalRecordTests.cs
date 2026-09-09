@@ -1,6 +1,7 @@
 using AwesomeAssertions;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
+using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Base;
 
 namespace ClinicFlow.Domain.Tests.Entities;
@@ -17,7 +18,14 @@ public class MedicalRecordTests
         var chiefComplaint = "Headache and fever";
 
         // Act
-        var record = MedicalRecord.Create(patientId, doctorId, appointmentId, chiefComplaint);
+        var record = MedicalRecord.Create(
+            patientId,
+            doctorId,
+            appointmentId,
+            chiefComplaint,
+            null,
+            null
+        );
 
         // Assert
         record.Should().NotBeNull();
@@ -26,6 +34,120 @@ public class MedicalRecordTests
         record.AppointmentId.Should().Be(appointmentId);
         record.ChiefComplaint.Should().Be(chiefComplaint);
         record.ClinicalDetails.Should().BeEmpty();
+        record.ProtectedCareCategory.Should().BeNull();
+        record.GuardianInitiatedTreatment.Should().BeNull();
+    }
+
+    [Fact]
+    public void Create_ShouldAssignProtectedCategory_WhenValidProtectedCategoryProvided()
+    {
+        // Arrange
+        var patientId = Guid.CreateVersion7();
+        var doctorId = Guid.CreateVersion7();
+        var appointmentId = Guid.CreateVersion7();
+        var chiefComplaint = "Headache and fever";
+
+        // Act
+        var record = MedicalRecord.Create(
+            patientId,
+            doctorId,
+            appointmentId,
+            chiefComplaint,
+            ProtectedCategory.MentalHealthCounseling,
+            null
+        );
+
+        // Assert
+        record.PatientId.Should().Be(patientId);
+        record.DoctorId.Should().Be(doctorId);
+        record.AppointmentId.Should().Be(appointmentId);
+        record.ChiefComplaint.Should().Be(chiefComplaint);
+        record.ClinicalDetails.Should().BeEmpty();
+        record.ProtectedCareCategory.Should().Be(ProtectedCategory.MentalHealthCounseling);
+        record.GuardianInitiatedTreatment.Should().BeNull();
+    }
+
+    [Fact]
+    public void Create_ShouldThrowException_WhenProtectedCategoryIsNotDefined()
+    {
+        // Arrange & Act
+        var act = () =>
+            MedicalRecord.Create(
+                Guid.CreateVersion7(),
+                Guid.CreateVersion7(),
+                Guid.CreateVersion7(),
+                "Headache and fever",
+                (ProtectedCategory)999,
+                null
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.InvalidEnumValue);
+    }
+
+    [Fact]
+    public void Create_ShouldThrowException_WhenSubstanceAbuseTreatmentLacksGuardianInitiatedTreatment()
+    {
+        // Arrange & Act
+        var act = () =>
+            MedicalRecord.Create(
+                Guid.CreateVersion7(),
+                Guid.CreateVersion7(),
+                Guid.CreateVersion7(),
+                "Headache and fever",
+                ProtectedCategory.SubstanceAbuseTreatment,
+                guardianInitiatedTreatment: null
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.MedicalRecord.GuardianInitiatedTreatmentRequired);
+    }
+
+    [Fact]
+    public void Create_ShouldThrowException_WhenGuardianInitiatedTreatmentProvidedForNonSubstanceAbuseCategory()
+    {
+        // Arrange & Act
+        var act = () =>
+            MedicalRecord.Create(
+                Guid.CreateVersion7(),
+                Guid.CreateVersion7(),
+                Guid.CreateVersion7(),
+                "Headache and fever",
+                ProtectedCategory.MentalHealthCounseling,
+                guardianInitiatedTreatment: true
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.MedicalRecord.GuardianInitiatedTreatmentNotApplicable);
+    }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void Create_ShouldAssignGuardianInitiatedTreatment_WhenSubstanceAbuseTreatmentProvided(
+        bool guardianInitiatedTreatment
+    )
+    {
+        // Arrange & Act
+        var record = MedicalRecord.Create(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            "Headache and fever",
+            ProtectedCategory.SubstanceAbuseTreatment,
+            guardianInitiatedTreatment
+        );
+
+        // Assert
+        record.ProtectedCareCategory.Should().Be(ProtectedCategory.SubstanceAbuseTreatment);
+        record.GuardianInitiatedTreatment.Should().Be(guardianInitiatedTreatment);
+        record.GuardianInvolvementDeemedAppropriate.Should().BeNull();
     }
 
     [Theory]
@@ -85,7 +207,9 @@ public class MedicalRecordTests
                 Guid.Parse(patientIdStr),
                 Guid.Parse(doctorIdStr),
                 Guid.Parse(appointmentIdStr),
-                chiefComplaint!
+                chiefComplaint!,
+                null,
+                null
             );
 
         // Assert
@@ -141,11 +265,57 @@ public class MedicalRecordTests
             .WithMessage(DomainErrors.MedicalEncounter.DetailAlreadyExists);
     }
 
-    private static MedicalRecord CreateValidMedicalRecord() =>
+    [Theory]
+    [InlineData(ProtectedCategory.MentalHealthCounseling, true)]
+    [InlineData(ProtectedCategory.ResidentialShelter, false)]
+    public void SetGuardianInvolvementDetermination_ShouldAssignValue_WhenCategoryIsEligibleForGuardianInvolvement(
+        ProtectedCategory protectedCareCategory,
+        bool guardianInvolvementDeemedAppropriate
+    )
+    {
+        // Arrange
+        var record = CreateValidMedicalRecord(protectedCareCategory);
+
+        // Act
+        record.SetGuardianInvolvementDetermination(guardianInvolvementDeemedAppropriate);
+
+        // Assert
+        record
+            .GuardianInvolvementDeemedAppropriate.Should()
+            .Be(guardianInvolvementDeemedAppropriate);
+    }
+
+    [Theory]
+    [InlineData(null, null)]
+    [InlineData(ProtectedCategory.SubstanceAbuseTreatment, false)]
+    [InlineData(ProtectedCategory.PregnancyPrevention, null)]
+    public void SetGuardianInvolvementDetermination_ShouldThrowException_WhenCategoryIsNotEligibleForGuardianInvolvement(
+        ProtectedCategory? protectedCareCategory,
+        bool? guardianInitiatedTreatment
+    )
+    {
+        // Arrange
+        var record = CreateValidMedicalRecord(protectedCareCategory, guardianInitiatedTreatment);
+
+        // Act
+        var act = () => record.SetGuardianInvolvementDetermination(true);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.MedicalRecord.GuardianInvolvementFlagNotApplicable);
+    }
+
+    private static MedicalRecord CreateValidMedicalRecord(
+        ProtectedCategory? protectedCareCategory = null,
+        bool? guardianInitiatedTreatment = null
+    ) =>
         MedicalRecord.Create(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
-            "General checkup"
+            "General checkup",
+            protectedCareCategory,
+            guardianInitiatedTreatment
         );
 }

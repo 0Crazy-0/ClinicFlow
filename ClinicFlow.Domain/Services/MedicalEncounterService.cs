@@ -1,5 +1,6 @@
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
+using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Services.Contexts;
 using ClinicFlow.Domain.Services.Policies;
@@ -16,12 +17,14 @@ public class MedicalEncounterService(
 {
     public static MedicalRecord InitiateMedicalRecord(
         Appointment appointment,
-        string chiefComplaint
+        string chiefComplaint,
+        ProtectedCategory? protectedCareCategory = null,
+        bool? guardianInitiatedTreatment = null
     )
     {
         ArgumentNullException.ThrowIfNull(appointment);
 
-        if (appointment.Status is not Enums.AppointmentStatus.InProgress)
+        if (appointment.Status is not AppointmentStatus.InProgress)
             throw new BusinessRuleValidationException(
                 DomainErrors.MedicalEncounter.AppointmentNotInProgress
             );
@@ -30,7 +33,9 @@ public class MedicalEncounterService(
             appointment.PatientId,
             appointment.DoctorId,
             appointment.Id,
-            chiefComplaint
+            chiefComplaint,
+            protectedCareCategory,
+            guardianInitiatedTreatment
         );
     }
 
@@ -91,5 +96,27 @@ public class MedicalEncounterService(
         }
 
         record.AddClinicalDetail(newDetail);
+    }
+
+    public static void RecordGuardianInvolvementDetermination(
+        MedicalRecord record,
+        Appointment appointment,
+        bool guardianInvolvementDeemedAppropriate
+    )
+    {
+        ArgumentNullException.ThrowIfNull(record);
+        ArgumentNullException.ThrowIfNull(appointment);
+
+        if (record.AppointmentId != appointment.Id)
+            throw new BusinessRuleValidationException(
+                DomainErrors.MedicalEncounter.AppointmentMismatch
+            );
+
+        if (appointment.Status is not (AppointmentStatus.InProgress or AppointmentStatus.Completed))
+            throw new BusinessRuleValidationException(
+                DomainErrors.MedicalEncounter.AppointmentNotInProgressOrCompleted
+            );
+
+        record.SetGuardianInvolvementDetermination(guardianInvolvementDeemedAppropriate);
     }
 }

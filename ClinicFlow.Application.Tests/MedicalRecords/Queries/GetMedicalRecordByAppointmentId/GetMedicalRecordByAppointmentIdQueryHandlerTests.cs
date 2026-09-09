@@ -29,7 +29,9 @@ public class GetMedicalRecordByAppointmentIdQueryHandlerTests
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             appointmentId,
-            "Headache"
+            "Headache",
+            null,
+            null
         );
 
         _medicalRecordRepositoryMock

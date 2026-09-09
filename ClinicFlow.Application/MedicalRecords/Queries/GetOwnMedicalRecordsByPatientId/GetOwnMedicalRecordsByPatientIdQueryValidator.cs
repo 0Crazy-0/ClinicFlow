@@ -1,13 +1,16 @@
 using ClinicFlow.Domain.Common;
 using FluentValidation;
 
-namespace ClinicFlow.Application.MedicalRecords.Queries.GetMedicalRecordsByPatientId;
+namespace ClinicFlow.Application.MedicalRecords.Queries.GetOwnMedicalRecordsByPatientId;
 
-public sealed class GetMedicalRecordsByPatientIdQueryValidator
-    : AbstractValidator<GetMedicalRecordsByPatientIdQuery>
+public sealed class GetOwnMedicalRecordsByPatientIdQueryValidator
+    : AbstractValidator<GetOwnMedicalRecordsByPatientIdQuery>
 {
-    public GetMedicalRecordsByPatientIdQueryValidator()
+    public GetOwnMedicalRecordsByPatientIdQueryValidator()
     {
+        RuleFor(x => x.RequesterUserId)
+            .NotEmpty()
+            .WithMessage(DomainErrors.Validation.InvalidValue);
         RuleFor(x => x.PatientId).NotEmpty().WithMessage(DomainErrors.Validation.InvalidValue);
         RuleFor(x => x.PageNumber)
             .GreaterThanOrEqualTo(1)

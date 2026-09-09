@@ -1,5 +1,7 @@
 using ClinicFlow.Domain.Entities;
+using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Interfaces.Repositories;
+using ClinicFlow.Domain.Services.Policies;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClinicFlow.Infrastructure.Persistence.Repositories;
@@ -43,6 +45,34 @@ public sealed class MedicalRecordRepository(ApplicationDbContext dbContext)
             .MedicalRecords.Include(m => m.ClinicalDetails)
             .AsNoTracking()
             .Where(m => m.PatientId == patientId);
+
+        var totalCount = await query.CountAsync(cancellationToken);
+        var items = await query
+            .OrderByDescending(m => m.SequenceNumber)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
+
+        return (items, totalCount);
+    }
+
+    /// <inheritdoc />
+    public async Task<(
+        IReadOnlyList<MedicalRecord> Items,
+        int TotalCount
+    )> GetByPatientIdPaginatedExcludingCategoriesAsync(
+        Guid patientId,
+        IReadOnlyCollection<ProtectedCategory> excludedCategories,
+        int pageNumber,
+        int pageSize,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var query = dbContext
+            .MedicalRecords.Include(m => m.ClinicalDetails)
+            .AsNoTracking()
+            .Where(m => m.PatientId == patientId)
+            .Where(ProtectedCategoryPolicy.IsVisibleToFamilyMember(excludedCategories));
 
         var totalCount = await query.CountAsync(cancellationToken);
         var items = await query

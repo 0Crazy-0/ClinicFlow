@@ -631,7 +631,9 @@ public static class DbSeeder
                 appt.PatientId,
                 appt.DoctorId,
                 appt.Id,
-                ResolveChiefComplaint(appt, apptTypeById, specialtyById, faker)
+                ResolveChiefComplaint(appt, apptTypeById, specialtyById, faker),
+                null,
+                null
             );
 
             var templateCode = ResolveTemplateCode(appt, apptTypeById);

@@ -1,4 +1,5 @@
 using ClinicFlow.Domain.Entities;
+using ClinicFlow.Domain.Enums;
 
 namespace ClinicFlow.Domain.Interfaces.Repositories;
 
@@ -13,6 +14,23 @@ public interface IMedicalRecordRepository
 
     Task<(IReadOnlyList<MedicalRecord> Items, int TotalCount)> GetByPatientIdPaginatedAsync(
         Guid patientId,
+        int pageNumber,
+        int pageSize,
+        CancellationToken cancellationToken = default
+    );
+
+    /// <summary>
+    /// Retrieves the patient's medical records paginated, filtered for family member access.
+    /// </summary>
+    /// <remarks>
+    /// Visibility of each record is determined by <see cref="ProtectedCategoryPolicy.IsVisibleToFamilyMember"/>.
+    /// </remarks>
+    Task<(
+        IReadOnlyList<MedicalRecord> Items,
+        int TotalCount
+    )> GetByPatientIdPaginatedExcludingCategoriesAsync(
+        Guid patientId,
+        IReadOnlyCollection<ProtectedCategory> excludedCategories,
         int pageNumber,
         int pageSize,
         CancellationToken cancellationToken = default

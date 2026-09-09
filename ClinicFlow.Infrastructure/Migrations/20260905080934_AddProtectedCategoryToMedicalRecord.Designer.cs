@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using ClinicFlow.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ClinicFlow.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260905080934_AddProtectedCategoryToMedicalRecord")]
+    partial class AddProtectedCategoryToMedicalRecord
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -378,16 +381,10 @@ namespace ClinicFlow.Infrastructure.Migrations
                     b.Property<Guid>("DoctorId")
                         .HasColumnType("uuid");
 
-                    b.Property<bool?>("GuardianInitiatedTreatment")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool?>("GuardianInvolvementDeemedAppropriate")
-                        .HasColumnType("boolean");
-
                     b.Property<Guid>("PatientId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("ProtectedCareCategory")
+                    b.Property<string>("ProtectedCategory")
                         .HasColumnType("text");
 
                     b.Property<long>("SequenceNumber")

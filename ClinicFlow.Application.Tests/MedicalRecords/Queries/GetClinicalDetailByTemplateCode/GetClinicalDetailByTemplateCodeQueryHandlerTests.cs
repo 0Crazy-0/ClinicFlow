@@ -104,6 +104,8 @@ public class GetClinicalDetailByTemplateCodeQueryHandlerTests
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
-            "General checkup"
+            "General checkup",
+            null,
+            null
         );
 }
