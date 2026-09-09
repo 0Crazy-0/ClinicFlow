@@ -412,6 +412,34 @@ public class MedicalEncounterServiceTests
     }
 
     [Fact]
+    public void RecordGuardianInvolvementDetermination_ShouldThrowBusinessRuleValidationException_WhenRecordBelongsToAnotherAppointment()
+    {
+        // Arrange
+        var appointment = CreateAppointment(Guid.CreateVersion7());
+        var record = MedicalRecord.Create(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            "Headache",
+            ProtectedCategory.MentalHealthCounseling,
+            null
+        );
+
+        // Act
+        var act = () =>
+            MedicalEncounterService.RecordGuardianInvolvementDetermination(
+                record,
+                appointment,
+                true
+            );
+
+        // Assert
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.MedicalEncounter.AppointmentMismatch);
+    }
+
+    [Fact]
     public void RecordGuardianInvolvementDetermination_ShouldThrowBusinessRuleValidationException_WhenAppointmentIsNotInProgressOrCompleted()
     {
         // Arrange
@@ -422,7 +450,10 @@ public class MedicalEncounterServiceTests
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange.Create(new TimeOnly(10), new TimeOnly(11))
         );
-        var record = CreateMedicalRecordWithCategory(ProtectedCategory.MentalHealthCounseling);
+        var record = CreateMedicalRecordWithCategoryForAppointment(
+            ProtectedCategory.MentalHealthCounseling,
+            scheduledAppointment.Id
+        );
 
         // Act
         var act = () =>
@@ -443,7 +474,10 @@ public class MedicalEncounterServiceTests
     {
         // Arrange
         var appointment = CreateAppointment(Guid.CreateVersion7());
-        var record = CreateMedicalRecordWithCategory(ProtectedCategory.MentalHealthCounseling);
+        var record = CreateMedicalRecordWithCategoryForAppointment(
+            ProtectedCategory.MentalHealthCounseling,
+            appointment.Id
+        );
 
         // Act
         MedicalEncounterService.RecordGuardianInvolvementDetermination(record, appointment, true);
@@ -458,7 +492,10 @@ public class MedicalEncounterServiceTests
         // Arrange
         var appointment = CreateAppointment(Guid.CreateVersion7());
         appointment.Complete(_fakeTime.GetUtcNow().UtcDateTime);
-        var record = CreateMedicalRecordWithCategory(ProtectedCategory.ResidentialShelter);
+        var record = CreateMedicalRecordWithCategoryForAppointment(
+            ProtectedCategory.ResidentialShelter,
+            appointment.Id
+        );
 
         // Act
         MedicalEncounterService.RecordGuardianInvolvementDetermination(record, appointment, false);
@@ -467,13 +504,14 @@ public class MedicalEncounterServiceTests
         record.GuardianInvolvementDeemedAppropriate.Should().BeFalse();
     }
 
-    private static MedicalRecord CreateMedicalRecordWithCategory(
-        ProtectedCategory protectedCareCategory
+    private static MedicalRecord CreateMedicalRecordWithCategoryForAppointment(
+        ProtectedCategory protectedCareCategory,
+        Guid appointmentId
     ) =>
         MedicalRecord.Create(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
-            Guid.CreateVersion7(),
+            appointmentId,
             "Headache",
             protectedCareCategory,
             null
@@ -541,7 +579,7 @@ public class MedicalEncounterServiceTests
 
     private static AppointmentTypeDefinition CreateAppointmentType() =>
         AppointmentTypeDefinition.Create(
-            Enums.AppointmentCategory.Checkup,
+            AppointmentCategory.Checkup,
             "Checkup",
             "Desc",
             EncounterDuration.FromMinutes(30)

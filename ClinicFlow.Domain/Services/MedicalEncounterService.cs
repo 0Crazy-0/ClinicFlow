@@ -107,6 +107,11 @@ public class MedicalEncounterService(
         ArgumentNullException.ThrowIfNull(record);
         ArgumentNullException.ThrowIfNull(appointment);
 
+        if (record.AppointmentId != appointment.Id)
+            throw new BusinessRuleValidationException(
+                DomainErrors.MedicalEncounter.AppointmentMismatch
+            );
+
         if (appointment.Status is not (AppointmentStatus.InProgress or AppointmentStatus.Completed))
             throw new BusinessRuleValidationException(
                 DomainErrors.MedicalEncounter.AppointmentNotInProgressOrCompleted
