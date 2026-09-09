@@ -1,4 +1,8 @@
+using System.Linq.Expressions;
+using ClinicFlow.Domain.Common;
+using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
+using ClinicFlow.Domain.Exceptions.Base;
 
 namespace ClinicFlow.Domain.Services.Policies;
 
@@ -125,7 +129,7 @@ public static class ProtectedCategoryPolicy
             ProtectedCategory.BuprenorphineOpioidTreatment => 16,
             ProtectedCategory.NarcoticTreatmentProgram => 16,
             ProtectedCategory.IntimatePartnerViolenceCare => 12,
-            _ => throw new ArgumentOutOfRangeException(nameof(category)),
+            _ => throw new DomainValidationException(DomainErrors.Validation.InvalidEnumValue),
         };
 
     /// <summary>

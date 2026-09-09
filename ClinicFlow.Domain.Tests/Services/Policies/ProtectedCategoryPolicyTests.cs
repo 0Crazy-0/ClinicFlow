@@ -1,5 +1,8 @@
 using AwesomeAssertions;
+using ClinicFlow.Domain.Common;
+using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
+using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Services.Policies;
 
 namespace ClinicFlow.Domain.Tests.Services.Policies;
@@ -30,7 +33,7 @@ public class ProtectedCategoryPolicyTests
     [Theory]
     [InlineData(999)]
     [InlineData(-1)]
-    public void MinimumConsentAge_ShouldThrowArgumentOutOfRangeException_WhenCategoryIsUndefined(
+    public void MinimumConsentAge_ShouldThrowDomainValidationException_WhenCategoryIsUndefined(
         int undefinedCategoryValue
     )
     {
@@ -41,7 +44,9 @@ public class ProtectedCategoryPolicyTests
         var act = () => ProtectedCategoryPolicy.MinimumConsentAge(undefinedCategory);
 
         // Assert
-        act.Should().Throw<ArgumentOutOfRangeException>();
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.InvalidEnumValue);
     }
 
     [Fact]
