@@ -4,6 +4,7 @@ using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Services;
+using ClinicFlow.Domain.Services.Args.GuardianInvolvement;
 using ClinicFlow.Domain.Services.Contexts;
 using ClinicFlow.Domain.Services.Policies;
 using ClinicFlow.Domain.Tests.Shared;
@@ -71,7 +72,7 @@ public class MedicalEncounterServiceTests
     public void InitiateMedicalRecord_ShouldReturnMedicalRecord_WhenAppointmentIsInProgress()
     {
         // Arrange
-        var appointment = CreateAppointment(Guid.CreateVersion7());
+        var appointment = CreateAppointment();
         var chiefComplaint = "Headache";
 
         // Act
@@ -388,8 +389,12 @@ public class MedicalEncounterServiceTests
         var act = () =>
             MedicalEncounterService.RecordGuardianInvolvementDetermination(
                 null!,
-                CreateAppointment(Guid.CreateVersion7()),
-                true
+                CreateAppointment(),
+                new DoctorGuardianInvolvementArgs
+                {
+                    InitiatorDoctorId = Guid.CreateVersion7(),
+                    GuardianInvolvementDeemedAppropriate = true,
+                }
             );
 
         // Assert
@@ -404,7 +409,26 @@ public class MedicalEncounterServiceTests
             MedicalEncounterService.RecordGuardianInvolvementDetermination(
                 CreateMedicalRecord(),
                 null!,
-                true
+                new DoctorGuardianInvolvementArgs
+                {
+                    InitiatorDoctorId = Guid.CreateVersion7(),
+                    GuardianInvolvementDeemedAppropriate = true,
+                }
+            );
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void RecordGuardianInvolvementDetermination_ShouldThrowArgumentNullException_WhenArgsIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            MedicalEncounterService.RecordGuardianInvolvementDetermination(
+                CreateMedicalRecord(),
+                CreateAppointment(),
+                null!
             );
 
         // Assert
@@ -415,7 +439,7 @@ public class MedicalEncounterServiceTests
     public void RecordGuardianInvolvementDetermination_ShouldThrowBusinessRuleValidationException_WhenRecordBelongsToAnotherAppointment()
     {
         // Arrange
-        var appointment = CreateAppointment(Guid.CreateVersion7());
+        var appointment = CreateAppointment();
         var record = MedicalRecord.Create(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
@@ -430,13 +454,47 @@ public class MedicalEncounterServiceTests
             MedicalEncounterService.RecordGuardianInvolvementDetermination(
                 record,
                 appointment,
-                true
+                new DoctorGuardianInvolvementArgs
+                {
+                    InitiatorDoctorId = Guid.CreateVersion7(),
+                    GuardianInvolvementDeemedAppropriate = true,
+                }
             );
 
         // Assert
         act.Should()
             .Throw<BusinessRuleValidationException>()
             .WithMessage(DomainErrors.MedicalEncounter.AppointmentMismatch);
+    }
+
+    [Fact]
+    public void RecordGuardianInvolvementDetermination_ShouldThrowDomainValidationException_WhenInitiatorIsNotAppointmentDoctor()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        var record = CreateMedicalRecordWithCategoryForAppointment(
+            ProtectedCategory.MentalHealthCounseling,
+            appointment.Id
+        );
+
+        var args = new DoctorGuardianInvolvementArgs
+        {
+            InitiatorDoctorId = Guid.CreateVersion7(),
+            GuardianInvolvementDeemedAppropriate = true,
+        };
+
+        // Act
+        var act = () =>
+            MedicalEncounterService.RecordGuardianInvolvementDetermination(
+                record,
+                appointment,
+                args
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Appointment.UnauthorizedDoctor);
     }
 
     [Fact]
@@ -460,7 +518,11 @@ public class MedicalEncounterServiceTests
             MedicalEncounterService.RecordGuardianInvolvementDetermination(
                 record,
                 scheduledAppointment,
-                true
+                new DoctorGuardianInvolvementArgs
+                {
+                    InitiatorDoctorId = scheduledAppointment.DoctorId,
+                    GuardianInvolvementDeemedAppropriate = true,
+                }
             );
 
         // Assert
@@ -473,14 +535,22 @@ public class MedicalEncounterServiceTests
     public void RecordGuardianInvolvementDetermination_ShouldSetDetermination_WhenAppointmentIsInProgress()
     {
         // Arrange
-        var appointment = CreateAppointment(Guid.CreateVersion7());
+        var appointment = CreateAppointment();
         var record = CreateMedicalRecordWithCategoryForAppointment(
             ProtectedCategory.MentalHealthCounseling,
             appointment.Id
         );
 
         // Act
-        MedicalEncounterService.RecordGuardianInvolvementDetermination(record, appointment, true);
+        MedicalEncounterService.RecordGuardianInvolvementDetermination(
+            record,
+            appointment,
+            new DoctorGuardianInvolvementArgs
+            {
+                InitiatorDoctorId = appointment.DoctorId,
+                GuardianInvolvementDeemedAppropriate = true,
+            }
+        );
 
         // Assert
         record.GuardianInvolvementDeemedAppropriate.Should().BeTrue();
@@ -490,7 +560,7 @@ public class MedicalEncounterServiceTests
     public void RecordGuardianInvolvementDetermination_ShouldSetDetermination_WhenAppointmentIsCompleted()
     {
         // Arrange
-        var appointment = CreateAppointment(Guid.CreateVersion7());
+        var appointment = CreateAppointment();
         appointment.Complete(_fakeTime.GetUtcNow().UtcDateTime);
         var record = CreateMedicalRecordWithCategoryForAppointment(
             ProtectedCategory.ResidentialShelter,
@@ -498,7 +568,15 @@ public class MedicalEncounterServiceTests
         );
 
         // Act
-        MedicalEncounterService.RecordGuardianInvolvementDetermination(record, appointment, false);
+        MedicalEncounterService.RecordGuardianInvolvementDetermination(
+            record,
+            appointment,
+            new DoctorGuardianInvolvementArgs
+            {
+                InitiatorDoctorId = appointment.DoctorId,
+                GuardianInvolvementDeemedAppropriate = false,
+            }
+        );
 
         // Assert
         record.GuardianInvolvementDeemedAppropriate.Should().BeFalse();
@@ -571,6 +649,22 @@ public class MedicalEncounterServiceTests
         );
 
         appointment.SetId(id);
+        appointment.CheckIn(DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime));
+        appointment.Start(appointment.DoctorId, _fakeTime.GetUtcNow().UtcDateTime);
+
+        return appointment;
+    }
+
+    private Appointment CreateAppointment()
+    {
+        var appointment = Appointment.Schedule(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(-1)),
+            TimeRange.Create(new TimeOnly(10), new TimeOnly(11))
+        );
+
         appointment.CheckIn(DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime));
         appointment.Start(appointment.DoctorId, _fakeTime.GetUtcNow().UtcDateTime);
 
