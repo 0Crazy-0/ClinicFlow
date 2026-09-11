@@ -99,13 +99,13 @@ public class PrimaryProfileRegistrationServiceTests
     }
 
     [Fact]
-    public void Register_ShouldThrowPatientTooYoungForSelfMembership_WhenNewPatientAgeIsLessThan13()
+    public void Register_ShouldThrowPatientTooYoungForSelfMembership_WhenNewPatientAgeIsLessThan12()
     {
         // Arrange
         var userId = Guid.CreateVersion7();
         var args = CreateArgs(userId) with
         {
-            DateOfBirth = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-12)),
+            DateOfBirth = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-11)),
         };
 
         // Act
@@ -118,12 +118,12 @@ public class PrimaryProfileRegistrationServiceTests
     }
 
     [Fact]
-    public void Register_ShouldThrowPatientTooYoungForSelfMembership_WhenExistingPatientAgeIsLessThan13()
+    public void Register_ShouldThrowPatientTooYoungForSelfMembership_WhenExistingPatientAgeIsLessThan12()
     {
         // Arrange
         var existingPatient = Patient.CreateProfile(
             PersonName.Create("Test Patient"),
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-12)),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-11)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
 

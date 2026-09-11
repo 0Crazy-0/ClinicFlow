@@ -12,7 +12,7 @@ namespace ClinicFlow.Domain.Services;
 /// </summary>
 public static class PrimaryProfileRegistrationService
 {
-    public const int MinimumSelfAge = 13;
+    public const int MinimumSelfAge = 12;
 
     public static (Patient Patient, FamilyMembership Membership) Register(
         PrimaryProfileRegistrationArgs args
