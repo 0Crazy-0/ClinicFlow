@@ -2,6 +2,7 @@ using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Base;
+using ClinicFlow.Domain.Services.Args.GuardianInvolvement;
 using ClinicFlow.Domain.Services.Contexts;
 using ClinicFlow.Domain.Services.Policies;
 
@@ -101,22 +102,26 @@ public class MedicalEncounterService(
     public static void RecordGuardianInvolvementDetermination(
         MedicalRecord record,
         Appointment appointment,
-        bool guardianInvolvementDeemedAppropriate
+        DoctorGuardianInvolvementArgs args
     )
     {
         ArgumentNullException.ThrowIfNull(record);
         ArgumentNullException.ThrowIfNull(appointment);
+        ArgumentNullException.ThrowIfNull(args);
 
         if (record.AppointmentId != appointment.Id)
             throw new BusinessRuleValidationException(
                 DomainErrors.MedicalEncounter.AppointmentMismatch
             );
 
+        if (args.InitiatorDoctorId != appointment.DoctorId)
+            throw new DomainValidationException(DomainErrors.Appointment.UnauthorizedDoctor);
+
         if (appointment.Status is not (AppointmentStatus.InProgress or AppointmentStatus.Completed))
             throw new BusinessRuleValidationException(
                 DomainErrors.MedicalEncounter.AppointmentNotInProgressOrCompleted
             );
 
-        record.SetGuardianInvolvementDetermination(guardianInvolvementDeemedAppropriate);
+        record.SetGuardianInvolvementDetermination(args.GuardianInvolvementDeemedAppropriate);
     }
 }
