@@ -128,7 +128,6 @@ public class AppointmentTypeDefinition : SoftDeletableEntity
         if (specialtyIds.Count != specialtyIds.Distinct().Count())
             throw new DomainValidationException(DomainErrors.Validation.DuplicateValues);
 
-        _allowedSpecialtyIds.Clear();
         _allowedSpecialtyIds.AddRange(specialtyIds);
 
         IsUnrestrictedBySpecialty = false;
