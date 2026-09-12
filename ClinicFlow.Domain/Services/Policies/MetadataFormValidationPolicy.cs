@@ -19,20 +19,14 @@ public class MetadataFormValidationPolicy(IJsonSchemaValidator jsonSchemaValidat
         ArgumentNullException.ThrowIfNull(appointmentType);
         ArgumentNullException.ThrowIfNull(providedDetails);
 
-        var providedTemplateCodes = providedDetails.Select(d => d.TemplateCode).ToHashSet();
-
         foreach (var requiredTemplate in appointmentType.RequiredTemplates)
         {
-            if (!providedTemplateCodes.Contains(requiredTemplate.Code))
-            {
-                throw new BusinessRuleValidationException(
+            var providedDetail =
+                providedDetails.FirstOrDefault(d => d.TemplateCode == requiredTemplate.Code)
+                ?? throw new BusinessRuleValidationException(
                     DomainErrors.MedicalEncounter.MissingRequiredTemplate
                 );
-            }
 
-            var providedDetail = providedDetails.First(d =>
-                d.TemplateCode == requiredTemplate.Code
-            );
             ValidateJsonStructure(requiredTemplate, providedDetail);
         }
     }
