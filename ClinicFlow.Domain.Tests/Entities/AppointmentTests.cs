@@ -586,6 +586,26 @@ public class AppointmentTests
     }
 
     [Fact]
+    public void Complete_ShouldSucceed_WhenCompletedAtEqualsAppointmentStart()
+    {
+        // Arrange
+        var appointment = CreateAppointment(); // TimeRange: 9:00 - 10:00
+
+        appointment.CheckIn(appointment.ScheduledDate);
+        appointment.Start(
+            appointment.DoctorId,
+            appointment.ScheduledDate.ToDateTime(appointment.TimeRange.Start)
+        );
+
+        // Act
+        appointment.Complete(appointment.ScheduledDate.ToDateTime(appointment.TimeRange.Start));
+
+        // Assert
+        appointment.Status.Should().Be(AppointmentStatus.Completed);
+        appointment.DomainEvents.OfType<AppointmentCompletedEvent>().Should().ContainSingle();
+    }
+
+    [Fact]
     public void Complete_ShouldThrowException_WhenStatusIsNotInProgress()
     {
         // Arrange

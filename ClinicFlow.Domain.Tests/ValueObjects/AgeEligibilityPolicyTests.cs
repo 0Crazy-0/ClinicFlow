@@ -311,6 +311,19 @@ public class AgeEligibilityPolicyTests
         result.Should().BeTrue();
     }
 
+    [Fact]
+    public void RequiresGuardianForAge_ShouldReturnFalse_WhenPatientIsExactlyLegalAdultAge()
+    {
+        // Arrange
+        var policy = AgeEligibilityPolicy.Create(null, null, true);
+
+        // Act
+        var result = policy.RequiresGuardianForAge(18);
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
     [Theory]
     [InlineData(0)]
     [InlineData(15)]

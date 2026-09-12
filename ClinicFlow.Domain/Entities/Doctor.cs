@@ -18,6 +18,7 @@ public class Doctor : SoftDeletableEntity
 
     public MedicalLicenseNumber LicenseNumber { get; private set; } = null!;
 
+    // Stryker disable once String
     public string Biography { get; private set; } = string.Empty;
 
     public ConsultationRoom ConsultationRoom { get; private set; } = null!;

@@ -13,27 +13,105 @@ For the CI workflow integration, see [.github/workflows/mutation-testing.yml](..
 
 ## Design Decisions & Philosophy
 
-### 1. Pure Code Philosophy Across All Layers
-In alignment with our [Codecov](./codecov.md) and [SonarCloud](./sonarcloud.md) conventions, **we do not use C# attributes (such as `[ExcludeFromCodeCoverage]`) or Stryker suppression comments (such as `// Stryker disable all`, `// Stryker disable once all`, `// Stryker disable once <mutators>`, or `// Stryker restore all`)** anywhere in the Domain, Application, or Infrastructure layers. 
+### 1. Domain-First Test Integrity Over Code Purity
 
-The codebase must speak its own language and remain completely free from tooling-specific annotations and comments. We prioritize code purity, domain clarity, and maintainability over artificially achieving a 100% mutation score by polluting the source code.
+Earlier revisions of this document enforced a strict "pure code" policy: no C# attributes (`[ExcludeFromCodeCoverage]`) and no Stryker suppression comments anywhere in Domain, Application, or Infrastructure. That policy has been **revised**, based on a recurring, well-understood pattern that the previous policy could not handle cleanly, and later extended to Infrastructure once the same reasoning proved to apply there too.
+
+#### The problem the old policy created
+
+ClinicFlow is a health system. Mutation testing is not a vanity metric here: it is one of the tools we rely on to catch real logical gaps before they become real bugs affecting patient data. A mutation report is only useful if a survived mutant reliably means "there might be a real gap here." Under the old policy, that signal was drowned out by a specific, repeating, structurally unavoidable false positive in Domain:
+
+```csharp
+public string TemplateCode { get; private set; } = string.Empty;
+```
+
+Properties with a private setter, populated exclusively through a validated factory method or constructor, still carry a default value assigned inline. Stryker has no way to know that the default is unreachable in practice: it mutates the literal (`string.Empty` → `"Stryker was here!"`) and generates a mutant that **cannot be killed by any reasonable test**, because reaching it would require asserting on a transient default value that the factory always overwrites before the object is ever usable.
+
+With every regeneration of the report, these false positives reappeared indistinguishably alongside genuine survivors. Verifying each one ("is this the known false positive, or a real gap this time?") for every survived mutant, every run, is exactly the kind of manual, error-prone triage that erodes trust in the tool and, eventually, gets skipped under deadline pressure. That is the real risk: not that the score looks worse than it is, but that a genuine gap gets waved through because it looked like the familiar noise.
+
+#### The revised policy
+
+`// Stryker disable once <mutator>` comments are now permitted, under a single condition: the mutant must be genuinely unreachable by design, or proven behaviorally equivalent, or a documented, justified cost/benefit trade-off, never suppressed merely because writing the test is inconvenient. The comment is a deliberate, per-line, per-mutator decision, never a blanket suppression, and it exists to keep the report's signal clean, not to inflate the score.
+
+This is a conscious trade-off. We are accepting a small amount of tooling annotation inside source files in exchange for a report where a survived mutant reliably means "look here." We are explicitly **not** doing this to chase a 100% score: a suppressed mutant does not count toward the score at all (see [Effect on Mutation Score](#effect-on-mutation-score)); it is removed from consideration entirely, same as an `Ignored` mutant from the `mutate` config exclusions.
+
+Every suppression must be documented at the point of use with a reason, and, for anything beyond the trivial Domain pattern below, cross-referenced in [Documented Survived & Equivalent Mutants](#documented-survived--equivalent-mutants), so the justification lives in git history and PR review, not just in a one-line comment.
+
+#### Why per-line `disable once`, not `disable all` / `restore all`
+
+We initially considered using ranged suppression to cover multiple adjacent properties with a single pair of comments:
+
+```csharp
+// Stryker disable all: props overwritten by factory method
+public string Name { get; private set; } = string.Empty;
+public string Description { get; private set; } = string.Empty;
+// Stryker restore all
+```
+
+**This does not reliably work in Stryker.NET.** We verified directly against our own codebase that a mutant between a `disable all`/`restore all` pair can still survive uninhibited, confirmed against known upstream issues in the Stryker.NET repository describing the same failure (ranged `disable`/`restore all` not consistently respected, particularly across separate member declarations). Do not use `disable all` / `restore all` for this purpose. It is not a matter of syntax mistakes; the feature has known reliability gaps in this scenario.
+
+The reliable pattern is `disable once`, scoped to the specific mutator, applied individually above each affected declaration:
+
+```csharp
+// Stryker disable once String
+public string Name { get; private set; } = string.Empty;
+
+// Stryker disable once String
+public string Description { get; private set; } = string.Empty;
+```
+
+Yes, this means one comment per property, with no shortcut for grouping several at once. That repetition is the accepted cost of a suppression mechanism we can actually trust, confirmed working, run after run, over one that silently fails a fraction of the time.
+
+#### Domain: when this applies (and when it does not)
+
+Two recurring, pre-approved cases in Domain:
+
+1. **Properties with a private setter and a literal default, populated only through a factory method or constructor that fully replaces the default before the entity is usable.**
+   ```csharp
+   // Stryker disable once String
+   public string Code { get; private set; } = string.Empty;
+   ```
+   Mutator: `String`. Reason: the mutated default is never observable outside object construction.
+
+2. **Private, parameterless constructors that exist solely for EF Core materialization and are never invoked by application code.**
+   ```csharp
+   // Stryker disable once all
+   // EF Core constructor
+   private AppointmentTypeDefinition()
+   {
+       // ...
+   }
+   ```
+   Mutator: `all` (there is no specific mutator to isolate; the whole construct is unreachable by design). Reason: EF Core invokes this exclusively via reflection during materialization; no application-level test can reach it without instantiating a real `DbContext` and asserting on ORM internals, which would test EF Core's behavior, not ours.
+
+This exception does **not** cover:
+- Any property or method with real branching, validation, or domain logic.
+- A survived mutant simply because writing the test is inconvenient or time-consuming.
+- Anything where killing the mutant would actually close a real gap: those get a test, not a comment.
+
+Before adding `// Stryker disable once` to a new case, confirm it is genuinely unreachable by the same reasoning as the two cases above. If in doubt, treat it as a real gap and write the test.
+
+#### Infrastructure: same mechanism, individually justified cases
+
+The four previously-documented Infrastructure survivors ([CreateRangeAsync empty check](#1-repository-createrangeasync-empty-check-count--0-vs-count--0), [ApplicationDbContext setup](#2-applicationdbcontext-infrastructure-setup), [UnitOfWork events filter](#3-unitofwork-domain-events-filter-count--0-vs-count--0), and [ToStableLong bitwise conversion](#4-unitofwork-advisory-lock-key-conversion-high--low-vs-high--low)) now also carry `// Stryker disable once` comments at their exact location, pointing back to their full proof or rationale below. Unlike the Domain pattern, these are **not** a repeating structural case: each is a unique, individually reviewed piece of logic, and each one's comment exists only because the accompanying proof or rationale in this document already justified it in full. The comment is a pointer to that justification, not a replacement for it. Any new Infrastructure survivor must go through the same documentation process (a full proof of equivalence or an explicit cost/benefit rationale) before it is suppressed; it is never suppressed on the strength of the comment alone.
+
+#### Application: no suppressions needed
+
+Unlike Domain and Infrastructure, the Application layer currently has no documented suppressions and needs none. Its 100% score is achieved purely through test coverage, not through any `// Stryker disable` comment. This isn't a gap in the exception process, it simply reflects that Application code (CQRS handlers, validators, mapping logic) doesn't exhibit the structural patterns that make Domain and Infrastructure need suppression: no factory-populated default properties, no EF Core materialization constructors, no equivalent-mutant arithmetic. If a genuinely unreachable or equivalent mutant ever does surface in Application, it follows the same documentation process as Infrastructure: a full proof or rationale added to this document before any suppression comment is added to the code.
+
+#### Effect on mutation score
+
+A mutant marked `Ignored` via `// Stryker disable` is **removed from the score calculation entirely**, same treatment as mutants excluded via the `mutate` glob patterns. It is not counted as killed, and it is not counted as survived; it simply does not enter the denominator. This is different from `NoCoverage`, which **does** count against the score (a `NoCoverage` mutant is treated as equivalent to a survivor, since no test exercises that line at all). Suppressing a genuinely unreachable EF Core constructor moves it from `NoCoverage` (penalizing the score) to `Ignored` (neutral): a legitimate correction, not score inflation, because the code is not testable by design in the first place.
 
 ### 2. Non-Blocking CI Status & Baseline Drift
-Stryker mutation testing runs in CI via GitHub Actions, but **it is intentionally configured as a non-blocking check for Pull Requests**. 
+Stryker mutation testing runs in CI via GitHub Actions, but **it is intentionally configured as a non-blocking check for Pull Requests**.
 
-This decision was made due to recurring false positives and tooling limitations in incremental baseline mode:
+This decision was made due to recurring tooling limitations in incremental baseline mode:
 
-1. **Pure Configuration Lines in `ApplicationDbContext`:**
-   Mutants surviving in `OnModelCreating` fall into two distinct categories:
-   - **`base.OnModelCreating(modelBuilder)` statement removal:** EF Core's base `DbContext.OnModelCreating` is an empty no-op, so removing this call produces zero side effects and leaves the model in an identical state — an **equivalent mutant** that cannot be distinguished by any test.
-   - **`modelBuilder.HasPostgresExtension("btree_gist")` registration:** This single line registers a PostgreSQL database extension and has no observable branching logic to verify in isolated unit or repository tests; mutants on its string literal are false positives.
-   
-   This exception is strictly limited to the two lines above. It does **not** extend to the `foreach` loops configuring `SequenceNumber`/`Version` (`BaseEntity`) or the dynamically-built soft-delete query filter (`SoftDeletableEntity`) — both are exercised by `ApplicationDbContextModelTests` and `ApplicationDbContextIntegrationTests` respectively, and any survived mutants there represent real gaps.
+**Baseline Reset on Accumulated Edits:**
+Stryker's `--with-baseline` mode operates by only evaluating mutants within changed code and comparing against a base commit. When a file accumulates modifications across multiple commits or refactorings, Stryker resets the baseline status for all mutants in the modified blocks. Consequently, previously killed or suppressed mutants can lose their baseline status and resurface as survived mutants in CI reports without any real regression in business logic.
 
-2. **Baseline Reset on Accumulated Edits:**
-   Stryker's `--with-baseline` mode operates by only evaluating mutants within changed code and comparing against a base commit. When a file accumulates modifications across multiple commits or refactorings, Stryker resets the baseline status for all mutants in the modified blocks. Consequently, previously killed or benign configuration mutants can lose their baseline status and resurface as survived mutants in CI reports without any real regression in business logic.
-
-Due to these false positives and baseline inconsistencies, Stryker is not a required gating check in PRs. Instead, developers verify mutation results locally before pushing. Local runs execute a full (non-baseline) analysis, so new mutants are not automatically isolated from pre-existing ones. Developers should review any survived mutants and confirm they fall into a known false-positive category (see above) rather than representing a real gap in business logic before merging.
+Due to this baseline inconsistency, Stryker is not a required gating check in PRs. Instead, developers verify mutation results locally before pushing. Local runs execute a full (non-baseline) analysis, so new mutants are not automatically isolated from pre-existing ones. Developers should review any survived mutants and confirm whether they require a new documented suppression (see above) or represent a real gap in business logic before merging.
 
 ### 3. Mutation Score Thresholds & Current Status
 Each project defines three mutation score thresholds in its `stryker-config.json`:
@@ -42,11 +120,11 @@ Each project defines three mutation score thresholds in its `stryker-config.json
 |---|---|---|---|---|
 | **Domain** | ≥ 95% | 90% | < 85% | **100% (0 surviving mutants)** |
 | **Application** | ≥ 95% | 90% | < 80% | **100% (0 surviving mutants)** |
-| **Infrastructure** | ≥ 95% | 90% | < 85% | [Documented exceptions only](#documented-survived--equivalent-mutants) |
+| **Infrastructure** | ≥ 95% | 90% | < 85% | **100% (0 surviving mutants)** |
 
-Both **Domain** and **Application** layers achieve and maintain a **100% mutation score with zero surviving mutants**. Every mutation generated across domain entities, value objects, domain services, CQRS command/query handlers, and validators is killed by their corresponding test suites.
+**Domain**, **Application**, and **Infrastructure** all achieve and maintain a **100% mutation score with zero surviving mutants**. Every mutation generated across domain entities, value objects, domain services, CQRS command/query handlers, validators, repository implementations, persistence logic, and policies is either killed by the corresponding test suite or deliberately suppressed via a documented `// Stryker disable once` comment, per the policy above.
 
-The **Infrastructure** layer similarly kills all mutations across repository implementations, persistence logic, and policies, with surviving mutants strictly confined to the four documented exceptions below (repository `CreateRangeAsync` boundary check, `ApplicationDbContext` model registration, `UnitOfWork` events filter, and `ToStableLong` bitwise helper). Outside of these documented cases, Infrastructure is expected to remain completely free of surviving mutants.
+Suppressed mutants are not hidden from scrutiny: every suppression in Infrastructure is backed by a full proof of equivalence or an explicit rationale in [Documented Survived & Equivalent Mutants](#documented-survived--equivalent-mutants), and any newly introduced suppression must be added there and reviewed before merging.
 
 ---
 
@@ -83,13 +161,10 @@ Certain file patterns and namespaces are globally excluded from mutation analysi
 ## Documented Survived & Equivalent Mutants
 
 > [!NOTE]
-> **Zero Survived Mutants in Domain and Application:**
-> The `ClinicFlow.Domain` and `ClinicFlow.Application` layers have **zero surviving mutants** (100% mutation score).
->
-> **Infrastructure Baseline & Zero-Mutant Expectation:**
-> The survived and equivalent mutants documented below occur **exclusively within the Infrastructure layer** (`ClinicFlow.Infrastructure`). Outside of these documented exceptions, the Infrastructure layer is expected to be completely free of surviving mutants.
+> **Zero Survived Mutants Across All Layers:**
+> `ClinicFlow.Domain`, `ClinicFlow.Application`, and `ClinicFlow.Infrastructure` all have **zero surviving mutants** (100% mutation score). Mutants that would otherwise survive are either killed by tests or intentionally suppressed via `// Stryker disable once` comments, each backed by the proof or rationale below.
 
-The following survived mutants are intentionally permitted. Each is documented below with either a proof of behavioral equivalence or a rationale for why killing it would require disproportionate test complexity (e.g., reflection against private members) without practical benefit. No other Infrastructure mutant is permitted to survive outside this list; any new survivor must either be killed or added here with equivalent proof/rationale and reviewed.
+The following mutants are intentionally suppressed via code comment. Each is documented below with either a proof of behavioral equivalence or a rationale for why killing it would require disproportionate test complexity (e.g., reflection against private members) without practical benefit. No new suppression is permitted outside this process; any newly introduced survivor must either be killed, or added here with equivalent proof/rationale, reviewed, and only then suppressed in code.
 
 ### 1. Repository `CreateRangeAsync` Empty Check (`Count > 0` vs `Count >= 0`)
 
@@ -107,7 +182,7 @@ public Task CreateRangeAsync(
         .Where(p => dbContext.Entry(p).State is EntityState.Detached)
         .ToList();
 
-    // Stryker mutates 'Count > 0' to 'Count >= 0'
+    // Stryker disable once Equality: see docs/tooling/stryker.md, section "1. Repository CreateRangeAsync Empty Check"
     if (detachedPenalties.Count > 0)
         dbContext.PatientPenalties.AddRange(detachedPenalties);
 
@@ -136,7 +211,8 @@ Stryker mutates the relational operator from `Count > 0` to `Count >= 0`.
    Note: `DbSet<TEntity>.AddRange(IEnumerable<TEntity>)` is virtual in EF Core 10.0.11. This equivalence claim holds only for tests exercising the real EF Core implementation. A mock or derived `DbSet` could still observe the call itself (e.g. via `Verify(x => x.AddRange(...))`), even though no tracked or persisted state changes.
 
 4. **Conclusion:**
-   Restricted to tests that use the real EF Core implementation and assert only tracked or persisted state, `AddRange([])` and not calling `AddRange` produce the exact same observable outcome. Within that scope, the mutant is an **equivalent mutant** and cannot be killed by any assertion on tracked entities, persisted state, or generated SQL.
+   Restricted to tests that use the real EF Core implementation and assert only tracked or persisted state, `AddRange([])` and not calling `AddRange` produce the exact same observable outcome. Within that scope, the mutant is an **equivalent mutant** and cannot be killed by any assertion on tracked entities, persisted state, or generated SQL. Suppressed via `// Stryker disable once Equality`.
+
 ---
 
 ### 2. `ApplicationDbContext` Infrastructure Setup
@@ -146,23 +222,25 @@ Stryker mutates the relational operator from `Count > 0` to `Count >= 0`.
 ```csharp
 protected override void OnModelCreating(ModelBuilder modelBuilder)
 {
-    // Stryker statement mutation: removes base.OnModelCreating(modelBuilder)
+    // Stryker disable once all: see docs/tooling/stryker.md, section "2. ApplicationDbContext Infrastructure Setup"
     base.OnModelCreating(modelBuilder);
 
-    // Stryker string/statement mutation: mutates or removes extension registration
+    // Stryker disable once String: see docs/tooling/stryker.md, section "2. ApplicationDbContext Infrastructure Setup"
     modelBuilder.HasPostgresExtension("btree_gist");
-    
+
     // Dynamic soft-delete filter expressions and sequence number conventions...
 }
 ```
 
-Mutants generated inside `OnModelCreating` survive due to the following characteristics:
+Mutants generated inside `OnModelCreating` are suppressed due to the following characteristics:
 
 1. **`base.OnModelCreating(modelBuilder)` Statement Removal:**
    In EF Core's base `DbContext` class, the virtual `OnModelCreating` method is an empty method (a complete no-op). When Stryker mutates this line by removing the invocation, calling an empty base method versus omitting the call produces zero side effects and leaves the model in an identical state. This makes the statement removal an **equivalent mutant** that cannot be distinguished by tests.
 
 2. **Model Metadata and Engine Extensions:**
    Invocations such as `modelBuilder.HasPostgresExtension("btree_gist")` and dynamic query filter / row version metadata bindings target database engine extensions and ORM conventions. These configurations are exercised when applying database migrations against PostgreSQL, but have no branchable domain logic to verify in isolated unit or repository tests.
+
+This exception is strictly limited to the two lines above. It does **not** extend to the `foreach` loops configuring `SequenceNumber`/`Version` (`BaseEntity`) or the dynamically-built soft-delete query filter (`SoftDeletableEntity`): both are exercised by `ApplicationDbContextModelTests` and `ApplicationDbContextIntegrationTests` respectively, and any survived mutants there represent real gaps and must not be suppressed.
 
 ---
 
@@ -173,9 +251,10 @@ Mutants generated inside `OnModelCreating` survive due to the following characte
 ```csharp
 public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
 {
+   // Stryker disable once Equality: see docs/tooling/stryker.md, section "3. UnitOfWork Domain Events Filter"
     var domainEntities = dbContext
         .ChangeTracker.Entries<BaseEntity>()
-        .Where(x => x.Entity.DomainEvents.Count > 0) // Stryker mutates to 'Count >= 0'
+        .Where(x => x.Entity.DomainEvents.Count > 0)
         .ToList();
 
     var domainEvents = domainEntities.SelectMany(x => x.Entity.DomainEvents).ToList();
@@ -201,11 +280,11 @@ Stryker mutates `x.Entity.DomainEvents.Count > 0` to `x.Entity.DomainEvents.Coun
 3. **Indistinguishable Side Effects (Persistence & Notifications):**
    When an entity with 0 events is included:
    - `domainEntities.SelectMany(x => x.Entity.DomainEvents)` produces 0 items (no extra events added to `domainEvents`).
-   - `entity.Entity.ClearDomainEvents()` on an already empty collection produces no observable difference in persisted data or published notifications. Note: internally,        `List<T>.Clear()` still increments the list's version counter even when empty, which could invalidate a concurrent enumerator over that same `DomainEvents` instance. No such concurrent enumeration occurs within the current `SaveChangesAsync` flow.
+   - `entity.Entity.ClearDomainEvents()` on an already empty collection produces no observable difference in persisted data or published notifications. Note: internally, `List<T>.Clear()` still increments the list's version counter even when empty, which could invalidate a concurrent enumerator over that same `DomainEvents` instance. No such concurrent enumeration occurs within the current `SaveChangesAsync` flow.
    - Dispatched notifications, database persistence, and entity states remain completely identical.
 
 4. **Conclusion:**
-   The output collection of events, the published MediatR notifications, and the database changes are identical. This is an **equivalent mutant** for the purposes of persisted state and published notifications, and cannot be distinguished by tests covering those concerns.
+   The output collection of events, the published MediatR notifications, and the database changes are identical. This is an **equivalent mutant** for the purposes of persisted state and published notifications, and cannot be distinguished by tests covering those concerns. Suppressed via `// Stryker disable once Equality`.
 
 ---
 
@@ -220,11 +299,12 @@ private static long ToStableLong(Guid guid)
     guid.TryWriteBytes(bytes);
     var high = BitConverter.ToInt64(bytes[..8]);
     var low = BitConverter.ToInt64(bytes[8..]);
-    return high ^ low; // Stryker mutates to '~(high ^ low)'
+    // Stryker disable once Bitwise: see docs/tooling/stryker.md, section "4. UnitOfWork Advisory Lock Key Conversion"
+    return high ^ low;
 }
 ```
 
-#### Rationale and Why This Mutant is Permitted to Survive
+#### Rationale and Why This Mutant is Suppressed
 Stryker applies a bitwise mutation on `high ^ low`, converting it to `~(high ^ low)`.
 
 1. **Behavioral Context:**
@@ -239,7 +319,7 @@ Stryker applies a bitwise mutation on `high ^ low`, converting it to `~(high ^ l
    - Injecting complex EF Core command interceptors to inspect low-level raw SQL text and parameters sent to PostgreSQL.
 
 4. **Conclusion:**
-   Writing fragile reflection-based tests or complex database command interceptors to assert on an internal bitwise hashing formula adds significant maintenance complexity without improving business logic reliability. Therefore, this mutant is intentionally permitted to survive.
+   Writing fragile reflection-based tests or complex database command interceptors to assert on an internal bitwise hashing formula adds significant maintenance complexity without improving business logic reliability. Therefore, this mutant is intentionally suppressed via `// Stryker disable once Bitwise`.
 
 ---
 
@@ -281,6 +361,6 @@ dotnet stryker -m "**/Repositories/*.cs" --concurrency 1
 
 When reviewing mutation test output:
 
-1. **Verify Business Logic Mutants (Domain & Application):** Ensure all mutants in Domain entities, Domain services, and Application handlers/validators are killed (maintaining a 100% mutation score with zero surviving mutants).
-2. **Inspect Survived Mutants (Infrastructure):** If any mutant survives in `ClinicFlow.Infrastructure`, verify whether it belongs strictly to the documented exceptions above (repository `CreateRangeAsync` boundary check, `ApplicationDbContext` model registration, `UnitOfWork` events filter, or `ToStableLong` bitwise helper). Outside of these documented exceptions, the Infrastructure layer must be free of surviving mutants.
-3. **No Unjustified Mutants:** Any newly introduced survived mutant in business logic or repositories outside the documented exceptions must be addressed by adding corresponding test assertions before merging.
+1. **Verify Business Logic Mutants:** Ensure all mutants across Domain, Application, and Infrastructure are killed or suppressed, maintaining a 100% mutation score with zero surviving mutants.
+2. **Inspect Any `// Stryker disable` Comment:** Confirm it falls into one of the pre-approved Domain patterns (factory-populated property default, EF Core materialization constructor) or references an entry in [Documented Survived & Equivalent Mutants](#documented-survived--equivalent-mutants). A suppression comment with no corresponding documentation entry (for anything beyond the trivial Domain pattern) should be rejected in review.
+3. **No Unjustified Suppressions:** Any newly introduced suppression outside the pre-approved Domain patterns must come with a full proof of equivalence or an explicit cost/benefit rationale added to this document before merging. If in doubt, write the test instead of suppressing the mutant.

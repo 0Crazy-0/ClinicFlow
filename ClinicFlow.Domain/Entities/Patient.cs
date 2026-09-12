@@ -17,8 +17,10 @@ public class Patient : BaseEntity
 
     public BloodType BloodType { get; private set; } = null!;
 
+    // Stryker disable once String
     public string Allergies { get; private set; } = string.Empty;
 
+    // Stryker disable once String
     public string ChronicConditions { get; private set; } = string.Empty;
 
     public EmergencyContact EmergencyContact { get; private set; } = null!;

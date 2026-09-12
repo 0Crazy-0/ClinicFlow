@@ -19,6 +19,7 @@ public class User : BaseEntity
 
     public EmailAddress Email { get; private set; } = null!;
 
+    // Stryker disable once String
     public string PasswordHash { get; private set; } = string.Empty;
 
     public PhoneNumber PhoneNumber { get; private set; } = null!;

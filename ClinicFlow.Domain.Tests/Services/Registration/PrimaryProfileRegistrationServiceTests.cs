@@ -83,6 +83,28 @@ public class PrimaryProfileRegistrationServiceTests
     }
 
     [Fact]
+    public void Register_ShouldSucceed_WhenPatientAgeIsExactly12()
+    {
+        // Arrange
+        var userId = Guid.CreateVersion7();
+        var args = CreateArgs(userId) with
+        {
+            DateOfBirth = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-12)),
+        };
+
+        // Act
+        var (patient, membership) = PrimaryProfileRegistrationService.Register(args);
+
+        // Assert
+        patient.GetAge(DateOnly.FromDateTime(args.ReferenceTime)).Should().Be(12);
+        membership.PatientId.Should().Be(patient.Id);
+        membership.UserId.Should().Be(userId);
+        membership.Role.Should().Be(PatientRelationship.Self);
+        membership.Status.Should().Be(FamilyMembershipStatus.Active);
+        membership.StartedAt.Should().Be(args.ReferenceTime);
+    }
+
+    [Fact]
     public void Register_ShouldThrowPatientAlreadyHasActiveMembership_WhenHasExistingSelfMembershipIsTrue()
     {
         // Arrange

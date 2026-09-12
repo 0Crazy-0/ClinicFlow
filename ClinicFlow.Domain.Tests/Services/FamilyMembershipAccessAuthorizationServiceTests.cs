@@ -83,6 +83,24 @@ public class FamilyMembershipAccessAuthorizationServiceTests
         result.Should().BeFalse();
     }
 
+    [Fact]
+    public void CanChangeAccessLevel_ShouldTreatPatientAsAdult_WhenPatientIsExactlyEighteenYearsOld()
+    {
+        // Arrange
+        var context = CreateContext(
+            yearsOld: 18,
+            selfMembership: true,
+            patientsSelf: false,
+            activeMembership: true
+        );
+
+        // Act
+        var result = FamilyMembershipAccessAuthorizationService.CanChangeAccessLevel(context);
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
     private AccessLevelChangeAuthorizationContext CreateContext(
         int yearsOld,
         bool selfMembership,

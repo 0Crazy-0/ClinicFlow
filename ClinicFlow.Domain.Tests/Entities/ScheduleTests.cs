@@ -243,6 +243,39 @@ public class ScheduleTests
     }
 
     [Fact]
+    public void EnsureNoDuplicateDay_ShouldNotThrow_WhenSameDoctorHasScheduleOnDifferentDay()
+    {
+        // Arrange
+        var doctorId = Guid.CreateVersion7();
+        var existingSchedules = new List<Schedule> { CreateSchedule(doctorId) }; //schedule is on Monday
+
+        // Act
+        var act = () =>
+            Schedule.EnsureNoDuplicateDay(existingSchedules, doctorId, DayOfWeek.Tuesday);
+
+        // Assert
+        act.Should().NotThrow();
+    }
+
+    [Fact]
+    public void EnsureNoDuplicateDay_ShouldNotThrow_WhenDifferentDoctorHasScheduleOnSameDay()
+    {
+        // Arrange
+        var existingSchedules = new List<Schedule> { CreateSchedule() };
+
+        // Act
+        var act = () =>
+            Schedule.EnsureNoDuplicateDay(
+                existingSchedules,
+                Guid.CreateVersion7(),
+                DayOfWeek.Monday
+            );
+
+        // Assert
+        act.Should().NotThrow();
+    }
+
+    [Fact]
     public void EnsureDoctorIsAvailable_ShouldNotThrow_WhenDoctorMatchesAndScheduleCoversTimeRange()
     {
         // Arrange

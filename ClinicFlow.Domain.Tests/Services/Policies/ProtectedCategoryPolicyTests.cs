@@ -541,6 +541,20 @@ public class ProtectedCategoryPolicyTests
         IsVisibleToFamilyMember(record, [ProtectedCategory.ResidentialShelter]).Should().BeFalse();
     }
 
+    [Fact]
+    public void IsVisibleToFamilyMember_ShouldReturnTrue_WhenExcludedResidentialShelterHadGuardianInvolvementDeemedAppropriate()
+    {
+        // Arrange
+        var record = CreateMedicalRecord(
+            protectedCareCategory: ProtectedCategory.ResidentialShelter,
+            guardianInitiatedTreatment: null
+        );
+        record.SetGuardianInvolvementDetermination(true);
+
+        // Act & Assert
+        IsVisibleToFamilyMember(record, [ProtectedCategory.ResidentialShelter]).Should().BeTrue();
+    }
+
     private static bool IsVisibleToFamilyMember(
         MedicalRecord record,
         IReadOnlyCollection<ProtectedCategory> excludedCategories

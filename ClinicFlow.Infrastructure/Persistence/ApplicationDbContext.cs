@@ -26,8 +26,10 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     /// <inheritdoc />
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        // Stryker disable once all: see docs/tooling/stryker.md, section "2. ApplicationDbContext Infrastructure Setup"
         base.OnModelCreating(modelBuilder);
 
+        // Stryker disable once String: see docs/tooling/stryker.md, section "2. ApplicationDbContext Infrastructure Setup"
         modelBuilder.HasPostgresExtension("btree_gist");
 
         foreach (
