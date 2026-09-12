@@ -2,6 +2,7 @@ using AwesomeAssertions;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
+using ClinicFlow.Domain.Events.Appointments;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Args.GuardianInvolvement;
@@ -251,6 +252,37 @@ public class MedicalEncounterServiceTests
     }
 
     [Fact]
+    public void ValidateAndCompleteRecord_ShouldCompleteAppointment_WhenValid()
+    {
+        // Arrange
+        var doctorId = Guid.CreateVersion7();
+        var appointmentId = Guid.CreateVersion7();
+        var record = CreateMedicalRecord(doctorId, appointmentId);
+        var appointmentType = CreateAppointmentType();
+        var detail = DynamicClinicalDetail.Create("Test1", "{}");
+        var providedDetails = new List<DynamicClinicalDetail> { detail };
+
+        var context = new MedicalEncounterContext
+        {
+            ExpectedDoctor = CreateDoctor(doctorId),
+            Appointment = CreateAppointment(appointmentId),
+            AppointmentTypeDefinition = appointmentType,
+            CompletedAt = _fakeTime.GetUtcNow().UtcDateTime,
+            ProvidedDetails = providedDetails,
+        };
+
+        // Act
+        _sut.ValidateAndCompleteRecord(record, context);
+
+        // Assert
+        context.Appointment.Status.Should().Be(AppointmentStatus.Completed);
+        context
+            .Appointment.DomainEvents.OfType<AppointmentCompletedEvent>()
+            .Should()
+            .ContainSingle();
+    }
+
+    [Fact]
     public void AppendClinicalDetail_ShouldThrowArgumentNullException_WhenRecordIsNull()
     {
         // Arrange & Act
@@ -380,6 +412,31 @@ public class MedicalEncounterServiceTests
 
         // Assert
         record.ClinicalDetails.Should().Contain(detail);
+    }
+
+    [Fact]
+    public void AppendClinicalDetail_ShouldSkipSchemaValidation_WhenSchemaIsEmptyObject()
+    {
+        // Arrange
+        var record = CreateMedicalRecord();
+        var detail = DynamicClinicalDetail.Create("Test1", """{"bp":"120/80"}""");
+        var template = CreateFormTemplate("Test1", "{}");
+
+        string errorMessage = "Schema would fail if evaluated";
+        _mockJsonValidator
+            .Setup(v => v.ValidateSchema("{}", """{"bp":"120/80"}""", out errorMessage!))
+            .Returns(false);
+
+        // Act
+        _sut.AppendClinicalDetail(record, detail, template);
+
+        // Assert
+        record.ClinicalDetails.Should().Contain(detail);
+        _mockJsonValidator.Verify(
+            v =>
+                v.ValidateSchema(It.IsAny<string>(), It.IsAny<string>(), out It.Ref<string?>.IsAny),
+            Times.Never
+        );
     }
 
     [Fact]

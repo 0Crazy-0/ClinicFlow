@@ -97,6 +97,27 @@ public class PenaltyHistoryTests
     }
 
     [Fact]
+    public void IsCurrentlyBlocked_ShouldReturnFalse_WhenBlockExpiresExactlyOnReferenceDate()
+    {
+        // Arrange
+        var patientId = Guid.CreateVersion7();
+        var referenceTime = _fakeTime.GetUtcNow().UtcDateTime;
+
+        var expiringBlock = PatientPenalty.CreateAutomaticBlock(
+            patientId,
+            PenaltyReasons.AutomaticBlock,
+            BlockDuration.Minor,
+            referenceTime
+        );
+
+        var history = new PenaltyHistory([expiringBlock]);
+        var referenceDate = DateOnly.FromDateTime(referenceTime).AddDays((int)BlockDuration.Minor);
+
+        // Assert
+        history.IsCurrentlyBlocked(referenceDate).Should().BeFalse();
+    }
+
+    [Fact]
     public void IsCurrentlyBlocked_ShouldReturnTrue_WhenActiveBlockExists()
     {
         // Arrange

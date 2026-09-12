@@ -20,6 +20,18 @@ public class TimeRangeTests
     }
 
     [Fact]
+    public void Constructor_ShouldThrowException_WhenStartEqualsEnd()
+    {
+        // Arrange & Act
+        var act = () => TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(9, 0));
+
+        // Assert
+        act.Should()
+            .Throw<InvalidTimeRangeException>()
+            .WithMessage(DomainErrors.Schedule.InvalidTimeRange);
+    }
+
+    [Fact]
     public void Duration_ShouldReturnCorrectDifference()
     {
         // Arrange
