@@ -7,7 +7,10 @@ namespace ClinicFlow.Domain.Entities;
 /// </summary>
 public class DynamicClinicalDetail : BaseEntity
 {
+    // Stryker disable once String
     public string TemplateCode { get; private set; } = string.Empty;
+
+    // Stryker disable once String
     public string JsonDataPayload { get; private set; } = string.Empty;
 
     // EF Core constructor

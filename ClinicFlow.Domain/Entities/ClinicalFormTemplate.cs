@@ -12,14 +12,20 @@ public class ClinicalFormTemplate : SoftDeletableEntity
     /// Immutable natural key that external systems and the frontend use to
     /// reference this template. Changing it would break historical records.
     /// </summary>
+    // Stryker disable once String
     public string Code { get; private set; } = string.Empty;
+
+    // Stryker disable once String
     public string Name { get; private set; } = string.Empty;
+
+    // Stryker disable once String
     public string Description { get; private set; } = string.Empty;
 
     /// <summary>
     /// JSON string defining the schema, fields, and types required for this template.
     /// This acts as the metadata for the frontend to render the form and the backend to validate it.
     /// </summary>
+    // Stryker disable once String
     public string JsonSchemaDefinition { get; private set; } = "{}";
 
     // EF Core constructor

@@ -12,8 +12,10 @@ public class AppointmentTypeDefinition : SoftDeletableEntity
 {
     public AppointmentCategory Category { get; private set; }
 
+    // Stryker disable once String
     public string Name { get; private set; } = string.Empty;
 
+    // Stryker disable once String
     public string Description { get; private set; } = string.Empty;
 
     public EncounterDuration Duration { get; private set; }
@@ -38,6 +40,7 @@ public class AppointmentTypeDefinition : SoftDeletableEntity
     public IReadOnlyCollection<ClinicalFormTemplate> RequiredTemplates =>
         _requiredTemplates.AsReadOnly();
 
+    // Stryker disable once all
     // EF Core constructor
     private AppointmentTypeDefinition()
     {

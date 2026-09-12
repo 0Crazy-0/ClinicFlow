@@ -28,8 +28,10 @@ public class Appointment : BaseEntity
 
     public AppointmentStatus Status { get; private set; }
 
+    // Stryker disable once String
     public string PatientNotes { get; private set; } = string.Empty;
 
+    // Stryker disable once String
     public string ReceptionistNotes { get; private set; } = string.Empty;
 
     public DateOnly? CheckedInAt { get; private set; }

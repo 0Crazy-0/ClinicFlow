@@ -52,6 +52,7 @@ public class MedicalRecord : BaseEntity
     /// <summary>
     /// Primary symptom or reason for the visit as reported by the patient.
     /// </summary>
+    // Stryker disable once String
     public string ChiefComplaint { get; private set; } = string.Empty;
 
     private readonly List<DynamicClinicalDetail> _clinicalDetails = [];

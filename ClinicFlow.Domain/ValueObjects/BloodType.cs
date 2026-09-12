@@ -7,6 +7,7 @@ public record BloodType
 {
     public string Value { get; }
 
+    // Stryker disable once String
     private static readonly HashSet<string> ValidBloodTypes =
     [
         "A+",

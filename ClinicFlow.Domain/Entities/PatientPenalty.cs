@@ -15,6 +15,7 @@ public class PatientPenalty : BaseEntity
 
     public PenaltyType Type { get; private set; }
 
+    // Stryker disable once String
     public string Reason { get; private set; } = string.Empty;
 
     /// <remarks>

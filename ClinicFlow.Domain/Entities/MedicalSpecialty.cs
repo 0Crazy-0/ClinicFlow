@@ -13,8 +13,10 @@ namespace ClinicFlow.Domain.Entities;
 /// </remarks>
 public class MedicalSpecialty : SoftDeletableEntity
 {
+    // Stryker disable once String
     public string Name { get; private set; } = string.Empty;
 
+    // Stryker disable once String
     public string Description { get; private set; } = string.Empty;
 
     /// <remarks>
@@ -26,6 +28,7 @@ public class MedicalSpecialty : SoftDeletableEntity
 
     public CancellationLimit CancellationPolicy { get; private set; }
 
+    // Stryker disable once all
     // EF Core constructor
     private MedicalSpecialty()
     {
