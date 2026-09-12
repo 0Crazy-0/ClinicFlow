@@ -21,7 +21,7 @@ public sealed class UnitOfWork(ApplicationDbContext dbContext, IPublisher publis
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        // Stryker disable once Equality: see docs/testing/stryker.md, section "3. UnitOfWork Domain Events Filter"
+        // Stryker disable once Equality: see docs/tooling/stryker.md, section "3. UnitOfWork Domain Events Filter"
         var domainEntities = dbContext
             .ChangeTracker.Entries<BaseEntity>()
             .Where(x => x.Entity.DomainEvents.Count > 0)
@@ -131,7 +131,7 @@ public sealed class UnitOfWork(ApplicationDbContext dbContext, IPublisher publis
         guid.TryWriteBytes(bytes);
         var high = BitConverter.ToInt64(bytes[..8]);
         var low = BitConverter.ToInt64(bytes[8..]);
-        // Stryker disable once Bitwise: see docs/testing/stryker.md, section "4. UnitOfWork Advisory Lock Key Conversion"
+        // Stryker disable once Bitwise: see docs/tooling/stryker.md, section "4. UnitOfWork Advisory Lock Key Conversion"
         return high ^ low;
     }
 }

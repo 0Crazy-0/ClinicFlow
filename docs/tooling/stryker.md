@@ -182,7 +182,7 @@ public Task CreateRangeAsync(
         .Where(p => dbContext.Entry(p).State is EntityState.Detached)
         .ToList();
 
-    // Stryker disable once Equality: see docs/testing/stryker.md, section "1. Repository CreateRangeAsync Empty Check"
+    // Stryker disable once Equality: see docs/tooling/stryker.md, section "1. Repository CreateRangeAsync Empty Check"
     if (detachedPenalties.Count > 0)
         dbContext.PatientPenalties.AddRange(detachedPenalties);
 
@@ -222,10 +222,10 @@ Stryker mutates the relational operator from `Count > 0` to `Count >= 0`.
 ```csharp
 protected override void OnModelCreating(ModelBuilder modelBuilder)
 {
-    // Stryker disable once all: see docs/testing/stryker.md, section "2. ApplicationDbContext Infrastructure Setup"
+    // Stryker disable once all: see docs/tooling/stryker.md, section "2. ApplicationDbContext Infrastructure Setup"
     base.OnModelCreating(modelBuilder);
 
-    // Stryker disable once String: see docs/testing/stryker.md, section "2. ApplicationDbContext Infrastructure Setup"
+    // Stryker disable once String: see docs/tooling/stryker.md, section "2. ApplicationDbContext Infrastructure Setup"
     modelBuilder.HasPostgresExtension("btree_gist");
 
     // Dynamic soft-delete filter expressions and sequence number conventions...
@@ -251,7 +251,7 @@ This exception is strictly limited to the two lines above. It does **not** exten
 ```csharp
 public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
 {
-   // Stryker disable once Equality: see docs/testing/stryker.md, section "3. UnitOfWork Domain Events Filter"
+   // Stryker disable once Equality: see docs/tooling/stryker.md, section "3. UnitOfWork Domain Events Filter"
     var domainEntities = dbContext
         .ChangeTracker.Entries<BaseEntity>()
         .Where(x => x.Entity.DomainEvents.Count > 0)
@@ -299,7 +299,7 @@ private static long ToStableLong(Guid guid)
     guid.TryWriteBytes(bytes);
     var high = BitConverter.ToInt64(bytes[..8]);
     var low = BitConverter.ToInt64(bytes[8..]);
-    // Stryker disable once Bitwise: see docs/testing/stryker.md, section "4. UnitOfWork Advisory Lock Key Conversion"
+    // Stryker disable once Bitwise: see docs/tooling/stryker.md, section "4. UnitOfWork Advisory Lock Key Conversion"
     return high ^ low;
 }
 ```

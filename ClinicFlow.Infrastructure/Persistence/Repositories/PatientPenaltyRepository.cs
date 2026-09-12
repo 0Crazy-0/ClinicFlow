@@ -28,7 +28,7 @@ public sealed class PatientPenaltyRepository(ApplicationDbContext dbContext)
             .Where(p => dbContext.Entry(p).State is EntityState.Detached)
             .ToList();
 
-        // Stryker disable once Equality: see docs/testing/stryker.md, section "1. Repository CreateRangeAsync Empty Check"
+        // Stryker disable once Equality: see docs/tooling/stryker.md, section "1. Repository CreateRangeAsync Empty Check"
         if (detachedPenalties.Count > 0)
             dbContext.PatientPenalties.AddRange(detachedPenalties);
 

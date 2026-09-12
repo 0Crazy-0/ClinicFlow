@@ -26,7 +26,7 @@ public sealed class ScheduleRepository(ApplicationDbContext dbContext) : ISchedu
             .Where(s => dbContext.Entry(s).State is EntityState.Detached)
             .ToList();
 
-        // Stryker disable once Equality: see docs/testing/stryker.md, section "1. Repository CreateRangeAsync Empty Check"
+        // Stryker disable once Equality: see docs/tooling/stryker.md, section "1. Repository CreateRangeAsync Empty Check"
         if (detachedSchedules.Count > 0)
             dbContext.Schedules.AddRange(detachedSchedules);
 
