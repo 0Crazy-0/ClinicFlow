@@ -22,6 +22,8 @@ public class AppointmentTypeDefinition : SoftDeletableEntity
 
     public AgeEligibilityPolicy AgePolicy { get; private set; }
 
+    public ProtectedCategory? ProtectedCareCategory { get; private set; }
+
     /// <summary>
     /// When <c>true</c>, any doctor within the specialty can schedule this type.
     /// <see cref="AllowedSpecialtyIds"/> is ignored.
@@ -54,7 +56,8 @@ public class AppointmentTypeDefinition : SoftDeletableEntity
         string description,
         EncounterDuration duration,
         AgeEligibilityPolicy agePolicy,
-        bool isUnrestrictedBySpecialty
+        bool isUnrestrictedBySpecialty,
+        ProtectedCategory? protectedCareCategory
     )
     {
         Category = category;
@@ -63,6 +66,7 @@ public class AppointmentTypeDefinition : SoftDeletableEntity
         Duration = duration;
         AgePolicy = agePolicy;
         IsUnrestrictedBySpecialty = isUnrestrictedBySpecialty;
+        ProtectedCareCategory = protectedCareCategory;
     }
 
     public static AppointmentTypeDefinition Create(
@@ -70,13 +74,18 @@ public class AppointmentTypeDefinition : SoftDeletableEntity
         string name,
         string description,
         EncounterDuration duration,
-        AgeEligibilityPolicy? agePolicy = null
+        AgeEligibilityPolicy? agePolicy = null,
+        ProtectedCategory? protectedCareCategory = null
     )
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+
         if (duration is null)
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+
+        if (protectedCareCategory is not null && !Enum.IsDefined(protectedCareCategory.Value))
+            throw new DomainValidationException(DomainErrors.Validation.InvalidEnumValue);
 
         return new AppointmentTypeDefinition(
             category,
@@ -84,7 +93,8 @@ public class AppointmentTypeDefinition : SoftDeletableEntity
             description,
             duration,
             agePolicy ?? AgeEligibilityPolicy.NoRestriction,
-            true
+            true,
+            protectedCareCategory
         );
     }
 
@@ -174,6 +184,14 @@ public class AppointmentTypeDefinition : SoftDeletableEntity
 
     public void ChangeAgePolicy(AgeEligibilityPolicy agePolicy) =>
         AgePolicy = agePolicy ?? AgeEligibilityPolicy.NoRestriction;
+
+    public void ChangeProtectedCareCategory(ProtectedCategory? protectedCareCategory)
+    {
+        if (protectedCareCategory is not null && !Enum.IsDefined(protectedCareCategory.Value))
+            throw new DomainValidationException(DomainErrors.Validation.InvalidEnumValue);
+
+        ProtectedCareCategory = protectedCareCategory;
+    }
 
     public void AddRequiredTemplate(ClinicalFormTemplate template)
     {

@@ -18,9 +18,17 @@ public class AppointmentTypeDefinitionTests
         var name = "General Checkup";
         var description = "Routine consultation";
         var duration = EncounterDuration.FromMinutes(30);
+        var protectedCareCategory = ProtectedCategory.MentalHealthCounseling;
 
         // Act
-        var result = AppointmentTypeDefinition.Create(category, name, description, duration);
+        var result = AppointmentTypeDefinition.Create(
+            category,
+            name,
+            description,
+            duration,
+            null,
+            protectedCareCategory
+        );
 
         // Assert
         result.Should().NotBeNull();
@@ -28,6 +36,8 @@ public class AppointmentTypeDefinitionTests
         result.Name.Should().Be(name);
         result.Description.Should().Be(description);
         result.Duration.Should().Be(duration);
+        result.AgePolicy.Should().Be(AgeEligibilityPolicy.NoRestriction);
+        result.ProtectedCareCategory.Should().Be(protectedCareCategory);
     }
 
     [Theory]
@@ -67,6 +77,26 @@ public class AppointmentTypeDefinitionTests
         act.Should()
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void Create_ShouldThrowException_WhenProtectedCareCategoryIsNotDefined()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentTypeDefinition.Create(
+                AppointmentCategory.Checkup,
+                "Checkup",
+                "Description",
+                EncounterDuration.FromMinutes(30),
+                null,
+                (ProtectedCategory)999
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.InvalidEnumValue);
     }
 
     [Fact]
@@ -324,6 +354,55 @@ public class AppointmentTypeDefinitionTests
 
         // Assert
         appointmentType.AgePolicy.Should().Be(AgeEligibilityPolicy.NoRestriction);
+    }
+
+    [Fact]
+    public void ChangeProtectedCareCategory_ShouldUpdateCategory_WhenValidCategoryProvided()
+    {
+        // Arrange
+        var appointmentType = CreateAppointmentTypeDefinition(); // ProtectedCategory is initially null
+        var protectedCareCategory = ProtectedCategory.MentalHealthCounseling;
+
+        // Act
+        appointmentType.ChangeProtectedCareCategory(protectedCareCategory);
+
+        // Assert
+        appointmentType.ProtectedCareCategory.Should().Be(protectedCareCategory);
+    }
+
+    [Fact]
+    public void ChangeProtectedCareCategory_ShouldSetNull_WhenNullProvided()
+    {
+        // Arrange
+        var appointmentType = AppointmentTypeDefinition.Create(
+            AppointmentCategory.Checkup,
+            "Checkup",
+            "Description",
+            EncounterDuration.FromMinutes(30),
+            null,
+            ProtectedCategory.MentalHealthCounseling
+        );
+
+        // Act
+        appointmentType.ChangeProtectedCareCategory(null);
+
+        // Assert
+        appointmentType.ProtectedCareCategory.Should().BeNull();
+    }
+
+    [Fact]
+    public void ChangeProtectedCareCategory_ShouldThrowException_WhenCategoryIsNotDefined()
+    {
+        // Arrange
+        var appointmentType = CreateAppointmentTypeDefinition();
+
+        // Act
+        var act = () => appointmentType.ChangeProtectedCareCategory((ProtectedCategory)999);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.InvalidEnumValue);
     }
 
     [Fact]
