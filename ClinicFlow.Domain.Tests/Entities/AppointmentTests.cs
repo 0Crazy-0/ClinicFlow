@@ -467,14 +467,14 @@ public class AppointmentTests
 
         appointment.CheckIn(appointment.ScheduledDate);
 
+        var startedAt = appointment.ScheduledDate.ToDateTime(new TimeOnly(9, 15));
+
         // Act
-        appointment.Start(
-            appointment.DoctorId,
-            appointment.ScheduledDate.ToDateTime(appointment.TimeRange.Start)
-        );
+        appointment.Start(appointment.DoctorId, startedAt);
 
         // Assert
         appointment.Status.Should().Be(AppointmentStatus.InProgress);
+        appointment.StartedAt.Should().Be(startedAt);
         appointment.DomainEvents.OfType<AppointmentStartedEvent>().Should().ContainSingle();
     }
 
@@ -555,10 +555,12 @@ public class AppointmentTests
         );
 
         // Act
-        appointment.Complete(appointment.ScheduledDate.ToDateTime(new TimeOnly(9, 30)));
+        var completedAt = appointment.ScheduledDate.ToDateTime(new TimeOnly(9, 30));
+        appointment.Complete(completedAt);
 
         // Assert
         appointment.Status.Should().Be(AppointmentStatus.Completed);
+        appointment.CompletedAt.Should().Be(completedAt);
         appointment.DomainEvents.OfType<AppointmentCompletedEvent>().Should().ContainSingle();
     }
 
@@ -598,11 +600,55 @@ public class AppointmentTests
         );
 
         // Act
-        appointment.Complete(appointment.ScheduledDate.ToDateTime(appointment.TimeRange.Start));
+        var completedAt = appointment.ScheduledDate.ToDateTime(appointment.TimeRange.Start);
+        appointment.Complete(completedAt);
 
         // Assert
         appointment.Status.Should().Be(AppointmentStatus.Completed);
+        appointment.CompletedAt.Should().Be(completedAt);
         appointment.DomainEvents.OfType<AppointmentCompletedEvent>().Should().ContainSingle();
+    }
+
+    [Fact]
+    public void Complete_ShouldThrowException_WhenCompletedAtIsBeforeActualStart()
+    {
+        // Arrange
+        var appointment = CreateAppointment(); // TimeRange: 9:00 - 10:00
+
+        appointment.CheckIn(appointment.ScheduledDate);
+        appointment.Start(
+            appointment.DoctorId,
+            appointment.ScheduledDate.ToDateTime(new TimeOnly(9, 15))
+        );
+
+        // Act
+        var act = () => appointment.Complete(appointment.ScheduledDate.ToDateTime(new TimeOnly(9)));
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Appointment.CompletionBeforeActualStart);
+
+        appointment.Status.Should().Be(AppointmentStatus.InProgress);
+        appointment.CompletedAt.Should().BeNull();
+    }
+
+    [Fact]
+    public void Complete_ShouldSucceed_WhenCompletedAtEqualsActualStart()
+    {
+        // Arrange
+        var appointment = CreateAppointment(); // TimeRange: 9:00 - 10:00
+
+        appointment.CheckIn(appointment.ScheduledDate);
+        var startedAt = appointment.ScheduledDate.ToDateTime(new TimeOnly(9, 15));
+        appointment.Start(appointment.DoctorId, startedAt);
+
+        // Act
+        appointment.Complete(startedAt);
+
+        // Assert
+        appointment.Status.Should().Be(AppointmentStatus.Completed);
+        appointment.CompletedAt.Should().Be(startedAt);
     }
 
     [Fact]

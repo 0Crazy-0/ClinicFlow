@@ -36,6 +36,10 @@ public class Appointment : BaseEntity
 
     public DateOnly? CheckedInAt { get; private set; }
 
+    public DateTime? StartedAt { get; private set; }
+
+    public DateTime? CompletedAt { get; private set; }
+
     public DateOnly? CancelledAt { get; private set; }
 
     public string? CancellationReason { get; private set; }
@@ -160,6 +164,7 @@ public class Appointment : BaseEntity
             throw new DomainValidationException(DomainErrors.Appointment.CannotStart);
 
         Status = AppointmentStatus.InProgress;
+        StartedAt = startedAt;
 
         AddDomainEvent(new AppointmentStartedEvent(this, startedAt));
     }
@@ -169,10 +174,16 @@ public class Appointment : BaseEntity
         if (completedAt < ScheduledDate.ToDateTime(TimeRange.Start))
             throw new DomainValidationException(DomainErrors.Appointment.InvalidCompletionDate);
 
+        if (StartedAt.HasValue && completedAt < StartedAt.Value)
+            throw new DomainValidationException(
+                DomainErrors.Appointment.CompletionBeforeActualStart
+            );
+
         if (Status is not AppointmentStatus.InProgress)
             throw new DomainValidationException(DomainErrors.Appointment.CannotComplete);
 
         Status = AppointmentStatus.Completed;
+        CompletedAt = completedAt;
 
         AddDomainEvent(new AppointmentCompletedEvent(this, completedAt));
     }

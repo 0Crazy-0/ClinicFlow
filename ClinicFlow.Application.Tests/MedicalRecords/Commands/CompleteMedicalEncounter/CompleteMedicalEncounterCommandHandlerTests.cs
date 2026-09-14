@@ -303,7 +303,10 @@ public class CompleteMedicalEncounterCommandHandlerTests
 
         appointment.SetId(id);
         appointment.CheckIn(DateOnly.FromDateTime(referenceDate));
-        appointment.Start(doctorId, referenceDate);
+        appointment.Start(
+            doctorId,
+            appointment.ScheduledDate.ToDateTime(appointment.TimeRange.Start)
+        );
 
         return appointment;
     }
