@@ -80,6 +80,26 @@ public class AppointmentTypeDefinitionTests
     }
 
     [Fact]
+    public void Create_ShouldThrowException_WhenProtectedCareCategoryIsNotDefined()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentTypeDefinition.Create(
+                AppointmentCategory.Checkup,
+                "Checkup",
+                "Description",
+                EncounterDuration.FromMinutes(30),
+                null,
+                (ProtectedCategory)999
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.InvalidEnumValue);
+    }
+
+    [Fact]
     public void AddRequiredTemplate_ShouldThrowException_WhenTemplateIsNull()
     {
         // Arrange
@@ -348,6 +368,26 @@ public class AppointmentTypeDefinitionTests
 
         // Assert
         appointmentType.ProtectedCareCategory.Should().Be(protectedCareCategory);
+    }
+
+    [Fact]
+    public void ChangeProtectedCareCategory_ShouldSetNull_WhenNullProvided()
+    {
+        // Arrange
+        var appointmentType = AppointmentTypeDefinition.Create(
+            AppointmentCategory.Checkup,
+            "Checkup",
+            "Description",
+            EncounterDuration.FromMinutes(30),
+            null,
+            ProtectedCategory.MentalHealthCounseling
+        );
+
+        // Act
+        appointmentType.ChangeProtectedCareCategory(null);
+
+        // Assert
+        appointmentType.ProtectedCareCategory.Should().BeNull();
     }
 
     [Fact]
