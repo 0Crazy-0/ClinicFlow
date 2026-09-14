@@ -24,7 +24,6 @@ public static class DomainErrors
         public const string InvalidPhoneFormat = "INVALID_PHONE_FORMAT";
         public const string InvalidBloodType = "INVALID_BLOOD_TYPE";
         public const string InvalidFormat = "INVALID_FORMAT";
-        public const string StartTimeMustBeBeforeEndTime = "START_TIME_MUST_BE_BEFORE_END_TIME";
         public const string EndTimeMustBeAfterStartTime = "END_TIME_MUST_BE_AFTER_START_TIME";
         public const string InvalidDateRange = "INVALID_DATE_RANGE";
         public const string InvalidEnumValue = "INVALID_ENUM_VALUE";
@@ -48,7 +47,6 @@ public static class DomainErrors
         public const string CannotStart = "START_NOT_ALLOWED";
         public const string CannotComplete = "COMPLETE_NOT_ALLOWED";
         public const string UnauthorizedDoctor = "UNAUTHORIZED_DOCTOR";
-        public const string UnauthorizedSpecialty = "UNAUTHORIZED_SPECIALTY";
         public const string PhoneNotVerified = "PHONE_NOT_VERIFIED";
         public const string CannotReassign = "REASSIGNMENT_NOT_ALLOWED";
         public const string CannotUpdateNotes = "UPDATE_NOTES_NOT_ALLOWED";
@@ -102,21 +100,8 @@ public static class DomainErrors
         public const string Blocked = "PATIENT_BLOCKED";
         public const string CannotBeSelf = "INVALID_FAMILY_RELATIONSHIP";
         public const string ProfileIncomplete = "PATIENT_PROFILE_INCOMPLETE";
-        public const string CannotRemovePrimaryUser = "CANNOT_REMOVE_PRIMARY_USER";
-        public const string UnauthorizedRemoval = "UNAUTHORIZED_REMOVAL";
-        public const string OnlyPrimaryUserCanCloseAccount = "ONLY_PRIMARY_USER_CAN_CLOSE_ACCOUNT";
-        public const string CannotCloseAccountWithPendingAppointments =
-            "CANNOT_CLOSE_ACCOUNT_WITH_PENDING_APPOINTMENTS";
-        public const string ActiveProfileAlreadyExists = "PATIENT_ACTIVE_PROFILE_ALREADY_EXISTS";
-        public const string UserIdMismatch = "PATIENT_USER_ID_MISMATCH";
         public const string UnauthorizedAccess = "PATIENT_UNAUTHORIZED_ACCESS";
         public const string PrimaryPatientRequired = "PRIMARY_PATIENT_REQUIRED";
-
-        public const string UnderageCannotLeaveFamilyAccount =
-            "UNDERAGE_CANNOT_LEAVE_FAMILY_ACCOUNT";
-        public const string CannotLeaveOwnAccount = "CANNOT_LEAVE_OWN_ACCOUNT";
-        public const string ProfileRequiresAdministrativeClaim =
-            "PATIENT_PROFILE_REQUIRES_ADMINISTRATIVE_CLAIM";
     }
 
     public static class Doctor
