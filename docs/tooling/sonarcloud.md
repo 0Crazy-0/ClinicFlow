@@ -31,6 +31,14 @@ Consistent with the [Codecov philosophy](./codecov.md), **we do not use `// NOSO
 
 SonarCloud consumes the same OpenCover XML report (`coverage.opencover.xml`) generated during the test step in CI. Coverage is not collected separately. Both Codecov and SonarCloud share the same test execution and report artifacts.
 
+### 4. No Shared Abstractions in the Application Layer
+
+Command and query handlers, and their validators, never inherit from a common base class or delegate to a shared service purely to eliminate structural repetition. Each handler is an independent, self-contained unit that fetches its own dependencies and orchestrates its own business rules — even when that means repeating a similar-looking sequence of lookups, validations, or persistence calls across handlers.
+
+This is a conscious tradeoff based on past experience: shared handler abstractions (base classes, generic lookup services) led to code that was harder to read, harder to change safely, and coupled use cases that were conceptually unrelated. A change to one handler's shared base could silently ripple into handlers that had nothing to do with it. Duplication that is a **natural consequence of consistent handler design** is accepted; duplication is only actually addressed when it represents genuine copy-pasted business logic, not structural similarity between independent use cases.
+
+This philosophy directly informs the [Duplication Exclusions](#duplication-exclusions-sonarcpdexclusions) below.
+
 ---
 
 ## Quality Gate
@@ -66,11 +74,13 @@ These patterns are excluded from coverage analysis because they do not contain t
 
 These patterns are excluded from Copy-Paste Detection because their structural similarity is intentional by design:
 
-- **Reschedule Command Handlers:** `RescheduleByDoctorCommandHandler.cs`, `RescheduleByStaffCommandHandler.cs`, `RescheduleByPatientCommandHandler.cs`. These handlers orchestrate the same rescheduling workflow but intentionally remain separate. Each delegates to a distinct domain service method that enforces different authorization and business rules depending on who initiates the reschedule (doctor, staff, or patient). A generic handler was explicitly rejected to keep each handler readable and independently evolvable as requirements grow.
+- **CQRS Command Handlers (`**/Commands/**/*CommandHandler.cs`) and Query Handlers (`**/Queries/**/*QueryHandler.cs`):** Consistent with the project's philosophy of [no shared abstractions in the Application layer](#4-no-shared-abstractions-in-the-application-layer), command and query handlers are never refactored into a shared base class or lookup service to satisfy the duplication detector. Any structural similarity flagged between handlers is expected and accepted, not a defect. This blanket exclusion supersedes the narrower, handler-by-handler exclusions previously maintained here — new handlers are covered automatically and do not require individual exclusion requests.
 
-- **AppointmentType Query Handlers:** `GetAllActiveAppointmentTypesQueryHandler.cs`, `GetAppointmentTypeByIdQueryHandler.cs`, `GetAppointmentTypesByCategoryQueryHandler.cs`, `GetEligibleAppointmentTypesQueryHandler.cs`. These handlers follow the same CQRS orchestration pattern (fetch → project → return). Their structural similarity is a natural consequence of consistent handler design, not duplication.
-
-- **Family Member Command Handlers:** `AddFamilyMemberCommandHandler.cs`, `AddCompleteFamilyMemberCommandHandler.cs`. These handlers orchestrate family member registration (basic vs. complete with medical profile and emergency contact). Both share nearly identical concurrency locking, pre-validation checks, and domain service calls before persisting. Keeping them as distinct handlers maintains clean CQRS command boundaries and independent evolution without introducing artificial coupling or shared base handlers.
+  Representative examples of this pattern in practice:
+  - **Reschedule Command Handlers** (`RescheduleByDoctorCommandHandler`, `RescheduleByStaffCommandHandler`, `RescheduleByPatientCommandHandler`) orchestrate the same rescheduling workflow but each delegates to a distinct domain service method enforcing different authorization rules depending on who initiates the reschedule.
+  - **AppointmentType Query Handlers** (`GetAllActiveAppointmentTypesQueryHandler`, `GetAppointmentTypeByIdQueryHandler`, `GetAppointmentTypesByCategoryQueryHandler`, `GetEligibleAppointmentTypesQueryHandler`) follow the same fetch → project → return orchestration, a natural consequence of consistent handler design rather than copy-paste.
+  - **Family Member Command Handlers** (`AddFamilyMemberCommandHandler`, `AddCompleteFamilyMemberCommandHandler`) share nearly identical concurrency locking and pre-validation checks before diverging in what they persist.
+  - **Medical Encounter Command Handlers** (`StartMedicalEncounterCommandHandler`, `CompleteMedicalEncounterCommandHandler`) share the same doctor/appointment/appointmentType lookup sequence before diverging into starting vs. completing the encounter.
 
 - **Command Validators (`**/Commands/**/*Validator.cs`):** Validators were originally built on shared base classes and interfaces (e.g., `RegisterUserCommandValidatorBase<T>`, `CancelCommandValidatorBase<T>`). These abstractions were removed in favor of standalone validators to eliminate unnecessary coupling and forced property contracts. The resulting validators share structural patterns inherent to the FluentValidation API, which triggers the duplication detector despite each validator being independently authored.
 - **`PatientPenalty.cs`:** Contains intentionally duplicated factory methods (`CreateAutomaticBlock` / `CreateManualBlock`) that preserve explicit domain intent despite identical implementations.
@@ -190,7 +200,7 @@ The same false-positive scenarios documented for [Codecov](./codecov.md#permissi
 Additionally, the following SonarCloud-specific scenario may cause legitimate Quality Gate failures:
 
 #### Duplication on New CQRS Handlers
-New query or command handlers that follow established patterns may trigger the duplication threshold (≤ 3%). If the structural similarity is a natural consequence of the CQRS pattern and not actual copy-pasted business logic, the handler should be added to the duplication exclusions list.
+New command and query handlers are covered automatically by the blanket `**/Commands/**/*CommandHandler.cs` and `**/Queries/**/*QueryHandler.cs` exclusions (see [Duplication Exclusions](#duplication-exclusions-sonarcpdexclusions)) and do not require individual exclusion requests. If a new handler triggers duplication against non-handler code (unlikely, but possible), evaluate it on its own merits rather than assuming the blanket exclusion applies.
 
 ---
 
