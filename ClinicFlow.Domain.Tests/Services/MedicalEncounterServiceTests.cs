@@ -242,6 +242,34 @@ public class MedicalEncounterServiceTests
     }
 
     [Fact]
+    public void ValidateAndCompleteRecord_ShouldThrowBusinessRuleValidationException_WhenRequiredTemplateIsMissing()
+    {
+        // Arrange
+        var doctorId = Guid.CreateVersion7();
+        var appointmentId = Guid.CreateVersion7();
+        var record = CreateMedicalRecord(doctorId, appointmentId);
+        var appointmentType = CreateAppointmentType();
+
+        appointmentType.AddRequiredTemplate(CreateFormTemplate("Test1", "{}"));
+
+        var context = new MedicalEncounterContext
+        {
+            ExpectedDoctor = CreateDoctor(doctorId),
+            Appointment = CreateAppointment(appointmentId),
+            AppointmentTypeDefinition = appointmentType,
+            CompletedAt = _fakeTime.GetUtcNow().UtcDateTime,
+        };
+
+        // Act
+        var act = () => _sut.ValidateAndCompleteRecord(record, context);
+
+        // Assert
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.MedicalEncounter.MissingRequiredTemplate);
+    }
+
+    [Fact]
     public void ValidateAndCompleteRecord_ShouldCompleteAppointment_WhenValid()
     {
         // Arrange
