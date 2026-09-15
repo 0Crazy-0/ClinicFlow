@@ -142,8 +142,7 @@ The only exception to the "no interfaces in domain" rule is when validation requ
 ```csharp
 // IJsonSchemaValidator is an interface defined in the Domain layer,
 // implemented in Infrastructure, injected via DI into the Policy class.
-public class MetadataFormValidationPolicy(IJsonSchemaValidator jsonSchemaValidator)
-    : IMedicalRecordValidationPolicy { ... }
+public class MetadataFormValidationPolicy(IJsonSchemaValidator jsonSchemaValidator) { ... }
 ```
 
 ---

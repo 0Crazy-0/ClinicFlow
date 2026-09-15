@@ -8,7 +8,7 @@ public sealed class CreateClinicalFormTemplateCommandValidator
     : AbstractValidator<CreateClinicalFormTemplateCommand>
 {
     public CreateClinicalFormTemplateCommandValidator(
-        IJsonSchemaDefinitionValidator schemaDefinitionValidator
+        IJsonSchemaValidator schemaDefinitionValidator
     )
     {
         RuleFor(x => x.Code).NotEmpty().WithMessage(DomainErrors.Validation.ValueRequired);

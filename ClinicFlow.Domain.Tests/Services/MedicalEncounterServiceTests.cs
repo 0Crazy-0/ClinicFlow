@@ -18,23 +18,15 @@ namespace ClinicFlow.Domain.Tests.Services;
 public class MedicalEncounterServiceTests
 {
     private readonly FakeTimeProvider _fakeTime = new();
-    private readonly Mock<IMedicalRecordValidationPolicy> _mockPolicy1;
-    private readonly Mock<IMedicalRecordValidationPolicy> _mockPolicy2;
     private readonly Mock<IJsonSchemaValidator> _mockJsonValidator;
     private readonly MedicalEncounterService _sut;
 
     public MedicalEncounterServiceTests()
     {
-        _mockPolicy1 = new Mock<IMedicalRecordValidationPolicy>();
-        _mockPolicy2 = new Mock<IMedicalRecordValidationPolicy>();
         _mockJsonValidator = new Mock<IJsonSchemaValidator>();
 
-        var policies = new List<IMedicalRecordValidationPolicy>
-        {
-            _mockPolicy1.Object,
-            _mockPolicy2.Object,
-        };
-        _sut = new MedicalEncounterService(policies, _mockJsonValidator.Object);
+        var validationPolicy = new MetadataFormValidationPolicy(_mockJsonValidator.Object);
+        _sut = new MedicalEncounterService(validationPolicy, _mockJsonValidator.Object);
     }
 
     [Fact]
@@ -246,9 +238,6 @@ public class MedicalEncounterServiceTests
         _sut.ValidateAndCompleteRecord(record, context);
 
         // Assert
-        _mockPolicy1.Verify(p => p.Validate(appointmentType, record.ClinicalDetails), Times.Once);
-        _mockPolicy2.Verify(p => p.Validate(appointmentType, record.ClinicalDetails), Times.Once);
-
         record.ClinicalDetails.Should().BeEquivalentTo([detail1, detail2]);
     }
 

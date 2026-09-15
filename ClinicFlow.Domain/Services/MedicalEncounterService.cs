@@ -12,7 +12,7 @@ namespace ClinicFlow.Domain.Services;
 /// Domain service responsible for orchestrating the rules around a medical encounter.
 /// </summary>
 public class MedicalEncounterService(
-    IEnumerable<IMedicalRecordValidationPolicy> policies,
+    MetadataFormValidationPolicy validationPolicy,
     IJsonSchemaValidator jsonSchemaValidator
 )
 {
@@ -59,8 +59,7 @@ public class MedicalEncounterService(
                 DomainErrors.MedicalEncounter.AppointmentMismatch
             );
 
-        foreach (var policy in policies)
-            policy.Validate(context.AppointmentTypeDefinition, record.ClinicalDetails);
+        validationPolicy.Validate(context.AppointmentTypeDefinition, record.ClinicalDetails);
 
         context.Appointment.Complete(context.CompletedAt);
     }
