@@ -27,8 +27,10 @@ public class AddClinicalDetailToMedicalRecordCommandHandlerTests
         _templateRepositoryMock = new Mock<IClinicalFormTemplateRepository>();
         _jsonValidatorMock = new Mock<IJsonSchemaValidator>();
 
-        var policies = new List<IMedicalRecordValidationPolicy>();
-        _medicalEncounterService = new MedicalEncounterService(policies, _jsonValidatorMock.Object);
+        _medicalEncounterService = new MedicalEncounterService(
+            new MetadataFormValidationPolicy(_jsonValidatorMock.Object),
+            _jsonValidatorMock.Object
+        );
 
         _sut = new AddClinicalDetailToMedicalRecordCommandHandler(
             _medicalRecordRepositoryMock.Object,

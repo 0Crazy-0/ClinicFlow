@@ -9,7 +9,6 @@ namespace ClinicFlow.Domain.Services.Policies;
 /// are present in the provided clinical details, and that their structure is valid.
 /// </summary>
 public class MetadataFormValidationPolicy(IJsonSchemaValidator jsonSchemaValidator)
-    : IMedicalRecordValidationPolicy
 {
     public void Validate(
         AppointmentTypeDefinition appointmentType,

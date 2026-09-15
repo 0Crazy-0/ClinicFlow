@@ -34,9 +34,13 @@ public class CompleteMedicalEncounterCommandHandlerTests
         _medicalRecordRepositoryMock = new Mock<IMedicalRecordRepository>();
         _unitOfWorkMock = new Mock<IUnitOfWork>();
 
-        // Use a real MedicalEncounterService with empty policies since it's a domain service
         var jsonValidatorMock = new Mock<IJsonSchemaValidator>();
-        _medicalEncounterService = new MedicalEncounterService([], jsonValidatorMock.Object);
+
+        // Use a real MedicalEncounterService with its validation policy since it's a domain service
+        _medicalEncounterService = new MedicalEncounterService(
+            new MetadataFormValidationPolicy(jsonValidatorMock.Object),
+            jsonValidatorMock.Object
+        );
 
         _sut = new CompleteMedicalEncounterCommandHandler(
             _doctorRepositoryMock.Object,
