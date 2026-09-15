@@ -8,12 +8,12 @@ namespace ClinicFlow.Application.Tests.ClinicalFormTemplates.Commands.UpdateClin
 
 public class UpdateClinicalFormTemplateCommandValidatorTests
 {
-    private readonly Mock<IJsonSchemaDefinitionValidator> _schemaValidatorMock;
+    private readonly Mock<IJsonSchemaValidator> _schemaValidatorMock;
     private readonly UpdateClinicalFormTemplateCommandValidator _sut;
 
     public UpdateClinicalFormTemplateCommandValidatorTests()
     {
-        _schemaValidatorMock = new Mock<IJsonSchemaDefinitionValidator>();
+        _schemaValidatorMock = new Mock<IJsonSchemaValidator>();
         _schemaValidatorMock
             .Setup(x => x.IsValidSchema(It.IsAny<string>(), out It.Ref<string?>.IsAny))
             .Returns(true);

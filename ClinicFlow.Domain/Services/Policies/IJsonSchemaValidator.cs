@@ -13,7 +13,12 @@ public interface IJsonSchemaValidator
     /// </summary>
     /// <param name="schemaDefinition">The JSON string representing the schema (e.g., from ClinicalFormTemplate).</param>
     /// <param name="jsonDataPayload">The JSON string representing the provided answers (e.g., from DynamicClinicalDetail).</param>
-    /// <param name="errorMessage">The error message returned if validation fails.</param>
-    /// <returns>True if the payload is valid; otherwise false.</returns>
     bool ValidateSchema(string schemaDefinition, string jsonDataPayload, out string? errorMessage);
+
+    /// <summary>
+    /// Determines whether the given JSON string is a valid schema definition
+    /// suitable for use as a clinical form template.
+    /// </summary>
+    /// <param name="schemaDefinition">The JSON string representing the schema to validate.</param>
+    bool IsValidSchema(string schemaDefinition, out string? errorMessage);
 }
