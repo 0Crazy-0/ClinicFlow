@@ -1,26 +1,27 @@
-using ClinicFlow.Application.MedicalRecords.Commands.CompleteMedicalEncounter;
+using ClinicFlow.Application.MedicalRecords.Commands.StartMedicalEncounter;
 using ClinicFlow.Domain.Common;
 using FluentValidation.TestHelper;
 
-namespace ClinicFlow.Application.Tests.MedicalRecords.Commands.CompleteMedicalEncounter;
+namespace ClinicFlow.Application.Tests.MedicalRecords.Commands.StartMedicalEncounter;
 
-public class CompleteMedicalEncounterCommandValidatorTests
+public class StartMedicalEncounterCommandValidatorTests
 {
-    private readonly CompleteMedicalEncounterCommandValidator _sut;
+    private readonly StartMedicalEncounterCommandValidator _sut;
 
-    public CompleteMedicalEncounterCommandValidatorTests()
+    public StartMedicalEncounterCommandValidatorTests()
     {
-        _sut = new CompleteMedicalEncounterCommandValidator();
+        _sut = new StartMedicalEncounterCommandValidator();
     }
 
     [Fact]
     public void Validate_ShouldBeValid_WhenAllPropertiesAreProvidedAndValid()
     {
         // Arrange
-        var command = new CompleteMedicalEncounterCommand(
+        var command = new StartMedicalEncounterCommand(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
-            Guid.CreateVersion7()
+            "Headache",
+            null
         );
 
         // Act
@@ -34,10 +35,11 @@ public class CompleteMedicalEncounterCommandValidatorTests
     public void Validate_ShouldHaveError_WhenDoctorIdIsEmpty()
     {
         // Arrange
-        var command = new CompleteMedicalEncounterCommand(
+        var command = new StartMedicalEncounterCommand(
             Guid.Empty,
             Guid.CreateVersion7(),
-            Guid.CreateVersion7()
+            "Headache",
+            null
         );
 
         // Act
@@ -53,10 +55,11 @@ public class CompleteMedicalEncounterCommandValidatorTests
     public void Validate_ShouldHaveError_WhenAppointmentIdIsEmpty()
     {
         // Arrange
-        var command = new CompleteMedicalEncounterCommand(
+        var command = new StartMedicalEncounterCommand(
             Guid.CreateVersion7(),
             Guid.Empty,
-            Guid.CreateVersion7()
+            "Headache",
+            null
         );
 
         // Act
@@ -68,14 +71,18 @@ public class CompleteMedicalEncounterCommandValidatorTests
             .WithErrorMessage(DomainErrors.Validation.InvalidValue);
     }
 
-    [Fact]
-    public void Validate_ShouldHaveError_WhenMedicalRecordIdIsEmpty()
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Validate_ShouldHaveError_WhenChiefComplaintIsEmpty(string? chiefComplaint)
     {
         // Arrange
-        var command = new CompleteMedicalEncounterCommand(
+        var command = new StartMedicalEncounterCommand(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
-            Guid.Empty
+            chiefComplaint!,
+            null
         );
 
         // Act
@@ -83,7 +90,7 @@ public class CompleteMedicalEncounterCommandValidatorTests
 
         // Assert
         result
-            .ShouldHaveValidationErrorFor(x => x.MedicalRecordId)
-            .WithErrorMessage(DomainErrors.Validation.InvalidValue);
+            .ShouldHaveValidationErrorFor(x => x.ChiefComplaint)
+            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
     }
 }

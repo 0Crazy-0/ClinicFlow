@@ -221,7 +221,7 @@ public class MedicalEncounterServiceTests
     }
 
     [Fact]
-    public void ValidateAndCompleteRecord_ShouldCallPoliciesAndAddDetails_WhenValid()
+    public void ValidateAndCompleteRecord_ShouldValidateAgainstAccumulatedDetails_WhenValid()
     {
         // Arrange
         var doctorId = Guid.CreateVersion7();
@@ -230,7 +230,9 @@ public class MedicalEncounterServiceTests
         var appointmentType = CreateAppointmentType();
         var detail1 = DynamicClinicalDetail.Create("Test1", "{}");
         var detail2 = DynamicClinicalDetail.Create("Test2", "{}");
-        var providedDetails = new List<DynamicClinicalDetail> { detail1, detail2 };
+
+        _sut.AppendClinicalDetail(record, detail1, CreateFormTemplate("Test1"));
+        _sut.AppendClinicalDetail(record, detail2, CreateFormTemplate("Test2"));
 
         var context = new MedicalEncounterContext
         {
@@ -238,15 +240,14 @@ public class MedicalEncounterServiceTests
             Appointment = CreateAppointment(appointmentId),
             AppointmentTypeDefinition = appointmentType,
             CompletedAt = _fakeTime.GetUtcNow().UtcDateTime,
-            ProvidedDetails = providedDetails,
         };
 
         // Act
         _sut.ValidateAndCompleteRecord(record, context);
 
         // Assert
-        _mockPolicy1.Verify(p => p.Validate(appointmentType, providedDetails), Times.Once);
-        _mockPolicy2.Verify(p => p.Validate(appointmentType, providedDetails), Times.Once);
+        _mockPolicy1.Verify(p => p.Validate(appointmentType, record.ClinicalDetails), Times.Once);
+        _mockPolicy2.Verify(p => p.Validate(appointmentType, record.ClinicalDetails), Times.Once);
 
         record.ClinicalDetails.Should().BeEquivalentTo([detail1, detail2]);
     }
@@ -260,7 +261,8 @@ public class MedicalEncounterServiceTests
         var record = CreateMedicalRecord(doctorId, appointmentId);
         var appointmentType = CreateAppointmentType();
         var detail = DynamicClinicalDetail.Create("Test1", "{}");
-        var providedDetails = new List<DynamicClinicalDetail> { detail };
+
+        _sut.AppendClinicalDetail(record, detail, CreateFormTemplate("Test1"));
 
         var context = new MedicalEncounterContext
         {
@@ -268,7 +270,6 @@ public class MedicalEncounterServiceTests
             Appointment = CreateAppointment(appointmentId),
             AppointmentTypeDefinition = appointmentType,
             CompletedAt = _fakeTime.GetUtcNow().UtcDateTime,
-            ProvidedDetails = providedDetails,
         };
 
         // Act

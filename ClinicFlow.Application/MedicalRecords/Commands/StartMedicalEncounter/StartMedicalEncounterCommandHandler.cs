@@ -4,24 +4,22 @@ using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.Services;
-using ClinicFlow.Domain.Services.Contexts;
 using MediatR;
 
-namespace ClinicFlow.Application.MedicalRecords.Commands.CompleteMedicalEncounter;
+namespace ClinicFlow.Application.MedicalRecords.Commands.StartMedicalEncounter;
 
-public sealed class CompleteMedicalEncounterCommandHandler(
+public sealed class StartMedicalEncounterCommandHandler(
     IDoctorRepository doctorRepository,
     IAppointmentRepository appointmentRepository,
     IAppointmentTypeDefinitionRepository appointmentTypeRepository,
     IMedicalRecordRepository medicalRecordRepository,
-    MedicalEncounterService medicalEncounterService,
     IUnitOfWork unitOfWork,
     TimeProvider timeProvider
-) : IRequestHandler<CompleteMedicalEncounterCommand, Guid>
+) : IRequestHandler<StartMedicalEncounterCommand, Guid>
 {
     /// <inheritdoc />
     public async Task<Guid> Handle(
-        CompleteMedicalEncounterCommand request,
+        StartMedicalEncounterCommand request,
         CancellationToken cancellationToken
     )
     {
@@ -52,24 +50,16 @@ public sealed class CompleteMedicalEncounterCommandHandler(
                 appointment.AppointmentTypeId
             );
 
-        var medicalRecord =
-            await medicalRecordRepository.GetByIdAsync(request.MedicalRecordId, cancellationToken)
-            ?? throw new EntityNotFoundException(
-                DomainErrors.General.NotFound,
-                nameof(MedicalRecord),
-                request.MedicalRecordId
-            );
+        appointment.Start(doctor.Id, timeProvider.GetUtcNow().UtcDateTime);
 
-        var context = new MedicalEncounterContext
-        {
-            ExpectedDoctor = doctor,
-            Appointment = appointment,
-            AppointmentTypeDefinition = appointmentType,
-            CompletedAt = timeProvider.GetUtcNow().UtcDateTime,
-        };
+        var medicalRecord = MedicalEncounterService.InitiateMedicalRecord(
+            appointment,
+            request.ChiefComplaint,
+            appointmentType.ProtectedCareCategory,
+            request.GuardianInitiatedTreatment
+        );
 
-        medicalEncounterService.ValidateAndCompleteRecord(medicalRecord, context);
-
+        await medicalRecordRepository.CreateAsync(medicalRecord, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return medicalRecord.Id;

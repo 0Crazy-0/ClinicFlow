@@ -16,6 +16,9 @@ public class MedicalEncounterService(
     IJsonSchemaValidator jsonSchemaValidator
 )
 {
+    /// <param name="protectedCareCategory">
+    /// Sourced from the appointment's <see cref="AppointmentTypeDefinition.ProtectedCareCategory"/>.
+    /// </param>
     public static MedicalRecord InitiateMedicalRecord(
         Appointment appointment,
         string chiefComplaint,
@@ -57,10 +60,7 @@ public class MedicalEncounterService(
             );
 
         foreach (var policy in policies)
-            policy.Validate(context.AppointmentTypeDefinition, context.ProvidedDetails);
-
-        foreach (var detail in context.ProvidedDetails)
-            record.AddClinicalDetail(detail);
+            policy.Validate(context.AppointmentTypeDefinition, record.ClinicalDetails);
 
         context.Appointment.Complete(context.CompletedAt);
     }

@@ -10,6 +10,5 @@ public sealed record class MedicalEncounterContext
     public required Doctor ExpectedDoctor { get; init; }
     public required Appointment Appointment { get; init; }
     public required AppointmentTypeDefinition AppointmentTypeDefinition { get; init; }
-    public IReadOnlyList<DynamicClinicalDetail> ProvidedDetails { get; init; } = [];
     public DateTime CompletedAt { get; init; }
 }
