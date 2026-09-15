@@ -20,9 +20,7 @@ public class CompleteMedicalEncounterCommandValidatorTests
         var command = new CompleteMedicalEncounterCommand(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
-            Guid.CreateVersion7(),
-            "Headache",
-            [new DynamicClinicalDetailDto("vital-signs", "{}")]
+            Guid.CreateVersion7()
         );
 
         // Act
@@ -33,36 +31,13 @@ public class CompleteMedicalEncounterCommandValidatorTests
     }
 
     [Fact]
-    public void Validate_ShouldHaveError_WhenPatientIdIsEmpty()
-    {
-        // Arrange
-        var command = new CompleteMedicalEncounterCommand(
-            Guid.Empty,
-            Guid.CreateVersion7(),
-            Guid.CreateVersion7(),
-            "Headache",
-            []
-        );
-
-        // Act
-        var result = _sut.TestValidate(command);
-
-        // Assert
-        result
-            .ShouldHaveValidationErrorFor(x => x.PatientId)
-            .WithErrorMessage(DomainErrors.Validation.InvalidValue);
-    }
-
-    [Fact]
     public void Validate_ShouldHaveError_WhenDoctorIdIsEmpty()
     {
         // Arrange
         var command = new CompleteMedicalEncounterCommand(
-            Guid.CreateVersion7(),
             Guid.Empty,
             Guid.CreateVersion7(),
-            "Headache",
-            []
+            Guid.CreateVersion7()
         );
 
         // Act
@@ -80,10 +55,8 @@ public class CompleteMedicalEncounterCommandValidatorTests
         // Arrange
         var command = new CompleteMedicalEncounterCommand(
             Guid.CreateVersion7(),
-            Guid.CreateVersion7(),
             Guid.Empty,
-            "Headache",
-            []
+            Guid.CreateVersion7()
         );
 
         // Act
@@ -96,15 +69,13 @@ public class CompleteMedicalEncounterCommandValidatorTests
     }
 
     [Fact]
-    public void Validate_ShouldHaveError_WhenChiefComplaintIsEmpty()
+    public void Validate_ShouldHaveError_WhenMedicalRecordIdIsEmpty()
     {
         // Arrange
         var command = new CompleteMedicalEncounterCommand(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
-            Guid.CreateVersion7(),
-            string.Empty,
-            []
+            Guid.Empty
         );
 
         // Act
@@ -112,49 +83,7 @@ public class CompleteMedicalEncounterCommandValidatorTests
 
         // Assert
         result
-            .ShouldHaveValidationErrorFor(x => x.ChiefComplaint)
-            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
-    }
-
-    [Fact]
-    public void Validate_ShouldHaveError_WhenTemplateCodeIsEmpty()
-    {
-        // Arrange
-        var command = new CompleteMedicalEncounterCommand(
-            Guid.CreateVersion7(),
-            Guid.CreateVersion7(),
-            Guid.CreateVersion7(),
-            "Headache",
-            [new DynamicClinicalDetailDto(string.Empty, "{}")]
-        );
-
-        // Act
-        var result = _sut.TestValidate(command);
-
-        // Assert
-        result
-            .ShouldHaveValidationErrorFor("Details[0].TemplateCode")
-            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
-    }
-
-    [Fact]
-    public void Validate_ShouldHaveError_WhenJsonDataPayloadIsEmpty()
-    {
-        // Arrange
-        var command = new CompleteMedicalEncounterCommand(
-            Guid.CreateVersion7(),
-            Guid.CreateVersion7(),
-            Guid.CreateVersion7(),
-            "Headache",
-            [new DynamicClinicalDetailDto("vital-signs", string.Empty)]
-        );
-
-        // Act
-        var result = _sut.TestValidate(command);
-
-        // Assert
-        result
-            .ShouldHaveValidationErrorFor("Details[0].JsonDataPayload")
-            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
+            .ShouldHaveValidationErrorFor(x => x.MedicalRecordId)
+            .WithErrorMessage(DomainErrors.Validation.InvalidValue);
     }
 }

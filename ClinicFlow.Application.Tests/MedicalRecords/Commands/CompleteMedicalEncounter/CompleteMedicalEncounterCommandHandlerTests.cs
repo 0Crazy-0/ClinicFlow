@@ -50,23 +50,24 @@ public class CompleteMedicalEncounterCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ShouldCompleteMedicalEncounter_WhenAllEntitiesExistAndValid()
+    public async Task Handle_ShouldCompleteExistingRecord_WhenDetailsWereAddedBeforehand()
     {
         // Arrange
         var doctorId = Guid.CreateVersion7();
-        var patientId = Guid.CreateVersion7();
         var appointmentId = Guid.CreateVersion7();
         var appointmentTypeId = Guid.CreateVersion7();
-        var command = new CompleteMedicalEncounterCommand(
-            patientId,
+        var record = MedicalRecord.Create(
+            Guid.CreateVersion7(),
             doctorId,
             appointmentId,
             "Headache",
-            [new DynamicClinicalDetailDto("vital-signs", "{}")]
+            null,
+            null
         );
+        var command = new CompleteMedicalEncounterCommand(doctorId, appointmentId, record.Id);
 
         var doctor = CreateDoctor(doctorId);
-        var appointment = CreateAppointment(appointmentId, appointmentTypeId, patientId, doctorId);
+        var appointment = CreateAppointment(appointmentId, appointmentTypeId, doctorId);
 
         var appointmentType = AppointmentTypeDefinition.Create(
             AppointmentCategory.Checkup,
@@ -75,6 +76,10 @@ public class CompleteMedicalEncounterCommandHandlerTests
             EncounterDuration.FromMinutes(30),
             AgeEligibilityPolicy.Create(0, 100, false)
         );
+
+        var detail = DynamicClinicalDetail.Create("vital-signs", "{}");
+        var template = ClinicalFormTemplate.Create("vital-signs", "Vitals", "Desc", "{}");
+        _medicalEncounterService.AppendClinicalDetail(record, detail, template);
 
         _doctorRepositoryMock
             .Setup(x => x.GetByIdAsync(doctorId, It.IsAny<CancellationToken>()))
@@ -85,46 +90,38 @@ public class CompleteMedicalEncounterCommandHandlerTests
         _appointmentTypeRepositoryMock
             .Setup(x => x.GetByIdAsync(appointmentTypeId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(appointmentType);
-
-        MedicalRecord? capturedRecord = null;
         _medicalRecordRepositoryMock
-            .Setup(x => x.CreateAsync(It.IsAny<MedicalRecord>(), It.IsAny<CancellationToken>()))
-            .Callback<MedicalRecord, CancellationToken>((r, _) => capturedRecord = r);
+            .Setup(x => x.GetByIdAsync(record.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(record);
 
         // Act
         var result = await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
-        result.Should().NotBeEmpty();
-        capturedRecord.Should().NotBeNull();
-        capturedRecord.PatientId.Should().Be(patientId);
-        capturedRecord.DoctorId.Should().Be(doctorId);
-        capturedRecord.AppointmentId.Should().Be(appointmentId);
-        capturedRecord.ChiefComplaint.Should().Be(command.ChiefComplaint);
-        capturedRecord.ClinicalDetails.Should().ContainSingle();
-        capturedRecord.ClinicalDetails.First().TemplateCode.Should().Be("vital-signs");
-        capturedRecord.ClinicalDetails.First().JsonDataPayload.Should().Be("{}");
+        result.Should().Be(record.Id);
+        record.ClinicalDetails.Should().ContainSingle().Which.Should().Be(detail);
         appointment.Status.Should().Be(AppointmentStatus.Completed);
     }
 
     [Fact]
-    public async Task Handle_ShouldCallRepositoryCreateAndSaveChanges_WhenAllEntitiesExistAndValid()
+    public async Task Handle_ShouldCallSaveChanges_WhenExistingRecordIsCompleted()
     {
         // Arrange
         var doctorId = Guid.CreateVersion7();
-        var patientId = Guid.CreateVersion7();
         var appointmentId = Guid.CreateVersion7();
         var appointmentTypeId = Guid.CreateVersion7();
-        var command = new CompleteMedicalEncounterCommand(
-            patientId,
+        var record = MedicalRecord.Create(
+            Guid.CreateVersion7(),
             doctorId,
             appointmentId,
             "Headache",
-            [new DynamicClinicalDetailDto("vital-signs", "{}")]
+            null,
+            null
         );
+        var command = new CompleteMedicalEncounterCommand(doctorId, appointmentId, record.Id);
 
         var doctor = CreateDoctor(doctorId);
-        var appointment = CreateAppointment(appointmentId, appointmentTypeId, patientId, doctorId);
+        var appointment = CreateAppointment(appointmentId, appointmentTypeId, doctorId);
 
         var appointmentType = AppointmentTypeDefinition.Create(
             AppointmentCategory.Checkup,
@@ -143,13 +140,16 @@ public class CompleteMedicalEncounterCommandHandlerTests
         _appointmentTypeRepositoryMock
             .Setup(x => x.GetByIdAsync(appointmentTypeId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(appointmentType);
+        _medicalRecordRepositoryMock
+            .Setup(x => x.GetByIdAsync(record.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(record);
 
         // Act
         await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
         _medicalRecordRepositoryMock.Verify(
-            x => x.CreateAsync(It.IsAny<MedicalRecord>(), It.IsAny<CancellationToken>()),
+            x => x.GetByIdAsync(record.Id, It.IsAny<CancellationToken>()),
             Times.Once
         );
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
@@ -162,9 +162,7 @@ public class CompleteMedicalEncounterCommandHandlerTests
         var command = new CompleteMedicalEncounterCommand(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
-            Guid.CreateVersion7(),
-            "Headache",
-            []
+            Guid.CreateVersion7()
         );
 
         _doctorRepositoryMock
@@ -180,10 +178,6 @@ public class CompleteMedicalEncounterCommandHandlerTests
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(Doctor));
 
-        _medicalRecordRepositoryMock.Verify(
-            x => x.CreateAsync(It.IsAny<MedicalRecord>(), It.IsAny<CancellationToken>()),
-            Times.Never
-        );
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
@@ -193,11 +187,9 @@ public class CompleteMedicalEncounterCommandHandlerTests
         // Arrange
         var doctorId = Guid.CreateVersion7();
         var command = new CompleteMedicalEncounterCommand(
-            Guid.CreateVersion7(),
             doctorId,
             Guid.CreateVersion7(),
-            "Headache",
-            []
+            Guid.CreateVersion7()
         );
 
         var doctor = CreateDoctor(doctorId);
@@ -217,10 +209,6 @@ public class CompleteMedicalEncounterCommandHandlerTests
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(Appointment));
 
-        _medicalRecordRepositoryMock.Verify(
-            x => x.CreateAsync(It.IsAny<MedicalRecord>(), It.IsAny<CancellationToken>()),
-            Times.Never
-        );
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
@@ -229,19 +217,20 @@ public class CompleteMedicalEncounterCommandHandlerTests
     {
         // Arrange
         var doctorId = Guid.CreateVersion7();
-        var patientId = Guid.CreateVersion7();
         var appointmentId = Guid.CreateVersion7();
         var appointmentTypeId = Guid.CreateVersion7();
-        var command = new CompleteMedicalEncounterCommand(
-            patientId,
+        var record = MedicalRecord.Create(
+            Guid.CreateVersion7(),
             doctorId,
             appointmentId,
             "Headache",
-            []
+            null,
+            null
         );
+        var command = new CompleteMedicalEncounterCommand(doctorId, appointmentId, record.Id);
 
         var doctor = CreateDoctor(doctorId);
-        var appointment = CreateAppointment(appointmentId, appointmentTypeId, patientId, doctorId);
+        var appointment = CreateAppointment(appointmentId, appointmentTypeId, doctorId);
 
         _doctorRepositoryMock
             .Setup(x => x.GetByIdAsync(doctorId, It.IsAny<CancellationToken>()))
@@ -262,10 +251,55 @@ public class CompleteMedicalEncounterCommandHandlerTests
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(AppointmentTypeDefinition));
 
-        _medicalRecordRepositoryMock.Verify(
-            x => x.CreateAsync(It.IsAny<MedicalRecord>(), It.IsAny<CancellationToken>()),
-            Times.Never
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldThrowEntityNotFoundException_WhenMedicalRecordDoesNotExist()
+    {
+        // Arrange
+        var doctorId = Guid.CreateVersion7();
+        var appointmentId = Guid.CreateVersion7();
+        var appointmentTypeId = Guid.CreateVersion7();
+        var command = new CompleteMedicalEncounterCommand(
+            doctorId,
+            appointmentId,
+            Guid.CreateVersion7()
         );
+
+        var doctor = CreateDoctor(doctorId);
+        var appointment = CreateAppointment(appointmentId, appointmentTypeId, doctorId);
+
+        var appointmentType = AppointmentTypeDefinition.Create(
+            AppointmentCategory.Checkup,
+            "Checkup",
+            "Desc",
+            EncounterDuration.FromMinutes(30),
+            AgeEligibilityPolicy.Create(0, 100, false)
+        );
+
+        _doctorRepositoryMock
+            .Setup(x => x.GetByIdAsync(doctorId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(doctor);
+        _appointmentRepositoryMock
+            .Setup(x => x.GetByIdAsync(appointmentId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(appointment);
+        _appointmentTypeRepositoryMock
+            .Setup(x => x.GetByIdAsync(appointmentTypeId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(appointmentType);
+        _medicalRecordRepositoryMock
+            .Setup(x => x.GetByIdAsync(command.MedicalRecordId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((MedicalRecord?)null);
+
+        // Act
+        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
+
+        // Assert
+        var exceptionAssertion = await act.Should()
+            .ThrowAsync<EntityNotFoundException>()
+            .WithMessage(DomainErrors.General.NotFound);
+        exceptionAssertion.Which.EntityName.Should().Be(nameof(MedicalRecord));
+
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
@@ -285,16 +319,11 @@ public class CompleteMedicalEncounterCommandHandlerTests
         return doctor;
     }
 
-    private Appointment CreateAppointment(
-        Guid id,
-        Guid appointmentTypeId,
-        Guid patientId,
-        Guid doctorId
-    )
+    private Appointment CreateAppointment(Guid id, Guid appointmentTypeId, Guid doctorId)
     {
         var referenceDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(1);
         var appointment = Appointment.Schedule(
-            patientId,
+            Guid.CreateVersion7(),
             doctorId,
             appointmentTypeId,
             DateOnly.FromDateTime(referenceDate.AddDays(-2)),

@@ -8,23 +8,10 @@ public sealed class CompleteMedicalEncounterCommandValidator
 {
     public CompleteMedicalEncounterCommandValidator()
     {
-        RuleFor(x => x.PatientId).NotEmpty().WithMessage(DomainErrors.Validation.InvalidValue);
         RuleFor(x => x.DoctorId).NotEmpty().WithMessage(DomainErrors.Validation.InvalidValue);
         RuleFor(x => x.AppointmentId).NotEmpty().WithMessage(DomainErrors.Validation.InvalidValue);
-        RuleFor(x => x.ChiefComplaint)
+        RuleFor(x => x.MedicalRecordId)
             .NotEmpty()
-            .WithMessage(DomainErrors.Validation.ValueRequired);
-        RuleForEach(x => x.Details)
-            .ChildRules(details =>
-            {
-                details
-                    .RuleFor(d => d.TemplateCode)
-                    .NotEmpty()
-                    .WithMessage(DomainErrors.Validation.ValueRequired);
-                details
-                    .RuleFor(d => d.JsonDataPayload)
-                    .NotEmpty()
-                    .WithMessage(DomainErrors.Validation.ValueRequired);
-            });
+            .WithMessage(DomainErrors.Validation.InvalidValue);
     }
 }

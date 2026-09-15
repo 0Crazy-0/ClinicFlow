@@ -52,29 +52,24 @@ public sealed class CompleteMedicalEncounterCommandHandler(
                 appointment.AppointmentTypeId
             );
 
-        var details = request
-            .Details.Select(dto =>
-                DynamicClinicalDetail.Create(dto.TemplateCode, dto.JsonDataPayload)
-            )
-            .ToList();
+        var medicalRecord =
+            await medicalRecordRepository.GetByIdAsync(request.MedicalRecordId, cancellationToken)
+            ?? throw new EntityNotFoundException(
+                DomainErrors.General.NotFound,
+                nameof(MedicalRecord),
+                request.MedicalRecordId
+            );
 
         var context = new MedicalEncounterContext
         {
             ExpectedDoctor = doctor,
             Appointment = appointment,
             AppointmentTypeDefinition = appointmentType,
-            ProvidedDetails = details,
             CompletedAt = timeProvider.GetUtcNow().UtcDateTime,
         };
 
-        var medicalRecord = MedicalEncounterService.InitiateMedicalRecord(
-            appointment,
-            request.ChiefComplaint
-        );
-
         medicalEncounterService.ValidateAndCompleteRecord(medicalRecord, context);
 
-        await medicalRecordRepository.CreateAsync(medicalRecord, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return medicalRecord.Id;
