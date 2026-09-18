@@ -35,21 +35,9 @@ public class MetadataFormValidationPolicy(IJsonSchemaValidator jsonSchemaValidat
         if (detail is null || string.IsNullOrWhiteSpace(detail.JsonDataPayload))
             throw new BusinessRuleValidationException(DomainErrors.MedicalEncounter.MissingPayload);
 
-        if (
-            string.IsNullOrWhiteSpace(template.JsonSchemaDefinition)
-            || template.JsonSchemaDefinition is "{}"
-        )
+        if (template.JsonSchemaDefinition is "{}")
             return; // No schema defined, nothing to validate
 
-        if (
-            !jsonSchemaValidator.ValidateSchema(
-                template.JsonSchemaDefinition,
-                detail.JsonDataPayload,
-                out string? errorMessage
-            )
-        )
-            throw new BusinessRuleValidationException(
-                $"{DomainErrors.MedicalEncounter.ValidationFailed}: {errorMessage}"
-            );
+        jsonSchemaValidator.ValidateSchema(template.JsonSchemaDefinition, detail.JsonDataPayload);
     }
 }
