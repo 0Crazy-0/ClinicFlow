@@ -9,11 +9,11 @@ namespace ClinicFlow.Domain.Services.Policies;
 public interface IJsonSchemaValidator
 {
     /// <summary>
-    /// Validates if a JSON payload complies with the requirements defined in a JSON schema.
+    /// Validates that a JSON payload complies with the requirements defined in a JSON schema.
     /// </summary>
     /// <param name="schemaDefinition">The JSON string representing the schema (e.g., from ClinicalFormTemplate).</param>
     /// <param name="jsonDataPayload">The JSON string representing the provided answers (e.g., from DynamicClinicalDetail).</param>
-    bool ValidateSchema(string schemaDefinition, string jsonDataPayload, out string? errorMessage);
+    void ValidateSchema(string schemaDefinition, string jsonDataPayload);
 
     /// <summary>
     /// Determines whether the given JSON string is a valid schema definition

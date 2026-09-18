@@ -93,8 +93,10 @@ public class MetadataFormValidationPolicyTests
         // Arrange
         var template = ClinicalFormTemplate.Create("VITALS", "Vitals", "Vital signs", "");
         var appointmentType = CreateAppointmentTypeWithTemplates(template);
-        var detail = DynamicClinicalDetail.Create("VITALS", """{"bp":"120/80"}""");
-        var details = new List<DynamicClinicalDetail> { detail };
+        var details = new List<DynamicClinicalDetail>
+        {
+            DynamicClinicalDetail.Create("VITALS", """{"bp":"120/80"}"""),
+        };
 
         // Act
         var act = () => _sut.Validate(appointmentType, details);
@@ -102,8 +104,7 @@ public class MetadataFormValidationPolicyTests
         // Assert
         act.Should().NotThrow();
         _mockSchemaValidator.Verify(
-            v =>
-                v.ValidateSchema(It.IsAny<string>(), It.IsAny<string>(), out It.Ref<string?>.IsAny),
+            v => v.ValidateSchema(It.IsAny<string>(), It.IsAny<string>()),
             Times.Never
         );
     }
@@ -123,8 +124,7 @@ public class MetadataFormValidationPolicyTests
         // Assert
         act.Should().NotThrow();
         _mockSchemaValidator.Verify(
-            v =>
-                v.ValidateSchema(It.IsAny<string>(), It.IsAny<string>(), out It.Ref<string?>.IsAny),
+            v => v.ValidateSchema(It.IsAny<string>(), It.IsAny<string>()),
             Times.Never
         );
     }
@@ -141,14 +141,8 @@ public class MetadataFormValidationPolicyTests
             schemaDefinition
         );
         var appointmentType = CreateAppointmentTypeWithTemplates(template);
-        var payload = """{"bp":"120/80"}""";
-        var detail = DynamicClinicalDetail.Create("VITALS", payload);
+        var detail = DynamicClinicalDetail.Create("VITALS", """{"bp":"120/80"}""");
         var details = new List<DynamicClinicalDetail> { detail };
-
-        string? errorMsg = null;
-        _mockSchemaValidator
-            .Setup(v => v.ValidateSchema(schemaDefinition, payload, out errorMsg))
-            .Returns(true);
 
         // Act
         var act = () => _sut.Validate(appointmentType, details);
@@ -156,39 +150,9 @@ public class MetadataFormValidationPolicyTests
         // Assert
         act.Should().NotThrow();
         _mockSchemaValidator.Verify(
-            v => v.ValidateSchema(schemaDefinition, payload, out It.Ref<string?>.IsAny),
+            v => v.ValidateSchema(schemaDefinition, detail.JsonDataPayload),
             Times.Once
         );
-    }
-
-    [Fact]
-    public void Validate_ShouldThrowBusinessRuleValidationException_WhenSchemaValidationFails()
-    {
-        // Arrange
-        var schemaDefinition = """{"type":"object","required":["bp"]}""";
-        var template = ClinicalFormTemplate.Create(
-            "VITALS",
-            "Vitals",
-            "Vital signs",
-            schemaDefinition
-        );
-        var appointmentType = CreateAppointmentTypeWithTemplates(template);
-        var payload = """{"temperature":"37"}""";
-        var detail = DynamicClinicalDetail.Create("VITALS", payload);
-        var details = new List<DynamicClinicalDetail> { detail };
-
-        string? errorMsg = "Required property 'bp' is missing.";
-        _mockSchemaValidator
-            .Setup(v => v.ValidateSchema(schemaDefinition, payload, out errorMsg))
-            .Returns(false);
-
-        // Act
-        var act = () => _sut.Validate(appointmentType, details);
-
-        // Assert
-        act.Should()
-            .Throw<BusinessRuleValidationException>()
-            .WithMessage($"{DomainErrors.MedicalEncounter.ValidationFailed}: {errorMsg}");
     }
 
     [Fact]
@@ -212,24 +176,13 @@ public class MetadataFormValidationPolicyTests
         var detail2 = DynamicClinicalDetail.Create("ALLERGIES", payload2);
         var details = new List<DynamicClinicalDetail> { detail1, detail2 };
 
-        string? errorMsg = null;
-        _mockSchemaValidator
-            .Setup(v => v.ValidateSchema(It.IsAny<string>(), It.IsAny<string>(), out errorMsg))
-            .Returns(true);
-
         // Act
         var act = () => _sut.Validate(appointmentType, details);
 
         // Assert
         act.Should().NotThrow();
-        _mockSchemaValidator.Verify(
-            v => v.ValidateSchema(schema1, payload1, out It.Ref<string?>.IsAny),
-            Times.Once
-        );
-        _mockSchemaValidator.Verify(
-            v => v.ValidateSchema(schema2, payload2, out It.Ref<string?>.IsAny),
-            Times.Once
-        );
+        _mockSchemaValidator.Verify(v => v.ValidateSchema(schema1, payload1), Times.Once);
+        _mockSchemaValidator.Verify(v => v.ValidateSchema(schema2, payload2), Times.Once);
     }
 
     [Fact]

@@ -62,11 +62,6 @@ public class AddClinicalDetailToMedicalRecordCommandHandlerTests
             .Setup(x => x.GetByCodeAsync(template.Code, TestContext.Current.CancellationToken))
             .ReturnsAsync(template);
 
-        string? errorMessage = null;
-        _jsonValidatorMock
-            .Setup(x => x.ValidateSchema(It.IsAny<string>(), It.IsAny<string>(), out errorMessage))
-            .Returns(true);
-
         // Act
         await _sut.Handle(request, TestContext.Current.CancellationToken);
 

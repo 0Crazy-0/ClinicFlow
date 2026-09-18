@@ -380,33 +380,6 @@ public class MedicalEncounterServiceTests
     }
 
     [Fact]
-    public void AppendClinicalDetail_ShouldThrowBusinessRuleValidationException_WhenPayloadIsInvalidSchema()
-    {
-        // Arrange
-        var record = CreateMedicalRecord();
-        var detail = DynamicClinicalDetail.Create("Test1", """{"invalid": "data"}""");
-        var template = CreateFormTemplate("Test1", """{"type": "object"}""");
-
-        string errorMessage = "Schema validation failed";
-        _mockJsonValidator
-            .Setup(v =>
-                v.ValidateSchema(
-                    """{"type": "object"}""",
-                    """{"invalid": "data"}""",
-                    out errorMessage!
-                )
-            )
-            .Returns(false);
-        // Act
-        var act = () => _sut.AppendClinicalDetail(record, detail, template);
-
-        // Assert
-        act.Should()
-            .Throw<BusinessRuleValidationException>()
-            .WithMessage($"{DomainErrors.MedicalEncounter.ValidationFailed}: {errorMessage}");
-    }
-
-    [Fact]
     public void AppendClinicalDetail_ShouldAddDetail_WhenValidAndSchemaMatches()
     {
         // Arrange
@@ -414,22 +387,15 @@ public class MedicalEncounterServiceTests
         var detail = DynamicClinicalDetail.Create("Test1", """{"valid": "data"}""");
         var template = CreateFormTemplate("Test1", """{"type": "object"}""");
 
-        string? errorMessage = null;
-        _mockJsonValidator
-            .Setup(v =>
-                v.ValidateSchema(
-                    """{"type": "object"}""",
-                    """{"valid": "data"}""",
-                    out errorMessage
-                )
-            )
-            .Returns(true);
         // Act
-
         _sut.AppendClinicalDetail(record, detail, template);
 
         // Assert
         record.ClinicalDetails.Should().Contain(detail);
+        _mockJsonValidator.Verify(
+            v => v.ValidateSchema(template.JsonSchemaDefinition, detail.JsonDataPayload),
+            Times.Once
+        );
     }
 
     [Fact]
@@ -440,19 +406,13 @@ public class MedicalEncounterServiceTests
         var detail = DynamicClinicalDetail.Create("Test1", """{"bp":"120/80"}""");
         var template = CreateFormTemplate("Test1", "{}");
 
-        string errorMessage = "Schema would fail if evaluated";
-        _mockJsonValidator
-            .Setup(v => v.ValidateSchema("{}", """{"bp":"120/80"}""", out errorMessage!))
-            .Returns(false);
-
         // Act
         _sut.AppendClinicalDetail(record, detail, template);
 
         // Assert
         record.ClinicalDetails.Should().Contain(detail);
         _mockJsonValidator.Verify(
-            v =>
-                v.ValidateSchema(It.IsAny<string>(), It.IsAny<string>(), out It.Ref<string?>.IsAny),
+            v => v.ValidateSchema(It.IsAny<string>(), It.IsAny<string>()),
             Times.Never
         );
     }

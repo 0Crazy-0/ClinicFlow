@@ -80,18 +80,11 @@ public class MedicalEncounterService(
         if (string.IsNullOrWhiteSpace(newDetail.JsonDataPayload))
             throw new BusinessRuleValidationException(DomainErrors.MedicalEncounter.MissingPayload);
 
-        if (
-            !string.IsNullOrWhiteSpace(template.JsonSchemaDefinition)
-            && template.JsonSchemaDefinition is not "{}"
-            && !jsonSchemaValidator.ValidateSchema(
-                template.JsonSchemaDefinition,
-                newDetail.JsonDataPayload,
-                out string? errorMessage
-            )
-        )
+        if (template.JsonSchemaDefinition is not "{}")
         {
-            throw new BusinessRuleValidationException(
-                $"{DomainErrors.MedicalEncounter.ValidationFailed}: {errorMessage}"
+            jsonSchemaValidator.ValidateSchema(
+                template.JsonSchemaDefinition,
+                newDetail.JsonDataPayload
             );
         }
 
