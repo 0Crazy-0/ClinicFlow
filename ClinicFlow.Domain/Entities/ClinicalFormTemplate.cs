@@ -60,6 +60,8 @@ public class ClinicalFormTemplate : SoftDeletableEntity
             ? "{}"
             : jsonSchemaDefinition;
 
+        JsonSyntaxGuard.EnsureValidJson(schemaToSave);
+
         return new ClinicalFormTemplate(code, name, description, schemaToSave);
     }
 
@@ -72,10 +74,16 @@ public class ClinicalFormTemplate : SoftDeletableEntity
         Description = description;
     }
 
-    public void UpdateSchema(string jsonSchemaDefinition) =>
-        JsonSchemaDefinition = string.IsNullOrWhiteSpace(jsonSchemaDefinition)
+    public void UpdateSchema(string jsonSchemaDefinition)
+    {
+        var schemaToSave = string.IsNullOrWhiteSpace(jsonSchemaDefinition)
             ? "{}"
             : jsonSchemaDefinition;
+
+        JsonSyntaxGuard.EnsureValidJson(schemaToSave);
+
+        JsonSchemaDefinition = schemaToSave;
+    }
 
     public void Deactivate()
     {

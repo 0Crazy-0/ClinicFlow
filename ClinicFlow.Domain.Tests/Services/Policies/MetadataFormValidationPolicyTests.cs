@@ -70,21 +70,23 @@ public class MetadataFormValidationPolicyTests
     }
 
     [Fact]
-    public void Validate_ShouldThrowBusinessRuleValidationException_WhenJsonDataPayloadIsEmpty()
+    public void Validate_ShouldThrowDomainValidationException_WhenJsonDataPayloadIsEmpty()
     {
         // Arrange
         var template = ClinicalFormTemplate.Create("VITALS", "Vitals", "Vital signs", "{}");
         var appointmentType = CreateAppointmentTypeWithTemplates(template);
-        var detail = DynamicClinicalDetail.Create("VITALS", "   ");
-        var details = new List<DynamicClinicalDetail> { detail };
 
         // Act
-        var act = () => _sut.Validate(appointmentType, details);
+        var act = () =>
+        {
+            var detail = DynamicClinicalDetail.Create("VITALS", "   ");
+            _sut.Validate(appointmentType, [detail]);
+        };
 
         // Assert
         act.Should()
-            .Throw<BusinessRuleValidationException>()
-            .WithMessage(DomainErrors.MedicalEncounter.MissingPayload);
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Fact]

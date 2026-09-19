@@ -26,18 +26,12 @@ public class MetadataFormValidationPolicy(IJsonSchemaValidator jsonSchemaValidat
                     DomainErrors.MedicalEncounter.MissingRequiredTemplate
                 );
 
-            ValidateJsonStructure(requiredTemplate, providedDetail);
+            // No schema defined, nothing to validate
+            if (requiredTemplate.JsonSchemaDefinition is not "{}")
+                jsonSchemaValidator.ValidateSchema(
+                    requiredTemplate.JsonSchemaDefinition,
+                    providedDetail.JsonDataPayload
+                );
         }
-    }
-
-    private void ValidateJsonStructure(ClinicalFormTemplate template, DynamicClinicalDetail? detail)
-    {
-        if (detail is null || string.IsNullOrWhiteSpace(detail.JsonDataPayload))
-            throw new BusinessRuleValidationException(DomainErrors.MedicalEncounter.MissingPayload);
-
-        if (template.JsonSchemaDefinition is "{}")
-            return; // No schema defined, nothing to validate
-
-        jsonSchemaValidator.ValidateSchema(template.JsonSchemaDefinition, detail.JsonDataPayload);
     }
 }

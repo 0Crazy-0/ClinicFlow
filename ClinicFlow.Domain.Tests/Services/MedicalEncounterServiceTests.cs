@@ -361,22 +361,25 @@ public class MedicalEncounterServiceTests
     [InlineData(null)]
     [InlineData("")]
     [InlineData("   ")]
-    public void AppendClinicalDetail_ShouldThrowBusinessRuleValidationException_WhenPayloadIsNullOrWhiteSpace(
+    public void AppendClinicalDetail_ShouldThrowDomainValidationException_WhenPayloadIsNullOrWhiteSpace(
         string? payload
     )
     {
         // Arrange
         var record = CreateMedicalRecord();
         var template = CreateFormTemplate("Test1");
-        var detail = DynamicClinicalDetail.Create("Test1", payload!);
 
         // Act
-        var act = () => _sut.AppendClinicalDetail(record, detail, template);
+        var act = () =>
+        {
+            var detail = DynamicClinicalDetail.Create("Test1", payload!);
+            _sut.AppendClinicalDetail(record, detail, template);
+        };
 
         // Assert
         act.Should()
-            .Throw<BusinessRuleValidationException>()
-            .WithMessage(DomainErrors.MedicalEncounter.MissingPayload);
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Fact]

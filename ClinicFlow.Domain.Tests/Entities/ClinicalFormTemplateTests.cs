@@ -65,6 +65,25 @@ public class ClinicalFormTemplateTests
             .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
+    [Theory]
+    [InlineData("{invalid}")]
+    [InlineData("{")]
+    [InlineData("not json67")]
+    [InlineData("""{"a":1,}""")]
+    [InlineData("""{"a": // comentario""")]
+    [InlineData("undefined")]
+    [InlineData("""{"a":1} {"b":2}""")]
+    public void Create_ShouldThrowException_WhenSchemaIsNotValidJson(string schema)
+    {
+        // Act
+        var act = () => ClinicalFormTemplate.Create("CODE_01", "Name", "Desc", schema);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.InvalidFormat);
+    }
+
     [Fact]
     public void UpdateDetails_ShouldUpdateNameAndDescription_WhenValid()
     {
@@ -139,6 +158,28 @@ public class ClinicalFormTemplateTests
 
         // Assert
         template.JsonSchemaDefinition.Should().Be("{}");
+    }
+
+    [Theory]
+    [InlineData("{invalid}")]
+    [InlineData("{")]
+    [InlineData("not json67")]
+    [InlineData("""{"a":1,}""")]
+    [InlineData("""{"a": // comentario""")]
+    [InlineData("undefined")]
+    [InlineData("""{"a":1} {"b":2}""")]
+    public void UpdateSchema_ShouldThrowException_WhenSchemaIsNotValidJson(string schema)
+    {
+        // Arrange
+        var template = CreateDefaultTemplate();
+
+        // Act
+        var act = () => template.UpdateSchema(schema);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.InvalidFormat);
     }
 
     [Fact]
