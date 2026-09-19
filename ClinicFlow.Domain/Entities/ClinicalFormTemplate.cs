@@ -76,11 +76,13 @@ public class ClinicalFormTemplate : SoftDeletableEntity
 
     public void UpdateSchema(string jsonSchemaDefinition)
     {
-        JsonSchemaDefinition = string.IsNullOrWhiteSpace(jsonSchemaDefinition)
+        var schemaToSave = string.IsNullOrWhiteSpace(jsonSchemaDefinition)
             ? "{}"
             : jsonSchemaDefinition;
 
-        JsonSyntaxGuard.EnsureValidJson(JsonSchemaDefinition);
+        JsonSyntaxGuard.EnsureValidJson(schemaToSave);
+
+        JsonSchemaDefinition = schemaToSave;
     }
 
     public void Deactivate()
