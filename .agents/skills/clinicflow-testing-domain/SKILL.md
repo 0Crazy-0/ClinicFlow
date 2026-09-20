@@ -71,7 +71,7 @@ public void CancelByStaff_ShouldThrowArgumentNullException_WhenReasonIsNull()
 }
 ```
 
-Do not assert `WithParameterName(...)`; a plain exception-type assertion is the standard.
+Do not assert `WithParameterName(...)`; a plain exception-type assertion is the standard. Exception: when the guarded parameter is a collection consumed immediately by LINQ (`Any`, `Where`, `Select`, `FirstOrDefault`), assert `.WithParameterName("...")`. Without the guard, LINQ would still throw `ArgumentNullException` with param name `source`, so a plain type assertion cannot detect the missing guard.
 
 2. **Business rule nulls** (currently only `SchedulingClearance` in scheduling and rescheduling methods). A null clearance means the regional scheduling regulation was not enforced, which violates a domain rule. The service throws `BusinessRuleValidationException(DomainErrors.Scheduling.MissingClearance)`:
 
