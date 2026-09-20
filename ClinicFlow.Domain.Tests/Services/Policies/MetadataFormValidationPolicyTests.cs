@@ -36,10 +36,6 @@ public class MetadataFormValidationPolicyTests
         var act = () => _sut.Validate(CreateAppointmentTypeWithTemplates(), null!);
 
         // Assert
-        // Exception to clinicflow-testing-domain skill (which forbids WithParameterName):
-        // the parameter name assertion is required here. Without the guard, LINQ's Select
-        // would still throw ArgumentNullException (with param name "source"), so a
-        // plain exception type assertion cannot detect the missing guard.
         act.Should().Throw<ArgumentNullException>().WithParameterName("providedDetails");
     }
 
