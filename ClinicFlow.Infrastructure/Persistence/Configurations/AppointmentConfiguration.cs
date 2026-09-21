@@ -39,6 +39,13 @@ public sealed class AppointmentConfiguration : IEntityTypeConfiguration<Appointm
             .HasForeignKey(a => a.AppointmentTypeId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        builder.HasIndex(a => new
+        {
+            a.PatientId,
+            a.AppointmentTypeId,
+            a.Status,
+        });
+
         builder.HasComplexCompositeIndex(a => new
         {
             a.DoctorId,
