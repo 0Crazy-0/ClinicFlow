@@ -276,7 +276,7 @@ public class Appointment : BaseEntity
 
     private void EnsureCancellable()
     {
-        if (Status is AppointmentStatus.Cancelled or AppointmentStatus.LateCancellation)
+        if (Status is not (AppointmentStatus.Scheduled or AppointmentStatus.CheckedIn))
             throw new AppointmentCancellationNotAllowedException(
                 DomainErrors.Appointment.CannotCancel,
                 Status
