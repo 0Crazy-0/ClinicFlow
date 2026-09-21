@@ -108,6 +108,8 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
     {
         // Arrange
         var (doctor, patient, apptType) = await SeedCommonEntitiesAsync();
+        var patient2 = await CreatePatientAsync();
+        var patient3 = await CreatePatientAsync();
         var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
 
         var appointment1 = Appointment.Schedule(
@@ -122,7 +124,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var appointment2 = Appointment.Schedule(
-            patient.Id,
+            patient2.Id,
             doctor.Id,
             apptType.Id,
             scheduledDate,
@@ -133,7 +135,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var appointment3 = Appointment.Schedule(
-            patient.Id,
+            patient3.Id,
             doctor.Id,
             apptType.Id,
             scheduledDate,
@@ -205,6 +207,8 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
     {
         // Arrange
         var (doctor, patient, apptType) = await SeedCommonEntitiesAsync();
+        var patient2 = await CreatePatientAsync();
+        var patient3 = await CreatePatientAsync();
         var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
 
         var appointment1 = Appointment.Schedule(
@@ -219,7 +223,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var appointment2 = Appointment.Schedule(
-            patient.Id,
+            patient2.Id,
             doctor.Id,
             apptType.Id,
             scheduledDate,
@@ -230,7 +234,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var appointment3 = Appointment.Schedule(
-            patient.Id,
+            patient3.Id,
             doctor.Id,
             apptType.Id,
             scheduledDate,
@@ -264,6 +268,8 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
     {
         // Arrange
         var (doctor, patient, apptType) = await SeedCommonEntitiesAsync();
+        var patient2 = await CreatePatientAsync();
+        var patient3 = await CreatePatientAsync();
         var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
 
         var appointment1 = Appointment.Schedule(
@@ -277,7 +283,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var appointment2 = Appointment.Schedule(
-            patient.Id,
+            patient2.Id,
             doctor.Id,
             apptType.Id,
             scheduledDate,
@@ -287,7 +293,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var appointment3 = Appointment.Schedule(
-            patient.Id,
+            patient3.Id,
             doctor.Id,
             apptType.Id,
             scheduledDate,
@@ -321,6 +327,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
     {
         // Arrange
         var (doctor, patient, apptType) = await SeedCommonEntitiesAsync();
+        var patient2 = await CreatePatientAsync();
+        var patient3 = await CreatePatientAsync();
+        var patient4 = await CreatePatientAsync();
         var baseDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
 
         var appointment1 = Appointment.Schedule(
@@ -335,7 +344,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var appointment2 = Appointment.Schedule(
-            patient.Id,
+            patient2.Id,
             doctor.Id,
             apptType.Id,
             baseDate.AddDays(1),
@@ -346,7 +355,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var appointment3 = Appointment.Schedule(
-            patient.Id,
+            patient3.Id,
             doctor.Id,
             apptType.Id,
             baseDate.AddDays(2),
@@ -357,7 +366,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var appointmentOutOfRange = Appointment.Schedule(
-            patient.Id,
+            patient4.Id,
             doctor.Id,
             apptType.Id,
             baseDate.AddDays(5),
@@ -392,6 +401,8 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
     {
         // Arrange
         var (doctor, patient, apptType) = await SeedCommonEntitiesAsync();
+        var patient2 = await CreatePatientAsync();
+        var patient3 = await CreatePatientAsync();
         var baseDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
 
         var appointment1 = Appointment.Schedule(
@@ -406,7 +417,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var appointment2 = Appointment.Schedule(
-            patient.Id,
+            patient2.Id,
             doctor.Id,
             apptType.Id,
             baseDate.AddDays(1),
@@ -417,7 +428,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var appointment3 = Appointment.Schedule(
-            patient.Id,
+            patient3.Id,
             doctor.Id,
             apptType.Id,
             baseDate.AddDays(2),
@@ -451,6 +462,8 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
     {
         // Arrange
         var (doctor, patient, apptType) = await SeedCommonEntitiesAsync();
+        var patient2 = await CreatePatientAsync();
+        var patient3 = await CreatePatientAsync();
         var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
 
         var appointment1 = Appointment.Schedule(
@@ -465,7 +478,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var appointment2 = Appointment.Schedule(
-            patient.Id,
+            patient2.Id,
             doctor.Id,
             apptType.Id,
             scheduledDate,
@@ -476,7 +489,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var appointment3 = Appointment.Schedule(
-            patient.Id,
+            patient3.Id,
             doctor.Id,
             apptType.Id,
             scheduledDate,
@@ -511,6 +524,8 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
     {
         // Arrange
         var (doctor, patient1, apptType) = await SeedCommonEntitiesAsync();
+        var apptType2 = await CreateAppointmentTypeAsync();
+        var apptType3 = await CreateAppointmentTypeAsync();
         var patient2 = await CreatePatientAsync();
         var baseDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
 
@@ -528,7 +543,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         var appointment2 = Appointment.Schedule(
             patient1.Id,
             doctor.Id,
-            apptType.Id,
+            apptType2.Id,
             baseDate.AddDays(1),
             TimeRange.Create(new TimeOnly(11, 0), new TimeOnly(12, 0))
         );
@@ -539,7 +554,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         var appointment3 = Appointment.Schedule(
             patient1.Id,
             doctor.Id,
-            apptType.Id,
+            apptType3.Id,
             baseDate.AddDays(2),
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
@@ -582,6 +597,8 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
     {
         // Arrange
         var (doctor, patient1, apptType) = await SeedCommonEntitiesAsync();
+        var apptType2 = await CreateAppointmentTypeAsync();
+        var apptType3 = await CreateAppointmentTypeAsync();
         var patient2 = await CreatePatientAsync();
         var baseDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
 
@@ -599,7 +616,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         var appointment2 = Appointment.Schedule(
             patient1.Id,
             doctor.Id,
-            apptType.Id,
+            apptType2.Id,
             baseDate.AddDays(1),
             TimeRange.Create(new TimeOnly(11, 0), new TimeOnly(12, 0))
         );
@@ -610,7 +627,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         var appointment3 = Appointment.Schedule(
             patient1.Id,
             doctor.Id,
-            apptType.Id,
+            apptType3.Id,
             baseDate.AddDays(2),
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
@@ -652,6 +669,8 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
     {
         // Arrange
         var (doctor, patient, apptType) = await SeedCommonEntitiesAsync();
+        var apptType2 = await CreateAppointmentTypeAsync();
+        var apptType3 = await CreateAppointmentTypeAsync();
         var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
 
         var appointment1 = Appointment.Schedule(
@@ -667,7 +686,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         var appointment2 = Appointment.Schedule(
             patient.Id,
             doctor.Id,
-            apptType.Id,
+            apptType2.Id,
             scheduledDate,
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
@@ -677,7 +696,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         var appointment3 = Appointment.Schedule(
             patient.Id,
             doctor.Id,
-            apptType.Id,
+            apptType3.Id,
             scheduledDate,
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
@@ -1131,6 +1150,259 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
     }
 
     [Fact]
+    public async Task HasActiveAppointmentForPatientAsync_ShouldReturnTrue_WhenScheduledExists()
+    {
+        // Arrange
+        var (doctor, patient, apptType) = await SeedCommonEntitiesAsync();
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+
+        var appointment = Appointment.Schedule(
+            patient.Id,
+            doctor.Id,
+            apptType.Id,
+            scheduledDate,
+            TimeRange.Create(new TimeOnly(9), new TimeOnly(10))
+        );
+
+        Context.Appointments.Add(appointment);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var result = await _sut.HasActiveAppointmentForPatientAsync(
+            patient.Id,
+            apptType.Id,
+            null,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task HasActiveAppointmentForPatientAsync_ShouldReturnTrue_WhenRequiresReassignmentExists()
+    {
+        // Arrange
+        var (doctor, patient, apptType) = await SeedCommonEntitiesAsync();
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+
+        var appointment = Appointment.Schedule(
+            patient.Id,
+            doctor.Id,
+            apptType.Id,
+            scheduledDate,
+            TimeRange.Create(new TimeOnly(9), new TimeOnly(10))
+        );
+        appointment.MarkAsRequiresReassignment();
+
+        Context.Appointments.Add(appointment);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var result = await _sut.HasActiveAppointmentForPatientAsync(
+            patient.Id,
+            apptType.Id,
+            null,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task HasActiveAppointmentForPatientAsync_ShouldReturnFalse_WhenOnlyCancelledExists()
+    {
+        // Arrange
+        var (doctor, patient, apptType) = await SeedCommonEntitiesAsync();
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+
+        var appointment = Appointment.Schedule(
+            patient.Id,
+            doctor.Id,
+            apptType.Id,
+            scheduledDate,
+            TimeRange.Create(new TimeOnly(9), new TimeOnly(10))
+        );
+        appointment.Cancel(
+            Guid.CreateVersion7(),
+            "Patient request",
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime)
+        );
+
+        Context.Appointments.Add(appointment);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var result = await _sut.HasActiveAppointmentForPatientAsync(
+            patient.Id,
+            apptType.Id,
+            null,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task HasActiveAppointmentForPatientAsync_ShouldReturnFalse_WhenNoMatch()
+    {
+        // Arrange
+        var (doctor, patient, apptType) = await SeedCommonEntitiesAsync();
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+
+        var appointment = Appointment.Schedule(
+            patient.Id,
+            doctor.Id,
+            apptType.Id,
+            scheduledDate,
+            TimeRange.Create(new TimeOnly(9), new TimeOnly(10))
+        );
+
+        Context.Appointments.Add(appointment);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var result = await _sut.HasActiveAppointmentForPatientAsync(
+            patient.Id,
+            Guid.CreateVersion7(),
+            null,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task HasActiveAppointmentForPatientAsync_ShouldReturnFalse_WhenAppointmentBelongsToAnotherPatient()
+    {
+        // Arrange
+        var (doctor, patient, apptType) = await SeedCommonEntitiesAsync();
+        var otherPatient = await CreatePatientAsync();
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+
+        var appointment = Appointment.Schedule(
+            patient.Id,
+            doctor.Id,
+            apptType.Id,
+            scheduledDate,
+            TimeRange.Create(new TimeOnly(9), new TimeOnly(10))
+        );
+
+        Context.Appointments.Add(appointment);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var result = await _sut.HasActiveAppointmentForPatientAsync(
+            otherPatient.Id,
+            apptType.Id,
+            null,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task HasActiveAppointmentForPatientAsync_ShouldReturnTrue_WhenExcludedIdDoesNotMatch()
+    {
+        // Arrange
+        var (doctor, patient, apptType) = await SeedCommonEntitiesAsync();
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+
+        var appointment = Appointment.Schedule(
+            patient.Id,
+            doctor.Id,
+            apptType.Id,
+            scheduledDate,
+            TimeRange.Create(new TimeOnly(9), new TimeOnly(10))
+        );
+
+        Context.Appointments.Add(appointment);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var result = await _sut.HasActiveAppointmentForPatientAsync(
+            patient.Id,
+            apptType.Id,
+            Guid.CreateVersion7(),
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task SaveChangesAsync_ShouldThrowDbUpdateException_WhenDuplicateActiveAppointmentExists()
+    {
+        // Arrange
+        // Active duplicates are prevented by the unique filtered index on (PatientId, AppointmentTypeId).
+        var (doctor, patient, apptType) = await SeedCommonEntitiesAsync();
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+
+        var appointment1 = Appointment.Schedule(
+            patient.Id,
+            doctor.Id,
+            apptType.Id,
+            scheduledDate,
+            TimeRange.Create(new TimeOnly(9), new TimeOnly(10))
+        );
+
+        Context.Appointments.Add(appointment1);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var appointment2 = Appointment.Schedule(
+            patient.Id,
+            doctor.Id,
+            apptType.Id,
+            scheduledDate,
+            TimeRange.Create(new TimeOnly(11), new TimeOnly(12))
+        );
+
+        Context.Appointments.Add(appointment2);
+
+        // Act
+        var act = async () => await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Assert
+        await act.Should().ThrowAsync<DbUpdateException>();
+    }
+
+    [Fact]
+    public async Task HasActiveAppointmentForPatientAsync_ShouldReturnFalse_WhenOnlySelfMatches()
+    {
+        // Arrange
+        var (doctor, patient, apptType) = await SeedCommonEntitiesAsync();
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+
+        var appointment = Appointment.Schedule(
+            patient.Id,
+            doctor.Id,
+            apptType.Id,
+            scheduledDate,
+            TimeRange.Create(new TimeOnly(9), new TimeOnly(10))
+        );
+
+        Context.Appointments.Add(appointment);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var result = await _sut.HasActiveAppointmentForPatientAsync(
+            patient.Id,
+            apptType.Id,
+            appointment.Id,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [Fact]
     public async Task HasConflictAsync_ShouldReturnTrue_WhenOverlappingAppointmentExists()
     {
         // Arrange
@@ -1360,6 +1632,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
     {
         // Arrange
         var (doctor, patient, apptType) = await SeedCommonEntitiesAsync();
+        var patient2 = await CreatePatientAsync();
         var baseDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
 
         var appointment1 = Appointment.Schedule(
@@ -1374,7 +1647,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var appointment2 = Appointment.Schedule(
-            patient.Id,
+            patient2.Id,
             doctor.Id,
             apptType.Id,
             baseDate.AddDays(-1),
@@ -1438,6 +1711,8 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
     {
         // Arrange
         var (doctor, patient, apptType) = await SeedCommonEntitiesAsync();
+        var patient2 = await CreatePatientAsync();
+        var patient3 = await CreatePatientAsync();
         var baseTime = _fakeTime.GetUtcNow().UtcDateTime;
         var baseDate = DateOnly.FromDateTime(baseTime);
 
@@ -1451,8 +1726,11 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
 
         appointment1.MarkAsRequiresReassignment();
 
+        Context.Appointments.Add(appointment1);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
         var appointment2 = Appointment.Schedule(
-            patient.Id,
+            patient2.Id,
             doctor.Id,
             apptType.Id,
             baseDate.AddDays(1),
@@ -1461,16 +1739,18 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
 
         appointment2.MarkAsRequiresReassignment();
 
+        Context.Appointments.Add(appointment2);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
         var appointment3 = Appointment.Schedule(
-            patient.Id,
+            patient3.Id,
             doctor.Id,
             apptType.Id,
             baseDate,
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
 
-        Context.Appointments.AddRange(appointment1, appointment2, appointment3);
-
+        Context.Appointments.Add(appointment3);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Act
@@ -1557,32 +1837,19 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         return (appointment, doctor, patient);
     }
 
-    private async Task<(
-        Appointment Appointment,
-        User PatientUser
-    )> CreateAppointmentDraftWithUserAsync(DateOnly scheduledDate, TimeRange timeRange)
+    private async Task<AppointmentTypeDefinition> CreateAppointmentTypeAsync()
     {
-        var (doctor, patient, apptType) = await SeedCommonEntitiesAsync();
-        var patientUser = await CreateUserAsync(UserRole.Patient);
-        var membership = FamilyMembership.CreateSelf(
-            patient.Id,
-            patientUser.Id,
-            _fakeTime.GetUtcNow().UtcDateTime
+        var entity = AppointmentTypeDefinition.Create(
+            AppointmentCategory.FirstConsultation,
+            "name",
+            "Desc",
+            EncounterDuration.FromMinutes(20)
         );
 
-        Context.FamilyMemberships.Add(membership);
-        await Context.SaveChangesAsync();
+        Context.AppointmentTypes.Add(entity);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
-        var appointment = Appointment.Schedule(
-            patient.Id,
-            doctor.Id,
-            apptType.Id,
-            scheduledDate,
-            timeRange
-        );
-        appointment.ClearDomainEvents();
-
-        return (appointment, patientUser);
+        return entity;
     }
 
     private async Task<(

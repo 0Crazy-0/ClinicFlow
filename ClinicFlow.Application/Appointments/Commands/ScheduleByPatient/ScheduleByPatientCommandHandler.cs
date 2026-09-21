@@ -74,6 +74,7 @@ public sealed class ScheduleByPatientCommandHandler(
             request.TargetPatientId,
             cancellationToken
         );
+
         var timeRange = TimeRange.Create(request.StartTime, request.EndTime);
 
         var doctorSchedule =
@@ -92,6 +93,21 @@ public sealed class ScheduleByPatientCommandHandler(
             request.TargetPatientId,
             async cancellationToken =>
             {
+                if (
+                    await appointmentRepository.HasActiveAppointmentForPatientAsync(
+                        request.TargetPatientId,
+                        appointmentType.Id,
+                        cancellationToken: cancellationToken
+                    )
+                )
+                {
+                    throw new AppointmentDuplicateException(
+                        DomainErrors.Appointment.Duplicate,
+                        request.TargetPatientId,
+                        appointmentType.Id
+                    );
+                }
+
                 if (
                     await appointmentRepository.HasConflictAsync(
                         request.DoctorId,

@@ -49,6 +49,7 @@ public static class DomainErrors
         public const string UnauthorizedDoctor = "UNAUTHORIZED_DOCTOR";
         public const string PhoneNotVerified = "PHONE_NOT_VERIFIED";
         public const string CannotReassign = "REASSIGNMENT_NOT_ALLOWED";
+        public const string Duplicate = "DUPLICATE_APPOINTMENT";
         public const string CannotUpdateNotes = "UPDATE_NOTES_NOT_ALLOWED";
         public const string InvalidCompletionDate = "COMPLETION_DATE_BEFORE_APPOINTMENT_START";
         public const string CompletionBeforeActualStart = "COMPLETION_BEFORE_ACTUAL_START";

@@ -55,6 +55,22 @@ public sealed class ReassignAppointmentCommandHandler(
             );
 
         if (
+            await appointmentRepository.HasActiveAppointmentForPatientAsync(
+                appointment.PatientId,
+                appointment.AppointmentTypeId,
+                appointment.Id,
+                cancellationToken
+            )
+        )
+        {
+            throw new AppointmentDuplicateException(
+                DomainErrors.Appointment.Duplicate,
+                appointment.PatientId,
+                appointment.AppointmentTypeId
+            );
+        }
+
+        if (
             await appointmentRepository.HasConflictAsync(
                 newDoctor.Id,
                 request.NewDate,

@@ -368,6 +368,89 @@ public class ScheduleByStaffCommandHandlerTests
     }
 
     [Fact]
+    public async Task Handle_ShouldThrowAppointmentDuplicateException_WhenDuplicateExists()
+    {
+        // Arrange
+        var command = new ScheduleByStaffCommand(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
+            new TimeOnly(10),
+            new TimeOnly(11),
+            false,
+            false
+        );
+
+        var targetPatient = CreateTargetPatient();
+        var doctor = Doctor.Create(
+            Guid.CreateVersion7(),
+            PersonName.Create("Test Doctor"),
+            MedicalLicenseNumber.Create("LIC-123"),
+            Guid.CreateVersion7(),
+            "Bio",
+            ConsultationRoom.Create(1, "Room", 1)
+        );
+        var appointmentType = AppointmentTypeDefinition.Create(
+            AppointmentCategory.Checkup,
+            "Checkup",
+            "Desc",
+            EncounterDuration.FromMinutes(30),
+            null
+        );
+
+        _patientRepositoryMock
+            .Setup(r => r.GetByIdAsync(command.TargetPatientId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(targetPatient);
+        _doctorRepositoryMock
+            .Setup(r => r.GetByIdAsync(command.DoctorId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(doctor);
+        _appointmentTypeRepositoryMock
+            .Setup(r => r.GetByIdAsync(command.AppointmentTypeId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(appointmentType);
+        _scheduleRepositoryMock
+            .Setup(r =>
+                r.GetActiveByDoctorAndDayAsync(
+                    command.DoctorId,
+                    command.ScheduledDate.DayOfWeek,
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(
+                Schedule.Create(
+                    command.DoctorId,
+                    command.ScheduledDate.DayOfWeek,
+                    TimeRange.Create(command.StartTime, command.EndTime)
+                )
+            );
+        _appointmentRepositoryMock
+            .Setup(r =>
+                r.HasActiveAppointmentForPatientAsync(
+                    command.TargetPatientId,
+                    appointmentType.Id,
+                    It.IsAny<Guid?>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(true);
+
+        // Act
+        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
+
+        // Assert
+        await act.Should()
+            .ThrowAsync<AppointmentDuplicateException>()
+            .WithMessage(DomainErrors.Appointment.Duplicate);
+
+        _appointmentRepositoryMock.Verify(
+            r => r.CreateAsync(It.IsAny<Appointment>(), It.IsAny<CancellationToken>()),
+            Times.Never
+        );
+        _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
     public async Task Handle_ShouldThrowAppointmentConflictException_WhenConflictExists()
     {
         // Arrange
