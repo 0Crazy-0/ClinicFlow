@@ -31,11 +31,6 @@ Use the following template:
 
 ## How to test
 <!-- Steps to verify this works as expected -->
-
-## Checklist
-- [ ] Code follows project standards
-- [ ] Tests pass
-- [ ] No Console.WriteLine or dead code
 ```
 
 ## PR Title
@@ -259,6 +254,3 @@ Confirms the removal of the deleted profile validation logic without affecting t
 - `CreatePatientProfileCommandHandlerTests`
 ```
 
-## Checklist
-
-The checklist is filled by the **developer manually** before merging. The agent must leave all checkboxes unchecked.
