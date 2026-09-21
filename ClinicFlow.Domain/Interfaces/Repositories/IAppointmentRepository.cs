@@ -1,4 +1,5 @@
 using ClinicFlow.Domain.Entities;
+using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.ValueObjects;
 
 namespace ClinicFlow.Domain.Interfaces.Repositories;
@@ -32,6 +33,18 @@ public interface IAppointmentRepository
         Guid patientId,
         int pageNumber,
         int pageSize,
+        CancellationToken cancellationToken = default
+    );
+
+    /// <remarks>
+    /// An appointment is active while its <see cref="AppointmentStatus"/> is
+    /// <see cref="AppointmentStatus.Scheduled"/> or
+    /// <see cref="AppointmentStatus.RequiresReassignment"/>.
+    /// </remarks>
+    Task<bool> HasActiveAppointmentForPatientAsync(
+        Guid patientId,
+        Guid appointmentTypeId,
+        Guid? excludeAppointmentId = null,
         CancellationToken cancellationToken = default
     );
 

@@ -1131,6 +1131,236 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
     }
 
     [Fact]
+    public async Task HasActiveAppointmentForPatientAsync_ShouldReturnTrue_WhenScheduledExists()
+    {
+        // Arrange
+        var (doctor, patient, apptType) = await SeedCommonEntitiesAsync();
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+
+        var appointment = Appointment.Schedule(
+            patient.Id,
+            doctor.Id,
+            apptType.Id,
+            scheduledDate,
+            TimeRange.Create(new TimeOnly(9), new TimeOnly(10))
+        );
+
+        Context.Appointments.Add(appointment);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var result = await _sut.HasActiveAppointmentForPatientAsync(
+            patient.Id,
+            apptType.Id,
+            null,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task HasActiveAppointmentForPatientAsync_ShouldReturnTrue_WhenRequiresReassignmentExists()
+    {
+        // Arrange
+        var (doctor, patient, apptType) = await SeedCommonEntitiesAsync();
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+
+        var appointment = Appointment.Schedule(
+            patient.Id,
+            doctor.Id,
+            apptType.Id,
+            scheduledDate,
+            TimeRange.Create(new TimeOnly(9), new TimeOnly(10))
+        );
+        appointment.MarkAsRequiresReassignment();
+
+        Context.Appointments.Add(appointment);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var result = await _sut.HasActiveAppointmentForPatientAsync(
+            patient.Id,
+            apptType.Id,
+            null,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task HasActiveAppointmentForPatientAsync_ShouldReturnFalse_WhenOnlyCancelledExists()
+    {
+        // Arrange
+        var (doctor, patient, apptType) = await SeedCommonEntitiesAsync();
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+
+        var appointment = Appointment.Schedule(
+            patient.Id,
+            doctor.Id,
+            apptType.Id,
+            scheduledDate,
+            TimeRange.Create(new TimeOnly(9), new TimeOnly(10))
+        );
+        appointment.Cancel(
+            Guid.CreateVersion7(),
+            "Patient request",
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime)
+        );
+
+        Context.Appointments.Add(appointment);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var result = await _sut.HasActiveAppointmentForPatientAsync(
+            patient.Id,
+            apptType.Id,
+            null,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task HasActiveAppointmentForPatientAsync_ShouldReturnFalse_WhenNoMatch()
+    {
+        // Arrange
+        var (doctor, patient, apptType) = await SeedCommonEntitiesAsync();
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+
+        var appointment = Appointment.Schedule(
+            patient.Id,
+            doctor.Id,
+            apptType.Id,
+            scheduledDate,
+            TimeRange.Create(new TimeOnly(9), new TimeOnly(10))
+        );
+
+        Context.Appointments.Add(appointment);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var result = await _sut.HasActiveAppointmentForPatientAsync(
+            patient.Id,
+            Guid.CreateVersion7(),
+            null,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task HasActiveAppointmentForPatientAsync_ShouldReturnFalse_WhenAppointmentBelongsToAnotherPatient()
+    {
+        // Arrange
+        var (doctor, patient, apptType) = await SeedCommonEntitiesAsync();
+        var otherPatient = await CreatePatientAsync();
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+
+        var appointment = Appointment.Schedule(
+            patient.Id,
+            doctor.Id,
+            apptType.Id,
+            scheduledDate,
+            TimeRange.Create(new TimeOnly(9), new TimeOnly(10))
+        );
+
+        Context.Appointments.Add(appointment);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var result = await _sut.HasActiveAppointmentForPatientAsync(
+            otherPatient.Id,
+            apptType.Id,
+            null,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task HasActiveAppointmentForPatientAsync_ShouldReturnTrue_WhenAnotherActiveExists()
+    {
+        // Arrange
+        // Duplicates are prevented at the handler level (see DomainErrors.Appointment.Duplicate).
+        // Two are seeded here only to test the repository's exclusion logic in isolation.
+        var (doctor, patient, apptType) = await SeedCommonEntitiesAsync();
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+
+        var appointment1 = Appointment.Schedule(
+            patient.Id,
+            doctor.Id,
+            apptType.Id,
+            scheduledDate,
+            TimeRange.Create(new TimeOnly(9), new TimeOnly(10))
+        );
+
+        Context.Appointments.Add(appointment1);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var appointment2 = Appointment.Schedule(
+            patient.Id,
+            doctor.Id,
+            apptType.Id,
+            scheduledDate,
+            TimeRange.Create(new TimeOnly(11), new TimeOnly(12))
+        );
+
+        Context.Appointments.Add(appointment2);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var result = await _sut.HasActiveAppointmentForPatientAsync(
+            patient.Id,
+            apptType.Id,
+            appointment1.Id,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task HasActiveAppointmentForPatientAsync_ShouldReturnFalse_WhenOnlySelfMatches()
+    {
+        // Arrange
+        var (doctor, patient, apptType) = await SeedCommonEntitiesAsync();
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+
+        var appointment = Appointment.Schedule(
+            patient.Id,
+            doctor.Id,
+            apptType.Id,
+            scheduledDate,
+            TimeRange.Create(new TimeOnly(9), new TimeOnly(10))
+        );
+
+        Context.Appointments.Add(appointment);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var result = await _sut.HasActiveAppointmentForPatientAsync(
+            patient.Id,
+            apptType.Id,
+            appointment.Id,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [Fact]
     public async Task HasConflictAsync_ShouldReturnTrue_WhenOverlappingAppointmentExists()
     {
         // Arrange

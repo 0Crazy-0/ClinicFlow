@@ -137,6 +137,25 @@ public sealed class AppointmentRepository(ApplicationDbContext dbContext) : IApp
         );
     }
 
+    /// <inheritdoc />
+    public async Task<bool> HasActiveAppointmentForPatientAsync(
+        Guid patientId,
+        Guid appointmentTypeId,
+        Guid? excludeAppointmentId = null,
+        CancellationToken cancellationToken = default
+    ) =>
+        await dbContext.Appointments.AnyAsync(
+            a =>
+                a.PatientId == patientId
+                && a.AppointmentTypeId == appointmentTypeId
+                && (
+                    a.Status == AppointmentStatus.Scheduled
+                    || a.Status == AppointmentStatus.RequiresReassignment
+                )
+                && (excludeAppointmentId == null || a.Id != excludeAppointmentId),
+            cancellationToken
+        );
+
     public async Task<bool> HasConflictAsync(
         Guid doctorId,
         DateOnly scheduledDate,
