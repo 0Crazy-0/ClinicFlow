@@ -70,6 +70,21 @@ public sealed class ScheduleByDoctorCommandHandler(
             );
 
         if (
+            await appointmentRepository.HasActiveAppointmentForPatientAsync(
+                request.TargetPatientId,
+                appointmentType.Id,
+                cancellationToken: cancellationToken
+            )
+        )
+        {
+            throw new AppointmentDuplicateException(
+                DomainErrors.Appointment.Duplicate,
+                request.TargetPatientId,
+                appointmentType.Id
+            );
+        }
+
+        if (
             !request.IsOverbook
             && await appointmentRepository.HasConflictAsync(
                 initiatorDoctor.Id,
