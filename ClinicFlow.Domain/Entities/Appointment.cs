@@ -9,7 +9,11 @@ namespace ClinicFlow.Domain.Entities;
 
 /// <summary>
 /// Represents a medical appointment between a patient and a doctor.
-/// Enforces the full appointment lifecycle transitions: scheduling, rescheduling, check-in, in-progress, completion, no-show, and cancellation.
+/// Enforces lifecycle transitions across <see cref="AppointmentStatus.Scheduled"/>,
+/// <see cref="AppointmentStatus.CheckedIn"/>, <see cref="AppointmentStatus.InProgress"/>,
+/// <see cref="AppointmentStatus.Completed"/>, <see cref="AppointmentStatus.NoShow"/>,
+/// <see cref="AppointmentStatus.Cancelled"/>, <see cref="AppointmentStatus.LateCancellation"/>
+/// and <see cref="AppointmentStatus.RequiresReassignment"/>.
 /// </summary>
 public class Appointment : BaseEntity
 {
