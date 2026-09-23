@@ -315,12 +315,9 @@ public class AppointmentCancellationServiceTests
     }
 
     [Theory]
-    [InlineData(30, AppointmentCategory.Checkup)]
-    [InlineData(30, AppointmentCategory.Emergency)]
-    public void CancelByPatient_ShouldSucceed_WhenPatientIsSelf(
-        int age,
-        AppointmentCategory category
-    )
+    [InlineData(30, AppointmentPurpose.Checkup)]
+    [InlineData(30, AppointmentPurpose.Emergency)]
+    public void CancelByPatient_ShouldSucceed_WhenPatientIsSelf(int age, AppointmentPurpose purpose)
     {
         // Arrange
         var initiatorUserId = Guid.CreateVersion7();
@@ -329,7 +326,7 @@ public class AppointmentCancellationServiceTests
         var appointment = CreateAppointment(patientId);
         var context = new AppointmentCancellationContext
         {
-            Category = category,
+            Purpose = purpose,
             Specialty = CreateSpecialty(),
             IsInitiatorSelfOfTarget = true,
         };
@@ -351,15 +348,15 @@ public class AppointmentCancellationServiceTests
     }
 
     [Theory]
-    [InlineData(PatientRelationship.Child, 10, AppointmentCategory.Checkup)]
-    [InlineData(PatientRelationship.Child, 10, AppointmentCategory.Emergency)]
-    [InlineData(PatientRelationship.Child, 20, AppointmentCategory.Checkup)]
-    [InlineData(PatientRelationship.Spouse, 30, AppointmentCategory.Checkup)]
-    [InlineData(PatientRelationship.Parent, 60, AppointmentCategory.FollowUp)]
+    [InlineData(PatientRelationship.Child, 10, AppointmentPurpose.Checkup)]
+    [InlineData(PatientRelationship.Child, 10, AppointmentPurpose.Emergency)]
+    [InlineData(PatientRelationship.Child, 20, AppointmentPurpose.Checkup)]
+    [InlineData(PatientRelationship.Spouse, 30, AppointmentPurpose.Checkup)]
+    [InlineData(PatientRelationship.Parent, 60, AppointmentPurpose.FollowUp)]
     public void CancelByPatient_ShouldSucceed_WhenPatientIsFamilyMember(
         PatientRelationship relationship,
         int age,
-        AppointmentCategory category
+        AppointmentPurpose purpose
     )
     {
         // Arrange
@@ -369,7 +366,7 @@ public class AppointmentCancellationServiceTests
         var appointment = CreateAppointment(patientId);
         var context = new AppointmentCancellationContext
         {
-            Category = category,
+            Purpose = purpose,
             Specialty = CreateSpecialty(),
             IsInitiatorSelfOfTarget = false,
             IsInitiatorGuardianOfMinorTarget = relationship is PatientRelationship.Child,
@@ -402,7 +399,7 @@ public class AppointmentCancellationServiceTests
 
         var context = new AppointmentCancellationContext
         {
-            Category = AppointmentCategory.Procedure,
+            Purpose = AppointmentPurpose.Procedure,
             Specialty = CreateSpecialty(),
             IsInitiatorSelfOfTarget = true,
         };
@@ -425,16 +422,16 @@ public class AppointmentCancellationServiceTests
     }
 
     [Theory]
-    [InlineData(PatientRelationship.Child, 10, AppointmentCategory.Procedure)]
-    [InlineData(PatientRelationship.Child, 18, AppointmentCategory.Emergency)]
-    [InlineData(PatientRelationship.Child, 20, AppointmentCategory.Emergency)]
-    [InlineData(PatientRelationship.Spouse, 30, AppointmentCategory.Emergency)]
-    [InlineData(PatientRelationship.Spouse, 30, AppointmentCategory.Procedure)]
-    [InlineData(PatientRelationship.Parent, 60, AppointmentCategory.Emergency)]
+    [InlineData(PatientRelationship.Child, 10, AppointmentPurpose.Procedure)]
+    [InlineData(PatientRelationship.Child, 18, AppointmentPurpose.Emergency)]
+    [InlineData(PatientRelationship.Child, 20, AppointmentPurpose.Emergency)]
+    [InlineData(PatientRelationship.Spouse, 30, AppointmentPurpose.Emergency)]
+    [InlineData(PatientRelationship.Spouse, 30, AppointmentPurpose.Procedure)]
+    [InlineData(PatientRelationship.Parent, 60, AppointmentPurpose.Emergency)]
     public void CancelByPatient_ShouldThrowUnauthorized_WhenPatientIsFamilyMemberAndRulesFail(
         PatientRelationship relationship,
         int age,
-        AppointmentCategory category
+        AppointmentPurpose purpose
     )
     {
         // Arrange
@@ -445,7 +442,7 @@ public class AppointmentCancellationServiceTests
 
         var context = new AppointmentCancellationContext
         {
-            Category = category,
+            Purpose = purpose,
             Specialty = CreateSpecialty(),
             IsInitiatorSelfOfTarget = false,
             IsInitiatorGuardianOfMinorTarget = relationship is PatientRelationship.Child,
@@ -478,7 +475,7 @@ public class AppointmentCancellationServiceTests
         var appointment = CreateAppointment(); // patientId = Guid.CreateVersion7()
         var context = new AppointmentCancellationContext
         {
-            Category = AppointmentCategory.Checkup,
+            Purpose = AppointmentPurpose.Checkup,
             Specialty = CreateSpecialty(),
         };
 
@@ -520,7 +517,7 @@ public class AppointmentCancellationServiceTests
 
         var context = new AppointmentCancellationContext
         {
-            Category = AppointmentCategory.Checkup,
+            Purpose = AppointmentPurpose.Checkup,
             Specialty = CreateSpecialty(),
         };
 
@@ -571,7 +568,7 @@ public class AppointmentCancellationServiceTests
 
         var context = new AppointmentCancellationContext
         {
-            Category = AppointmentCategory.Checkup,
+            Purpose = AppointmentPurpose.Checkup,
             Specialty = MedicalSpecialty.Create("Test Specialty", "Test Description", 30, minHours),
         };
 
@@ -640,5 +637,5 @@ public class AppointmentCancellationServiceTests
     }
 
     private static AppointmentCancellationContext CreateValidCancellationContext() =>
-        new() { Category = AppointmentCategory.Checkup, Specialty = CreateSpecialty() };
+        new() { Purpose = AppointmentPurpose.Checkup, Specialty = CreateSpecialty() };
 }

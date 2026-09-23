@@ -28,12 +28,12 @@ public static class AppointmentCancellationService
         if (appointment.PatientId != args.TargetPatient.Id)
             throw new DomainValidationException(DomainErrors.Appointment.DataMismatch);
 
-        if (context.Category is AppointmentCategory.Procedure)
+        if (context.Purpose is AppointmentPurpose.Procedure)
             throw new AppointmentCancellationUnauthorizedException(
                 DomainErrors.Appointment.CannotCancel
             );
 
-        if (context.Category is AppointmentCategory.Emergency)
+        if (context.Purpose is AppointmentPurpose.Emergency)
             ValidateEmergencyCancellation(
                 args.TargetPatient,
                 context.IsInitiatorSelfOfTarget,

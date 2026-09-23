@@ -130,6 +130,14 @@ Constructor has 8 or 9 parameters, which is greater than the 7 authorized.
 
 **Resolution:** Intentional by design. These are CQRS orchestration handlers where each of the dependencies serves a distinct, non-mergeable responsibility. Refactoring into facade or aggregate services would obscure dependencies without reducing actual complexity.
 
+**File:** `AppointmentTypeDefinition.cs` (Domain/Entities)
+
+```
+Constructor has 8 parameters, which is greater than the 7 authorized.
+```
+
+**Resolution:** Intentional by design. The private constructor captures the complete initial state of this core entity, where each parameter maps to a distinct, non-mergeable invariant. Wrapping them in a DTO or parameter object would only camouflage the count without reducing actual complexity, while obscuring the factory intent. Same reasoning as the Application handler `S107` cases above.
+
 ### `S4144`. Identical method implementations
 
 **File:** `PatientPenalty.cs` (Domain/Entities)

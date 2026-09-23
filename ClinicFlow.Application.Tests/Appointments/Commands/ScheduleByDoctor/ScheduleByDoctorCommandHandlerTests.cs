@@ -61,7 +61,8 @@ public class ScheduleByDoctorCommandHandlerTests
         var doctor = CreateDoctor(command.InitiatorUserId);
         var targetPatient = CreateTargetPatient();
         var appointmentType = AppointmentTypeDefinition.Create(
-            AppointmentCategory.FollowUp,
+            AppointmentCategory.Other,
+            AppointmentPurpose.FollowUp,
             "FollowUp",
             "Follow up visit",
             EncounterDuration.FromMinutes(30),
@@ -150,7 +151,8 @@ public class ScheduleByDoctorCommandHandlerTests
         var doctor = CreateDoctor(command.InitiatorUserId);
         var targetPatient = CreateTargetPatient();
         var appointmentType = AppointmentTypeDefinition.Create(
-            AppointmentCategory.FollowUp,
+            AppointmentCategory.Other,
+            AppointmentPurpose.FollowUp,
             "FollowUp",
             "Follow up visit",
             EncounterDuration.FromMinutes(30),
@@ -352,7 +354,8 @@ public class ScheduleByDoctorCommandHandlerTests
         var doctor = CreateDoctor(command.InitiatorUserId);
         var targetPatient = CreateTargetPatient();
         var appointmentType = AppointmentTypeDefinition.Create(
-            AppointmentCategory.Checkup,
+            AppointmentCategory.Other,
+            AppointmentPurpose.Checkup,
             "Checkup",
             "Desc",
             EncounterDuration.FromMinutes(30),
@@ -412,7 +415,8 @@ public class ScheduleByDoctorCommandHandlerTests
         var doctor = CreateDoctor(command.InitiatorUserId);
         var targetPatient = CreateTargetPatient();
         var appointmentType = AppointmentTypeDefinition.Create(
-            AppointmentCategory.Checkup,
+            AppointmentCategory.Other,
+            AppointmentPurpose.Checkup,
             "Checkup",
             "Desc",
             EncounterDuration.FromMinutes(30),
@@ -487,7 +491,8 @@ public class ScheduleByDoctorCommandHandlerTests
         var doctor = CreateDoctor(command.InitiatorUserId);
         var targetPatient = CreateTargetPatient();
         var appointmentType = AppointmentTypeDefinition.Create(
-            AppointmentCategory.Checkup,
+            AppointmentCategory.Other,
+            AppointmentPurpose.Checkup,
             "Checkup",
             "Desc",
             EncounterDuration.FromMinutes(30),

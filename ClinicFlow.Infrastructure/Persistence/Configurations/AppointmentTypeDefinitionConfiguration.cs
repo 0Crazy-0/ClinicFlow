@@ -27,6 +27,7 @@ public sealed class AppointmentTypeDefinitionConfiguration
         );
 
         builder.Property(a => a.Category).HasConversion<string>();
+        builder.Property(a => a.Purpose).HasConversion<string>();
         builder.Property(a => a.ProtectedCareCategory).HasConversion<string>();
         builder
             .Property(a => a.Duration)

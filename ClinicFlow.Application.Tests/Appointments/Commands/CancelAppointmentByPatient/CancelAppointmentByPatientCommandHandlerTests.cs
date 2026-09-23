@@ -406,7 +406,8 @@ public class CancelAppointmentByPatientCommandHandlerTests
 
     private static AppointmentTypeDefinition CreateAppointmentType() =>
         AppointmentTypeDefinition.Create(
-            AppointmentCategory.Checkup,
+            AppointmentCategory.Other,
+            AppointmentPurpose.Checkup,
             "Checkup",
             "Desc",
             EncounterDuration.FromMinutes(30)

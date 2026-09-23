@@ -14,7 +14,8 @@ public class AppointmentTypeDefinitionTests
     public void Create_ShouldCreateInstance_WhenValidParameters()
     {
         // Arrange
-        var category = AppointmentCategory.Checkup;
+        var category = AppointmentCategory.Other;
+        var purpose = AppointmentPurpose.Checkup;
         var name = "General Checkup";
         var description = "Routine consultation";
         var duration = EncounterDuration.FromMinutes(30);
@@ -23,6 +24,7 @@ public class AppointmentTypeDefinitionTests
         // Act
         var result = AppointmentTypeDefinition.Create(
             category,
+            purpose,
             name,
             description,
             duration,
@@ -33,6 +35,7 @@ public class AppointmentTypeDefinitionTests
         // Assert
         result.Should().NotBeNull();
         result.Category.Should().Be(category);
+        result.Purpose.Should().Be(purpose);
         result.Name.Should().Be(name);
         result.Description.Should().Be(description);
         result.Duration.Should().Be(duration);
@@ -49,7 +52,8 @@ public class AppointmentTypeDefinitionTests
         // Arrange & Act
         var act = () =>
             AppointmentTypeDefinition.Create(
-                AppointmentCategory.Checkup,
+                AppointmentCategory.Other,
+                AppointmentPurpose.Checkup,
                 name!,
                 "Description",
                 EncounterDuration.FromMinutes(30)
@@ -67,7 +71,8 @@ public class AppointmentTypeDefinitionTests
         // Arrange & Act
         var act = () =>
             AppointmentTypeDefinition.Create(
-                AppointmentCategory.Checkup,
+                AppointmentCategory.Other,
+                AppointmentPurpose.Checkup,
                 "Checkup",
                 "Description",
                 null!
@@ -80,12 +85,51 @@ public class AppointmentTypeDefinitionTests
     }
 
     [Fact]
+    public void Create_ShouldThrowException_WhenCategoryIsNotDefined()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentTypeDefinition.Create(
+                (AppointmentCategory)999,
+                AppointmentPurpose.Checkup,
+                "Checkup",
+                "Description",
+                EncounterDuration.FromMinutes(30)
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.InvalidEnumValue);
+    }
+
+    [Fact]
+    public void Create_ShouldThrowException_WhenPurposeIsNotDefined()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentTypeDefinition.Create(
+                AppointmentCategory.Other,
+                (AppointmentPurpose)999,
+                "Checkup",
+                "Description",
+                EncounterDuration.FromMinutes(30)
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.InvalidEnumValue);
+    }
+
+    [Fact]
     public void Create_ShouldThrowException_WhenProtectedCareCategoryIsNotDefined()
     {
         // Arrange & Act
         var act = () =>
             AppointmentTypeDefinition.Create(
-                AppointmentCategory.Checkup,
+                AppointmentCategory.Other,
+                AppointmentPurpose.Checkup,
                 "Checkup",
                 "Description",
                 EncounterDuration.FromMinutes(30),
@@ -223,7 +267,8 @@ public class AppointmentTypeDefinitionTests
     {
         // Arrange
         var appointmentType = AppointmentTypeDefinition.Create(
-            AppointmentCategory.Checkup,
+            AppointmentCategory.Other,
+            AppointmentPurpose.Checkup,
             "Checkup",
             "Description",
             EncounterDuration.FromMinutes(30),
@@ -242,7 +287,8 @@ public class AppointmentTypeDefinitionTests
     {
         // Arrange
         var appointmentType = AppointmentTypeDefinition.Create(
-            AppointmentCategory.Checkup,
+            AppointmentCategory.Other,
+            AppointmentPurpose.Checkup,
             "Checkup",
             "Description",
             EncounterDuration.FromMinutes(30),
@@ -263,16 +309,24 @@ public class AppointmentTypeDefinitionTests
     {
         // Arrange
         var appointmentType = CreateAppointmentTypeDefinition();
-        var newCategory = AppointmentCategory.FollowUp;
+        var newCategory = AppointmentCategory.Pediatrics;
+        var newPurpose = AppointmentPurpose.FollowUp;
         var newName = "Updated Name";
         var newDescription = "Updated Description";
         var newDuration = EncounterDuration.FromMinutes(60);
 
         // Act
-        appointmentType.UpdateDetails(newCategory, newName, newDescription, newDuration);
+        appointmentType.UpdateDetails(
+            newCategory,
+            newPurpose,
+            newName,
+            newDescription,
+            newDuration
+        );
 
         // Assert
         appointmentType.Category.Should().Be(newCategory);
+        appointmentType.Purpose.Should().Be(newPurpose);
         appointmentType.Name.Should().Be(newName);
         appointmentType.Description.Should().Be(newDescription);
         appointmentType.Duration.Should().Be(newDuration);
@@ -290,7 +344,8 @@ public class AppointmentTypeDefinitionTests
         // Act
         var act = () =>
             appointmentType.UpdateDetails(
-                AppointmentCategory.Checkup,
+                AppointmentCategory.Other,
+                AppointmentPurpose.Checkup,
                 name!,
                 "Description",
                 EncounterDuration.FromMinutes(30)
@@ -311,7 +366,8 @@ public class AppointmentTypeDefinitionTests
         // Act
         var act = () =>
             appointmentType.UpdateDetails(
-                AppointmentCategory.Checkup,
+                AppointmentCategory.Other,
+                AppointmentPurpose.Checkup,
                 "Valid Name",
                 "Description",
                 null!
@@ -321,6 +377,50 @@ public class AppointmentTypeDefinitionTests
         act.Should()
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void UpdateDetails_ShouldThrowException_WhenCategoryIsNotDefined()
+    {
+        // Arrange
+        var appointmentType = CreateAppointmentTypeDefinition();
+
+        // Act
+        var act = () =>
+            appointmentType.UpdateDetails(
+                (AppointmentCategory)999,
+                AppointmentPurpose.Checkup,
+                "Valid Name",
+                "Description",
+                EncounterDuration.FromMinutes(30)
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.InvalidEnumValue);
+    }
+
+    [Fact]
+    public void UpdateDetails_ShouldThrowException_WhenPurposeIsNotDefined()
+    {
+        // Arrange
+        var appointmentType = CreateAppointmentTypeDefinition();
+
+        // Act
+        var act = () =>
+            appointmentType.UpdateDetails(
+                AppointmentCategory.Other,
+                (AppointmentPurpose)999,
+                "Valid Name",
+                "Description",
+                EncounterDuration.FromMinutes(30)
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.InvalidEnumValue);
     }
 
     [Fact]
@@ -342,7 +442,8 @@ public class AppointmentTypeDefinitionTests
     {
         // Arrange
         var appointmentType = AppointmentTypeDefinition.Create(
-            AppointmentCategory.Checkup,
+            AppointmentCategory.Other,
+            AppointmentPurpose.Checkup,
             "Checkup",
             "Description",
             EncounterDuration.FromMinutes(30),
@@ -375,7 +476,8 @@ public class AppointmentTypeDefinitionTests
     {
         // Arrange
         var appointmentType = AppointmentTypeDefinition.Create(
-            AppointmentCategory.Checkup,
+            AppointmentCategory.Other,
+            AppointmentPurpose.Checkup,
             "Checkup",
             "Description",
             EncounterDuration.FromMinutes(30),
@@ -722,7 +824,8 @@ public class AppointmentTypeDefinitionTests
 
     private static AppointmentTypeDefinition CreateAppointmentTypeDefinition() =>
         AppointmentTypeDefinition.Create(
-            AppointmentCategory.Checkup,
+            AppointmentCategory.Other,
+            AppointmentPurpose.Checkup,
             "Checkup",
             "Description",
             EncounterDuration.FromMinutes(30)

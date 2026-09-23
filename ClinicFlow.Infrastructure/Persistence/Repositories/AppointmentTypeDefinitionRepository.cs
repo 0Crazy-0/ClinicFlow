@@ -38,14 +38,14 @@ public sealed class AppointmentTypeDefinitionRepository(ApplicationDbContext dbC
             .Include(a => a.RequiredTemplates)
             .ToListAsync(cancellationToken);
 
-    public async Task<IReadOnlyList<AppointmentTypeDefinition>> GetByCategoryAsync(
-        AppointmentCategory category,
+    public async Task<IReadOnlyList<AppointmentTypeDefinition>> GetByPurposeAsync(
+        AppointmentPurpose purpose,
         CancellationToken cancellationToken = default
     ) =>
         await dbContext
             .AppointmentTypes.AsNoTracking()
             .Include(a => a.RequiredTemplates)
-            .Where(a => a.Category == category)
+            .Where(a => a.Purpose == purpose)
             .ToListAsync(cancellationToken);
 
     public async Task<IReadOnlyList<AppointmentTypeDefinition>> GetEligibleByAgeAsync(

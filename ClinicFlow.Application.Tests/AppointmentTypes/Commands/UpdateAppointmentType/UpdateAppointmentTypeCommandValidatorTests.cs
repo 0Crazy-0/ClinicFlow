@@ -20,7 +20,8 @@ public class UpdateAppointmentTypeCommandValidatorTests
         // Arrange
         var command = new UpdateAppointmentTypeCommand(
             Guid.CreateVersion7(),
-            AppointmentCategory.Checkup,
+            AppointmentCategory.Other,
+            AppointmentPurpose.Checkup,
             "General Checkup",
             "Routine consultation",
             30
@@ -39,7 +40,8 @@ public class UpdateAppointmentTypeCommandValidatorTests
         // Arrange
         var command = new UpdateAppointmentTypeCommand(
             Guid.Empty,
-            AppointmentCategory.Checkup,
+            AppointmentCategory.Other,
+            AppointmentPurpose.Checkup,
             "Checkup",
             "Description",
             30
@@ -54,6 +56,50 @@ public class UpdateAppointmentTypeCommandValidatorTests
             .WithErrorMessage(DomainErrors.Validation.InvalidValue);
     }
 
+    [Fact]
+    public void Validate_ShouldHaveError_WhenCategoryIsInvalid()
+    {
+        // Arrange
+        var command = new UpdateAppointmentTypeCommand(
+            Guid.CreateVersion7(),
+            (AppointmentCategory)999,
+            AppointmentPurpose.Checkup,
+            "Checkup",
+            "Description",
+            30
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.Category)
+            .WithErrorMessage(DomainErrors.Validation.InvalidEnumValue);
+    }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenPurposeIsInvalid()
+    {
+        // Arrange
+        var command = new UpdateAppointmentTypeCommand(
+            Guid.CreateVersion7(),
+            AppointmentCategory.Other,
+            (AppointmentPurpose)999,
+            "Checkup",
+            "Description",
+            30
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.Purpose)
+            .WithErrorMessage(DomainErrors.Validation.InvalidEnumValue);
+    }
+
     [Theory]
     [InlineData(null)]
     [InlineData("")]
@@ -63,7 +109,8 @@ public class UpdateAppointmentTypeCommandValidatorTests
         // Arrange
         var command = new UpdateAppointmentTypeCommand(
             Guid.CreateVersion7(),
-            AppointmentCategory.Checkup,
+            AppointmentCategory.Other,
+            AppointmentPurpose.Checkup,
             name!,
             "Description",
             30
@@ -89,7 +136,8 @@ public class UpdateAppointmentTypeCommandValidatorTests
         // Arrange
         var command = new UpdateAppointmentTypeCommand(
             Guid.CreateVersion7(),
-            AppointmentCategory.Checkup,
+            AppointmentCategory.Other,
+            AppointmentPurpose.Checkup,
             "Checkup",
             "Description",
             minutes

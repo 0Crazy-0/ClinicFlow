@@ -32,6 +32,7 @@ public sealed class GetAppointmentTypeByIdQueryHandler(
         return new AppointmentTypeDto(
             appointmentType.Id,
             appointmentType.Category.ToString(),
+            appointmentType.Purpose.ToString(),
             appointmentType.Name,
             appointmentType.Description,
             appointmentType.Duration.Minutes,

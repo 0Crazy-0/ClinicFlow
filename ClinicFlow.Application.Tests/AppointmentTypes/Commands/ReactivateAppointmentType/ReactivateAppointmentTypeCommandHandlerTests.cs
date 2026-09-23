@@ -32,7 +32,8 @@ public class ReactivateAppointmentTypeCommandHandlerTests
     {
         // Arrange
         var appointmentType = AppointmentTypeDefinition.Create(
-            AppointmentCategory.Checkup,
+            AppointmentCategory.Other,
+            AppointmentPurpose.Checkup,
             "General Checkup",
             "Routine consultation",
             EncounterDuration.FromMinutes(30)
@@ -90,7 +91,8 @@ public class ReactivateAppointmentTypeCommandHandlerTests
     {
         // Arrange
         var appointmentType = AppointmentTypeDefinition.Create(
-            AppointmentCategory.Checkup,
+            AppointmentCategory.Other,
+            AppointmentPurpose.Checkup,
             "General Checkup",
             "Routine consultation",
             EncounterDuration.FromMinutes(30)

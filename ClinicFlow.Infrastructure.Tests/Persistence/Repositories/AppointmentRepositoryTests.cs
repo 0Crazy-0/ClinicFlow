@@ -730,7 +730,8 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         var (doctor, _, _) = await SeedCommonEntitiesAsync();
 
         var guardianApptType = AppointmentTypeDefinition.Create(
-            AppointmentCategory.FirstConsultation,
+            AppointmentCategory.Other,
+            AppointmentPurpose.FirstConsultation,
             "Pediatric Consultation",
             "Desc",
             EncounterDuration.FromMinutes(20),
@@ -786,7 +787,8 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         var (doctor, _, _) = await SeedCommonEntitiesAsync();
 
         var guardianApptType = AppointmentTypeDefinition.Create(
-            AppointmentCategory.FirstConsultation,
+            AppointmentCategory.Other,
+            AppointmentPurpose.FirstConsultation,
             "Pediatric Consultation",
             "Desc",
             EncounterDuration.FromMinutes(20),
@@ -835,7 +837,8 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         var (doctor, _, _) = await SeedCommonEntitiesAsync();
 
         var guardianApptType = AppointmentTypeDefinition.Create(
-            AppointmentCategory.FirstConsultation,
+            AppointmentCategory.Other,
+            AppointmentPurpose.FirstConsultation,
             "General Consultation",
             "Desc",
             EncounterDuration.FromMinutes(20),
@@ -925,7 +928,8 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         var (doctor, _, _) = await SeedCommonEntitiesAsync();
 
         var guardianApptType = AppointmentTypeDefinition.Create(
-            AppointmentCategory.FirstConsultation,
+            AppointmentCategory.Other,
+            AppointmentPurpose.FirstConsultation,
             "Pediatric Consultation",
             "Desc",
             EncounterDuration.FromMinutes(20),
@@ -981,7 +985,8 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         var (doctor, _, _) = await SeedCommonEntitiesAsync();
 
         var guardianApptType = AppointmentTypeDefinition.Create(
-            AppointmentCategory.FirstConsultation,
+            AppointmentCategory.Other,
+            AppointmentPurpose.FirstConsultation,
             "Pediatric Consultation",
             "Desc",
             EncounterDuration.FromMinutes(20),
@@ -1036,7 +1041,8 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         var (doctor, _, _) = await SeedCommonEntitiesAsync();
 
         var guardianApptType = AppointmentTypeDefinition.Create(
-            AppointmentCategory.FirstConsultation,
+            AppointmentCategory.Other,
+            AppointmentPurpose.FirstConsultation,
             "Pediatric Consultation",
             "Desc",
             EncounterDuration.FromMinutes(20),
@@ -1091,7 +1097,8 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         var (doctor, _, _) = await SeedCommonEntitiesAsync();
 
         var guardianApptType = AppointmentTypeDefinition.Create(
-            AppointmentCategory.FirstConsultation,
+            AppointmentCategory.Other,
+            AppointmentPurpose.FirstConsultation,
             "Pediatric Consultation",
             "Desc",
             EncounterDuration.FromMinutes(20),
@@ -1840,7 +1847,8 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
     private async Task<AppointmentTypeDefinition> CreateAppointmentTypeAsync()
     {
         var entity = AppointmentTypeDefinition.Create(
-            AppointmentCategory.FirstConsultation,
+            AppointmentCategory.Other,
+            AppointmentPurpose.FirstConsultation,
             "name",
             "Desc",
             EncounterDuration.FromMinutes(20)
@@ -1862,7 +1870,8 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         var doctor = await CreateDoctorAsync(doctorUser.Id);
         var patient = await CreatePatientAsync();
         var apptType = AppointmentTypeDefinition.Create(
-            AppointmentCategory.FirstConsultation,
+            AppointmentCategory.Other,
+            AppointmentPurpose.FirstConsultation,
             "Standard Consultation",
             "Desc",
             EncounterDuration.FromMinutes(20)

@@ -33,7 +33,8 @@ public class MakeAppointmentTypeUnrestrictedCommandHandlerTests
         // Arrange
         var command = new MakeAppointmentTypeUnrestrictedCommand(Guid.CreateVersion7());
         var appointmentType = AppointmentTypeDefinition.Create(
-            AppointmentCategory.Checkup,
+            AppointmentCategory.Other,
+            AppointmentPurpose.Checkup,
             "Checkup",
             "Description",
             EncounterDuration.FromMinutes(30)

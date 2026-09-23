@@ -70,7 +70,8 @@ public class RescheduleByDoctorCommandHandlerTests
 
         var targetPatient = CreatePatient();
         var appointmentType = AppointmentTypeDefinition.Create(
-            AppointmentCategory.Checkup,
+            AppointmentCategory.Other,
+            AppointmentPurpose.Checkup,
             "Checkup",
             "Desc",
             EncounterDuration.FromMinutes(30),
@@ -293,7 +294,8 @@ public class RescheduleByDoctorCommandHandlerTests
         var doctor = CreateDoctor(doctorId, command.InitiatorUserId);
         var targetPatient = CreatePatient();
         var appointmentType = AppointmentTypeDefinition.Create(
-            AppointmentCategory.Checkup,
+            AppointmentCategory.Other,
+            AppointmentPurpose.Checkup,
             "Checkup",
             "Desc",
             EncounterDuration.FromMinutes(30),
@@ -371,7 +373,8 @@ public class RescheduleByDoctorCommandHandlerTests
         var doctor = CreateDoctor(doctorId, command.InitiatorUserId);
         var targetPatient = CreatePatient();
         var appointmentType = AppointmentTypeDefinition.Create(
-            AppointmentCategory.Checkup,
+            AppointmentCategory.Other,
+            AppointmentPurpose.Checkup,
             "Checkup",
             "Desc",
             EncounterDuration.FromMinutes(30),

@@ -20,7 +20,8 @@ public class CreateAppointmentTypeCommandValidatorTests
     {
         // Arrange
         var command = new CreateAppointmentTypeCommand(
-            AppointmentCategory.Checkup,
+            AppointmentCategory.Other,
+            AppointmentPurpose.Checkup,
             "General Checkup",
             "Routine consultation",
             30,
@@ -36,6 +37,54 @@ public class CreateAppointmentTypeCommandValidatorTests
         result.ShouldNotHaveAnyValidationErrors();
     }
 
+    [Fact]
+    public void Validate_ShouldHaveError_WhenCategoryIsInvalid()
+    {
+        // Arrange
+        var command = new CreateAppointmentTypeCommand(
+            (AppointmentCategory)999,
+            AppointmentPurpose.Checkup,
+            "Checkup",
+            "Description",
+            30,
+            null,
+            null,
+            false
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.Category)
+            .WithErrorMessage(DomainErrors.Validation.InvalidEnumValue);
+    }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenPurposeIsInvalid()
+    {
+        // Arrange
+        var command = new CreateAppointmentTypeCommand(
+            AppointmentCategory.Other,
+            (AppointmentPurpose)999,
+            "Checkup",
+            "Description",
+            30,
+            null,
+            null,
+            false
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.Purpose)
+            .WithErrorMessage(DomainErrors.Validation.InvalidEnumValue);
+    }
+
     [Theory]
     [InlineData(null)]
     [InlineData("")]
@@ -44,7 +93,8 @@ public class CreateAppointmentTypeCommandValidatorTests
     {
         // Arrange
         var command = new CreateAppointmentTypeCommand(
-            AppointmentCategory.Checkup,
+            AppointmentCategory.Other,
+            AppointmentPurpose.Checkup,
             name!,
             "Routine consultation",
             30,
@@ -72,7 +122,8 @@ public class CreateAppointmentTypeCommandValidatorTests
     {
         // Arrange
         var command = new CreateAppointmentTypeCommand(
-            AppointmentCategory.Checkup,
+            AppointmentCategory.Other,
+            AppointmentPurpose.Checkup,
             "Checkup",
             "Description",
             minutes,
@@ -98,7 +149,8 @@ public class CreateAppointmentTypeCommandValidatorTests
     {
         // Arrange
         var command = new CreateAppointmentTypeCommand(
-            AppointmentCategory.Checkup,
+            AppointmentCategory.Other,
+            AppointmentPurpose.Checkup,
             "Checkup",
             "Description",
             30,
@@ -124,7 +176,8 @@ public class CreateAppointmentTypeCommandValidatorTests
     {
         // Arrange
         var command = new CreateAppointmentTypeCommand(
-            AppointmentCategory.Checkup,
+            AppointmentCategory.Other,
+            AppointmentPurpose.Checkup,
             "Checkup",
             "Description",
             30,
@@ -147,7 +200,8 @@ public class CreateAppointmentTypeCommandValidatorTests
     {
         // Arrange
         var command = new CreateAppointmentTypeCommand(
-            AppointmentCategory.Checkup,
+            AppointmentCategory.Other,
+            AppointmentPurpose.Checkup,
             "Checkup",
             "Description",
             30,
@@ -170,7 +224,8 @@ public class CreateAppointmentTypeCommandValidatorTests
     {
         // Arrange
         var command = new CreateAppointmentTypeCommand(
-            AppointmentCategory.Checkup,
+            AppointmentCategory.Other,
+            AppointmentPurpose.Checkup,
             "Checkup",
             "Description",
             30,
@@ -193,7 +248,8 @@ public class CreateAppointmentTypeCommandValidatorTests
     {
         // Arrange
         var command = new CreateAppointmentTypeCommand(
-            AppointmentCategory.Checkup,
+            AppointmentCategory.Other,
+            AppointmentPurpose.Checkup,
             "General Checkup",
             "Routine consultation",
             30,

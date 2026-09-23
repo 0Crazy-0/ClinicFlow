@@ -5,6 +5,7 @@ namespace ClinicFlow.Application.AppointmentTypes.Commands.CreateAppointmentType
 
 public sealed record CreateAppointmentTypeCommand(
     AppointmentCategory Category,
+    AppointmentPurpose Purpose,
     string Name,
     string Description,
     int DurationMinutes,

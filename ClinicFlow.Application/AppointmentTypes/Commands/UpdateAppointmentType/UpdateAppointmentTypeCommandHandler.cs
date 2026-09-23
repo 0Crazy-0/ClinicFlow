@@ -43,6 +43,7 @@ public sealed class UpdateAppointmentTypeCommandHandler(
 
         appointmentType.UpdateDetails(
             request.Category,
+            request.Purpose,
             request.Name,
             request.Description,
             EncounterDuration.FromMinutes(request.DurationMinutes)

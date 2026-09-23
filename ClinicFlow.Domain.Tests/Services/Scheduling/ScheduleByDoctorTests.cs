@@ -144,7 +144,8 @@ public class ScheduleByDoctorTests
     {
         // Arrange
         var appointmentType = AppointmentTypeDefinition.Create(
-            AppointmentCategory.Checkup,
+            AppointmentCategory.Other,
+            AppointmentPurpose.Checkup,
             "Checkup",
             "Description",
             EncounterDuration.FromMinutes(30),
@@ -309,7 +310,8 @@ public class ScheduleByDoctorTests
 
     private static AppointmentTypeDefinition CreateAppointmentType() =>
         AppointmentTypeDefinition.Create(
-            AppointmentCategory.Checkup,
+            AppointmentCategory.Other,
+            AppointmentPurpose.Checkup,
             "Checkup",
             "Description",
             EncounterDuration.FromMinutes(30),

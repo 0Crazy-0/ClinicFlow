@@ -31,7 +31,8 @@ public class CreateAppointmentTypeCommandHandlerTests
     {
         // Arrange
         var command = new CreateAppointmentTypeCommand(
-            AppointmentCategory.Checkup,
+            AppointmentCategory.Other,
+            AppointmentPurpose.Checkup,
             "General Checkup",
             "Routine consultation",
             30,
@@ -66,7 +67,8 @@ public class CreateAppointmentTypeCommandHandlerTests
     {
         // Arrange
         var command = new CreateAppointmentTypeCommand(
-            AppointmentCategory.Checkup,
+            AppointmentCategory.Other,
+            AppointmentPurpose.Checkup,
             "General Checkup",
             "Routine consultation",
             30,
@@ -92,7 +94,8 @@ public class CreateAppointmentTypeCommandHandlerTests
     {
         // Arrange
         var command = new CreateAppointmentTypeCommand(
-            AppointmentCategory.Checkup,
+            AppointmentCategory.Other,
+            AppointmentPurpose.Checkup,
             "General Checkup",
             "Routine consultation",
             30,
