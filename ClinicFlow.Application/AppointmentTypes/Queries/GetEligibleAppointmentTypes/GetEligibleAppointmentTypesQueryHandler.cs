@@ -25,6 +25,7 @@ public sealed class GetEligibleAppointmentTypesQueryHandler(
             .. appointmentTypes.Select(appointmentType => new AppointmentTypeDto(
                 appointmentType.Id,
                 appointmentType.Category.ToString(),
+                appointmentType.Purpose.ToString(),
                 appointmentType.Name,
                 appointmentType.Description,
                 appointmentType.Duration.Minutes,

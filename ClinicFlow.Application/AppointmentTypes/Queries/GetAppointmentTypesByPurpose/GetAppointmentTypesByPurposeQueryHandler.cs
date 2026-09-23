@@ -3,20 +3,20 @@ using ClinicFlow.Application.ClinicalFormTemplates.Queries.DTOs;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using MediatR;
 
-namespace ClinicFlow.Application.AppointmentTypes.Queries.GetAppointmentTypesByCategory;
+namespace ClinicFlow.Application.AppointmentTypes.Queries.GetAppointmentTypesByPurpose;
 
-public sealed class GetAppointmentTypesByCategoryQueryHandler(
+public sealed class GetAppointmentTypesByPurposeQueryHandler(
     IAppointmentTypeDefinitionRepository appointmentTypeRepository
-) : IRequestHandler<GetAppointmentTypesByCategoryQuery, IReadOnlyList<AppointmentTypeDto>>
+) : IRequestHandler<GetAppointmentTypesByPurposeQuery, IReadOnlyList<AppointmentTypeDto>>
 {
     /// <inheritdoc />
     public async Task<IReadOnlyList<AppointmentTypeDto>> Handle(
-        GetAppointmentTypesByCategoryQuery request,
+        GetAppointmentTypesByPurposeQuery request,
         CancellationToken cancellationToken
     )
     {
-        var appointmentTypes = await appointmentTypeRepository.GetByCategoryAsync(
-            request.Category,
+        var appointmentTypes = await appointmentTypeRepository.GetByPurposeAsync(
+            request.Purpose,
             cancellationToken
         );
 
@@ -25,6 +25,7 @@ public sealed class GetAppointmentTypesByCategoryQueryHandler(
             .. appointmentTypes.Select(appointmentType => new AppointmentTypeDto(
                 appointmentType.Id,
                 appointmentType.Category.ToString(),
+                appointmentType.Purpose.ToString(),
                 appointmentType.Name,
                 appointmentType.Description,
                 appointmentType.Duration.Minutes,

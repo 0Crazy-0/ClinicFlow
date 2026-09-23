@@ -26,7 +26,8 @@ public class GetAllActiveAppointmentTypesQueryHandlerTests
     {
         // Arrange
         var type1 = AppointmentTypeDefinition.Create(
-            AppointmentCategory.Checkup,
+            AppointmentCategory.Other,
+            AppointmentPurpose.Checkup,
             "General Checkup",
             "Routine",
             EncounterDuration.FromMinutes(30)
@@ -40,7 +41,8 @@ public class GetAllActiveAppointmentTypesQueryHandlerTests
         type1.AddRequiredTemplate(template);
 
         var type2 = AppointmentTypeDefinition.Create(
-            AppointmentCategory.FollowUp,
+            AppointmentCategory.Other,
+            AppointmentPurpose.FollowUp,
             "Follow Up",
             "Return visit",
             EncounterDuration.FromMinutes(20)
@@ -60,6 +62,7 @@ public class GetAllActiveAppointmentTypesQueryHandlerTests
             appointmentType => new AppointmentTypeDto(
                 appointmentType.Id,
                 appointmentType.Category.ToString(),
+                appointmentType.Purpose.ToString(),
                 appointmentType.Name,
                 appointmentType.Description,
                 appointmentType.Duration.Minutes,

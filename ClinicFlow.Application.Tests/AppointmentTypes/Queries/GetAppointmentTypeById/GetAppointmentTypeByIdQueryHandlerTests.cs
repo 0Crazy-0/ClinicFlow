@@ -28,7 +28,8 @@ public class GetAppointmentTypeByIdQueryHandlerTests
     {
         // Arrange
         var entity = AppointmentTypeDefinition.Create(
-            AppointmentCategory.Checkup,
+            AppointmentCategory.Other,
+            AppointmentPurpose.Checkup,
             "General Checkup",
             "Routine consultation",
             EncounterDuration.FromMinutes(30)
@@ -55,6 +56,7 @@ public class GetAppointmentTypeByIdQueryHandlerTests
         var expectedDto = new AppointmentTypeDto(
             entity.Id,
             entity.Category.ToString(),
+            entity.Purpose.ToString(),
             entity.Name,
             entity.Description,
             entity.Duration.Minutes,

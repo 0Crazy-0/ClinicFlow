@@ -74,7 +74,8 @@ public class CompleteMedicalEncounterCommandHandlerTests
         var appointment = CreateAppointment(appointmentId, appointmentTypeId, doctorId);
 
         var appointmentType = AppointmentTypeDefinition.Create(
-            AppointmentCategory.Checkup,
+            AppointmentCategory.Other,
+            AppointmentPurpose.Checkup,
             "Checkup",
             "Desc",
             EncounterDuration.FromMinutes(30),
@@ -128,7 +129,8 @@ public class CompleteMedicalEncounterCommandHandlerTests
         var appointment = CreateAppointment(appointmentId, appointmentTypeId, doctorId);
 
         var appointmentType = AppointmentTypeDefinition.Create(
-            AppointmentCategory.Checkup,
+            AppointmentCategory.Other,
+            AppointmentPurpose.Checkup,
             "Checkup",
             "Desc",
             EncounterDuration.FromMinutes(30),
@@ -275,7 +277,8 @@ public class CompleteMedicalEncounterCommandHandlerTests
         var appointment = CreateAppointment(appointmentId, appointmentTypeId, doctorId);
 
         var appointmentType = AppointmentTypeDefinition.Create(
-            AppointmentCategory.Checkup,
+            AppointmentCategory.Other,
+            AppointmentPurpose.Checkup,
             "Checkup",
             "Desc",
             EncounterDuration.FromMinutes(30),

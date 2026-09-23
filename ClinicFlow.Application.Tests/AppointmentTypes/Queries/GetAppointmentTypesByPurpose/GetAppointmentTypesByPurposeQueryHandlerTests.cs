@@ -1,6 +1,6 @@
 using AwesomeAssertions;
 using ClinicFlow.Application.AppointmentTypes.Queries.DTOs;
-using ClinicFlow.Application.AppointmentTypes.Queries.GetAppointmentTypesByCategory;
+using ClinicFlow.Application.AppointmentTypes.Queries.GetAppointmentTypesByPurpose;
 using ClinicFlow.Application.ClinicalFormTemplates.Queries.DTOs;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
@@ -8,25 +8,26 @@ using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.ValueObjects;
 using Moq;
 
-namespace ClinicFlow.Application.Tests.AppointmentTypes.Queries.GetAppointmentTypesByCategory;
+namespace ClinicFlow.Application.Tests.AppointmentTypes.Queries.GetAppointmentTypesByPurpose;
 
-public class GetAppointmentTypesByCategoryQueryHandlerTests
+public class GetAppointmentTypesByPurposeQueryHandlerTests
 {
     private readonly Mock<IAppointmentTypeDefinitionRepository> _repositoryMock;
-    private readonly GetAppointmentTypesByCategoryQueryHandler _sut;
+    private readonly GetAppointmentTypesByPurposeQueryHandler _sut;
 
-    public GetAppointmentTypesByCategoryQueryHandlerTests()
+    public GetAppointmentTypesByPurposeQueryHandlerTests()
     {
         _repositoryMock = new Mock<IAppointmentTypeDefinitionRepository>();
-        _sut = new GetAppointmentTypesByCategoryQueryHandler(_repositoryMock.Object);
+        _sut = new GetAppointmentTypesByPurposeQueryHandler(_repositoryMock.Object);
     }
 
     [Fact]
-    public async Task Handle_ShouldReturnMatchingTypes_WhenCategoryHasTypes()
+    public async Task Handle_ShouldReturnMatchingTypes_WhenPurposeHasTypes()
     {
         // Arrange
         var type1 = AppointmentTypeDefinition.Create(
-            AppointmentCategory.Checkup,
+            AppointmentCategory.Other,
+            AppointmentPurpose.Checkup,
             "General Checkup",
             "Routine",
             EncounterDuration.FromMinutes(30)
@@ -41,11 +42,11 @@ public class GetAppointmentTypesByCategoryQueryHandlerTests
 
         _repositoryMock
             .Setup(x =>
-                x.GetByCategoryAsync(AppointmentCategory.Checkup, It.IsAny<CancellationToken>())
+                x.GetByPurposeAsync(AppointmentPurpose.Checkup, It.IsAny<CancellationToken>())
             )
             .ReturnsAsync([type1]);
 
-        var query = new GetAppointmentTypesByCategoryQuery(AppointmentCategory.Checkup);
+        var query = new GetAppointmentTypesByPurposeQuery(AppointmentPurpose.Checkup);
 
         // Act
         var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
@@ -55,6 +56,7 @@ public class GetAppointmentTypesByCategoryQueryHandlerTests
             appointmentType => new AppointmentTypeDto(
                 appointmentType.Id,
                 appointmentType.Category.ToString(),
+                appointmentType.Purpose.ToString(),
                 appointmentType.Name,
                 appointmentType.Description,
                 appointmentType.Duration.Minutes,
@@ -79,22 +81,22 @@ public class GetAppointmentTypesByCategoryQueryHandlerTests
         result.Should().BeEquivalentTo(expectedDtos);
 
         _repositoryMock.Verify(
-            x => x.GetByCategoryAsync(AppointmentCategory.Checkup, It.IsAny<CancellationToken>()),
+            x => x.GetByPurposeAsync(AppointmentPurpose.Checkup, It.IsAny<CancellationToken>()),
             Times.Once
         );
     }
 
     [Fact]
-    public async Task Handle_ShouldReturnEmptyList_WhenCategoryHasNoTypes()
+    public async Task Handle_ShouldReturnEmptyList_WhenPurposeHasNoTypes()
     {
         // Arrange
         _repositoryMock
             .Setup(x =>
-                x.GetByCategoryAsync(AppointmentCategory.Emergency, It.IsAny<CancellationToken>())
+                x.GetByPurposeAsync(AppointmentPurpose.Emergency, It.IsAny<CancellationToken>())
             )
             .ReturnsAsync([]);
 
-        var query = new GetAppointmentTypesByCategoryQuery(AppointmentCategory.Emergency);
+        var query = new GetAppointmentTypesByPurposeQuery(AppointmentPurpose.Emergency);
 
         // Act
         var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
@@ -103,7 +105,7 @@ public class GetAppointmentTypesByCategoryQueryHandlerTests
         result.Should().BeEmpty();
 
         _repositoryMock.Verify(
-            x => x.GetByCategoryAsync(AppointmentCategory.Emergency, It.IsAny<CancellationToken>()),
+            x => x.GetByPurposeAsync(AppointmentPurpose.Emergency, It.IsAny<CancellationToken>()),
             Times.Once
         );
     }

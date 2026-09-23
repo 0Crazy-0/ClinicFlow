@@ -87,7 +87,7 @@ public sealed class CancelAppointmentByPatientCommandHandler(
             new AppointmentCancellationContext
             {
                 Specialty = specialty,
-                Category = appointmentType.Category,
+                Purpose = appointmentType.Purpose,
                 IsInitiatorSelfOfTarget = initiatorMembership.Role is PatientRelationship.Self,
                 IsInitiatorGuardianOfMinorTarget =
                     initiatorMembership.Role is PatientRelationship.Child,

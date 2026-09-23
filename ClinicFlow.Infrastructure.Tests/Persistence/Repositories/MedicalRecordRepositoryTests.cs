@@ -849,7 +849,8 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
     private async Task<Appointment> CreateAppointmentAsync(Guid patientId, Guid doctorId)
     {
         var apptType = AppointmentTypeDefinition.Create(
-            AppointmentCategory.FirstConsultation,
+            AppointmentCategory.Other,
+            AppointmentPurpose.FirstConsultation,
             "name",
             "Desc",
             EncounterDuration.FromMinutes(20)

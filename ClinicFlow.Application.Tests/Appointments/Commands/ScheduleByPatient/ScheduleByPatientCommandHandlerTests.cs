@@ -82,7 +82,8 @@ public class ScheduleByPatientCommandHandlerTests
 
         var targetPatient = CreateTargetPatient();
         var appointmentType = AppointmentTypeDefinition.Create(
-            AppointmentCategory.Checkup,
+            AppointmentCategory.Other,
+            AppointmentPurpose.Checkup,
             "Checkup",
             "Desc",
             EncounterDuration.FromMinutes(30),
@@ -223,7 +224,8 @@ public class ScheduleByPatientCommandHandlerTests
 
         var targetPatient = CreateTargetPatient();
         var appointmentType = AppointmentTypeDefinition.Create(
-            AppointmentCategory.Checkup,
+            AppointmentCategory.Other,
+            AppointmentPurpose.Checkup,
             "Checkup",
             "Desc",
             EncounterDuration.FromMinutes(30),
@@ -570,7 +572,8 @@ public class ScheduleByPatientCommandHandlerTests
         );
         var user = CreateVerifiedUser();
         var appointmentType = AppointmentTypeDefinition.Create(
-            AppointmentCategory.Checkup,
+            AppointmentCategory.Other,
+            AppointmentPurpose.Checkup,
             "Checkup",
             "Desc",
             EncounterDuration.FromMinutes(30),
@@ -666,7 +669,8 @@ public class ScheduleByPatientCommandHandlerTests
         );
         var user = CreateVerifiedUser();
         var appointmentType = AppointmentTypeDefinition.Create(
-            AppointmentCategory.Checkup,
+            AppointmentCategory.Other,
+            AppointmentPurpose.Checkup,
             "Checkup",
             "Desc",
             EncounterDuration.FromMinutes(30),
@@ -766,7 +770,8 @@ public class ScheduleByPatientCommandHandlerTests
         );
         var user = CreateVerifiedUser();
         var appointmentType = AppointmentTypeDefinition.Create(
-            AppointmentCategory.Checkup,
+            AppointmentCategory.Other,
+            AppointmentPurpose.Checkup,
             "Checkup",
             "Desc",
             EncounterDuration.FromMinutes(30),

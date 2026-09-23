@@ -39,7 +39,8 @@ public class AddAllowedSpecialtyToAppointmentTypeCommandHandlerTests
         );
 
         var appointmentType = AppointmentTypeDefinition.Create(
-            AppointmentCategory.Checkup,
+            AppointmentCategory.Other,
+            AppointmentPurpose.Checkup,
             "Checkup",
             "Description",
             EncounterDuration.FromMinutes(30)

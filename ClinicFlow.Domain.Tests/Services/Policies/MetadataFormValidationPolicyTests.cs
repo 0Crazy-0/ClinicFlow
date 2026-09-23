@@ -213,7 +213,8 @@ public class MetadataFormValidationPolicyTests
     )
     {
         var appointmentType = AppointmentTypeDefinition.Create(
-            Enums.AppointmentCategory.Checkup,
+            Enums.AppointmentCategory.Other,
+            Enums.AppointmentPurpose.Checkup,
             "General Checkup",
             "Standard checkup",
             EncounterDuration.FromMinutes(30)

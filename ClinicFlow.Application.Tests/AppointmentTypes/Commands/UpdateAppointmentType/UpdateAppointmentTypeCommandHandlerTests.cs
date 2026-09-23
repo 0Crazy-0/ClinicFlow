@@ -33,14 +33,16 @@ public class UpdateAppointmentTypeCommandHandlerTests
         // Arrange
         var command = new UpdateAppointmentTypeCommand(
             Guid.CreateVersion7(),
-            AppointmentCategory.FollowUp,
+            AppointmentCategory.Other,
+            AppointmentPurpose.FollowUp,
             "Updated Checkup",
             "Updated description",
             45
         );
 
         var existingEntity = AppointmentTypeDefinition.Create(
-            AppointmentCategory.Checkup,
+            AppointmentCategory.Other,
+            AppointmentPurpose.Checkup,
             "Original Checkup",
             "Original description",
             EncounterDuration.FromMinutes(30)
@@ -68,7 +70,8 @@ public class UpdateAppointmentTypeCommandHandlerTests
         // Arrange
         var command = new UpdateAppointmentTypeCommand(
             Guid.CreateVersion7(),
-            AppointmentCategory.Checkup,
+            AppointmentCategory.Other,
+            AppointmentPurpose.Checkup,
             "Checkup",
             "Description",
             30
@@ -96,14 +99,16 @@ public class UpdateAppointmentTypeCommandHandlerTests
         // Arrange
         var command = new UpdateAppointmentTypeCommand(
             Guid.CreateVersion7(),
-            AppointmentCategory.Checkup,
+            AppointmentCategory.Other,
+            AppointmentPurpose.Checkup,
             "Existing Name",
             "Description",
             30
         );
 
         var existingEntity = AppointmentTypeDefinition.Create(
-            AppointmentCategory.Checkup,
+            AppointmentCategory.Other,
+            AppointmentPurpose.Checkup,
             "Original Name",
             "Original description",
             EncounterDuration.FromMinutes(30)

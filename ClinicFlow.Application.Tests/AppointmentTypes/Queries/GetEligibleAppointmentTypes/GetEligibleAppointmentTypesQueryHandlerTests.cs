@@ -26,7 +26,8 @@ public class GetEligibleAppointmentTypesQueryHandlerTests
     {
         // Arrange
         var adultType = AppointmentTypeDefinition.Create(
-            AppointmentCategory.Checkup,
+            AppointmentCategory.Other,
+            AppointmentPurpose.Checkup,
             "Adult Checkup",
             "For adults",
             EncounterDuration.FromMinutes(30),
@@ -54,6 +55,7 @@ public class GetEligibleAppointmentTypesQueryHandlerTests
             appointmentType => new AppointmentTypeDto(
                 appointmentType.Id,
                 appointmentType.Category.ToString(),
+                appointmentType.Purpose.ToString(),
                 appointmentType.Name,
                 appointmentType.Description,
                 appointmentType.Duration.Minutes,

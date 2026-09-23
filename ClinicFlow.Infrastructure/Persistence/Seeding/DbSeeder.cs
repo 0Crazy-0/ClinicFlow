@@ -167,6 +167,7 @@ public static class DbSeeder
         {
             var apptType = AppointmentTypeDefinition.Create(
                 data.Category,
+                data.Purpose,
                 data.Name,
                 data.Desc,
                 EncounterDuration.FromMinutes(data.Duration),

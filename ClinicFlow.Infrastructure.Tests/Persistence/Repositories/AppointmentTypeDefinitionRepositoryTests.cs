@@ -33,7 +33,8 @@ public class AppointmentTypeDefinitionRepositoryTests(PostgresFixture fixture) :
     {
         // Arrange
         var appointmentType = AppointmentTypeDefinition.Create(
-            AppointmentCategory.FirstConsultation,
+            AppointmentCategory.Other,
+            AppointmentPurpose.FirstConsultation,
             "Name",
             "Description",
             EncounterDuration.FromMinutes(20),
@@ -60,7 +61,8 @@ public class AppointmentTypeDefinitionRepositoryTests(PostgresFixture fixture) :
     {
         // Arrange
         var appointmentType = AppointmentTypeDefinition.Create(
-            AppointmentCategory.FirstConsultation,
+            AppointmentCategory.Other,
+            AppointmentPurpose.FirstConsultation,
             "Name",
             "Description",
             EncounterDuration.FromMinutes(20),
@@ -170,16 +172,16 @@ public class AppointmentTypeDefinitionRepositoryTests(PostgresFixture fixture) :
     }
 
     [Fact]
-    public async Task GetByCategoryAsync_ShouldReturnOnlyMatchingActiveCategory()
+    public async Task GetByPurposeAsync_ShouldReturnOnlyMatchingActivePurpose()
     {
         // Arrange
         var firstConsult = await CreateAppointmentType(
-            category: AppointmentCategory.FirstConsultation
+            purpose: AppointmentPurpose.FirstConsultation
         );
-        await CreateAppointmentType(category: AppointmentCategory.FollowUp);
+        await CreateAppointmentType(purpose: AppointmentPurpose.FollowUp);
 
         var inactiveFirst = await CreateAppointmentType(
-            category: AppointmentCategory.FirstConsultation
+            purpose: AppointmentPurpose.FirstConsultation
         );
 
         inactiveFirst.Deactivate();
@@ -187,8 +189,8 @@ public class AppointmentTypeDefinitionRepositoryTests(PostgresFixture fixture) :
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Act
-        var results = await _sut.GetByCategoryAsync(
-            AppointmentCategory.FirstConsultation,
+        var results = await _sut.GetByPurposeAsync(
+            AppointmentPurpose.FirstConsultation,
             TestContext.Current.CancellationToken
         );
 
@@ -333,11 +335,12 @@ public class AppointmentTypeDefinitionRepositoryTests(PostgresFixture fixture) :
 
     private async Task<AppointmentTypeDefinition> CreateAppointmentType(
         AgeEligibilityPolicy? agePolicy = null,
-        AppointmentCategory category = AppointmentCategory.FirstConsultation
+        AppointmentPurpose purpose = AppointmentPurpose.FirstConsultation
     )
     {
         var appointmentType = AppointmentTypeDefinition.Create(
-            category,
+            AppointmentCategory.Other,
+            purpose,
             "Name",
             "Description",
             EncounterDuration.FromMinutes(20),
@@ -350,13 +353,11 @@ public class AppointmentTypeDefinitionRepositoryTests(PostgresFixture fixture) :
         return appointmentType;
     }
 
-    private async Task<AppointmentTypeDefinition> CreateAppointmentType(
-        string name,
-        AppointmentCategory category = AppointmentCategory.FirstConsultation
-    )
+    private async Task<AppointmentTypeDefinition> CreateAppointmentType(string name)
     {
         var appointmentType = AppointmentTypeDefinition.Create(
-            category,
+            AppointmentCategory.Other,
+            AppointmentPurpose.FirstConsultation,
             name,
             "Description",
             EncounterDuration.FromMinutes(20),

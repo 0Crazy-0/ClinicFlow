@@ -856,7 +856,8 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
         var doctor = await CreateDoctorAsync();
 
         var apptType = AppointmentTypeDefinition.Create(
-            AppointmentCategory.FirstConsultation,
+            AppointmentCategory.Other,
+            AppointmentPurpose.FirstConsultation,
             $"Consultation-{Guid.CreateVersion7():N}",
             "Desc",
             EncounterDuration.FromMinutes(20)

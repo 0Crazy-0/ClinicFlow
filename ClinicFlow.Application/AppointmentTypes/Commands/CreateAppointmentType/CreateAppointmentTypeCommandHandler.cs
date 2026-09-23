@@ -32,6 +32,7 @@ public sealed class CreateAppointmentTypeCommandHandler(
 
         var appointmentType = AppointmentTypeDefinition.Create(
             request.Category,
+            request.Purpose,
             request.Name,
             request.Description,
             EncounterDuration.FromMinutes(request.DurationMinutes),

@@ -9,6 +9,8 @@ public sealed class CreateAppointmentTypeCommandValidator
 {
     public CreateAppointmentTypeCommandValidator()
     {
+        RuleFor(x => x.Category).IsInEnum().WithMessage(DomainErrors.Validation.InvalidEnumValue);
+        RuleFor(x => x.Purpose).IsInEnum().WithMessage(DomainErrors.Validation.InvalidEnumValue);
         RuleFor(x => x.Name).NotEmpty().WithMessage(DomainErrors.Validation.ValueRequired);
         RuleFor(x => x.DurationMinutes)
             .Must(EncounterDuration.IsValid)

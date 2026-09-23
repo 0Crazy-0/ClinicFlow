@@ -12,6 +12,8 @@ public class AppointmentTypeDefinition : SoftDeletableEntity
 {
     public AppointmentCategory Category { get; private set; }
 
+    public AppointmentPurpose Purpose { get; private set; }
+
     // Stryker disable once String
     public string Name { get; private set; } = string.Empty;
 
@@ -52,6 +54,7 @@ public class AppointmentTypeDefinition : SoftDeletableEntity
 
     private AppointmentTypeDefinition(
         AppointmentCategory category,
+        AppointmentPurpose purpose,
         string name,
         string description,
         EncounterDuration duration,
@@ -61,6 +64,7 @@ public class AppointmentTypeDefinition : SoftDeletableEntity
     )
     {
         Category = category;
+        Purpose = purpose;
         Name = name;
         Description = description;
         Duration = duration;
@@ -71,6 +75,7 @@ public class AppointmentTypeDefinition : SoftDeletableEntity
 
     public static AppointmentTypeDefinition Create(
         AppointmentCategory category,
+        AppointmentPurpose purpose,
         string name,
         string description,
         EncounterDuration duration,
@@ -84,11 +89,18 @@ public class AppointmentTypeDefinition : SoftDeletableEntity
         if (duration is null)
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
 
+        if (!Enum.IsDefined(category))
+            throw new DomainValidationException(DomainErrors.Validation.InvalidEnumValue);
+
+        if (!Enum.IsDefined(purpose))
+            throw new DomainValidationException(DomainErrors.Validation.InvalidEnumValue);
+
         if (protectedCareCategory is not null && !Enum.IsDefined(protectedCareCategory.Value))
             throw new DomainValidationException(DomainErrors.Validation.InvalidEnumValue);
 
         return new AppointmentTypeDefinition(
             category,
+            purpose,
             name,
             description,
             duration,
@@ -100,6 +112,7 @@ public class AppointmentTypeDefinition : SoftDeletableEntity
 
     public void UpdateDetails(
         AppointmentCategory category,
+        AppointmentPurpose purpose,
         string name,
         string description,
         EncounterDuration duration
@@ -110,7 +123,14 @@ public class AppointmentTypeDefinition : SoftDeletableEntity
         if (duration is null)
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
 
+        if (!Enum.IsDefined(category))
+            throw new DomainValidationException(DomainErrors.Validation.InvalidEnumValue);
+
+        if (!Enum.IsDefined(purpose))
+            throw new DomainValidationException(DomainErrors.Validation.InvalidEnumValue);
+
         Category = category;
+        Purpose = purpose;
         Name = name;
         Description = description;
         Duration = duration;

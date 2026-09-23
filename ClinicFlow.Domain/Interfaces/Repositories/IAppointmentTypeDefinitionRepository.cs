@@ -22,8 +22,8 @@ public interface IAppointmentTypeDefinitionRepository
         CancellationToken cancellationToken = default
     );
 
-    Task<IReadOnlyList<AppointmentTypeDefinition>> GetByCategoryAsync(
-        AppointmentCategory category,
+    Task<IReadOnlyList<AppointmentTypeDefinition>> GetByPurposeAsync(
+        AppointmentPurpose purpose,
         CancellationToken cancellationToken = default
     );
 
