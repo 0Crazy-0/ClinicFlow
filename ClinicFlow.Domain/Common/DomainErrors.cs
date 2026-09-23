@@ -167,7 +167,6 @@ public static class DomainErrors
         public const string DoctorMismatch = "DOCTOR_MISMATCH";
         public const string AppointmentMismatch = "APPOINTMENT_MISMATCH";
         public const string CodeMismatch = "TEMPLATE_CODE_MISMATCH";
-        public const string MissingPayload = "MISSING_PAYLOAD";
         public const string ValidationFailed = "VALIDATION_FAILED";
         public const string MissingRequiredTemplate = "MISSING_REQUIRED_TEMPLATE";
         public const string DetailAlreadyExists = "CLINICAL_DETAIL_ALREADY_EXISTS";

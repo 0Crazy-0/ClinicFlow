@@ -77,9 +77,6 @@ public class MedicalEncounterService(
         if (newDetail.TemplateCode != template.Code)
             throw new BusinessRuleValidationException(DomainErrors.MedicalEncounter.CodeMismatch);
 
-        if (string.IsNullOrWhiteSpace(newDetail.JsonDataPayload))
-            throw new BusinessRuleValidationException(DomainErrors.MedicalEncounter.MissingPayload);
-
         if (template.JsonSchemaDefinition is not "{}")
         {
             jsonSchemaValidator.ValidateSchema(
