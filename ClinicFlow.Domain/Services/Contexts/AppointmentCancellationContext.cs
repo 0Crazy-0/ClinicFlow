@@ -10,7 +10,7 @@ namespace ClinicFlow.Domain.Services.Contexts;
 public sealed record class AppointmentCancellationContext
 {
     public required MedicalSpecialty Specialty { get; init; }
-    public AppointmentPurpose Purpose { get; init; }
+    public required AppointmentPurpose Purpose { get; init; }
     public bool IsInitiatorSelfOfTarget { get; init; }
     public bool IsInitiatorGuardianOfMinorTarget { get; init; }
 }
