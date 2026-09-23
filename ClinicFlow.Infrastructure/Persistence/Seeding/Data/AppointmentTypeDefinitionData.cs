@@ -31,6 +31,7 @@ public static class AppointmentTypeDefinitionData
             // General Medicine
             new AppointmentTypeSeedItem
             {
+                Category = AppointmentCategory.GeneralMedicine,
                 Purpose = AppointmentPurpose.FirstConsultation,
                 Name = "General Adult Consultation",
                 Desc = "Initial assessment and comprehensive checkup for adult patients.",
@@ -41,6 +42,7 @@ public static class AppointmentTypeDefinitionData
             },
             new AppointmentTypeSeedItem
             {
+                Category = AppointmentCategory.GeneralMedicine,
                 Purpose = AppointmentPurpose.FollowUp,
                 Name = "Chronic Disease Follow-up",
                 Desc =
@@ -53,6 +55,7 @@ public static class AppointmentTypeDefinitionData
             // Pediatrics
             new AppointmentTypeSeedItem
             {
+                Category = AppointmentCategory.Pediatrics,
                 Purpose = AppointmentPurpose.Checkup,
                 Name = "Pediatric Well-Child Checkup",
                 Desc = "Routine developmental checkup and vaccination review for children.",
@@ -63,6 +66,7 @@ public static class AppointmentTypeDefinitionData
             },
             new AppointmentTypeSeedItem
             {
+                Category = AppointmentCategory.Pediatrics,
                 Purpose = AppointmentPurpose.FirstConsultation,
                 Name = "Pediatric Initial Consultation",
                 Desc = "Initial diagnosis and treatment planning for pediatric patients.",
@@ -74,6 +78,7 @@ public static class AppointmentTypeDefinitionData
             // Cardiology
             new AppointmentTypeSeedItem
             {
+                Category = AppointmentCategory.Cardiology,
                 Purpose = AppointmentPurpose.FirstConsultation,
                 Name = "Cardiology Consultation",
                 Desc = "Initial cardiovascular assessment and treatment planning.",
@@ -84,6 +89,7 @@ public static class AppointmentTypeDefinitionData
             },
             new AppointmentTypeSeedItem
             {
+                Category = AppointmentCategory.Cardiology,
                 Purpose = AppointmentPurpose.Checkup,
                 Name = "Cardiovascular Risk Assessment",
                 Desc = "Comprehensive review of cardiac risk factors and extended vitals.",
@@ -94,6 +100,7 @@ public static class AppointmentTypeDefinitionData
             },
             new AppointmentTypeSeedItem
             {
+                Category = AppointmentCategory.Cardiology,
                 Purpose = AppointmentPurpose.Procedure,
                 Name = "Electrocardiogram (ECG)",
                 Desc = "Diagnostic ECG recording and interpretation.",
@@ -105,6 +112,7 @@ public static class AppointmentTypeDefinitionData
             // Dermatology
             new AppointmentTypeSeedItem
             {
+                Category = AppointmentCategory.Dermatology,
                 Purpose = AppointmentPurpose.FirstConsultation,
                 Name = "Skin Lesion Evaluation",
                 Desc = "Detailed examination and dermoscopy of suspicious skin lesions.",
@@ -115,6 +123,7 @@ public static class AppointmentTypeDefinitionData
             },
             new AppointmentTypeSeedItem
             {
+                Category = AppointmentCategory.Dermatology,
                 Purpose = AppointmentPurpose.FollowUp,
                 Name = "Acne Treatment Follow-up",
                 Desc = "Progress evaluation for ongoing dermatological therapy.",
@@ -130,6 +139,7 @@ public static class AppointmentTypeDefinitionData
             ///</remarks>
             new AppointmentTypeSeedItem
             {
+                Category = AppointmentCategory.Other,
                 Purpose = AppointmentPurpose.FirstConsultation,
                 Name = "Gynecological Assessment",
                 Desc = "Comprehensive gynecological screening and history taking.",
@@ -140,6 +150,7 @@ public static class AppointmentTypeDefinitionData
             },
             new AppointmentTypeSeedItem
             {
+                Category = AppointmentCategory.Other,
                 Purpose = AppointmentPurpose.FollowUp,
                 Name = "Prenatal Care Consultation",
                 Desc = "Routine maternal-fetal health tracking and obstetric checkup.",
@@ -151,6 +162,7 @@ public static class AppointmentTypeDefinitionData
             // Ophthalmology
             new AppointmentTypeSeedItem
             {
+                Category = AppointmentCategory.Ophthalmology,
                 Purpose = AppointmentPurpose.Checkup,
                 Name = "Comprehensive Visual Acuity Exam",
                 Desc = "Standard visual acuity, slit lamp, and visual fields assessment.",
@@ -161,6 +173,7 @@ public static class AppointmentTypeDefinitionData
             },
             new AppointmentTypeSeedItem
             {
+                Category = AppointmentCategory.Ophthalmology,
                 Purpose = AppointmentPurpose.FollowUp,
                 Name = "Intraocular Pressure Monitoring",
                 Desc = "Glaucoma follow-up and tonometry check.",
@@ -172,6 +185,7 @@ public static class AppointmentTypeDefinitionData
             // Orthopedics
             new AppointmentTypeSeedItem
             {
+                Category = AppointmentCategory.Traumatology,
                 Purpose = AppointmentPurpose.FirstConsultation,
                 Name = "Musculoskeletal Injury Evaluation",
                 Desc = "Comprehensive orthopedic evaluation of joints, bones, and muscles.",
@@ -182,6 +196,7 @@ public static class AppointmentTypeDefinitionData
             },
             new AppointmentTypeSeedItem
             {
+                Category = AppointmentCategory.Traumatology,
                 Purpose = AppointmentPurpose.FollowUp,
                 Name = "Post-Fracture Recovery Follow-up",
                 Desc = "Reviewing mobility progress and recovery status of skeletal injuries.",
@@ -193,6 +208,7 @@ public static class AppointmentTypeDefinitionData
             // Otolaryngology
             new AppointmentTypeSeedItem
             {
+                Category = AppointmentCategory.Other,
                 Purpose = AppointmentPurpose.FirstConsultation,
                 Name = "ENT Initial Consultation",
                 Desc = "Specialist review of ear, nose, throat, or balance symptoms.",
@@ -203,6 +219,7 @@ public static class AppointmentTypeDefinitionData
             },
             new AppointmentTypeSeedItem
             {
+                Category = AppointmentCategory.Other,
                 Purpose = AppointmentPurpose.Checkup,
                 Name = "Hearing Loss Assessment",
                 Desc = "Detailed audiometry interpretation and otoscopic exam.",
@@ -214,6 +231,7 @@ public static class AppointmentTypeDefinitionData
             // Neurology
             new AppointmentTypeSeedItem
             {
+                Category = AppointmentCategory.Neurology,
                 Purpose = AppointmentPurpose.FirstConsultation,
                 Name = "Neurological Evaluation",
                 Desc = "Initial specialist motor, reflex, and cognitive assessment.",
@@ -224,6 +242,7 @@ public static class AppointmentTypeDefinitionData
             },
             new AppointmentTypeSeedItem
             {
+                Category = AppointmentCategory.Neurology,
                 Purpose = AppointmentPurpose.FollowUp,
                 Name = "Brain MRI & Neuro-imaging Review",
                 Desc = "Specialist analysis of neurology imaging results and plan adjustment.",
@@ -235,6 +254,7 @@ public static class AppointmentTypeDefinitionData
             // Psychiatry
             new AppointmentTypeSeedItem
             {
+                Category = AppointmentCategory.Other,
                 Purpose = AppointmentPurpose.FirstConsultation,
                 Name = "Psychiatric Initial Intake",
                 Desc = "Comprehensive mental status exam and initial psychiatric assessment.",
@@ -245,6 +265,7 @@ public static class AppointmentTypeDefinitionData
             },
             new AppointmentTypeSeedItem
             {
+                Category = AppointmentCategory.Other,
                 Purpose = AppointmentPurpose.Emergency,
                 Name = "Mental Health Crisis Evaluation",
                 Desc = "Immediate psychiatric risk assessment and safety plan design.",
@@ -255,6 +276,7 @@ public static class AppointmentTypeDefinitionData
             },
             new AppointmentTypeSeedItem
             {
+                Category = AppointmentCategory.Other,
                 Purpose = AppointmentPurpose.FollowUp,
                 Name = "Therapeutic Medication Follow-up",
                 Desc = "Mood assessment and medication tuning for existing psychiatric patients.",
@@ -266,6 +288,7 @@ public static class AppointmentTypeDefinitionData
             // Urology
             new AppointmentTypeSeedItem
             {
+                Category = AppointmentCategory.Urology,
                 Purpose = AppointmentPurpose.FirstConsultation,
                 Name = "Urological Initial Consultation",
                 Desc = "Urinary and reproductive system diagnostic evaluation.",
@@ -276,6 +299,7 @@ public static class AppointmentTypeDefinitionData
             },
             new AppointmentTypeSeedItem
             {
+                Category = AppointmentCategory.Urology,
                 Purpose = AppointmentPurpose.Checkup,
                 Name = "Prostate Cancer Prevention Screening",
                 Desc = "Annual checkup including prostate exam and PSA review.",
@@ -287,6 +311,7 @@ public static class AppointmentTypeDefinitionData
             // Oncology
             new AppointmentTypeSeedItem
             {
+                Category = AppointmentCategory.Other,
                 Purpose = AppointmentPurpose.FirstConsultation,
                 Name = "Oncology Initial Consultation",
                 Desc = "Comprehensive cancer diagnosis review, staging and treatment planning.",
@@ -297,6 +322,7 @@ public static class AppointmentTypeDefinitionData
             },
             new AppointmentTypeSeedItem
             {
+                Category = AppointmentCategory.Other,
                 Purpose = AppointmentPurpose.FollowUp,
                 Name = "Chemotherapy Tolerance Checkup",
                 Desc = "Reviewing toxicities and blood counts before next chemotherapy cycle.",
@@ -308,6 +334,7 @@ public static class AppointmentTypeDefinitionData
             // Endocrinology
             new AppointmentTypeSeedItem
             {
+                Category = AppointmentCategory.Endocrinology,
                 Purpose = AppointmentPurpose.FirstConsultation,
                 Name = "Endocrine Disorders Intake",
                 Desc = "Comprehensive hormonal and thyroid disease diagnostic check.",
@@ -318,6 +345,7 @@ public static class AppointmentTypeDefinitionData
             },
             new AppointmentTypeSeedItem
             {
+                Category = AppointmentCategory.Endocrinology,
                 Purpose = AppointmentPurpose.FollowUp,
                 Name = "Diabetes Mellitus Follow-up",
                 Desc = "Metabolic panel analysis, HbA1c review and insulin adjustment.",
@@ -329,6 +357,7 @@ public static class AppointmentTypeDefinitionData
             // Gastroenterology
             new AppointmentTypeSeedItem
             {
+                Category = AppointmentCategory.Gastroenterology,
                 Purpose = AppointmentPurpose.FirstConsultation,
                 Name = "Gastroenterology Intake",
                 Desc = "Specialist diagnostic evaluation of persistent digestive disorders.",
@@ -339,6 +368,7 @@ public static class AppointmentTypeDefinitionData
             },
             new AppointmentTypeSeedItem
             {
+                Category = AppointmentCategory.Gastroenterology,
                 Purpose = AppointmentPurpose.FollowUp,
                 Name = "Chronic Digestive Disease Review",
                 Desc = "Monitoring progress of conditions like Crohn's, IBS or gastritis.",
@@ -350,6 +380,7 @@ public static class AppointmentTypeDefinitionData
             // Pulmonology
             new AppointmentTypeSeedItem
             {
+                Category = AppointmentCategory.Pulmonology,
                 Purpose = AppointmentPurpose.FirstConsultation,
                 Name = "Pulmonology Comprehensive Exam",
                 Desc = "Comprehensive lung function, spirometry review and respiratory intake.",
@@ -360,6 +391,7 @@ public static class AppointmentTypeDefinitionData
             },
             new AppointmentTypeSeedItem
             {
+                Category = AppointmentCategory.Pulmonology,
                 Purpose = AppointmentPurpose.FollowUp,
                 Name = "Asthma & COPD Control Check",
                 Desc = "Assessing oxygen saturation, smoking history and lung function.",
