@@ -59,6 +59,7 @@ public class UpdateAppointmentTypeCommandHandlerTests
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
 
         existingEntity.Category.Should().Be(command.Category);
+        existingEntity.Purpose.Should().Be(command.Purpose);
         existingEntity.Name.Should().Be(command.Name);
         existingEntity.Description.Should().Be(command.Description);
         existingEntity.Duration.Minutes.Should().Be(command.DurationMinutes);
