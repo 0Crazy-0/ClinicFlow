@@ -20,6 +20,26 @@ public class FamilyMembership : BaseEntity
 
     public FamilyMembershipAccessLevel AccessLevel { get; private set; }
 
+    private readonly List<AppointmentCategory> _allowedAppointmentCategories = [];
+
+    /// <summary>
+    /// Lists the categories the family member is allowed to schedule appointments
+    /// for when <see cref="AccessLevel"/> is
+    /// <see cref="FamilyMembershipAccessLevel.Restricted"/>. An empty collection
+    /// means the member cannot schedule any appointment at all; this is
+    /// intentional, not a permissive fallback.
+    /// </summary>
+    /// <remarks>
+    /// Protection status never filters scheduling. A category granted here opens
+    /// both routine and protected <see cref="AppointmentTypeDefinition"/> entries
+    /// of that category;
+    /// <see cref="AppointmentTypeDefinition.ProtectedCareCategory"/> governs
+    /// record visibility only, as enforced by
+    /// <see cref="Services.Policies.ProtectedCategoryPolicy"/>.
+    /// </remarks>
+    public IReadOnlyCollection<AppointmentCategory> AllowedAppointmentCategories =>
+        _allowedAppointmentCategories.AsReadOnly();
+
     public DateTime StartedAt { get; private set; }
 
     /// <remarks>
@@ -129,7 +149,60 @@ public class FamilyMembership : BaseEntity
         if (AccessLevel == newAccessLevel)
             throw new DomainValidationException(DomainErrors.FamilyMembership.AccessLevelUnchanged);
 
+        if (
+            newAccessLevel is not FamilyMembershipAccessLevel.Restricted
+            && _allowedAppointmentCategories.Count > 0
+        )
+            throw new DomainValidationException(
+                DomainErrors.FamilyMembership.CannotChangeAccessLevelWithCategoriesConfigured
+            );
+
         AccessLevel = newAccessLevel;
+    }
+
+    public void AddAllowedAppointmentCategory(
+        AppointmentCategory category,
+        bool requesterIsAuthorized
+    )
+    {
+        if (!requesterIsAuthorized)
+            throw new DomainValidationException(
+                DomainErrors.FamilyMembership.UnauthorizedCategoryListChange
+            );
+
+        if (AccessLevel is not FamilyMembershipAccessLevel.Restricted)
+            throw new DomainValidationException(
+                DomainErrors.FamilyMembership.OnlyRestrictedCanHaveCategoryList
+            );
+
+        if (!Enum.IsDefined(category))
+            throw new DomainValidationException(DomainErrors.Validation.InvalidEnumValue);
+
+        if (_allowedAppointmentCategories.Contains(category))
+            throw new DomainValidationException(
+                DomainErrors.FamilyMembership.CategoryAlreadyAllowed
+            );
+
+        _allowedAppointmentCategories.Add(category);
+    }
+
+    public void RemoveAllowedAppointmentCategory(
+        AppointmentCategory category,
+        bool requesterIsAuthorized
+    )
+    {
+        if (!requesterIsAuthorized)
+            throw new DomainValidationException(
+                DomainErrors.FamilyMembership.UnauthorizedCategoryListChange
+            );
+
+        if (AccessLevel is not FamilyMembershipAccessLevel.Restricted)
+            throw new DomainValidationException(
+                DomainErrors.FamilyMembership.OnlyRestrictedCanHaveCategoryList
+            );
+
+        if (!_allowedAppointmentCategories.Remove(category))
+            throw new DomainValidationException(DomainErrors.FamilyMembership.CategoryNotFound);
     }
 
     /// <summary>

@@ -188,6 +188,8 @@ public static class DomainErrors
             "FAMILY_MEMBERSHIP_CANNOT_CHANGE_ACCESS_LEVEL_OF_SELF";
         public const string UnauthorizedAccessLevelChange =
             "FAMILY_MEMBERSHIP_UNAUTHORIZED_ACCESS_LEVEL_CHANGE";
+        public const string UnauthorizedCategoryListChange =
+            "FAMILY_MEMBERSHIP_UNAUTHORIZED_CATEGORY_LIST_CHANGE";
         public const string AccessLevelUnchanged = "FAMILY_MEMBERSHIP_ACCESS_LEVEL_UNCHANGED";
         public const string OwnerMustBeAdult = "OWNER_MUST_BE_ADULT";
         public const string MemberMustBeAdultToLeave = "MEMBER_MUST_BE_ADULT_TO_LEAVE";
@@ -198,5 +200,11 @@ public static class DomainErrors
         public const string CanOnlyCloseSelfMembership = "CAN_ONLY_CLOSE_SELF_MEMBERSHIP";
         public const string CannotRemoveWithUpcomingAppointments =
             "CANNOT_REMOVE_WITH_UPCOMING_APPOINTMENTS";
+        public const string OnlyRestrictedCanHaveCategoryList =
+            "FAMILY_MEMBERSHIP_ONLY_RESTRICTED_CAN_HAVE_CATEGORY_LIST";
+        public const string CategoryAlreadyAllowed = "FAMILY_MEMBERSHIP_CATEGORY_ALREADY_ALLOWED";
+        public const string CategoryNotFound = "FAMILY_MEMBERSHIP_CATEGORY_NOT_FOUND";
+        public const string CannotChangeAccessLevelWithCategoriesConfigured =
+            "FAMILY_MEMBERSHIP_CANNOT_CHANGE_ACCESS_LEVEL_WITH_CATEGORIES_CONFIGURED";
     }
 }
