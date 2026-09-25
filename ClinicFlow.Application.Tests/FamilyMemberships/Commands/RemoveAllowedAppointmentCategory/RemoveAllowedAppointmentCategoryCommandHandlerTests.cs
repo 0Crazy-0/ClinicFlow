@@ -31,76 +31,6 @@ public class RemoveAllowedAppointmentCategoryCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ShouldRemoveCategoryAndSaveChanges_WhenValidCommand()
-    {
-        // Arrange
-        var requesterUserId = Guid.CreateVersion7();
-        var targetUserId = Guid.CreateVersion7();
-        var patient = Patient.CreateProfile(
-            PersonName.Create("John Doe"),
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10)),
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
-
-        var membership = CreateRestrictedMembership(patient.Id, targetUserId);
-        membership.AddAllowedAppointmentCategory(
-            AppointmentCategory.Pediatrics,
-            requesterIsAuthorized: true
-        );
-
-        var command = new RemoveAllowedAppointmentCategoryCommand(
-            requesterUserId,
-            targetUserId,
-            patient.Id,
-            AppointmentCategory.Pediatrics
-        );
-
-        _familyMembershipRepositoryMock
-            .Setup(x =>
-                x.GetActiveMembershipAsync(targetUserId, patient.Id, It.IsAny<CancellationToken>())
-            )
-            .ReturnsAsync(membership);
-
-        _patientRepositoryMock
-            .Setup(x => x.GetByIdAsync(patient.Id, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(patient);
-
-        _familyMembershipRepositoryMock
-            .Setup(x =>
-                x.HasActiveSelfMembershipByUserIdAsync(
-                    requesterUserId,
-                    It.IsAny<CancellationToken>()
-                )
-            )
-            .ReturnsAsync(true);
-
-        var requesterMembership = FamilyMembership.CreateFamilyMember(
-            patient.Id,
-            requesterUserId,
-            PatientRelationship.Child,
-            FamilyMembershipAccessLevel.Full,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
-
-        _familyMembershipRepositoryMock
-            .Setup(x =>
-                x.GetActiveMembershipAsync(
-                    requesterUserId,
-                    patient.Id,
-                    It.IsAny<CancellationToken>()
-                )
-            )
-            .ReturnsAsync(requesterMembership);
-
-        // Act
-        await _sut.Handle(command, TestContext.Current.CancellationToken);
-
-        // Assert
-        membership.AllowedAppointmentCategories.Should().BeEmpty();
-        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
-    }
-
-    [Fact]
     public async Task Handle_ShouldRemoveCategoryAndSaveChanges_WhenRequesterIsPatientsSelf()
     {
         // Arrange
@@ -136,28 +66,13 @@ public class RemoveAllowedAppointmentCategoryCommandHandlerTests
 
         _familyMembershipRepositoryMock
             .Setup(x =>
-                x.HasActiveSelfMembershipByUserIdAsync(
-                    requesterUserId,
-                    It.IsAny<CancellationToken>()
-                )
-            )
-            .ReturnsAsync(true);
-
-        var requesterMembership = FamilyMembership.CreateSelf(
-            patient.Id,
-            requesterUserId,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
-
-        _familyMembershipRepositoryMock
-            .Setup(x =>
-                x.GetActiveMembershipAsync(
+                x.HasActiveSelfMembershipAsync(
                     requesterUserId,
                     patient.Id,
                     It.IsAny<CancellationToken>()
                 )
             )
-            .ReturnsAsync(requesterMembership);
+            .ReturnsAsync(true);
 
         // Act
         await _sut.Handle(command, TestContext.Current.CancellationToken);
@@ -168,7 +83,7 @@ public class RemoveAllowedAppointmentCategoryCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ShouldThrowDomainValidationException_WhenRequesterHasNoActiveMembershipWithPatient()
+    public async Task Handle_ShouldThrowDomainValidationException_WhenPatientIsMinor()
     {
         // Arrange
         var requesterUserId = Guid.CreateVersion7();
@@ -178,6 +93,7 @@ public class RemoveAllowedAppointmentCategoryCommandHandlerTests
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
+
         var membership = CreateRestrictedMembership(patient.Id, targetUserId);
         membership.AddAllowedAppointmentCategory(
             AppointmentCategory.Pediatrics,
@@ -203,22 +119,13 @@ public class RemoveAllowedAppointmentCategoryCommandHandlerTests
 
         _familyMembershipRepositoryMock
             .Setup(x =>
-                x.HasActiveSelfMembershipByUserIdAsync(
-                    requesterUserId,
-                    It.IsAny<CancellationToken>()
-                )
-            )
-            .ReturnsAsync(true);
-
-        _familyMembershipRepositoryMock
-            .Setup(x =>
-                x.GetActiveMembershipAsync(
+                x.HasActiveSelfMembershipAsync(
                     requesterUserId,
                     patient.Id,
                     It.IsAny<CancellationToken>()
                 )
             )
-            .ReturnsAsync((FamilyMembership?)null);
+            .ReturnsAsync(true);
 
         // Act
         var act = () => _sut.Handle(command, TestContext.Current.CancellationToken);

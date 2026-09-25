@@ -1,6 +1,5 @@
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
-using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
@@ -43,26 +42,20 @@ public sealed class RemoveAllowedAppointmentCategoryCommandHandler(
                 request.PatientId
             );
 
-        var requesterHasSelfMembership =
-            await familyMembershipRepository.HasActiveSelfMembershipByUserIdAsync(
-                request.RequesterUserId,
-                cancellationToken
-            );
-
-        var requesterMembership = await familyMembershipRepository.GetActiveMembershipAsync(
+        var requesterIsPatientsSelf = await familyMembershipRepository.HasActiveSelfMembershipAsync(
             request.RequesterUserId,
             request.PatientId,
             cancellationToken
         );
 
-        var isAuthorized = FamilyMembershipAccessAuthorizationService.CanChangeAccessLevel(
-            new AccessLevelChangeAuthorizationContext
+        var isAuthorized = FamilyMembershipAccessAuthorizationService.CanManageFamilyMembership(
+            new FamilyMembershipManagementAuthorizationContext
             {
                 Patient = patient,
                 ReferenceTime = timeProvider.GetUtcNow().UtcDateTime,
-                RequesterHasSelfMembership = requesterHasSelfMembership,
-                RequesterIsPatientsSelf = requesterMembership?.Role is PatientRelationship.Self,
-                RequesterHasActiveMembershipWithPatient = requesterMembership is not null,
+                RequesterUserId = request.RequesterUserId,
+                TargetUserId = request.TargetUserId,
+                RequesterIsPatientsSelf = requesterIsPatientsSelf,
             }
         );
 
