@@ -302,11 +302,7 @@ public class FamilyMembershipTests
         );
 
         // Act
-        var act = () =>
-            membership.ChangeAccessLevel(
-                default(FamilyMembershipAccessLevel),
-                requesterIsAuthorized: true
-            );
+        var act = () => membership.ChangeAccessLevel(default, requesterIsAuthorized: true);
 
         // Assert
         act.Should()
@@ -334,6 +330,34 @@ public class FamilyMembershipTests
 
         // Assert
         membership.AccessLevel.Should().Be(FamilyMembershipAccessLevel.ViewOnly);
+    }
+
+    [Theory]
+    [InlineData(FamilyMembershipAccessLevel.Full)]
+    [InlineData(FamilyMembershipAccessLevel.ViewOnly)]
+    [InlineData(FamilyMembershipAccessLevel.EmergencyOnly)]
+    [InlineData(FamilyMembershipAccessLevel.AppointmentOnly)]
+    public void ChangeAccessLevel_ShouldUpdateAccessLevel_WhenChangingToRestricted(
+        FamilyMembershipAccessLevel currentAccessLevel
+    )
+    {
+        // Arrange
+        var membership = FamilyMembership.CreateFamilyMember(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            PatientRelationship.Child,
+            currentAccessLevel,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        // Act
+        membership.ChangeAccessLevel(
+            FamilyMembershipAccessLevel.Restricted,
+            requesterIsAuthorized: true
+        );
+
+        // Assert
+        membership.AccessLevel.Should().Be(FamilyMembershipAccessLevel.Restricted);
     }
 
     [Fact]
@@ -407,6 +431,251 @@ public class FamilyMembershipTests
         act.Should()
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.FamilyMembership.AccessLevelUnchanged);
+    }
+
+    [Theory]
+    [InlineData(FamilyMembershipAccessLevel.Full)]
+    [InlineData(FamilyMembershipAccessLevel.ViewOnly)]
+    [InlineData(FamilyMembershipAccessLevel.EmergencyOnly)]
+    [InlineData(FamilyMembershipAccessLevel.AppointmentOnly)]
+    public void ChangeAccessLevel_ShouldThrowException_WhenChangingFromRestrictedWithCategoriesConfigured(
+        FamilyMembershipAccessLevel newAccessLevel
+    )
+    {
+        // Arrange
+        var membership = CreateRestrictedMembership();
+        membership.AddAllowedAppointmentCategory(
+            AppointmentCategory.Pediatrics,
+            requesterIsAuthorized: true
+        );
+
+        // Act
+        var act = () => membership.ChangeAccessLevel(newAccessLevel, requesterIsAuthorized: true);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(
+                DomainErrors.FamilyMembership.CannotChangeAccessLevelWithCategoriesConfigured
+            );
+    }
+
+    [Theory]
+    [InlineData(FamilyMembershipAccessLevel.Full)]
+    [InlineData(FamilyMembershipAccessLevel.ViewOnly)]
+    public void ChangeAccessLevel_ShouldUpdateAccessLevel_WhenChangingFromRestrictedWithEmptyCategoryList(
+        FamilyMembershipAccessLevel newAccessLevel
+    )
+    {
+        // Arrange
+        var membership = CreateRestrictedMembership();
+
+        // Act
+        membership.ChangeAccessLevel(newAccessLevel, requesterIsAuthorized: true);
+
+        // Assert
+        membership.AccessLevel.Should().Be(newAccessLevel);
+    }
+
+    [Fact]
+    public void AddAllowedAppointmentCategory_ShouldAddCategory_WhenAccessLevelIsRestricted()
+    {
+        // Arrange
+        var membership = CreateRestrictedMembership();
+
+        // Act
+        membership.AddAllowedAppointmentCategory(
+            AppointmentCategory.Pediatrics,
+            requesterIsAuthorized: true
+        );
+
+        // Assert
+        membership
+            .AllowedAppointmentCategories.Should()
+            .ContainSingle()
+            .Which.Should()
+            .Be(AppointmentCategory.Pediatrics);
+    }
+
+    [Fact]
+    public void AddAllowedAppointmentCategory_ShouldThrowException_WhenRequesterIsNotAuthorized()
+    {
+        // Arrange
+        var membership = CreateRestrictedMembership();
+
+        // Act
+        var act = () =>
+            membership.AddAllowedAppointmentCategory(
+                AppointmentCategory.Pediatrics,
+                requesterIsAuthorized: false
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.FamilyMembership.UnauthorizedCategoryListChange);
+    }
+
+    [Theory]
+    [InlineData(FamilyMembershipAccessLevel.Full)]
+    [InlineData(FamilyMembershipAccessLevel.ViewOnly)]
+    [InlineData(FamilyMembershipAccessLevel.EmergencyOnly)]
+    [InlineData(FamilyMembershipAccessLevel.AppointmentOnly)]
+    public void AddAllowedAppointmentCategory_ShouldThrowException_WhenAccessLevelIsNotRestricted(
+        FamilyMembershipAccessLevel accessLevel
+    )
+    {
+        // Arrange
+        var membership = FamilyMembership.CreateFamilyMember(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            PatientRelationship.Child,
+            accessLevel,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        // Act
+        var act = () =>
+            membership.AddAllowedAppointmentCategory(
+                AppointmentCategory.Pediatrics,
+                requesterIsAuthorized: true
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.FamilyMembership.OnlyRestrictedCanHaveCategoryList);
+    }
+
+    [Fact]
+    public void AddAllowedAppointmentCategory_ShouldThrowException_WhenCategoryIsNotDefined()
+    {
+        // Arrange
+        var membership = CreateRestrictedMembership();
+
+        // Act
+        var act = () =>
+            membership.AddAllowedAppointmentCategory(
+                (AppointmentCategory)999,
+                requesterIsAuthorized: true
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.InvalidEnumValue);
+    }
+
+    [Fact]
+    public void AddAllowedAppointmentCategory_ShouldThrowException_WhenCategoryIsAlreadyAllowed()
+    {
+        // Arrange
+        var membership = CreateRestrictedMembership();
+        membership.AddAllowedAppointmentCategory(
+            AppointmentCategory.Pediatrics,
+            requesterIsAuthorized: true
+        );
+
+        // Act
+        var act = () =>
+            membership.AddAllowedAppointmentCategory(
+                AppointmentCategory.Pediatrics,
+                requesterIsAuthorized: true
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.FamilyMembership.CategoryAlreadyAllowed);
+    }
+
+    [Fact]
+    public void RemoveAllowedAppointmentCategory_ShouldRemoveCategory_WhenCategoryIsAllowed()
+    {
+        // Arrange
+        var membership = CreateRestrictedMembership();
+        membership.AddAllowedAppointmentCategory(
+            AppointmentCategory.Pediatrics,
+            requesterIsAuthorized: true
+        );
+
+        // Act
+        membership.RemoveAllowedAppointmentCategory(
+            AppointmentCategory.Pediatrics,
+            requesterIsAuthorized: true
+        );
+
+        // Assert
+        membership.AllowedAppointmentCategories.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void RemoveAllowedAppointmentCategory_ShouldThrowException_WhenRequesterIsNotAuthorized()
+    {
+        // Arrange
+        var membership = CreateRestrictedMembership();
+
+        // Act
+        var act = () =>
+            membership.RemoveAllowedAppointmentCategory(
+                AppointmentCategory.Pediatrics,
+                requesterIsAuthorized: false
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.FamilyMembership.UnauthorizedCategoryListChange);
+    }
+
+    [Theory]
+    [InlineData(FamilyMembershipAccessLevel.Full)]
+    [InlineData(FamilyMembershipAccessLevel.ViewOnly)]
+    [InlineData(FamilyMembershipAccessLevel.EmergencyOnly)]
+    [InlineData(FamilyMembershipAccessLevel.AppointmentOnly)]
+    public void RemoveAllowedAppointmentCategory_ShouldThrowException_WhenAccessLevelIsNotRestricted(
+        FamilyMembershipAccessLevel accessLevel
+    )
+    {
+        // Arrange
+        var membership = FamilyMembership.CreateFamilyMember(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            PatientRelationship.Child,
+            accessLevel,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        // Act
+        var act = () =>
+            membership.RemoveAllowedAppointmentCategory(
+                AppointmentCategory.Pediatrics,
+                requesterIsAuthorized: true
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.FamilyMembership.OnlyRestrictedCanHaveCategoryList);
+    }
+
+    [Fact]
+    public void RemoveAllowedAppointmentCategory_ShouldThrowException_WhenCategoryIsNotAllowed()
+    {
+        // Arrange
+        var membership = CreateRestrictedMembership();
+
+        // Act
+        var act = () =>
+            membership.RemoveAllowedAppointmentCategory(
+                AppointmentCategory.Pediatrics,
+                requesterIsAuthorized: true
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.FamilyMembership.CategoryNotFound);
     }
 
     [Theory]
@@ -961,4 +1230,13 @@ public class FamilyMembershipTests
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.Validation.EndTimeMustBeAfterStartTime);
     }
+
+    private FamilyMembership CreateRestrictedMembership() =>
+        FamilyMembership.CreateFamilyMember(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            PatientRelationship.Child,
+            FamilyMembershipAccessLevel.Restricted,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
 }

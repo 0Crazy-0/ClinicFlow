@@ -14,6 +14,11 @@ public sealed class FamilyMembershipConfiguration : IEntityTypeConfiguration<Fam
         builder.Property(m => m.AccessLevel).HasConversion<string>();
 
         builder
+            .Property(m => m.AllowedAppointmentCategories)
+            .HasField("_allowedAppointmentCategories")
+            .UsePropertyAccessMode(PropertyAccessMode.Field);
+
+        builder
             .HasOne<Patient>()
             .WithMany()
             .HasForeignKey(m => m.PatientId)
