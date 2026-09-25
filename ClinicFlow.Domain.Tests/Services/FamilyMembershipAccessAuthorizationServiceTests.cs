@@ -12,100 +12,121 @@ public class FamilyMembershipAccessAuthorizationServiceTests
     private readonly FakeTimeProvider _fakeTime = new();
 
     [Fact]
-    public void CanChangeAccessLevel_ShouldReturnTrue_WhenPatientIsMinorAndRequesterIsAuthorized()
+    public void CanManageFamilyMembership_ShouldReturnFalse_WhenRequesterModifiesOwnMembership()
     {
         // Arrange
-        var context = CreateContext(
-            yearsOld: 10,
-            selfMembership: true,
-            patientsSelf: false,
-            activeMembership: true
-        );
-
-        // Act
-        var result = FamilyMembershipAccessAuthorizationService.CanChangeAccessLevel(context);
-
-        // Assert
-        result.Should().BeTrue();
-    }
-
-    [Fact]
-    public void CanChangeAccessLevel_ShouldReturnFalse_WhenPatientIsMinorAndRequesterIsNotAuthorized()
-    {
-        // Arrange
-        var context = CreateContext(
-            yearsOld: 10,
-            selfMembership: false,
-            patientsSelf: false,
-            activeMembership: true
-        );
-
-        // Act
-        var result = FamilyMembershipAccessAuthorizationService.CanChangeAccessLevel(context);
-
-        // Assert
-        result.Should().BeFalse();
-    }
-
-    [Fact]
-    public void CanChangeAccessLevel_ShouldReturnTrue_WhenPatientIsAdultAndRequesterIsPatientsSelf()
-    {
-        // Arrange
+        var userId = Guid.CreateVersion7();
         var context = CreateContext(
             yearsOld: 30,
-            selfMembership: true,
             patientsSelf: true,
-            activeMembership: true
+            requesterUserId: userId,
+            targetUserId: userId
         );
 
         // Act
-        var result = FamilyMembershipAccessAuthorizationService.CanChangeAccessLevel(context);
-
-        // Assert
-        result.Should().BeTrue();
-    }
-
-    [Fact]
-    public void CanChangeAccessLevel_ShouldReturnFalse_WhenPatientIsAdultAndRequesterIsNotPatientsSelf()
-    {
-        // Arrange
-        var context = CreateContext(
-            yearsOld: 30,
-            selfMembership: true,
-            patientsSelf: false,
-            activeMembership: true
-        );
-
-        // Act
-        var result = FamilyMembershipAccessAuthorizationService.CanChangeAccessLevel(context);
+        var result = FamilyMembershipAccessAuthorizationService.CanManageFamilyMembership(context);
 
         // Assert
         result.Should().BeFalse();
     }
 
     [Fact]
-    public void CanChangeAccessLevel_ShouldTreatPatientAsAdult_WhenPatientIsExactlyEighteenYearsOld()
+    public void CanManageFamilyMembership_ShouldReturnFalse_WhenPatientIsMinorAndRequesterIsPatientsSelf()
+    {
+        // Arrange
+        // 15 years old: old enough to hold a self membership (MinimumSelfAge is 12)
+        // but still a minor, so management stays disabled.
+        var context = CreateContext(
+            yearsOld: 15,
+            patientsSelf: true,
+            requesterUserId: Guid.CreateVersion7(),
+            targetUserId: Guid.CreateVersion7()
+        );
+
+        // Act
+        var result = FamilyMembershipAccessAuthorizationService.CanManageFamilyMembership(context);
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [Fact]
+    public void CanManageFamilyMembership_ShouldReturnFalse_WhenPatientIsMinorAndRequesterIsNotPatientsSelf()
+    {
+        // Arrange
+        var context = CreateContext(
+            yearsOld: 10,
+            patientsSelf: false,
+            requesterUserId: Guid.CreateVersion7(),
+            targetUserId: Guid.CreateVersion7()
+        );
+
+        // Act
+        var result = FamilyMembershipAccessAuthorizationService.CanManageFamilyMembership(context);
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [Fact]
+    public void CanManageFamilyMembership_ShouldReturnTrue_WhenPatientIsAdultAndRequesterIsPatientsSelf()
+    {
+        // Arrange
+        var context = CreateContext(
+            yearsOld: 67,
+            patientsSelf: true,
+            requesterUserId: Guid.CreateVersion7(),
+            targetUserId: Guid.CreateVersion7()
+        );
+
+        // Act
+        var result = FamilyMembershipAccessAuthorizationService.CanManageFamilyMembership(context);
+
+        // Assert
+        result.Should().BeTrue();
+    }
+
+    [Fact]
+    public void CanManageFamilyMembership_ShouldReturnFalse_WhenPatientIsAdultAndRequesterIsNotPatientsSelf()
+    {
+        // Arrange
+        var context = CreateContext(
+            yearsOld: 30,
+            patientsSelf: false,
+            requesterUserId: Guid.CreateVersion7(),
+            targetUserId: Guid.CreateVersion7()
+        );
+
+        // Act
+        var result = FamilyMembershipAccessAuthorizationService.CanManageFamilyMembership(context);
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [Fact]
+    public void CanManageFamilyMembership_ShouldTreatPatientAsAdult_WhenPatientIsExactlyEighteenYearsOld()
     {
         // Arrange
         var context = CreateContext(
             yearsOld: 18,
-            selfMembership: true,
-            patientsSelf: false,
-            activeMembership: true
+            patientsSelf: true,
+            requesterUserId: Guid.CreateVersion7(),
+            targetUserId: Guid.CreateVersion7()
         );
 
         // Act
-        var result = FamilyMembershipAccessAuthorizationService.CanChangeAccessLevel(context);
+        var result = FamilyMembershipAccessAuthorizationService.CanManageFamilyMembership(context);
 
         // Assert
-        result.Should().BeFalse();
+        result.Should().BeTrue();
     }
 
-    private AccessLevelChangeAuthorizationContext CreateContext(
+    private FamilyMembershipManagementAuthorizationContext CreateContext(
         int yearsOld,
-        bool selfMembership,
         bool patientsSelf,
-        bool activeMembership
+        Guid requesterUserId,
+        Guid targetUserId
     )
     {
         var referenceTime = _fakeTime.GetUtcNow().UtcDateTime;
@@ -116,13 +137,13 @@ public class FamilyMembershipAccessAuthorizationServiceTests
             referenceTime
         );
 
-        return new AccessLevelChangeAuthorizationContext
+        return new FamilyMembershipManagementAuthorizationContext
         {
             Patient = patient,
             ReferenceTime = referenceTime,
-            RequesterHasSelfMembership = selfMembership,
+            RequesterUserId = requesterUserId,
+            TargetUserId = targetUserId,
             RequesterIsPatientsSelf = patientsSelf,
-            RequesterHasActiveMembershipWithPatient = activeMembership,
         };
     }
 }

@@ -40,6 +40,15 @@ public interface IFamilyMembershipRepository
         CancellationToken cancellationToken = default
     );
 
+    /// <summary>
+    /// Checks if the user account holds the self membership for a specific patient profile.
+    /// </summary>
+    Task<bool> HasActiveSelfMembershipAsync(
+        Guid userId,
+        Guid patientId,
+        CancellationToken cancellationToken = default
+    );
+
     Task<int> CountActiveFamilyMembersAsync(
         Guid userId,
         CancellationToken cancellationToken = default

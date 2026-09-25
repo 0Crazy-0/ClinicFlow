@@ -14,9 +14,11 @@ public sealed class FamilyMembershipConfiguration : IEntityTypeConfiguration<Fam
         builder.Property(m => m.AccessLevel).HasConversion<string>();
 
         builder
-            .Property(m => m.AllowedAppointmentCategories)
+            .PrimitiveCollection(m => m.AllowedAppointmentCategories)
             .HasField("_allowedAppointmentCategories")
-            .UsePropertyAccessMode(PropertyAccessMode.Field);
+            .UsePropertyAccessMode(PropertyAccessMode.Field)
+            .ElementType()
+            .HasConversion<string>();
 
         builder
             .HasOne<Patient>()

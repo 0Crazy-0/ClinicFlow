@@ -556,6 +556,160 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
     }
 
     [Fact]
+    public async Task HasActiveSelfMembershipAsync_ShouldReturnTrue_WhenActiveSelfMembershipMatchesUserAndPatient()
+    {
+        // Arrange
+        var user = await CreateUserAsync();
+        var patient = await CreatePatientAsync();
+        var membership = FamilyMembership.CreateSelf(
+            patient.Id,
+            user.Id,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        Context.FamilyMemberships.Add(membership);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var result = await _sut.HasActiveSelfMembershipAsync(
+            user.Id,
+            patient.Id,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task HasActiveSelfMembershipAsync_ShouldReturnFalse_WhenMembershipRoleIsNotSelf()
+    {
+        // Arrange
+        var user = await CreateUserAsync();
+        var patient = await CreatePatientAsync();
+        var membership = FamilyMembership.CreateFamilyMember(
+            patient.Id,
+            user.Id,
+            PatientRelationship.Child,
+            FamilyMembershipAccessLevel.Full,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        Context.FamilyMemberships.Add(membership);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var result = await _sut.HasActiveSelfMembershipAsync(
+            user.Id,
+            patient.Id,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task HasActiveSelfMembershipAsync_ShouldReturnFalse_WhenSelfMembershipIsClosed()
+    {
+        // Arrange
+        var user = await CreateUserAsync();
+        var patient = await CreatePatientAsync();
+        var membership = FamilyMembership.CreateSelf(
+            patient.Id,
+            user.Id,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        membership.CloseSelfMembership(_fakeTime.GetUtcNow().UtcDateTime.AddHours(1));
+
+        Context.FamilyMemberships.Add(membership);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var result = await _sut.HasActiveSelfMembershipAsync(
+            user.Id,
+            patient.Id,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task HasActiveSelfMembershipAsync_ShouldReturnFalse_WhenUserIdDoesNotMatch()
+    {
+        // Arrange
+        var ownerUser = await CreateUserAsync();
+        var otherUser = await CreateUserAsync();
+        var patient = await CreatePatientAsync();
+        var membership = FamilyMembership.CreateSelf(
+            patient.Id,
+            ownerUser.Id,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        Context.FamilyMemberships.Add(membership);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var result = await _sut.HasActiveSelfMembershipAsync(
+            otherUser.Id,
+            patient.Id,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task HasActiveSelfMembershipAsync_ShouldReturnFalse_WhenPatientIdDoesNotMatch()
+    {
+        // Arrange
+        var user = await CreateUserAsync();
+        var patient = await CreatePatientAsync();
+        var otherPatient = await CreatePatientAsync();
+        var membership = FamilyMembership.CreateSelf(
+            patient.Id,
+            user.Id,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        Context.FamilyMemberships.Add(membership);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var result = await _sut.HasActiveSelfMembershipAsync(
+            user.Id,
+            otherPatient.Id,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task HasActiveSelfMembershipAsync_ShouldReturnFalse_WhenDoesNotExist()
+    {
+        // Arrange
+        var nonExistentUserId = Guid.CreateVersion7();
+        var nonExistentPatientId = Guid.CreateVersion7();
+
+        // Act
+        var result = await _sut.HasActiveSelfMembershipAsync(
+            nonExistentUserId,
+            nonExistentPatientId,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [Fact]
     public async Task CountActiveFamilyMembersAsync_ShouldReturnCountExcludingSelf()
     {
         // Arrange
