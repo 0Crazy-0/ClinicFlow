@@ -112,7 +112,10 @@ public static class AppointmentCancellationService
         if (isInitiatorSelfOfTarget)
             return;
 
-        if (isInitiatorGuardianOfMinorTarget && patient.GetAge(referenceDate) < DomainRules.AdultAge)
+        if (
+            isInitiatorGuardianOfMinorTarget
+            && patient.GetAge(referenceDate) < DomainRules.AdultAge
+        )
             return;
 
         throw new AppointmentCancellationUnauthorizedException(
