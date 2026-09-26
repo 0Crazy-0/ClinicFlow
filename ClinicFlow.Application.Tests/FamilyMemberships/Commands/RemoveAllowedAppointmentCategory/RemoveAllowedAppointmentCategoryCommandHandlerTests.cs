@@ -228,6 +228,7 @@ public class RemoveAllowedAppointmentCategoryCommandHandlerTests
             ownerUserId,
             PatientRelationship.Child,
             FamilyMembershipAccessLevel.Restricted,
+            30,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 }

@@ -10,6 +10,7 @@ namespace ClinicFlow.Domain.Entities;
 public class FamilyMembership : BaseEntity
 {
     public const int MinimumAgeToLeave = 18;
+    public const int MinimumAdultAge = 18;
     public Guid PatientId { get; private set; }
 
     public Guid UserId { get; private set; }
@@ -93,11 +94,17 @@ public class FamilyMembership : BaseEntity
     /// <summary>
     /// Creates a family member membership link for a dependent patient under an account owner.
     /// </summary>
+    /// <remarks>
+    /// A patient under <see cref="MinimumAdultAge"/> can only be linked with
+    /// <see cref="FamilyMembershipAccessLevel.Full"/> access, since a minor's
+    /// profile must remain fully manageable by their legal guardian.
+    /// </remarks>
     internal static FamilyMembership CreateFamilyMember(
         Guid patientId,
         Guid ownerUserId,
         PatientRelationship role,
         FamilyMembershipAccessLevel accessLevel,
+        int patientAge,
         DateTime referenceTime
     )
     {
@@ -122,11 +129,23 @@ public class FamilyMembership : BaseEntity
         if (accessLevel is FamilyMembershipAccessLevel.Unspecified)
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
 
+        if (patientAge < MinimumAdultAge && accessLevel is not FamilyMembershipAccessLevel.Full)
+            throw new DomainValidationException(
+                DomainErrors.FamilyMembership.MinorMustHaveFullAccess
+            );
+
         return new FamilyMembership(patientId, ownerUserId, role, accessLevel, referenceTime);
     }
 
+    /// <remarks>
+    /// The access level of a patient under <see cref="MinimumAdultAge"/> is
+    /// immutable: their membership must remain at
+    /// <see cref="FamilyMembershipAccessLevel.Full"/> while the patient is a
+    /// minor, so any change attempt is rejected regardless of the target level.
+    /// </remarks>
     public void ChangeAccessLevel(
         FamilyMembershipAccessLevel newAccessLevel,
+        int patientAge,
         bool requesterIsAuthorized
     )
     {
@@ -139,6 +158,11 @@ public class FamilyMembership : BaseEntity
         if (Role is PatientRelationship.Self)
             throw new DomainValidationException(
                 DomainErrors.FamilyMembership.CannotChangeAccessLevelOfSelf
+            );
+
+        if (patientAge < MinimumAdultAge)
+            throw new DomainValidationException(
+                DomainErrors.FamilyMembership.CannotChangeAccessLevelWhileMinor
             );
 
         if (!requesterIsAuthorized)

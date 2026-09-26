@@ -130,6 +130,7 @@ public class GetOwnMedicalRecordsByPatientIdQueryHandlerTests
             requesterUserId,
             role,
             FamilyMembershipAccessLevel.Full,
+            30,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 

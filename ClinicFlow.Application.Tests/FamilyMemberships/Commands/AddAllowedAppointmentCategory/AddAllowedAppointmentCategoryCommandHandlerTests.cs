@@ -219,6 +219,7 @@ public class AddAllowedAppointmentCategoryCommandHandlerTests
             ownerUserId,
             PatientRelationship.Child,
             FamilyMembershipAccessLevel.Restricted,
+            30,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 }
