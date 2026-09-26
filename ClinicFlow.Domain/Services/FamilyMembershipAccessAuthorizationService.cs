@@ -1,10 +1,11 @@
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Services.Contexts;
 
 namespace ClinicFlow.Domain.Services;
 
 public static class FamilyMembershipAccessAuthorizationService
 {
-    public const int MinimumAdultAge = 18;
+    public const int MinimumAdultAge = DomainRules.AdultAge;
 
     /// <remarks>
     /// A requester can never manage their own membership through this check.

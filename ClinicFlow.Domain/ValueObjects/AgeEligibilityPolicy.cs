@@ -11,7 +11,7 @@ public record AgeEligibilityPolicy
     public const int MinimumAllowedAge = 0;
     public const int MaximumAllowedAge = 120;
 
-    private const int LegalAdultAge = 18;
+    private const int LegalAdultAge = DomainRules.AdultAge;
 
     public int? MinimumAge { get; }
 
