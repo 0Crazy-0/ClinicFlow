@@ -30,11 +30,11 @@ Certain file patterns are globally ignored by Codecov because they do not contai
 
 ---
 
-## Criteria for Ignoring Failed Checks in Pull Requests (False Positives)
+## Criteria for Overriding a Failed Check in Pull Requests (False Positives)
 
 Since we do not use attributes to exclude code from coverage, Codecov's patch coverage check might occasionally fail (fall below 80%) on Pull Requests that modify lines of code containing no testable logic. 
 
-In these specific scenarios, **reviewers and authors are permitted and expected to ignore the red Codecov check and merge the PR**.
+The Codecov check is **required to pass before merging** in the repository branch protection rules. When a PR fails due to a genuine false positive that cannot be solved, the required status is temporarily lifted by following the [Reviewer Protocol](#reviewer-protocol) below, and restored immediately after the merge.
 
 ### Permissible False-Positive Scenarios
 
@@ -60,6 +60,10 @@ public sealed record CancelAppointmentByDoctorCommand(
 These objects contain no behavior or business logic. Writing unit tests for them is unnecessary. If they are modified or introduced in a PR without being explicitly instantiated in a unit test, Codecov will report them as missing coverage.
 
 ### Reviewer Protocol
-Before merging a PR with a failing Codecov check, the author and reviewer must verify that any missing lines highlighted in the Codecov report belong exclusively to the false-positive categories described above, and that all actual business logic has appropriate test coverage meeting project standards.
+The Codecov check must pass before merging, and overriding it is an exceptional measure reserved for genuine false positives. The protocol is a strict escalation path, and every step must be completed in order:
 
-If these conditions are met, reviewers may override the failing Codecov check only after explicit verification and approval, confirming that no business logic is affected.
+1. **Classify the failure.** The author verifies that every missing line highlighted in the Codecov report belongs exclusively to the false-positive categories described above, and that all actual business logic has appropriate test coverage meeting project standards.
+2. **Attempt to solve the gap first.** Before any override, the author must evaluate whether the missing coverage can be legitimately resolved: by writing a test that exercises the affected code, or by adding the affected file to the `ignore` section of `codecov.yml` when the file is pure boilerplate with no business logic. Partial file exclusions are not supported by `codecov.yml`, which is why patterns such as parameterless constructors cannot be silenced through configuration.
+3. **Confirm the false positive is unsolvable.** If no test or configuration change can legitimately cover the lines, the reviewer explicitly verifies and approves the false-positive claim in the PR conversation.
+4. **Temporarily lift the required status.** A repository admin removes the Codecov check from the list of required status checks in the branch protection rule, only for the duration of the merge.
+5. **Merge and restore.** Merge the PR and immediately add the Codecov check back to the required status checks. The required status must never remain disabled after the merge, otherwise subsequent PRs would merge without coverage enforcement.
