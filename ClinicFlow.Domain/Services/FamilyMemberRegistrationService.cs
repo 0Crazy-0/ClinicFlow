@@ -41,6 +41,7 @@ public static class FamilyMemberRegistrationService
             args.OwnerUserId,
             args.Role,
             args.AccessLevel,
+            patient.GetAge(DateOnly.FromDateTime(args.ReferenceTime)),
             args.ReferenceTime
         );
 

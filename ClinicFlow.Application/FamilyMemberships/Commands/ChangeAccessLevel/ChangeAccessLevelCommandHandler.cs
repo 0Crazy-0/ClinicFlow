@@ -45,18 +45,24 @@ public sealed class ChangeAccessLevelCommandHandler(
             cancellationToken
         );
 
+        var referenceTime = timeProvider.GetUtcNow().UtcDateTime;
+
         var isAuthorized = FamilyMembershipAccessAuthorizationService.CanManageFamilyMembership(
             new FamilyMembershipManagementAuthorizationContext
             {
                 Patient = patient,
-                ReferenceTime = timeProvider.GetUtcNow().UtcDateTime,
+                ReferenceTime = referenceTime,
                 RequesterUserId = request.RequesterUserId,
                 TargetUserId = request.TargetUserId,
                 RequesterIsPatientsSelf = requesterIsPatientsSelf,
             }
         );
 
-        membership.ChangeAccessLevel(request.NewAccessLevel, isAuthorized);
+        membership.ChangeAccessLevel(
+            request.NewAccessLevel,
+            patient.GetAge(DateOnly.FromDateTime(referenceTime)),
+            isAuthorized
+        );
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }

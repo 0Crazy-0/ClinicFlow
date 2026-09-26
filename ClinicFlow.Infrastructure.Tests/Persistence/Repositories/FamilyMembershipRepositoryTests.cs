@@ -160,6 +160,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
             user.Id,
             PatientRelationship.Child,
             FamilyMembershipAccessLevel.Full,
+            30,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -187,6 +188,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
             user.Id,
             PatientRelationship.Spouse,
             FamilyMembershipAccessLevel.Full,
+            30,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -216,6 +218,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
             ownerUser.Id,
             PatientRelationship.Spouse,
             FamilyMembershipAccessLevel.Full,
+            30,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -245,6 +248,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
             user.Id,
             PatientRelationship.Child,
             FamilyMembershipAccessLevel.Full,
+            30,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -273,6 +277,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
             user.Id,
             PatientRelationship.Child,
             FamilyMembershipAccessLevel.Full,
+            30,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -397,6 +402,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
             user.Id,
             PatientRelationship.Child,
             FamilyMembershipAccessLevel.Full,
+            30,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -476,6 +482,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
             user.Id,
             PatientRelationship.Spouse,
             FamilyMembershipAccessLevel.Full,
+            30,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -505,6 +512,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
             ownerUser.Id,
             PatientRelationship.Spouse,
             FamilyMembershipAccessLevel.Full,
+            30,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -533,6 +541,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
             user.Id,
             PatientRelationship.Child,
             FamilyMembershipAccessLevel.Full,
+            30,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -592,6 +601,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
             user.Id,
             PatientRelationship.Child,
             FamilyMembershipAccessLevel.Full,
+            30,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -729,6 +739,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
             ownerUser.Id,
             PatientRelationship.Child,
             FamilyMembershipAccessLevel.Full,
+            30,
             now
         );
         Context.FamilyMemberships.Add(childMembership);
@@ -738,6 +749,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
             ownerUser.Id,
             PatientRelationship.Spouse,
             FamilyMembershipAccessLevel.Full,
+            30,
             now
         );
         Context.FamilyMemberships.Add(spouseMembership);
@@ -747,6 +759,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
             otherUser.Id,
             PatientRelationship.Child,
             FamilyMembershipAccessLevel.Full,
+            30,
             now
         );
         Context.FamilyMemberships.Add(otherChildMembership);

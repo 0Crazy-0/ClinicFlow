@@ -519,12 +519,18 @@ public static class DbSeeder
                 )
             );
             patients.Add(patient);
+            var patientAge = patient.GetAge(DateOnly.FromDateTime(refTime));
+            var accessLevel =
+                patientAge < FamilyMembership.MinimumAdultAge
+                    ? FamilyMembershipAccessLevel.Full
+                    : accessLevels[i % accessLevels.Length];
             familyMemberships.Add(
                 FamilyMembership.CreateFamilyMember(
                     patient.Id,
                     pUser.Id,
                     relationship,
-                    accessLevels[i % accessLevels.Length],
+                    accessLevel,
+                    patientAge,
                     refTime
                 )
             );

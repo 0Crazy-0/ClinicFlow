@@ -482,6 +482,7 @@ public class GetFamilyMemberMedicalRecordsByPatientIdQueryHandlerTests
             userId,
             PatientRelationship.Child,
             accessLevel,
+            30,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 }

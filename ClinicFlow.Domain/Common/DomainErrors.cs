@@ -206,5 +206,9 @@ public static class DomainErrors
         public const string CategoryNotFound = "FAMILY_MEMBERSHIP_CATEGORY_NOT_FOUND";
         public const string CannotChangeAccessLevelWithCategoriesConfigured =
             "FAMILY_MEMBERSHIP_CANNOT_CHANGE_ACCESS_LEVEL_WITH_CATEGORIES_CONFIGURED";
+        public const string MinorMustHaveFullAccess =
+            "FAMILY_MEMBERSHIP_MINOR_MUST_HAVE_FULL_ACCESS";
+        public const string CannotChangeAccessLevelWhileMinor =
+            "FAMILY_MEMBERSHIP_CANNOT_CHANGE_ACCESS_LEVEL_WHILE_MINOR";
     }
 }

@@ -124,7 +124,7 @@ public class ChangeAccessLevelCommandHandlerTests
         // Assert
         await act.Should()
             .ThrowAsync<DomainValidationException>()
-            .WithMessage(DomainErrors.FamilyMembership.UnauthorizedAccessLevelChange);
+            .WithMessage(DomainErrors.FamilyMembership.CannotChangeAccessLevelWhileMinor);
 
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
@@ -219,6 +219,7 @@ public class ChangeAccessLevelCommandHandlerTests
             ownerUserId,
             PatientRelationship.Child,
             FamilyMembershipAccessLevel.Full,
+            30,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 }
