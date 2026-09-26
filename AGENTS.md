@@ -29,6 +29,7 @@ ClinicFlow.Application         → CQRS orchestration: commands, queries, handle
 ClinicFlow.Application.Tests   → Unit tests for the application layer
 ClinicFlow.Infrastructure      → Persistence (EF Core, configurations, migrations, seeding, repository implementations), Unit of Work
 ClinicFlow.Infrastructure.Tests → Unit/integration tests for the infrastructure layer (persistence and seeding)
+ClinicFlow.Architecture.Tests  → Architecture tests enforcing layer dependency rules (ArchUnitNET)
 ```
 
 **Future layers** (not yet created):
@@ -40,11 +41,12 @@ ClinicFlow.Infrastructure.Tests → Unit/integration tests for the infrastructur
 | Layer | Libraries |
 |---|---|
 | **Domain** | Zero external packages. No NuGet dependencies allowed. |
-| **Application** | MediatR 14.0, FluentValidation 12.1, Microsoft.Extensions.DependencyInjection.Abstractions 10.0 |
-| **Infrastructure** | EF Core 10.0 (Design), Npgsql.EntityFrameworkCore.PostgreSQL 10.0, Microsoft.Extensions.Configuration.Binder 10.0, Bogus 35.6 |
-| **Tests (Domain)** | xUnit 2.9, FluentAssertions 8.8, Moq 4.20, Microsoft.Extensions.TimeProvider.Testing 10.4 |
-| **Tests (Application)** | xUnit 2.9, FluentAssertions 8.8, Moq 4.20, Microsoft.Extensions.TimeProvider.Testing 10.4 |
-| **Tests (Infrastructure)** | xUnit 2.9, FluentAssertions 8.8, Moq 4.20, Microsoft.Extensions.TimeProvider.Testing 10.4, EF Core (Relational, InMemory) 10.0, Respawn 7.0, Testcontainers.PostgreSql 4.12 |
+| **Application** | MediatR 14.2, FluentValidation.DependencyInjectionExtensions 12.1, Microsoft.Extensions.DependencyInjection.Abstractions 10.0 |
+| **Infrastructure** | EF Core (Relational, Design) 10.0, EFCore.ComplexIndexes 5.0, Npgsql.EntityFrameworkCore.PostgreSQL 10.0, Microsoft.Extensions.Configuration.Binder 10.0, Bogus 35.6 |
+| **Tests (Domain)** | xunit.v3 4.0, AwesomeAssertions 9.5, Moq 4.20, Microsoft.Extensions.TimeProvider.Testing 10.9 |
+| **Tests (Application)** | xunit.v3 4.0, AwesomeAssertions 9.5, Moq 4.20, Microsoft.Extensions.TimeProvider.Testing 10.9 |
+| **Tests (Infrastructure)** | xunit.v3 4.0, AwesomeAssertions 9.5, Moq 4.20, Microsoft.Extensions.TimeProvider.Testing 10.9, EF Core (Relational, InMemory) 10.0, Respawn 7.0, Testcontainers.PostgreSql 4.14 |
+| **Tests (Architecture)** | xunit.v3 4.0, AwesomeAssertions 9.5, TngTech.ArchUnitNET.xUnitV3 0.13 |
 
 ### Key Dependency Flow
 
