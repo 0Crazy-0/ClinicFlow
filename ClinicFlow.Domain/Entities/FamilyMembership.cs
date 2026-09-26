@@ -9,8 +9,8 @@ namespace ClinicFlow.Domain.Entities;
 /// </summary>
 public class FamilyMembership : BaseEntity
 {
-    public const int MinimumAgeToLeave = 18;
-    public const int MinimumAdultAge = 18;
+    public const int MinimumAgeToLeave = DomainRules.AdultAge;
+    public const int MinimumAdultAge = DomainRules.AdultAge;
     public Guid PatientId { get; private set; }
 
     public Guid UserId { get; private set; }

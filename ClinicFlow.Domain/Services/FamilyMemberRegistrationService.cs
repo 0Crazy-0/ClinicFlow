@@ -13,7 +13,7 @@ namespace ClinicFlow.Domain.Services;
 public static class FamilyMemberRegistrationService
 {
     public const int MaxActiveFamilyMembers = 15;
-    public const int MinimumOwnerAge = 18;
+    public const int MinimumOwnerAge = DomainRules.AdultAge;
 
     public static (Patient Patient, FamilyMembership Membership) Register(
         FamilyMemberRegistrationArgs args
