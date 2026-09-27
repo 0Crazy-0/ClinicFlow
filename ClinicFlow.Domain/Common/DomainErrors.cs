@@ -53,8 +53,9 @@ public static class DomainErrors
         public const string CannotUpdateNotes = "UPDATE_NOTES_NOT_ALLOWED";
         public const string InvalidCompletionDate = "COMPLETION_DATE_BEFORE_APPOINTMENT_START";
         public const string CompletionBeforeActualStart = "COMPLETION_BEFORE_ACTUAL_START";
-        public const string InvalidStartDate = "START_DATE_BEFORE_APPOINTMENT_START";
-        public const string InvalidCheckInDate = "CHECK_IN_DATE_BEFORE_SCHEDULED_DATE";
+        public const string InvalidStartDate = "START_DATE_MISMATCH";
+        public const string InvalidCheckInDate = "CHECK_IN_DATE_MISMATCH";
+        public const string CheckInAfterEndTime = "CHECK_IN_AFTER_APPOINTMENT_END_TIME";
     }
 
     public static class Scheduling

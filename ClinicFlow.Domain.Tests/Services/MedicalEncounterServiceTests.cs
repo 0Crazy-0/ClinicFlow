@@ -662,8 +662,11 @@ public class MedicalEncounterServiceTests
         );
 
         appointment.SetId(id);
-        appointment.CheckIn(DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime));
-        appointment.Start(appointment.DoctorId, _fakeTime.GetUtcNow().UtcDateTime);
+        appointment.CheckIn(appointment.ScheduledDate.ToDateTime(appointment.TimeRange.Start));
+        appointment.Start(
+            appointment.DoctorId,
+            appointment.ScheduledDate.ToDateTime(new TimeOnly(10, 15))
+        );
 
         return appointment;
     }
@@ -678,8 +681,11 @@ public class MedicalEncounterServiceTests
             TimeRange.Create(new TimeOnly(10), new TimeOnly(11))
         );
 
-        appointment.CheckIn(DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime));
-        appointment.Start(appointment.DoctorId, _fakeTime.GetUtcNow().UtcDateTime);
+        appointment.CheckIn(appointment.ScheduledDate.ToDateTime(appointment.TimeRange.Start));
+        appointment.Start(
+            appointment.DoctorId,
+            appointment.ScheduledDate.ToDateTime(new TimeOnly(10, 15))
+        );
 
         return appointment;
     }

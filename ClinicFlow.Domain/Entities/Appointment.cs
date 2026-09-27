@@ -141,23 +141,39 @@ public class Appointment : BaseEntity
         AddDomainEvent(new AppointmentLateCancelledEvent(this, cancelledByUserId, reason));
     }
 
-    public void CheckIn(DateOnly checkedInAt, string? receptionistNotes = null)
+    /// <remarks>
+    /// The check-in must occur on the appointment's scheduled date, before the appointment's end time.
+    /// Checking in before the appointment's start time is allowed since patients may arrive early.
+    /// </remarks>
+    public void CheckIn(DateTime checkedInAt, string? receptionistNotes = null)
     {
-        if (checkedInAt < ScheduledDate)
+        var checkedInDate = DateOnly.FromDateTime(checkedInAt);
+
+        if (checkedInDate != ScheduledDate)
             throw new DomainValidationException(DomainErrors.Appointment.InvalidCheckInDate);
+
+        if (checkedInAt >= ScheduledDate.ToDateTime(TimeRange.End))
+            throw new DomainValidationException(DomainErrors.Appointment.CheckInAfterEndTime);
 
         if (Status is not AppointmentStatus.Scheduled)
             throw new DomainValidationException(DomainErrors.Appointment.CannotCheckIn);
 
         Status = AppointmentStatus.CheckedIn;
-        CheckedInAt = checkedInAt;
+        CheckedInAt = checkedInDate;
         ReceptionistNotes = receptionistNotes ?? string.Empty;
 
-        AddDomainEvent(new AppointmentCheckedInEvent(this, checkedInAt));
+        AddDomainEvent(new AppointmentCheckedInEvent(this, checkedInDate));
     }
 
+    /// <remarks>
+    /// The start must occur on the appointment's scheduled date. Starting after the appointment's end
+    /// time is allowed, since doctor delays must be recorded as actual events rather than rejected.
+    /// </remarks>
     public void Start(Guid initiatorDoctorId, DateTime startedAt)
     {
+        if (DateOnly.FromDateTime(startedAt) != ScheduledDate)
+            throw new DomainValidationException(DomainErrors.Appointment.InvalidStartDate);
+
         if (startedAt < ScheduledDate.ToDateTime(TimeRange.Start))
             throw new DomainValidationException(DomainErrors.Appointment.InvalidStartDate);
 

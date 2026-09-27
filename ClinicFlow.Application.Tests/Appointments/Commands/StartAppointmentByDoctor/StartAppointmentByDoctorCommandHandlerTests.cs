@@ -53,7 +53,7 @@ public class StartAppointmentByDoctorCommandHandlerTests
             TimeRange.Create(new TimeOnly(0), new TimeOnly(1))
         );
 
-        appointment.CheckIn(appointment.ScheduledDate);
+        appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
 
         _appointmentRepositoryMock
             .Setup(r => r.GetByIdAsync(command.AppointmentId, It.IsAny<CancellationToken>()))

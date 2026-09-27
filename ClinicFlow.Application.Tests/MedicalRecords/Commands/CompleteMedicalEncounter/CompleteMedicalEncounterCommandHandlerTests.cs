@@ -328,21 +328,18 @@ public class CompleteMedicalEncounterCommandHandlerTests
 
     private Appointment CreateAppointment(Guid id, Guid appointmentTypeId, Guid doctorId)
     {
-        var referenceDate = _fakeTime.GetUtcNow().UtcDateTime.AddDays(1);
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(-1));
         var appointment = Appointment.Schedule(
             Guid.CreateVersion7(),
             doctorId,
             appointmentTypeId,
-            DateOnly.FromDateTime(referenceDate.AddDays(-2)),
+            scheduledDate,
             TimeRange.Create(new TimeOnly(9), new TimeOnly(10))
         );
 
         appointment.SetId(id);
-        appointment.CheckIn(DateOnly.FromDateTime(referenceDate));
-        appointment.Start(
-            doctorId,
-            appointment.ScheduledDate.ToDateTime(appointment.TimeRange.Start)
-        );
+        appointment.CheckIn(scheduledDate.ToDateTime(new TimeOnly(9)));
+        appointment.Start(doctorId, scheduledDate.ToDateTime(new TimeOnly(9, 15)));
 
         return appointment;
     }

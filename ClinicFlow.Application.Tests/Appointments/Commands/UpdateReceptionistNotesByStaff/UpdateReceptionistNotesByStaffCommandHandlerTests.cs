@@ -43,7 +43,7 @@ public class UpdateReceptionistNotesByStaffCommandHandlerTests
             TimeRange.Create(new TimeOnly(10), new TimeOnly(11))
         );
 
-        appointment.CheckIn(appointment.ScheduledDate);
+        appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
 
         _appointmentRepositoryMock
             .Setup(r => r.GetByIdAsync(command.AppointmentId, It.IsAny<CancellationToken>()))
