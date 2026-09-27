@@ -383,7 +383,7 @@ public class AppointmentTests
         var appointment = CreateAppointment();
 
         // Act
-        appointment.CheckIn(appointment.ScheduledDate);
+        appointment.CheckIn(appointment.ScheduledDate.ToDateTime(new TimeOnly(9, 30)));
 
         // Assert
         appointment.Status.Should().Be(AppointmentStatus.CheckedIn);
@@ -393,11 +393,11 @@ public class AppointmentTests
     }
 
     [Fact]
-    public void CheckIn_ShouldThrowException_WhenCheckedInAtIsBeforeScheduledDate()
+    public void CheckIn_ShouldThrowException_WhenCheckedInAtIsNotOnScheduledDate()
     {
         // Arrange
         var appointment = CreateAppointment();
-        var checkedInAt = appointment.ScheduledDate.AddDays(-1);
+        var checkedInAt = appointment.ScheduledDate.AddDays(1).ToDateTime(new TimeOnly(9, 30));
 
         // Act
         var act = () => appointment.CheckIn(checkedInAt);
@@ -409,6 +409,33 @@ public class AppointmentTests
 
         appointment.Status.Should().Be(AppointmentStatus.Scheduled);
         appointment.CheckedInAt.Should().BeNull();
+        appointment.ReceptionistNotes.Should().BeEmpty();
+        appointment.DomainEvents.OfType<AppointmentCheckedInEvent>().Should().BeEmpty();
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    public void CheckIn_ShouldThrowException_WhenCheckedInAtIsAtOrAfterEndTime(int minutesAfterEnd)
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        var checkedInAt = appointment
+            .ScheduledDate.ToDateTime(appointment.TimeRange.End)
+            .AddMinutes(minutesAfterEnd);
+
+        // Act
+        var act = () => appointment.CheckIn(checkedInAt);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Appointment.CheckInAfterEndTime);
+
+        appointment.Status.Should().Be(AppointmentStatus.Scheduled);
+        appointment.CheckedInAt.Should().BeNull();
+        appointment.ReceptionistNotes.Should().BeEmpty();
+        appointment.DomainEvents.OfType<AppointmentCheckedInEvent>().Should().BeEmpty();
     }
 
     [Fact]
@@ -418,7 +445,7 @@ public class AppointmentTests
         var appointment = CreateAppointment();
 
         // Act
-        appointment.CheckIn(appointment.ScheduledDate, null);
+        appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue), null);
 
         // Assert
         appointment.ReceptionistNotes.Should().BeEmpty();
@@ -437,7 +464,8 @@ public class AppointmentTests
         );
 
         // Act
-        var act = () => appointment.CheckIn(appointment.ScheduledDate);
+        var act = () =>
+            appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
 
         // Assert
         act.Should()
@@ -453,7 +481,10 @@ public class AppointmentTests
         var receptionistNotes = "Test receptionist notes";
 
         // Act
-        appointment.CheckIn(appointment.ScheduledDate, receptionistNotes);
+        appointment.CheckIn(
+            appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue),
+            receptionistNotes
+        );
 
         // Assert
         appointment.ReceptionistNotes.Should().Be(receptionistNotes);
@@ -465,7 +496,7 @@ public class AppointmentTests
         // Arrange
         var appointment = CreateAppointment();
 
-        appointment.CheckIn(appointment.ScheduledDate);
+        appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
 
         var startedAt = appointment.ScheduledDate.ToDateTime(new TimeOnly(9, 15));
 
@@ -484,7 +515,7 @@ public class AppointmentTests
         // Arrange
         var appointment = CreateAppointment();
 
-        appointment.CheckIn(appointment.ScheduledDate);
+        appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
 
         // Act
         var act = () =>
@@ -502,13 +533,39 @@ public class AppointmentTests
         appointment.DomainEvents.OfType<AppointmentStartedEvent>().Should().BeEmpty();
     }
 
+    [Theory]
+    [InlineData(-1)]
+    [InlineData(1)]
+    public void Start_ShouldThrowException_WhenStartedAtIsNotOnScheduledDate(int dayOffset)
+    {
+        // Arrange
+        var appointment = CreateAppointment(); // ScheduledDate is 2 days from now
+
+        appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
+
+        // Act
+        var act = () =>
+            appointment.Start(
+                appointment.DoctorId,
+                appointment.ScheduledDate.AddDays(dayOffset).ToDateTime(new TimeOnly(9, 15))
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Appointment.InvalidStartDate);
+
+        appointment.Status.Should().Be(AppointmentStatus.CheckedIn);
+        appointment.DomainEvents.OfType<AppointmentStartedEvent>().Should().BeEmpty();
+    }
+
     [Fact]
     public void Start_ShouldThrowException_WhenDoctorIdDiffers()
     {
         // Arrange
         var appointment = CreateAppointment();
 
-        appointment.CheckIn(appointment.ScheduledDate);
+        appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
 
         // Act
         var act = () =>
@@ -548,7 +605,7 @@ public class AppointmentTests
         // Arrange
         var appointment = CreateAppointment(); // TimeRange: 9:00 - 10:00
 
-        appointment.CheckIn(appointment.ScheduledDate);
+        appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
         appointment.Start(
             appointment.DoctorId,
             appointment.ScheduledDate.ToDateTime(appointment.TimeRange.Start)
@@ -570,14 +627,15 @@ public class AppointmentTests
         // Arrange
         var appointment = CreateAppointment(); // TimeRange: 9:00 - 10:00
 
-        appointment.CheckIn(appointment.ScheduledDate);
+        appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
         appointment.Start(
             appointment.DoctorId,
             appointment.ScheduledDate.ToDateTime(appointment.TimeRange.Start)
         );
 
         // Act
-        var act = () => appointment.Complete(appointment.ScheduledDate.ToDateTime(new TimeOnly(8)));
+        var act = () =>
+            appointment.Complete(appointment.ScheduledDate.ToDateTime(new TimeOnly(8, 0)));
 
         // Assert
         act.Should()
@@ -593,7 +651,7 @@ public class AppointmentTests
         // Arrange
         var appointment = CreateAppointment(); // TimeRange: 9:00 - 10:00
 
-        appointment.CheckIn(appointment.ScheduledDate);
+        appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
         appointment.Start(
             appointment.DoctorId,
             appointment.ScheduledDate.ToDateTime(appointment.TimeRange.Start)
@@ -615,14 +673,15 @@ public class AppointmentTests
         // Arrange
         var appointment = CreateAppointment(); // TimeRange: 9:00 - 10:00
 
-        appointment.CheckIn(appointment.ScheduledDate);
+        appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
         appointment.Start(
             appointment.DoctorId,
             appointment.ScheduledDate.ToDateTime(new TimeOnly(9, 15))
         );
 
         // Act
-        var act = () => appointment.Complete(appointment.ScheduledDate.ToDateTime(new TimeOnly(9)));
+        var act = () =>
+            appointment.Complete(appointment.ScheduledDate.ToDateTime(new TimeOnly(9, 0)));
 
         // Assert
         act.Should()
@@ -639,7 +698,7 @@ public class AppointmentTests
         // Arrange
         var appointment = CreateAppointment(); // TimeRange: 9:00 - 10:00
 
-        appointment.CheckIn(appointment.ScheduledDate);
+        appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
         var startedAt = appointment.ScheduledDate.ToDateTime(new TimeOnly(9, 15));
         appointment.Start(appointment.DoctorId, startedAt);
 
@@ -876,7 +935,7 @@ public class AppointmentTests
         // Arrange
         var appointment = CreateAppointment();
 
-        appointment.CheckIn(appointment.ScheduledDate);
+        appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
 
         // Act
         var act = () => appointment.UpdatePatientNotes("New notes");
@@ -892,7 +951,7 @@ public class AppointmentTests
     {
         // Arrange
         var appointment = CreateAppointment();
-        appointment.CheckIn(appointment.ScheduledDate);
+        appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
         var newNotes = "New receptionist notes";
 
         // Act
@@ -907,7 +966,7 @@ public class AppointmentTests
     {
         // Arrange
         var appointment = CreateAppointment();
-        appointment.CheckIn(appointment.ScheduledDate);
+        appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
         appointment.UpdateReceptionistNotes("Initial notes");
 
         // Act
@@ -938,6 +997,6 @@ public class AppointmentTests
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2)),
-            TimeRange.Create(new TimeOnly(9), new TimeOnly(10))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
         );
 }

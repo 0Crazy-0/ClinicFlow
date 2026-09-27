@@ -309,17 +309,16 @@ public class StartMedicalEncounterCommandHandlerTests
 
     private Appointment CreateCheckedInAppointment(Guid id, Guid appointmentTypeId, Guid doctorId)
     {
-        var now = _fakeTime.GetUtcNow().UtcDateTime;
         var appointment = Appointment.Schedule(
             Guid.CreateVersion7(),
             doctorId,
             appointmentTypeId,
-            DateOnly.FromDateTime(now.AddDays(-1)),
-            TimeRange.Create(new TimeOnly(9), new TimeOnly(10))
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime),
+            TimeRange.Create(new TimeOnly(0), new TimeOnly(1))
         );
 
         appointment.SetId(id);
-        appointment.CheckIn(DateOnly.FromDateTime(now.AddDays(-1)));
+        appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
 
         return appointment;
     }

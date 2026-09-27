@@ -286,17 +286,17 @@ public class SetGuardianInvolvementDeterminationByDoctorCommandHandlerTests
 
     private Appointment CreateInProgressAppointment(Guid doctorId)
     {
-        var now = _fakeTime.GetUtcNow().UtcDateTime;
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(-1));
         var appointment = Appointment.Schedule(
             Guid.CreateVersion7(),
             doctorId,
             Guid.CreateVersion7(),
-            DateOnly.FromDateTime(now.AddDays(-1)),
+            scheduledDate,
             TimeRange.Create(new TimeOnly(9), new TimeOnly(10))
         );
 
-        appointment.CheckIn(DateOnly.FromDateTime(now));
-        appointment.Start(doctorId, now);
+        appointment.CheckIn(scheduledDate.ToDateTime(new TimeOnly(9)));
+        appointment.Start(doctorId, scheduledDate.ToDateTime(new TimeOnly(9, 15)));
 
         return appointment;
     }
