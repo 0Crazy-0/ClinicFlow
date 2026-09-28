@@ -21,8 +21,7 @@ public class TimeProviderUsageTests
             .HaveNameStartingWith(nameof(TimeProvider.GetUtcNow));
 
         var rule = ArchitectureLayers
-            .ApplicationLayer
-            .Should()
+            .ApplicationLayer.Should()
             .NotCallAny(forbiddenMethod)
             .Because(
                 "timeProvider.GetLocalNow().DateTime must always be used for business rules, "
@@ -44,8 +43,7 @@ public class TimeProviderUsageTests
             .HaveNameStartingWith("get_" + nameof(DateTimeOffset.UtcDateTime));
 
         var rule = ArchitectureLayers
-            .ApplicationLayer
-            .Should()
+            .ApplicationLayer.Should()
             .NotCallAny(forbiddenGetter)
             .Because(
                 "the result of timeProvider.GetLocalNow() must only be consumed through "
@@ -67,8 +65,7 @@ public class TimeProviderUsageTests
             .HaveNameStartingWith("get_" + nameof(DateTimeOffset.LocalDateTime));
 
         var rule = ArchitectureLayers
-            .ApplicationLayer
-            .Should()
+            .ApplicationLayer.Should()
             .NotCallAny(forbiddenGetter)
             .Because(
                 "the result of timeProvider.GetLocalNow() must only be consumed through "
