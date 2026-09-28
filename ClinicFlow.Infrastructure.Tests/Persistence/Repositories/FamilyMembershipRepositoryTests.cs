@@ -39,7 +39,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
         var membership = FamilyMembership.CreateSelf(
             patient.Id,
             user.Id,
-            _fakeTime.GetUtcNow().UtcDateTime
+            _fakeTime.GetLocalNow().DateTime
         );
 
         // Act
@@ -63,7 +63,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
         var membership = FamilyMembership.CreateSelf(
             patient.Id,
             user.Id,
-            _fakeTime.GetUtcNow().UtcDateTime
+            _fakeTime.GetLocalNow().DateTime
         );
 
         Context.FamilyMemberships.Add(membership);
@@ -85,7 +85,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
         var membership = FamilyMembership.CreateSelf(
             patient.Id,
             user.Id,
-            _fakeTime.GetUtcNow().UtcDateTime
+            _fakeTime.GetLocalNow().DateTime
         );
 
         Context.FamilyMemberships.Add(membership);
@@ -110,10 +110,10 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
         var membership = FamilyMembership.CreateSelf(
             patient.Id,
             user.Id,
-            _fakeTime.GetUtcNow().UtcDateTime
+            _fakeTime.GetLocalNow().DateTime
         );
 
-        membership.CloseSelfMembership(_fakeTime.GetUtcNow().UtcDateTime.AddHours(1));
+        membership.CloseSelfMembership(_fakeTime.GetLocalNow().DateTime.AddHours(1));
 
         Context.FamilyMemberships.Add(membership);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -161,7 +161,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
             PatientRelationship.Child,
             FamilyMembershipAccessLevel.Full,
             30,
-            _fakeTime.GetUtcNow().UtcDateTime
+            _fakeTime.GetLocalNow().DateTime
         );
 
         Context.FamilyMemberships.Add(membership);
@@ -189,7 +189,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
             PatientRelationship.Spouse,
             FamilyMembershipAccessLevel.Full,
             30,
-            _fakeTime.GetUtcNow().UtcDateTime
+            _fakeTime.GetLocalNow().DateTime
         );
 
         Context.FamilyMemberships.Add(membership);
@@ -219,7 +219,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
             PatientRelationship.Spouse,
             FamilyMembershipAccessLevel.Full,
             30,
-            _fakeTime.GetUtcNow().UtcDateTime
+            _fakeTime.GetLocalNow().DateTime
         );
 
         Context.FamilyMemberships.Add(membership);
@@ -249,7 +249,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
             PatientRelationship.Child,
             FamilyMembershipAccessLevel.Full,
             30,
-            _fakeTime.GetUtcNow().UtcDateTime
+            _fakeTime.GetLocalNow().DateTime
         );
 
         Context.FamilyMemberships.Add(membership);
@@ -278,12 +278,12 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
             PatientRelationship.Child,
             FamilyMembershipAccessLevel.Full,
             30,
-            _fakeTime.GetUtcNow().UtcDateTime
+            _fakeTime.GetLocalNow().DateTime
         );
 
         membership.Leave(
             FamilyMembership.MinimumAgeToLeave,
-            _fakeTime.GetUtcNow().UtcDateTime.AddHours(1)
+            _fakeTime.GetLocalNow().DateTime.AddHours(1)
         );
 
         Context.FamilyMemberships.Add(membership);
@@ -327,7 +327,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
         var membership = FamilyMembership.CreateSelf(
             patient.Id,
             user.Id,
-            _fakeTime.GetUtcNow().UtcDateTime
+            _fakeTime.GetLocalNow().DateTime
         );
 
         Context.FamilyMemberships.Add(membership);
@@ -352,10 +352,10 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
         var membership = FamilyMembership.CreateSelf(
             patient.Id,
             user.Id,
-            _fakeTime.GetUtcNow().UtcDateTime
+            _fakeTime.GetLocalNow().DateTime
         );
 
-        membership.CloseSelfMembership(_fakeTime.GetUtcNow().UtcDateTime.AddHours(1));
+        membership.CloseSelfMembership(_fakeTime.GetLocalNow().DateTime.AddHours(1));
 
         Context.FamilyMemberships.Add(membership);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -403,7 +403,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
             PatientRelationship.Child,
             FamilyMembershipAccessLevel.Full,
             30,
-            _fakeTime.GetUtcNow().UtcDateTime
+            _fakeTime.GetLocalNow().DateTime
         );
 
         Context.FamilyMemberships.Add(membership);
@@ -428,7 +428,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
         var membership = FamilyMembership.CreateSelf(
             patient.Id,
             user.Id,
-            _fakeTime.GetUtcNow().UtcDateTime
+            _fakeTime.GetLocalNow().DateTime
         );
 
         Context.FamilyMemberships.Add(membership);
@@ -453,10 +453,10 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
         var membership = FamilyMembership.CreateSelf(
             patient.Id,
             user.Id,
-            _fakeTime.GetUtcNow().UtcDateTime
+            _fakeTime.GetLocalNow().DateTime
         );
 
-        membership.CloseSelfMembership(_fakeTime.GetUtcNow().UtcDateTime.AddHours(1));
+        membership.CloseSelfMembership(_fakeTime.GetLocalNow().DateTime.AddHours(1));
 
         Context.FamilyMemberships.Add(membership);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -483,7 +483,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
             PatientRelationship.Spouse,
             FamilyMembershipAccessLevel.Full,
             30,
-            _fakeTime.GetUtcNow().UtcDateTime
+            _fakeTime.GetLocalNow().DateTime
         );
 
         Context.FamilyMemberships.Add(membership);
@@ -513,7 +513,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
             PatientRelationship.Spouse,
             FamilyMembershipAccessLevel.Full,
             30,
-            _fakeTime.GetUtcNow().UtcDateTime
+            _fakeTime.GetLocalNow().DateTime
         );
 
         Context.FamilyMemberships.Add(membership);
@@ -542,12 +542,12 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
             PatientRelationship.Child,
             FamilyMembershipAccessLevel.Full,
             30,
-            _fakeTime.GetUtcNow().UtcDateTime
+            _fakeTime.GetLocalNow().DateTime
         );
 
         membership.Leave(
             FamilyMembership.MinimumAgeToLeave,
-            _fakeTime.GetUtcNow().UtcDateTime.AddHours(1)
+            _fakeTime.GetLocalNow().DateTime.AddHours(1)
         );
 
         Context.FamilyMemberships.Add(membership);
@@ -573,7 +573,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
         var membership = FamilyMembership.CreateSelf(
             patient.Id,
             user.Id,
-            _fakeTime.GetUtcNow().UtcDateTime
+            _fakeTime.GetLocalNow().DateTime
         );
 
         Context.FamilyMemberships.Add(membership);
@@ -602,7 +602,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
             PatientRelationship.Child,
             FamilyMembershipAccessLevel.Full,
             30,
-            _fakeTime.GetUtcNow().UtcDateTime
+            _fakeTime.GetLocalNow().DateTime
         );
 
         Context.FamilyMemberships.Add(membership);
@@ -628,10 +628,10 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
         var membership = FamilyMembership.CreateSelf(
             patient.Id,
             user.Id,
-            _fakeTime.GetUtcNow().UtcDateTime
+            _fakeTime.GetLocalNow().DateTime
         );
 
-        membership.CloseSelfMembership(_fakeTime.GetUtcNow().UtcDateTime.AddHours(1));
+        membership.CloseSelfMembership(_fakeTime.GetLocalNow().DateTime.AddHours(1));
 
         Context.FamilyMemberships.Add(membership);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -657,7 +657,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
         var membership = FamilyMembership.CreateSelf(
             patient.Id,
             ownerUser.Id,
-            _fakeTime.GetUtcNow().UtcDateTime
+            _fakeTime.GetLocalNow().DateTime
         );
 
         Context.FamilyMemberships.Add(membership);
@@ -684,7 +684,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
         var membership = FamilyMembership.CreateSelf(
             patient.Id,
             user.Id,
-            _fakeTime.GetUtcNow().UtcDateTime
+            _fakeTime.GetLocalNow().DateTime
         );
 
         Context.FamilyMemberships.Add(membership);
@@ -729,7 +729,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
         var patientChild = await CreatePatientAsync();
         var patientSpouse = await CreatePatientAsync();
         var patientOtherChild = await CreatePatientAsync();
-        var now = _fakeTime.GetUtcNow().UtcDateTime;
+        var now = _fakeTime.GetLocalNow().DateTime;
 
         var selfMembership = FamilyMembership.CreateSelf(patientSelf.Id, ownerUser.Id, now);
         Context.FamilyMemberships.Add(selfMembership);
@@ -783,7 +783,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
         var user1 = await CreateUserAsync();
         var user2 = await CreateUserAsync();
         var patient = await CreatePatientAsync();
-        var startTime = _fakeTime.GetUtcNow().UtcDateTime;
+        var startTime = _fakeTime.GetLocalNow().DateTime;
 
         var oldMembership = FamilyMembership.CreateSelf(patient.Id, user1.Id, startTime);
 
@@ -830,7 +830,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
         var patient = Patient.CreateProfile(
             PersonName.Create("Patient"),
             new DateOnly(1990, 1, 1),
-            _fakeTime.GetUtcNow().UtcDateTime
+            _fakeTime.GetLocalNow().DateTime
         );
 
         patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");

@@ -34,7 +34,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
     public async Task CreateAsync_ShouldAddAppointmentToDbContext()
     {
         // Arrange
-        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime.AddDays(1));
         var timeRange = TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0));
         var (appointment, _, _) = await CreateAppointmentDraftAsync(scheduledDate, timeRange);
 
@@ -57,7 +57,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
     public async Task CreateAsync_ShouldNotReAdd_WhenEntityIsAlreadyTracked()
     {
         // Arrange
-        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime.AddDays(1));
         var timeRange = TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0));
         var (appointment, _, _) = await CreateAppointmentDraftAsync(scheduledDate, timeRange);
 
@@ -75,7 +75,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
     public async Task GetByIdAsync_ShouldReturnAppointment_WhenExists()
     {
         // Arrange
-        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime.AddDays(1));
         var timeRange = TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0));
         var (appointment, _, _) = await CreateAppointmentDraftAsync(scheduledDate, timeRange);
 
@@ -110,7 +110,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         var (doctor, patient, apptType) = await SeedCommonEntitiesAsync();
         var patient2 = await CreatePatientAsync();
         var patient3 = await CreatePatientAsync();
-        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime.AddDays(1));
 
         var appointment1 = Appointment.Schedule(
             patient.Id,
@@ -169,7 +169,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
     public async Task GetByDoctorIdAndDateAsync_ShouldReturnOnlyAppointmentsForRequestedDoctor()
     {
         // Arrange
-        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime.AddDays(1));
 
         var (appointmentDoctor1, doctor1, _) = await CreateAppointmentDraftAsync(
             scheduledDate,
@@ -209,7 +209,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         var (doctor, patient, apptType) = await SeedCommonEntitiesAsync();
         var patient2 = await CreatePatientAsync();
         var patient3 = await CreatePatientAsync();
-        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime.AddDays(1));
 
         var appointment1 = Appointment.Schedule(
             patient.Id,
@@ -270,7 +270,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         var (doctor, patient, apptType) = await SeedCommonEntitiesAsync();
         var patient2 = await CreatePatientAsync();
         var patient3 = await CreatePatientAsync();
-        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime.AddDays(1));
 
         var appointment1 = Appointment.Schedule(
             patient.Id,
@@ -330,7 +330,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         var patient2 = await CreatePatientAsync();
         var patient3 = await CreatePatientAsync();
         var patient4 = await CreatePatientAsync();
-        var baseDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+        var baseDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime);
 
         var appointment1 = Appointment.Schedule(
             patient.Id,
@@ -403,7 +403,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         var (doctor, patient, apptType) = await SeedCommonEntitiesAsync();
         var patient2 = await CreatePatientAsync();
         var patient3 = await CreatePatientAsync();
-        var baseDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+        var baseDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime);
 
         var appointment1 = Appointment.Schedule(
             patient.Id,
@@ -464,7 +464,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         var (doctor, patient, apptType) = await SeedCommonEntitiesAsync();
         var patient2 = await CreatePatientAsync();
         var patient3 = await CreatePatientAsync();
-        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime.AddDays(1));
 
         var appointment1 = Appointment.Schedule(
             patient.Id,
@@ -527,7 +527,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         var apptType2 = await CreateAppointmentTypeAsync();
         var apptType3 = await CreateAppointmentTypeAsync();
         var patient2 = await CreatePatientAsync();
-        var baseDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+        var baseDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime);
 
         var appointment1 = Appointment.Schedule(
             patient1.Id,
@@ -600,7 +600,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         var apptType2 = await CreateAppointmentTypeAsync();
         var apptType3 = await CreateAppointmentTypeAsync();
         var patient2 = await CreatePatientAsync();
-        var baseDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+        var baseDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime);
 
         var appointment1 = Appointment.Schedule(
             patient1.Id,
@@ -671,7 +671,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         var (doctor, patient, apptType) = await SeedCommonEntitiesAsync();
         var apptType2 = await CreateAppointmentTypeAsync();
         var apptType3 = await CreateAppointmentTypeAsync();
-        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime.AddDays(1));
 
         var appointment1 = Appointment.Schedule(
             patient.Id,
@@ -726,7 +726,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
     public async Task HasUpcomingAppointmentRequiringGuardianForMinorAsync_ShouldReturnTrue_WhenMinorHasFutureAppointmentRequiringGuardian()
     {
         // Arrange
-        var refTime = _fakeTime.GetUtcNow().UtcDateTime;
+        var refTime = _fakeTime.GetLocalNow().DateTime;
         var (doctor, _, _) = await SeedCommonEntitiesAsync();
 
         var guardianApptType = AppointmentTypeDefinition.Create(
@@ -778,11 +778,11 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
     {
         // Arrange
         var noonToday = new DateTimeOffset(
-            _fakeTime.GetUtcNow().UtcDateTime.Date.AddHours(10),
+            _fakeTime.GetLocalNow().DateTime.Date.AddHours(10),
             TimeSpan.Zero
         );
         _fakeTime.SetUtcNow(noonToday);
-        var refTime = noonToday.UtcDateTime;
+        var refTime = noonToday.DateTime;
 
         var (doctor, _, _) = await SeedCommonEntitiesAsync();
 
@@ -833,7 +833,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
     public async Task HasUpcomingAppointmentRequiringGuardianForMinorAsync_ShouldReturnFalse_WhenPatientIsAdultOnScheduledDate()
     {
         // Arrange
-        var refTime = _fakeTime.GetUtcNow().UtcDateTime;
+        var refTime = _fakeTime.GetLocalNow().DateTime;
         var (doctor, _, _) = await SeedCommonEntitiesAsync();
 
         var guardianApptType = AppointmentTypeDefinition.Create(
@@ -884,7 +884,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
     public async Task HasUpcomingAppointmentRequiringGuardianForMinorAsync_ShouldReturnFalse_WhenAppointmentTypeDoesNotRequireGuardian()
     {
         // Arrange
-        var refTime = _fakeTime.GetUtcNow().UtcDateTime;
+        var refTime = _fakeTime.GetLocalNow().DateTime;
         var (doctor, _, standardApptType) = await SeedCommonEntitiesAsync();
 
         var minorPatient = Patient.CreateProfile(
@@ -924,7 +924,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
     public async Task HasUpcomingAppointmentRequiringGuardianForMinorAsync_ShouldReturnFalse_WhenAppointmentIsCancelled()
     {
         // Arrange
-        var refTime = _fakeTime.GetUtcNow().UtcDateTime;
+        var refTime = _fakeTime.GetLocalNow().DateTime;
         var (doctor, _, _) = await SeedCommonEntitiesAsync();
 
         var guardianApptType = AppointmentTypeDefinition.Create(
@@ -976,11 +976,11 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
     {
         // Arrange
         var noonToday = new DateTimeOffset(
-            _fakeTime.GetUtcNow().UtcDateTime.Date.AddHours(14),
+            _fakeTime.GetLocalNow().DateTime.Date.AddHours(14),
             TimeSpan.Zero
         );
         _fakeTime.SetUtcNow(noonToday);
-        var refTime = noonToday.UtcDateTime;
+        var refTime = noonToday.DateTime;
 
         var (doctor, _, _) = await SeedCommonEntitiesAsync();
 
@@ -1032,11 +1032,11 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
     {
         // Arrange
         var noonToday = new DateTimeOffset(
-            _fakeTime.GetUtcNow().UtcDateTime.Date.AddHours(10),
+            _fakeTime.GetLocalNow().DateTime.Date.AddHours(10),
             TimeSpan.Zero
         );
         _fakeTime.SetUtcNow(noonToday);
-        var refTime = noonToday.UtcDateTime;
+        var refTime = noonToday.DateTime;
 
         var (doctor, _, _) = await SeedCommonEntitiesAsync();
 
@@ -1088,11 +1088,11 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
     {
         // Arrange
         var noonToday = new DateTimeOffset(
-            _fakeTime.GetUtcNow().UtcDateTime.Date.AddHours(10),
+            _fakeTime.GetLocalNow().DateTime.Date.AddHours(10),
             TimeSpan.Zero
         );
         _fakeTime.SetUtcNow(noonToday);
-        var refTime = noonToday.UtcDateTime;
+        var refTime = noonToday.DateTime;
 
         var (doctor, _, _) = await SeedCommonEntitiesAsync();
 
@@ -1148,7 +1148,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         // Act
         var result = await _sut.HasUpcomingAppointmentRequiringGuardianForMinorAsync(
             patient.Id,
-            _fakeTime.GetUtcNow().UtcDateTime,
+            _fakeTime.GetLocalNow().DateTime,
             TestContext.Current.CancellationToken
         );
 
@@ -1161,7 +1161,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
     {
         // Arrange
         var (doctor, patient, apptType) = await SeedCommonEntitiesAsync();
-        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime.AddDays(1));
 
         var appointment = Appointment.Schedule(
             patient.Id,
@@ -1191,7 +1191,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
     {
         // Arrange
         var (doctor, patient, apptType) = await SeedCommonEntitiesAsync();
-        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime.AddDays(1));
 
         var appointment = Appointment.Schedule(
             patient.Id,
@@ -1222,7 +1222,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
     {
         // Arrange
         var (doctor, patient, apptType) = await SeedCommonEntitiesAsync();
-        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime.AddDays(1));
 
         var appointment = Appointment.Schedule(
             patient.Id,
@@ -1234,7 +1234,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         appointment.Cancel(
             Guid.CreateVersion7(),
             "Patient request",
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime)
+            DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime)
         );
 
         Context.Appointments.Add(appointment);
@@ -1257,7 +1257,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
     {
         // Arrange
         var (doctor, patient, apptType) = await SeedCommonEntitiesAsync();
-        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime.AddDays(1));
 
         var appointment = Appointment.Schedule(
             patient.Id,
@@ -1288,7 +1288,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         // Arrange
         var (doctor, patient, apptType) = await SeedCommonEntitiesAsync();
         var otherPatient = await CreatePatientAsync();
-        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime.AddDays(1));
 
         var appointment = Appointment.Schedule(
             patient.Id,
@@ -1318,7 +1318,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
     {
         // Arrange
         var (doctor, patient, apptType) = await SeedCommonEntitiesAsync();
-        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime.AddDays(1));
 
         var appointment = Appointment.Schedule(
             patient.Id,
@@ -1349,7 +1349,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         // Arrange
         // Active duplicates are prevented by the unique filtered index on (PatientId, AppointmentTypeId).
         var (doctor, patient, apptType) = await SeedCommonEntitiesAsync();
-        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime.AddDays(1));
 
         var appointment1 = Appointment.Schedule(
             patient.Id,
@@ -1384,7 +1384,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
     {
         // Arrange
         var (doctor, patient, apptType) = await SeedCommonEntitiesAsync();
-        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime.AddDays(1));
 
         var appointment = Appointment.Schedule(
             patient.Id,
@@ -1413,7 +1413,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
     public async Task HasConflictAsync_ShouldReturnTrue_WhenOverlappingAppointmentExists()
     {
         // Arrange
-        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime.AddDays(1));
 
         var (existingAppointment, doctor, _) = await CreateAppointmentDraftAsync(
             scheduledDate,
@@ -1440,7 +1440,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
     public async Task HasConflictAsync_ShouldReturnFalse_WhenNoOverlappingAppointment()
     {
         // Arrange
-        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime.AddDays(1));
 
         var (existingAppointment, doctor, _) = await CreateAppointmentDraftAsync(
             scheduledDate,
@@ -1467,7 +1467,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
     public async Task HasConflictAsync_ShouldReturnFalse_WhenNewAppointmentEndsExactlyWhenExistingBegins()
     {
         // Arrange
-        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime.AddDays(1));
 
         var (existingAppointment, doctor, _) = await CreateAppointmentDraftAsync(
             scheduledDate,
@@ -1494,7 +1494,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
     public async Task HasConflictAsync_ShouldReturnFalse_WhenOverlappingAppointmentIsOnDifferentDate()
     {
         // Arrange
-        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime.AddDays(1));
 
         var differentDate = scheduledDate.AddDays(1);
 
@@ -1523,7 +1523,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
     public async Task HasConflictAsync_ShouldReturnFalse_WhenOverlappingAppointmentIsForDifferentDoctor()
     {
         // Arrange
-        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime.AddDays(1));
 
         var (existingAppointment, _, _) = await CreateAppointmentDraftAsync(
             scheduledDate,
@@ -1553,7 +1553,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
     public async Task HasConflictAsync_ShouldReturnFalse_WhenOverlappingAppointmentIsCancelled()
     {
         // Arrange
-        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime.AddDays(1));
 
         var (existingAppointment, doctor, _) = await CreateAppointmentDraftAsync(
             scheduledDate,
@@ -1581,7 +1581,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
     public async Task HasConflictAsync_ShouldReturnFalse_WhenOverlappingAppointmentIsLateCancelled()
     {
         // Arrange
-        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime.AddDays(1));
 
         var (existingAppointment, doctor, _) = await CreateAppointmentDraftAsync(
             scheduledDate,
@@ -1610,7 +1610,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
     public async Task HasConflictAsync_ShouldReturnFalse_WhenOverlappingAppointmentRequiresReassignment()
     {
         // Arrange
-        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime.AddDays(1));
 
         var (existingAppointment, doctor, _) = await CreateAppointmentDraftAsync(
             scheduledDate,
@@ -1640,7 +1640,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         // Arrange
         var (doctor, patient, apptType) = await SeedCommonEntitiesAsync();
         var patient2 = await CreatePatientAsync();
-        var baseDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+        var baseDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime);
 
         var appointment1 = Appointment.Schedule(
             patient.Id,
@@ -1692,7 +1692,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
     public async Task GetFutureScheduledByDoctorIdAsync_ShouldReturnAppointment_WhenScheduledDateEqualsReferenceDate()
     {
         // Arrange
-        var baseDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+        var baseDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime);
         var (appointment, doctor, _) = await CreateAppointmentDraftAsync(
             baseDate,
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
@@ -1720,7 +1720,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         var (doctor, patient, apptType) = await SeedCommonEntitiesAsync();
         var patient2 = await CreatePatientAsync();
         var patient3 = await CreatePatientAsync();
-        var baseTime = _fakeTime.GetUtcNow().UtcDateTime;
+        var baseTime = _fakeTime.GetLocalNow().DateTime;
         var baseDate = DateOnly.FromDateTime(baseTime);
 
         var appointment1 = Appointment.Schedule(
@@ -1774,7 +1774,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
     public async Task GetExpiredDisplacedAppointmentsAsync_ShouldNotReturnAppointment_WhenScheduledForTodayInFuture()
     {
         // Arrange
-        var baseTime = _fakeTime.GetUtcNow().UtcDateTime;
+        var baseTime = _fakeTime.GetLocalNow().DateTime;
         var baseDate = DateOnly.FromDateTime(baseTime);
         var (appointment, _, _) = await CreateAppointmentDraftAsync(
             baseDate,
@@ -1801,7 +1801,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
     public async Task GetExpiredDisplacedAppointmentsAsync_ShouldNotReturnAppointment_WhenStartTimeEqualsReferenceTime()
     {
         // Arrange
-        var baseTime = _fakeTime.GetUtcNow().UtcDateTime;
+        var baseTime = _fakeTime.GetLocalNow().DateTime;
         var baseDate = DateOnly.FromDateTime(baseTime);
         var (appointment, _, _) = await CreateAppointmentDraftAsync(
             baseDate,
@@ -1932,7 +1932,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
 
     private async Task<Patient> CreatePatientAsync()
     {
-        var refTime = _fakeTime.GetUtcNow().UtcDateTime;
+        var refTime = _fakeTime.GetLocalNow().DateTime;
         var patient = Patient.CreateProfile(
             PersonName.Create("John Doe"),
             DateOnly.FromDateTime(refTime.AddYears(-30)),

@@ -205,7 +205,7 @@ public static class DbSeeder
         var doctorUsers = new List<User>();
         var patientUsers = new List<User>();
         var refTime = DateTime.SpecifyKind(
-            timeProvider.GetUtcNow().UtcDateTime,
+            timeProvider.GetLocalNow().DateTime,
             DateTimeKind.Unspecified
         );
 
@@ -377,7 +377,7 @@ public static class DbSeeder
     )
     {
         var patients = new List<Patient>();
-        var refTime = timeProvider.GetUtcNow().UtcDateTime;
+        var refTime = timeProvider.GetLocalNow().DateTime;
         var faker = seederContext.Faker;
 
         string[] bloodTypes = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
@@ -603,7 +603,7 @@ public static class DbSeeder
         CancellationToken cancellationToken
     )
     {
-        var baseDate = timeProvider.GetUtcNow().UtcDateTime.Date;
+        var baseDate = timeProvider.GetLocalNow().DateTime.Date;
         var generator = new AppointmentGenerator(args, baseDate);
         var appointments = Enumerable.Range(0, 500).Select(generator.Generate).ToList();
 
@@ -685,7 +685,7 @@ public static class DbSeeder
                     patientPenalties.AsReadOnly(),
                     appt.Id,
                     reason,
-                    appt.ScheduledDate.ToDateTime(TimeOnly.MinValue, DateTimeKind.Utc)
+                    appt.ScheduledDate.ToDateTime(TimeOnly.MinValue, DateTimeKind.Unspecified)
                 );
 
                 patientPenalties.AddRange(newPenalties);
