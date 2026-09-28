@@ -3,6 +3,11 @@ using static ArchUnitNET.Fluent.ArchRuleDefinition;
 
 namespace ClinicFlow.Architecture.Tests.Common;
 
+// Raw namespace filters backing the ArchUnit architectures. Each production
+// provider excludes its companion Tests namespace, so production and test
+// pairs never overlap. ClinicFlowTypes covers every ClinicFlow assembly,
+// production and test. ArchitectureLayers exposes these filters as fluent
+// rule entry points.
 public static class Layers
 {
     public static readonly IObjectProvider<IType> ClinicFlowTypes = Types()
@@ -13,6 +18,8 @@ public static class Layers
     public static readonly IObjectProvider<IType> DomainTypes = Types()
         .That()
         .ResideInNamespaceMatching(@"^ClinicFlow\.Domain(?:\.|$)")
+        .And()
+        .DoNotResideInNamespaceMatching(@"^ClinicFlow\.Domain\.Tests(?:\.|$)")
         .As("Domain Layer");
 
     public static readonly IObjectProvider<IType> DomainTestsTypes = Types()
@@ -23,6 +30,8 @@ public static class Layers
     public static readonly IObjectProvider<IType> ApplicationTypes = Types()
         .That()
         .ResideInNamespaceMatching(@"^ClinicFlow\.Application(?:\.|$)")
+        .And()
+        .DoNotResideInNamespaceMatching(@"^ClinicFlow\.Application\.Tests(?:\.|$)")
         .As("Application Layer");
 
     public static readonly IObjectProvider<IType> ApplicationTestsTypes = Types()
@@ -33,6 +42,8 @@ public static class Layers
     public static readonly IObjectProvider<IType> InfrastructureTypes = Types()
         .That()
         .ResideInNamespaceMatching(@"^ClinicFlow\.Infrastructure(?:\.|$)")
+        .And()
+        .DoNotResideInNamespaceMatching(@"^ClinicFlow\.Infrastructure\.Tests(?:\.|$)")
         .As("Infrastructure Layer");
 
     public static readonly IObjectProvider<IType> InfrastructureTestsTypes = Types()
