@@ -19,7 +19,7 @@ public sealed class CleanExpiredDisplacedAppointmentsCommandHandler(
         CancellationToken cancellationToken
     )
     {
-        var now = timeProvider.GetUtcNow().UtcDateTime;
+        var now = timeProvider.GetLocalNow().DateTime;
         var expiredAppointments = await appointmentRepository.GetExpiredDisplacedAppointmentsAsync(
             now,
             cancellationToken

@@ -18,7 +18,7 @@ public sealed class BlockPatientCommandHandler(
             request.PatientId,
             request.Reason,
             request.Duration,
-            timeProvider.GetUtcNow().UtcDateTime
+            timeProvider.GetLocalNow().DateTime
         );
 
         await penaltyRepository.CreateAsync(penalty, cancellationToken);

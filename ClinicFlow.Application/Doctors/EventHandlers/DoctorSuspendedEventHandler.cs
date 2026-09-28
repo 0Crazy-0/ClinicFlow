@@ -19,7 +19,7 @@ public sealed class DoctorSuspendedEventHandler(
     )
     {
         var doctorId = notification.DomainEvent.DoctorId;
-        var referenceDate = DateOnly.FromDateTime(timeProvider.GetUtcNow().UtcDateTime);
+        var referenceDate = DateOnly.FromDateTime(timeProvider.GetLocalNow().DateTime);
         var futureAppointments = await appointmentRepository.GetFutureScheduledByDoctorIdAsync(
             doctorId,
             referenceDate,

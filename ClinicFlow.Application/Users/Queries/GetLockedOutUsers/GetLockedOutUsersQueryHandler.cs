@@ -17,7 +17,7 @@ public sealed class GetLockedOutUsersQueryHandler(
     )
     {
         var (items, totalCount) = await userRepository.GetLockedOutUsersPaginatedAsync(
-            timeProvider.GetUtcNow().UtcDateTime,
+            timeProvider.GetLocalNow().DateTime,
             request.PageNumber,
             request.PageSize,
             cancellationToken

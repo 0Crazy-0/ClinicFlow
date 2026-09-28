@@ -27,7 +27,7 @@ public sealed class LoginUserCommandHandler(
         var authenticated = UserAuthenticationService.TryAuthenticate(
             user,
             isValid,
-            timeProvider.GetUtcNow().UtcDateTime
+            timeProvider.GetLocalNow().DateTime
         );
 
         await unitOfWork.SaveChangesAsync(cancellationToken);

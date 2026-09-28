@@ -97,7 +97,7 @@ public sealed class CancelAppointmentByPatientCommandHandler(
                 TargetPatient = targetPatient,
                 InitiatorUserId = request.InitiatorUserId,
                 Reason = request.Reason,
-                CancelledAt = timeProvider.GetUtcNow().UtcDateTime,
+                CancelledAt = timeProvider.GetLocalNow().DateTime,
             }
         );
 

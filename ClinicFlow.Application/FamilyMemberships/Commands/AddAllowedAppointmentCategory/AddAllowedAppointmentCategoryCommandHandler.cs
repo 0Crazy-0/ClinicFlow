@@ -52,7 +52,7 @@ public sealed class AddAllowedAppointmentCategoryCommandHandler(
             new FamilyMembershipManagementAuthorizationContext
             {
                 Patient = patient,
-                ReferenceTime = timeProvider.GetUtcNow().UtcDateTime,
+                ReferenceTime = timeProvider.GetLocalNow().DateTime,
                 RequesterUserId = request.RequesterUserId,
                 TargetUserId = request.TargetUserId,
                 RequesterIsPatientsSelf = requesterIsPatientsSelf,
