@@ -51,9 +51,7 @@ public sealed class GetFamilyMemberMedicalRecordByIdQueryHandler(
                 record.PatientId
             );
 
-        var patientAge = patient.GetAge(
-            DateOnly.FromDateTime(timeProvider.GetUtcNow().UtcDateTime)
-        );
+        var patientAge = patient.GetAge(DateOnly.FromDateTime(timeProvider.GetLocalNow().DateTime));
 
         if (
             ProtectedCategoryPolicy.IsProtectedForPatient(

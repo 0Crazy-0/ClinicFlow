@@ -3,6 +3,7 @@ using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Infrastructure.Persistence;
 using ClinicFlow.Infrastructure.Persistence.Options;
 using ClinicFlow.Infrastructure.Persistence.Repositories;
+using ClinicFlow.Infrastructure.Time;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,6 +18,14 @@ public static class DependencyInjection
     )
     {
         var dbOptions = DatabaseOptions.FromConfiguration(configuration);
+        var clinicOptions = ClinicOptions.FromConfiguration(configuration);
+
+        var clinicTimeProvider = new ClinicTimeProvider(
+            TimeProvider.System,
+            clinicOptions.TimeZoneId
+        );
+
+        services.AddSingleton<TimeProvider>(clinicTimeProvider);
 
         services.AddDbContext<ApplicationDbContext>(options =>
         {
@@ -28,14 +37,14 @@ public static class DependencyInjection
                     (context, _) =>
                         Persistence.Seeding.DbSeeder.Seed(
                             (ApplicationDbContext)context,
-                            TimeProvider.System
+                            clinicTimeProvider
                         )
                 );
                 options.UseAsyncSeeding(
                     (context, _, cancellationToken) =>
                         Persistence.Seeding.DbSeeder.SeedAsync(
                             (ApplicationDbContext)context,
-                            TimeProvider.System,
+                            clinicTimeProvider,
                             cancellationToken
                         )
                 );

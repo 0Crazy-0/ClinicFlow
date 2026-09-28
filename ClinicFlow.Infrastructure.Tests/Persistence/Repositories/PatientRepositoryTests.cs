@@ -36,7 +36,7 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         var patient = Patient.CreateProfile(
             PersonName.Create("New Patient"),
             new DateOnly(1990, 1, 1),
-            _fakeTime.GetUtcNow().UtcDateTime
+            _fakeTime.GetLocalNow().DateTime
         );
 
         patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
@@ -61,7 +61,7 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         var patient = Patient.CreateProfile(
             PersonName.Create("New Patient"),
             new DateOnly(1990, 1, 1),
-            _fakeTime.GetUtcNow().UtcDateTime
+            _fakeTime.GetLocalNow().DateTime
         );
 
         patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
@@ -142,7 +142,7 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         var patient = Patient.CreateProfile(
             PersonName.Create("fullName"),
             new DateOnly(1990, 1, 1),
-            _fakeTime.GetUtcNow().UtcDateTime
+            _fakeTime.GetLocalNow().DateTime
         );
 
         patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");

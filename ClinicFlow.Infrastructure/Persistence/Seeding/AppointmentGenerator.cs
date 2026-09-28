@@ -70,7 +70,9 @@ public class AppointmentGenerator(AppointmentSeedingArgs args, DateTime baseDate
             );
         }
 
-        var actionTime = apptDate.ToDateTime(timeRange.Start, DateTimeKind.Utc).AddMinutes(-10);
+        var actionTime = apptDate
+            .ToDateTime(timeRange.Start, DateTimeKind.Unspecified)
+            .AddMinutes(-10);
 
         string? receptionistNotes = status
             is AppointmentStatus.Completed

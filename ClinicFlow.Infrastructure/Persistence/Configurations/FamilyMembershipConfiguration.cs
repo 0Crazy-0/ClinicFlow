@@ -13,6 +13,9 @@ public sealed class FamilyMembershipConfiguration : IEntityTypeConfiguration<Fam
         builder.Property(m => m.Status).HasConversion<string>();
         builder.Property(m => m.AccessLevel).HasConversion<string>();
 
+        builder.Property(m => m.StartedAt).HasColumnType("timestamp without time zone");
+        builder.Property(m => m.EndedAt).HasColumnType("timestamp without time zone");
+
         builder
             .PrimitiveCollection(m => m.AllowedAppointmentCategories)
             .HasField("_allowedAppointmentCategories")

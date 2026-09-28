@@ -32,7 +32,7 @@ public sealed class LeaveFamilyMembershipCommandHandler(
                 request.PatientId
             );
 
-        var referenceTime = timeProvider.GetUtcNow().UtcDateTime;
+        var referenceTime = timeProvider.GetLocalNow().DateTime;
 
         var patient =
             await patientRepository.GetByIdAsync(request.PatientId, cancellationToken)

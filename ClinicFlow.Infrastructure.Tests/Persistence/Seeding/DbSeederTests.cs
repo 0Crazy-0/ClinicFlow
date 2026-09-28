@@ -227,7 +227,7 @@ public class DbSeederTests(PostgresFixture fixture) : IAsyncLifetime
                 p.EmergencyContact.PhoneNumber.Should().NotBeNull();
                 p.DateOfBirth.ToDateTime(TimeOnly.MinValue)
                     .Should()
-                    .BeBefore(_fakeTime.GetUtcNow().UtcDateTime);
+                    .BeBefore(_fakeTime.GetLocalNow().DateTime);
             });
     }
 

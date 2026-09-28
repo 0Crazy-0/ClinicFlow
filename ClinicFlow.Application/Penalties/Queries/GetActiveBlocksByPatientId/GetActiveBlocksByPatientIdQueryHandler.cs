@@ -17,7 +17,7 @@ public sealed class GetActiveBlocksByPatientIdQueryHandler(
     {
         var items = await penaltyRepository.GetActiveBlocksByPatientIdAsync(
             request.PatientId,
-            DateOnly.FromDateTime(timeProvider.GetUtcNow().UtcDateTime),
+            DateOnly.FromDateTime(timeProvider.GetLocalNow().DateTime),
             cancellationToken
         );
 

@@ -32,7 +32,7 @@ public sealed class AppointmentMarkedAsNoShowEventHandler(
             existingPenalties,
             appointment.Id,
             PenaltyReasons.NoShow,
-            timeProvider.GetUtcNow().UtcDateTime
+            timeProvider.GetLocalNow().DateTime
         );
 
         await patientPenaltyRepository.CreateRangeAsync(newPenalties, cancellationToken);

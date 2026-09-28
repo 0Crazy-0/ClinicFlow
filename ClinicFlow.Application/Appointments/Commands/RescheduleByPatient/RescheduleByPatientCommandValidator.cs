@@ -13,7 +13,7 @@ public sealed class RescheduleByPatientCommandValidator
             .WithMessage(DomainErrors.Validation.InvalidValue);
         RuleFor(x => x.AppointmentId).NotEmpty().WithMessage(DomainErrors.Validation.InvalidValue);
         RuleFor(x => x.NewDate)
-            .GreaterThanOrEqualTo(_ => DateOnly.FromDateTime(timeProvider.GetUtcNow().UtcDateTime))
+            .GreaterThanOrEqualTo(_ => DateOnly.FromDateTime(timeProvider.GetLocalNow().DateTime))
             .WithMessage(DomainErrors.Validation.ValueMustBeInFuture);
         RuleFor(x => x.NewEndTime)
             .GreaterThan(x => x.NewStartTime)

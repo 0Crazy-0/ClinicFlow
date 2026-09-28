@@ -45,7 +45,7 @@ public sealed class AddCompleteFamilyMemberCommandHandler(
                         request.UserId
                     );
 
-                var referenceTime = timeProvider.GetUtcNow().UtcDateTime;
+                var referenceTime = timeProvider.GetLocalNow().DateTime;
 
                 var ownerPatient =
                     await patientRepository.GetByIdAsync(

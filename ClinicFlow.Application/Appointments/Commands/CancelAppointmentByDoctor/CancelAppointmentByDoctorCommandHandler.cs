@@ -45,7 +45,7 @@ public sealed class CancelAppointmentByDoctorCommandHandler(
                 InitiatorDoctorId = initiatorDoctor.Id,
                 InitiatorUserId = request.InitiatorUserId,
                 Reason = request.Reason,
-                CancelledAt = timeProvider.GetUtcNow().UtcDateTime,
+                CancelledAt = timeProvider.GetLocalNow().DateTime,
             }
         );
 

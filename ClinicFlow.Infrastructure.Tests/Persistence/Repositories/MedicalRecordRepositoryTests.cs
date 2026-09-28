@@ -832,8 +832,8 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
     {
         var patient = Patient.CreateProfile(
             PersonName.Create("John Doe"),
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
-            _fakeTime.GetUtcNow().UtcDateTime
+            DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime.AddYears(-30)),
+            _fakeTime.GetLocalNow().DateTime
         );
 
         patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
@@ -865,7 +865,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
             patientId,
             doctorId,
             apptType.Id,
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
+            DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime.AddDays(1)),
             TimeRange.Create(
                 new TimeOnly(8, 0).AddMinutes(startMinute),
                 new TimeOnly(8, 0).AddMinutes(startMinute + 30)

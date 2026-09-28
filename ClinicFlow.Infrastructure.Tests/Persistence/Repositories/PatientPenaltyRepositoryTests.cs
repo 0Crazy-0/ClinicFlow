@@ -39,7 +39,7 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
             patient.Id,
             "Test block",
             BlockDuration.Minor,
-            _fakeTime.GetUtcNow().UtcDateTime
+            _fakeTime.GetLocalNow().DateTime
         );
 
         // Act
@@ -92,7 +92,7 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
             patient.Id,
             "Manual block",
             BlockDuration.Minor,
-            _fakeTime.GetUtcNow().UtcDateTime
+            _fakeTime.GetLocalNow().DateTime
         );
 
         // Act
@@ -338,7 +338,7 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
     {
         // Arrange
         var patient = await CreatePatientAsync();
-        var referenceDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+        var referenceDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime);
         var futureBlock = await CreateActiveBlockAsync(patient.Id);
 
         // Act
@@ -357,7 +357,7 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
     {
         // Arrange
         var patient = await CreatePatientAsync();
-        var referenceDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+        var referenceDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime);
         var removedBlock = await CreateActiveBlockAsync(patient.Id, 10);
 
         removedBlock.Remove();
@@ -380,7 +380,7 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
     {
         // Arrange
         var patient = await CreatePatientAsync();
-        var referenceDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+        var referenceDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime);
 
         await CreateExpiredBlockAsync(patient.Id);
 
@@ -401,7 +401,7 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
         // Arrange
         var patient = await CreatePatientAsync();
         var appointment = await CreateAppointmentAsync(patient.Id);
-        var referenceDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+        var referenceDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime);
         await CreateWarningAsync(patient.Id, appointment.Id);
 
         // Act
@@ -420,7 +420,7 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
     {
         // Arrange
         var nonExistentPatientId = Guid.CreateVersion7();
-        var referenceDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+        var referenceDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime);
 
         // Act
         var result = await _sut.GetActiveBlocksByPatientIdAsync(
@@ -438,7 +438,7 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
     {
         // Arrange
         var patient = await CreatePatientAsync();
-        var referenceDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+        var referenceDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime);
 
         var block1 = await CreateActiveBlockAsync(patient.Id, daysFromNow: 15);
         var block2 = await CreateActiveBlockAsync(patient.Id, daysFromNow: 5);
@@ -462,7 +462,7 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
     {
         // Arrange
         var patient = await CreatePatientAsync();
-        var referenceDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+        var referenceDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime);
 
         await CreateActiveBlockAsync(patient.Id, daysFromNow: 0);
 
@@ -483,7 +483,7 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
         // Arrange
         var patient1 = await CreatePatientAsync();
         var patient2 = await CreatePatientAsync();
-        var referenceDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+        var referenceDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime);
 
         var block1 = await CreateActiveBlockAsync(patient1.Id, daysFromNow: 10);
 
@@ -510,7 +510,7 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
     {
         // Arrange
         var patient = await CreatePatientAsync();
-        var referenceDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+        var referenceDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime);
 
         await CreateActiveBlockAsync(patient.Id, daysFromNow: 5);
         await CreateActiveBlockAsync(patient.Id, daysFromNow: 10);
@@ -536,7 +536,7 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
     {
         // Arrange
         var patient = await CreatePatientAsync();
-        var referenceDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+        var referenceDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime);
 
         var removedBlock = await CreateActiveBlockAsync(patient.Id);
 
@@ -563,7 +563,7 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
     {
         // Arrange
         var patient = await CreatePatientAsync();
-        var referenceDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+        var referenceDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime);
 
         await CreateExpiredBlockAsync(patient.Id);
 
@@ -586,7 +586,7 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
     {
         // Arrange
         var patient = await CreatePatientAsync();
-        var referenceDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+        var referenceDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime);
 
         await CreateActiveBlockAsync(patient.Id, daysFromNow: 0);
 
@@ -608,7 +608,7 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
     public async Task GetActiveBlocksPaginatedAsync_ShouldReturnEmpty_WhenNoActiveBlocks()
     {
         // Arrange
-        var referenceDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+        var referenceDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime);
 
         // Act
         var (items, totalCount) = await _sut.GetActiveBlocksPaginatedAsync(
@@ -741,7 +741,7 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
     {
         // Arrange
         var patient = await CreatePatientAsync();
-        var referenceDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+        var referenceDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime);
 
         var block1 = await CreateActiveBlockAsync(patient.Id, daysFromNow: 5);
         var block2 = await CreateActiveBlockAsync(patient.Id, daysFromNow: 5);
@@ -765,7 +765,7 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
     {
         // Arrange
         var patient = await CreatePatientAsync();
-        var referenceDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+        var referenceDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime);
 
         var block1 = await CreateActiveBlockAsync(patient.Id, daysFromNow: 5);
         var block2 = await CreateActiveBlockAsync(patient.Id, daysFromNow: 5);
@@ -837,8 +837,8 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
     {
         var patient = Patient.CreateProfile(
             PersonName.Create("John Doe"),
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
-            _fakeTime.GetUtcNow().UtcDateTime
+            DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime.AddYears(-30)),
+            _fakeTime.GetLocalNow().DateTime
         );
 
         patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
@@ -872,7 +872,7 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
             patientId,
             doctor.Id,
             apptType.Id,
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
+            DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime.AddDays(1)),
             TimeRange.Create(
                 new TimeOnly(8, 0).AddMinutes(startMinute),
                 new TimeOnly(8, 0).AddMinutes(startMinute + 30)
@@ -904,8 +904,8 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
     private async Task<PatientPenalty> CreateActiveBlockAsync(Guid patientId, int daysFromNow = 1)
     {
         var referenceTime = _fakeTime
-            .GetUtcNow()
-            .UtcDateTime.AddDays(daysFromNow - (int)BlockDuration.Minor);
+            .GetLocalNow()
+            .DateTime.AddDays(daysFromNow - (int)BlockDuration.Minor);
 
         var block = PatientPenalty.CreateManualBlock(
             patientId,
@@ -922,7 +922,7 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
 
     private async Task<PatientPenalty> CreateExpiredBlockAsync(Guid patientId)
     {
-        var referenceTime = _fakeTime.GetUtcNow().UtcDateTime.AddDays(-100);
+        var referenceTime = _fakeTime.GetLocalNow().DateTime.AddDays(-100);
 
         var block = PatientPenalty.CreateManualBlock(
             patientId,

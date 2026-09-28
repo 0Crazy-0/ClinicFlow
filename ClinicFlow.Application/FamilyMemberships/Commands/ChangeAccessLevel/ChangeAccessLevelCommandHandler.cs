@@ -45,7 +45,7 @@ public sealed class ChangeAccessLevelCommandHandler(
             cancellationToken
         );
 
-        var referenceTime = timeProvider.GetUtcNow().UtcDateTime;
+        var referenceTime = timeProvider.GetLocalNow().DateTime;
 
         var isAuthorized = FamilyMembershipAccessAuthorizationService.CanManageFamilyMembership(
             new FamilyMembershipManagementAuthorizationContext

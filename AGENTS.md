@@ -236,7 +236,7 @@ else
 The second example is decision logic (it picks *what to do*) and belongs in the Domain layer, as already implemented in `AppointmentCancellationService.CancelByPatient`.
 ### Time Abstraction
 
-Always use `TimeProvider` (abstract class) instead of `DateTime.UtcNow` or `DateTimeOffset.UtcNow`. Inject `TimeProvider` via the primary constructor and call `timeProvider.GetUtcNow().UtcDateTime`.
+Always use `TimeProvider` (abstract class) instead of `DateTime.UtcNow` or `DateTimeOffset.UtcNow`. Inject `TimeProvider` via the primary constructor and call `timeProvider.GetLocalNow().DateTime` for business rules: it returns clinic wall clock time from the configured clinic timezone (`ClinicOptions`, default `America/Los_Angeles`). `timeProvider.GetUtcNow()` must always return the truthful UTC instant, never shift it.
 
 ---
 

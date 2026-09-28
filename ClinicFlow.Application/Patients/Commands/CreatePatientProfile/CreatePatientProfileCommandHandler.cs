@@ -52,7 +52,7 @@ public sealed class CreatePatientProfileCommandHandler(
                         UserId = request.UserId,
                         FullName = fullName,
                         DateOfBirth = request.DateOfBirth,
-                        ReferenceTime = timeProvider.GetUtcNow().UtcDateTime,
+                        ReferenceTime = timeProvider.GetLocalNow().DateTime,
                     }
                 );
 
