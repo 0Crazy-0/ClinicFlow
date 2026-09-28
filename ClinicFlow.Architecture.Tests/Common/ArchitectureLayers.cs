@@ -3,6 +3,9 @@ using static ArchUnitNET.Fluent.ArchRuleDefinition;
 
 namespace ClinicFlow.Architecture.Tests.Common;
 
+// Fluent entry points built on top of Layers for dependency rules. They inherit
+// the production only semantics of Layers, so production and test layers stay
+// disjoint in every architecture.
 public static class ArchitectureLayers
 {
     public static GivenTypesConjunctionWithDescription DomainLayer =>
