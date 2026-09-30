@@ -498,7 +498,7 @@ public class FamilyMembershipTests
         var membership = FamilyMembership.CreateFamilyMember(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
-            PatientRelationship.Child,
+            PatientRelationship.Parent,
             FamilyMembershipAccessLevel.Full,
             patientAge: FamilyMembership.MinimumAdultAge - 1,
             _fakeTime.GetUtcNow().UtcDateTime

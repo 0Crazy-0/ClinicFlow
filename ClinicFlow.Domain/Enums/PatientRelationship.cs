@@ -1,7 +1,7 @@
 namespace ClinicFlow.Domain.Enums;
 
 /// <summary>
-/// Defines the relationship of a patient to the primary user account.
+/// Defines the relationship of the user to the patient profile.
 /// </summary>
 public enum PatientRelationship
 {

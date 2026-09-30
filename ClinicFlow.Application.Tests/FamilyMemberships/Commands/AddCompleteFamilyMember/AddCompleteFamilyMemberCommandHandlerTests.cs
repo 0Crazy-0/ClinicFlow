@@ -66,7 +66,7 @@ public class AddCompleteFamilyMemberCommandHandlerTests
             "Asthma",
             "Mom",
             "555-5555",
-            PatientRelationship.Child,
+            PatientRelationship.Parent,
             FamilyMembershipAccessLevel.Full
         );
 
@@ -153,7 +153,7 @@ public class AddCompleteFamilyMemberCommandHandlerTests
             "None",
             "Mom",
             "555-5555",
-            PatientRelationship.Child,
+            PatientRelationship.Parent,
             FamilyMembershipAccessLevel.Full
         );
         var personName = PersonName.Create($"{command.FirstName} {command.LastName}");
@@ -231,7 +231,7 @@ public class AddCompleteFamilyMemberCommandHandlerTests
             "Asthma",
             "Mom",
             "555-5555",
-            PatientRelationship.Child,
+            PatientRelationship.Parent,
             FamilyMembershipAccessLevel.Full
         );
 
@@ -287,7 +287,7 @@ public class AddCompleteFamilyMemberCommandHandlerTests
             "Asthma",
             "Mom",
             "555-5555",
-            PatientRelationship.Child,
+            PatientRelationship.Parent,
             FamilyMembershipAccessLevel.Full
         );
 

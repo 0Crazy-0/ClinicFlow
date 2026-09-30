@@ -481,11 +481,11 @@ public static class DbSeeder
             .ToArray();
         var dependentsToCreate = new List<PatientRelationship>();
         for (int i = 0; i < 25; i++)
-            dependentsToCreate.Add(PatientRelationship.Child);
+            dependentsToCreate.Add(PatientRelationship.Parent);
         for (int i = 0; i < 20; i++)
             dependentsToCreate.Add(PatientRelationship.Spouse);
         for (int i = 0; i < 15; i++)
-            dependentsToCreate.Add(PatientRelationship.Parent);
+            dependentsToCreate.Add(PatientRelationship.Child);
         for (int i = 0; i < 10; i++)
             dependentsToCreate.Add(PatientRelationship.Sibling);
         for (int i = 0; i < 10; i++)
@@ -497,8 +497,8 @@ public static class DbSeeder
             var relationship = dependentsToCreate[i];
             int age = relationship switch
             {
-                PatientRelationship.Child => faker.Random.Number(1, 17),
-                PatientRelationship.Parent => faker.Random.Number(50, 80),
+                PatientRelationship.Parent => faker.Random.Number(1, 17),
+                PatientRelationship.Child => faker.Random.Number(50, 80),
                 PatientRelationship.Spouse => faker.Random.Number(25, 45),
                 _ => faker.Random.Number(18, 65),
             };
