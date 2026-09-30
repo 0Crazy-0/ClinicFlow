@@ -86,6 +86,12 @@ DomainErrors.Validation.ValueRequired  // "VALUE_REQUIRED"
 
 New exceptions must reference existing constants or add new ones to `DomainErrors`. Never use hardcoded error strings.
 
+### Guard Clauses
+
+Identical input validations in entities and value objects must use `Guard` (`ClinicFlow.Domain/Common/Guard.cs`), never inline `if`/`throw` blocks. `Guard` throws `DomainValidationException` with the standardized code: `NotNull` reports `RequiredFieldNull`, `NotEmpty`/`NotDefault`/`NotNullOrWhiteSpace` report `ValueRequired`, `IsDefined` reports `InvalidEnumValue`.
+
+Domain services keep `ArgumentNullException.ThrowIfNull` for contract nulls (entities, Args, Contexts). It must never be replaced by `Guard`.
+
 ### Exception Hierarchy
 
 ```
@@ -305,6 +311,7 @@ internal void MarkAsNoShow() { }
 ### Prohibited Actions
 
 - Never install packages in `ClinicFlow.Domain`.
+- Never write inline identical input validations in entities or value objects. Use `Guard`.
 - Never add branching logic (multiple business outcomes) in the Application layer handlers. Single-condition guard clauses are allowed: they either throw a domain exception or let execution continue (see [Conditional Logic Prohibition](#conditional-logic-prohibition)).
 - Never create test helpers with conditional logic.
 - Never use `DateTime.UtcNow` / `DateTimeOffset.UtcNow` directly. Always use `TimeProvider`.
