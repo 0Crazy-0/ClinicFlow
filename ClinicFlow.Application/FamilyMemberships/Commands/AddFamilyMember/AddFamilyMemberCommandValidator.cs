@@ -41,5 +41,8 @@ public sealed class AddFamilyMemberCommandValidator : AbstractValidator<AddFamil
             .WithMessage(DomainErrors.Validation.InvalidEnumValue)
             .NotEqual(FamilyMembershipAccessLevel.Unspecified)
             .WithMessage(DomainErrors.Validation.ValueRequired);
+        RuleFor(x => x.LegalAuthority)
+            .IsInEnum()
+            .WithMessage(DomainErrors.Validation.InvalidEnumValue);
     }
 }

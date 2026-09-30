@@ -403,7 +403,7 @@ public class ScheduleByPatientTests
     }
 
     [Fact]
-    public void ScheduleByPatient_ShouldSucceed_WhenIsGuardianSchedulingIsTrueAndTargetIsMinor()
+    public void ScheduleByPatient_ShouldSucceed_WhenInitiatorHasLegalAuthorityAndTargetIsMinor()
     {
         // Arrange
         var appointmentType = AppointmentTypeDefinition.Create(
@@ -443,8 +443,7 @@ public class ScheduleByPatientTests
         {
             DoctorSchedule = doctorSchedule,
             InitiatorHasAccessToTarget = true,
-            InitiatorHasOwnSelfMembership = true,
-            TargetHasOwnSelfMembership = false,
+            InitiatorLegalAuthority = LegalAuthorityType.Parent,
         };
 
         // Act
@@ -466,7 +465,7 @@ public class ScheduleByPatientTests
     }
 
     [Fact]
-    public void ScheduleByPatient_ShouldThrowDomainValidationException_WhenIsGuardianSchedulingIsFalseAndTargetIsMinor()
+    public void ScheduleByPatient_ShouldThrowDomainValidationException_WhenInitiatorLacksLegalAuthorityAndTargetIsMinor()
     {
         // Arrange
         var appointmentType = AppointmentTypeDefinition.Create(
@@ -506,8 +505,7 @@ public class ScheduleByPatientTests
         {
             DoctorSchedule = doctorSchedule,
             InitiatorHasAccessToTarget = true,
-            InitiatorHasOwnSelfMembership = false,
-            TargetHasOwnSelfMembership = false,
+            InitiatorLegalAuthority = LegalAuthorityType.None,
         };
 
         // Act

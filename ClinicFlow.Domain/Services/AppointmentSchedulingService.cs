@@ -1,5 +1,6 @@
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
+using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Appointments;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Services.Args.Scheduling;
@@ -44,12 +45,9 @@ public static class AppointmentSchedulingService
 
         new PenaltyHistory(context.Penalties).EnsureNotBlocked(args.ScheduledDate);
 
-        bool isGuardianScheduling =
-            context.InitiatorHasOwnSelfMembership && !context.TargetHasOwnSelfMembership;
-
         appointmentType.ValidatePatientEligibility(
             args.TargetPatient.GetAge(args.ScheduledDate),
-            isGuardianScheduling
+            context.InitiatorLegalAuthority is not LegalAuthorityType.None
         );
 
         context.DoctorSchedule.EnsureDoctorIsAvailable(

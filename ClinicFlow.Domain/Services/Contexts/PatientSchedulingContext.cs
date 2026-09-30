@@ -1,4 +1,5 @@
 using ClinicFlow.Domain.Entities;
+using ClinicFlow.Domain.Enums;
 
 namespace ClinicFlow.Domain.Services.Contexts;
 
@@ -10,6 +11,10 @@ public sealed record class PatientSchedulingContext
     public IReadOnlyList<PatientPenalty> Penalties { get; init; } = [];
     public required Schedule DoctorSchedule { get; init; }
     public bool InitiatorHasAccessToTarget { get; init; }
-    public bool InitiatorHasOwnSelfMembership { get; init; }
-    public bool TargetHasOwnSelfMembership { get; init; }
+
+    /// <summary>
+    /// Holds the initiator's legal authority over the target patient.
+    /// The guardian consent check compares this against None in the domain.
+    /// </summary>
+    public LegalAuthorityType InitiatorLegalAuthority { get; init; }
 }

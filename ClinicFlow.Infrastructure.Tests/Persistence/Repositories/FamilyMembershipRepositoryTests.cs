@@ -159,6 +159,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
             patient.Id,
             user.Id,
             PatientRelationship.Child,
+            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
             30,
             _fakeTime.GetLocalNow().DateTime
@@ -187,6 +188,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
             patient.Id,
             user.Id,
             PatientRelationship.Spouse,
+            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
             30,
             _fakeTime.GetLocalNow().DateTime
@@ -217,6 +219,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
             patient.Id,
             ownerUser.Id,
             PatientRelationship.Spouse,
+            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
             30,
             _fakeTime.GetLocalNow().DateTime
@@ -247,6 +250,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
             patient1.Id,
             user.Id,
             PatientRelationship.Child,
+            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
             30,
             _fakeTime.GetLocalNow().DateTime
@@ -276,6 +280,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
             patient.Id,
             user.Id,
             PatientRelationship.Child,
+            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
             30,
             _fakeTime.GetLocalNow().DateTime
@@ -401,6 +406,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
             patient.Id,
             user.Id,
             PatientRelationship.Child,
+            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
             30,
             _fakeTime.GetLocalNow().DateTime
@@ -481,6 +487,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
             patient.Id,
             user.Id,
             PatientRelationship.Spouse,
+            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
             30,
             _fakeTime.GetLocalNow().DateTime
@@ -511,6 +518,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
             patient.Id,
             ownerUser.Id,
             PatientRelationship.Spouse,
+            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
             30,
             _fakeTime.GetLocalNow().DateTime
@@ -540,6 +548,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
             patient.Id,
             user.Id,
             PatientRelationship.Child,
+            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
             30,
             _fakeTime.GetLocalNow().DateTime
@@ -600,6 +609,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
             patient.Id,
             user.Id,
             PatientRelationship.Child,
+            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
             30,
             _fakeTime.GetLocalNow().DateTime
@@ -738,6 +748,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
             patientChild.Id,
             ownerUser.Id,
             PatientRelationship.Child,
+            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
             30,
             now
@@ -748,6 +759,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
             patientSpouse.Id,
             ownerUser.Id,
             PatientRelationship.Spouse,
+            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
             30,
             now
@@ -758,6 +770,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
             patientOtherChild.Id,
             otherUser.Id,
             PatientRelationship.Child,
+            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
             30,
             now

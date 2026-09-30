@@ -32,6 +32,7 @@ public class AddCompleteFamilyMemberCommandValidatorTests
             "Jane Doe",
             "555-0199",
             PatientRelationship.Spouse,
+            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full
         );
 
@@ -57,6 +58,7 @@ public class AddCompleteFamilyMemberCommandValidatorTests
             "Jane Doe",
             "555-0199",
             PatientRelationship.Spouse,
+            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full
         );
 
@@ -87,6 +89,7 @@ public class AddCompleteFamilyMemberCommandValidatorTests
             "Jane Doe",
             "555-0199",
             PatientRelationship.Spouse,
+            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full
         );
 
@@ -114,6 +117,7 @@ public class AddCompleteFamilyMemberCommandValidatorTests
             "Jane Doe",
             "555-0199",
             PatientRelationship.Spouse,
+            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full
         );
 
@@ -142,6 +146,7 @@ public class AddCompleteFamilyMemberCommandValidatorTests
             "Jane Doe",
             "555-0199",
             PatientRelationship.Spouse,
+            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full
         );
 
@@ -172,6 +177,7 @@ public class AddCompleteFamilyMemberCommandValidatorTests
             "Jane Doe",
             "555-0199",
             PatientRelationship.Spouse,
+            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full
         );
 
@@ -199,6 +205,7 @@ public class AddCompleteFamilyMemberCommandValidatorTests
             "Jane Doe",
             "555-0199",
             PatientRelationship.Spouse,
+            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full
         );
 
@@ -227,6 +234,7 @@ public class AddCompleteFamilyMemberCommandValidatorTests
             "Jane Doe",
             "555-0199",
             PatientRelationship.Spouse,
+            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full
         );
 
@@ -254,6 +262,7 @@ public class AddCompleteFamilyMemberCommandValidatorTests
             "Jane Doe",
             "555-0199",
             PatientRelationship.Spouse,
+            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full
         );
 
@@ -284,6 +293,7 @@ public class AddCompleteFamilyMemberCommandValidatorTests
             "Jane Doe",
             "555-0199",
             PatientRelationship.Spouse,
+            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full
         );
 
@@ -314,6 +324,7 @@ public class AddCompleteFamilyMemberCommandValidatorTests
             name!,
             "555-0199",
             PatientRelationship.Spouse,
+            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full
         );
 
@@ -342,6 +353,7 @@ public class AddCompleteFamilyMemberCommandValidatorTests
             emergencyContactName,
             "555-0199",
             PatientRelationship.Spouse,
+            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full
         );
 
@@ -370,6 +382,7 @@ public class AddCompleteFamilyMemberCommandValidatorTests
             emergencyContactName,
             "555-0199",
             PatientRelationship.Spouse,
+            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full
         );
 
@@ -400,6 +413,7 @@ public class AddCompleteFamilyMemberCommandValidatorTests
             "Jane Doe",
             phone!,
             PatientRelationship.Spouse,
+            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full
         );
 
@@ -428,6 +442,7 @@ public class AddCompleteFamilyMemberCommandValidatorTests
             "Jane Doe",
             emergencyContactPhone,
             PatientRelationship.Spouse,
+            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full
         );
 
@@ -456,6 +471,7 @@ public class AddCompleteFamilyMemberCommandValidatorTests
             "Jane Doe",
             emergencyContactPhone,
             PatientRelationship.Spouse,
+            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full
         );
 
@@ -483,6 +499,7 @@ public class AddCompleteFamilyMemberCommandValidatorTests
             "Jane Doe",
             "555-0199",
             (PatientRelationship)999,
+            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full
         );
 
@@ -510,6 +527,7 @@ public class AddCompleteFamilyMemberCommandValidatorTests
             "Jane Doe",
             "555-0199",
             PatientRelationship.Spouse,
+            LegalAuthorityType.None,
             (FamilyMembershipAccessLevel)667
         );
 
@@ -537,6 +555,7 @@ public class AddCompleteFamilyMemberCommandValidatorTests
             "Jane Doe",
             "555-0199",
             PatientRelationship.Spouse,
+            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Unspecified
         );
 
@@ -547,5 +566,33 @@ public class AddCompleteFamilyMemberCommandValidatorTests
         result
             .ShouldHaveValidationErrorFor(x => x.AccessLevel)
             .WithErrorMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenLegalAuthorityIsInvalid()
+    {
+        // Arrange
+        var command = new AddCompleteFamilyMemberCommand(
+            Guid.CreateVersion7(),
+            "John",
+            "Doe",
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            "O+",
+            "Peanut allergy",
+            "Asthma",
+            "Jane Doe",
+            "555-0199",
+            PatientRelationship.Spouse,
+            (LegalAuthorityType)999,
+            FamilyMembershipAccessLevel.Full
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.LegalAuthority)
+            .WithErrorMessage(DomainErrors.Validation.InvalidEnumValue);
     }
 }

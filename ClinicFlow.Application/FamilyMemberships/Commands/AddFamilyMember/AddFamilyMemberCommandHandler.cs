@@ -83,6 +83,7 @@ public sealed class AddFamilyMemberCommandHandler(
                         OwnerAgeInYears = ownerAge,
                         OwnerUserId = request.UserId,
                         Role = request.Relationship,
+                        LegalAuthority = request.LegalAuthority,
                         AccessLevel = request.AccessLevel,
                         FullName = fullName,
                         DateOfBirth = request.DateOfBirth,

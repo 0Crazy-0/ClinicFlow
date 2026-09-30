@@ -37,7 +37,7 @@ public static class AppointmentCancellationService
             ValidateEmergencyCancellation(
                 args.TargetPatient,
                 context.IsInitiatorSelfOfTarget,
-                context.IsInitiatorGuardianOfMinorTarget,
+                context.InitiatorLegalAuthority,
                 DateOnly.FromDateTime(args.CancelledAt)
             );
 
@@ -105,7 +105,7 @@ public static class AppointmentCancellationService
     private static void ValidateEmergencyCancellation(
         Patient patient,
         bool isInitiatorSelfOfTarget,
-        bool isInitiatorGuardianOfMinorTarget,
+        LegalAuthorityType initiatorLegalAuthority,
         DateOnly referenceDate
     )
     {
@@ -113,7 +113,7 @@ public static class AppointmentCancellationService
             return;
 
         if (
-            isInitiatorGuardianOfMinorTarget
+            initiatorLegalAuthority is not LegalAuthorityType.None
             && patient.GetAge(referenceDate) < DomainRules.AdultAge
         )
             return;

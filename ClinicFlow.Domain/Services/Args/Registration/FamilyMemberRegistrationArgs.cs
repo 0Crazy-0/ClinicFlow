@@ -12,6 +12,7 @@ public sealed record FamilyMemberRegistrationArgs
     public int OwnerAgeInYears { get; init; }
     public Guid OwnerUserId { get; init; }
     public PatientRelationship Role { get; init; }
+    public LegalAuthorityType LegalAuthority { get; init; }
     public FamilyMembershipAccessLevel AccessLevel { get; init; }
     public required PersonName FullName { get; init; }
     public DateOnly DateOfBirth { get; init; }

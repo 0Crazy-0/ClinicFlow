@@ -67,6 +67,7 @@ public class AddCompleteFamilyMemberCommandHandlerTests
             "Mom",
             "555-5555",
             PatientRelationship.Parent,
+            LegalAuthorityType.Parent,
             FamilyMembershipAccessLevel.Full
         );
 
@@ -136,6 +137,7 @@ public class AddCompleteFamilyMemberCommandHandlerTests
         capturedMembership.PatientId.Should().Be(capturedPatient.Id);
         capturedMembership.UserId.Should().Be(command.UserId);
         capturedMembership.Role.Should().Be(command.Relationship);
+        capturedMembership.LegalAuthority.Should().Be(command.LegalAuthority);
         capturedMembership.AccessLevel.Should().Be(command.AccessLevel);
     }
 
@@ -154,6 +156,7 @@ public class AddCompleteFamilyMemberCommandHandlerTests
             "Mom",
             "555-5555",
             PatientRelationship.Parent,
+            LegalAuthorityType.Parent,
             FamilyMembershipAccessLevel.Full
         );
         var personName = PersonName.Create($"{command.FirstName} {command.LastName}");
@@ -232,6 +235,7 @@ public class AddCompleteFamilyMemberCommandHandlerTests
             "Mom",
             "555-5555",
             PatientRelationship.Parent,
+            LegalAuthorityType.Parent,
             FamilyMembershipAccessLevel.Full
         );
 
@@ -288,6 +292,7 @@ public class AddCompleteFamilyMemberCommandHandlerTests
             "Mom",
             "555-5555",
             PatientRelationship.Parent,
+            LegalAuthorityType.Parent,
             FamilyMembershipAccessLevel.Full
         );
 

@@ -211,5 +211,11 @@ public static class DomainErrors
             "FAMILY_MEMBERSHIP_MINOR_MUST_HAVE_FULL_ACCESS";
         public const string CannotChangeAccessLevelWhileMinor =
             "FAMILY_MEMBERSHIP_CANNOT_CHANGE_ACCESS_LEVEL_WHILE_MINOR";
+        public const string InvalidLegalAuthorityForRole =
+            "FAMILY_MEMBERSHIP_INVALID_LEGAL_AUTHORITY_FOR_ROLE";
+        public const string LegalAuthorityRequiresMinor =
+            "FAMILY_MEMBERSHIP_LEGAL_AUTHORITY_REQUIRES_MINOR";
+        public const string MinorRequiresLegalAuthority =
+            "FAMILY_MEMBERSHIP_MINOR_REQUIRES_LEGAL_AUTHORITY";
     }
 }

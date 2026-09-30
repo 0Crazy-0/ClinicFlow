@@ -9,5 +9,6 @@ public sealed record AddFamilyMemberCommand(
     string LastName,
     DateOnly DateOfBirth,
     PatientRelationship Relationship,
+    LegalAuthorityType LegalAuthority,
     FamilyMembershipAccessLevel AccessLevel
 ) : IRequest<Guid>;

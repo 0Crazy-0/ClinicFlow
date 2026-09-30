@@ -524,11 +524,30 @@ public static class DbSeeder
                 patientAge < FamilyMembership.MinimumAdultAge
                     ? FamilyMembershipAccessLevel.Full
                     : accessLevels[i % accessLevels.Length];
+            LegalAuthorityType legalAuthority;
+
+            if (patientAge >= FamilyMembership.MinimumAdultAge)
+            {
+                legalAuthority = LegalAuthorityType.None;
+            }
+            else if (relationship is PatientRelationship.Parent)
+            {
+                legalAuthority = LegalAuthorityType.Parent;
+            }
+            else if (relationship is PatientRelationship.Other or PatientRelationship.Sibling)
+            {
+                legalAuthority = LegalAuthorityType.Guardian;
+            }
+            else
+            {
+                legalAuthority = LegalAuthorityType.None;
+            }
             familyMemberships.Add(
                 FamilyMembership.CreateFamilyMember(
                     patient.Id,
                     pUser.Id,
                     relationship,
+                    legalAuthority,
                     accessLevel,
                     patientAge,
                     refTime
