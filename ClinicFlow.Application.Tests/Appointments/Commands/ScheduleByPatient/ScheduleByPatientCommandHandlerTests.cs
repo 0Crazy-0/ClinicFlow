@@ -163,29 +163,19 @@ public class ScheduleByPatientCommandHandlerTests
             .ReturnsAsync(user);
         _familyMembershipRepositoryMock
             .Setup(r =>
-                r.HasActiveMembershipAsync(
-                    It.IsAny<Guid>(),
-                    It.IsAny<Guid>(),
+                r.GetActiveMembershipAsync(
+                    command.InitiatorUserId,
+                    command.TargetPatientId,
                     It.IsAny<CancellationToken>()
                 )
             )
-            .ReturnsAsync(true);
-        _familyMembershipRepositoryMock
-            .Setup(r =>
-                r.HasActiveSelfMembershipByUserIdAsync(
-                    It.IsAny<Guid>(),
-                    It.IsAny<CancellationToken>()
+            .ReturnsAsync(
+                FamilyMembership.CreateSelf(
+                    command.TargetPatientId,
+                    command.InitiatorUserId,
+                    _fakeTime.GetUtcNow().UtcDateTime
                 )
-            )
-            .ReturnsAsync(true);
-        _familyMembershipRepositoryMock
-            .Setup(r =>
-                r.HasActiveSelfMembershipByPatientIdAsync(
-                    It.IsAny<Guid>(),
-                    It.IsAny<CancellationToken>()
-                )
-            )
-            .ReturnsAsync(true);
+            );
 
         Appointment? capturedAppointment = null;
         _appointmentRepositoryMock
@@ -305,29 +295,19 @@ public class ScheduleByPatientCommandHandlerTests
             .ReturnsAsync(user);
         _familyMembershipRepositoryMock
             .Setup(r =>
-                r.HasActiveMembershipAsync(
-                    It.IsAny<Guid>(),
-                    It.IsAny<Guid>(),
+                r.GetActiveMembershipAsync(
+                    command.InitiatorUserId,
+                    command.TargetPatientId,
                     It.IsAny<CancellationToken>()
                 )
             )
-            .ReturnsAsync(true);
-        _familyMembershipRepositoryMock
-            .Setup(r =>
-                r.HasActiveSelfMembershipByUserIdAsync(
-                    It.IsAny<Guid>(),
-                    It.IsAny<CancellationToken>()
+            .ReturnsAsync(
+                FamilyMembership.CreateSelf(
+                    command.TargetPatientId,
+                    command.InitiatorUserId,
+                    _fakeTime.GetUtcNow().UtcDateTime
                 )
-            )
-            .ReturnsAsync(true);
-        _familyMembershipRepositoryMock
-            .Setup(r =>
-                r.HasActiveSelfMembershipByPatientIdAsync(
-                    It.IsAny<Guid>(),
-                    It.IsAny<CancellationToken>()
-                )
-            )
-            .ReturnsAsync(true);
+            );
 
         // Act
         await _sut.Handle(command, TestContext.Current.CancellationToken);

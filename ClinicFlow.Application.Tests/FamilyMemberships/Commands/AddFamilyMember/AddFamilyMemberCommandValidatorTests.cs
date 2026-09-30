@@ -27,6 +27,7 @@ public class AddFamilyMemberCommandValidatorTests
             "Doe",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             PatientRelationship.Spouse,
+            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full
         );
 
@@ -47,6 +48,7 @@ public class AddFamilyMemberCommandValidatorTests
             "Doe",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             PatientRelationship.Spouse,
+            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full
         );
 
@@ -72,6 +74,7 @@ public class AddFamilyMemberCommandValidatorTests
             "Doe",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             PatientRelationship.Spouse,
+            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full
         );
 
@@ -94,6 +97,7 @@ public class AddFamilyMemberCommandValidatorTests
             "Doe",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             PatientRelationship.Spouse,
+            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full
         );
 
@@ -117,6 +121,7 @@ public class AddFamilyMemberCommandValidatorTests
             "Doe",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             PatientRelationship.Spouse,
+            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full
         );
 
@@ -142,6 +147,7 @@ public class AddFamilyMemberCommandValidatorTests
             lastName!,
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             PatientRelationship.Spouse,
+            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full
         );
 
@@ -164,6 +170,7 @@ public class AddFamilyMemberCommandValidatorTests
             "D",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             PatientRelationship.Spouse,
+            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full
         );
 
@@ -187,6 +194,7 @@ public class AddFamilyMemberCommandValidatorTests
             lastName,
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             PatientRelationship.Spouse,
+            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full
         );
 
@@ -209,6 +217,7 @@ public class AddFamilyMemberCommandValidatorTests
             "Doe",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             PatientRelationship.Spouse,
+            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full
         );
 
@@ -231,6 +240,7 @@ public class AddFamilyMemberCommandValidatorTests
             "Doe",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             (PatientRelationship)999,
+            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full
         );
 
@@ -253,6 +263,7 @@ public class AddFamilyMemberCommandValidatorTests
             "Doe",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             PatientRelationship.Self,
+            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full
         );
 
@@ -275,6 +286,7 @@ public class AddFamilyMemberCommandValidatorTests
             "Doe",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             PatientRelationship.Spouse,
+            LegalAuthorityType.None,
             (FamilyMembershipAccessLevel)967
         );
 
@@ -297,6 +309,7 @@ public class AddFamilyMemberCommandValidatorTests
             "Doe",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             PatientRelationship.Spouse,
+            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Unspecified
         );
 
@@ -307,5 +320,28 @@ public class AddFamilyMemberCommandValidatorTests
         result
             .ShouldHaveValidationErrorFor(x => x.AccessLevel)
             .WithErrorMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenLegalAuthorityIsInvalid()
+    {
+        // Arrange
+        var command = new AddFamilyMemberCommand(
+            Guid.CreateVersion7(),
+            "John",
+            "Doe",
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            PatientRelationship.Spouse,
+            (LegalAuthorityType)999,
+            FamilyMembershipAccessLevel.Full
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.LegalAuthority)
+            .WithErrorMessage(DomainErrors.Validation.InvalidEnumValue);
     }
 }

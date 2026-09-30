@@ -348,13 +348,13 @@ public class AppointmentCancellationServiceTests
     }
 
     [Theory]
-    [InlineData(PatientRelationship.Parent, 10, AppointmentPurpose.Checkup)]
-    [InlineData(PatientRelationship.Parent, 10, AppointmentPurpose.Emergency)]
-    [InlineData(PatientRelationship.Parent, 20, AppointmentPurpose.Checkup)]
-    [InlineData(PatientRelationship.Spouse, 30, AppointmentPurpose.Checkup)]
-    [InlineData(PatientRelationship.Child, 60, AppointmentPurpose.FollowUp)]
+    [InlineData(LegalAuthorityType.Parent, 10, AppointmentPurpose.Checkup)]
+    [InlineData(LegalAuthorityType.Parent, 10, AppointmentPurpose.Emergency)]
+    [InlineData(LegalAuthorityType.Parent, 20, AppointmentPurpose.Checkup)]
+    [InlineData(LegalAuthorityType.None, 30, AppointmentPurpose.Checkup)]
+    [InlineData(LegalAuthorityType.None, 60, AppointmentPurpose.FollowUp)]
     public void CancelByPatient_ShouldSucceed_WhenPatientIsFamilyMember(
-        PatientRelationship relationship,
+        LegalAuthorityType initiatorLegalAuthority,
         int age,
         AppointmentPurpose purpose
     )
@@ -369,7 +369,7 @@ public class AppointmentCancellationServiceTests
             Purpose = purpose,
             Specialty = CreateSpecialty(),
             IsInitiatorSelfOfTarget = false,
-            IsInitiatorGuardianOfMinorTarget = relationship is PatientRelationship.Parent,
+            InitiatorLegalAuthority = initiatorLegalAuthority,
         };
 
         var args = new PatientCancellationArgs
@@ -422,14 +422,14 @@ public class AppointmentCancellationServiceTests
     }
 
     [Theory]
-    [InlineData(PatientRelationship.Parent, 10, AppointmentPurpose.Procedure)]
-    [InlineData(PatientRelationship.Parent, 18, AppointmentPurpose.Emergency)]
-    [InlineData(PatientRelationship.Parent, 20, AppointmentPurpose.Emergency)]
-    [InlineData(PatientRelationship.Spouse, 30, AppointmentPurpose.Emergency)]
-    [InlineData(PatientRelationship.Spouse, 30, AppointmentPurpose.Procedure)]
-    [InlineData(PatientRelationship.Child, 60, AppointmentPurpose.Emergency)]
+    [InlineData(LegalAuthorityType.Parent, 10, AppointmentPurpose.Procedure)]
+    [InlineData(LegalAuthorityType.Parent, 18, AppointmentPurpose.Emergency)]
+    [InlineData(LegalAuthorityType.Parent, 20, AppointmentPurpose.Emergency)]
+    [InlineData(LegalAuthorityType.None, 30, AppointmentPurpose.Emergency)]
+    [InlineData(LegalAuthorityType.None, 30, AppointmentPurpose.Procedure)]
+    [InlineData(LegalAuthorityType.None, 60, AppointmentPurpose.Emergency)]
     public void CancelByPatient_ShouldThrowUnauthorized_WhenPatientIsFamilyMemberAndRulesFail(
-        PatientRelationship relationship,
+        LegalAuthorityType initiatorLegalAuthority,
         int age,
         AppointmentPurpose purpose
     )
@@ -445,7 +445,7 @@ public class AppointmentCancellationServiceTests
             Purpose = purpose,
             Specialty = CreateSpecialty(),
             IsInitiatorSelfOfTarget = false,
-            IsInitiatorGuardianOfMinorTarget = relationship is PatientRelationship.Parent,
+            InitiatorLegalAuthority = initiatorLegalAuthority,
         };
 
         var args = new PatientCancellationArgs

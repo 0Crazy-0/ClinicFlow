@@ -201,6 +201,7 @@ public class RevokeFamilyMemberCommandHandlerTests
             patientId,
             ownerUserId,
             PatientRelationship.Child,
+            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
             30,
             startedAt

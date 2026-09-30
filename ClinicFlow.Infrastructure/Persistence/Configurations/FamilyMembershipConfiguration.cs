@@ -10,6 +10,7 @@ public sealed class FamilyMembershipConfiguration : IEntityTypeConfiguration<Fam
     public void Configure(EntityTypeBuilder<FamilyMembership> builder)
     {
         builder.Property(m => m.Role).HasConversion<string>();
+        builder.Property(m => m.LegalAuthority).HasConversion<string>();
         builder.Property(m => m.Status).HasConversion<string>();
         builder.Property(m => m.AccessLevel).HasConversion<string>();
 

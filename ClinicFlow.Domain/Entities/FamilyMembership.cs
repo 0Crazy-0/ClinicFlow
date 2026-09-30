@@ -17,6 +17,15 @@ public class FamilyMembership : BaseEntity
 
     public PatientRelationship Role { get; private set; }
 
+    /// <summary>
+    /// Defines whether the member holds legal authority over the linked patient.
+    /// </summary>
+    /// <remarks>
+    /// The meaning and coherence rules of this value are described in
+    /// <see cref="LegalAuthorityType"/>.
+    /// </remarks>
+    public LegalAuthorityType LegalAuthority { get; private set; }
+
     public FamilyMembershipStatus Status { get; private set; }
 
     public FamilyMembershipAccessLevel AccessLevel { get; private set; }
@@ -55,6 +64,7 @@ public class FamilyMembership : BaseEntity
         Guid patientId,
         Guid userId,
         PatientRelationship role,
+        LegalAuthorityType legalAuthority,
         FamilyMembershipAccessLevel accessLevel,
         DateTime startedAt
     )
@@ -63,6 +73,7 @@ public class FamilyMembership : BaseEntity
         PatientId = patientId;
         UserId = userId;
         Role = role;
+        LegalAuthority = legalAuthority;
         AccessLevel = accessLevel;
         Status = FamilyMembershipStatus.Active;
         StartedAt = startedAt;
@@ -86,6 +97,7 @@ public class FamilyMembership : BaseEntity
             patientId,
             userId,
             PatientRelationship.Self,
+            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
             referenceTime
         );
@@ -98,11 +110,14 @@ public class FamilyMembership : BaseEntity
     /// A patient under <see cref="MinimumAdultAge"/> can only be linked with
     /// <see cref="FamilyMembershipAccessLevel.Full"/> access, since a minor's
     /// profile must remain fully manageable by their legal guardian.
+    /// Role, authority and age coherence is validated as described in
+    /// <see cref="LegalAuthorityType"/>.
     /// </remarks>
     internal static FamilyMembership CreateFamilyMember(
         Guid patientId,
         Guid ownerUserId,
         PatientRelationship role,
+        LegalAuthorityType legalAuthority,
         FamilyMembershipAccessLevel accessLevel,
         int patientAge,
         DateTime referenceTime
@@ -123,6 +138,28 @@ public class FamilyMembership : BaseEntity
         if (role is PatientRelationship.Self)
             throw new DomainValidationException(DomainErrors.FamilyMembership.CannotBeSelf);
 
+        if (!Enum.IsDefined(legalAuthority))
+            throw new DomainValidationException(DomainErrors.Validation.InvalidEnumValue);
+
+        if (
+            legalAuthority is LegalAuthorityType.Parent && role is not PatientRelationship.Parent
+            || legalAuthority is LegalAuthorityType.Guardian
+                && role is not (PatientRelationship.Other or PatientRelationship.Sibling)
+        )
+            throw new DomainValidationException(
+                DomainErrors.FamilyMembership.InvalidLegalAuthorityForRole
+            );
+
+        if (legalAuthority is not LegalAuthorityType.None && patientAge >= MinimumAdultAge)
+            throw new DomainValidationException(
+                DomainErrors.FamilyMembership.LegalAuthorityRequiresMinor
+            );
+
+        if (legalAuthority is LegalAuthorityType.None && patientAge < MinimumAdultAge)
+            throw new DomainValidationException(
+                DomainErrors.FamilyMembership.MinorRequiresLegalAuthority
+            );
+
         if (!Enum.IsDefined(accessLevel))
             throw new DomainValidationException(DomainErrors.Validation.InvalidEnumValue);
 
@@ -134,7 +171,14 @@ public class FamilyMembership : BaseEntity
                 DomainErrors.FamilyMembership.MinorMustHaveFullAccess
             );
 
-        return new FamilyMembership(patientId, ownerUserId, role, accessLevel, referenceTime);
+        return new FamilyMembership(
+            patientId,
+            ownerUserId,
+            role,
+            legalAuthority,
+            accessLevel,
+            referenceTime
+        );
     }
 
     /// <remarks>

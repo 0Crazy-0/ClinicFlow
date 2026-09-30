@@ -1,5 +1,6 @@
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
+using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Appointments;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
@@ -130,23 +131,16 @@ public sealed class ScheduleByPatientCommandHandler(
                     appointmentType
                 );
 
-                var initiatorHasAccessToTarget =
-                    await familyMembershipRepository.HasActiveMembershipAsync(
-                        request.InitiatorUserId,
-                        request.TargetPatientId,
-                        cancellationToken
-                    );
-                var initiatorHasOwnSelfMembership =
-                    await familyMembershipRepository.HasActiveSelfMembershipByUserIdAsync(
-                        request.InitiatorUserId,
-                        cancellationToken
-                    );
+                var initiatorMembership = await familyMembershipRepository.GetActiveMembershipAsync(
+                    request.InitiatorUserId,
+                    request.TargetPatientId,
+                    cancellationToken
+                );
 
-                var targetHasOwnSelfMembership =
-                    await familyMembershipRepository.HasActiveSelfMembershipByPatientIdAsync(
-                        request.TargetPatientId,
-                        cancellationToken
-                    );
+                // This will be refactored soon
+                var initiatorHasAccessToTarget = initiatorMembership is not null;
+                var initiatorLegalAuthority =
+                    initiatorMembership?.LegalAuthority ?? LegalAuthorityType.None;
 
                 var appointment = AppointmentSchedulingService.ScheduleByPatient(
                     appointmentType,
@@ -164,8 +158,7 @@ public sealed class ScheduleByPatientCommandHandler(
                         Penalties = penalties,
                         DoctorSchedule = doctorSchedule,
                         InitiatorHasAccessToTarget = initiatorHasAccessToTarget,
-                        InitiatorHasOwnSelfMembership = initiatorHasOwnSelfMembership,
-                        TargetHasOwnSelfMembership = targetHasOwnSelfMembership,
+                        InitiatorLegalAuthority = initiatorLegalAuthority,
                     },
                     clearance
                 );
