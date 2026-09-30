@@ -104,9 +104,9 @@ public class DbSeederTests(PostgresFixture fixture) : IAsyncLifetime
 
         familyMemberships.Should().HaveCount(200);
         familyMemberships.Count(m => m.Role is PatientRelationship.Self).Should().Be(120);
-        familyMemberships.Count(m => m.Role is PatientRelationship.Child).Should().Be(25);
+        familyMemberships.Count(m => m.Role is PatientRelationship.Parent).Should().Be(25);
         familyMemberships.Count(m => m.Role is PatientRelationship.Spouse).Should().Be(20);
-        familyMemberships.Count(m => m.Role is PatientRelationship.Parent).Should().Be(15);
+        familyMemberships.Count(m => m.Role is PatientRelationship.Child).Should().Be(15);
         familyMemberships.Count(m => m.Role is PatientRelationship.Sibling).Should().Be(10);
         familyMemberships.Count(m => m.Role is PatientRelationship.Other).Should().Be(10);
 

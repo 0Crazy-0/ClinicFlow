@@ -61,7 +61,7 @@ public class AddFamilyMemberCommandHandlerTests
             "Child",
             "Doe",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-5)),
-            PatientRelationship.Child,
+            PatientRelationship.Parent,
             FamilyMembershipAccessLevel.Full
         );
 
@@ -135,7 +135,7 @@ public class AddFamilyMemberCommandHandlerTests
             "Child",
             "Doe",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-5)),
-            PatientRelationship.Child,
+            PatientRelationship.Parent,
             FamilyMembershipAccessLevel.Full
         );
 
@@ -207,7 +207,7 @@ public class AddFamilyMemberCommandHandlerTests
             "Child",
             "Doe",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-5)),
-            PatientRelationship.Child,
+            PatientRelationship.Parent,
             FamilyMembershipAccessLevel.Full
         );
 
@@ -258,7 +258,7 @@ public class AddFamilyMemberCommandHandlerTests
             "Child",
             "Doe",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-5)),
-            PatientRelationship.Child,
+            PatientRelationship.Parent,
             FamilyMembershipAccessLevel.Full
         );
 

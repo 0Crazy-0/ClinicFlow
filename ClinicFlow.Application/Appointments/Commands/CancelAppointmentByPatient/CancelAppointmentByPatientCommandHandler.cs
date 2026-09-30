@@ -90,7 +90,7 @@ public sealed class CancelAppointmentByPatientCommandHandler(
                 Purpose = appointmentType.Purpose,
                 IsInitiatorSelfOfTarget = initiatorMembership.Role is PatientRelationship.Self,
                 IsInitiatorGuardianOfMinorTarget =
-                    initiatorMembership.Role is PatientRelationship.Child,
+                    initiatorMembership.Role is PatientRelationship.Parent,
             },
             new PatientCancellationArgs
             {
