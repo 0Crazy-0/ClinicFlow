@@ -72,7 +72,7 @@ public class PatientTests
         // Assert
         act.Should()
             .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.Validation.ValueRequired);
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 
     [Fact]

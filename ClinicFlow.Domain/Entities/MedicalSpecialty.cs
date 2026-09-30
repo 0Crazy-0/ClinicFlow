@@ -56,10 +56,8 @@ public class MedicalSpecialty : SoftDeletableEntity
         int minCancellationHours
     )
     {
-        if (string.IsNullOrWhiteSpace(name))
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-        if (string.IsNullOrWhiteSpace(description))
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        Guard.NotNullOrWhiteSpace(name);
+        Guard.NotNullOrWhiteSpace(description);
 
         var typicalDuration = EncounterDuration.FromMinutes(typicalDurationMinutes);
         var cancellationPolicy = CancellationLimit.FromHours(minCancellationHours);
@@ -74,10 +72,8 @@ public class MedicalSpecialty : SoftDeletableEntity
         int minCancellationHours
     )
     {
-        if (string.IsNullOrWhiteSpace(name))
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-        if (string.IsNullOrWhiteSpace(description))
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        Guard.NotNullOrWhiteSpace(name);
+        Guard.NotNullOrWhiteSpace(description);
 
         var typicalDuration = EncounterDuration.FromMinutes(typicalDurationMinutes);
         var cancellationPolicy = CancellationLimit.FromHours(minCancellationHours);
@@ -102,6 +98,7 @@ public class MedicalSpecialty : SoftDeletableEntity
             throw new BusinessRuleValidationException(
                 DomainErrors.MedicalSpecialty.AlreadyInactive
             );
+
         if (hasActiveDoctors)
             throw new BusinessRuleValidationException(
                 DomainErrors.MedicalSpecialty.HasActiveDoctors

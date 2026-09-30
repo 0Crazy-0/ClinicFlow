@@ -83,20 +83,11 @@ public class AppointmentTypeDefinition : SoftDeletableEntity
         ProtectedCategory? protectedCareCategory = null
     )
     {
-        if (string.IsNullOrWhiteSpace(name))
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-
-        if (duration is null)
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-
-        if (!Enum.IsDefined(category))
-            throw new DomainValidationException(DomainErrors.Validation.InvalidEnumValue);
-
-        if (!Enum.IsDefined(purpose))
-            throw new DomainValidationException(DomainErrors.Validation.InvalidEnumValue);
-
-        if (protectedCareCategory is not null && !Enum.IsDefined(protectedCareCategory.Value))
-            throw new DomainValidationException(DomainErrors.Validation.InvalidEnumValue);
+        Guard.NotNullOrWhiteSpace(name);
+        Guard.NotNull(duration);
+        Guard.IsDefined(category);
+        Guard.IsDefined(purpose);
+        Guard.IsDefined(protectedCareCategory);
 
         return new AppointmentTypeDefinition(
             category,
@@ -118,16 +109,10 @@ public class AppointmentTypeDefinition : SoftDeletableEntity
         EncounterDuration duration
     )
     {
-        if (string.IsNullOrWhiteSpace(name))
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-        if (duration is null)
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-
-        if (!Enum.IsDefined(category))
-            throw new DomainValidationException(DomainErrors.Validation.InvalidEnumValue);
-
-        if (!Enum.IsDefined(purpose))
-            throw new DomainValidationException(DomainErrors.Validation.InvalidEnumValue);
+        Guard.NotNullOrWhiteSpace(name);
+        Guard.NotNull(duration);
+        Guard.IsDefined(category);
+        Guard.IsDefined(purpose);
 
         Category = category;
         Purpose = purpose;
@@ -173,8 +158,7 @@ public class AppointmentTypeDefinition : SoftDeletableEntity
                 DomainErrors.AppointmentType.CannotAddSpecialtyToGlobalType
             );
 
-        if (specialtyId == Guid.Empty)
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        Guard.NotEmpty(specialtyId);
 
         if (_allowedSpecialtyIds.Contains(specialtyId))
             throw new DomainValidationException(
@@ -207,16 +191,14 @@ public class AppointmentTypeDefinition : SoftDeletableEntity
 
     public void ChangeProtectedCareCategory(ProtectedCategory? protectedCareCategory)
     {
-        if (protectedCareCategory is not null && !Enum.IsDefined(protectedCareCategory.Value))
-            throw new DomainValidationException(DomainErrors.Validation.InvalidEnumValue);
+        Guard.IsDefined(protectedCareCategory);
 
         ProtectedCareCategory = protectedCareCategory;
     }
 
     public void AddRequiredTemplate(ClinicalFormTemplate template)
     {
-        if (template is null)
-            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+        Guard.NotNull(template);
         if (_requiredTemplates.Any(t => t.Id == template.Id || t.Code == template.Code))
             throw new DomainValidationException(
                 DomainErrors.AppointmentType.TemplateAlreadyRequired
@@ -227,8 +209,7 @@ public class AppointmentTypeDefinition : SoftDeletableEntity
 
     public void RemoveRequiredTemplate(ClinicalFormTemplate template)
     {
-        if (template is null)
-            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+        Guard.NotNull(template);
 
         var existing =
             _requiredTemplates.Find(t => t.Id == template.Id)

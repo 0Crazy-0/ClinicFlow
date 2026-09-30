@@ -56,8 +56,7 @@ public class User : BaseEntity
         UserRole role
     )
     {
-        if (string.IsNullOrWhiteSpace(passwordHash))
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        Guard.NotNullOrWhiteSpace(passwordHash);
 
         return new User(email, passwordHash, phoneNumber, role);
     }
@@ -89,8 +88,7 @@ public class User : BaseEntity
 
     internal void RecordFailedLogin(DateTime referenceTime)
     {
-        if (referenceTime == default)
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        Guard.NotDefault(referenceTime);
 
         if (!IsActive)
             throw new BusinessRuleValidationException(DomainErrors.User.AccountInactive);
@@ -103,8 +101,7 @@ public class User : BaseEntity
 
     public void ChangePassword(string newPasswordHash)
     {
-        if (string.IsNullOrWhiteSpace(newPasswordHash))
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        Guard.NotNullOrWhiteSpace(newPasswordHash);
 
         PasswordHash = newPasswordHash;
         FailedLoginAttempts = 0;

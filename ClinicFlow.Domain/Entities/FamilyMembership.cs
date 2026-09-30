@@ -84,14 +84,9 @@ public class FamilyMembership : BaseEntity
     /// </summary>
     internal static FamilyMembership CreateSelf(Guid patientId, Guid userId, DateTime referenceTime)
     {
-        if (patientId == Guid.Empty)
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-
-        if (userId == Guid.Empty)
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-
-        if (referenceTime == default)
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        Guard.NotEmpty(patientId);
+        Guard.NotEmpty(userId);
+        Guard.NotDefault(referenceTime);
 
         return new FamilyMembership(
             patientId,
@@ -123,23 +118,15 @@ public class FamilyMembership : BaseEntity
         DateTime referenceTime
     )
     {
-        if (patientId == Guid.Empty)
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-
-        if (ownerUserId == Guid.Empty)
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-
-        if (referenceTime == default)
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-
-        if (!Enum.IsDefined(role))
-            throw new DomainValidationException(DomainErrors.Validation.InvalidEnumValue);
+        Guard.NotEmpty(patientId);
+        Guard.NotEmpty(ownerUserId);
+        Guard.NotDefault(referenceTime);
+        Guard.IsDefined(role);
 
         if (role is PatientRelationship.Self)
             throw new DomainValidationException(DomainErrors.FamilyMembership.CannotBeSelf);
 
-        if (!Enum.IsDefined(legalAuthority))
-            throw new DomainValidationException(DomainErrors.Validation.InvalidEnumValue);
+        Guard.IsDefined(legalAuthority);
 
         if (
             legalAuthority is LegalAuthorityType.Parent && role is not PatientRelationship.Parent
@@ -160,8 +147,7 @@ public class FamilyMembership : BaseEntity
                 DomainErrors.FamilyMembership.MinorRequiresLegalAuthority
             );
 
-        if (!Enum.IsDefined(accessLevel))
-            throw new DomainValidationException(DomainErrors.Validation.InvalidEnumValue);
+        Guard.IsDefined(accessLevel);
 
         if (accessLevel is FamilyMembershipAccessLevel.Unspecified)
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
@@ -193,8 +179,7 @@ public class FamilyMembership : BaseEntity
         bool requesterIsAuthorized
     )
     {
-        if (!Enum.IsDefined(newAccessLevel))
-            throw new DomainValidationException(DomainErrors.Validation.InvalidEnumValue);
+        Guard.IsDefined(newAccessLevel);
 
         if (newAccessLevel is FamilyMembershipAccessLevel.Unspecified)
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
@@ -243,8 +228,7 @@ public class FamilyMembership : BaseEntity
                 DomainErrors.FamilyMembership.OnlyRestrictedCanHaveCategoryList
             );
 
-        if (!Enum.IsDefined(category))
-            throw new DomainValidationException(DomainErrors.Validation.InvalidEnumValue);
+        Guard.IsDefined(category);
 
         if (_allowedAppointmentCategories.Contains(category))
             throw new DomainValidationException(

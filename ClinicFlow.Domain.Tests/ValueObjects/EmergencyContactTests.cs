@@ -52,7 +52,7 @@ public class EmergencyContactTests
 
         // Assert
         act.Should()
-            .Throw<BusinessRuleValidationException>()
+            .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 
@@ -64,7 +64,7 @@ public class EmergencyContactTests
 
         // Assert
         act.Should()
-            .Throw<BusinessRuleValidationException>()
+            .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 

@@ -51,10 +51,8 @@ public class ClinicalFormTemplate : SoftDeletableEntity
         string jsonSchemaDefinition
     )
     {
-        if (string.IsNullOrWhiteSpace(code))
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-        if (string.IsNullOrWhiteSpace(name))
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        Guard.NotNullOrWhiteSpace(code);
+        Guard.NotNullOrWhiteSpace(name);
 
         string schemaToSave = string.IsNullOrWhiteSpace(jsonSchemaDefinition)
             ? "{}"
@@ -67,8 +65,7 @@ public class ClinicalFormTemplate : SoftDeletableEntity
 
     public void UpdateDetails(string name, string description)
     {
-        if (string.IsNullOrWhiteSpace(name))
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        Guard.NotNullOrWhiteSpace(name);
 
         Name = name;
         Description = description;

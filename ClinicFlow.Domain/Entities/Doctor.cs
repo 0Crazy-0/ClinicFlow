@@ -52,12 +52,9 @@ public class Doctor : SoftDeletableEntity
         ConsultationRoom consultationRoom
     )
     {
-        if (userId == Guid.Empty)
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-        if (fullName is null)
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-        if (medicalSpecialtyId == Guid.Empty)
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        Guard.NotEmpty(userId);
+        Guard.NotNull(fullName);
+        Guard.NotEmpty(medicalSpecialtyId);
 
         return new Doctor(
             userId,

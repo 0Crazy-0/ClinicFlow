@@ -174,7 +174,7 @@ public class PatientPenaltyTests
         // Assert
         act.Should()
             .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.Validation.ValueRequired);
+            .WithMessage(DomainErrors.Validation.InvalidEnumValue);
     }
 
     [Fact]
@@ -316,6 +316,6 @@ public class PatientPenaltyTests
         // Assert
         act.Should()
             .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.Validation.ValueRequired);
+            .WithMessage(DomainErrors.Validation.InvalidEnumValue);
     }
 }

@@ -1,5 +1,4 @@
 using ClinicFlow.Domain.Common;
-using ClinicFlow.Domain.Exceptions.Base;
 
 namespace ClinicFlow.Domain.Entities;
 
@@ -28,11 +27,8 @@ public class DynamicClinicalDetail : BaseEntity
     /// </summary>
     public static DynamicClinicalDetail Create(string templateCode, string jsonDataPayload)
     {
-        if (string.IsNullOrWhiteSpace(templateCode))
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-
-        if (string.IsNullOrWhiteSpace(jsonDataPayload))
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        Guard.NotNullOrWhiteSpace(templateCode);
+        Guard.NotNullOrWhiteSpace(jsonDataPayload);
 
         JsonSyntaxGuard.EnsureValidJson(jsonDataPayload);
 

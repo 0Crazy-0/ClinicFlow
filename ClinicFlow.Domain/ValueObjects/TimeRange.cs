@@ -27,16 +27,14 @@ public record TimeRange
 
     public bool OverlapsWith(TimeRange other)
     {
-        if (other is null)
-            throw new InvalidTimeRangeException(DomainErrors.General.RequiredFieldNull);
+        Guard.NotNull(other);
 
         return Start < other.End && other.Start < End;
     }
 
     public bool Covers(TimeRange other)
     {
-        if (other is null)
-            throw new InvalidTimeRangeException(DomainErrors.General.RequiredFieldNull);
+        Guard.NotNull(other);
 
         return Start <= other.Start && End >= other.End;
     }
