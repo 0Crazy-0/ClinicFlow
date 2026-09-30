@@ -92,17 +92,10 @@ public class MedicalRecord : BaseEntity
         bool? guardianInitiatedTreatment
     )
     {
-        if (patientId == Guid.Empty)
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-
-        if (doctorId == Guid.Empty)
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-
-        if (appointmentId == Guid.Empty)
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-
-        if (protectedCareCategory is not null && !Enum.IsDefined(protectedCareCategory.Value))
-            throw new DomainValidationException(DomainErrors.Validation.InvalidEnumValue);
+        Guard.NotEmpty(patientId);
+        Guard.NotEmpty(doctorId);
+        Guard.NotEmpty(appointmentId);
+        Guard.IsDefined(protectedCareCategory);
 
         if (
             protectedCareCategory is ProtectedCategory.SubstanceAbuseTreatment
@@ -120,8 +113,7 @@ public class MedicalRecord : BaseEntity
                 DomainErrors.MedicalRecord.GuardianInitiatedTreatmentNotApplicable
             );
 
-        if (string.IsNullOrWhiteSpace(chiefComplaint))
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        Guard.NotNullOrWhiteSpace(chiefComplaint);
 
         var record = new MedicalRecord(
             patientId,
@@ -137,8 +129,7 @@ public class MedicalRecord : BaseEntity
 
     internal void AddClinicalDetail(DynamicClinicalDetail detail)
     {
-        if (detail is null)
-            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+        Guard.NotNull(detail);
 
         if (_clinicalDetails.Any(d => d.TemplateCode == detail.TemplateCode))
             throw new DomainValidationException(DomainErrors.MedicalEncounter.DetailAlreadyExists);

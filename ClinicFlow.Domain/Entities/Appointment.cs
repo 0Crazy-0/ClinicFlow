@@ -83,14 +83,10 @@ public class Appointment : BaseEntity
         string? patientNotes = null
     )
     {
-        if (patientId == Guid.Empty)
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-        if (doctorId == Guid.Empty)
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-        if (appointmentTypeId == Guid.Empty)
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-        if (timeRange is null)
-            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+        Guard.NotEmpty(patientId);
+        Guard.NotEmpty(doctorId);
+        Guard.NotEmpty(appointmentTypeId);
+        Guard.NotNull(timeRange);
 
         var appointment = new Appointment(
             patientId,
@@ -223,11 +219,8 @@ public class Appointment : BaseEntity
 
     internal void Reassign(Guid newDoctorId, DateOnly newDate, TimeRange newTimeRange)
     {
-        if (newTimeRange is null)
-            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
-
-        if (newDoctorId == Guid.Empty)
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        Guard.NotNull(newTimeRange);
+        Guard.NotEmpty(newDoctorId);
 
         if (Status is not AppointmentStatus.RequiresReassignment)
             throw new DomainValidationException(DomainErrors.Appointment.CannotReassign);

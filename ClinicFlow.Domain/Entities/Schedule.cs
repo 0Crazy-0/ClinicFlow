@@ -32,12 +32,12 @@ public class Schedule : BaseEntity
 
     public static Schedule Create(Guid doctorId, DayOfWeek dayOfWeek, TimeRange timeRange)
     {
-        if (doctorId == Guid.Empty)
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        Guard.NotEmpty(doctorId);
+
         if (!Enum.IsDefined(dayOfWeek))
             throw new DomainValidationException(DomainErrors.Schedule.InvalidDayOfWeek);
-        if (timeRange is null)
-            throw new DomainValidationException(DomainErrors.General.RequiredFieldNull);
+
+        Guard.NotNull(timeRange);
 
         return new Schedule(doctorId, dayOfWeek, timeRange);
     }

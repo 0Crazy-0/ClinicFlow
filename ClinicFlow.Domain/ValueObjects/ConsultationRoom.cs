@@ -37,8 +37,7 @@ public record ConsultationRoom
         if (floor > MaximumFloor)
             throw new DomainValidationException(DomainErrors.Validation.ValueExceedsMaximum);
 
-        if (string.IsNullOrWhiteSpace(name))
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        Guard.NotNullOrWhiteSpace(name);
 
         return new ConsultationRoom(number, name.Trim(), floor);
     }
