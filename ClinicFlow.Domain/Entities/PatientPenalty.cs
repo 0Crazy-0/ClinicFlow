@@ -55,12 +55,9 @@ public class PatientPenalty : BaseEntity
         string reason
     )
     {
-        if (patientId == Guid.Empty)
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-        if (appointmentId == Guid.Empty)
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-        if (string.IsNullOrWhiteSpace(reason))
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        Guard.NotEmpty(patientId);
+        Guard.NotEmpty(appointmentId);
+        Guard.NotNullOrWhiteSpace(reason);
 
         return new PatientPenalty(patientId, appointmentId, PenaltyType.Warning, reason, null);
     }
@@ -74,17 +71,10 @@ public class PatientPenalty : BaseEntity
         DateTime referenceTime
     )
     {
-        if (patientId == Guid.Empty)
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-
-        if (referenceTime == default)
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-
-        if (string.IsNullOrWhiteSpace(reason))
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-
-        if (!Enum.IsDefined(duration))
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        Guard.NotEmpty(patientId);
+        Guard.NotDefault(referenceTime);
+        Guard.NotNullOrWhiteSpace(reason);
+        Guard.IsDefined(duration);
 
         return new PatientPenalty(
             patientId,
@@ -102,17 +92,10 @@ public class PatientPenalty : BaseEntity
         DateTime referenceTime
     )
     {
-        if (patientId == Guid.Empty)
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-
-        if (referenceTime == default)
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-
-        if (string.IsNullOrWhiteSpace(reason))
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-
-        if (!Enum.IsDefined(duration))
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        Guard.NotEmpty(patientId);
+        Guard.NotDefault(referenceTime);
+        Guard.NotNullOrWhiteSpace(reason);
+        Guard.IsDefined(duration);
 
         return new PatientPenalty(
             patientId,

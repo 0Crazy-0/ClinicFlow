@@ -41,10 +41,11 @@ public class Patient : BaseEntity
         DateTime referenceTime
     )
     {
-        if (fullName is null)
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+        Guard.NotNull(fullName);
+
         if (dateOfBirth > DateOnly.FromDateTime(referenceTime))
             throw new DomainValidationException(DomainErrors.Validation.ValueCannotBeInFuture);
+
         return new Patient(fullName, dateOfBirth);
     }
 
