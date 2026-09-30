@@ -1,5 +1,6 @@
 using AwesomeAssertions;
 using ClinicFlow.Domain.Common;
+using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Exceptions.Scheduling;
 using ClinicFlow.Domain.ValueObjects;
 
@@ -67,7 +68,7 @@ public class TimeRangeTests
 
         // Assert
         act.Should()
-            .Throw<InvalidTimeRangeException>()
+            .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 
@@ -115,7 +116,7 @@ public class TimeRangeTests
 
         // Assert
         act.Should()
-            .Throw<InvalidTimeRangeException>()
+            .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 

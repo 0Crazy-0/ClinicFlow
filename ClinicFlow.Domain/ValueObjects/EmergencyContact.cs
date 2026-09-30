@@ -1,5 +1,4 @@
 using ClinicFlow.Domain.Common;
-using ClinicFlow.Domain.Exceptions.Base;
 
 namespace ClinicFlow.Domain.ValueObjects;
 
@@ -25,10 +24,8 @@ public record EmergencyContact
 
     internal static EmergencyContact Create(PersonName name, PhoneNumber phoneNumber)
     {
-        if (name is null)
-            throw new BusinessRuleValidationException(DomainErrors.General.RequiredFieldNull);
-        if (phoneNumber is null)
-            throw new BusinessRuleValidationException(DomainErrors.General.RequiredFieldNull);
+        Guard.NotNull(name);
+        Guard.NotNull(phoneNumber);
 
         return new EmergencyContact(name, phoneNumber);
     }
