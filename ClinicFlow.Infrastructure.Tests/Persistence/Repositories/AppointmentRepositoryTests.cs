@@ -117,7 +117,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             apptType.Id,
             scheduledDate,
-            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            null,
+            Guid.CreateVersion7()
         );
 
         Context.Appointments.Add(appointment1);
@@ -128,7 +130,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             apptType.Id,
             scheduledDate,
-            TimeRange.Create(new TimeOnly(11, 0), new TimeOnly(12, 0))
+            TimeRange.Create(new TimeOnly(11, 0), new TimeOnly(12, 0)),
+            null,
+            Guid.CreateVersion7()
         );
 
         Context.Appointments.Add(appointment2);
@@ -139,7 +143,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             apptType.Id,
             scheduledDate,
-            TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0))
+            TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0)),
+            null,
+            Guid.CreateVersion7()
         );
 
         Context.Appointments.Add(appointment3);
@@ -216,7 +222,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             apptType.Id,
             scheduledDate,
-            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            null,
+            Guid.CreateVersion7()
         );
 
         Context.Appointments.Add(appointment1);
@@ -227,7 +235,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             apptType.Id,
             scheduledDate,
-            TimeRange.Create(new TimeOnly(11, 0), new TimeOnly(12, 0))
+            TimeRange.Create(new TimeOnly(11, 0), new TimeOnly(12, 0)),
+            null,
+            Guid.CreateVersion7()
         );
 
         Context.Appointments.Add(appointment2);
@@ -238,7 +248,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             apptType.Id,
             scheduledDate,
-            TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0))
+            TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0)),
+            null,
+            Guid.CreateVersion7()
         );
 
         Context.Appointments.Add(appointment3);
@@ -277,7 +289,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             apptType.Id,
             scheduledDate,
-            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            null,
+            Guid.CreateVersion7()
         );
         Context.Appointments.Add(appointment1);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -287,7 +301,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             apptType.Id,
             scheduledDate,
-            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            null,
+            Guid.CreateVersion7()
         );
         Context.Appointments.Add(appointment2);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -297,7 +313,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             apptType.Id,
             scheduledDate,
-            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            null,
+            Guid.CreateVersion7()
         );
         Context.Appointments.Add(appointment3);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -337,7 +355,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             apptType.Id,
             baseDate.AddDays(1),
-            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            null,
+            Guid.CreateVersion7()
         );
 
         Context.Appointments.Add(appointment1);
@@ -348,7 +368,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             apptType.Id,
             baseDate.AddDays(1),
-            TimeRange.Create(new TimeOnly(11, 0), new TimeOnly(12, 0))
+            TimeRange.Create(new TimeOnly(11, 0), new TimeOnly(12, 0)),
+            null,
+            Guid.CreateVersion7()
         );
 
         Context.Appointments.Add(appointment2);
@@ -359,7 +381,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             apptType.Id,
             baseDate.AddDays(2),
-            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            null,
+            Guid.CreateVersion7()
         );
 
         Context.Appointments.Add(appointment3);
@@ -370,7 +394,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             apptType.Id,
             baseDate.AddDays(5),
-            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            null,
+            Guid.CreateVersion7()
         );
 
         Context.Appointments.Add(appointmentOutOfRange);
@@ -410,7 +436,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             apptType.Id,
             baseDate.AddDays(1),
-            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            null,
+            Guid.CreateVersion7()
         );
 
         Context.Appointments.Add(appointment1);
@@ -421,7 +449,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             apptType.Id,
             baseDate.AddDays(1),
-            TimeRange.Create(new TimeOnly(11, 0), new TimeOnly(12, 0))
+            TimeRange.Create(new TimeOnly(11, 0), new TimeOnly(12, 0)),
+            null,
+            Guid.CreateVersion7()
         );
 
         Context.Appointments.Add(appointment2);
@@ -432,7 +462,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             apptType.Id,
             baseDate.AddDays(2),
-            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            null,
+            Guid.CreateVersion7()
         );
 
         Context.Appointments.Add(appointment3);
@@ -471,7 +503,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             apptType.Id,
             scheduledDate,
-            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            null,
+            Guid.CreateVersion7()
         );
 
         Context.Appointments.Add(appointment1);
@@ -482,7 +516,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             apptType.Id,
             scheduledDate,
-            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            null,
+            Guid.CreateVersion7()
         );
 
         Context.Appointments.Add(appointment2);
@@ -493,7 +529,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             apptType.Id,
             scheduledDate,
-            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            null,
+            Guid.CreateVersion7()
         );
 
         Context.Appointments.Add(appointment3);
@@ -534,7 +572,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             apptType.Id,
             baseDate.AddDays(1),
-            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            null,
+            Guid.CreateVersion7()
         );
 
         Context.Appointments.Add(appointment1);
@@ -545,7 +585,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             apptType2.Id,
             baseDate.AddDays(1),
-            TimeRange.Create(new TimeOnly(11, 0), new TimeOnly(12, 0))
+            TimeRange.Create(new TimeOnly(11, 0), new TimeOnly(12, 0)),
+            null,
+            Guid.CreateVersion7()
         );
 
         Context.Appointments.Add(appointment2);
@@ -556,7 +598,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             apptType3.Id,
             baseDate.AddDays(2),
-            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            null,
+            Guid.CreateVersion7()
         );
 
         Context.Appointments.Add(appointment3);
@@ -567,7 +611,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             apptType.Id,
             baseDate.AddDays(1),
-            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            null,
+            Guid.CreateVersion7()
         );
 
         Context.Appointments.Add(appointmentOtherPatient);
@@ -607,7 +653,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             apptType.Id,
             baseDate.AddDays(1),
-            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            null,
+            Guid.CreateVersion7()
         );
 
         Context.Appointments.Add(appointment1);
@@ -618,7 +666,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             apptType2.Id,
             baseDate.AddDays(1),
-            TimeRange.Create(new TimeOnly(11, 0), new TimeOnly(12, 0))
+            TimeRange.Create(new TimeOnly(11, 0), new TimeOnly(12, 0)),
+            null,
+            Guid.CreateVersion7()
         );
 
         Context.Appointments.Add(appointment2);
@@ -629,7 +679,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             apptType3.Id,
             baseDate.AddDays(2),
-            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            null,
+            Guid.CreateVersion7()
         );
 
         Context.Appointments.Add(appointment3);
@@ -640,7 +692,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             apptType.Id,
             baseDate.AddDays(1),
-            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            null,
+            Guid.CreateVersion7()
         );
 
         Context.Appointments.Add(appointmentOtherPatient);
@@ -678,7 +732,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             apptType.Id,
             scheduledDate,
-            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            null,
+            Guid.CreateVersion7()
         );
         Context.Appointments.Add(appointment1);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -688,7 +744,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             apptType2.Id,
             scheduledDate,
-            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            null,
+            Guid.CreateVersion7()
         );
         Context.Appointments.Add(appointment2);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -698,7 +756,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             apptType3.Id,
             scheduledDate,
-            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            null,
+            Guid.CreateVersion7()
         );
         Context.Appointments.Add(appointment3);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -757,7 +817,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             guardianApptType.Id,
             scheduledDate,
-            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            null,
+            Guid.CreateVersion7()
         );
         Context.Appointments.Add(appointment);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -813,7 +875,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             guardianApptType.Id,
             scheduledDate,
-            TimeRange.Create(new TimeOnly(14, 0), new TimeOnly(15, 0))
+            TimeRange.Create(new TimeOnly(14, 0), new TimeOnly(15, 0)),
+            null,
+            Guid.CreateVersion7()
         );
         Context.Appointments.Add(appointment);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -864,7 +928,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             guardianApptType.Id,
             scheduledDate,
-            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            null,
+            Guid.CreateVersion7()
         );
         Context.Appointments.Add(appointment);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -904,7 +970,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             standardApptType.Id,
             scheduledDate,
-            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            null,
+            Guid.CreateVersion7()
         );
         Context.Appointments.Add(appointment);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -954,7 +1022,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             guardianApptType.Id,
             scheduledDate,
-            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            null,
+            Guid.CreateVersion7()
         );
         appointment.Cancel(Guid.CreateVersion7(), "Reason", scheduledDate);
         Context.Appointments.Add(appointment);
@@ -1011,7 +1081,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             guardianApptType.Id,
             scheduledDate,
-            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            null,
+            Guid.CreateVersion7()
         );
         Context.Appointments.Add(appointment);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -1067,7 +1139,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             guardianApptType.Id,
             scheduledDate,
-            TimeRange.Create(new TimeOnly(14, 0), new TimeOnly(15, 0))
+            TimeRange.Create(new TimeOnly(14, 0), new TimeOnly(15, 0)),
+            null,
+            Guid.CreateVersion7()
         );
         Context.Appointments.Add(appointment);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -1123,7 +1197,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             guardianApptType.Id,
             scheduledDate,
-            TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0))
+            TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0)),
+            null,
+            Guid.CreateVersion7()
         );
         Context.Appointments.Add(appointment);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -1168,7 +1244,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             apptType.Id,
             scheduledDate,
-            TimeRange.Create(new TimeOnly(9), new TimeOnly(10))
+            TimeRange.Create(new TimeOnly(9), new TimeOnly(10)),
+            null,
+            Guid.CreateVersion7()
         );
 
         Context.Appointments.Add(appointment);
@@ -1198,7 +1276,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             apptType.Id,
             scheduledDate,
-            TimeRange.Create(new TimeOnly(9), new TimeOnly(10))
+            TimeRange.Create(new TimeOnly(9), new TimeOnly(10)),
+            null,
+            Guid.CreateVersion7()
         );
         appointment.MarkAsRequiresReassignment();
 
@@ -1229,7 +1309,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             apptType.Id,
             scheduledDate,
-            TimeRange.Create(new TimeOnly(9), new TimeOnly(10))
+            TimeRange.Create(new TimeOnly(9), new TimeOnly(10)),
+            null,
+            Guid.CreateVersion7()
         );
         appointment.Cancel(
             Guid.CreateVersion7(),
@@ -1264,7 +1346,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             apptType.Id,
             scheduledDate,
-            TimeRange.Create(new TimeOnly(9), new TimeOnly(10))
+            TimeRange.Create(new TimeOnly(9), new TimeOnly(10)),
+            null,
+            Guid.CreateVersion7()
         );
 
         Context.Appointments.Add(appointment);
@@ -1295,7 +1379,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             apptType.Id,
             scheduledDate,
-            TimeRange.Create(new TimeOnly(9), new TimeOnly(10))
+            TimeRange.Create(new TimeOnly(9), new TimeOnly(10)),
+            null,
+            Guid.CreateVersion7()
         );
 
         Context.Appointments.Add(appointment);
@@ -1325,7 +1411,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             apptType.Id,
             scheduledDate,
-            TimeRange.Create(new TimeOnly(9), new TimeOnly(10))
+            TimeRange.Create(new TimeOnly(9), new TimeOnly(10)),
+            null,
+            Guid.CreateVersion7()
         );
 
         Context.Appointments.Add(appointment);
@@ -1356,7 +1444,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             apptType.Id,
             scheduledDate,
-            TimeRange.Create(new TimeOnly(9), new TimeOnly(10))
+            TimeRange.Create(new TimeOnly(9), new TimeOnly(10)),
+            null,
+            Guid.CreateVersion7()
         );
 
         Context.Appointments.Add(appointment1);
@@ -1367,7 +1457,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             apptType.Id,
             scheduledDate,
-            TimeRange.Create(new TimeOnly(11), new TimeOnly(12))
+            TimeRange.Create(new TimeOnly(11), new TimeOnly(12)),
+            null,
+            Guid.CreateVersion7()
         );
 
         Context.Appointments.Add(appointment2);
@@ -1391,7 +1483,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             apptType.Id,
             scheduledDate,
-            TimeRange.Create(new TimeOnly(9), new TimeOnly(10))
+            TimeRange.Create(new TimeOnly(9), new TimeOnly(10)),
+            null,
+            Guid.CreateVersion7()
         );
 
         Context.Appointments.Add(appointment);
@@ -1647,7 +1741,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             apptType.Id,
             baseDate.AddDays(1),
-            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            null,
+            Guid.CreateVersion7()
         );
 
         Context.Appointments.Add(appointment1);
@@ -1658,7 +1754,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             apptType.Id,
             baseDate.AddDays(-1),
-            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            null,
+            Guid.CreateVersion7()
         );
 
         Context.Appointments.Add(appointment2);
@@ -1669,7 +1767,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             apptType.Id,
             baseDate.AddDays(1),
-            TimeRange.Create(new TimeOnly(11, 0), new TimeOnly(12, 0))
+            TimeRange.Create(new TimeOnly(11, 0), new TimeOnly(12, 0)),
+            null,
+            Guid.CreateVersion7()
         );
 
         appointment3.Cancel(Guid.CreateVersion7(), "cancelled", baseDate);
@@ -1728,7 +1828,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             apptType.Id,
             baseDate,
-            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            null,
+            Guid.CreateVersion7()
         );
 
         appointment1.MarkAsRequiresReassignment();
@@ -1741,7 +1843,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             apptType.Id,
             baseDate.AddDays(1),
-            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            null,
+            Guid.CreateVersion7()
         );
 
         appointment2.MarkAsRequiresReassignment();
@@ -1754,7 +1858,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             apptType.Id,
             baseDate,
-            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            null,
+            Guid.CreateVersion7()
         );
 
         Context.Appointments.Add(appointment3);
@@ -1837,7 +1943,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             apptType.Id,
             scheduledDate,
-            timeRange
+            timeRange,
+            null,
+            Guid.CreateVersion7()
         );
         appointment.ClearDomainEvents();
 

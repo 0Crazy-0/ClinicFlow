@@ -62,7 +62,8 @@ public static class AppointmentSchedulingService
             appointmentType.Id,
             args.ScheduledDate,
             args.TimeRange,
-            args.PatientNotes
+            args.PatientNotes,
+            args.InitiatorUserId
         );
     }
 
@@ -100,7 +101,9 @@ public static class AppointmentSchedulingService
             args.InitiatorDoctor.Id,
             appointmentType.Id,
             args.ScheduledDate,
-            args.TimeRange
+            args.TimeRange,
+            null,
+            args.InitiatorDoctor.UserId
         );
     }
 
@@ -139,7 +142,9 @@ public static class AppointmentSchedulingService
             args.DoctorId,
             appointmentType.Id,
             args.ScheduledDate,
-            args.TimeRange
+            args.TimeRange,
+            null,
+            args.InitiatorUserId
         );
     }
 }

@@ -292,7 +292,9 @@ public class SetGuardianInvolvementDeterminationByDoctorCommandHandlerTests
             doctorId,
             Guid.CreateVersion7(),
             scheduledDate,
-            TimeRange.Create(new TimeOnly(9), new TimeOnly(10))
+            TimeRange.Create(new TimeOnly(9), new TimeOnly(10)),
+            null,
+            Guid.CreateVersion7()
         );
 
         appointment.CheckIn(scheduledDate.ToDateTime(new TimeOnly(9)));

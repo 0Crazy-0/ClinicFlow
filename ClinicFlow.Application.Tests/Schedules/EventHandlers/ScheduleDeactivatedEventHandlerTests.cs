@@ -50,7 +50,9 @@ public class ScheduleDeactivatedEventHandlerTests
             doctorId,
             Guid.CreateVersion7(),
             nextMondayDate,
-            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            null,
+            Guid.CreateVersion7()
         );
 
         _appointmentRepositoryMock
@@ -104,7 +106,9 @@ public class ScheduleDeactivatedEventHandlerTests
             doctorId,
             Guid.CreateVersion7(),
             mondayDate,
-            TimeRange.Create(new TimeOnly(15, 0), new TimeOnly(16, 0))
+            TimeRange.Create(new TimeOnly(15, 0), new TimeOnly(16, 0)),
+            null,
+            Guid.CreateVersion7()
         );
 
         _appointmentRepositoryMock
@@ -164,7 +168,9 @@ public class ScheduleDeactivatedEventHandlerTests
             doctorId,
             Guid.CreateVersion7(),
             mondayDate,
-            TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0))
+            TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0)),
+            null,
+            Guid.CreateVersion7()
         );
 
         _appointmentRepositoryMock
@@ -224,7 +230,9 @@ public class ScheduleDeactivatedEventHandlerTests
             doctorId,
             Guid.CreateVersion7(),
             tuesdayDate,
-            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            null,
+            Guid.CreateVersion7()
         );
 
         _appointmentRepositoryMock

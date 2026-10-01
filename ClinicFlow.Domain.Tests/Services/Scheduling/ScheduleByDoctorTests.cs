@@ -215,6 +215,7 @@ public class ScheduleByDoctorTests
         // Assert
         appointment.Should().NotBeNull();
         appointment.Status.Should().Be(AppointmentStatus.Scheduled);
+        appointment.ScheduledByUserId.Should().Be(args.InitiatorDoctor.UserId);
     }
 
     [Fact]
@@ -288,6 +289,7 @@ public class ScheduleByDoctorTests
         appointment.ScheduledDate.Should().Be(args.ScheduledDate);
         appointment.TimeRange.Should().Be(args.TimeRange);
         appointment.Status.Should().Be(AppointmentStatus.Scheduled);
+        appointment.ScheduledByUserId.Should().Be(args.InitiatorDoctor.UserId);
     }
 
     private DoctorSchedulingArgs CreateValidDoctorSchedulingArgs() =>

@@ -23,6 +23,7 @@ public class AppointmentTests
         var appointmentTypeId = Guid.CreateVersion7();
         var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
         var timeRange = TimeRange.Create(new TimeOnly(9), new TimeOnly(10));
+        var scheduledByUserId = Guid.CreateVersion7();
 
         // Act
         var appointment = Appointment.Schedule(
@@ -30,7 +31,9 @@ public class AppointmentTests
             doctorId,
             appointmentTypeId,
             scheduledDate,
-            timeRange
+            timeRange,
+            null,
+            scheduledByUserId
         );
 
         // Assert
@@ -42,6 +45,7 @@ public class AppointmentTests
         appointment.TimeRange.Should().Be(timeRange);
         appointment.Status.Should().Be(AppointmentStatus.Scheduled);
         appointment.PatientNotes.Should().BeEmpty();
+        appointment.ScheduledByUserId.Should().Be(scheduledByUserId);
         appointment.RescheduleCount.Should().Be(0);
         appointment.DomainEvents.OfType<AppointmentScheduledEvent>().Should().ContainSingle();
     }
@@ -79,11 +83,34 @@ public class AppointmentTests
                 Guid.Parse(doctorIdStr),
                 Guid.Parse(appointmentTypeIdStr),
                 DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
-                TimeRange.Create(new TimeOnly(9), new TimeOnly(10))
+                TimeRange.Create(new TimeOnly(9), new TimeOnly(10)),
+                null,
+                Guid.CreateVersion7()
             );
 
         // Assert
         act.Should().Throw<DomainValidationException>().WithMessage(expectedMessage);
+    }
+
+    [Fact]
+    public void Schedule_ShouldThrowException_WhenScheduledByIsEmpty()
+    {
+        // Arrange & Act
+        var act = () =>
+            Appointment.Schedule(
+                Guid.CreateVersion7(),
+                Guid.CreateVersion7(),
+                Guid.CreateVersion7(),
+                DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
+                TimeRange.Create(new TimeOnly(9), new TimeOnly(10)),
+                null,
+                Guid.Empty
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Fact]
@@ -96,7 +123,9 @@ public class AppointmentTests
                 Guid.CreateVersion7(),
                 Guid.CreateVersion7(),
                 DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
-                null!
+                null!,
+                null,
+                Guid.CreateVersion7()
             );
 
         // Assert
@@ -123,7 +152,8 @@ public class AppointmentTests
             appointmentTypeId,
             scheduledDate,
             timeRange,
-            patientNotes
+            patientNotes,
+            Guid.CreateVersion7()
         );
 
         // Assert
@@ -147,7 +177,8 @@ public class AppointmentTests
             appointmentTypeId,
             scheduledDate,
             timeRange,
-            null
+            null,
+            Guid.CreateVersion7()
         );
 
         // Assert
@@ -997,6 +1028,8 @@ public class AppointmentTests
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2)),
-            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            null,
+            Guid.CreateVersion7()
         );
 }
