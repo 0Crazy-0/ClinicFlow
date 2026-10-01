@@ -334,7 +334,9 @@ public class CompleteMedicalEncounterCommandHandlerTests
             doctorId,
             appointmentTypeId,
             scheduledDate,
-            TimeRange.Create(new TimeOnly(9), new TimeOnly(10))
+            TimeRange.Create(new TimeOnly(9), new TimeOnly(10)),
+            null,
+            Guid.CreateVersion7()
         );
 
         appointment.SetId(id);

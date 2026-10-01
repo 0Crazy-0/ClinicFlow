@@ -513,7 +513,9 @@ public class AppointmentCancellationServiceTests
             TimeRange.Create(
                 TimeOnly.FromDateTime(scheduledDateTime),
                 TimeOnly.FromDateTime(scheduledDateTime).AddMinutes(30)
-            )
+            ),
+            null,
+            Guid.CreateVersion7()
         );
 
         var context = new AppointmentCancellationContext
@@ -565,7 +567,9 @@ public class AppointmentCancellationServiceTests
             TimeRange.Create(
                 TimeOnly.FromDateTime(scheduledDateTime),
                 TimeOnly.FromDateTime(scheduledDateTime).AddMinutes(30)
-            )
+            ),
+            null,
+            Guid.CreateVersion7()
         );
 
         var context = new AppointmentCancellationContext
@@ -599,7 +603,9 @@ public class AppointmentCancellationServiceTests
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2)),
-            TimeRange.Create(new TimeOnly(9), new TimeOnly(10))
+            TimeRange.Create(new TimeOnly(9), new TimeOnly(10)),
+            null,
+            Guid.CreateVersion7()
         );
 
     private Appointment CreateAppointment(Guid patientId) =>
@@ -611,7 +617,9 @@ public class AppointmentCancellationServiceTests
             TimeRange.Create(
                 TimeOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2)),
                 TimeOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2)).AddMinutes(30)
-            )
+            ),
+            null,
+            Guid.CreateVersion7()
         );
 
     private Patient CreatePatient(Guid id, int age)

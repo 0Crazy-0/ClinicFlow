@@ -876,7 +876,9 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
             TimeRange.Create(
                 new TimeOnly(8, 0).AddMinutes(startMinute),
                 new TimeOnly(8, 0).AddMinutes(startMinute + 30)
-            )
+            ),
+            null,
+            Guid.CreateVersion7()
         );
 
         Context.Appointments.Add(appointment);

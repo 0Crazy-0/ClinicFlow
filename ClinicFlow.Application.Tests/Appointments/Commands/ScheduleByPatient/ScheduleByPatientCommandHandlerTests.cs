@@ -193,6 +193,7 @@ public class ScheduleByPatientCommandHandlerTests
         capturedAppointment.AppointmentTypeId.Should().Be(appointmentType.Id);
         capturedAppointment.ScheduledDate.Should().Be(scheduledDate);
         capturedAppointment.PatientNotes.Should().Be(command.PatientNotes);
+        capturedAppointment.ScheduledByUserId.Should().Be(command.InitiatorUserId);
     }
 
     [Fact]

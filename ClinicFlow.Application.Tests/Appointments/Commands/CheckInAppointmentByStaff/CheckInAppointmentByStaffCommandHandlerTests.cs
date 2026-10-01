@@ -38,7 +38,9 @@ public class CheckInAppointmentByStaffCommandHandlerTests
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime),
-            TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0))
+            TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0)),
+            null,
+            Guid.CreateVersion7()
         );
 
         _appointmentRepositoryMock
@@ -70,7 +72,9 @@ public class CheckInAppointmentByStaffCommandHandlerTests
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime),
-            TimeRange.Create(new TimeOnly(10), new TimeOnly(11))
+            TimeRange.Create(new TimeOnly(10), new TimeOnly(11)),
+            null,
+            Guid.CreateVersion7()
         );
 
         _appointmentRepositoryMock

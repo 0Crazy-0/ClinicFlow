@@ -50,7 +50,9 @@ public class StartAppointmentByDoctorCommandHandlerTests
             doctor.Id,
             Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime),
-            TimeRange.Create(new TimeOnly(0), new TimeOnly(1))
+            TimeRange.Create(new TimeOnly(0), new TimeOnly(1)),
+            null,
+            Guid.CreateVersion7()
         );
 
         appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
@@ -109,7 +111,9 @@ public class StartAppointmentByDoctorCommandHandlerTests
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
-            TimeRange.Create(new TimeOnly(10), new TimeOnly(11))
+            TimeRange.Create(new TimeOnly(10), new TimeOnly(11)),
+            null,
+            Guid.CreateVersion7()
         );
 
         _appointmentRepositoryMock

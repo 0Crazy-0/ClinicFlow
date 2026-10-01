@@ -52,6 +52,8 @@ public class Appointment : BaseEntity
 
     public int RescheduleCount { get; private set; }
 
+    public Guid ScheduledByUserId { get; private set; }
+
     // EF Core constructor
     private Appointment() => TimeRange = null!;
 
@@ -61,7 +63,8 @@ public class Appointment : BaseEntity
         Guid appointmentTypeId,
         DateOnly scheduledDate,
         TimeRange timeRange,
-        string? patientNotes = null
+        string? patientNotes,
+        Guid scheduledByUserId
     )
     {
         PatientId = patientId;
@@ -72,6 +75,7 @@ public class Appointment : BaseEntity
         Status = AppointmentStatus.Scheduled;
         RescheduleCount = 0;
         PatientNotes = patientNotes ?? string.Empty;
+        ScheduledByUserId = scheduledByUserId;
     }
 
     internal static Appointment Schedule(
@@ -80,13 +84,15 @@ public class Appointment : BaseEntity
         Guid appointmentTypeId,
         DateOnly scheduledDate,
         TimeRange timeRange,
-        string? patientNotes = null
+        string? patientNotes,
+        Guid scheduledByUserId
     )
     {
         Guard.NotEmpty(patientId);
         Guard.NotEmpty(doctorId);
         Guard.NotEmpty(appointmentTypeId);
         Guard.NotNull(timeRange);
+        Guard.NotEmpty(scheduledByUserId);
 
         var appointment = new Appointment(
             patientId,
@@ -94,7 +100,8 @@ public class Appointment : BaseEntity
             appointmentTypeId,
             scheduledDate,
             timeRange,
-            patientNotes
+            patientNotes,
+            scheduledByUserId
         );
 
         appointment.AddDomainEvent(new AppointmentScheduledEvent(appointment));

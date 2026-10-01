@@ -314,7 +314,9 @@ public class StartMedicalEncounterCommandHandlerTests
             doctorId,
             appointmentTypeId,
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime),
-            TimeRange.Create(new TimeOnly(0), new TimeOnly(1))
+            TimeRange.Create(new TimeOnly(0), new TimeOnly(1)),
+            null,
+            Guid.CreateVersion7()
         );
 
         appointment.SetId(id);

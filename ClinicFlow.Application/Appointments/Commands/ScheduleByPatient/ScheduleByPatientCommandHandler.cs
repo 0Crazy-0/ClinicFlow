@@ -147,6 +147,7 @@ public sealed class ScheduleByPatientCommandHandler(
                     new PatientSchedulingArgs
                     {
                         TargetPatient = targetPatient,
+                        InitiatorUserId = request.InitiatorUserId,
                         DoctorId = request.DoctorId,
                         ScheduledDate = request.ScheduledDate,
                         TimeRange = timeRange,

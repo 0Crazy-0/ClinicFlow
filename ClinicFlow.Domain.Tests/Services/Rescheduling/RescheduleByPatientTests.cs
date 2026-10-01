@@ -476,7 +476,9 @@ public class RescheduleByPatientTests
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2)),
-            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            null,
+            Guid.CreateVersion7()
         );
 
         appointment.ClearDomainEvents();
@@ -491,7 +493,9 @@ public class RescheduleByPatientTests
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2)),
-            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            null,
+            Guid.CreateVersion7()
         );
 
         appointment.ClearDomainEvents();

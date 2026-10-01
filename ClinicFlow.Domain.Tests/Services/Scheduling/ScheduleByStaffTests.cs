@@ -135,6 +135,7 @@ public class ScheduleByStaffTests
         var args = new StaffSchedulingArgs
         {
             TargetPatient = incompletePatient,
+            InitiatorUserId = Guid.CreateVersion7(),
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange = CreateTimeRange(),
@@ -217,6 +218,7 @@ public class ScheduleByStaffTests
         var args = new StaffSchedulingArgs
         {
             TargetPatient = target,
+            InitiatorUserId = Guid.CreateVersion7(),
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange = CreateTimeRange(),
@@ -238,6 +240,7 @@ public class ScheduleByStaffTests
         appointment.DomainEvents.OfType<AppointmentScheduledEvent>().Should().ContainSingle();
         appointment.Should().NotBeNull();
         appointment.Status.Should().Be(AppointmentStatus.Scheduled);
+        appointment.ScheduledByUserId.Should().Be(args.InitiatorUserId);
     }
 
     [Fact]
@@ -282,6 +285,7 @@ public class ScheduleByStaffTests
         var args = new StaffSchedulingArgs
         {
             TargetPatient = target,
+            InitiatorUserId = Guid.CreateVersion7(),
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange = CreateTimeRange(),
@@ -311,6 +315,7 @@ public class ScheduleByStaffTests
         appointment.ScheduledDate.Should().Be(args.ScheduledDate);
         appointment.TimeRange.Should().Be(args.TimeRange);
         appointment.Status.Should().Be(AppointmentStatus.Scheduled);
+        appointment.ScheduledByUserId.Should().Be(args.InitiatorUserId);
     }
 
     private StaffSchedulingArgs CreateValidStaffSchedulingArgs() =>

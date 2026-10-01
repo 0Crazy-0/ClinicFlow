@@ -119,6 +119,8 @@ public class GetAppointmentsByDoctorIdAndDateQueryHandlerTests
             doctorId,
             Guid.CreateVersion7(),
             scheduledDate,
-            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0))
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            null,
+            Guid.CreateVersion7()
         );
 }

@@ -48,7 +48,9 @@ public class MedicalEncounterServiceTests
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
-            TimeRange.Create(new TimeOnly(10), new TimeOnly(11))
+            TimeRange.Create(new TimeOnly(10), new TimeOnly(11)),
+            null,
+            Guid.CreateVersion7()
         );
 
         // Act
@@ -519,7 +521,9 @@ public class MedicalEncounterServiceTests
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
-            TimeRange.Create(new TimeOnly(10), new TimeOnly(11))
+            TimeRange.Create(new TimeOnly(10), new TimeOnly(11)),
+            null,
+            Guid.CreateVersion7()
         );
         var record = CreateMedicalRecordWithCategoryForAppointment(
             ProtectedCategory.MentalHealthCounseling,
@@ -658,7 +662,9 @@ public class MedicalEncounterServiceTests
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(-1)),
-            TimeRange.Create(new TimeOnly(10), new TimeOnly(11))
+            TimeRange.Create(new TimeOnly(10), new TimeOnly(11)),
+            null,
+            Guid.CreateVersion7()
         );
 
         appointment.SetId(id);
@@ -678,7 +684,9 @@ public class MedicalEncounterServiceTests
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(-1)),
-            TimeRange.Create(new TimeOnly(10), new TimeOnly(11))
+            TimeRange.Create(new TimeOnly(10), new TimeOnly(11)),
+            null,
+            Guid.CreateVersion7()
         );
 
         appointment.CheckIn(appointment.ScheduledDate.ToDateTime(appointment.TimeRange.Start));

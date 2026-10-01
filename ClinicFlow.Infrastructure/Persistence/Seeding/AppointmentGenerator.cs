@@ -53,7 +53,8 @@ public class AppointmentGenerator(AppointmentSeedingArgs args, DateTime baseDate
                 apptType.Id,
                 originalDate,
                 timeRange,
-                patientNotes
+                patientNotes,
+                _ownerUserIdByPatientId[patient.Id]
             );
 
             appointment.Reschedule(apptDate, timeRange);
@@ -66,7 +67,8 @@ public class AppointmentGenerator(AppointmentSeedingArgs args, DateTime baseDate
                 apptType.Id,
                 apptDate,
                 timeRange,
-                patientNotes
+                patientNotes,
+                _ownerUserIdByPatientId[patient.Id]
             );
         }
 
