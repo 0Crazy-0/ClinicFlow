@@ -36,7 +36,7 @@ public static class AppointmentCancellationService
         if (context.Purpose is AppointmentPurpose.Emergency)
             ValidateEmergencyCancellation(
                 args.TargetPatient,
-                context.IsInitiatorSelfOfTarget,
+                context.InitiatorRelationship,
                 context.InitiatorLegalAuthority,
                 DateOnly.FromDateTime(args.CancelledAt)
             );
@@ -104,12 +104,12 @@ public static class AppointmentCancellationService
     /// </summary>
     private static void ValidateEmergencyCancellation(
         Patient patient,
-        bool isInitiatorSelfOfTarget,
+        PatientRelationship initiatorRelationship,
         LegalAuthorityType initiatorLegalAuthority,
         DateOnly referenceDate
     )
     {
-        if (isInitiatorSelfOfTarget)
+        if (initiatorRelationship is PatientRelationship.Self)
             return;
 
         if (

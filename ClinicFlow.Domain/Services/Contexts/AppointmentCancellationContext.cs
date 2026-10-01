@@ -11,6 +11,6 @@ public sealed record class AppointmentCancellationContext
 {
     public required MedicalSpecialty Specialty { get; init; }
     public AppointmentPurpose Purpose { get; init; }
-    public bool IsInitiatorSelfOfTarget { get; init; }
+    public PatientRelationship InitiatorRelationship { get; init; }
     public LegalAuthorityType InitiatorLegalAuthority { get; init; }
 }

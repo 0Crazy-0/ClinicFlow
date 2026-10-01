@@ -328,7 +328,7 @@ public class AppointmentCancellationServiceTests
         {
             Purpose = purpose,
             Specialty = CreateSpecialty(),
-            IsInitiatorSelfOfTarget = true,
+            InitiatorRelationship = PatientRelationship.Self,
         };
 
         var args = new PatientCancellationArgs
@@ -368,7 +368,7 @@ public class AppointmentCancellationServiceTests
         {
             Purpose = purpose,
             Specialty = CreateSpecialty(),
-            IsInitiatorSelfOfTarget = false,
+            InitiatorRelationship = PatientRelationship.Other,
             InitiatorLegalAuthority = initiatorLegalAuthority,
         };
 
@@ -401,7 +401,7 @@ public class AppointmentCancellationServiceTests
         {
             Purpose = AppointmentPurpose.Procedure,
             Specialty = CreateSpecialty(),
-            IsInitiatorSelfOfTarget = true,
+            InitiatorRelationship = PatientRelationship.Self,
         };
 
         var args = new PatientCancellationArgs
@@ -444,7 +444,7 @@ public class AppointmentCancellationServiceTests
         {
             Purpose = purpose,
             Specialty = CreateSpecialty(),
-            IsInitiatorSelfOfTarget = false,
+            InitiatorRelationship = PatientRelationship.Other,
             InitiatorLegalAuthority = initiatorLegalAuthority,
         };
 
@@ -477,6 +477,7 @@ public class AppointmentCancellationServiceTests
         {
             Purpose = AppointmentPurpose.Checkup,
             Specialty = CreateSpecialty(),
+            InitiatorRelationship = PatientRelationship.Self,
         };
 
         var args = new PatientCancellationArgs
@@ -519,6 +520,7 @@ public class AppointmentCancellationServiceTests
         {
             Purpose = AppointmentPurpose.Checkup,
             Specialty = CreateSpecialty(),
+            InitiatorRelationship = PatientRelationship.Self,
         };
 
         var args = new PatientCancellationArgs
@@ -570,6 +572,7 @@ public class AppointmentCancellationServiceTests
         {
             Purpose = AppointmentPurpose.Checkup,
             Specialty = MedicalSpecialty.Create("Test Specialty", "Test Description", 30, minHours),
+            InitiatorRelationship = PatientRelationship.Self,
         };
 
         var args = new PatientCancellationArgs
@@ -637,5 +640,10 @@ public class AppointmentCancellationServiceTests
     }
 
     private static AppointmentCancellationContext CreateValidCancellationContext() =>
-        new() { Purpose = AppointmentPurpose.Checkup, Specialty = CreateSpecialty() };
+        new()
+        {
+            Purpose = AppointmentPurpose.Checkup,
+            Specialty = CreateSpecialty(),
+            InitiatorRelationship = PatientRelationship.Self,
+        };
 }

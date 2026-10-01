@@ -1,6 +1,5 @@
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
-using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Appointments;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
@@ -88,7 +87,7 @@ public sealed class CancelAppointmentByPatientCommandHandler(
             {
                 Specialty = specialty,
                 Purpose = appointmentType.Purpose,
-                IsInitiatorSelfOfTarget = initiatorMembership.Role is PatientRelationship.Self,
+                InitiatorRelationship = initiatorMembership.Role,
                 InitiatorLegalAuthority = initiatorMembership.LegalAuthority,
             },
             new PatientCancellationArgs
