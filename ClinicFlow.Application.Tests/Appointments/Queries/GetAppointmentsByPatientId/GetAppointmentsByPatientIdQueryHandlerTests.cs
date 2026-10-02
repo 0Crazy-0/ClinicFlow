@@ -32,6 +32,7 @@ public class GetAppointmentsByPatientIdQueryHandlerTests
             CreateAppointment(patientId),
             CreateAppointment(patientId),
         };
+        appointments[0].SetGuardianNotes("notes", Guid.CreateVersion7());
 
         _appointmentRepositoryMock
             .Setup(x =>
@@ -53,7 +54,8 @@ public class GetAppointmentsByPatientIdQueryHandlerTests
             a.TimeRange.End,
             a.Status,
             a.PatientNotes,
-            a.ReceptionistNotes
+            a.ReceptionistNotes,
+            a.GuardianNotes
         ));
 
         result.Items.Should().BeEquivalentTo(expectedDtos);
