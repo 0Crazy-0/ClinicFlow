@@ -36,6 +36,11 @@ public class Appointment : BaseEntity
     public string PatientNotes { get; private set; } = string.Empty;
 
     // Stryker disable once String
+    public string GuardianNotes { get; private set; } = string.Empty;
+
+    public Guid? GuardianNotesAuthorUserId { get; private set; }
+
+    // Stryker disable once String
     public string ReceptionistNotes { get; private set; } = string.Empty;
 
     public DateOnly? CheckedInAt { get; private set; }
@@ -274,6 +279,27 @@ public class Appointment : BaseEntity
             throw new DomainValidationException(DomainErrors.Appointment.CannotUpdateNotes);
 
         PatientNotes = notes ?? string.Empty;
+    }
+
+    /// <remarks>
+    /// Callers ensure the patient is a minor at the scheduled date through the guardian
+    /// channel gates before invoking this method.
+    /// </remarks>
+    internal void SetGuardianNotes(string? notes, Guid authorUserId)
+    {
+        if (Status is not (AppointmentStatus.Scheduled or AppointmentStatus.CheckedIn))
+            throw new DomainValidationException(DomainErrors.Appointment.CannotUpdateNotes);
+
+        Guard.NotEmpty(authorUserId);
+
+        if (string.IsNullOrEmpty(notes))
+        {
+            GuardianNotes = string.Empty;
+            return;
+        }
+
+        GuardianNotes = notes;
+        GuardianNotesAuthorUserId = authorUserId;
     }
 
     public void UpdateReceptionistNotes(string? notes)
