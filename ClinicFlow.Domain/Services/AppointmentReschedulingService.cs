@@ -1,7 +1,9 @@
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
+using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Appointments;
 using ClinicFlow.Domain.Exceptions.Base;
+using ClinicFlow.Domain.Exceptions.Patients;
 using ClinicFlow.Domain.Services.Args.Rescheduling;
 using ClinicFlow.Domain.Services.Contexts;
 using ClinicFlow.Domain.ValueObjects;
@@ -9,7 +11,7 @@ using ClinicFlow.Domain.ValueObjects;
 namespace ClinicFlow.Domain.Services;
 
 /// <summary>
-/// Orchestrates appointment rescheduling for different actors (Patient, Doctor, Staff).
+/// Orchestrates appointment rescheduling for different actors (Patient, Guardian, Doctor, Staff).
 /// </summary>
 /// <remarks>
 /// All rescheduling requests must be accompanied by a valid scheduling clearance to ensure compliance with regional scheduling regulations.
@@ -55,6 +57,61 @@ public static class AppointmentReschedulingService
 
         if (args.NewPatientNotes is not null)
             appointment.UpdatePatientNotes(args.NewPatientNotes);
+    }
+
+    public static void RescheduleByGuardian(
+        Appointment appointment,
+        GuardianReschedulingArgs args,
+        PatientReschedulingContext context,
+        SchedulingClearance clearance
+    )
+    {
+        ArgumentNullException.ThrowIfNull(appointment);
+        ArgumentNullException.ThrowIfNull(args);
+        ArgumentNullException.ThrowIfNull(args.TargetPatient);
+        ArgumentNullException.ThrowIfNull(args.InitiatorMembership);
+        ArgumentNullException.ThrowIfNull(args.NewTimeRange);
+        ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(context.DoctorSchedule);
+
+        if (clearance is null)
+            throw new BusinessRuleValidationException(DomainErrors.Reschedule.MissingClearance);
+
+        if (args.TargetPatient.Id != appointment.PatientId)
+            throw new DomainValidationException(DomainErrors.Appointment.DataMismatch);
+
+        PatientAccessService.VerifyAccess(context.InitiatorHasAccessToTarget);
+
+        args.InitiatorMembership.EnsureGuardianAccess();
+
+        var isMinorAtNewDate =
+            args.TargetPatient.GetAge(args.NewDate) < FamilyMembership.MinimumAdultAge;
+
+        if (!isMinorAtNewDate)
+            throw new DomainValidationException(DomainErrors.Appointment.GuardianRequiresMinor);
+
+        if (args.NewGuardianNotes is not null && appointment.GuardianNotesAuthorUserId is not null)
+            args.InitiatorMembership.EnsureGuardianNotesEditAccess(
+                appointment.GuardianNotesAuthorUserId.Value
+            );
+
+        if (!args.IsInitiatorPhoneVerified)
+            throw new AppointmentSchedulingUnauthorizedException(
+                DomainErrors.Appointment.PhoneNotVerified
+            );
+
+        new PenaltyHistory(context.Penalties).EnsureNotBlocked(args.NewDate);
+
+        context.DoctorSchedule.EnsureDoctorIsAvailable(
+            appointment.DoctorId,
+            args.NewDate.DayOfWeek,
+            args.NewTimeRange
+        );
+
+        appointment.Reschedule(args.NewDate, args.NewTimeRange);
+
+        if (args.NewGuardianNotes is not null)
+            appointment.SetGuardianNotes(args.NewGuardianNotes, args.InitiatorUserId);
     }
 
     public static void RescheduleByDoctor(
