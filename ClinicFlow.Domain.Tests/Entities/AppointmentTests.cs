@@ -978,6 +978,75 @@ public class AppointmentTests
     }
 
     [Fact]
+    public void SetGuardianNotes_ShouldSetTextAndAuthor_WhenScheduled()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        var authorId = Guid.CreateVersion7();
+
+        // Act
+        appointment.SetGuardianNotes("notes", authorId);
+
+        // Assert
+        appointment.GuardianNotes.Should().Be("notes");
+        appointment.GuardianNotesAuthorUserId.Should().Be(authorId);
+        appointment.PatientNotes.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void SetGuardianNotes_ShouldThrowException_WhenInvalidStatus()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
+
+        appointment.Start(
+            appointment.DoctorId,
+            appointment.ScheduledDate.ToDateTime(new TimeOnly(9, 30))
+        );
+
+        // Act
+        var act = () => appointment.SetGuardianNotes("notes", Guid.CreateVersion7());
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Appointment.CannotUpdateNotes);
+    }
+
+    [Fact]
+    public void SetGuardianNotes_ShouldThrowException_WhenAuthorIsEmpty()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+
+        // Act
+        var act = () => appointment.SetGuardianNotes("notes", Guid.Empty);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void SetGuardianNotes_ShouldClearTextButRetainAuthor_WhenEmptyProvidedAfterPriorNote()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        var authorId = Guid.CreateVersion7();
+        appointment.SetGuardianNotes("notes", authorId);
+
+        // Act
+        appointment.SetGuardianNotes(null, authorId);
+
+        // Assert
+        appointment.GuardianNotes.Should().BeEmpty();
+        appointment.GuardianNotesAuthorUserId.Should().Be(authorId);
+        appointment.PatientNotes.Should().BeEmpty();
+    }
+
+    [Fact]
     public void UpdateReceptionistNotes_ShouldSucceed_WhenCheckedIn()
     {
         // Arrange
