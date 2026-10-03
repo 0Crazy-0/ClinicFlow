@@ -285,7 +285,7 @@ public class Appointment : BaseEntity
     /// Callers ensure the patient is a minor at the scheduled date through the guardian
     /// channel gates before invoking this method.
     /// </remarks>
-    internal void SetGuardianNotes(string? notes, Guid authorUserId)
+    internal void UpdateGuardianNotes(string? notes, Guid authorUserId)
     {
         if (Status is not (AppointmentStatus.Scheduled or AppointmentStatus.CheckedIn))
             throw new DomainValidationException(DomainErrors.Appointment.CannotUpdateNotes);

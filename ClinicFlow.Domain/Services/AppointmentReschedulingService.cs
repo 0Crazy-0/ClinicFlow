@@ -120,7 +120,7 @@ public static class AppointmentReschedulingService
         appointment.Reschedule(args.NewDate, args.NewTimeRange);
 
         if (args.NewGuardianNotes is not null)
-            appointment.SetGuardianNotes(args.NewGuardianNotes, args.InitiatorUserId);
+            appointment.UpdateGuardianNotes(args.NewGuardianNotes, args.InitiatorUserId);
     }
 
     public static void RescheduleByDoctor(

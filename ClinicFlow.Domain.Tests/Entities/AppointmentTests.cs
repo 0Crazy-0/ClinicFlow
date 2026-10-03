@@ -978,14 +978,14 @@ public class AppointmentTests
     }
 
     [Fact]
-    public void SetGuardianNotes_ShouldSetTextAndAuthor_WhenScheduled()
+    public void UpdateGuardianNotes_ShouldSetTextAndAuthor_WhenScheduled()
     {
         // Arrange
         var appointment = CreateAppointment();
         var authorId = Guid.CreateVersion7();
 
         // Act
-        appointment.SetGuardianNotes("notes", authorId);
+        appointment.UpdateGuardianNotes("notes", authorId);
 
         // Assert
         appointment.GuardianNotes.Should().Be("notes");
@@ -994,7 +994,7 @@ public class AppointmentTests
     }
 
     [Fact]
-    public void SetGuardianNotes_ShouldThrowException_WhenInvalidStatus()
+    public void UpdateGuardianNotes_ShouldThrowException_WhenInvalidStatus()
     {
         // Arrange
         var appointment = CreateAppointment();
@@ -1006,7 +1006,7 @@ public class AppointmentTests
         );
 
         // Act
-        var act = () => appointment.SetGuardianNotes("notes", Guid.CreateVersion7());
+        var act = () => appointment.UpdateGuardianNotes("notes", Guid.CreateVersion7());
 
         // Assert
         act.Should()
@@ -1015,13 +1015,13 @@ public class AppointmentTests
     }
 
     [Fact]
-    public void SetGuardianNotes_ShouldThrowException_WhenAuthorIsEmpty()
+    public void UpdateGuardianNotes_ShouldThrowException_WhenAuthorIsEmpty()
     {
         // Arrange
         var appointment = CreateAppointment();
 
         // Act
-        var act = () => appointment.SetGuardianNotes("notes", Guid.Empty);
+        var act = () => appointment.UpdateGuardianNotes("notes", Guid.Empty);
 
         // Assert
         act.Should()
@@ -1030,15 +1030,15 @@ public class AppointmentTests
     }
 
     [Fact]
-    public void SetGuardianNotes_ShouldClearTextButRetainAuthor_WhenEmptyProvidedAfterPriorNote()
+    public void UpdateGuardianNotes_ShouldClearTextButRetainAuthor_WhenEmptyProvidedAfterPriorNote()
     {
         // Arrange
         var appointment = CreateAppointment();
         var authorId = Guid.CreateVersion7();
-        appointment.SetGuardianNotes("notes", authorId);
+        appointment.UpdateGuardianNotes("notes", authorId);
 
         // Act
-        appointment.SetGuardianNotes(null, authorId);
+        appointment.UpdateGuardianNotes(null, authorId);
 
         // Assert
         appointment.GuardianNotes.Should().BeEmpty();

@@ -126,7 +126,7 @@ public static class AppointmentSchedulingService
         );
 
         if (args.GuardianNotes is not null)
-            appointment.SetGuardianNotes(args.GuardianNotes, args.InitiatorUserId);
+            appointment.UpdateGuardianNotes(args.GuardianNotes, args.InitiatorUserId);
 
         return appointment;
     }

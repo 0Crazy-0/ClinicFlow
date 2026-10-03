@@ -33,7 +33,7 @@ public class GetAppointmentsByDoctorIdAndDateQueryHandlerTests
             CreateAppointment(doctorId, date),
             CreateAppointment(doctorId, date),
         };
-        appointments[0].SetGuardianNotes("notes", Guid.CreateVersion7());
+        appointments[0].UpdateGuardianNotes("notes", Guid.CreateVersion7());
 
         _appointmentRepositoryMock
             .Setup(x =>

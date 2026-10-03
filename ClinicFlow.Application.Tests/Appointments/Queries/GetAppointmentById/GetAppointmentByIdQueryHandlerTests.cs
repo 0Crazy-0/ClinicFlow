@@ -43,7 +43,7 @@ public class GetAppointmentByIdQueryHandlerTests
         );
 
         appointment.SetId(appointmentId);
-        appointment.SetGuardianNotes("notes", Guid.CreateVersion7());
+        appointment.UpdateGuardianNotes("notes", Guid.CreateVersion7());
 
         _appointmentRepositoryMock
             .Setup(x => x.GetByIdAsync(appointmentId, It.IsAny<CancellationToken>()))

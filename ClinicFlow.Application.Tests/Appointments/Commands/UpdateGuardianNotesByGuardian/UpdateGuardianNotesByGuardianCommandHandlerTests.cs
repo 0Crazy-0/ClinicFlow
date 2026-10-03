@@ -55,7 +55,7 @@ public class UpdateGuardianNotesByGuardianCommandHandlerTests
             Guid.CreateVersion7()
         );
 
-        appointment.SetGuardianNotes("Original", authorId);
+        appointment.UpdateGuardianNotes("Original", authorId);
 
         _appointmentRepositoryMock
             .Setup(r => r.GetByIdAsync(command.AppointmentId, It.IsAny<CancellationToken>()))
