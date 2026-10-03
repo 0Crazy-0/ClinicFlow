@@ -2,6 +2,7 @@ using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Exceptions.Appointments;
 using ClinicFlow.Domain.Exceptions.Base;
+using ClinicFlow.Domain.Exceptions.Patients;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.Interfaces.Services;
@@ -123,18 +124,29 @@ public sealed class RescheduleByPatientCommandHandler(
                     appointmentType
                 );
 
-                var initiatorHasAccessToTarget =
-                    await familyMembershipRepository.HasActiveMembershipAsync(
+                if (
+                    !await familyMembershipRepository.HasActiveSelfMembershipAsync(
                         request.InitiatorUserId,
                         appointment.PatientId,
                         cancellationToken
+                    )
+                )
+                    throw new PatientAccessUnauthorizedException(
+                        DomainErrors.Patient.UnauthorizedAccess
                     );
+
+                var creatorMembership = await familyMembershipRepository.GetActiveMembershipAsync(
+                    appointment.ScheduledByUserId,
+                    appointment.PatientId,
+                    cancellationToken
+                );
 
                 AppointmentReschedulingService.RescheduleByPatient(
                     appointment,
                     new PatientReschedulingArgs
                     {
                         TargetPatient = targetPatient,
+                        InitiatorUserId = request.InitiatorUserId,
                         NewDate = request.NewDate,
                         NewTimeRange = newTimeRange,
                         IsInitiatorPhoneVerified = user.IsPhoneVerified,
@@ -144,7 +156,8 @@ public sealed class RescheduleByPatientCommandHandler(
                     {
                         Penalties = penalties,
                         DoctorSchedule = doctorSchedule,
-                        InitiatorHasAccessToTarget = initiatorHasAccessToTarget,
+                        InitiatorHasAccessToTarget = true,
+                        CreatorLegalAuthority = creatorMembership?.LegalAuthority,
                     },
                     clearance
                 );
