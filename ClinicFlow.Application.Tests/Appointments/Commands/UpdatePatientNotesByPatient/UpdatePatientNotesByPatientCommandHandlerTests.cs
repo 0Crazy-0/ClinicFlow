@@ -2,6 +2,7 @@ using AwesomeAssertions;
 using ClinicFlow.Application.Appointments.Commands.UpdatePatientNotesByPatient;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
+using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Exceptions.Patients;
 using ClinicFlow.Domain.Interfaces;
@@ -30,17 +31,18 @@ public class UpdatePatientNotesByPatientCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ShouldUpdatePatientNotes_WhenInitiatorHasAccess()
+    public async Task Handle_ShouldUpdatePatientNotes_WhenInitiatorIsSelf()
     {
         // Arrange
         var userId = Guid.CreateVersion7();
         var command = new UpdatePatientNotesByPatientCommand(
             Guid.CreateVersion7(),
             userId,
-            "Updated patient notes"
+            "Updated notes"
         );
 
-        var appointment = CreateAppointment(Guid.CreateVersion7());
+        var patientId = Guid.CreateVersion7();
+        var appointment = CreateAppointment(patientId);
 
         _appointmentRepositoryMock
             .Setup(r => r.GetByIdAsync(command.AppointmentId, It.IsAny<CancellationToken>()))
@@ -48,13 +50,15 @@ public class UpdatePatientNotesByPatientCommandHandlerTests
 
         _familyMembershipRepositoryMock
             .Setup(r =>
-                r.HasActiveMembershipAsync(
+                r.GetActiveMembershipAsync(
                     command.InitiatorUserId,
                     appointment.PatientId,
                     It.IsAny<CancellationToken>()
                 )
             )
-            .ReturnsAsync(true);
+            .ReturnsAsync(
+                FamilyMembership.CreateSelf(patientId, userId, _fakeTime.GetUtcNow().UtcDateTime)
+            );
 
         // Act
         await _sut.Handle(command, TestContext.Current.CancellationToken);
@@ -92,7 +96,7 @@ public class UpdatePatientNotesByPatientCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ShouldThrowPatientAccessUnauthorizedException_WhenInitiatorHasNoAccess()
+    public async Task Handle_ShouldThrowPatientAccessUnauthorizedException_WhenNoMembership()
     {
         // Arrange
         var initiatorUserId = Guid.CreateVersion7();
@@ -110,13 +114,13 @@ public class UpdatePatientNotesByPatientCommandHandlerTests
 
         _familyMembershipRepositoryMock
             .Setup(r =>
-                r.HasActiveMembershipAsync(
+                r.GetActiveMembershipAsync(
                     command.InitiatorUserId,
                     appointment.PatientId,
                     It.IsAny<CancellationToken>()
                 )
             )
-            .ReturnsAsync(false);
+            .ReturnsAsync((FamilyMembership?)null);
 
         // Act
         var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
@@ -129,13 +133,64 @@ public class UpdatePatientNotesByPatientCommandHandlerTests
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
+    [Fact]
+    public async Task Handle_ShouldThrowPatientAccessUnauthorizedException_WhenInitiatorIsGuardian()
+    {
+        // Arrange
+        var guardianId = Guid.CreateVersion7();
+        var patientId = Guid.CreateVersion7();
+        var command = new UpdatePatientNotesByPatientCommand(
+            Guid.CreateVersion7(),
+            guardianId,
+            "Notes"
+        );
+
+        var appointment = CreateAppointment(patientId);
+
+        _appointmentRepositoryMock
+            .Setup(r => r.GetByIdAsync(command.AppointmentId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(appointment);
+
+        _familyMembershipRepositoryMock
+            .Setup(r =>
+                r.GetActiveMembershipAsync(
+                    command.InitiatorUserId,
+                    appointment.PatientId,
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(
+                FamilyMembership.CreateFamilyMember(
+                    patientId,
+                    guardianId,
+                    PatientRelationship.Parent,
+                    LegalAuthorityType.Parent,
+                    FamilyMembershipAccessLevel.Full,
+                    10,
+                    _fakeTime.GetUtcNow().UtcDateTime
+                )
+            );
+
+        // Act
+        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
+
+        // Assert
+        await act.Should()
+            .ThrowAsync<PatientAccessUnauthorizedException>()
+            .WithMessage(DomainErrors.Patient.UnauthorizedAccess);
+
+        appointment.PatientNotes.Should().BeEmpty();
+
+        _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+    }
+
     private Appointment CreateAppointment(Guid patientId) =>
         Appointment.Schedule(
             patientId,
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
-            TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0)),
+            TimeRange.Create(new TimeOnly(10), new TimeOnly(11)),
             null,
             Guid.CreateVersion7()
         );

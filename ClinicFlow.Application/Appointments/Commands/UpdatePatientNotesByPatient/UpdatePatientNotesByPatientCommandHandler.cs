@@ -1,9 +1,9 @@
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Exceptions.Base;
+using ClinicFlow.Domain.Exceptions.Patients;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
-using ClinicFlow.Domain.Services;
 using MediatR;
 
 namespace ClinicFlow.Application.Appointments.Commands.UpdatePatientNotesByPatient;
@@ -28,13 +28,17 @@ public sealed class UpdatePatientNotesByPatientCommandHandler(
                 request.AppointmentId
             );
 
-        var hasAccess = await familyMembershipRepository.HasActiveMembershipAsync(
-            request.InitiatorUserId,
-            appointment.PatientId,
-            cancellationToken
-        );
+        var membership =
+            await familyMembershipRepository.GetActiveMembershipAsync(
+                request.InitiatorUserId,
+                appointment.PatientId,
+                cancellationToken
+            )
+            ?? throw new PatientAccessUnauthorizedException(
+                DomainErrors.Patient.UnauthorizedAccess
+            );
 
-        PatientAccessService.VerifyAccess(hasAccess);
+        membership.EnsurePatientNotesWrite();
 
         appointment.UpdatePatientNotes(request.Notes);
 
