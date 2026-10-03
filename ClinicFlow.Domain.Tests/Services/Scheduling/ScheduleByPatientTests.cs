@@ -573,6 +573,102 @@ public class ScheduleByPatientTests
     }
 
     [Fact]
+    public void ScheduleByPatient_ShouldSetPatientNotes_WhenPatientNotesProvided()
+    {
+        // Arrange
+        var appointmentType = CreateAppointmentType();
+        var target = CreateSelfPatient();
+        var args = new PatientSchedulingArgs
+        {
+            TargetPatient = target,
+            DoctorId = Guid.CreateVersion7(),
+            ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
+            TimeRange = CreateTimeRange(),
+            IsInitiatorPhoneVerified = true,
+            InitiatorUserId = Guid.CreateVersion7(),
+            PatientNotes = "Patient note",
+        };
+
+        var doctorSchedule = Schedule.Create(
+            args.DoctorId,
+            args.ScheduledDate.DayOfWeek,
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(17, 0))
+        );
+
+        var context = new PatientSchedulingContext
+        {
+            DoctorSchedule = doctorSchedule,
+            InitiatorHasAccessToTarget = true,
+        };
+
+        // Act
+        var appointment = AppointmentSchedulingService.ScheduleByPatient(
+            appointmentType,
+            args,
+            context,
+            SchedulingClearance.Granted()
+        );
+
+        // Assert
+        appointment.PatientNotes.Should().Be(args.PatientNotes);
+        appointment.PatientId.Should().Be(target.Id);
+        appointment.DoctorId.Should().Be(args.DoctorId);
+        appointment.ScheduledDate.Should().Be(args.ScheduledDate);
+        appointment.TimeRange.Should().Be(args.TimeRange);
+        appointment.Status.Should().Be(AppointmentStatus.Scheduled);
+        appointment.ScheduledByUserId.Should().Be(args.InitiatorUserId);
+        appointment.DomainEvents.OfType<AppointmentScheduledEvent>().Should().ContainSingle();
+    }
+
+    [Fact]
+    public void ScheduleByPatient_ShouldLeavePatientNotesEmpty_WhenPatientNotesIsNull()
+    {
+        // Arrange
+        var appointmentType = CreateAppointmentType();
+        var target = CreateSelfPatient();
+        var args = new PatientSchedulingArgs
+        {
+            TargetPatient = target,
+            DoctorId = Guid.CreateVersion7(),
+            ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
+            TimeRange = CreateTimeRange(),
+            IsInitiatorPhoneVerified = true,
+            InitiatorUserId = Guid.CreateVersion7(),
+            PatientNotes = null,
+        };
+
+        var doctorSchedule = Schedule.Create(
+            args.DoctorId,
+            args.ScheduledDate.DayOfWeek,
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(17, 0))
+        );
+
+        var context = new PatientSchedulingContext
+        {
+            DoctorSchedule = doctorSchedule,
+            InitiatorHasAccessToTarget = true,
+        };
+
+        // Act
+        var appointment = AppointmentSchedulingService.ScheduleByPatient(
+            appointmentType,
+            args,
+            context,
+            SchedulingClearance.Granted()
+        );
+
+        // Assert
+        appointment.PatientNotes.Should().BeEmpty();
+        appointment.PatientId.Should().Be(target.Id);
+        appointment.DoctorId.Should().Be(args.DoctorId);
+        appointment.ScheduledDate.Should().Be(args.ScheduledDate);
+        appointment.TimeRange.Should().Be(args.TimeRange);
+        appointment.Status.Should().Be(AppointmentStatus.Scheduled);
+        appointment.ScheduledByUserId.Should().Be(args.InitiatorUserId);
+        appointment.DomainEvents.OfType<AppointmentScheduledEvent>().Should().ContainSingle();
+    }
+
+    [Fact]
     public void ScheduleByPatient_ShouldSucceed_WhenAllConditionsMet()
     {
         // Arrange
@@ -610,13 +706,13 @@ public class ScheduleByPatientTests
 
         // Assert
         appointment.DomainEvents.OfType<AppointmentScheduledEvent>().Should().ContainSingle();
-        appointment.Should().NotBeNull();
         appointment.PatientId.Should().Be(target.Id);
         appointment.DoctorId.Should().Be(args.DoctorId);
         appointment.ScheduledDate.Should().Be(args.ScheduledDate);
         appointment.TimeRange.Should().Be(args.TimeRange);
         appointment.Status.Should().Be(AppointmentStatus.Scheduled);
         appointment.ScheduledByUserId.Should().Be(args.InitiatorUserId);
+        appointment.PatientNotes.Should().BeEmpty();
     }
 
     private PatientSchedulingArgs CreateValidPatientSchedulingArgs() =>

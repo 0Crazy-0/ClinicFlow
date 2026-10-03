@@ -293,7 +293,6 @@ public class SetGuardianInvolvementDeterminationByDoctorCommandHandlerTests
             Guid.CreateVersion7(),
             scheduledDate,
             TimeRange.Create(new TimeOnly(9), new TimeOnly(10)),
-            null,
             Guid.CreateVersion7()
         );
 

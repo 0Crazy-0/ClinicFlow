@@ -103,7 +103,6 @@ public class AppointmentNoShowTests
                 TimeOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2)),
                 TimeOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2).AddHours(1))
             ),
-            null,
             Guid.CreateVersion7()
         );
 }

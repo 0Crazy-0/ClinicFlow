@@ -32,7 +32,6 @@ public class AppointmentTests
             appointmentTypeId,
             scheduledDate,
             timeRange,
-            null,
             scheduledByUserId
         );
 
@@ -84,7 +83,6 @@ public class AppointmentTests
                 Guid.Parse(appointmentTypeIdStr),
                 DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
                 TimeRange.Create(new TimeOnly(9), new TimeOnly(10)),
-                null,
                 Guid.CreateVersion7()
             );
 
@@ -103,7 +101,6 @@ public class AppointmentTests
                 Guid.CreateVersion7(),
                 DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
                 TimeRange.Create(new TimeOnly(9), new TimeOnly(10)),
-                null,
                 Guid.Empty
             );
 
@@ -124,7 +121,6 @@ public class AppointmentTests
                 Guid.CreateVersion7(),
                 DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
                 null!,
-                null,
                 Guid.CreateVersion7()
             );
 
@@ -132,57 +128,6 @@ public class AppointmentTests
         act.Should()
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.General.RequiredFieldNull);
-    }
-
-    [Fact]
-    public void Schedule_ShouldSetPatientNotes_WhenProvided()
-    {
-        // Arrange
-        var patientId = Guid.CreateVersion7();
-        var doctorId = Guid.CreateVersion7();
-        var appointmentTypeId = Guid.CreateVersion7();
-        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
-        var timeRange = TimeRange.Create(new TimeOnly(9), new TimeOnly(10));
-        var patientNotes = "Test patient notes";
-
-        // Act
-        var appointment = Appointment.Schedule(
-            patientId,
-            doctorId,
-            appointmentTypeId,
-            scheduledDate,
-            timeRange,
-            patientNotes,
-            Guid.CreateVersion7()
-        );
-
-        // Assert
-        appointment.PatientNotes.Should().Be(patientNotes);
-    }
-
-    [Fact]
-    public void Schedule_ShouldSetPatientNotesToEmpty_WhenNullProvided()
-    {
-        // Arrange
-        var patientId = Guid.CreateVersion7();
-        var doctorId = Guid.CreateVersion7();
-        var appointmentTypeId = Guid.CreateVersion7();
-        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
-        var timeRange = TimeRange.Create(new TimeOnly(9), new TimeOnly(10));
-
-        // Act
-        var appointment = Appointment.Schedule(
-            patientId,
-            doctorId,
-            appointmentTypeId,
-            scheduledDate,
-            timeRange,
-            null,
-            Guid.CreateVersion7()
-        );
-
-        // Assert
-        appointment.PatientNotes.Should().BeEmpty();
     }
 
     [Fact]
@@ -1098,7 +1043,6 @@ public class AppointmentTests
             Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2)),
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
-            null,
             Guid.CreateVersion7()
         );
 }

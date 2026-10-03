@@ -514,7 +514,6 @@ public class AppointmentCancellationServiceTests
                 TimeOnly.FromDateTime(scheduledDateTime),
                 TimeOnly.FromDateTime(scheduledDateTime).AddMinutes(30)
             ),
-            null,
             Guid.CreateVersion7()
         );
 
@@ -568,7 +567,6 @@ public class AppointmentCancellationServiceTests
                 TimeOnly.FromDateTime(scheduledDateTime),
                 TimeOnly.FromDateTime(scheduledDateTime).AddMinutes(30)
             ),
-            null,
             Guid.CreateVersion7()
         );
 
@@ -604,7 +602,6 @@ public class AppointmentCancellationServiceTests
             Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2)),
             TimeRange.Create(new TimeOnly(9), new TimeOnly(10)),
-            null,
             Guid.CreateVersion7()
         );
 
@@ -618,7 +615,6 @@ public class AppointmentCancellationServiceTests
                 TimeOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2)),
                 TimeOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2)).AddMinutes(30)
             ),
-            null,
             Guid.CreateVersion7()
         );
 

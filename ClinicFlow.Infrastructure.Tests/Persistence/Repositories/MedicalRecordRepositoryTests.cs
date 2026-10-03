@@ -870,7 +870,6 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
                 new TimeOnly(8, 0).AddMinutes(startMinute),
                 new TimeOnly(8, 0).AddMinutes(startMinute + 30)
             ),
-            null,
             Guid.CreateVersion7()
         );
 

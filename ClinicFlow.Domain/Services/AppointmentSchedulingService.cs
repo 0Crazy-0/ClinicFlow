@@ -56,15 +56,19 @@ public static class AppointmentSchedulingService
             args.TimeRange
         );
 
-        return Appointment.Schedule(
+        var appointment = Appointment.Schedule(
             args.TargetPatient.Id,
             args.DoctorId,
             appointmentType.Id,
             args.ScheduledDate,
             args.TimeRange,
-            args.PatientNotes,
             args.InitiatorUserId
         );
+
+        if (args.PatientNotes is not null)
+            appointment.UpdatePatientNotes(args.PatientNotes);
+
+        return appointment;
     }
 
     public static Appointment ScheduleByGuardian(
@@ -121,7 +125,6 @@ public static class AppointmentSchedulingService
             appointmentType.Id,
             args.ScheduledDate,
             args.TimeRange,
-            null,
             args.InitiatorUserId
         );
 
@@ -166,7 +169,6 @@ public static class AppointmentSchedulingService
             appointmentType.Id,
             args.ScheduledDate,
             args.TimeRange,
-            null,
             args.InitiatorDoctor.UserId
         );
     }
@@ -207,7 +209,6 @@ public static class AppointmentSchedulingService
             appointmentType.Id,
             args.ScheduledDate,
             args.TimeRange,
-            null,
             args.InitiatorUserId
         );
     }

@@ -118,7 +118,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             apptType.Id,
             scheduledDate,
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
-            null,
             Guid.CreateVersion7()
         );
 
@@ -131,7 +130,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             apptType.Id,
             scheduledDate,
             TimeRange.Create(new TimeOnly(11, 0), new TimeOnly(12, 0)),
-            null,
             Guid.CreateVersion7()
         );
 
@@ -144,7 +142,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             apptType.Id,
             scheduledDate,
             TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0)),
-            null,
             Guid.CreateVersion7()
         );
 
@@ -223,7 +220,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             apptType.Id,
             scheduledDate,
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
-            null,
             Guid.CreateVersion7()
         );
 
@@ -236,7 +232,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             apptType.Id,
             scheduledDate,
             TimeRange.Create(new TimeOnly(11, 0), new TimeOnly(12, 0)),
-            null,
             Guid.CreateVersion7()
         );
 
@@ -249,7 +244,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             apptType.Id,
             scheduledDate,
             TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0)),
-            null,
             Guid.CreateVersion7()
         );
 
@@ -290,7 +284,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             apptType.Id,
             scheduledDate,
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
-            null,
             Guid.CreateVersion7()
         );
         Context.Appointments.Add(appointment1);
@@ -302,7 +295,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             apptType.Id,
             scheduledDate,
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
-            null,
             Guid.CreateVersion7()
         );
         Context.Appointments.Add(appointment2);
@@ -314,7 +306,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             apptType.Id,
             scheduledDate,
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
-            null,
             Guid.CreateVersion7()
         );
         Context.Appointments.Add(appointment3);
@@ -356,7 +347,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             apptType.Id,
             baseDate.AddDays(1),
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
-            null,
             Guid.CreateVersion7()
         );
 
@@ -369,7 +359,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             apptType.Id,
             baseDate.AddDays(1),
             TimeRange.Create(new TimeOnly(11, 0), new TimeOnly(12, 0)),
-            null,
             Guid.CreateVersion7()
         );
 
@@ -382,7 +371,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             apptType.Id,
             baseDate.AddDays(2),
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
-            null,
             Guid.CreateVersion7()
         );
 
@@ -395,7 +383,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             apptType.Id,
             baseDate.AddDays(5),
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
-            null,
             Guid.CreateVersion7()
         );
 
@@ -437,7 +424,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             apptType.Id,
             baseDate.AddDays(1),
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
-            null,
             Guid.CreateVersion7()
         );
 
@@ -450,7 +436,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             apptType.Id,
             baseDate.AddDays(1),
             TimeRange.Create(new TimeOnly(11, 0), new TimeOnly(12, 0)),
-            null,
             Guid.CreateVersion7()
         );
 
@@ -463,7 +448,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             apptType.Id,
             baseDate.AddDays(2),
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
-            null,
             Guid.CreateVersion7()
         );
 
@@ -504,7 +488,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             apptType.Id,
             scheduledDate,
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
-            null,
             Guid.CreateVersion7()
         );
 
@@ -517,7 +500,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             apptType.Id,
             scheduledDate,
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
-            null,
             Guid.CreateVersion7()
         );
 
@@ -530,7 +512,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             apptType.Id,
             scheduledDate,
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
-            null,
             Guid.CreateVersion7()
         );
 
@@ -573,7 +554,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             apptType.Id,
             baseDate.AddDays(1),
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
-            null,
             Guid.CreateVersion7()
         );
 
@@ -586,7 +566,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             apptType2.Id,
             baseDate.AddDays(1),
             TimeRange.Create(new TimeOnly(11, 0), new TimeOnly(12, 0)),
-            null,
             Guid.CreateVersion7()
         );
 
@@ -599,7 +578,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             apptType3.Id,
             baseDate.AddDays(2),
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
-            null,
             Guid.CreateVersion7()
         );
 
@@ -612,7 +590,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             apptType.Id,
             baseDate.AddDays(1),
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
-            null,
             Guid.CreateVersion7()
         );
 
@@ -654,7 +631,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             apptType.Id,
             baseDate.AddDays(1),
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
-            null,
             Guid.CreateVersion7()
         );
 
@@ -667,7 +643,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             apptType2.Id,
             baseDate.AddDays(1),
             TimeRange.Create(new TimeOnly(11, 0), new TimeOnly(12, 0)),
-            null,
             Guid.CreateVersion7()
         );
 
@@ -680,7 +655,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             apptType3.Id,
             baseDate.AddDays(2),
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
-            null,
             Guid.CreateVersion7()
         );
 
@@ -693,7 +667,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             apptType.Id,
             baseDate.AddDays(1),
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
-            null,
             Guid.CreateVersion7()
         );
 
@@ -733,7 +706,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             apptType.Id,
             scheduledDate,
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
-            null,
             Guid.CreateVersion7()
         );
         Context.Appointments.Add(appointment1);
@@ -745,7 +717,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             apptType2.Id,
             scheduledDate,
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
-            null,
             Guid.CreateVersion7()
         );
         Context.Appointments.Add(appointment2);
@@ -757,7 +728,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             apptType3.Id,
             scheduledDate,
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
-            null,
             Guid.CreateVersion7()
         );
         Context.Appointments.Add(appointment3);
@@ -818,7 +788,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             guardianApptType.Id,
             scheduledDate,
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
-            null,
             Guid.CreateVersion7()
         );
         Context.Appointments.Add(appointment);
@@ -876,7 +845,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             guardianApptType.Id,
             scheduledDate,
             TimeRange.Create(new TimeOnly(14, 0), new TimeOnly(15, 0)),
-            null,
             Guid.CreateVersion7()
         );
         Context.Appointments.Add(appointment);
@@ -929,7 +897,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             guardianApptType.Id,
             scheduledDate,
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
-            null,
             Guid.CreateVersion7()
         );
         Context.Appointments.Add(appointment);
@@ -971,7 +938,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             standardApptType.Id,
             scheduledDate,
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
-            null,
             Guid.CreateVersion7()
         );
         Context.Appointments.Add(appointment);
@@ -1023,7 +989,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             guardianApptType.Id,
             scheduledDate,
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
-            null,
             Guid.CreateVersion7()
         );
         appointment.Cancel(Guid.CreateVersion7(), "Reason", scheduledDate);
@@ -1082,7 +1047,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             guardianApptType.Id,
             scheduledDate,
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
-            null,
             Guid.CreateVersion7()
         );
         Context.Appointments.Add(appointment);
@@ -1140,7 +1104,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             guardianApptType.Id,
             scheduledDate,
             TimeRange.Create(new TimeOnly(14, 0), new TimeOnly(15, 0)),
-            null,
             Guid.CreateVersion7()
         );
         Context.Appointments.Add(appointment);
@@ -1198,7 +1161,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             guardianApptType.Id,
             scheduledDate,
             TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0)),
-            null,
             Guid.CreateVersion7()
         );
         Context.Appointments.Add(appointment);
@@ -1245,7 +1207,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             apptType.Id,
             scheduledDate,
             TimeRange.Create(new TimeOnly(9), new TimeOnly(10)),
-            null,
             Guid.CreateVersion7()
         );
 
@@ -1277,7 +1238,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             apptType.Id,
             scheduledDate,
             TimeRange.Create(new TimeOnly(9), new TimeOnly(10)),
-            null,
             Guid.CreateVersion7()
         );
         appointment.MarkAsRequiresReassignment();
@@ -1310,7 +1270,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             apptType.Id,
             scheduledDate,
             TimeRange.Create(new TimeOnly(9), new TimeOnly(10)),
-            null,
             Guid.CreateVersion7()
         );
         appointment.Cancel(
@@ -1347,7 +1306,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             apptType.Id,
             scheduledDate,
             TimeRange.Create(new TimeOnly(9), new TimeOnly(10)),
-            null,
             Guid.CreateVersion7()
         );
 
@@ -1380,7 +1338,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             apptType.Id,
             scheduledDate,
             TimeRange.Create(new TimeOnly(9), new TimeOnly(10)),
-            null,
             Guid.CreateVersion7()
         );
 
@@ -1412,7 +1369,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             apptType.Id,
             scheduledDate,
             TimeRange.Create(new TimeOnly(9), new TimeOnly(10)),
-            null,
             Guid.CreateVersion7()
         );
 
@@ -1445,7 +1401,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             apptType.Id,
             scheduledDate,
             TimeRange.Create(new TimeOnly(9), new TimeOnly(10)),
-            null,
             Guid.CreateVersion7()
         );
 
@@ -1458,7 +1413,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             apptType.Id,
             scheduledDate,
             TimeRange.Create(new TimeOnly(11), new TimeOnly(12)),
-            null,
             Guid.CreateVersion7()
         );
 
@@ -1484,7 +1438,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             apptType.Id,
             scheduledDate,
             TimeRange.Create(new TimeOnly(9), new TimeOnly(10)),
-            null,
             Guid.CreateVersion7()
         );
 
@@ -1742,7 +1695,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             apptType.Id,
             baseDate.AddDays(1),
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
-            null,
             Guid.CreateVersion7()
         );
 
@@ -1755,7 +1707,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             apptType.Id,
             baseDate.AddDays(-1),
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
-            null,
             Guid.CreateVersion7()
         );
 
@@ -1768,7 +1719,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             apptType.Id,
             baseDate.AddDays(1),
             TimeRange.Create(new TimeOnly(11, 0), new TimeOnly(12, 0)),
-            null,
             Guid.CreateVersion7()
         );
 
@@ -1829,7 +1779,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             apptType.Id,
             baseDate,
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
-            null,
             Guid.CreateVersion7()
         );
 
@@ -1844,7 +1793,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             apptType.Id,
             baseDate.AddDays(1),
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
-            null,
             Guid.CreateVersion7()
         );
 
@@ -1859,7 +1807,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             apptType.Id,
             baseDate,
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
-            null,
             Guid.CreateVersion7()
         );
 
@@ -1944,7 +1891,6 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             apptType.Id,
             scheduledDate,
             timeRange,
-            null,
             Guid.CreateVersion7()
         );
         appointment.ClearDomainEvents();
