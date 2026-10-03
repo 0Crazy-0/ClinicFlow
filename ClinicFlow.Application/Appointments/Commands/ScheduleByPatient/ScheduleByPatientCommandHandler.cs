@@ -3,6 +3,7 @@ using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Appointments;
 using ClinicFlow.Domain.Exceptions.Base;
+using ClinicFlow.Domain.Exceptions.Patients;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.Interfaces.Services;
@@ -131,16 +132,16 @@ public sealed class ScheduleByPatientCommandHandler(
                     appointmentType
                 );
 
-                var initiatorMembership = await familyMembershipRepository.GetActiveMembershipAsync(
-                    request.InitiatorUserId,
-                    request.TargetPatientId,
-                    cancellationToken
-                );
-
-                // This will be refactored soon
-                var initiatorHasAccessToTarget = initiatorMembership is not null;
-                var initiatorLegalAuthority =
-                    initiatorMembership?.LegalAuthority ?? LegalAuthorityType.None;
+                if (
+                    !await familyMembershipRepository.HasActiveSelfMembershipAsync(
+                        request.InitiatorUserId,
+                        request.TargetPatientId,
+                        cancellationToken
+                    )
+                )
+                    throw new PatientAccessUnauthorizedException(
+                        DomainErrors.Patient.UnauthorizedAccess
+                    );
 
                 var appointment = AppointmentSchedulingService.ScheduleByPatient(
                     appointmentType,
@@ -158,8 +159,8 @@ public sealed class ScheduleByPatientCommandHandler(
                     {
                         Penalties = penalties,
                         DoctorSchedule = doctorSchedule,
-                        InitiatorHasAccessToTarget = initiatorHasAccessToTarget,
-                        InitiatorLegalAuthority = initiatorLegalAuthority,
+                        InitiatorHasAccessToTarget = true,
+                        InitiatorLegalAuthority = LegalAuthorityType.None,
                     },
                     clearance
                 );

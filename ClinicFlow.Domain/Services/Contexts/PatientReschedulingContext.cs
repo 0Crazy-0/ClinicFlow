@@ -1,4 +1,5 @@
 using ClinicFlow.Domain.Entities;
+using ClinicFlow.Domain.Enums;
 
 namespace ClinicFlow.Domain.Services.Contexts;
 
@@ -10,4 +11,5 @@ public sealed record class PatientReschedulingContext
     public IReadOnlyList<PatientPenalty> Penalties { get; init; } = [];
     public required Schedule DoctorSchedule { get; init; }
     public bool InitiatorHasAccessToTarget { get; init; }
+    public LegalAuthorityType? CreatorLegalAuthority { get; init; }
 }

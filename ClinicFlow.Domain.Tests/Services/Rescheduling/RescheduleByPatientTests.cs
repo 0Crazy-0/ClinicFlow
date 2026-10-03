@@ -151,6 +151,7 @@ public class RescheduleByPatientTests
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
             NewTimeRange = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
+            InitiatorUserId = Guid.CreateVersion7(),
         };
 
         var context = new PatientReschedulingContext
@@ -187,6 +188,7 @@ public class RescheduleByPatientTests
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
             NewTimeRange = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
+            InitiatorUserId = Guid.CreateVersion7(),
         };
 
         var context = new PatientReschedulingContext
@@ -222,6 +224,7 @@ public class RescheduleByPatientTests
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
             NewTimeRange = CreateTimeRange(),
             IsInitiatorPhoneVerified = false,
+            InitiatorUserId = Guid.CreateVersion7(),
         };
 
         var context = new PatientReschedulingContext
@@ -257,6 +260,7 @@ public class RescheduleByPatientTests
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
             NewTimeRange = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
+            InitiatorUserId = Guid.CreateVersion7(),
         };
 
         var penalties = new[]
@@ -301,6 +305,7 @@ public class RescheduleByPatientTests
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
             NewTimeRange = TimeRange.Create(new TimeOnly(18, 0), new TimeOnly(19, 0)),
             IsInitiatorPhoneVerified = true,
+            InitiatorUserId = Guid.CreateVersion7(),
         };
 
         var context = new PatientReschedulingContext
@@ -336,6 +341,7 @@ public class RescheduleByPatientTests
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
             NewTimeRange = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
+            InitiatorUserId = Guid.CreateVersion7(),
         };
 
         var context = new PatientReschedulingContext
@@ -373,6 +379,7 @@ public class RescheduleByPatientTests
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
             NewTimeRange = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
+            InitiatorUserId = Guid.CreateVersion7(),
             NewPatientNotes = "Rescheduled notes",
         };
 
@@ -409,6 +416,7 @@ public class RescheduleByPatientTests
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
             NewTimeRange = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
+            InitiatorUserId = Guid.CreateVersion7(),
             NewPatientNotes = null,
         };
 
@@ -430,10 +438,275 @@ public class RescheduleByPatientTests
         appointment.PatientNotes.Should().Be("Original notes");
     }
 
+    [Fact]
+    public void RescheduleByPatient_ShouldThrowUnauthorized_WhenMinorReschedulesGuardianCreatedAppointment()
+    {
+        // Arrange
+        var target = CreateMinorPatient();
+        var guardianId = Guid.CreateVersion7();
+        var appointment = Appointment.Schedule(
+            target.Id,
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2)),
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            null,
+            guardianId
+        );
+
+        var minorId = Guid.CreateVersion7();
+        appointment.ClearDomainEvents();
+
+        var args = new PatientReschedulingArgs
+        {
+            TargetPatient = target,
+            InitiatorUserId = minorId,
+            NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
+            NewTimeRange = CreateTimeRange(),
+            IsInitiatorPhoneVerified = true,
+        };
+
+        var context = new PatientReschedulingContext
+        {
+            DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek),
+            InitiatorHasAccessToTarget = true,
+            CreatorLegalAuthority = LegalAuthorityType.Parent,
+        };
+
+        // Act
+        var act = () =>
+            AppointmentReschedulingService.RescheduleByPatient(
+                appointment,
+                args,
+                context,
+                SchedulingClearance.Granted()
+            );
+
+        // Assert
+        act.Should()
+            .Throw<PatientAccessUnauthorizedException>()
+            .WithMessage(DomainErrors.Patient.UnauthorizedAccess);
+    }
+
+    [Fact]
+    public void RescheduleByPatient_ShouldSucceed_WhenAdultReschedulesGuardianCreatedAppointment()
+    {
+        // Arrange
+        var target = CreateSelfPatient(); // dateOfBirth is 30 years ago
+        var guardianId = Guid.CreateVersion7();
+        var appointment = Appointment.Schedule(
+            target.Id,
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2)),
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            null,
+            guardianId
+        );
+
+        appointment.ClearDomainEvents();
+
+        var args = new PatientReschedulingArgs
+        {
+            TargetPatient = target,
+            InitiatorUserId = Guid.CreateVersion7(),
+            NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
+            NewTimeRange = CreateTimeRange(),
+            IsInitiatorPhoneVerified = true,
+        };
+
+        var context = new PatientReschedulingContext
+        {
+            DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek),
+            InitiatorHasAccessToTarget = true,
+            CreatorLegalAuthority = LegalAuthorityType.Parent,
+        };
+
+        // Act
+        AppointmentReschedulingService.RescheduleByPatient(
+            appointment,
+            args,
+            context,
+            SchedulingClearance.Granted()
+        );
+
+        // Assert
+        appointment.DomainEvents.OfType<AppointmentRescheduledEvent>().Should().ContainSingle();
+        appointment.ScheduledDate.Should().Be(args.NewDate);
+        appointment.TimeRange.Should().Be(args.NewTimeRange);
+    }
+
+    [Fact]
+    public void RescheduleByPatient_ShouldSucceed_WhenExactlyAdultReschedulesGuardianCreatedAppointment()
+    {
+        // Arrange
+        var newDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3));
+        var target = Patient.CreateProfile(
+            PersonName.Create("Test"),
+            newDate.AddYears(-FamilyMembership.MinimumAdultAge),
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        target.UpdateMedicalProfile(BloodType.Create("A+"), "", "");
+        target.UpdateEmergencyContact(EmergencyContact.Create("Name", "1234567890"));
+
+        var guardianId = Guid.CreateVersion7();
+        var appointment = Appointment.Schedule(
+            target.Id,
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2)),
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            null,
+            guardianId
+        );
+
+        appointment.ClearDomainEvents();
+
+        var args = new PatientReschedulingArgs
+        {
+            TargetPatient = target,
+            InitiatorUserId = Guid.CreateVersion7(),
+            NewDate = newDate,
+            NewTimeRange = CreateTimeRange(),
+            IsInitiatorPhoneVerified = true,
+        };
+
+        var context = new PatientReschedulingContext
+        {
+            DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek),
+            InitiatorHasAccessToTarget = true,
+            CreatorLegalAuthority = LegalAuthorityType.Parent,
+        };
+
+        // Act
+        AppointmentReschedulingService.RescheduleByPatient(
+            appointment,
+            args,
+            context,
+            SchedulingClearance.Granted()
+        );
+
+        // Assert
+        appointment.DomainEvents.OfType<AppointmentRescheduledEvent>().Should().ContainSingle();
+        appointment.ScheduledDate.Should().Be(args.NewDate);
+        appointment.TimeRange.Should().Be(args.NewTimeRange);
+    }
+
+    [Fact]
+    public void RescheduleByPatient_ShouldSucceed_WhenGuardianAuthorityExtinguished()
+    {
+        // Arrange
+        var target = CreateMinorPatient();
+        var guardianId = Guid.CreateVersion7();
+        var appointment = Appointment.Schedule(
+            target.Id,
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2)),
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            null,
+            guardianId
+        );
+
+        appointment.ClearDomainEvents();
+
+        var args = new PatientReschedulingArgs
+        {
+            TargetPatient = target,
+            InitiatorUserId = Guid.CreateVersion7(),
+            NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
+            NewTimeRange = CreateTimeRange(),
+            IsInitiatorPhoneVerified = true,
+        };
+
+        var context = new PatientReschedulingContext
+        {
+            DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek),
+            InitiatorHasAccessToTarget = true,
+            CreatorLegalAuthority = LegalAuthorityType.None,
+        };
+
+        // Act
+        AppointmentReschedulingService.RescheduleByPatient(
+            appointment,
+            args,
+            context,
+            SchedulingClearance.Granted()
+        );
+
+        // Assert
+        appointment.DomainEvents.OfType<AppointmentRescheduledEvent>().Should().ContainSingle();
+        appointment.ScheduledDate.Should().Be(args.NewDate);
+        appointment.TimeRange.Should().Be(args.NewTimeRange);
+    }
+
+    [Fact]
+    public void RescheduleByPatient_ShouldSucceed_WhenReschedulingOwnAppointment()
+    {
+        // Arrange
+        var target = CreateMinorPatient();
+        var minorId = Guid.CreateVersion7();
+        var appointment = Appointment.Schedule(
+            target.Id,
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2)),
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            null,
+            minorId
+        );
+
+        appointment.ClearDomainEvents();
+
+        var args = new PatientReschedulingArgs
+        {
+            TargetPatient = target,
+            InitiatorUserId = minorId,
+            NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
+            NewTimeRange = CreateTimeRange(),
+            IsInitiatorPhoneVerified = true,
+        };
+
+        var context = new PatientReschedulingContext
+        {
+            DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek),
+            InitiatorHasAccessToTarget = true,
+            CreatorLegalAuthority = LegalAuthorityType.Parent,
+        };
+
+        // Act
+        AppointmentReschedulingService.RescheduleByPatient(
+            appointment,
+            args,
+            context,
+            SchedulingClearance.Granted()
+        );
+
+        // Assert
+        appointment.DomainEvents.OfType<AppointmentRescheduledEvent>().Should().ContainSingle();
+        appointment.ScheduledDate.Should().Be(args.NewDate);
+        appointment.TimeRange.Should().Be(args.NewTimeRange);
+    }
+
+    private Patient CreateMinorPatient()
+    {
+        var patient = Patient.CreateProfile(
+            PersonName.Create("Child"),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10)),
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+        patient.UpdateMedicalProfile(BloodType.Create("A+"), "", "");
+        patient.UpdateEmergencyContact(EmergencyContact.Create("Name", "1234567890"));
+
+        return patient;
+    }
+
     private PatientReschedulingArgs CreateValidPatientReschedulingArgs() =>
         new()
         {
             TargetPatient = CreateSelfPatient(),
+            InitiatorUserId = Guid.CreateVersion7(),
             NewTimeRange = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
         };
