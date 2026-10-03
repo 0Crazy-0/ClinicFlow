@@ -78,6 +78,54 @@ public class AppointmentGuardianNotesServiceTests
     }
 
     [Fact]
+    public void UpdateByGuardian_ShouldThrowValidation_WhenTargetMismatch()
+    {
+        // Arrange
+        var appointment = CreateAppointment(Guid.CreateVersion7()); // patientId is different from target patient
+        var target = CreateMinorPatient();
+        var authorId = Guid.CreateVersion7();
+        var args = new UpdateGuardianNotesArgs
+        {
+            TargetPatient = target,
+            InitiatorMembership = CreateParentMembership(target.Id, authorId),
+            InitiatorUserId = authorId,
+            Notes = "Note",
+        };
+
+        // Act
+        var act = () => AppointmentGuardianNotesService.UpdateByGuardian(appointment, args);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Appointment.DataMismatch);
+    }
+
+    [Fact]
+    public void UpdateByGuardian_ShouldThrowValidation_WhenMembershipMismatch()
+    {
+        // Arrange
+        var target = CreateMinorPatient();
+        var appointment = CreateAppointment(target.Id);
+        var authorId = Guid.CreateVersion7();
+        var args = new UpdateGuardianNotesArgs
+        {
+            TargetPatient = target,
+            InitiatorMembership = CreateParentMembership(Guid.CreateVersion7(), authorId),
+            InitiatorUserId = authorId,
+            Notes = "Note",
+        };
+
+        // Act
+        var act = () => AppointmentGuardianNotesService.UpdateByGuardian(appointment, args);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Appointment.DataMismatch);
+    }
+
+    [Fact]
     public void UpdateByGuardian_ShouldSetGuardianNotes_WhenAuthorGuardianUpdates()
     {
         // Arrange
@@ -90,7 +138,7 @@ public class AppointmentGuardianNotesServiceTests
         var args = new UpdateGuardianNotesArgs
         {
             TargetPatient = target,
-            InitiatorMembership = CreateParentMembership(authorId),
+            InitiatorMembership = CreateParentMembership(target.Id, authorId),
             InitiatorUserId = authorId,
             Notes = "Updated note",
         };
@@ -115,7 +163,7 @@ public class AppointmentGuardianNotesServiceTests
         var args = new UpdateGuardianNotesArgs
         {
             TargetPatient = target,
-            InitiatorMembership = CreateParentMembership(authorId),
+            InitiatorMembership = CreateParentMembership(target.Id, authorId),
             InitiatorUserId = authorId,
             Notes = "First note",
         };
@@ -143,7 +191,7 @@ public class AppointmentGuardianNotesServiceTests
         var args = new UpdateGuardianNotesArgs
         {
             TargetPatient = target,
-            InitiatorMembership = CreateParentMembership(otherGuardianId),
+            InitiatorMembership = CreateParentMembership(target.Id, otherGuardianId),
             InitiatorUserId = otherGuardianId,
             Notes = "Outsider attempt",
         };
@@ -171,7 +219,7 @@ public class AppointmentGuardianNotesServiceTests
         {
             TargetPatient = target,
             InitiatorMembership = FamilyMembership.CreateSelf(
-                Guid.CreateVersion7(),
+                target.Id,
                 userId,
                 _fakeTime.GetUtcNow().UtcDateTime
             ),
@@ -200,7 +248,7 @@ public class AppointmentGuardianNotesServiceTests
         {
             TargetPatient = target,
             InitiatorMembership = FamilyMembership.CreateFamilyMember(
-                Guid.CreateVersion7(),
+                target.Id,
                 userId,
                 PatientRelationship.Spouse,
                 LegalAuthorityType.None,
@@ -237,7 +285,7 @@ public class AppointmentGuardianNotesServiceTests
         var args = new UpdateGuardianNotesArgs
         {
             TargetPatient = patientAdult,
-            InitiatorMembership = CreateParentMembership(authorId),
+            InitiatorMembership = CreateParentMembership(patientAdult.Id, authorId),
             InitiatorUserId = authorId,
             Notes = "Note for adult",
         };
@@ -274,7 +322,7 @@ public class AppointmentGuardianNotesServiceTests
         var args = new UpdateGuardianNotesArgs
         {
             TargetPatient = target,
-            InitiatorMembership = CreateParentMembership(authorId),
+            InitiatorMembership = CreateParentMembership(target.Id, authorId),
             InitiatorUserId = authorId,
             Notes = "Note",
         };
@@ -303,7 +351,7 @@ public class AppointmentGuardianNotesServiceTests
         var args = new UpdateGuardianNotesArgs
         {
             TargetPatient = target,
-            InitiatorMembership = CreateParentMembership(authorId),
+            InitiatorMembership = CreateParentMembership(target.Id, authorId),
             InitiatorUserId = authorId,
             Notes = "Note",
         };
@@ -317,9 +365,9 @@ public class AppointmentGuardianNotesServiceTests
             .WithMessage(DomainErrors.Appointment.CannotUpdateNotes);
     }
 
-    private FamilyMembership CreateParentMembership(Guid userId) =>
+    private FamilyMembership CreateParentMembership(Guid patientId, Guid userId) =>
         FamilyMembership.CreateFamilyMember(
-            Guid.CreateVersion7(),
+            patientId,
             userId,
             PatientRelationship.Parent,
             LegalAuthorityType.Parent,
@@ -341,14 +389,18 @@ public class AppointmentGuardianNotesServiceTests
         return patient;
     }
 
-    private UpdateGuardianNotesArgs CreateValidUpdateGuardianNotesArgs() =>
-        new()
+    private UpdateGuardianNotesArgs CreateValidUpdateGuardianNotesArgs()
+    {
+        var target = CreateMinorPatient();
+
+        return new()
         {
-            TargetPatient = CreateMinorPatient(),
-            InitiatorMembership = CreateParentMembership(Guid.CreateVersion7()),
+            TargetPatient = target,
+            InitiatorMembership = CreateParentMembership(target.Id, Guid.CreateVersion7()),
             InitiatorUserId = Guid.CreateVersion7(),
             Notes = "Note",
         };
+    }
 
     private Appointment CreateAppointment(Guid patientId)
     {

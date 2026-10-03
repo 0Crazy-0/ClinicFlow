@@ -18,6 +18,12 @@ public static class AppointmentGuardianNotesService
         ArgumentNullException.ThrowIfNull(args.TargetPatient);
         ArgumentNullException.ThrowIfNull(args.InitiatorMembership);
 
+        if (
+            args.TargetPatient.Id != appointment.PatientId
+            || args.InitiatorMembership.PatientId != appointment.PatientId
+        )
+            throw new DomainValidationException(DomainErrors.Appointment.DataMismatch);
+
         if (appointment.GuardianNotesAuthorUserId is null)
         {
             args.InitiatorMembership.EnsureGuardianAccess();
