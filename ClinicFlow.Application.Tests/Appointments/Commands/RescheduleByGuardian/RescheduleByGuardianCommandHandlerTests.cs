@@ -90,7 +90,6 @@ public class RescheduleByGuardianCommandHandlerTests
             typeId,
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0)),
-            null,
             authorId
         );
 
@@ -628,7 +627,6 @@ public class RescheduleByGuardianCommandHandlerTests
             typeId,
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange.Create(new TimeOnly(10), new TimeOnly(11)),
-            null,
             Guid.CreateVersion7()
         );
 
@@ -725,7 +723,6 @@ public class RescheduleByGuardianCommandHandlerTests
             Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange.Create(new TimeOnly(10), new TimeOnly(11)),
-            null,
             Guid.CreateVersion7()
         );
 

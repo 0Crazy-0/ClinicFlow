@@ -315,7 +315,6 @@ public class StartMedicalEncounterCommandHandlerTests
             appointmentTypeId,
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime),
             TimeRange.Create(new TimeOnly(0), new TimeOnly(1)),
-            null,
             Guid.CreateVersion7()
         );
 

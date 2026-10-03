@@ -68,7 +68,6 @@ public class Appointment : BaseEntity
         Guid appointmentTypeId,
         DateOnly scheduledDate,
         TimeRange timeRange,
-        string? patientNotes,
         Guid scheduledByUserId
     )
     {
@@ -79,7 +78,6 @@ public class Appointment : BaseEntity
         TimeRange = timeRange;
         Status = AppointmentStatus.Scheduled;
         RescheduleCount = 0;
-        PatientNotes = patientNotes ?? string.Empty;
         ScheduledByUserId = scheduledByUserId;
     }
 
@@ -89,7 +87,6 @@ public class Appointment : BaseEntity
         Guid appointmentTypeId,
         DateOnly scheduledDate,
         TimeRange timeRange,
-        string? patientNotes,
         Guid scheduledByUserId
     )
     {
@@ -105,7 +102,6 @@ public class Appointment : BaseEntity
             appointmentTypeId,
             scheduledDate,
             timeRange,
-            patientNotes,
             scheduledByUserId
         );
 
