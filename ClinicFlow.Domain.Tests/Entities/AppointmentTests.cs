@@ -211,6 +211,88 @@ public class AppointmentTests
     }
 
     [Fact]
+    public void Cancel_ShouldThrowException_WhenReasonExceedsMaximumLength()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        var reason = new string('A', Appointment.MaxCancellationReasonLength + 1);
+
+        // Act
+        var act = () =>
+            appointment.Cancel(
+                Guid.CreateVersion7(),
+                reason,
+                DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime)
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueTooLong);
+    }
+
+    [Fact]
+    public void Cancel_ShouldSucceed_WhenReasonLengthEqualsMaximumLength()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        var userId = Guid.CreateVersion7();
+        var reason = new string('A', Appointment.MaxCancellationReasonLength);
+        var cancelledAt = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+
+        // Act
+        appointment.Cancel(userId, reason, cancelledAt);
+
+        // Assert
+        appointment.Status.Should().Be(AppointmentStatus.Cancelled);
+        appointment.CancelledByUserId.Should().Be(userId);
+        appointment.CancellationReason.Should().Be(reason);
+        appointment.CancelledAt.Should().Be(cancelledAt);
+        appointment.DomainEvents.OfType<AppointmentCancelledEvent>().Should().ContainSingle();
+    }
+
+    [Fact]
+    public void CancelLate_ShouldThrowException_WhenReasonExceedsMaximumLength()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        var reason = new string('A', Appointment.MaxCancellationReasonLength + 1);
+
+        // Act
+        var act = () =>
+            appointment.CancelLate(
+                Guid.CreateVersion7(),
+                reason,
+                DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime)
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueTooLong);
+    }
+
+    [Fact]
+    public void CancelLate_ShouldSucceed_WhenReasonLengthEqualsMaximumLength()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        var userId = Guid.CreateVersion7();
+        var reason = new string('A', Appointment.MaxCancellationReasonLength);
+        var cancelledAt = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+
+        // Act
+        appointment.CancelLate(userId, reason, cancelledAt);
+
+        // Assert
+        appointment.Status.Should().Be(AppointmentStatus.LateCancellation);
+        appointment.CancelledByUserId.Should().Be(userId);
+        appointment.CancellationReason.Should().Be(reason);
+        appointment.CancelledAt.Should().Be(cancelledAt);
+        appointment.DomainEvents.OfType<AppointmentLateCancelledEvent>().Should().ContainSingle();
+    }
+
+    [Fact]
     public void CancelLate_ShouldSetStatusToLateCancellation()
     {
         // Arrange

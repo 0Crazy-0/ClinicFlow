@@ -21,6 +21,7 @@ public class Appointment : BaseEntity
         "System timeout: Displaced appointment was not reassigned.";
 
     public const int MaxNotesLength = 500;
+    public const int MaxCancellationReasonLength = 500;
 
     public Guid PatientId { get; init; }
 
@@ -133,7 +134,11 @@ public class Appointment : BaseEntity
     {
         EnsureCancellable();
 
+        if (reason?.Length > MaxCancellationReasonLength)
+            throw new DomainValidationException(DomainErrors.Validation.ValueTooLong);
+
         Status = AppointmentStatus.Cancelled;
+
         ApplyCancellation(cancelledByUserId, reason, cancelledAt);
         AddDomainEvent(new AppointmentCancelledEvent(this, cancelledByUserId, reason));
     }
@@ -142,7 +147,11 @@ public class Appointment : BaseEntity
     {
         EnsureCancellable();
 
+        if (reason?.Length > MaxCancellationReasonLength)
+            throw new DomainValidationException(DomainErrors.Validation.ValueTooLong);
+
         Status = AppointmentStatus.LateCancellation;
+
         ApplyCancellation(cancelledByUserId, reason, cancelledAt);
         AddDomainEvent(new AppointmentLateCancelledEvent(this, cancelledByUserId, reason));
     }
