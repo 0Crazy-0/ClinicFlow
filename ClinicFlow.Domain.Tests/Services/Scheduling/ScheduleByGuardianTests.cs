@@ -604,7 +604,7 @@ public class ScheduleByGuardianTests
     }
 
     [Fact]
-    public void ScheduleByGuardian_ShouldSetGuardianNotesAndAuthor_WhenValid()
+    public void ScheduleByGuardian_ShouldUpdateGuardianNotesAndAuthor_WhenValid()
     {
         // Arrange
         var appointmentType = AppointmentTypeDefinition.Create(

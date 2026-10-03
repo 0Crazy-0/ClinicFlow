@@ -126,14 +126,14 @@ public class AppointmentGuardianNotesServiceTests
     }
 
     [Fact]
-    public void UpdateByGuardian_ShouldSetGuardianNotes_WhenAuthorGuardianUpdates()
+    public void UpdateByGuardian_ShouldUpdateGuardianNotes_WhenAuthorGuardianUpdates()
     {
         // Arrange
         var target = CreateMinorPatient();
         var authorId = Guid.CreateVersion7();
         var appointment = CreateAppointment(target.Id);
 
-        appointment.SetGuardianNotes("Original", authorId);
+        appointment.UpdateGuardianNotes("Original", authorId);
 
         var args = new UpdateGuardianNotesArgs
         {
@@ -153,7 +153,7 @@ public class AppointmentGuardianNotesServiceTests
     }
 
     [Fact]
-    public void UpdateByGuardian_ShouldSetGuardianNotes_WhenGuardianCreatesFirstNote()
+    public void UpdateByGuardian_ShouldUpdateGuardianNotes_WhenGuardianCreatesFirstNote()
     {
         // Arrange
         var target = CreateMinorPatient();
@@ -186,7 +186,7 @@ public class AppointmentGuardianNotesServiceTests
         var otherGuardianId = Guid.CreateVersion7();
 
         var appointment = CreateAppointment(target.Id);
-        appointment.SetGuardianNotes("Original", authorId);
+        appointment.UpdateGuardianNotes("Original", authorId);
 
         var args = new UpdateGuardianNotesArgs
         {

@@ -417,7 +417,7 @@ public class RescheduleByGuardianTests
         );
 
         appointment.ClearDomainEvents();
-        appointment.SetGuardianNotes("original", authorId);
+        appointment.UpdateGuardianNotes("original", authorId);
 
         var originalDate = appointment.ScheduledDate;
 
@@ -580,7 +580,7 @@ public class RescheduleByGuardianTests
     }
 
     [Fact]
-    public void RescheduleByGuardian_ShouldSetGuardianNotes_WhenValid()
+    public void RescheduleByGuardian_ShouldUpdateGuardianNotes_WhenValid()
     {
         // Arrange
         var target = CreateMinorPatient();
@@ -644,7 +644,7 @@ public class RescheduleByGuardianTests
             authorId
         );
         appointment.ClearDomainEvents();
-        appointment.SetGuardianNotes("original", authorId);
+        appointment.UpdateGuardianNotes("original", authorId);
 
         var args = new GuardianReschedulingArgs
         {

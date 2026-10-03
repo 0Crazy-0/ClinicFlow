@@ -40,6 +40,6 @@ public static class AppointmentGuardianNotesService
         )
             throw new DomainValidationException(DomainErrors.Appointment.GuardianRequiresMinor);
 
-        appointment.SetGuardianNotes(args.Notes, args.InitiatorUserId);
+        appointment.UpdateGuardianNotes(args.Notes, args.InitiatorUserId);
     }
 }

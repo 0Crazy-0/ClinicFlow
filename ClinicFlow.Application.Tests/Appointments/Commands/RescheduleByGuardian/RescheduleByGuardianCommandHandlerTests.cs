@@ -94,7 +94,7 @@ public class RescheduleByGuardianCommandHandlerTests
             authorId
         );
 
-        appointment.SetGuardianNotes("Original", authorId);
+        appointment.UpdateGuardianNotes("Original", authorId);
 
         var targetPatient = CreateMinorPatient(patientId);
         var doctor = CreateDoctor();
