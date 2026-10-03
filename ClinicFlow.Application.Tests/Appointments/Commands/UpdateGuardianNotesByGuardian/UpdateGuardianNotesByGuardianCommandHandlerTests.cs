@@ -1,5 +1,6 @@
 using AwesomeAssertions;
 using ClinicFlow.Application.Appointments.Commands.UpdateGuardianNotesByGuardian;
+using ClinicFlow.Application.Tests.Shared;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
@@ -85,6 +86,8 @@ public class UpdateGuardianNotesByGuardianCommandHandlerTests
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
+
+        patient.SetId(appointment.PatientId);
 
         _patientRepositoryMock
             .Setup(r => r.GetByIdAsync(appointment.PatientId, It.IsAny<CancellationToken>()))
