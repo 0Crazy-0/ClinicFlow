@@ -12,5 +12,6 @@ public sealed record AppointmentDto(
     TimeOnly EndTime,
     AppointmentStatus Status,
     string PatientNotes,
-    string ReceptionistNotes
+    string ReceptionistNotes,
+    string? GuardianNotes
 );

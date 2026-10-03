@@ -34,7 +34,8 @@ public sealed class GetAppointmentByIdQueryHandler(IAppointmentRepository appoin
             appointment.TimeRange.End,
             appointment.Status,
             appointment.PatientNotes,
-            appointment.ReceptionistNotes
+            appointment.ReceptionistNotes,
+            null
         );
     }
 }

@@ -10,7 +10,7 @@ using ClinicFlow.Domain.ValueObjects;
 namespace ClinicFlow.Domain.Services;
 
 /// <summary>
-/// Orchestrates appointment scheduling for different actors (Patient, Doctor, Staff).
+/// Orchestrates appointment scheduling for different actors (Patient, Guardian, Doctor, Staff).
 /// </summary>
 /// <remarks>
 /// All scheduling requests must be accompanied by a valid scheduling clearance to ensure compliance with regional scheduling regulations.
@@ -65,6 +65,70 @@ public static class AppointmentSchedulingService
             args.PatientNotes,
             args.InitiatorUserId
         );
+    }
+
+    public static Appointment ScheduleByGuardian(
+        AppointmentTypeDefinition appointmentType,
+        GuardianSchedulingArgs args,
+        PatientSchedulingContext context,
+        SchedulingClearance clearance
+    )
+    {
+        ArgumentNullException.ThrowIfNull(appointmentType);
+        ArgumentNullException.ThrowIfNull(args);
+        ArgumentNullException.ThrowIfNull(args.TargetPatient);
+        ArgumentNullException.ThrowIfNull(args.InitiatorMembership);
+        ArgumentNullException.ThrowIfNull(args.TimeRange);
+        ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(context.DoctorSchedule);
+
+        if (clearance is null)
+            throw new BusinessRuleValidationException(DomainErrors.Scheduling.MissingClearance);
+
+        PatientAccessService.VerifyAccess(context.InitiatorHasAccessToTarget);
+
+        args.InitiatorMembership.EnsureGuardianAccess();
+
+        if (!args.IsInitiatorPhoneVerified)
+            throw new AppointmentSchedulingUnauthorizedException(
+                DomainErrors.Appointment.PhoneNotVerified
+            );
+
+        args.TargetPatient.EnsureCompleteProfile();
+
+        new PenaltyHistory(context.Penalties).EnsureNotBlocked(args.ScheduledDate);
+
+        appointmentType.ValidatePatientEligibility(
+            args.TargetPatient.GetAge(args.ScheduledDate),
+            context.InitiatorLegalAuthority is not LegalAuthorityType.None
+        );
+
+        context.DoctorSchedule.EnsureDoctorIsAvailable(
+            args.DoctorId,
+            args.ScheduledDate.DayOfWeek,
+            args.TimeRange
+        );
+
+        var isMinorAtScheduledDate =
+            args.TargetPatient.GetAge(args.ScheduledDate) < FamilyMembership.MinimumAdultAge;
+
+        if (!isMinorAtScheduledDate)
+            throw new DomainValidationException(DomainErrors.Appointment.GuardianRequiresMinor);
+
+        var appointment = Appointment.Schedule(
+            args.TargetPatient.Id,
+            args.DoctorId,
+            appointmentType.Id,
+            args.ScheduledDate,
+            args.TimeRange,
+            null,
+            args.InitiatorUserId
+        );
+
+        if (args.GuardianNotes is not null)
+            appointment.SetGuardianNotes(args.GuardianNotes, args.InitiatorUserId);
+
+        return appointment;
     }
 
     public static Appointment ScheduleByDoctor(

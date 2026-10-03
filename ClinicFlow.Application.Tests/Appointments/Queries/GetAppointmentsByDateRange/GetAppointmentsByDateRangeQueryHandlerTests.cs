@@ -33,6 +33,7 @@ public class GetAppointmentsByDateRangeQueryHandlerTests
             CreateAppointment(startDate.AddDays(1)),
             CreateAppointment(startDate.AddDays(3)),
         };
+        appointments[0].SetGuardianNotes("notes", Guid.CreateVersion7());
 
         _appointmentRepositoryMock
             .Setup(x =>
@@ -60,7 +61,8 @@ public class GetAppointmentsByDateRangeQueryHandlerTests
             a.TimeRange.End,
             a.Status,
             a.PatientNotes,
-            a.ReceptionistNotes
+            a.ReceptionistNotes,
+            null
         ));
 
         result.Items.Should().BeEquivalentTo(expectedDtos);

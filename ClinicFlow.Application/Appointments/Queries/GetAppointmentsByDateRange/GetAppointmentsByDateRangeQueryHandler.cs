@@ -34,7 +34,8 @@ public sealed class GetAppointmentsByDateRangeQueryHandler(
                 a.TimeRange.End,
                 a.Status,
                 a.PatientNotes,
-                a.ReceptionistNotes
+                a.ReceptionistNotes,
+                null
             ))
             .ToList();
 

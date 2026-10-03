@@ -34,7 +34,8 @@ public sealed class GetAppointmentsByDoctorIdAndDateQueryHandler(
                 a.TimeRange.End,
                 a.Status,
                 a.PatientNotes,
-                a.ReceptionistNotes
+                a.ReceptionistNotes,
+                a.GuardianNotes
             ))
             .ToList();
 

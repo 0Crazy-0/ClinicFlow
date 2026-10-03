@@ -3,6 +3,7 @@ using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Base;
+using ClinicFlow.Domain.Exceptions.Patients;
 using Microsoft.Extensions.Time.Testing;
 
 namespace ClinicFlow.Domain.Tests.Entities;
@@ -1670,6 +1671,132 @@ public class FamilyMembershipTests
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.Validation.EndTimeMustBeAfterStartTime);
     }
+
+    [Fact]
+    public void EnsureGuardianAccess_ShouldNotThrow_WhenFullParentActsAsGuardian()
+    {
+        // Arrange
+        var userId = Guid.CreateVersion7();
+        var membership = CreateParentMembershipForMinor(userId);
+
+        // Act & Assert
+        membership.Invoking(m => m.EnsureGuardianAccess()).Should().NotThrow();
+    }
+
+    [Fact]
+    public void EnsureGuardianAccess_ShouldThrowUnauthorized_WhenSelfAttempts()
+    {
+        // Arrange
+        var membership = FamilyMembership.CreateSelf(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        // Act & Assert
+        membership
+            .Invoking(m => m.EnsureGuardianAccess())
+            .Should()
+            .Throw<PatientAccessUnauthorizedException>()
+            .WithMessage(DomainErrors.Patient.UnauthorizedAccess);
+    }
+
+    [Fact]
+    public void EnsureGuardianAccess_ShouldThrowUnauthorized_WhenAuthorityIsNone()
+    {
+        // Arrange
+        var membership = FamilyMembership.CreateFamilyMember(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            PatientRelationship.Spouse,
+            LegalAuthorityType.None,
+            FamilyMembershipAccessLevel.Full,
+            30,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        // Act & Assert
+        membership
+            .Invoking(m => m.EnsureGuardianAccess())
+            .Should()
+            .Throw<PatientAccessUnauthorizedException>()
+            .WithMessage(DomainErrors.Patient.UnauthorizedAccess);
+    }
+
+    [Fact]
+    public void EnsureGuardianNotesEditAccess_ShouldNotThrow_WhenFullParentAuthorEditsOwnNote()
+    {
+        // Arrange
+        var userId = Guid.CreateVersion7();
+        var membership = CreateParentMembershipForMinor(userId);
+
+        // Act
+        var act = () => membership.EnsureGuardianNotesEditAccess(userId);
+
+        // Assert
+        act.Should().NotThrow();
+    }
+
+    [Fact]
+    public void EnsureGuardianNotesEditAccess_ShouldThrowUnauthorized_WhenDifferentAuthorEdits()
+    {
+        // Arrange
+        var membership = CreateParentMembershipForMinor(Guid.CreateVersion7());
+
+        // Act
+        var act = () => membership.EnsureGuardianNotesEditAccess(Guid.CreateVersion7());
+
+        // Assert
+        act.Should()
+            .Throw<PatientAccessUnauthorizedException>()
+            .WithMessage(DomainErrors.Patient.UnauthorizedAccess);
+    }
+
+    [Fact]
+    public void EnsureGuardianNotesEditAccess_ShouldThrowUnauthorized_WhenSelfAttempts()
+    {
+        // Arrange
+        var userId = Guid.CreateVersion7();
+        var membership = FamilyMembership.CreateSelf(
+            Guid.CreateVersion7(),
+            userId,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        // Act
+        var act = () => membership.EnsureGuardianNotesEditAccess(userId);
+
+        // Assert
+        act.Should()
+            .Throw<PatientAccessUnauthorizedException>()
+            .WithMessage(DomainErrors.Patient.UnauthorizedAccess);
+    }
+
+    [Fact]
+    public void EnsureGuardianNotesEditAccess_ShouldThrowValidation_WhenAuthorIsEmpty()
+    {
+        // Arrange
+        var membership = CreateParentMembershipForMinor(Guid.CreateVersion7());
+
+        // Act
+        var act = () => membership.EnsureGuardianNotesEditAccess(Guid.Empty);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    private FamilyMembership CreateParentMembershipForMinor(Guid userId) =>
+        FamilyMembership.CreateFamilyMember(
+            Guid.CreateVersion7(),
+            userId,
+            PatientRelationship.Parent,
+            LegalAuthorityType.Parent,
+            FamilyMembershipAccessLevel.Full,
+            10,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
 
     private FamilyMembership CreateRestrictedMembership() =>
         FamilyMembership.CreateFamilyMember(

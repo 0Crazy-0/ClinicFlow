@@ -1,6 +1,7 @@
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Base;
+using ClinicFlow.Domain.Exceptions.Patients;
 
 namespace ClinicFlow.Domain.Entities;
 
@@ -269,6 +270,35 @@ public class FamilyMembership : BaseEntity
             is not (FamilyMembershipAccessLevel.Full or FamilyMembershipAccessLevel.ViewOnly)
         )
             throw new DomainValidationException(DomainErrors.MedicalRecord.UnauthorizedAccess);
+    }
+
+    /// <summary>
+    /// Validates that the membership may act as a guardian (scheduling, rescheduling and
+    /// guardian notes). Requires current Parent or Guardian authority with Full access.
+    /// The patient themselves never act as guardian.
+    /// </summary>
+    public void EnsureGuardianAccess()
+    {
+        if (
+            Role is PatientRelationship.Self
+            || LegalAuthority is not (LegalAuthorityType.Parent or LegalAuthorityType.Guardian)
+            || AccessLevel is not FamilyMembershipAccessLevel.Full
+        )
+            throw new PatientAccessUnauthorizedException(DomainErrors.Patient.UnauthorizedAccess);
+    }
+
+    /// <summary>
+    /// Validates that the membership may edit an existing guardian note. Requires guardian
+    /// access plus the original author.
+    /// </summary>
+    public void EnsureGuardianNotesEditAccess(Guid currentAuthorUserId)
+    {
+        Guard.NotEmpty(currentAuthorUserId);
+
+        EnsureGuardianAccess();
+
+        if (UserId != currentAuthorUserId)
+            throw new PatientAccessUnauthorizedException(DomainErrors.Patient.UnauthorizedAccess);
     }
 
     public void Revoke(

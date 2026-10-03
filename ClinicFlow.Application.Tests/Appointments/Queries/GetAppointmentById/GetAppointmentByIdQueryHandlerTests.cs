@@ -43,6 +43,8 @@ public class GetAppointmentByIdQueryHandlerTests
         );
 
         appointment.SetId(appointmentId);
+        appointment.SetGuardianNotes("notes", Guid.CreateVersion7());
+
         _appointmentRepositoryMock
             .Setup(x => x.GetByIdAsync(appointmentId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(appointment);
@@ -61,7 +63,8 @@ public class GetAppointmentByIdQueryHandlerTests
             appointment.TimeRange.End,
             appointment.Status,
             appointment.PatientNotes,
-            appointment.ReceptionistNotes
+            appointment.ReceptionistNotes,
+            null
         );
 
         result.Should().BeEquivalentTo(expectedDto);
