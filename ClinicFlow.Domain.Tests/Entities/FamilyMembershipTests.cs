@@ -1787,6 +1787,34 @@ public class FamilyMembershipTests
             .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
+    [Fact]
+    public void EnsurePatientNotesWrite_ShouldPass_WhenSelf()
+    {
+        // Arrange
+        var membership = FamilyMembership.CreateSelf(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        // Act & Assert
+        membership.Invoking(m => m.EnsurePatientNotesWrite()).Should().NotThrow();
+    }
+
+    [Fact]
+    public void EnsurePatientNotesWrite_ShouldThrowUnauthorized_WhenGuardianAttempts()
+    {
+        // Arrange
+        var membership = CreateParentMembershipForMinor(Guid.CreateVersion7());
+
+        // Act & Assert
+        membership
+            .Invoking(m => m.EnsurePatientNotesWrite())
+            .Should()
+            .Throw<PatientAccessUnauthorizedException>()
+            .WithMessage(DomainErrors.Patient.UnauthorizedAccess);
+    }
+
     private FamilyMembership CreateParentMembershipForMinor(Guid userId) =>
         FamilyMembership.CreateFamilyMember(
             Guid.CreateVersion7(),

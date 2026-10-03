@@ -301,6 +301,12 @@ public class FamilyMembership : BaseEntity
             throw new PatientAccessUnauthorizedException(DomainErrors.Patient.UnauthorizedAccess);
     }
 
+    public void EnsurePatientNotesWrite()
+    {
+        if (Role is not PatientRelationship.Self)
+            throw new PatientAccessUnauthorizedException(DomainErrors.Patient.UnauthorizedAccess);
+    }
+
     public void Revoke(
         bool patientHasOwnSelfMembership,
         bool hasUpcomingAppointmentRequiringGuardianForMinor,
