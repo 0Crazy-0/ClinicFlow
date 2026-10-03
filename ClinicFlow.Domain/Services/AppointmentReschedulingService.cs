@@ -40,6 +40,15 @@ public static class AppointmentReschedulingService
 
         PatientAccessService.VerifyAccess(context.InitiatorHasAccessToTarget);
 
+        if (
+            args.TargetPatient.GetAge(args.NewDate) < FamilyMembership.MinimumAdultAge
+            && appointment.ScheduledByUserId != args.InitiatorUserId
+            && context.CreatorLegalAuthority
+                is LegalAuthorityType.Parent
+                    or LegalAuthorityType.Guardian
+        )
+            throw new PatientAccessUnauthorizedException(DomainErrors.Patient.UnauthorizedAccess);
+
         if (!args.IsInitiatorPhoneVerified)
             throw new AppointmentSchedulingUnauthorizedException(
                 DomainErrors.Appointment.PhoneNotVerified
