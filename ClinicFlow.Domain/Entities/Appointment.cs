@@ -20,6 +20,8 @@ public class Appointment : BaseEntity
     public const string SystemTimeoutCancellationReason =
         "System timeout: Displaced appointment was not reassigned.";
 
+    public const int MaxNotesLength = 500;
+
     public Guid PatientId { get; init; }
 
     public Guid DoctorId { get; private set; }
@@ -274,6 +276,9 @@ public class Appointment : BaseEntity
         if (Status is not (AppointmentStatus.Scheduled or AppointmentStatus.RequiresReassignment))
             throw new DomainValidationException(DomainErrors.Appointment.CannotUpdateNotes);
 
+        if (notes?.Length > MaxNotesLength)
+            throw new DomainValidationException(DomainErrors.Validation.ValueTooLong);
+
         PatientNotes = notes ?? string.Empty;
     }
 
@@ -287,6 +292,9 @@ public class Appointment : BaseEntity
             throw new DomainValidationException(DomainErrors.Appointment.CannotUpdateNotes);
 
         Guard.NotEmpty(authorUserId);
+
+        if (notes?.Length > MaxNotesLength)
+            throw new DomainValidationException(DomainErrors.Validation.ValueTooLong);
 
         if (string.IsNullOrEmpty(notes))
         {
@@ -302,6 +310,9 @@ public class Appointment : BaseEntity
     {
         if (Status is not AppointmentStatus.CheckedIn)
             throw new DomainValidationException(DomainErrors.Appointment.CannotUpdateNotes);
+
+        if (notes?.Length > MaxNotesLength)
+            throw new DomainValidationException(DomainErrors.Validation.ValueTooLong);
 
         ReceptionistNotes = notes ?? string.Empty;
     }

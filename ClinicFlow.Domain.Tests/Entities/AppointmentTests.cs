@@ -923,6 +923,36 @@ public class AppointmentTests
     }
 
     [Fact]
+    public void UpdatePatientNotes_ShouldThrowException_WhenNotesExceedMaximumLength()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        var notes = new string('A', Appointment.MaxNotesLength + 1);
+
+        // Act
+        var act = () => appointment.UpdatePatientNotes(notes);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueTooLong);
+    }
+
+    [Fact]
+    public void UpdatePatientNotes_ShouldSucceed_WhenNotesLengthEqualsMaximumLength()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        var notes = new string('A', Appointment.MaxNotesLength);
+
+        // Act
+        appointment.UpdatePatientNotes(notes);
+
+        // Assert
+        appointment.PatientNotes.Should().Be(notes);
+    }
+
+    [Fact]
     public void UpdateGuardianNotes_ShouldSetTextAndAuthor_WhenScheduled()
     {
         // Arrange
@@ -992,6 +1022,38 @@ public class AppointmentTests
     }
 
     [Fact]
+    public void UpdateGuardianNotes_ShouldThrowException_WhenNotesExceedMaximumLength()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        var notes = new string('A', Appointment.MaxNotesLength + 1);
+
+        // Act
+        var act = () => appointment.UpdateGuardianNotes(notes, Guid.CreateVersion7());
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueTooLong);
+    }
+
+    [Fact]
+    public void UpdateGuardianNotes_ShouldSucceed_WhenNotesLengthEqualsMaximumLength()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        var authorId = Guid.CreateVersion7();
+        var notes = new string('A', Appointment.MaxNotesLength);
+
+        // Act
+        appointment.UpdateGuardianNotes(notes, authorId);
+
+        // Assert
+        appointment.GuardianNotes.Should().Be(notes);
+        appointment.GuardianNotesAuthorUserId.Should().Be(authorId);
+    }
+
+    [Fact]
     public void UpdateReceptionistNotes_ShouldSucceed_WhenCheckedIn()
     {
         // Arrange
@@ -1034,6 +1096,38 @@ public class AppointmentTests
         act.Should()
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.Appointment.CannotUpdateNotes);
+    }
+
+    [Fact]
+    public void UpdateReceptionistNotes_ShouldThrowException_WhenNotesExceedMaximumLength()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
+        var notes = new string('A', Appointment.MaxNotesLength + 1);
+
+        // Act
+        var act = () => appointment.UpdateReceptionistNotes(notes);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueTooLong);
+    }
+
+    [Fact]
+    public void UpdateReceptionistNotes_ShouldSucceed_WhenNotesLengthEqualsMaximumLength()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
+        var notes = new string('A', Appointment.MaxNotesLength);
+
+        // Act
+        appointment.UpdateReceptionistNotes(notes);
+
+        // Assert
+        appointment.ReceptionistNotes.Should().Be(notes);
     }
 
     private Appointment CreateAppointment() =>
