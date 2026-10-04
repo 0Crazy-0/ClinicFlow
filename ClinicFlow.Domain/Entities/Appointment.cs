@@ -173,6 +173,9 @@ public class Appointment : BaseEntity
         if (Status is not AppointmentStatus.Scheduled)
             throw new DomainValidationException(DomainErrors.Appointment.CannotCheckIn);
 
+        if (receptionistNotes?.Length > MaxNotesLength)
+            throw new DomainValidationException(DomainErrors.Validation.ValueTooLong);
+
         Status = AppointmentStatus.CheckedIn;
         CheckedInAt = checkedInDate;
         ReceptionistNotes = receptionistNotes ?? string.Empty;

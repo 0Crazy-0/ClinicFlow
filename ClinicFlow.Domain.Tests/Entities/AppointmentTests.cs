@@ -549,6 +549,48 @@ public class AppointmentTests
     }
 
     [Fact]
+    public void CheckIn_ShouldThrowException_WhenReceptionistNotesExceedMaximumLength()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        var receptionistNotes = new string('A', Appointment.MaxNotesLength + 1);
+
+        // Act
+        var act = () =>
+            appointment.CheckIn(
+                appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue),
+                receptionistNotes
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueTooLong);
+
+        appointment.Status.Should().Be(AppointmentStatus.Scheduled);
+        appointment.CheckedInAt.Should().BeNull();
+        appointment.ReceptionistNotes.Should().BeEmpty();
+        appointment.DomainEvents.OfType<AppointmentCheckedInEvent>().Should().BeEmpty();
+    }
+
+    [Fact]
+    public void CheckIn_ShouldSucceed_WhenReceptionistNotesLengthEqualsMaximumLength()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        var receptionistNotes = new string('A', Appointment.MaxNotesLength);
+        var checkedInAt = appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue);
+
+        // Act
+        appointment.CheckIn(checkedInAt, receptionistNotes);
+
+        // Assert
+        appointment.Status.Should().Be(AppointmentStatus.CheckedIn);
+        appointment.CheckedInAt.Should().Be(appointment.ScheduledDate);
+        appointment.ReceptionistNotes.Should().Be(receptionistNotes);
+    }
+
+    [Fact]
     public void Start_ShouldSetStatusToInProgress_WhenValid()
     {
         // Arrange
