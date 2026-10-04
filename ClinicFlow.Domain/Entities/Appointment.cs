@@ -20,6 +20,9 @@ public class Appointment : BaseEntity
     public const string SystemTimeoutCancellationReason =
         "System timeout: Displaced appointment was not reassigned.";
 
+    public const int MaxNotesLength = 500;
+    public const int MaxCancellationReasonLength = 500;
+
     public Guid PatientId { get; init; }
 
     public Guid DoctorId { get; private set; }
@@ -131,7 +134,11 @@ public class Appointment : BaseEntity
     {
         EnsureCancellable();
 
+        if (reason?.Length > MaxCancellationReasonLength)
+            throw new DomainValidationException(DomainErrors.Validation.ValueTooLong);
+
         Status = AppointmentStatus.Cancelled;
+
         ApplyCancellation(cancelledByUserId, reason, cancelledAt);
         AddDomainEvent(new AppointmentCancelledEvent(this, cancelledByUserId, reason));
     }
@@ -140,7 +147,11 @@ public class Appointment : BaseEntity
     {
         EnsureCancellable();
 
+        if (reason?.Length > MaxCancellationReasonLength)
+            throw new DomainValidationException(DomainErrors.Validation.ValueTooLong);
+
         Status = AppointmentStatus.LateCancellation;
+
         ApplyCancellation(cancelledByUserId, reason, cancelledAt);
         AddDomainEvent(new AppointmentLateCancelledEvent(this, cancelledByUserId, reason));
     }
@@ -161,6 +172,9 @@ public class Appointment : BaseEntity
 
         if (Status is not AppointmentStatus.Scheduled)
             throw new DomainValidationException(DomainErrors.Appointment.CannotCheckIn);
+
+        if (receptionistNotes?.Length > MaxNotesLength)
+            throw new DomainValidationException(DomainErrors.Validation.ValueTooLong);
 
         Status = AppointmentStatus.CheckedIn;
         CheckedInAt = checkedInDate;
@@ -274,6 +288,9 @@ public class Appointment : BaseEntity
         if (Status is not (AppointmentStatus.Scheduled or AppointmentStatus.RequiresReassignment))
             throw new DomainValidationException(DomainErrors.Appointment.CannotUpdateNotes);
 
+        if (notes?.Length > MaxNotesLength)
+            throw new DomainValidationException(DomainErrors.Validation.ValueTooLong);
+
         PatientNotes = notes ?? string.Empty;
     }
 
@@ -287,6 +304,9 @@ public class Appointment : BaseEntity
             throw new DomainValidationException(DomainErrors.Appointment.CannotUpdateNotes);
 
         Guard.NotEmpty(authorUserId);
+
+        if (notes?.Length > MaxNotesLength)
+            throw new DomainValidationException(DomainErrors.Validation.ValueTooLong);
 
         if (string.IsNullOrEmpty(notes))
         {
@@ -302,6 +322,9 @@ public class Appointment : BaseEntity
     {
         if (Status is not AppointmentStatus.CheckedIn)
             throw new DomainValidationException(DomainErrors.Appointment.CannotUpdateNotes);
+
+        if (notes?.Length > MaxNotesLength)
+            throw new DomainValidationException(DomainErrors.Validation.ValueTooLong);
 
         ReceptionistNotes = notes ?? string.Empty;
     }

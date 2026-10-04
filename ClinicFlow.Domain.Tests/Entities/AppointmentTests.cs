@@ -211,6 +211,126 @@ public class AppointmentTests
     }
 
     [Fact]
+    public void Cancel_ShouldThrowException_WhenReasonExceedsMaximumLength()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        var reason = new string('A', Appointment.MaxCancellationReasonLength + 1);
+
+        // Act
+        var act = () =>
+            appointment.Cancel(
+                Guid.CreateVersion7(),
+                reason,
+                DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime)
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueTooLong);
+    }
+
+    [Fact]
+    public void Cancel_ShouldSucceed_WhenReasonLengthEqualsMaximumLength()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        var userId = Guid.CreateVersion7();
+        var reason = new string('A', Appointment.MaxCancellationReasonLength);
+        var cancelledAt = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+
+        // Act
+        appointment.Cancel(userId, reason, cancelledAt);
+
+        // Assert
+        appointment.Status.Should().Be(AppointmentStatus.Cancelled);
+        appointment.CancelledByUserId.Should().Be(userId);
+        appointment.CancellationReason.Should().Be(reason);
+        appointment.CancelledAt.Should().Be(cancelledAt);
+        appointment.DomainEvents.OfType<AppointmentCancelledEvent>().Should().ContainSingle();
+    }
+
+    [Fact]
+    public void Cancel_ShouldSucceed_WhenReasonIsNull()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        var userId = Guid.CreateVersion7();
+        var cancelledAt = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+
+        // Act
+        appointment.Cancel(userId, null, cancelledAt);
+
+        // Assert
+        appointment.Status.Should().Be(AppointmentStatus.Cancelled);
+        appointment.CancelledByUserId.Should().Be(userId);
+        appointment.CancellationReason.Should().BeNull();
+        appointment.CancelledAt.Should().Be(cancelledAt);
+        appointment.DomainEvents.OfType<AppointmentCancelledEvent>().Should().ContainSingle();
+    }
+
+    [Fact]
+    public void CancelLate_ShouldThrowException_WhenReasonExceedsMaximumLength()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        var reason = new string('A', Appointment.MaxCancellationReasonLength + 1);
+
+        // Act
+        var act = () =>
+            appointment.CancelLate(
+                Guid.CreateVersion7(),
+                reason,
+                DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime)
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueTooLong);
+    }
+
+    [Fact]
+    public void CancelLate_ShouldSucceed_WhenReasonLengthEqualsMaximumLength()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        var userId = Guid.CreateVersion7();
+        var reason = new string('A', Appointment.MaxCancellationReasonLength);
+        var cancelledAt = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+
+        // Act
+        appointment.CancelLate(userId, reason, cancelledAt);
+
+        // Assert
+        appointment.Status.Should().Be(AppointmentStatus.LateCancellation);
+        appointment.CancelledByUserId.Should().Be(userId);
+        appointment.CancellationReason.Should().Be(reason);
+        appointment.CancelledAt.Should().Be(cancelledAt);
+        appointment.DomainEvents.OfType<AppointmentLateCancelledEvent>().Should().ContainSingle();
+    }
+
+    [Fact]
+    public void CancelLate_ShouldSucceed_WhenReasonIsNull()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        var userId = Guid.CreateVersion7();
+        var cancelledAt = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+
+        // Act
+        appointment.CancelLate(userId, null, cancelledAt);
+
+        // Assert
+        appointment.Status.Should().Be(AppointmentStatus.LateCancellation);
+        appointment.CancelledByUserId.Should().Be(userId);
+        appointment.CancellationReason.Should().BeNull();
+        appointment.CancelledAt.Should().Be(cancelledAt);
+        appointment.DomainEvents.OfType<AppointmentLateCancelledEvent>().Should().ContainSingle();
+    }
+
+    [Fact]
     public void CancelLate_ShouldSetStatusToLateCancellation()
     {
         // Arrange
@@ -463,6 +583,48 @@ public class AppointmentTests
         );
 
         // Assert
+        appointment.ReceptionistNotes.Should().Be(receptionistNotes);
+    }
+
+    [Fact]
+    public void CheckIn_ShouldThrowException_WhenReceptionistNotesExceedMaximumLength()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        var receptionistNotes = new string('A', Appointment.MaxNotesLength + 1);
+
+        // Act
+        var act = () =>
+            appointment.CheckIn(
+                appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue),
+                receptionistNotes
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueTooLong);
+
+        appointment.Status.Should().Be(AppointmentStatus.Scheduled);
+        appointment.CheckedInAt.Should().BeNull();
+        appointment.ReceptionistNotes.Should().BeEmpty();
+        appointment.DomainEvents.OfType<AppointmentCheckedInEvent>().Should().BeEmpty();
+    }
+
+    [Fact]
+    public void CheckIn_ShouldSucceed_WhenReceptionistNotesLengthEqualsMaximumLength()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        var receptionistNotes = new string('A', Appointment.MaxNotesLength);
+        var checkedInAt = appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue);
+
+        // Act
+        appointment.CheckIn(checkedInAt, receptionistNotes);
+
+        // Assert
+        appointment.Status.Should().Be(AppointmentStatus.CheckedIn);
+        appointment.CheckedInAt.Should().Be(appointment.ScheduledDate);
         appointment.ReceptionistNotes.Should().Be(receptionistNotes);
     }
 
@@ -923,6 +1085,36 @@ public class AppointmentTests
     }
 
     [Fact]
+    public void UpdatePatientNotes_ShouldThrowException_WhenNotesExceedMaximumLength()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        var notes = new string('A', Appointment.MaxNotesLength + 1);
+
+        // Act
+        var act = () => appointment.UpdatePatientNotes(notes);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueTooLong);
+    }
+
+    [Fact]
+    public void UpdatePatientNotes_ShouldSucceed_WhenNotesLengthEqualsMaximumLength()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        var notes = new string('A', Appointment.MaxNotesLength);
+
+        // Act
+        appointment.UpdatePatientNotes(notes);
+
+        // Assert
+        appointment.PatientNotes.Should().Be(notes);
+    }
+
+    [Fact]
     public void UpdateGuardianNotes_ShouldSetTextAndAuthor_WhenScheduled()
     {
         // Arrange
@@ -992,6 +1184,38 @@ public class AppointmentTests
     }
 
     [Fact]
+    public void UpdateGuardianNotes_ShouldThrowException_WhenNotesExceedMaximumLength()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        var notes = new string('A', Appointment.MaxNotesLength + 1);
+
+        // Act
+        var act = () => appointment.UpdateGuardianNotes(notes, Guid.CreateVersion7());
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueTooLong);
+    }
+
+    [Fact]
+    public void UpdateGuardianNotes_ShouldSucceed_WhenNotesLengthEqualsMaximumLength()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        var authorId = Guid.CreateVersion7();
+        var notes = new string('A', Appointment.MaxNotesLength);
+
+        // Act
+        appointment.UpdateGuardianNotes(notes, authorId);
+
+        // Assert
+        appointment.GuardianNotes.Should().Be(notes);
+        appointment.GuardianNotesAuthorUserId.Should().Be(authorId);
+    }
+
+    [Fact]
     public void UpdateReceptionistNotes_ShouldSucceed_WhenCheckedIn()
     {
         // Arrange
@@ -1034,6 +1258,38 @@ public class AppointmentTests
         act.Should()
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.Appointment.CannotUpdateNotes);
+    }
+
+    [Fact]
+    public void UpdateReceptionistNotes_ShouldThrowException_WhenNotesExceedMaximumLength()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
+        var notes = new string('A', Appointment.MaxNotesLength + 1);
+
+        // Act
+        var act = () => appointment.UpdateReceptionistNotes(notes);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueTooLong);
+    }
+
+    [Fact]
+    public void UpdateReceptionistNotes_ShouldSucceed_WhenNotesLengthEqualsMaximumLength()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
+        var notes = new string('A', Appointment.MaxNotesLength);
+
+        // Act
+        appointment.UpdateReceptionistNotes(notes);
+
+        // Assert
+        appointment.ReceptionistNotes.Should().Be(notes);
     }
 
     private Appointment CreateAppointment() =>
