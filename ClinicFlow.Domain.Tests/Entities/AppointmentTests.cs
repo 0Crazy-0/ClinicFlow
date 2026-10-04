@@ -49,59 +49,58 @@ public class AppointmentTests
         appointment.DomainEvents.OfType<AppointmentScheduledEvent>().Should().ContainSingle();
     }
 
-    [Theory]
-    [InlineData(
-        "00000000-0000-0000-0000-000000000000",
-        "11111111-1111-1111-1111-111111111111",
-        "22222222-2222-2222-2222-222222222222",
-        DomainErrors.Validation.ValueRequired
-    )]
-    [InlineData(
-        "11111111-1111-1111-1111-111111111111",
-        "00000000-0000-0000-0000-000000000000",
-        "22222222-2222-2222-2222-222222222222",
-        DomainErrors.Validation.ValueRequired
-    )]
-    [InlineData(
-        "11111111-1111-1111-1111-111111111111",
-        "22222222-2222-2222-2222-222222222222",
-        "00000000-0000-0000-0000-000000000000",
-        DomainErrors.Validation.ValueRequired
-    )]
-    public void Schedule_ShouldThrowException_WhenIdIsEmpty(
-        string patientIdStr,
-        string doctorIdStr,
-        string appointmentTypeIdStr,
-        string expectedMessage
-    )
+    [Fact]
+    public void Schedule_ShouldThrowException_WhenPatientIdIsEmpty()
     {
         // Arrange & Act
         var act = () =>
             Appointment.Schedule(
-                Guid.Parse(patientIdStr),
-                Guid.Parse(doctorIdStr),
-                Guid.Parse(appointmentTypeIdStr),
+                Guid.Empty,
+                Guid.CreateVersion7(),
+                Guid.CreateVersion7(),
                 DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
                 TimeRange.Create(new TimeOnly(9), new TimeOnly(10)),
                 Guid.CreateVersion7()
             );
 
         // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage(expectedMessage);
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Fact]
-    public void Schedule_ShouldThrowException_WhenScheduledByIsEmpty()
+    public void Schedule_ShouldThrowException_WhenDoctorIdIsEmpty()
+    {
+        // Arrange & Act
+        var act = () =>
+            Appointment.Schedule(
+                Guid.CreateVersion7(),
+                Guid.Empty,
+                Guid.CreateVersion7(),
+                DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
+                TimeRange.Create(new TimeOnly(9), new TimeOnly(10)),
+                Guid.CreateVersion7()
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void Schedule_ShouldThrowException_WhenAppointmentTypeIdIsEmpty()
     {
         // Arrange & Act
         var act = () =>
             Appointment.Schedule(
                 Guid.CreateVersion7(),
                 Guid.CreateVersion7(),
-                Guid.CreateVersion7(),
+                Guid.Empty,
                 DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
                 TimeRange.Create(new TimeOnly(9), new TimeOnly(10)),
-                Guid.Empty
+                Guid.CreateVersion7()
             );
 
         // Assert
@@ -128,6 +127,26 @@ public class AppointmentTests
         act.Should()
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
+    public void Schedule_ShouldThrowException_WhenScheduledByIsEmpty()
+    {
+        // Arrange & Act
+        var act = () =>
+            Appointment.Schedule(
+                Guid.CreateVersion7(),
+                Guid.CreateVersion7(),
+                Guid.CreateVersion7(),
+                DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
+                TimeRange.Create(new TimeOnly(9), new TimeOnly(10)),
+                Guid.Empty
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Fact]
