@@ -252,6 +252,25 @@ public class AppointmentTests
     }
 
     [Fact]
+    public void Cancel_ShouldSucceed_WhenReasonIsNull()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        var userId = Guid.CreateVersion7();
+        var cancelledAt = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+
+        // Act
+        appointment.Cancel(userId, null, cancelledAt);
+
+        // Assert
+        appointment.Status.Should().Be(AppointmentStatus.Cancelled);
+        appointment.CancelledByUserId.Should().Be(userId);
+        appointment.CancellationReason.Should().BeNull();
+        appointment.CancelledAt.Should().Be(cancelledAt);
+        appointment.DomainEvents.OfType<AppointmentCancelledEvent>().Should().ContainSingle();
+    }
+
+    [Fact]
     public void CancelLate_ShouldThrowException_WhenReasonExceedsMaximumLength()
     {
         // Arrange
@@ -288,6 +307,25 @@ public class AppointmentTests
         appointment.Status.Should().Be(AppointmentStatus.LateCancellation);
         appointment.CancelledByUserId.Should().Be(userId);
         appointment.CancellationReason.Should().Be(reason);
+        appointment.CancelledAt.Should().Be(cancelledAt);
+        appointment.DomainEvents.OfType<AppointmentLateCancelledEvent>().Should().ContainSingle();
+    }
+
+    [Fact]
+    public void CancelLate_ShouldSucceed_WhenReasonIsNull()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        var userId = Guid.CreateVersion7();
+        var cancelledAt = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+
+        // Act
+        appointment.CancelLate(userId, null, cancelledAt);
+
+        // Assert
+        appointment.Status.Should().Be(AppointmentStatus.LateCancellation);
+        appointment.CancelledByUserId.Should().Be(userId);
+        appointment.CancellationReason.Should().BeNull();
         appointment.CancelledAt.Should().Be(cancelledAt);
         appointment.DomainEvents.OfType<AppointmentLateCancelledEvent>().Should().ContainSingle();
     }
