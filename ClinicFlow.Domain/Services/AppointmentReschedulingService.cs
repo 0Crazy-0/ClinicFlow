@@ -31,6 +31,7 @@ public static class AppointmentReschedulingService
         ArgumentNullException.ThrowIfNull(args.NewTimeRange);
         ArgumentNullException.ThrowIfNull(context);
         ArgumentNullException.ThrowIfNull(context.DoctorSchedule);
+        ArgumentNullException.ThrowIfNull(context.InitiatorMembership);
 
         if (clearance is null)
             throw new BusinessRuleValidationException(DomainErrors.Reschedule.MissingClearance);
@@ -38,7 +39,7 @@ public static class AppointmentReschedulingService
         if (args.TargetPatient.Id != appointment.PatientId)
             throw new DomainValidationException(DomainErrors.Appointment.DataMismatch);
 
-        PatientAccessService.VerifyAccess(context.InitiatorHasAccessToTarget);
+        context.InitiatorMembership.EnsureAppointmentAccess(context.RequestedCategory);
 
         if (
             args.TargetPatient.GetAge(args.NewDate) < FamilyMembership.MinimumAdultAge
@@ -88,8 +89,6 @@ public static class AppointmentReschedulingService
 
         if (args.TargetPatient.Id != appointment.PatientId)
             throw new DomainValidationException(DomainErrors.Appointment.DataMismatch);
-
-        PatientAccessService.VerifyAccess(context.InitiatorHasAccessToTarget);
 
         args.InitiatorMembership.EnsureGuardianAccess();
 

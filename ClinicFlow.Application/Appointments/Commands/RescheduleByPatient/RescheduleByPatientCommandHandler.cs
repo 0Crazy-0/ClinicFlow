@@ -124,14 +124,13 @@ public sealed class RescheduleByPatientCommandHandler(
                     appointmentType
                 );
 
-                if (
-                    !await familyMembershipRepository.HasActiveSelfMembershipAsync(
+                var initiatorMembership =
+                    await familyMembershipRepository.GetActiveMembershipAsync(
                         request.InitiatorUserId,
                         appointment.PatientId,
                         cancellationToken
                     )
-                )
-                    throw new PatientAccessUnauthorizedException(
+                    ?? throw new PatientAccessUnauthorizedException(
                         DomainErrors.Patient.UnauthorizedAccess
                     );
 
@@ -156,7 +155,8 @@ public sealed class RescheduleByPatientCommandHandler(
                     {
                         Penalties = penalties,
                         DoctorSchedule = doctorSchedule,
-                        InitiatorHasAccessToTarget = true,
+                        InitiatorMembership = initiatorMembership,
+                        RequestedCategory = appointmentType.Category,
                         CreatorLegalAuthority = creatorMembership?.LegalAuthority,
                     },
                     clearance

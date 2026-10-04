@@ -147,7 +147,8 @@ public sealed class RescheduleByGuardianCommandHandler(
                     {
                         Penalties = penalties,
                         DoctorSchedule = doctorSchedule,
-                        InitiatorHasAccessToTarget = true,
+                        InitiatorMembership = initiatorMembership,
+                        RequestedCategory = appointmentType.Category,
                     },
                     clearance
                 );
