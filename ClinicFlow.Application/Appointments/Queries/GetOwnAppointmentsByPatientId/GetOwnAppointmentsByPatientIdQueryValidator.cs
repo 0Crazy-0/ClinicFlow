@@ -1,13 +1,16 @@
 using ClinicFlow.Domain.Common;
 using FluentValidation;
 
-namespace ClinicFlow.Application.Appointments.Queries.GetAppointmentsByPatientId;
+namespace ClinicFlow.Application.Appointments.Queries.GetOwnAppointmentsByPatientId;
 
-public sealed class GetAppointmentsByPatientIdQueryValidator
-    : AbstractValidator<GetAppointmentsByPatientIdQuery>
+public sealed class GetOwnAppointmentsByPatientIdQueryValidator
+    : AbstractValidator<GetOwnAppointmentsByPatientIdQuery>
 {
-    public GetAppointmentsByPatientIdQueryValidator()
+    public GetOwnAppointmentsByPatientIdQueryValidator()
     {
+        RuleFor(x => x.RequesterUserId)
+            .NotEmpty()
+            .WithMessage(DomainErrors.Validation.InvalidValue);
         RuleFor(x => x.PatientId).NotEmpty().WithMessage(DomainErrors.Validation.InvalidValue);
         RuleFor(x => x.PageNumber)
             .GreaterThanOrEqualTo(1)

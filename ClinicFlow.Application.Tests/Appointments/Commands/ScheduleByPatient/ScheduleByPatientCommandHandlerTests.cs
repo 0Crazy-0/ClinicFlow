@@ -150,13 +150,19 @@ public class ScheduleByPatientCommandHandlerTests
             .ReturnsAsync(user);
         _familyMembershipRepositoryMock
             .Setup(r =>
-                r.HasActiveSelfMembershipAsync(
+                r.GetActiveMembershipAsync(
                     command.InitiatorUserId,
                     command.TargetPatientId,
                     It.IsAny<CancellationToken>()
                 )
             )
-            .ReturnsAsync(true);
+            .ReturnsAsync(
+                FamilyMembership.CreateSelf(
+                    command.TargetPatientId,
+                    command.InitiatorUserId,
+                    _fakeTime.GetUtcNow().UtcDateTime
+                )
+            );
 
         Appointment? capturedAppointment = null;
         _appointmentRepositoryMock
@@ -263,13 +269,19 @@ public class ScheduleByPatientCommandHandlerTests
             .ReturnsAsync(user);
         _familyMembershipRepositoryMock
             .Setup(r =>
-                r.HasActiveSelfMembershipAsync(
+                r.GetActiveMembershipAsync(
                     command.InitiatorUserId,
                     command.TargetPatientId,
                     It.IsAny<CancellationToken>()
                 )
             )
-            .ReturnsAsync(true);
+            .ReturnsAsync(
+                FamilyMembership.CreateSelf(
+                    command.TargetPatientId,
+                    command.InitiatorUserId,
+                    _fakeTime.GetUtcNow().UtcDateTime
+                )
+            );
 
         // Act
         await _sut.Handle(command, TestContext.Current.CancellationToken);
@@ -978,13 +990,13 @@ public class ScheduleByPatientCommandHandlerTests
 
         _familyMembershipRepositoryMock
             .Setup(r =>
-                r.HasActiveSelfMembershipAsync(
+                r.GetActiveMembershipAsync(
                     command.InitiatorUserId,
                     command.TargetPatientId,
                     It.IsAny<CancellationToken>()
                 )
             )
-            .ReturnsAsync(false);
+            .ReturnsAsync((FamilyMembership?)null);
 
         // Act
         var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);

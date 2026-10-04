@@ -10,11 +10,6 @@ public sealed record class PatientSchedulingContext
 {
     public IReadOnlyList<PatientPenalty> Penalties { get; init; } = [];
     public required Schedule DoctorSchedule { get; init; }
-    public bool InitiatorHasAccessToTarget { get; init; }
-
-    /// <summary>
-    /// Holds the initiator's legal authority over the target patient.
-    /// The guardian consent check compares this against None in the domain.
-    /// </summary>
-    public LegalAuthorityType InitiatorLegalAuthority { get; init; }
+    public required FamilyMembership InitiatorMembership { get; init; }
+    public AppointmentCategory RequestedCategory { get; init; }
 }

@@ -26,7 +26,12 @@ public class RescheduleByGuardianTests
             AppointmentReschedulingService.RescheduleByGuardian(
                 null!,
                 CreateValidGuardianReschedulingArgs(),
-                new PatientReschedulingContext { DoctorSchedule = CreateSchedule() },
+                new PatientReschedulingContext
+                {
+                    DoctorSchedule = CreateSchedule(),
+                    InitiatorMembership = CreateSelfMembership(),
+                    RequestedCategory = AppointmentCategory.Other,
+                },
                 SchedulingClearance.Granted()
             );
 
@@ -42,7 +47,12 @@ public class RescheduleByGuardianTests
             AppointmentReschedulingService.RescheduleByGuardian(
                 CreateAppointment(Guid.CreateVersion7()),
                 null!,
-                new PatientReschedulingContext { DoctorSchedule = CreateSchedule() },
+                new PatientReschedulingContext
+                {
+                    DoctorSchedule = CreateSchedule(),
+                    InitiatorMembership = CreateSelfMembership(),
+                    RequestedCategory = AppointmentCategory.Other,
+                },
                 SchedulingClearance.Granted()
             );
 
@@ -61,7 +71,12 @@ public class RescheduleByGuardianTests
                 {
                     TargetPatient = null!,
                 },
-                new PatientReschedulingContext { DoctorSchedule = CreateSchedule() },
+                new PatientReschedulingContext
+                {
+                    DoctorSchedule = CreateSchedule(),
+                    InitiatorMembership = CreateSelfMembership(),
+                    RequestedCategory = AppointmentCategory.Other,
+                },
                 SchedulingClearance.Granted()
             );
 
@@ -80,7 +95,12 @@ public class RescheduleByGuardianTests
                 {
                     InitiatorMembership = null!,
                 },
-                new PatientReschedulingContext { DoctorSchedule = CreateSchedule() },
+                new PatientReschedulingContext
+                {
+                    DoctorSchedule = CreateSchedule(),
+                    InitiatorMembership = CreateSelfMembership(),
+                    RequestedCategory = AppointmentCategory.Other,
+                },
                 SchedulingClearance.Granted()
             );
 
@@ -99,7 +119,12 @@ public class RescheduleByGuardianTests
                 {
                     NewTimeRange = null!,
                 },
-                new PatientReschedulingContext { DoctorSchedule = CreateSchedule() },
+                new PatientReschedulingContext
+                {
+                    DoctorSchedule = CreateSchedule(),
+                    InitiatorMembership = CreateSelfMembership(),
+                    RequestedCategory = AppointmentCategory.Other,
+                },
                 SchedulingClearance.Granted()
             );
 
@@ -131,7 +156,12 @@ public class RescheduleByGuardianTests
             AppointmentReschedulingService.RescheduleByGuardian(
                 CreateAppointment(Guid.CreateVersion7()),
                 CreateValidGuardianReschedulingArgs(),
-                new PatientReschedulingContext { DoctorSchedule = null! },
+                new PatientReschedulingContext
+                {
+                    DoctorSchedule = null!,
+                    InitiatorMembership = CreateSelfMembership(),
+                    RequestedCategory = AppointmentCategory.Other,
+                },
                 SchedulingClearance.Granted()
             );
 
@@ -147,7 +177,12 @@ public class RescheduleByGuardianTests
             AppointmentReschedulingService.RescheduleByGuardian(
                 CreateAppointment(Guid.CreateVersion7()),
                 CreateValidGuardianReschedulingArgs(),
-                new PatientReschedulingContext { DoctorSchedule = CreateSchedule() },
+                new PatientReschedulingContext
+                {
+                    DoctorSchedule = CreateSchedule(),
+                    InitiatorMembership = CreateSelfMembership(),
+                    RequestedCategory = AppointmentCategory.Other,
+                },
                 null!
             );
 
@@ -177,7 +212,8 @@ public class RescheduleByGuardianTests
         var context = new PatientReschedulingContext
         {
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek),
-            InitiatorHasAccessToTarget = true,
+            InitiatorMembership = CreateSelfMembership(),
+            RequestedCategory = AppointmentCategory.Other,
         };
 
         // Act
@@ -196,7 +232,7 @@ public class RescheduleByGuardianTests
     }
 
     [Fact]
-    public void RescheduleByGuardian_ShouldThrowUnauthorized_WhenInitiatorHasNoAccess()
+    public void RescheduleByGuardian_ShouldThrowUnauthorized_WhenInitiatorIsNotGuardian()
     {
         // Arrange
         var target = CreateMinorPatient();
@@ -204,7 +240,7 @@ public class RescheduleByGuardianTests
         var args = new GuardianReschedulingArgs
         {
             TargetPatient = target,
-            InitiatorMembership = CreateParentMembership(Guid.CreateVersion7()),
+            InitiatorMembership = CreateSelfMembership(),
             InitiatorUserId = Guid.CreateVersion7(),
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
             NewTimeRange = CreateTimeRange(),
@@ -214,7 +250,8 @@ public class RescheduleByGuardianTests
         var context = new PatientReschedulingContext
         {
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek),
-            InitiatorHasAccessToTarget = false,
+            InitiatorMembership = CreateSelfMembership(),
+            RequestedCategory = AppointmentCategory.Other,
         };
 
         // Act
@@ -258,7 +295,8 @@ public class RescheduleByGuardianTests
         var context = new PatientReschedulingContext
         {
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek),
-            InitiatorHasAccessToTarget = true,
+            InitiatorMembership = CreateSelfMembership(),
+            RequestedCategory = AppointmentCategory.Other,
         };
 
         // Act
@@ -318,7 +356,8 @@ public class RescheduleByGuardianTests
         var context = new PatientReschedulingContext
         {
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek),
-            InitiatorHasAccessToTarget = true,
+            InitiatorMembership = CreateSelfMembership(),
+            RequestedCategory = AppointmentCategory.Other,
         };
 
         // Act
@@ -377,7 +416,8 @@ public class RescheduleByGuardianTests
         var context = new PatientReschedulingContext
         {
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek),
-            InitiatorHasAccessToTarget = true,
+            InitiatorMembership = CreateSelfMembership(),
+            RequestedCategory = AppointmentCategory.Other,
         };
 
         // Act
@@ -432,7 +472,8 @@ public class RescheduleByGuardianTests
         var context = new PatientReschedulingContext
         {
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek),
-            InitiatorHasAccessToTarget = true,
+            InitiatorMembership = CreateSelfMembership(),
+            RequestedCategory = AppointmentCategory.Other,
         };
 
         // Act
@@ -473,7 +514,8 @@ public class RescheduleByGuardianTests
         var context = new PatientReschedulingContext
         {
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek),
-            InitiatorHasAccessToTarget = true,
+            InitiatorMembership = CreateSelfMembership(),
+            RequestedCategory = AppointmentCategory.Other,
         };
 
         // Act
@@ -522,7 +564,8 @@ public class RescheduleByGuardianTests
         {
             Penalties = penalties,
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek),
-            InitiatorHasAccessToTarget = true,
+            InitiatorMembership = CreateSelfMembership(),
+            RequestedCategory = AppointmentCategory.Other,
         };
 
         // Act
@@ -558,7 +601,8 @@ public class RescheduleByGuardianTests
         var context = new PatientReschedulingContext
         {
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek),
-            InitiatorHasAccessToTarget = true,
+            InitiatorMembership = CreateSelfMembership(),
+            RequestedCategory = AppointmentCategory.Other,
         };
 
         // Act
@@ -606,7 +650,8 @@ public class RescheduleByGuardianTests
         var context = new PatientReschedulingContext
         {
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek),
-            InitiatorHasAccessToTarget = true,
+            InitiatorMembership = CreateSelfMembership(),
+            RequestedCategory = AppointmentCategory.Other,
         };
 
         // Act
@@ -655,7 +700,8 @@ public class RescheduleByGuardianTests
         var context = new PatientReschedulingContext
         {
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek),
-            InitiatorHasAccessToTarget = true,
+            InitiatorMembership = CreateSelfMembership(),
+            RequestedCategory = AppointmentCategory.Other,
         };
 
         // Act
@@ -680,6 +726,13 @@ public class RescheduleByGuardianTests
             LegalAuthorityType.Parent,
             FamilyMembershipAccessLevel.Full,
             10,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+    private FamilyMembership CreateSelfMembership() =>
+        FamilyMembership.CreateSelf(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
             _fakeTime.GetUtcNow().UtcDateTime
         );
 

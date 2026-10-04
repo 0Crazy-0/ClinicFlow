@@ -30,11 +30,12 @@ public static class AppointmentSchedulingService
         ArgumentNullException.ThrowIfNull(args.TimeRange);
         ArgumentNullException.ThrowIfNull(context);
         ArgumentNullException.ThrowIfNull(context.DoctorSchedule);
+        ArgumentNullException.ThrowIfNull(context.InitiatorMembership);
 
         if (clearance is null)
             throw new BusinessRuleValidationException(DomainErrors.Scheduling.MissingClearance);
 
-        PatientAccessService.VerifyAccess(context.InitiatorHasAccessToTarget);
+        context.InitiatorMembership.EnsureAppointmentAccess(context.RequestedCategory);
 
         if (!args.IsInitiatorPhoneVerified)
             throw new AppointmentSchedulingUnauthorizedException(
@@ -47,7 +48,7 @@ public static class AppointmentSchedulingService
 
         appointmentType.ValidatePatientEligibility(
             args.TargetPatient.GetAge(args.ScheduledDate),
-            context.InitiatorLegalAuthority is not LegalAuthorityType.None
+            context.InitiatorMembership.LegalAuthority is not LegalAuthorityType.None
         );
 
         context.DoctorSchedule.EnsureDoctorIsAvailable(
@@ -89,8 +90,6 @@ public static class AppointmentSchedulingService
         if (clearance is null)
             throw new BusinessRuleValidationException(DomainErrors.Scheduling.MissingClearance);
 
-        PatientAccessService.VerifyAccess(context.InitiatorHasAccessToTarget);
-
         args.InitiatorMembership.EnsureGuardianAccess();
 
         if (!args.IsInitiatorPhoneVerified)
@@ -104,7 +103,7 @@ public static class AppointmentSchedulingService
 
         appointmentType.ValidatePatientEligibility(
             args.TargetPatient.GetAge(args.ScheduledDate),
-            context.InitiatorLegalAuthority is not LegalAuthorityType.None
+            context.InitiatorMembership.LegalAuthority is not LegalAuthorityType.None
         );
 
         context.DoctorSchedule.EnsureDoctorIsAvailable(

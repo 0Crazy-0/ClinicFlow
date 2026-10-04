@@ -97,6 +97,45 @@ public sealed class AppointmentRepository(ApplicationDbContext dbContext) : IApp
         return (items, totalCount);
     }
 
+    /// <inheritdoc />
+    public async Task<(
+        IReadOnlyList<Appointment> Items,
+        int TotalCount
+    )> GetByPatientIdInCategoriesExcludingProtectedAsync(
+        Guid patientId,
+        IReadOnlyCollection<AppointmentCategory> allowedCategories,
+        IReadOnlyCollection<ProtectedCategory> excludedCategories,
+        int pageNumber,
+        int pageSize,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var query = dbContext
+            .Appointments.AsNoTracking()
+            .Where(a => a.PatientId == patientId)
+            .Where(a =>
+                dbContext.AppointmentTypes.Any(t =>
+                    t.Id == a.AppointmentTypeId
+                    && allowedCategories.Contains(t.Category)
+                    && (
+                        t.ProtectedCareCategory == null
+                        || !excludedCategories.Contains(t.ProtectedCareCategory.Value)
+                    )
+                )
+            );
+
+        var totalCount = await query.CountAsync(cancellationToken);
+        var items = await query
+            .OrderBy(a => a.ScheduledDate)
+            .ThenBy(a => a.TimeRange.Start)
+            .ThenBy(a => a.SequenceNumber)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
+
+        return (items, totalCount);
+    }
+
     public async Task<bool> HasUpcomingAppointmentRequiringGuardianForMinorAsync(
         Guid patientId,
         DateTime referenceTime,

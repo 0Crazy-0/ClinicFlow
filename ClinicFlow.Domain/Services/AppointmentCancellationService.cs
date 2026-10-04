@@ -24,6 +24,9 @@ public static class AppointmentCancellationService
         ArgumentNullException.ThrowIfNull(context.Specialty);
         ArgumentNullException.ThrowIfNull(args);
         ArgumentNullException.ThrowIfNull(args.TargetPatient);
+        ArgumentNullException.ThrowIfNull(context.InitiatorMembership);
+
+        context.InitiatorMembership.EnsureAppointmentAccess(context.RequestedCategory);
 
         if (appointment.PatientId != args.TargetPatient.Id)
             throw new DomainValidationException(DomainErrors.Appointment.DataMismatch);
@@ -36,8 +39,7 @@ public static class AppointmentCancellationService
         if (context.Purpose is AppointmentPurpose.Emergency)
             ValidateEmergencyCancellation(
                 args.TargetPatient,
-                context.InitiatorRelationship,
-                context.InitiatorLegalAuthority,
+                context.InitiatorMembership,
                 DateOnly.FromDateTime(args.CancelledAt)
             );
 
@@ -104,16 +106,15 @@ public static class AppointmentCancellationService
     /// </summary>
     private static void ValidateEmergencyCancellation(
         Patient patient,
-        PatientRelationship initiatorRelationship,
-        LegalAuthorityType initiatorLegalAuthority,
+        FamilyMembership initiatorMembership,
         DateOnly referenceDate
     )
     {
-        if (initiatorRelationship is PatientRelationship.Self)
+        if (initiatorMembership.Role is PatientRelationship.Self)
             return;
 
         if (
-            initiatorLegalAuthority is not LegalAuthorityType.None
+            initiatorMembership.LegalAuthority is not LegalAuthorityType.None
             && patient.GetAge(referenceDate) < DomainRules.AdultAge
         )
             return;

@@ -1,6 +1,5 @@
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
-using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Appointments;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Exceptions.Patients;
@@ -132,14 +131,13 @@ public sealed class ScheduleByPatientCommandHandler(
                     appointmentType
                 );
 
-                if (
-                    !await familyMembershipRepository.HasActiveSelfMembershipAsync(
+                var initiatorMembership =
+                    await familyMembershipRepository.GetActiveMembershipAsync(
                         request.InitiatorUserId,
                         request.TargetPatientId,
                         cancellationToken
                     )
-                )
-                    throw new PatientAccessUnauthorizedException(
+                    ?? throw new PatientAccessUnauthorizedException(
                         DomainErrors.Patient.UnauthorizedAccess
                     );
 
@@ -159,8 +157,8 @@ public sealed class ScheduleByPatientCommandHandler(
                     {
                         Penalties = penalties,
                         DoctorSchedule = doctorSchedule,
-                        InitiatorHasAccessToTarget = true,
-                        InitiatorLegalAuthority = LegalAuthorityType.None,
+                        InitiatorMembership = initiatorMembership,
+                        RequestedCategory = appointmentType.Category,
                     },
                     clearance
                 );

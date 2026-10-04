@@ -155,8 +155,8 @@ public sealed class ScheduleByGuardianCommandHandler(
                     {
                         Penalties = penalties,
                         DoctorSchedule = doctorSchedule,
-                        InitiatorHasAccessToTarget = true,
-                        InitiatorLegalAuthority = initiatorMembership.LegalAuthority,
+                        InitiatorMembership = initiatorMembership,
+                        RequestedCategory = appointmentType.Category,
                     },
                     clearance
                 );

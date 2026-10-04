@@ -27,7 +27,12 @@ public class ScheduleByGuardianTests
             AppointmentSchedulingService.ScheduleByGuardian(
                 null!,
                 CreateValidGuardianSchedulingArgs(),
-                new PatientSchedulingContext { DoctorSchedule = CreateSchedule() },
+                new PatientSchedulingContext
+                {
+                    DoctorSchedule = CreateSchedule(),
+                    InitiatorMembership = CreateSelfMembership(),
+                    RequestedCategory = AppointmentCategory.Other,
+                },
                 SchedulingClearance.Granted()
             );
 
@@ -43,7 +48,12 @@ public class ScheduleByGuardianTests
             AppointmentSchedulingService.ScheduleByGuardian(
                 CreateAppointmentType(),
                 null!,
-                new PatientSchedulingContext { DoctorSchedule = CreateSchedule() },
+                new PatientSchedulingContext
+                {
+                    DoctorSchedule = CreateSchedule(),
+                    InitiatorMembership = CreateSelfMembership(),
+                    RequestedCategory = AppointmentCategory.Other,
+                },
                 SchedulingClearance.Granted()
             );
 
@@ -62,7 +72,12 @@ public class ScheduleByGuardianTests
                 {
                     TargetPatient = null!,
                 },
-                new PatientSchedulingContext { DoctorSchedule = CreateSchedule() },
+                new PatientSchedulingContext
+                {
+                    DoctorSchedule = CreateSchedule(),
+                    InitiatorMembership = CreateSelfMembership(),
+                    RequestedCategory = AppointmentCategory.Other,
+                },
                 SchedulingClearance.Granted()
             );
 
@@ -81,7 +96,12 @@ public class ScheduleByGuardianTests
                 {
                     InitiatorMembership = null!,
                 },
-                new PatientSchedulingContext { DoctorSchedule = CreateSchedule() },
+                new PatientSchedulingContext
+                {
+                    DoctorSchedule = CreateSchedule(),
+                    InitiatorMembership = CreateSelfMembership(),
+                    RequestedCategory = AppointmentCategory.Other,
+                },
                 SchedulingClearance.Granted()
             );
 
@@ -100,7 +120,12 @@ public class ScheduleByGuardianTests
                 {
                     TimeRange = null!,
                 },
-                new PatientSchedulingContext { DoctorSchedule = CreateSchedule() },
+                new PatientSchedulingContext
+                {
+                    DoctorSchedule = CreateSchedule(),
+                    InitiatorMembership = CreateSelfMembership(),
+                    RequestedCategory = AppointmentCategory.Other,
+                },
                 SchedulingClearance.Granted()
             );
 
@@ -132,7 +157,12 @@ public class ScheduleByGuardianTests
             AppointmentSchedulingService.ScheduleByGuardian(
                 CreateAppointmentType(),
                 CreateValidGuardianSchedulingArgs(),
-                new PatientSchedulingContext { DoctorSchedule = null! },
+                new PatientSchedulingContext
+                {
+                    DoctorSchedule = null!,
+                    InitiatorMembership = CreateSelfMembership(),
+                    RequestedCategory = AppointmentCategory.Other,
+                },
                 SchedulingClearance.Granted()
             );
 
@@ -150,11 +180,16 @@ public class ScheduleByGuardianTests
                 new GuardianSchedulingArgs
                 {
                     TargetPatient = CreateMinorPatient(),
-                    InitiatorMembership = CreateParentMembership(Guid.CreateVersion7()),
+                    InitiatorMembership = CreateParentMembership(),
                     InitiatorUserId = Guid.CreateVersion7(),
                     TimeRange = CreateTimeRange(),
                 },
-                new PatientSchedulingContext { DoctorSchedule = CreateSchedule() },
+                new PatientSchedulingContext
+                {
+                    DoctorSchedule = CreateSchedule(),
+                    InitiatorMembership = CreateSelfMembership(),
+                    RequestedCategory = AppointmentCategory.Other,
+                },
                 null!
             );
 
@@ -165,13 +200,13 @@ public class ScheduleByGuardianTests
     }
 
     [Fact]
-    public void ScheduleByGuardian_ShouldThrowUnauthorized_WhenInitiatorHasNoAccess()
+    public void ScheduleByGuardian_ShouldThrowUnauthorized_WhenInitiatorIsNotGuardian()
     {
         // Arrange
         var args = new GuardianSchedulingArgs
         {
             TargetPatient = CreateMinorPatient(),
-            InitiatorMembership = CreateParentMembership(Guid.CreateVersion7()),
+            InitiatorMembership = CreateSelfMembership(),
             InitiatorUserId = Guid.CreateVersion7(),
             TimeRange = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
@@ -180,7 +215,8 @@ public class ScheduleByGuardianTests
         var context = new PatientSchedulingContext
         {
             DoctorSchedule = CreateSchedule(),
-            InitiatorHasAccessToTarget = false,
+            InitiatorMembership = CreateSelfMembership(),
+            RequestedCategory = AppointmentCategory.Other,
         };
 
         // Act
@@ -219,8 +255,8 @@ public class ScheduleByGuardianTests
         var context = new PatientSchedulingContext
         {
             DoctorSchedule = CreateSchedule(),
-            InitiatorHasAccessToTarget = true,
-            InitiatorLegalAuthority = LegalAuthorityType.None,
+            InitiatorMembership = CreateSelfMembership(),
+            RequestedCategory = AppointmentCategory.Other,
         };
 
         // Act
@@ -257,8 +293,8 @@ public class ScheduleByGuardianTests
         var context = new PatientSchedulingContext
         {
             DoctorSchedule = CreateSchedule(),
-            InitiatorHasAccessToTarget = true,
-            InitiatorLegalAuthority = LegalAuthorityType.Parent,
+            InitiatorMembership = CreateParentMembership(),
+            RequestedCategory = AppointmentCategory.Other,
         };
 
         // Act
@@ -301,8 +337,8 @@ public class ScheduleByGuardianTests
         var context = new PatientSchedulingContext
         {
             DoctorSchedule = CreateSchedule(),
-            InitiatorHasAccessToTarget = true,
-            InitiatorLegalAuthority = LegalAuthorityType.Parent,
+            InitiatorMembership = CreateParentMembership(),
+            RequestedCategory = AppointmentCategory.Other,
         };
 
         // Act
@@ -351,8 +387,8 @@ public class ScheduleByGuardianTests
         {
             Penalties = penalties,
             DoctorSchedule = CreateSchedule(),
-            InitiatorHasAccessToTarget = true,
-            InitiatorLegalAuthority = LegalAuthorityType.Parent,
+            InitiatorMembership = CreateParentMembership(),
+            RequestedCategory = AppointmentCategory.Other,
         };
 
         // Act
@@ -396,8 +432,8 @@ public class ScheduleByGuardianTests
         var context = new PatientSchedulingContext
         {
             DoctorSchedule = CreateSchedule(),
-            InitiatorHasAccessToTarget = true,
-            InitiatorLegalAuthority = LegalAuthorityType.Parent,
+            InitiatorMembership = CreateParentMembership(),
+            RequestedCategory = AppointmentCategory.Other,
         };
 
         // Act
@@ -434,8 +470,8 @@ public class ScheduleByGuardianTests
         var context = new PatientSchedulingContext
         {
             DoctorSchedule = CreateSchedule(),
-            InitiatorHasAccessToTarget = true,
-            InitiatorLegalAuthority = LegalAuthorityType.Parent,
+            InitiatorMembership = CreateParentMembership(),
+            RequestedCategory = AppointmentCategory.Other,
         };
 
         // Act
@@ -481,8 +517,8 @@ public class ScheduleByGuardianTests
         var context = new PatientSchedulingContext
         {
             DoctorSchedule = CreateSchedule(),
-            InitiatorHasAccessToTarget = true,
-            InitiatorLegalAuthority = LegalAuthorityType.None,
+            InitiatorMembership = CreateSelfMembership(),
+            RequestedCategory = AppointmentCategory.Other,
         };
 
         // Act
@@ -532,8 +568,8 @@ public class ScheduleByGuardianTests
                 args.ScheduledDate.DayOfWeek,
                 TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(17, 0))
             ),
-            InitiatorHasAccessToTarget = true,
-            InitiatorLegalAuthority = LegalAuthorityType.Parent,
+            InitiatorMembership = CreateParentMembership(),
+            RequestedCategory = AppointmentCategory.Other,
         };
 
         // Act
@@ -584,8 +620,8 @@ public class ScheduleByGuardianTests
                 args.ScheduledDate.DayOfWeek,
                 TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(17, 0))
             ),
-            InitiatorHasAccessToTarget = true,
-            InitiatorLegalAuthority = LegalAuthorityType.Parent,
+            InitiatorMembership = CreateParentMembership(),
+            RequestedCategory = AppointmentCategory.Other,
         };
 
         // Act
@@ -639,8 +675,8 @@ public class ScheduleByGuardianTests
         var context = new PatientSchedulingContext
         {
             DoctorSchedule = doctorSchedule,
-            InitiatorHasAccessToTarget = true,
-            InitiatorLegalAuthority = LegalAuthorityType.Parent,
+            InitiatorMembership = CreateParentMembership(),
+            RequestedCategory = AppointmentCategory.Other,
         };
 
         // Act
@@ -690,8 +726,8 @@ public class ScheduleByGuardianTests
                 args.ScheduledDate.DayOfWeek,
                 TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(17, 0))
             ),
-            InitiatorHasAccessToTarget = true,
-            InitiatorLegalAuthority = LegalAuthorityType.Parent,
+            InitiatorMembership = CreateParentMembership(),
+            RequestedCategory = AppointmentCategory.Other,
         };
 
         // Act
@@ -726,6 +762,24 @@ public class ScheduleByGuardianTests
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
+    private FamilyMembership CreateParentMembership() =>
+        FamilyMembership.CreateFamilyMember(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            PatientRelationship.Parent,
+            LegalAuthorityType.Parent,
+            FamilyMembershipAccessLevel.Full,
+            10,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+    private FamilyMembership CreateSelfMembership() =>
+        FamilyMembership.CreateSelf(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
     private Patient CreateMinorPatient()
     {
         var patient = Patient.CreateProfile(
@@ -743,7 +797,7 @@ public class ScheduleByGuardianTests
         new()
         {
             TargetPatient = CreateMinorPatient(),
-            InitiatorMembership = CreateParentMembership(Guid.CreateVersion7()),
+            InitiatorMembership = CreateParentMembership(),
             InitiatorUserId = Guid.CreateVersion7(),
             TimeRange = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
