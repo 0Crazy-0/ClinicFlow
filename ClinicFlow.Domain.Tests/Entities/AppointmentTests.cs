@@ -1037,11 +1037,11 @@ public class AppointmentTests
     }
 
     [Fact]
-    public void UpdatePatientNotes_ShouldSucceed_WhenRequiresReassignment()
+    public void UpdatePatientNotes_ShouldSucceed_WhenCheckedIn()
     {
         // Arrange
         var appointment = CreateAppointment();
-        appointment.MarkAsRequiresReassignment();
+        appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
 
         var newNotes = "New patient notes";
 
@@ -1073,7 +1073,7 @@ public class AppointmentTests
         // Arrange
         var appointment = CreateAppointment();
 
-        appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
+        appointment.MarkAsRequiresReassignment();
 
         // Act
         var act = () => appointment.UpdatePatientNotes("New notes");
