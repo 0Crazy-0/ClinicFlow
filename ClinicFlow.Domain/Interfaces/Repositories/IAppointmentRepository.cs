@@ -37,6 +37,29 @@ public interface IAppointmentRepository
     );
 
     /// <remarks>
+    /// Both filters resolve in SQL before pagination, so the total count only reflects
+    /// visible appointments. An empty allowed list matches nothing by design.
+    /// An appointment type is visible when its category is allowed and its protected
+    /// care category is either absent or not excluded. The guardian based exceptions
+    /// of the medical record consent regime are deliberately not evaluated here: they
+    /// depend on per record state held by <see cref="MedicalRecord"/> (guardian initiated
+    /// treatment and guardian involvement determinations), which an appointment does not
+    /// carry. An appointment type protected by age is therefore always hidden from
+    /// family member listings.
+    /// </remarks>
+    Task<(
+        IReadOnlyList<Appointment> Items,
+        int TotalCount
+    )> GetByPatientIdInCategoriesExcludingProtectedAsync(
+        Guid patientId,
+        IReadOnlyCollection<AppointmentCategory> allowedCategories,
+        IReadOnlyCollection<ProtectedCategory> excludedCategories,
+        int pageNumber,
+        int pageSize,
+        CancellationToken cancellationToken = default
+    );
+
+    /// <remarks>
     /// An appointment is active while its <see cref="AppointmentStatus"/> is
     /// <see cref="AppointmentStatus.Scheduled"/> or
     /// <see cref="AppointmentStatus.RequiresReassignment"/>.
