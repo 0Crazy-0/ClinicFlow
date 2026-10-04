@@ -1137,6 +1137,204 @@ public class FamilyMembershipTests
     }
 
     [Fact]
+    public void EnsureAppointmentAccess_ShouldNotThrow_WhenRoleIsSelf()
+    {
+        // Arrange
+        var membership = FamilyMembership.CreateSelf(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        // Act & Assert
+        membership
+            .Invoking(m => m.EnsureAppointmentAccess(AppointmentCategory.GeneralMedicine))
+            .Should()
+            .NotThrow();
+    }
+
+    [Fact]
+    public void EnsureAppointmentAccess_ShouldNotThrow_WhenFullAccess()
+    {
+        // Arrange
+        var membership = FamilyMembership.CreateFamilyMember(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            PatientRelationship.Child,
+            LegalAuthorityType.None,
+            FamilyMembershipAccessLevel.Full,
+            30,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        // Act & Assert
+        membership
+            .Invoking(m => m.EnsureAppointmentAccess(AppointmentCategory.Cardiology))
+            .Should()
+            .NotThrow();
+    }
+
+    [Fact]
+    public void EnsureAppointmentAccess_ShouldNotThrow_WhenAppointmentOnlyAccess()
+    {
+        // Arrange
+        var membership = FamilyMembership.CreateFamilyMember(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            PatientRelationship.Child,
+            LegalAuthorityType.None,
+            FamilyMembershipAccessLevel.AppointmentOnly,
+            30,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        // Act & Assert
+        membership
+            .Invoking(m => m.EnsureAppointmentAccess(AppointmentCategory.Dermatology))
+            .Should()
+            .NotThrow();
+    }
+
+    [Fact]
+    public void EnsureAppointmentAccess_ShouldNotThrow_WhenRestrictedWithAllowedCategory()
+    {
+        // Arrange
+        var membership = CreateRestrictedMembership();
+
+        membership.AddAllowedAppointmentCategory(
+            AppointmentCategory.GeneralMedicine,
+            requesterIsAuthorized: true
+        );
+
+        // Act & Assert
+        membership
+            .Invoking(m => m.EnsureAppointmentAccess(AppointmentCategory.GeneralMedicine))
+            .Should()
+            .NotThrow();
+    }
+
+    [Fact]
+    public void EnsureAppointmentAccess_ShouldThrowPatientAccessUnauthorizedException_WhenViewOnly()
+    {
+        // Arrange
+        var membership = FamilyMembership.CreateFamilyMember(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            PatientRelationship.Child,
+            LegalAuthorityType.None,
+            FamilyMembershipAccessLevel.ViewOnly,
+            30,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        // Act
+        var act = () => membership.EnsureAppointmentAccess(AppointmentCategory.GeneralMedicine);
+
+        // Assert
+        act.Should()
+            .Throw<PatientAccessUnauthorizedException>()
+            .WithMessage(DomainErrors.Patient.UnauthorizedAccess);
+    }
+
+    [Fact]
+    public void EnsureAppointmentAccess_ShouldThrowPatientAccessUnauthorizedException_WhenRestrictedWithoutCategory()
+    {
+        // Arrange
+        var membership = CreateRestrictedMembership();
+
+        // Act
+        var act = () => membership.EnsureAppointmentAccess(AppointmentCategory.Cardiology);
+
+        // Assert
+        act.Should()
+            .Throw<PatientAccessUnauthorizedException>()
+            .WithMessage(DomainErrors.Patient.UnauthorizedAccess);
+    }
+
+    [Fact]
+    public void GetVisibleAppointmentCategories_ShouldReturnAll_WhenFullAccess()
+    {
+        // Arrange
+        var membership = FamilyMembership.CreateFamilyMember(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            PatientRelationship.Child,
+            LegalAuthorityType.None,
+            FamilyMembershipAccessLevel.Full,
+            30,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        // Act
+        var visible = membership.GetVisibleAppointmentCategories();
+
+        // Assert
+        visible.Should().BeEquivalentTo(Enum.GetValues<AppointmentCategory>());
+    }
+
+    [Fact]
+    public void GetVisibleAppointmentCategories_ShouldReturnAll_WhenViewOnlyAccess()
+    {
+        // Arrange
+        var membership = FamilyMembership.CreateFamilyMember(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            PatientRelationship.Child,
+            LegalAuthorityType.None,
+            FamilyMembershipAccessLevel.ViewOnly,
+            30,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        // Act
+        var visible = membership.GetVisibleAppointmentCategories();
+
+        // Assert
+        visible.Should().BeEquivalentTo(Enum.GetValues<AppointmentCategory>());
+    }
+
+    [Fact]
+    public void GetVisibleAppointmentCategories_ShouldReturnAllowedOnly_WhenRestricted()
+    {
+        // Arrange
+        var membership = CreateRestrictedMembership();
+
+        membership.AddAllowedAppointmentCategory(
+            AppointmentCategory.GeneralMedicine,
+            requesterIsAuthorized: true
+        );
+
+        // Act
+        var visible = membership.GetVisibleAppointmentCategories();
+
+        // Assert
+        visible.Should().BeEquivalentTo([AppointmentCategory.GeneralMedicine]);
+    }
+
+    [Fact]
+    public void GetVisibleAppointmentCategories_ShouldThrowDomainValidationException_WhenAppointmentOnly()
+    {
+        // Arrange
+        var membership = FamilyMembership.CreateFamilyMember(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            PatientRelationship.Child,
+            LegalAuthorityType.None,
+            FamilyMembershipAccessLevel.AppointmentOnly,
+            30,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        // Act
+        var act = () => membership.GetVisibleAppointmentCategories();
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Appointment.UnauthorizedAccess);
+    }
+
+    [Fact]
     public void Revoke_ShouldTransitionToRevoked_WhenValidParameters()
     {
         // Arrange

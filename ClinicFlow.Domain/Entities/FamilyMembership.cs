@@ -273,6 +273,46 @@ public class FamilyMembership : BaseEntity
     }
 
     /// <summary>
+    /// Validates that the membership allows operating on an appointment of the given category,
+    /// whether scheduling, rescheduling, or cancelling.
+    /// The patient themselves are never subject to access levels. Full and AppointmentOnly
+    /// members may operate on any category, while Restricted members are limited to the
+    /// categories in <see cref="AllowedAppointmentCategories"/>. Every other level is denied.
+    /// </summary>
+    public void EnsureAppointmentAccess(AppointmentCategory category)
+    {
+        if (
+            Role is PatientRelationship.Self
+            || AccessLevel
+                is FamilyMembershipAccessLevel.Full
+                    or FamilyMembershipAccessLevel.AppointmentOnly
+            || (
+                AccessLevel is FamilyMembershipAccessLevel.Restricted
+                && _allowedAppointmentCategories.Contains(category)
+            )
+        )
+            return;
+
+        throw new PatientAccessUnauthorizedException(DomainErrors.Patient.UnauthorizedAccess);
+    }
+
+    /// <summary>
+    /// Lists the appointment categories visible to the membership in appointment listings.
+    /// Full and ViewOnly members see every category, while Restricted members only see the
+    /// categories in <see cref="AllowedAppointmentCategories"/>, so an empty collection
+    /// sees nothing. Every other level is denied.
+    /// </summary>
+    public IReadOnlyCollection<AppointmentCategory> GetVisibleAppointmentCategories() =>
+        AccessLevel switch
+        {
+            FamilyMembershipAccessLevel.Full or FamilyMembershipAccessLevel.ViewOnly =>
+                Enum.GetValues<AppointmentCategory>(),
+
+            FamilyMembershipAccessLevel.Restricted => [.. AllowedAppointmentCategories],
+            _ => throw new DomainValidationException(DomainErrors.Appointment.UnauthorizedAccess),
+        };
+
+    /// <summary>
     /// Validates that the membership may act as a guardian (scheduling, rescheduling and
     /// guardian notes). Requires current Parent or Guardian authority with Full access.
     /// The patient themselves never act as guardian.
