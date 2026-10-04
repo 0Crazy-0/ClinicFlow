@@ -285,7 +285,7 @@ public class Appointment : BaseEntity
 
     public void UpdatePatientNotes(string? notes)
     {
-        if (Status is not (AppointmentStatus.Scheduled or AppointmentStatus.RequiresReassignment))
+        if (Status is not (AppointmentStatus.Scheduled or AppointmentStatus.CheckedIn))
             throw new DomainValidationException(DomainErrors.Appointment.CannotUpdateNotes);
 
         if (notes?.Length > MaxNotesLength)
