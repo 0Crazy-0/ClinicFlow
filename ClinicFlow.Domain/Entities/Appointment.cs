@@ -43,8 +43,17 @@ public class Appointment : BaseEntity
 
     public Guid? GuardianNotesAuthorUserId { get; private set; }
 
+    /// <remarks>
+    /// Holds accommodation details visible to the patient.
+    /// </remarks>
     // Stryker disable once String
     public string ReceptionistNotes { get; private set; } = string.Empty;
+
+    /// <remarks>
+    /// Holds private coordination details hidden from patient facing queries.
+    /// </remarks>
+    // Stryker disable once String
+    public string StaffInternalNotes { get; private set; } = string.Empty;
 
     public DateOnly? CheckedInAt { get; private set; }
 
@@ -327,6 +336,17 @@ public class Appointment : BaseEntity
             throw new DomainValidationException(DomainErrors.Validation.ValueTooLong);
 
         ReceptionistNotes = notes ?? string.Empty;
+    }
+
+    public void UpdateStaffInternalNotes(string? notes)
+    {
+        if (Status is not AppointmentStatus.CheckedIn)
+            throw new DomainValidationException(DomainErrors.Appointment.CannotUpdateNotes);
+
+        if (notes?.Length > MaxNotesLength)
+            throw new DomainValidationException(DomainErrors.Validation.ValueTooLong);
+
+        StaffInternalNotes = notes ?? string.Empty;
     }
 
     private void MarkAsNoShow()

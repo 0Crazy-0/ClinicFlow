@@ -1311,6 +1311,84 @@ public class AppointmentTests
         appointment.ReceptionistNotes.Should().Be(notes);
     }
 
+    [Fact]
+    public void UpdateStaffInternalNotes_ShouldSucceed_WhenCheckedIn()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
+
+        var newNotes = "New staff internal notes";
+
+        // Act
+        appointment.UpdateStaffInternalNotes(newNotes);
+
+        // Assert
+        appointment.StaffInternalNotes.Should().Be(newNotes);
+    }
+
+    [Fact]
+    public void UpdateStaffInternalNotes_ShouldSetNotesToEmpty_WhenNullProvided()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
+        appointment.UpdateStaffInternalNotes("Initial notes");
+
+        // Act
+        appointment.UpdateStaffInternalNotes(null);
+
+        // Assert
+        appointment.StaffInternalNotes.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void UpdateStaffInternalNotes_ShouldThrowException_WhenInvalidStatus()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+
+        // Act
+        var act = () => appointment.UpdateStaffInternalNotes("New notes");
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Appointment.CannotUpdateNotes);
+    }
+
+    [Fact]
+    public void UpdateStaffInternalNotes_ShouldThrowException_WhenNotesExceedMaximumLength()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
+        var notes = new string('A', Appointment.MaxNotesLength + 1);
+
+        // Act
+        var act = () => appointment.UpdateStaffInternalNotes(notes);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueTooLong);
+    }
+
+    [Fact]
+    public void UpdateStaffInternalNotes_ShouldSucceed_WhenNotesLengthEqualsMaximumLength()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
+        var notes = new string('A', Appointment.MaxNotesLength);
+
+        // Act
+        appointment.UpdateStaffInternalNotes(notes);
+
+        // Assert
+        appointment.StaffInternalNotes.Should().Be(notes);
+    }
+
     private Appointment CreateAppointment() =>
         Appointment.Schedule(
             Guid.CreateVersion7(),
