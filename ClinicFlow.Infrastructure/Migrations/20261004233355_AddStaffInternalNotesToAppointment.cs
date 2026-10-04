@@ -15,15 +15,14 @@ namespace ClinicFlow.Infrastructure.Migrations
                 table: "Appointments",
                 type: "text",
                 nullable: false,
-                defaultValue: "");
+                defaultValue: ""
+            );
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "StaffInternalNotes",
-                table: "Appointments");
+            migrationBuilder.DropColumn(name: "StaffInternalNotes", table: "Appointments");
         }
     }
 }
