@@ -35,5 +35,25 @@ public sealed class FamilyMembershipConfiguration : IEntityTypeConfiguration<Fam
             .WithMany()
             .HasForeignKey(m => m.UserId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasIndex(m => new
+        {
+            m.UserId,
+            m.PatientId,
+            m.Status,
+            m.Role,
+        });
+        builder.HasIndex(m => new
+        {
+            m.UserId,
+            m.Status,
+            m.Role,
+        });
+        builder.HasIndex(m => new
+        {
+            m.PatientId,
+            m.Status,
+            m.Role,
+        });
     }
 }
