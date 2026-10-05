@@ -63,7 +63,8 @@ public class GetAppointmentByIdQueryHandlerTests
             appointment.Status,
             appointment.PatientNotes,
             appointment.ReceptionistNotes,
-            null
+            appointment.GuardianNotes,
+            appointment.StaffInternalNotes
         );
 
         result.Should().BeEquivalentTo(expectedDto);

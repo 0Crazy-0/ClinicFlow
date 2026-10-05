@@ -14,10 +14,14 @@ public sealed class GetFamilyMemberAppointmentsByPatientIdQueryHandler(
     IPatientRepository patientRepository,
     IAppointmentRepository appointmentRepository,
     TimeProvider timeProvider
-) : IRequestHandler<GetFamilyMemberAppointmentsByPatientIdQuery, PaginatedList<AppointmentDto>>
+)
+    : IRequestHandler<
+        GetFamilyMemberAppointmentsByPatientIdQuery,
+        PaginatedList<PatientAppointmentDto>
+    >
 {
     /// <inheritdoc />
-    public async Task<PaginatedList<AppointmentDto>> Handle(
+    public async Task<PaginatedList<PatientAppointmentDto>> Handle(
         GetFamilyMemberAppointmentsByPatientIdQuery request,
         CancellationToken cancellationToken
     )
@@ -59,7 +63,7 @@ public sealed class GetFamilyMemberAppointmentsByPatientIdQueryHandler(
             );
 
         var dtos = items
-            .Select(a => new AppointmentDto(
+            .Select(a => new PatientAppointmentDto(
                 a.Id,
                 a.PatientId,
                 a.DoctorId,
@@ -74,7 +78,7 @@ public sealed class GetFamilyMemberAppointmentsByPatientIdQueryHandler(
             ))
             .ToList();
 
-        return new PaginatedList<AppointmentDto>(
+        return new PaginatedList<PatientAppointmentDto>(
             dtos,
             totalCount,
             request.PageNumber,

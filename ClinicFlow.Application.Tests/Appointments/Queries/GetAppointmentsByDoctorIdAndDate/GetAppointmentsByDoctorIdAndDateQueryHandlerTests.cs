@@ -56,7 +56,8 @@ public class GetAppointmentsByDoctorIdAndDateQueryHandlerTests
             a.Status,
             a.PatientNotes,
             a.ReceptionistNotes,
-            a.GuardianNotes
+            a.GuardianNotes,
+            a.StaffInternalNotes
         ));
 
         result.Items.Should().BeEquivalentTo(expectedDtos);

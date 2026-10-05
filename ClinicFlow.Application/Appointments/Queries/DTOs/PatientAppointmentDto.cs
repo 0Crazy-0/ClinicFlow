@@ -2,7 +2,7 @@ using ClinicFlow.Domain.Enums;
 
 namespace ClinicFlow.Application.Appointments.Queries.DTOs;
 
-public sealed record AppointmentDto(
+public sealed record PatientAppointmentDto(
     Guid Id,
     Guid PatientId,
     Guid DoctorId,
@@ -13,6 +13,5 @@ public sealed record AppointmentDto(
     AppointmentStatus Status,
     string PatientNotes,
     string ReceptionistNotes,
-    string? GuardianNotes,
-    string StaffInternalNotes
+    string? GuardianNotes
 );
