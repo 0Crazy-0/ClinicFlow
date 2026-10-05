@@ -92,14 +92,11 @@ public class ScheduleByGuardianTests
         var act = () =>
             AppointmentSchedulingService.ScheduleByGuardian(
                 CreateAppointmentType(),
-                CreateValidGuardianSchedulingArgs() with
-                {
-                    InitiatorMembership = null!,
-                },
+                CreateValidGuardianSchedulingArgs(),
                 new PatientSchedulingContext
                 {
                     DoctorSchedule = CreateSchedule(),
-                    InitiatorMembership = CreateSelfMembership(),
+                    InitiatorMembership = null!,
                     RequestedCategory = AppointmentCategory.Other,
                 },
                 SchedulingClearance.Granted()
@@ -180,7 +177,6 @@ public class ScheduleByGuardianTests
                 new GuardianSchedulingArgs
                 {
                     TargetPatient = CreateMinorPatient(),
-                    InitiatorMembership = CreateParentMembership(),
                     InitiatorUserId = Guid.CreateVersion7(),
                     TimeRange = CreateTimeRange(),
                 },
@@ -206,7 +202,6 @@ public class ScheduleByGuardianTests
         var args = new GuardianSchedulingArgs
         {
             TargetPatient = CreateMinorPatient(),
-            InitiatorMembership = CreateSelfMembership(),
             InitiatorUserId = Guid.CreateVersion7(),
             TimeRange = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
@@ -242,11 +237,6 @@ public class ScheduleByGuardianTests
         var args = new GuardianSchedulingArgs
         {
             TargetPatient = CreateMinorPatient(),
-            InitiatorMembership = FamilyMembership.CreateSelf(
-                Guid.CreateVersion7(),
-                userId,
-                _fakeTime.GetUtcNow().UtcDateTime
-            ),
             InitiatorUserId = userId,
             TimeRange = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
@@ -282,7 +272,6 @@ public class ScheduleByGuardianTests
         var args = new GuardianSchedulingArgs
         {
             TargetPatient = CreateMinorPatient(),
-            InitiatorMembership = CreateParentMembership(authorId),
             InitiatorUserId = authorId,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
@@ -326,7 +315,6 @@ public class ScheduleByGuardianTests
         var args = new GuardianSchedulingArgs
         {
             TargetPatient = incompletePatient,
-            InitiatorMembership = CreateParentMembership(authorId),
             InitiatorUserId = authorId,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
@@ -365,7 +353,6 @@ public class ScheduleByGuardianTests
         var args = new GuardianSchedulingArgs
         {
             TargetPatient = target,
-            InitiatorMembership = CreateParentMembership(authorId),
             InitiatorUserId = authorId,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
@@ -421,7 +408,6 @@ public class ScheduleByGuardianTests
         var args = new GuardianSchedulingArgs
         {
             TargetPatient = CreateMinorPatient(),
-            InitiatorMembership = CreateParentMembership(authorId),
             InitiatorUserId = authorId,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
@@ -459,7 +445,6 @@ public class ScheduleByGuardianTests
         var args = new GuardianSchedulingArgs
         {
             TargetPatient = CreateMinorPatient(),
-            InitiatorMembership = CreateParentMembership(authorId),
             InitiatorUserId = authorId,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
@@ -490,53 +475,6 @@ public class ScheduleByGuardianTests
     }
 
     [Fact]
-    public void ScheduleByGuardian_ShouldThrowDomainValidationException_WhenInitiatorLacksLegalAuthorityAndTargetIsMinor()
-    {
-        // Arrange
-        var appointmentType = AppointmentTypeDefinition.Create(
-            AppointmentCategory.Other,
-            AppointmentPurpose.Checkup,
-            "Pediatric Checkup",
-            "Description",
-            EncounterDuration.FromMinutes(30),
-            AgeEligibilityPolicy.Create(0, 17, requiresLegalGuardian: true)
-        );
-
-        var authorId = Guid.CreateVersion7();
-        var args = new GuardianSchedulingArgs
-        {
-            TargetPatient = CreateMinorPatient(),
-            InitiatorMembership = CreateParentMembership(authorId),
-            InitiatorUserId = authorId,
-            DoctorId = Guid.CreateVersion7(),
-            ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
-            TimeRange = CreateTimeRange(),
-            IsInitiatorPhoneVerified = true,
-        };
-
-        var context = new PatientSchedulingContext
-        {
-            DoctorSchedule = CreateSchedule(),
-            InitiatorMembership = CreateSelfMembership(),
-            RequestedCategory = AppointmentCategory.Other,
-        };
-
-        // Act
-        var act = () =>
-            AppointmentSchedulingService.ScheduleByGuardian(
-                appointmentType,
-                args,
-                context,
-                SchedulingClearance.Granted()
-            );
-
-        // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.AppointmentType.LegalGuardianRequired);
-    }
-
-    [Fact]
     public void ScheduleByGuardian_ShouldThrowValidation_WhenPatientIsAdult()
     {
         // Arrange
@@ -552,7 +490,6 @@ public class ScheduleByGuardianTests
         var args = new GuardianSchedulingArgs
         {
             TargetPatient = patientAdult,
-            InitiatorMembership = CreateParentMembership(authorId),
             InitiatorUserId = authorId,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
@@ -604,7 +541,6 @@ public class ScheduleByGuardianTests
         var args = new GuardianSchedulingArgs
         {
             TargetPatient = target,
-            InitiatorMembership = CreateParentMembership(authorId),
             InitiatorUserId = authorId,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = scheduledDate,
@@ -657,7 +593,6 @@ public class ScheduleByGuardianTests
         var args = new GuardianSchedulingArgs
         {
             TargetPatient = target,
-            InitiatorMembership = CreateParentMembership(authorId),
             InitiatorUserId = authorId,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
@@ -710,7 +645,6 @@ public class ScheduleByGuardianTests
         var args = new GuardianSchedulingArgs
         {
             TargetPatient = target,
-            InitiatorMembership = CreateParentMembership(authorId),
             InitiatorUserId = authorId,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
@@ -751,17 +685,6 @@ public class ScheduleByGuardianTests
         appointment.GuardianNotesAuthorUserId.Should().BeNull();
     }
 
-    private FamilyMembership CreateParentMembership(Guid userId) =>
-        FamilyMembership.CreateFamilyMember(
-            Guid.CreateVersion7(),
-            userId,
-            PatientRelationship.Parent,
-            LegalAuthorityType.Parent,
-            FamilyMembershipAccessLevel.Full,
-            10,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
-
     private FamilyMembership CreateParentMembership() =>
         FamilyMembership.CreateFamilyMember(
             Guid.CreateVersion7(),
@@ -797,7 +720,6 @@ public class ScheduleByGuardianTests
         new()
         {
             TargetPatient = CreateMinorPatient(),
-            InitiatorMembership = CreateParentMembership(),
             InitiatorUserId = Guid.CreateVersion7(),
             TimeRange = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,

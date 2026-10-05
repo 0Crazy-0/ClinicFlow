@@ -143,7 +143,6 @@ public sealed class ScheduleByGuardianCommandHandler(
                     new GuardianSchedulingArgs
                     {
                         TargetPatient = targetPatient,
-                        InitiatorMembership = initiatorMembership,
                         InitiatorUserId = request.InitiatorUserId,
                         DoctorId = request.DoctorId,
                         ScheduledDate = request.ScheduledDate,

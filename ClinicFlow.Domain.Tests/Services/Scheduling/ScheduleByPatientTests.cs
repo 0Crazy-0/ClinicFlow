@@ -467,7 +467,7 @@ public class ScheduleByPatientTests
     }
 
     [Fact]
-    public void ScheduleByPatient_ShouldSucceed_WhenInitiatorHasLegalAuthorityAndTargetIsMinor()
+    public void ScheduleByPatient_ShouldThrowDomainValidationException_WhenGuardianTriesViaPatientRoute()
     {
         // Arrange
         var appointmentType = AppointmentTypeDefinition.Create(
@@ -512,22 +512,18 @@ public class ScheduleByPatientTests
         };
 
         // Act
-        var appointment = AppointmentSchedulingService.ScheduleByPatient(
-            appointmentType,
-            args,
-            context,
-            SchedulingClearance.Granted()
-        );
+        var act = () =>
+            AppointmentSchedulingService.ScheduleByPatient(
+                appointmentType,
+                args,
+                context,
+                SchedulingClearance.Granted()
+            );
 
         // Assert
-        appointment.DomainEvents.OfType<AppointmentScheduledEvent>().Should().ContainSingle();
-        appointment.Should().NotBeNull();
-        appointment.PatientId.Should().Be(target.Id);
-        appointment.DoctorId.Should().Be(args.DoctorId);
-        appointment.ScheduledDate.Should().Be(args.ScheduledDate);
-        appointment.TimeRange.Should().Be(args.TimeRange);
-        appointment.Status.Should().Be(AppointmentStatus.Scheduled);
-        appointment.ScheduledByUserId.Should().Be(args.InitiatorUserId);
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.AppointmentType.LegalGuardianRequired);
     }
 
     [Fact]

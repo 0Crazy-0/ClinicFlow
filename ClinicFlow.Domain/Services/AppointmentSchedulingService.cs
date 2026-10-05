@@ -1,6 +1,5 @@
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
-using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Appointments;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Services.Args.Scheduling;
@@ -46,10 +45,7 @@ public static class AppointmentSchedulingService
 
         new PenaltyHistory(context.Penalties).EnsureNotBlocked(args.ScheduledDate);
 
-        appointmentType.ValidatePatientEligibility(
-            args.TargetPatient.GetAge(args.ScheduledDate),
-            context.InitiatorMembership.LegalAuthority is not LegalAuthorityType.None
-        );
+        appointmentType.ValidatePatientEligibility(args.TargetPatient.GetAge(args.ScheduledDate));
 
         context.DoctorSchedule.EnsureDoctorIsAvailable(
             args.DoctorId,
@@ -82,15 +78,15 @@ public static class AppointmentSchedulingService
         ArgumentNullException.ThrowIfNull(appointmentType);
         ArgumentNullException.ThrowIfNull(args);
         ArgumentNullException.ThrowIfNull(args.TargetPatient);
-        ArgumentNullException.ThrowIfNull(args.InitiatorMembership);
         ArgumentNullException.ThrowIfNull(args.TimeRange);
         ArgumentNullException.ThrowIfNull(context);
         ArgumentNullException.ThrowIfNull(context.DoctorSchedule);
+        ArgumentNullException.ThrowIfNull(context.InitiatorMembership);
 
         if (clearance is null)
             throw new BusinessRuleValidationException(DomainErrors.Scheduling.MissingClearance);
 
-        args.InitiatorMembership.EnsureGuardianAccess();
+        context.InitiatorMembership.EnsureGuardianAccess();
 
         if (!args.IsInitiatorPhoneVerified)
             throw new AppointmentSchedulingUnauthorizedException(
@@ -103,7 +99,7 @@ public static class AppointmentSchedulingService
 
         appointmentType.ValidatePatientEligibility(
             args.TargetPatient.GetAge(args.ScheduledDate),
-            context.InitiatorMembership.LegalAuthority is not LegalAuthorityType.None
+            true
         );
 
         context.DoctorSchedule.EnsureDoctorIsAvailable(
