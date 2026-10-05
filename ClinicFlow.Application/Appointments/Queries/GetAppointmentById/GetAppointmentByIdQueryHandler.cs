@@ -11,6 +11,9 @@ public sealed class GetAppointmentByIdQueryHandler(IAppointmentRepository appoin
     : IRequestHandler<GetAppointmentByIdQuery, AppointmentDto>
 {
     /// <inheritdoc />
+    /// <remarks>
+    /// Only administrative and clinical roles may execute this query. Patient facing callers must use the patient scoped queries.
+    /// </remarks>
     public async Task<AppointmentDto> Handle(
         GetAppointmentByIdQuery request,
         CancellationToken cancellationToken
@@ -35,7 +38,8 @@ public sealed class GetAppointmentByIdQueryHandler(IAppointmentRepository appoin
             appointment.Status,
             appointment.PatientNotes,
             appointment.ReceptionistNotes,
-            null
+            appointment.GuardianNotes,
+            appointment.StaffInternalNotes
         );
     }
 }

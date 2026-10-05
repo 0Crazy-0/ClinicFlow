@@ -59,7 +59,7 @@ public class GetOwnAppointmentsByPatientIdQueryHandlerTests
         var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
-        var expectedDtos = appointments.Select(a => new AppointmentDto(
+        var expectedDtos = appointments.Select(a => new PatientAppointmentDto(
             a.Id,
             a.PatientId,
             a.DoctorId,

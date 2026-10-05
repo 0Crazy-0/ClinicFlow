@@ -10,6 +10,9 @@ public sealed class GetAppointmentsByDateRangeQueryHandler(
 ) : IRequestHandler<GetAppointmentsByDateRangeQuery, PaginatedList<AppointmentDto>>
 {
     /// <inheritdoc />
+    /// <remarks>
+    /// Only administrative and clinical roles may execute this query. Patient facing callers must use the patient scoped queries.
+    /// </remarks>
     public async Task<PaginatedList<AppointmentDto>> Handle(
         GetAppointmentsByDateRangeQuery request,
         CancellationToken cancellationToken
@@ -35,7 +38,8 @@ public sealed class GetAppointmentsByDateRangeQueryHandler(
                 a.Status,
                 a.PatientNotes,
                 a.ReceptionistNotes,
-                null
+                a.GuardianNotes,
+                a.StaffInternalNotes
             ))
             .ToList();
 

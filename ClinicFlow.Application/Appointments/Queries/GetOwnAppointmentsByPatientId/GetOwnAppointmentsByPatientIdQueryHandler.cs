@@ -10,10 +10,10 @@ namespace ClinicFlow.Application.Appointments.Queries.GetOwnAppointmentsByPatien
 public sealed class GetOwnAppointmentsByPatientIdQueryHandler(
     IFamilyMembershipRepository familyMembershipRepository,
     IAppointmentRepository appointmentRepository
-) : IRequestHandler<GetOwnAppointmentsByPatientIdQuery, PaginatedList<AppointmentDto>>
+) : IRequestHandler<GetOwnAppointmentsByPatientIdQuery, PaginatedList<PatientAppointmentDto>>
 {
     /// <inheritdoc />
-    public async Task<PaginatedList<AppointmentDto>> Handle(
+    public async Task<PaginatedList<PatientAppointmentDto>> Handle(
         GetOwnAppointmentsByPatientIdQuery request,
         CancellationToken cancellationToken
     )
@@ -35,7 +35,7 @@ public sealed class GetOwnAppointmentsByPatientIdQueryHandler(
         );
 
         var dtos = items
-            .Select(a => new AppointmentDto(
+            .Select(a => new PatientAppointmentDto(
                 a.Id,
                 a.PatientId,
                 a.DoctorId,
@@ -50,7 +50,7 @@ public sealed class GetOwnAppointmentsByPatientIdQueryHandler(
             ))
             .ToList();
 
-        return new PaginatedList<AppointmentDto>(
+        return new PaginatedList<PatientAppointmentDto>(
             dtos,
             totalCount,
             request.PageNumber,

@@ -62,7 +62,8 @@ public class GetAppointmentsByDateRangeQueryHandlerTests
             a.Status,
             a.PatientNotes,
             a.ReceptionistNotes,
-            null
+            a.GuardianNotes,
+            a.StaffInternalNotes
         ));
 
         result.Items.Should().BeEquivalentTo(expectedDtos);

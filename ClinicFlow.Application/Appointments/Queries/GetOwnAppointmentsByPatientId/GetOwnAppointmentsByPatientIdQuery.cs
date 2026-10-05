@@ -9,4 +9,4 @@ public sealed record GetOwnAppointmentsByPatientIdQuery(
     Guid PatientId,
     int PageNumber,
     int PageSize
-) : IRequest<PaginatedList<AppointmentDto>>;
+) : IRequest<PaginatedList<PatientAppointmentDto>>;
