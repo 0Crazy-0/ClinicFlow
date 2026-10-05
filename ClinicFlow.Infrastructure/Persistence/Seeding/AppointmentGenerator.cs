@@ -229,6 +229,7 @@ public class AppointmentGenerator(AppointmentSeedingArgs args, DateTime baseDate
         {
             case AppointmentStatus.Completed:
                 appointment.CheckIn(actionTime, receptionistNotes);
+                appointment.UpdateStaffInternalNotes(GetStaffInternalNotes(index));
                 appointment.Start(doctorId, actionTime.AddMinutes(15));
                 appointment.Complete(actionTime.AddMinutes(35));
                 break;
@@ -267,10 +268,12 @@ public class AppointmentGenerator(AppointmentSeedingArgs args, DateTime baseDate
 
             case AppointmentStatus.CheckedIn:
                 appointment.CheckIn(actionTime, receptionistNotes);
+                appointment.UpdateStaffInternalNotes(GetStaffInternalNotes(index));
                 break;
 
             case AppointmentStatus.InProgress:
                 appointment.CheckIn(actionTime, receptionistNotes);
+                appointment.UpdateStaffInternalNotes(GetStaffInternalNotes(index));
                 appointment.Start(doctorId, actionTime.AddMinutes(15));
                 break;
         }
@@ -577,6 +580,20 @@ public class AppointmentGenerator(AppointmentSeedingArgs args, DateTime baseDate
                 $"No receptionist notes defined for appointment status: '{status}'"
             ),
         };
+
+        return notes[index % notes.Length];
+    }
+
+    private static string GetStaffInternalNotes(int index)
+    {
+        string[] notes =
+        [
+            "Verify insurance eligibility before billing. Flagged for front desk follow up.",
+            "Patient file incomplete. Request updated ID at next visit.",
+            "Coordinate with billing about pending copay balance.",
+            "Confirm referral paperwork with specialty desk before checkout.",
+            "Internal handoff completed. No patient action required.",
+        ];
 
         return notes[index % notes.Length];
     }
