@@ -6,7 +6,6 @@ using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces.Repositories;
-using Microsoft.Extensions.Time.Testing;
 using Moq;
 
 namespace ClinicFlow.Application.Tests.MedicalRecords.Queries.GetOwnMedicalRecordsByPatientId;
@@ -15,7 +14,6 @@ public class GetOwnMedicalRecordsByPatientIdQueryHandlerTests
 {
     private readonly Mock<IFamilyMembershipRepository> _familyMembershipRepositoryMock = new();
     private readonly Mock<IMedicalRecordRepository> _medicalRecordRepositoryMock = new();
-    private readonly FakeTimeProvider _fakeTime = new();
     private readonly GetOwnMedicalRecordsByPatientIdQueryHandler _sut;
 
     public GetOwnMedicalRecordsByPatientIdQueryHandlerTests()
@@ -27,18 +25,12 @@ public class GetOwnMedicalRecordsByPatientIdQueryHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ShouldReturnFullHistoryWithoutFilters_WhenMembershipRoleIsSelf()
+    public async Task Handle_ShouldReturnFullHistoryWithoutFilters_WhenHasActiveSelfMembership()
     {
         // Arrange
         var requesterUserId = Guid.CreateVersion7();
         var patientId = Guid.CreateVersion7();
         var query = new GetOwnMedicalRecordsByPatientIdQuery(requesterUserId, patientId, 1, 10);
-
-        var membership = FamilyMembership.CreateSelf(
-            patientId,
-            requesterUserId,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
 
         var record1 = CreateMedicalRecord(patientId);
         var record2 = CreateMedicalRecord(patientId);
@@ -47,13 +39,13 @@ public class GetOwnMedicalRecordsByPatientIdQueryHandlerTests
 
         _familyMembershipRepositoryMock
             .Setup(x =>
-                x.GetActiveMembershipAsync(
+                x.HasActiveSelfMembershipAsync(
                     requesterUserId,
                     patientId,
                     It.IsAny<CancellationToken>()
                 )
             )
-            .ReturnsAsync(membership);
+            .ReturnsAsync(true);
 
         _medicalRecordRepositoryMock
             .Setup(x =>
@@ -88,7 +80,7 @@ public class GetOwnMedicalRecordsByPatientIdQueryHandlerTests
 
         _familyMembershipRepositoryMock.Verify(
             x =>
-                x.GetActiveMembershipAsync(
+                x.HasActiveSelfMembershipAsync(
                     requesterUserId,
                     patientId,
                     It.IsAny<CancellationToken>()
@@ -112,71 +104,8 @@ public class GetOwnMedicalRecordsByPatientIdQueryHandlerTests
         );
     }
 
-    [Theory]
-    [InlineData(PatientRelationship.Child)]
-    [InlineData(PatientRelationship.Spouse)]
-    [InlineData(PatientRelationship.Sibling)]
-    public async Task Handle_ShouldThrowUnauthorizedAccess_WhenMembershipRoleIsNotSelf(
-        PatientRelationship role
-    )
-    {
-        // Arrange
-        var requesterUserId = Guid.CreateVersion7();
-        var patientId = Guid.CreateVersion7();
-        var query = new GetOwnMedicalRecordsByPatientIdQuery(requesterUserId, patientId, 1, 10);
-
-        var membership = FamilyMembership.CreateFamilyMember(
-            patientId,
-            requesterUserId,
-            role,
-            LegalAuthorityType.None,
-            FamilyMembershipAccessLevel.Full,
-            30,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
-
-        _familyMembershipRepositoryMock
-            .Setup(x =>
-                x.GetActiveMembershipAsync(
-                    requesterUserId,
-                    patientId,
-                    It.IsAny<CancellationToken>()
-                )
-            )
-            .ReturnsAsync(membership);
-
-        // Act
-        var act = () => _sut.Handle(query, TestContext.Current.CancellationToken);
-
-        // Assert
-        await act.Should()
-            .ThrowAsync<DomainValidationException>()
-            .WithMessage(DomainErrors.MedicalRecord.UnauthorizedAccess);
-
-        _familyMembershipRepositoryMock.Verify(
-            x =>
-                x.GetActiveMembershipAsync(
-                    requesterUserId,
-                    patientId,
-                    It.IsAny<CancellationToken>()
-                ),
-            Times.Once
-        );
-
-        _medicalRecordRepositoryMock.Verify(
-            x =>
-                x.GetByPatientIdPaginatedAsync(
-                    It.IsAny<Guid>(),
-                    It.IsAny<int>(),
-                    It.IsAny<int>(),
-                    It.IsAny<CancellationToken>()
-                ),
-            Times.Never
-        );
-    }
-
     [Fact]
-    public async Task Handle_ShouldThrowUnauthorizedAccess_WhenMembershipDoesNotExist()
+    public async Task Handle_ShouldThrowUnauthorizedAccess_WhenHasNoActiveSelfMembership()
     {
         // Arrange
         var requesterUserId = Guid.CreateVersion7();
@@ -185,13 +114,13 @@ public class GetOwnMedicalRecordsByPatientIdQueryHandlerTests
 
         _familyMembershipRepositoryMock
             .Setup(x =>
-                x.GetActiveMembershipAsync(
+                x.HasActiveSelfMembershipAsync(
                     requesterUserId,
                     patientId,
                     It.IsAny<CancellationToken>()
                 )
             )
-            .ReturnsAsync((FamilyMembership?)null);
+            .ReturnsAsync(false);
 
         // Act
         var act = () => _sut.Handle(query, TestContext.Current.CancellationToken);
@@ -203,13 +132,14 @@ public class GetOwnMedicalRecordsByPatientIdQueryHandlerTests
 
         _familyMembershipRepositoryMock.Verify(
             x =>
-                x.GetActiveMembershipAsync(
-                    It.IsAny<Guid>(),
-                    It.IsAny<Guid>(),
+                x.HasActiveSelfMembershipAsync(
+                    requesterUserId,
+                    patientId,
                     It.IsAny<CancellationToken>()
                 ),
             Times.Once
         );
+
         _medicalRecordRepositoryMock.Verify(
             x =>
                 x.GetByPatientIdPaginatedAsync(
