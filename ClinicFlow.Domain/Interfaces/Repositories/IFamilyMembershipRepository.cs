@@ -11,6 +11,7 @@ public interface IFamilyMembershipRepository
         FamilyMembership familyMembership,
         CancellationToken cancellationToken = default
     );
+    Task<FamilyMembership?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
     Task<FamilyMembership?> GetActiveSelfMembershipByUserIdAsync(
         Guid userId,
         CancellationToken cancellationToken = default
