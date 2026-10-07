@@ -220,4 +220,30 @@ public static class DomainErrors
         public const string MinorRequiresLegalAuthority =
             "FAMILY_MEMBERSHIP_MINOR_REQUIRES_LEGAL_AUTHORITY";
     }
+
+    public static class MedicalRecordConsentGrant
+    {
+        public const string UnauthorizedCreation =
+            "MEDICAL_RECORD_CONSENT_GRANT_UNAUTHORIZED_CREATION";
+        public const string PatientMustBeMinor =
+            "MEDICAL_RECORD_CONSENT_GRANT_PATIENT_MUST_BE_MINOR";
+        public const string RecordPatientMismatch =
+            "MEDICAL_RECORD_CONSENT_GRANT_RECORD_PATIENT_MISMATCH";
+        public const string RecordMustHaveProtectedCategory =
+            "MEDICAL_RECORD_CONSENT_GRANT_RECORD_MUST_HAVE_PROTECTED_CATEGORY";
+        public const string CategoryNotGrantable =
+            "MEDICAL_RECORD_CONSENT_GRANT_CATEGORY_NOT_GRANTABLE";
+        public const string RecipientMustBeActive =
+            "MEDICAL_RECORD_CONSENT_GRANT_RECIPIENT_MUST_BE_ACTIVE";
+        public const string RecipientPatientMismatch =
+            "MEDICAL_RECORD_CONSENT_GRANT_RECIPIENT_PATIENT_MISMATCH";
+        public const string RecipientCannotBeSelf =
+            "MEDICAL_RECORD_CONSENT_GRANT_RECIPIENT_CANNOT_BE_SELF";
+        public const string AlreadyExists = "MEDICAL_RECORD_CONSENT_GRANT_ALREADY_EXISTS";
+        public const string UnauthorizedRevocation =
+            "MEDICAL_RECORD_CONSENT_GRANT_UNAUTHORIZED_REVOCATION";
+        public const string AlreadyRevoked = "MEDICAL_RECORD_CONSENT_GRANT_ALREADY_REVOKED";
+        public const string AlreadyExpired = "MEDICAL_RECORD_CONSENT_GRANT_ALREADY_EXPIRED";
+        public const string UnauthorizedAccess = "MEDICAL_RECORD_CONSENT_GRANT_UNAUTHORIZED_ACCESS";
+    }
 }
