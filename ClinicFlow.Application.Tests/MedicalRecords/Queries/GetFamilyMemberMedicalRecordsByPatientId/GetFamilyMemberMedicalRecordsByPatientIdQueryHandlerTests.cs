@@ -17,6 +17,7 @@ public class GetFamilyMemberMedicalRecordsByPatientIdQueryHandlerTests
     private readonly Mock<IFamilyMembershipRepository> _familyMembershipRepositoryMock = new();
     private readonly Mock<IPatientRepository> _patientRepositoryMock = new();
     private readonly Mock<IMedicalRecordRepository> _medicalRecordRepositoryMock = new();
+    private readonly Mock<IMedicalRecordConsentGrantRepository> _consentGrantRepositoryMock = new();
     private readonly FakeTimeProvider _fakeTime = new();
     private readonly GetFamilyMemberMedicalRecordsByPatientIdQueryHandler _sut;
 
@@ -26,6 +27,7 @@ public class GetFamilyMemberMedicalRecordsByPatientIdQueryHandlerTests
             _familyMembershipRepositoryMock.Object,
             _patientRepositoryMock.Object,
             _medicalRecordRepositoryMock.Object,
+            _consentGrantRepositoryMock.Object,
             _fakeTime
         );
     }
@@ -63,20 +65,16 @@ public class GetFamilyMemberMedicalRecordsByPatientIdQueryHandlerTests
             .Setup(x => x.GetByIdAsync(patient.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(patient);
 
-        IReadOnlyCollection<ProtectedCategory>? capturedExcludedCategories = null;
-
         _medicalRecordRepositoryMock
             .Setup(x =>
                 x.GetByPatientIdPaginatedExcludingCategoriesAsync(
                     patient.Id,
                     It.IsAny<IReadOnlyCollection<ProtectedCategory>>(),
+                    It.IsAny<IReadOnlyCollection<Guid>>(),
                     1,
                     10,
                     It.IsAny<CancellationToken>()
                 )
-            )
-            .Callback<Guid, IReadOnlyCollection<ProtectedCategory>, int, int, CancellationToken>(
-                (_, excluded, _, _, _) => capturedExcludedCategories = excluded
             )
             .ReturnsAsync((new List<MedicalRecord>(), 0));
 
@@ -89,8 +87,16 @@ public class GetFamilyMemberMedicalRecordsByPatientIdQueryHandlerTests
         result.PageNumber.Should().Be(1);
         result.TotalPages.Should().Be(0);
 
-        capturedExcludedCategories.Should().NotBeNull();
-        capturedExcludedCategories.Should().BeEmpty();
+        _consentGrantRepositoryMock.Verify(
+            x =>
+                x.GetEffectiveRecordIdsAsync(
+                    It.IsAny<Guid>(),
+                    It.IsAny<Guid>(),
+                    It.IsAny<DateTime>(),
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Never
+        );
 
         _familyMembershipRepositoryMock.Verify(
             x =>
@@ -109,7 +115,84 @@ public class GetFamilyMemberMedicalRecordsByPatientIdQueryHandlerTests
             x =>
                 x.GetByPatientIdPaginatedExcludingCategoriesAsync(
                     patient.Id,
+                    It.Is<IReadOnlyCollection<ProtectedCategory>>(c => c.Count == 0),
+                    It.Is<IReadOnlyCollection<Guid>>(c => c.Count == 0),
+                    1,
+                    10,
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Once
+        );
+    }
+
+    [Fact]
+    public async Task Handle_ShouldSkipConsentGrants_WhenPatientIsExactlyAdultAge()
+    {
+        // Arrange
+        var requesterUserId = Guid.CreateVersion7();
+        var patient = CreatePatientWithAge(DomainRules.AdultAge);
+        var query = new GetFamilyMemberMedicalRecordsByPatientIdQuery(
+            requesterUserId,
+            patient.Id,
+            1,
+            10
+        );
+
+        var membership = CreateMembership(
+            patient.Id,
+            requesterUserId,
+            FamilyMembershipAccessLevel.Full
+        );
+
+        _familyMembershipRepositoryMock
+            .Setup(x =>
+                x.GetActiveMembershipAsync(
+                    requesterUserId,
+                    patient.Id,
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(membership);
+
+        _patientRepositoryMock
+            .Setup(x => x.GetByIdAsync(patient.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(patient);
+
+        _medicalRecordRepositoryMock
+            .Setup(x =>
+                x.GetByPatientIdPaginatedExcludingCategoriesAsync(
+                    patient.Id,
                     It.IsAny<IReadOnlyCollection<ProtectedCategory>>(),
+                    It.IsAny<IReadOnlyCollection<Guid>>(),
+                    1,
+                    10,
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync((new List<MedicalRecord>(), 0));
+
+        // Act
+        var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
+
+        // Assert
+        result.Items.Should().BeEmpty();
+
+        _consentGrantRepositoryMock.Verify(
+            x =>
+                x.GetEffectiveRecordIdsAsync(
+                    It.IsAny<Guid>(),
+                    It.IsAny<Guid>(),
+                    It.IsAny<DateTime>(),
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Never
+        );
+        _medicalRecordRepositoryMock.Verify(
+            x =>
+                x.GetByPatientIdPaginatedExcludingCategoriesAsync(
+                    patient.Id,
+                    It.Is<IReadOnlyCollection<ProtectedCategory>>(c => c.Count == 0),
+                    It.Is<IReadOnlyCollection<Guid>>(c => c.Count == 0),
                     1,
                     10,
                     It.IsAny<CancellationToken>()
@@ -151,20 +234,31 @@ public class GetFamilyMemberMedicalRecordsByPatientIdQueryHandlerTests
             .Setup(x => x.GetByIdAsync(patient.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(patient);
 
-        IReadOnlyCollection<ProtectedCategory>? capturedExcludedCategories = null;
+        var authorizedIds = new List<Guid> { Guid.CreateVersion7(), Guid.CreateVersion7() };
+
+        _consentGrantRepositoryMock
+            .Setup(x =>
+                x.GetEffectiveRecordIdsAsync(
+                    patient.Id,
+                    membership.Id,
+                    It.IsAny<DateTime>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(authorizedIds);
+
+        var expectedExcluded = Enum.GetValues<ProtectedCategory>();
 
         _medicalRecordRepositoryMock
             .Setup(x =>
                 x.GetByPatientIdPaginatedExcludingCategoriesAsync(
                     patient.Id,
                     It.IsAny<IReadOnlyCollection<ProtectedCategory>>(),
+                    It.IsAny<IReadOnlyCollection<Guid>>(),
                     1,
                     10,
                     It.IsAny<CancellationToken>()
                 )
-            )
-            .Callback<Guid, IReadOnlyCollection<ProtectedCategory>, int, int, CancellationToken>(
-                (_, excluded, _, _, _) => capturedExcludedCategories = excluded
             )
             .ReturnsAsync((new List<MedicalRecord>(), 0));
 
@@ -174,8 +268,31 @@ public class GetFamilyMemberMedicalRecordsByPatientIdQueryHandlerTests
         // Assert
         result.Items.Should().BeEmpty();
 
-        capturedExcludedCategories.Should().NotBeNull();
-        capturedExcludedCategories.Should().BeEquivalentTo(Enum.GetValues<ProtectedCategory>());
+        _consentGrantRepositoryMock.Verify(
+            x =>
+                x.GetEffectiveRecordIdsAsync(
+                    patient.Id,
+                    membership.Id,
+                    It.IsAny<DateTime>(),
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Once
+        );
+        _medicalRecordRepositoryMock
+            .Setup(x =>
+                x.GetByPatientIdPaginatedExcludingCategoriesAsync(
+                    patient.Id,
+                    It.Is<IReadOnlyCollection<ProtectedCategory>>(c =>
+                        expectedExcluded.ToHashSet().SetEquals(c)
+                    ),
+                    It.Is<IReadOnlyCollection<Guid>>(c => c.SequenceEqual(authorizedIds)),
+                    1,
+                    10,
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync((new List<MedicalRecord>(), 0))
+            .Verifiable(Times.Once);
     }
 
     [Theory]
@@ -225,6 +342,7 @@ public class GetFamilyMemberMedicalRecordsByPatientIdQueryHandlerTests
                 x.GetByPatientIdPaginatedExcludingCategoriesAsync(
                     It.IsAny<Guid>(),
                     It.IsAny<IReadOnlyCollection<ProtectedCategory>>(),
+                    It.IsAny<IReadOnlyCollection<Guid>>(),
                     It.IsAny<int>(),
                     It.IsAny<int>(),
                     It.IsAny<CancellationToken>()
@@ -271,11 +389,25 @@ public class GetFamilyMemberMedicalRecordsByPatientIdQueryHandlerTests
             .Setup(x => x.GetByIdAsync(patient.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(patient);
 
+        var authorizedIds = new List<Guid> { Guid.CreateVersion7() };
+
+        _consentGrantRepositoryMock
+            .Setup(x =>
+                x.GetEffectiveRecordIdsAsync(
+                    patient.Id,
+                    membership.Id,
+                    It.IsAny<DateTime>(),
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(authorizedIds);
+
         _medicalRecordRepositoryMock
             .Setup(x =>
                 x.GetByPatientIdPaginatedExcludingCategoriesAsync(
                     patient.Id,
                     It.IsAny<IReadOnlyCollection<ProtectedCategory>>(),
+                    It.IsAny<IReadOnlyCollection<Guid>>(),
                     2,
                     10,
                     It.IsAny<CancellationToken>()
@@ -308,6 +440,16 @@ public class GetFamilyMemberMedicalRecordsByPatientIdQueryHandlerTests
         result.PageNumber.Should().Be(2);
         result.TotalPages.Should().Be(1);
 
+        _consentGrantRepositoryMock.Verify(
+            x =>
+                x.GetEffectiveRecordIdsAsync(
+                    patient.Id,
+                    membership.Id,
+                    It.IsAny<DateTime>(),
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Once
+        );
         _familyMembershipRepositoryMock.Verify(
             x =>
                 x.GetActiveMembershipAsync(
@@ -326,6 +468,7 @@ public class GetFamilyMemberMedicalRecordsByPatientIdQueryHandlerTests
                 x.GetByPatientIdPaginatedExcludingCategoriesAsync(
                     patient.Id,
                     It.IsAny<IReadOnlyCollection<ProtectedCategory>>(),
+                    It.Is<IReadOnlyCollection<Guid>>(c => c.SequenceEqual(authorizedIds)),
                     2,
                     10,
                     It.IsAny<CancellationToken>()
@@ -384,6 +527,7 @@ public class GetFamilyMemberMedicalRecordsByPatientIdQueryHandlerTests
                 x.GetByPatientIdPaginatedExcludingCategoriesAsync(
                     It.IsAny<Guid>(),
                     It.IsAny<IReadOnlyCollection<ProtectedCategory>>(),
+                    It.IsAny<IReadOnlyCollection<Guid>>(),
                     It.IsAny<int>(),
                     It.IsAny<int>(),
                     It.IsAny<CancellationToken>()
@@ -443,6 +587,7 @@ public class GetFamilyMemberMedicalRecordsByPatientIdQueryHandlerTests
                 x.GetByPatientIdPaginatedExcludingCategoriesAsync(
                     It.IsAny<Guid>(),
                     It.IsAny<IReadOnlyCollection<ProtectedCategory>>(),
+                    It.IsAny<IReadOnlyCollection<Guid>>(),
                     It.IsAny<int>(),
                     It.IsAny<int>(),
                     It.IsAny<CancellationToken>()

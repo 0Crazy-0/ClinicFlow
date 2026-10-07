@@ -346,6 +346,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
         var (items, totalCount) = await _sut.GetByPatientIdPaginatedExcludingCategoriesAsync(
             patient.Id,
             [ProtectedCategory.MentalHealthCounseling],
+            [],
             pageNumber: 1,
             pageSize: 1,
             TestContext.Current.CancellationToken
@@ -407,6 +408,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
         var (items, totalCount) = await _sut.GetByPatientIdPaginatedExcludingCategoriesAsync(
             patient.Id,
             [ProtectedCategory.MentalHealthCounseling],
+            [],
             pageNumber: 2,
             pageSize: 2,
             TestContext.Current.CancellationToken

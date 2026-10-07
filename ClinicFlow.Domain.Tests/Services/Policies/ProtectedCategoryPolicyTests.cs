@@ -58,7 +58,24 @@ public class ProtectedCategoryPolicyTests
                 category: null,
                 patientAge: 10,
                 guardianInitiatedTreatment: null,
-                guardianInvolvementDeemedAppropriate: null
+                guardianInvolvementDeemedAppropriate: null,
+                hasEffectiveGrant: false
+            )
+            .Should()
+            .BeFalse();
+    }
+
+    [Fact]
+    public void IsProtectedForPatient_ShouldReturnFalse_WhenHasEffectiveGrant()
+    {
+        // Act & Assert
+        ProtectedCategoryPolicy
+            .IsProtectedForPatient(
+                category: ProtectedCategory.MentalHealthCounseling,
+                patientAge: 15,
+                guardianInitiatedTreatment: null,
+                guardianInvolvementDeemedAppropriate: null,
+                hasEffectiveGrant: true
             )
             .Should()
             .BeFalse();
@@ -73,7 +90,8 @@ public class ProtectedCategoryPolicyTests
                 category: ProtectedCategory.MentalHealthCounseling,
                 patientAge: 11,
                 guardianInitiatedTreatment: null,
-                guardianInvolvementDeemedAppropriate: null
+                guardianInvolvementDeemedAppropriate: null,
+                hasEffectiveGrant: false
             )
             .Should()
             .BeFalse();
@@ -83,7 +101,8 @@ public class ProtectedCategoryPolicyTests
                 category: ProtectedCategory.BuprenorphineOpioidTreatment,
                 patientAge: 15,
                 guardianInitiatedTreatment: null,
-                guardianInvolvementDeemedAppropriate: null
+                guardianInvolvementDeemedAppropriate: null,
+                hasEffectiveGrant: false
             )
             .Should()
             .BeFalse();
@@ -98,7 +117,8 @@ public class ProtectedCategoryPolicyTests
                 category: ProtectedCategory.MentalHealthCounseling,
                 patientAge: 12,
                 guardianInitiatedTreatment: null,
-                guardianInvolvementDeemedAppropriate: null
+                guardianInvolvementDeemedAppropriate: null,
+                hasEffectiveGrant: false
             )
             .Should()
             .BeTrue();
@@ -108,7 +128,8 @@ public class ProtectedCategoryPolicyTests
                 category: ProtectedCategory.BuprenorphineOpioidTreatment,
                 patientAge: 16,
                 guardianInitiatedTreatment: null,
-                guardianInvolvementDeemedAppropriate: null
+                guardianInvolvementDeemedAppropriate: null,
+                hasEffectiveGrant: false
             )
             .Should()
             .BeTrue();
@@ -123,7 +144,8 @@ public class ProtectedCategoryPolicyTests
                 category: ProtectedCategory.MentalHealthCounseling,
                 patientAge: 13,
                 guardianInitiatedTreatment: null,
-                guardianInvolvementDeemedAppropriate: null
+                guardianInvolvementDeemedAppropriate: null,
+                hasEffectiveGrant: false
             )
             .Should()
             .BeTrue();
@@ -133,7 +155,8 @@ public class ProtectedCategoryPolicyTests
                 category: ProtectedCategory.BuprenorphineOpioidTreatment,
                 patientAge: 17,
                 guardianInitiatedTreatment: null,
-                guardianInvolvementDeemedAppropriate: null
+                guardianInvolvementDeemedAppropriate: null,
+                hasEffectiveGrant: false
             )
             .Should()
             .BeTrue();
@@ -148,7 +171,8 @@ public class ProtectedCategoryPolicyTests
                 category: ProtectedCategory.PregnancyPrevention,
                 patientAge: 0,
                 guardianInitiatedTreatment: null,
-                guardianInvolvementDeemedAppropriate: null
+                guardianInvolvementDeemedAppropriate: null,
+                hasEffectiveGrant: false
             )
             .Should()
             .BeTrue();
@@ -158,7 +182,8 @@ public class ProtectedCategoryPolicyTests
                 category: ProtectedCategory.SexualAssaultCare,
                 patientAge: 0,
                 guardianInitiatedTreatment: null,
-                guardianInvolvementDeemedAppropriate: null
+                guardianInvolvementDeemedAppropriate: null,
+                hasEffectiveGrant: false
             )
             .Should()
             .BeTrue();
@@ -173,7 +198,8 @@ public class ProtectedCategoryPolicyTests
                 category: ProtectedCategory.PregnancyPrevention,
                 patientAge: 40,
                 guardianInitiatedTreatment: null,
-                guardianInvolvementDeemedAppropriate: null
+                guardianInvolvementDeemedAppropriate: null,
+                hasEffectiveGrant: false
             )
             .Should()
             .BeFalse();
@@ -188,7 +214,8 @@ public class ProtectedCategoryPolicyTests
                 category: ProtectedCategory.MentalHealthCounseling,
                 patientAge: 17,
                 guardianInitiatedTreatment: null,
-                guardianInvolvementDeemedAppropriate: null
+                guardianInvolvementDeemedAppropriate: null,
+                hasEffectiveGrant: false
             )
             .Should()
             .BeTrue();
@@ -203,7 +230,8 @@ public class ProtectedCategoryPolicyTests
                 category: ProtectedCategory.MentalHealthCounseling,
                 patientAge: 18,
                 guardianInitiatedTreatment: null,
-                guardianInvolvementDeemedAppropriate: null
+                guardianInvolvementDeemedAppropriate: null,
+                hasEffectiveGrant: false
             )
             .Should()
             .BeFalse();
@@ -213,7 +241,8 @@ public class ProtectedCategoryPolicyTests
                 category: ProtectedCategory.PregnancyPrevention,
                 patientAge: 18,
                 guardianInitiatedTreatment: null,
-                guardianInvolvementDeemedAppropriate: null
+                guardianInvolvementDeemedAppropriate: null,
+                hasEffectiveGrant: false
             )
             .Should()
             .BeFalse();
@@ -228,7 +257,8 @@ public class ProtectedCategoryPolicyTests
                 category: ProtectedCategory.SubstanceAbuseTreatment,
                 patientAge: 15,
                 guardianInitiatedTreatment: true,
-                guardianInvolvementDeemedAppropriate: null
+                guardianInvolvementDeemedAppropriate: null,
+                hasEffectiveGrant: false
             )
             .Should()
             .BeFalse();
@@ -243,7 +273,8 @@ public class ProtectedCategoryPolicyTests
                 category: ProtectedCategory.SubstanceAbuseTreatment,
                 patientAge: 15,
                 guardianInitiatedTreatment: false,
-                guardianInvolvementDeemedAppropriate: null
+                guardianInvolvementDeemedAppropriate: null,
+                hasEffectiveGrant: false
             )
             .Should()
             .BeTrue();
@@ -258,7 +289,8 @@ public class ProtectedCategoryPolicyTests
                 category: ProtectedCategory.SubstanceAbuseTreatment,
                 patientAge: 15,
                 guardianInitiatedTreatment: null,
-                guardianInvolvementDeemedAppropriate: null
+                guardianInvolvementDeemedAppropriate: null,
+                hasEffectiveGrant: false
             )
             .Should()
             .BeTrue();
@@ -273,7 +305,8 @@ public class ProtectedCategoryPolicyTests
                 category: ProtectedCategory.MentalHealthCounseling,
                 patientAge: 15,
                 guardianInitiatedTreatment: null,
-                guardianInvolvementDeemedAppropriate: true
+                guardianInvolvementDeemedAppropriate: true,
+                hasEffectiveGrant: false
             )
             .Should()
             .BeFalse();
@@ -288,7 +321,8 @@ public class ProtectedCategoryPolicyTests
                 category: ProtectedCategory.MentalHealthCounseling,
                 patientAge: 15,
                 guardianInitiatedTreatment: null,
-                guardianInvolvementDeemedAppropriate: false
+                guardianInvolvementDeemedAppropriate: false,
+                hasEffectiveGrant: false
             )
             .Should()
             .BeTrue();
@@ -303,7 +337,8 @@ public class ProtectedCategoryPolicyTests
                 category: ProtectedCategory.ResidentialShelter,
                 patientAge: 15,
                 guardianInitiatedTreatment: null,
-                guardianInvolvementDeemedAppropriate: true
+                guardianInvolvementDeemedAppropriate: true,
+                hasEffectiveGrant: false
             )
             .Should()
             .BeFalse();
@@ -318,7 +353,8 @@ public class ProtectedCategoryPolicyTests
                 category: ProtectedCategory.PregnancyPrevention,
                 patientAge: 10,
                 guardianInitiatedTreatment: true,
-                guardianInvolvementDeemedAppropriate: true
+                guardianInvolvementDeemedAppropriate: true,
+                hasEffectiveGrant: false
             )
             .Should()
             .BeTrue();
@@ -558,7 +594,7 @@ public class ProtectedCategoryPolicyTests
     private static bool IsVisibleToFamilyMember(
         MedicalRecord record,
         IReadOnlyCollection<ProtectedCategory> excludedCategories
-    ) => ProtectedCategoryPolicy.IsVisibleToFamilyMember(excludedCategories).Compile()(record);
+    ) => ProtectedCategoryPolicy.IsVisibleToFamilyMember(excludedCategories, []).Compile()(record);
 
     private static MedicalRecord CreateMedicalRecord(
         ProtectedCategory? protectedCareCategory,

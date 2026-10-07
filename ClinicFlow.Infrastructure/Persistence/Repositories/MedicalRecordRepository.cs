@@ -63,6 +63,7 @@ public sealed class MedicalRecordRepository(ApplicationDbContext dbContext)
     )> GetByPatientIdPaginatedExcludingCategoriesAsync(
         Guid patientId,
         IReadOnlyCollection<ProtectedCategory> excludedCategories,
+        IReadOnlyCollection<Guid> authorizedRecordIds,
         int pageNumber,
         int pageSize,
         CancellationToken cancellationToken = default
@@ -72,7 +73,12 @@ public sealed class MedicalRecordRepository(ApplicationDbContext dbContext)
             .MedicalRecords.Include(m => m.ClinicalDetails)
             .AsNoTracking()
             .Where(m => m.PatientId == patientId)
-            .Where(ProtectedCategoryPolicy.IsVisibleToFamilyMember(excludedCategories));
+            .Where(
+                ProtectedCategoryPolicy.IsVisibleToFamilyMember(
+                    excludedCategories,
+                    authorizedRecordIds
+                )
+            );
 
         var totalCount = await query.CountAsync(cancellationToken);
         var items = await query

@@ -96,6 +96,7 @@ public class GetOwnMedicalRecordsByPatientIdQueryHandlerTests
                 x.GetByPatientIdPaginatedExcludingCategoriesAsync(
                     It.IsAny<Guid>(),
                     It.IsAny<IReadOnlyCollection<ProtectedCategory>>(),
+                    It.IsAny<IReadOnlyCollection<Guid>>(),
                     It.IsAny<int>(),
                     It.IsAny<int>(),
                     It.IsAny<CancellationToken>()

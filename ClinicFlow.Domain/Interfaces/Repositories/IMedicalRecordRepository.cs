@@ -24,6 +24,8 @@ public interface IMedicalRecordRepository
     /// </summary>
     /// <remarks>
     /// Visibility of each record is determined by <see cref="ProtectedCategoryPolicy.IsVisibleToFamilyMember"/>.
+    /// Records whose id appears in <paramref name="authorizedRecordIds"/> remain visible
+    /// through an effective consent grant even when their category is excluded.
     /// </remarks>
     Task<(
         IReadOnlyList<MedicalRecord> Items,
@@ -31,6 +33,7 @@ public interface IMedicalRecordRepository
     )> GetByPatientIdPaginatedExcludingCategoriesAsync(
         Guid patientId,
         IReadOnlyCollection<ProtectedCategory> excludedCategories,
+        IReadOnlyCollection<Guid> authorizedRecordIds,
         int pageNumber,
         int pageSize,
         CancellationToken cancellationToken = default
