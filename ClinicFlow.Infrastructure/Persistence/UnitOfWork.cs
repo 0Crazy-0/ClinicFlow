@@ -60,6 +60,7 @@ public sealed class UnitOfWork(ApplicationDbContext dbContext, IPublisher publis
         var result = await strategy.ExecuteAsync(
             async (cancellationToken) =>
             {
+                // Stryker disable once all: see docs/tooling/stryker.md, section "5. UnitOfWork Retry ChangeTracker Clear"
                 if (attempt++ > 0)
                     dbContext.ChangeTracker.Clear();
 
@@ -97,6 +98,7 @@ public sealed class UnitOfWork(ApplicationDbContext dbContext, IPublisher publis
         await strategy.ExecuteAsync(
             async (cancellationToken) =>
             {
+                // Stryker disable once all: see docs/tooling/stryker.md, section "5. UnitOfWork Retry ChangeTracker Clear"
                 if (attempt++ > 0)
                     dbContext.ChangeTracker.Clear();
 

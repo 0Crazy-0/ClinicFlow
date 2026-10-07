@@ -93,7 +93,7 @@ Before adding `// Stryker disable once` to a new case, confirm it is genuinely u
 
 #### Infrastructure: same mechanism, individually justified cases
 
-The four previously-documented Infrastructure survivors ([CreateRangeAsync empty check](#1-repository-createrangeasync-empty-check-count--0-vs-count--0), [ApplicationDbContext setup](#2-applicationdbcontext-infrastructure-setup), [UnitOfWork events filter](#3-unitofwork-domain-events-filter-count--0-vs-count--0), and [ToStableLong bitwise conversion](#4-unitofwork-advisory-lock-key-conversion-high--low-vs-high--low)) now also carry `// Stryker disable once` comments at their exact location, pointing back to their full proof or rationale below. Unlike the Domain pattern, these are **not** a repeating structural case: each is a unique, individually reviewed piece of logic, and each one's comment exists only because the accompanying proof or rationale in this document already justified it in full. The comment is a pointer to that justification, not a replacement for it. Any new Infrastructure survivor must go through the same documentation process (a full proof of equivalence or an explicit cost/benefit rationale) before it is suppressed; it is never suppressed on the strength of the comment alone.
+The five previously-documented Infrastructure survivors ([CreateRangeAsync empty check](#1-repository-createrangeasync-empty-check-count--0-vs-count--0), [ApplicationDbContext setup](#2-applicationdbcontext-infrastructure-setup), [UnitOfWork events filter](#3-unitofwork-domain-events-filter-count--0-vs-count--0), [ToStableLong bitwise conversion](#4-unitofwork-advisory-lock-key-conversion-high--low-vs-high--low), and [UnitOfWork retry tracker clear](#5-unitofwork-retry-changetracker-clear)) now also carry `// Stryker disable once` comments at their exact location, pointing back to their full proof or rationale below. Unlike the Domain pattern, these are **not** a repeating structural case: each is a unique, individually reviewed piece of logic, and each one's comment exists only because the accompanying proof or rationale in this document already justified it in full. The comment is a pointer to that justification, not a replacement for it. Any new Infrastructure survivor must go through the same documentation process (a full proof of equivalence or an explicit cost/benefit rationale) before it is suppressed; it is never suppressed on the strength of the comment alone.
 
 #### Application: no suppressions needed
 
@@ -319,7 +319,37 @@ Stryker applies a bitwise mutation on `high ^ low`, converting it to `~(high ^ l
    - Injecting complex EF Core command interceptors to inspect low-level raw SQL text and parameters sent to PostgreSQL.
 
 4. **Conclusion:**
-   Writing fragile reflection-based tests or complex database command interceptors to assert on an internal bitwise hashing formula adds significant maintenance complexity without improving business logic reliability. Therefore, this mutant is intentionally suppressed via `// Stryker disable once Bitwise`.
+    Writing fragile reflection-based tests or complex database command interceptors to assert on an internal bitwise hashing formula adds significant maintenance complexity without improving business logic reliability. Therefore, this mutant is intentionally suppressed via `// Stryker disable once Bitwise`.
+
+---
+
+### 5. `UnitOfWork` Retry ChangeTracker Clear
+
+**File:** [UnitOfWork.cs](../../ClinicFlow.Infrastructure/Persistence/UnitOfWork.cs)
+
+Both `ExecuteWithLockAsync` overloads contain the same retry guard as their first statement inside the execution strategy delegate:
+
+```csharp
+// Stryker disable once all: see docs/tooling/stryker.md, section "5. UnitOfWork Retry ChangeTracker Clear"
+if (attempt++ > 0)
+    dbContext.ChangeTracker.Clear();
+```
+
+Observed mutants on these lines (report `StrykerOutput/2026-10-07.18-17-14`): Equality (`attempt++ > 0` to `< 0` and `>= 0`), Negate expression (`!(attempt++ > 0)`), PostIncrement to PostDecrement (`attempt++` to `attempt--`), and Statement (removal of `ChangeTracker.Clear()`). The removal mutants report as `NoCoverage` and the decrement mutant as `Survived`, because no existing test ever executes the delegate a second time.
+
+#### Rationale and Why These Mutants Are Suppressed
+
+1. **Retry path is not deterministically reachable in tests:**
+   The delegate re executes only when the Npgsql execution strategy decides to retry, which requires a genuine transient PostgreSQL failure. The strategy instance comes from `dbContext.Database.CreateExecutionStrategy()` with no seam to inject a fake that fails once and then succeeds. Provoking a real transient failure inside Testcontainers tests (deadlock, connection drop) is slow, flaky, and non deterministic by nature.
+
+2. **First attempt behavior must stay untouched:**
+   Clearing unconditionally would detach entities the operation legitimately needs on its first and normally only pass. The guard exists precisely to preserve first attempt behavior while discarding stale `Added` or `Modified` entries left over from a rolled back attempt, so they are not resubmitted on retry.
+
+3. **Explicit cost/benefit trade-off:**
+   Killing these mutants would require either a test controllable execution strategy seam (a design change made only to satisfy the tool) or orchestrating real transient database faults in integration tests. Both add significant complexity and flakiness without improving coverage of any business rule. This is the documented cost/benefit exception the policy permits, not suppression for convenience: the retry clearing has exactly one correct observable behavior, and the existing `UnitOfWorkLockTests` already cover commit, rollback, event deferral, and lock serialization around it.
+
+4. **Conclusion:**
+   Suppressed via `// Stryker disable once all`, scoped strictly to the new retry guard in each overload. 
 
 ---
 
