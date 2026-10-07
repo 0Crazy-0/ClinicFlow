@@ -1,7 +1,6 @@
 using ClinicFlow.Application.Common.Models;
 using ClinicFlow.Application.MedicalRecords.Queries.DTOs;
 using ClinicFlow.Domain.Common;
-using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using MediatR;
@@ -19,13 +18,13 @@ public sealed class GetOwnMedicalRecordsByPatientIdQueryHandler(
         CancellationToken cancellationToken
     )
     {
-        var membership = await familyMembershipRepository.GetActiveMembershipAsync(
-            request.RequesterUserId,
-            request.PatientId,
-            cancellationToken
-        );
-
-        if (membership?.Role is not PatientRelationship.Self)
+        if (
+            !await familyMembershipRepository.HasActiveSelfMembershipAsync(
+                request.RequesterUserId,
+                request.PatientId,
+                cancellationToken
+            )
+        )
             throw new DomainValidationException(DomainErrors.MedicalRecord.UnauthorizedAccess);
 
         var (items, totalCount) = await medicalRecordRepository.GetByPatientIdPaginatedAsync(
