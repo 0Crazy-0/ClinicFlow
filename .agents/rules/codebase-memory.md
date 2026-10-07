@@ -1,7 +1,3 @@
----
-trigger: always_on
----
-
 <!-- codebase-memory-mcp:start -->
 # Codebase Knowledge Graph (codebase-memory-mcp)
 

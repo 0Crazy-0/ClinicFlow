@@ -1,7 +1,3 @@
----
-trigger: always_on
----
-
 # context-mode — MANDATORY routing rules
 
 You have context-mode MCP tools available. These rules are NOT optional — they protect your context window from flooding. A single unrouted command can dump 56 KB into context and waste the entire session. Antigravity does NOT have hooks, so these instructions are your ONLY enforcement mechanism. Follow them strictly.
