@@ -20,6 +20,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<AppointmentTypeDefinition> AppointmentTypes => Set<AppointmentTypeDefinition>();
     public DbSet<ClinicalFormTemplate> ClinicalFormTemplates => Set<ClinicalFormTemplate>();
     public DbSet<MedicalRecord> MedicalRecords => Set<MedicalRecord>();
+    public DbSet<MedicalRecordConsentGrant> MedicalRecordConsentGrants =>
+        Set<MedicalRecordConsentGrant>();
     public DbSet<MedicalSpecialty> MedicalSpecialties => Set<MedicalSpecialty>();
     public DbSet<Schedule> Schedules => Set<Schedule>();
 
