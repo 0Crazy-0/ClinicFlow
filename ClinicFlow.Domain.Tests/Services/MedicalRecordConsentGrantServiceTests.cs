@@ -430,7 +430,7 @@ public class MedicalRecordConsentGrantServiceTests
             .WithMessage(DomainErrors.MedicalRecordConsentGrant.AlreadyExists);
     }
 
-    private GrantMedicalRecordConsentArgs CreateValidArgs(
+    private static GrantMedicalRecordConsentArgs CreateValidArgs(
         Guid requesterUserId,
         DateTime referenceTime
     ) => new() { RequesterUserId = requesterUserId, ReferenceTime = referenceTime };
