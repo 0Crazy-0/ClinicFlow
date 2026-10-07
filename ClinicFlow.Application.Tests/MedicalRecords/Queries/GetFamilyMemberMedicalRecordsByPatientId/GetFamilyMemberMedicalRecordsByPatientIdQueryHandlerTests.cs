@@ -278,8 +278,8 @@ public class GetFamilyMemberMedicalRecordsByPatientIdQueryHandlerTests
                 ),
             Times.Once
         );
-        _medicalRecordRepositoryMock
-            .Setup(x =>
+        _medicalRecordRepositoryMock.Verify(
+            x =>
                 x.GetByPatientIdPaginatedExcludingCategoriesAsync(
                     patient.Id,
                     It.Is<IReadOnlyCollection<ProtectedCategory>>(c =>
@@ -289,10 +289,9 @@ public class GetFamilyMemberMedicalRecordsByPatientIdQueryHandlerTests
                     1,
                     10,
                     It.IsAny<CancellationToken>()
-                )
-            )
-            .ReturnsAsync((new List<MedicalRecord>(), 0))
-            .Verifiable(Times.Once);
+                ),
+            Times.Once
+        );
     }
 
     [Theory]
