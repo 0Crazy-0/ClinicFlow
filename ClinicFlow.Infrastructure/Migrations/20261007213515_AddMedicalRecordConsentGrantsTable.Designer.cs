@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using ClinicFlow.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ClinicFlow.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20261007213515_AddMedicalRecordConsentGrantsTable")]
+    partial class AddMedicalRecordConsentGrantsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -139,7 +142,7 @@ namespace ClinicFlow.Infrastructure.Migrations
                         .IsUnique()
                         .HasFilter("\"Status\" IN ('Scheduled', 'RequiresReassignment')");
 
-                    b.ToTable("Appointments", (string)null);
+                    b.ToTable("Appointments");
 
                     b.HasAnnotation("CustomIndex:CompositeIndexes", "[{\"paths\":[\"DoctorId\",\"ScheduledDate\",\"TimeRange.Start\",\"SequenceNumber\"],\"unique\":false},{\"paths\":[\"PatientId\",\"ScheduledDate\",\"TimeRange.Start\",\"SequenceNumber\"],\"unique\":false},{\"paths\":[\"ScheduledDate\",\"TimeRange.Start\",\"SequenceNumber\"],\"unique\":false}]");
                 });
@@ -246,7 +249,7 @@ namespace ClinicFlow.Infrastructure.Migrations
                     b.HasIndex("Code")
                         .IsUnique();
 
-                    b.ToTable("ClinicalFormTemplates", (string)null);
+                    b.ToTable("ClinicalFormTemplates");
                 });
 
             modelBuilder.Entity("ClinicFlow.Domain.Entities.Doctor", b =>
@@ -337,7 +340,7 @@ namespace ClinicFlow.Infrastructure.Migrations
 
                     b.HasIndex("MedicalRecordId");
 
-                    b.ToTable("DynamicClinicalDetail", (string)null);
+                    b.ToTable("DynamicClinicalDetail");
                 });
 
             modelBuilder.Entity("ClinicFlow.Domain.Entities.FamilyMembership", b =>
@@ -398,7 +401,7 @@ namespace ClinicFlow.Infrastructure.Migrations
 
                     b.HasIndex("UserId", "PatientId", "Status", "Role");
 
-                    b.ToTable("FamilyMemberships", (string)null);
+                    b.ToTable("FamilyMemberships");
                 });
 
             modelBuilder.Entity("ClinicFlow.Domain.Entities.MedicalRecord", b =>
@@ -452,7 +455,7 @@ namespace ClinicFlow.Infrastructure.Migrations
                     b.HasIndex("PatientId", "SequenceNumber")
                         .IsDescending(false, true);
 
-                    b.ToTable("MedicalRecords", (string)null);
+                    b.ToTable("MedicalRecords");
                 });
 
             modelBuilder.Entity("ClinicFlow.Domain.Entities.MedicalRecordConsentGrant", b =>
@@ -507,7 +510,7 @@ namespace ClinicFlow.Infrastructure.Migrations
                     b.HasIndex("PatientId", "SequenceNumber")
                         .IsDescending(false, true);
 
-                    b.ToTable("MedicalRecordConsentGrants", (string)null);
+                    b.ToTable("MedicalRecordConsentGrants");
                 });
 
             modelBuilder.Entity("ClinicFlow.Domain.Entities.MedicalSpecialty", b =>
@@ -547,7 +550,7 @@ namespace ClinicFlow.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("MedicalSpecialties", (string)null);
+                    b.ToTable("MedicalSpecialties");
                 });
 
             modelBuilder.Entity("ClinicFlow.Domain.Entities.Patient", b =>
@@ -591,7 +594,7 @@ namespace ClinicFlow.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Patients", (string)null);
+                    b.ToTable("Patients");
                 });
 
             modelBuilder.Entity("ClinicFlow.Domain.Entities.PatientPenalty", b =>
@@ -644,7 +647,7 @@ namespace ClinicFlow.Infrastructure.Migrations
 
                     b.HasIndex("IsRemoved", "Type", "BlockedUntil", "SequenceNumber");
 
-                    b.ToTable("PatientPenalties", (string)null);
+                    b.ToTable("PatientPenalties");
                 });
 
             modelBuilder.Entity("ClinicFlow.Domain.Entities.Schedule", b =>
@@ -680,7 +683,7 @@ namespace ClinicFlow.Infrastructure.Migrations
                     b.HasIndex("DoctorId", "DayOfWeek")
                         .IsUnique();
 
-                    b.ToTable("Schedules", (string)null);
+                    b.ToTable("Schedules");
                 });
 
             modelBuilder.Entity("ClinicFlow.Domain.Entities.User", b =>
@@ -739,7 +742,7 @@ namespace ClinicFlow.Infrastructure.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("AppointmentTypeDefinitionClinicalFormTemplate", b =>
@@ -799,7 +802,7 @@ namespace ClinicFlow.Infrastructure.Migrations
 
                             b1.HasKey("AppointmentTypeDefinitionId");
 
-                            b1.ToTable("AppointmentTypes", (string)null);
+                            b1.ToTable("AppointmentTypes");
 
                             b1.WithOwner()
                                 .HasForeignKey("AppointmentTypeDefinitionId");
@@ -843,7 +846,7 @@ namespace ClinicFlow.Infrastructure.Migrations
 
                             b1.HasKey("DoctorId");
 
-                            b1.ToTable("Doctors", (string)null);
+                            b1.ToTable("Doctors");
 
                             b1.WithOwner()
                                 .HasForeignKey("DoctorId");
@@ -946,7 +949,7 @@ namespace ClinicFlow.Infrastructure.Migrations
 
                             b1.HasKey("PatientId");
 
-                            b1.ToTable("Patients", (string)null);
+                            b1.ToTable("Patients");
 
                             b1.WithOwner()
                                 .HasForeignKey("PatientId");
@@ -993,7 +996,7 @@ namespace ClinicFlow.Infrastructure.Migrations
 
                             b1.HasKey("ScheduleId");
 
-                            b1.ToTable("Schedules", (string)null);
+                            b1.ToTable("Schedules");
 
                             b1.WithOwner()
                                 .HasForeignKey("ScheduleId");
