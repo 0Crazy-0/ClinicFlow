@@ -13,6 +13,7 @@ public sealed class GetFamilyMemberMedicalRecordsByPatientIdQueryHandler(
     IFamilyMembershipRepository familyMembershipRepository,
     IPatientRepository patientRepository,
     IMedicalRecordRepository medicalRecordRepository,
+    IMedicalRecordConsentGrantRepository consentGrantRepository,
     TimeProvider timeProvider
 ) : IRequestHandler<GetFamilyMemberMedicalRecordsByPatientIdQuery, PaginatedList<MedicalRecordDto>>
 {
@@ -45,13 +46,26 @@ public sealed class GetFamilyMemberMedicalRecordsByPatientIdQueryHandler(
             );
 
         var patientAge = patient.GetAge(DateOnly.FromDateTime(timeProvider.GetLocalNow().DateTime));
-
         var excludedCategories = ProtectedCategoryPolicy.GetProtectedCategoriesFor(patientAge);
+
+        IReadOnlyCollection<Guid> authorizedRecordIds = [];
+
+        // Adults have no excluded categories, so grants cannot affect visibility. Skip the query.
+        if (patientAge < DomainRules.AdultAge)
+        {
+            authorizedRecordIds = await consentGrantRepository.GetEffectiveRecordIdsAsync(
+                request.PatientId,
+                membership.Id,
+                timeProvider.GetLocalNow().DateTime,
+                cancellationToken
+            );
+        }
 
         var (items, totalCount) =
             await medicalRecordRepository.GetByPatientIdPaginatedExcludingCategoriesAsync(
                 request.PatientId,
                 excludedCategories,
+                authorizedRecordIds,
                 request.PageNumber,
                 request.PageSize,
                 cancellationToken

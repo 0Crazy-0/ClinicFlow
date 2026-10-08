@@ -17,6 +17,7 @@ public class GetFamilyMemberMedicalRecordByIdQueryHandlerTests
     private readonly Mock<IMedicalRecordRepository> _medicalRecordRepositoryMock = new();
     private readonly Mock<IFamilyMembershipRepository> _familyMembershipRepositoryMock = new();
     private readonly Mock<IPatientRepository> _patientRepositoryMock = new();
+    private readonly Mock<IMedicalRecordConsentGrantRepository> _consentGrantRepositoryMock = new();
     private readonly FakeTimeProvider _fakeTime = new();
     private readonly GetFamilyMemberMedicalRecordByIdQueryHandler _sut;
 
@@ -26,6 +27,7 @@ public class GetFamilyMemberMedicalRecordByIdQueryHandlerTests
             _medicalRecordRepositoryMock.Object,
             _familyMembershipRepositoryMock.Object,
             _patientRepositoryMock.Object,
+            _consentGrantRepositoryMock.Object,
             _fakeTime
         );
     }

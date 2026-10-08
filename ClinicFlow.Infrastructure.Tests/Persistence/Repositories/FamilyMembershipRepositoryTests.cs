@@ -77,6 +77,65 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
     }
 
     [Fact]
+    public async Task GetByIdAsync_ShouldReturnEntity_WhenExists()
+    {
+        // Arrange
+        var user = await CreateUserAsync();
+        var patient = await CreatePatientAsync();
+        var membership = FamilyMembership.CreateSelf(
+            patient.Id,
+            user.Id,
+            _fakeTime.GetLocalNow().DateTime
+        );
+
+        Context.FamilyMemberships.Add(membership);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var result = await _sut.GetByIdAsync(membership.Id, TestContext.Current.CancellationToken);
+
+        // Assert
+        result.Should().BeEquivalentTo(membership);
+    }
+
+    [Fact]
+    public async Task GetByIdAsync_ShouldReturnNull_WhenDoesNotExist()
+    {
+        // Arrange
+        var nonExistentId = Guid.CreateVersion7();
+
+        // Act
+        var result = await _sut.GetByIdAsync(nonExistentId, TestContext.Current.CancellationToken);
+
+        // Assert
+        result.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task GetByIdAsync_ShouldReturnEntity_WhenMembershipIsNotActive()
+    {
+        // Arrange
+        var user = await CreateUserAsync();
+        var patient = await CreatePatientAsync();
+        var membership = FamilyMembership.CreateSelf(
+            patient.Id,
+            user.Id,
+            _fakeTime.GetLocalNow().DateTime
+        );
+
+        membership.CloseSelfMembership(_fakeTime.GetLocalNow().DateTime.AddHours(1));
+
+        Context.FamilyMemberships.Add(membership);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var result = await _sut.GetByIdAsync(membership.Id, TestContext.Current.CancellationToken);
+
+        // Assert
+        result.Should().BeEquivalentTo(membership);
+    }
+
+    [Fact]
     public async Task GetActiveSelfMembershipByUserIdAsync_ShouldReturnMembership_WhenExistsAndActive()
     {
         // Arrange

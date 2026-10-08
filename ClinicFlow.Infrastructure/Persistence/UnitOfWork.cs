@@ -56,9 +56,14 @@ public sealed class UnitOfWork(ApplicationDbContext dbContext, IPublisher publis
     {
         var strategy = dbContext.Database.CreateExecutionStrategy();
 
+        var attempt = 0;
         var result = await strategy.ExecuteAsync(
             async (cancellationToken) =>
             {
+                // Stryker disable once all: see docs/tooling/stryker.md, section "5. UnitOfWork Retry ChangeTracker Clear"
+                if (attempt++ > 0)
+                    dbContext.ChangeTracker.Clear();
+
                 _pendingNotifications.Clear();
 
                 await using var transaction = await dbContext.Database.BeginTransactionAsync(
@@ -89,9 +94,14 @@ public sealed class UnitOfWork(ApplicationDbContext dbContext, IPublisher publis
     {
         var strategy = dbContext.Database.CreateExecutionStrategy();
 
+        var attempt = 0;
         await strategy.ExecuteAsync(
             async (cancellationToken) =>
             {
+                // Stryker disable once all: see docs/tooling/stryker.md, section "5. UnitOfWork Retry ChangeTracker Clear"
+                if (attempt++ > 0)
+                    dbContext.ChangeTracker.Clear();
+
                 _pendingNotifications.Clear();
 
                 await using var transaction = await dbContext.Database.BeginTransactionAsync(

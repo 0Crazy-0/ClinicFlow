@@ -156,18 +156,28 @@ public static class ProtectedCategoryPolicy
     /// meaningful when the category is <see cref="ProtectedCategory.MentalHealthCounseling"/>
     /// or <see cref="ProtectedCategory.ResidentialShelter"/>; ignored otherwise. When true,
     /// the documented determination supports guardian access under
-    /// <see href="https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=FAM&amp;sectionNum=6924">Cal. Fam. Code § 6924(d)</see>,
+    /// <see href="https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=FAM&sectionNum=6924">Cal. Fam. Code § 6924(d)</see>,
     /// so the category is not protected.
+    /// </param>
+    /// <param name="hasEffectiveGrant">
+    /// Whether an effective consent grant signed by the minor authorizes a family member to
+    /// access this specific record. When true, the record is not protected because the minor
+    /// exercised their own authorization right under
+    /// <see href="https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=CIV&sectionNum=56.11">Cal. Civ. Code § 56.11(b)(3)(A)</see>.
     /// </param>
     /// <seealso cref="MinimumConsentAge"/>
     public static bool IsProtectedForPatient(
         ProtectedCategory? category,
         int patientAge,
         bool? guardianInitiatedTreatment,
-        bool? guardianInvolvementDeemedAppropriate
+        bool? guardianInvolvementDeemedAppropriate,
+        bool hasEffectiveGrant
     )
     {
         if (category is null)
+            return false;
+
+        if (hasEffectiveGrant)
             return false;
 
         if (
@@ -218,7 +228,8 @@ public static class ProtectedCategoryPolicy
     /// <summary>
     /// Builds the predicate determining whether a medical record is visible to a family member
     /// given the categories excluded by the patient's age. A record is visible when it holds no
-    /// protected category, when its category is not excluded, or when a guardian based exception
+    /// protected category, when its category is not excluded, when an effective consent grant
+    /// signed by the minor authorizes its disclosure, or when a guardian based exception
     /// lifts the protection: substance abuse treatment initiated by the guardian themselves,
     /// or mental health counseling or residential shelter where the treating professional
     /// deemed guardian involvement appropriate.
@@ -227,25 +238,35 @@ public static class ProtectedCategoryPolicy
     /// The protected categories to hide, typically obtained from
     /// <see cref="GetProtectedCategoriesFor"/> for the patient's age.
     /// </param>
+    /// <param name="authorizedRecordIds">
+    /// The ids of records covered by an effective consent grant signed by the minor for the
+    /// requesting membership. Records in this list stay visible even when their category is
+    /// excluded, reflecting the minor's own authorization right under
+    /// <see href="https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=CIV&sectionNum=56.11">Cal. Civ. Code § 56.11(b)(3)(A)</see>.
+    /// </param>
     /// <returns>
     /// A predicate translatable to SQL by EF Core, so this critical access logic lives in the
     /// domain instead of being replicated inside infrastructure queries. The guardian based
-    /// exceptions follow <see href="https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=FAM&amp;sectionNum=6929">Cal. Fam. Code § 6929(g)</see>
-    /// and <see href="https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=FAM&amp;sectionNum=6924">§ 6924(d)</see>.
+    /// exceptions follow <see href="https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=FAM&sectionNum=6929">Cal. Fam. Code § 6929(g)</see>
+    /// and <see href="https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=FAM&sectionNum=6924">§ 6924(d)</see>.
     /// </returns>
     /// <remarks>
     /// Duplicates by necessity the guardian based exceptions of
     /// <see cref="IsProtectedForPatient"/>: an <see cref="Expression"/> is required so EF Core
     /// can translate the predicate to SQL, whereas that method evaluates in memory over
-    /// pre-fetched data. Changes to one must be mirrored in the other.
+    /// pre-fetched data. Changes to one must be mirrored in the other. The consent grant
+    /// term mirrors the <paramref name="authorizedRecordIds"/> exception with the
+    /// <c>hasEffectiveGrant</c> parameter of <see cref="IsProtectedForPatient"/>.
     /// </remarks>
     /// <seealso cref="IsProtectedForPatient"/>
     public static Expression<Func<MedicalRecord, bool>> IsVisibleToFamilyMember(
-        IReadOnlyCollection<ProtectedCategory> excludedCategories
+        IReadOnlyCollection<ProtectedCategory> excludedCategories,
+        IReadOnlyCollection<Guid> authorizedRecordIds
     ) =>
         m =>
             m.ProtectedCareCategory == null
             || !excludedCategories.Contains(m.ProtectedCareCategory.Value)
+            || authorizedRecordIds.Contains(m.Id)
             || (
                 m.ProtectedCareCategory == ProtectedCategory.SubstanceAbuseTreatment
                 && m.GuardianInitiatedTreatment == true

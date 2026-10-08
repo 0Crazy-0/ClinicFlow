@@ -347,6 +347,53 @@ public class FamilyMembership : BaseEntity
             throw new PatientAccessUnauthorizedException(DomainErrors.Patient.UnauthorizedAccess);
     }
 
+    /// <summary>
+    /// Validates that the membership may sign a consent grant over the patient's protected
+    /// record. Requires the patient's own active Self membership, so only the minor patient
+    /// can authorize disclosure of their protected care under
+    /// <see href="https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=CIV&sectionNum=56.11">Cal. Civ. Code § 56.11(b)(3)(A)</see>.
+    /// </summary>
+    internal void EnsureConsentGrantSigner(Guid requesterUserId, Guid patientId)
+    {
+        Guard.NotEmpty(requesterUserId);
+        Guard.NotEmpty(patientId);
+
+        if (
+            Status is not FamilyMembershipStatus.Active
+            || PatientId != patientId
+            || Role is not PatientRelationship.Self
+            || UserId != requesterUserId
+        )
+            throw new DomainValidationException(
+                DomainErrors.MedicalRecordConsentGrant.UnauthorizedCreation
+            );
+    }
+
+    /// <summary>
+    /// Validates that the membership may receive access to a protected record through a
+    /// consent grant. Requires an active membership over the same patient with a role other
+    /// than Self, since the patient authorizes a family member, never themselves.
+    /// </summary>
+    internal void EnsureConsentGrantRecipient(Guid patientId)
+    {
+        Guard.NotEmpty(patientId);
+
+        if (Status is not FamilyMembershipStatus.Active)
+            throw new DomainValidationException(
+                DomainErrors.MedicalRecordConsentGrant.RecipientMustBeActive
+            );
+
+        if (PatientId != patientId)
+            throw new DomainValidationException(
+                DomainErrors.MedicalRecordConsentGrant.RecipientPatientMismatch
+            );
+
+        if (Role is PatientRelationship.Self)
+            throw new DomainValidationException(
+                DomainErrors.MedicalRecordConsentGrant.RecipientCannotBeSelf
+            );
+    }
+
     public void Revoke(
         bool patientHasOwnSelfMembership,
         bool hasUpcomingAppointmentRequiringGuardianForMinor,

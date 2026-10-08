@@ -12,6 +12,7 @@ public sealed class GetFamilyMemberMedicalRecordByIdQueryHandler(
     IMedicalRecordRepository medicalRecordRepository,
     IFamilyMembershipRepository familyMembershipRepository,
     IPatientRepository patientRepository,
+    IMedicalRecordConsentGrantRepository consentGrantRepository,
     TimeProvider timeProvider
 ) : IRequestHandler<GetFamilyMemberMedicalRecordByIdQuery, MedicalRecordDto>
 {
@@ -53,12 +54,20 @@ public sealed class GetFamilyMemberMedicalRecordByIdQueryHandler(
 
         var patientAge = patient.GetAge(DateOnly.FromDateTime(timeProvider.GetLocalNow().DateTime));
 
+        var hasEffectiveGrant = await consentGrantRepository.HasEffectiveGrantAsync(
+            record.Id,
+            membership.Id,
+            timeProvider.GetLocalNow().DateTime,
+            cancellationToken
+        );
+
         if (
             ProtectedCategoryPolicy.IsProtectedForPatient(
                 record.ProtectedCareCategory,
                 patientAge,
                 record.GuardianInitiatedTreatment,
-                record.GuardianInvolvementDeemedAppropriate
+                record.GuardianInvolvementDeemedAppropriate,
+                hasEffectiveGrant
             )
         )
             throw new DomainValidationException(DomainErrors.MedicalRecord.ProtectedByMinorConsent);

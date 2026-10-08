@@ -22,6 +22,11 @@ public sealed class FamilyMembershipRepository(ApplicationDbContext dbContext)
         return Task.CompletedTask;
     }
 
+    public async Task<FamilyMembership?> GetByIdAsync(
+        Guid id,
+        CancellationToken cancellationToken = default
+    ) => await dbContext.FamilyMemberships.FirstOrDefaultAsync(m => m.Id == id, cancellationToken);
+
     public async Task<FamilyMembership?> GetActiveSelfMembershipByUserIdAsync(
         Guid userId,
         CancellationToken cancellationToken = default
