@@ -101,10 +101,9 @@ public sealed class AppointmentRepository(ApplicationDbContext dbContext) : IApp
     public async Task<(
         IReadOnlyList<Appointment> Items,
         int TotalCount
-    )> GetByPatientIdInCategoriesExcludingProtectedAsync(
+    )> GetByPatientIdInCategoriesAsync(
         Guid patientId,
         IReadOnlyCollection<AppointmentCategory> allowedCategories,
-        IReadOnlyCollection<ProtectedCategory> excludedCategories,
         int pageNumber,
         int pageSize,
         CancellationToken cancellationToken = default
@@ -115,11 +114,49 @@ public sealed class AppointmentRepository(ApplicationDbContext dbContext) : IApp
             .Where(a => a.PatientId == patientId)
             .Where(a =>
                 dbContext.AppointmentTypes.Any(t =>
+                    t.Id == a.AppointmentTypeId && allowedCategories.Contains(t.Category)
+                )
+            );
+
+        var totalCount = await query.CountAsync(cancellationToken);
+        var items = await query
+            .OrderBy(a => a.ScheduledDate)
+            .ThenBy(a => a.TimeRange.Start)
+            .ThenBy(a => a.SequenceNumber)
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
+
+        return (items, totalCount);
+    }
+
+    /// <inheritdoc />
+    public async Task<(
+        IReadOnlyList<Appointment> Items,
+        int TotalCount
+    )> GetMinorVisibleAppointmentsAsync(
+        Guid patientId,
+        IReadOnlyCollection<ProtectedCategory> excludedCategories,
+        IReadOnlyCollection<ProtectedCategory> authorizedCategories,
+        IReadOnlyCollection<Guid> authorizedAppointmentIds,
+        Guid requesterUserId,
+        int pageNumber,
+        int pageSize,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var query = dbContext
+            .Appointments.AsNoTracking()
+            .Where(a => a.PatientId == patientId)
+            .Where(a =>
+                authorizedAppointmentIds.Contains(a.Id)
+                || a.ScheduledByUserId == requesterUserId
+                || dbContext.AppointmentTypes.Any(t =>
                     t.Id == a.AppointmentTypeId
-                    && allowedCategories.Contains(t.Category)
                     && (
                         t.ProtectedCareCategory == null
                         || !excludedCategories.Contains(t.ProtectedCareCategory.Value)
+                        || authorizedCategories.Contains(t.ProtectedCareCategory.Value)
                     )
                 )
             );

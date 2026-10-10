@@ -753,7 +753,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
     }
 
     [Fact]
-    public async Task GetByPatientIdInCategoriesExcludingProtectedAsync_ShouldReturnOnlyAllowedCategories()
+    public async Task GetByPatientIdInCategoriesAsync_ShouldReturnOnlyAllowedCategories()
     {
         // Arrange
         var doctorUser = await CreateUserAsync(UserRole.Doctor);
@@ -790,10 +790,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Act
-        var (items, totalCount) = await _sut.GetByPatientIdInCategoriesExcludingProtectedAsync(
+        var (items, totalCount) = await _sut.GetByPatientIdInCategoriesAsync(
             patient.Id,
             [AppointmentCategory.GeneralMedicine],
-            [],
             pageNumber: 1,
             pageSize: 10,
             TestContext.Current.CancellationToken
@@ -811,132 +810,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
     }
 
     [Fact]
-    public async Task GetByPatientIdInCategoriesExcludingProtectedAsync_ShouldExcludeProtectedCategories()
-    {
-        // Arrange
-        var doctorUser = await CreateUserAsync(UserRole.Doctor);
-        var doctor = await CreateDoctorAsync(doctorUser.Id);
-        var patient = await CreatePatientAsync();
-
-        var allowedType = await CreateAppointmentTypeAsync(AppointmentCategory.GeneralMedicine);
-        var protectedCareCategory = await CreateAppointmentTypeAsync(
-            AppointmentCategory.GeneralMedicine,
-            ProtectedCategory.MentalHealthCounseling
-        );
-
-        var baseDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime);
-
-        var allowedAppointment = Appointment.Schedule(
-            patient.Id,
-            doctor.Id,
-            allowedType.Id,
-            baseDate.AddDays(1),
-            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
-            Guid.CreateVersion7()
-        );
-
-        Context.Appointments.Add(allowedAppointment);
-        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
-
-        var protectedAppointment = Appointment.Schedule(
-            patient.Id,
-            doctor.Id,
-            protectedCareCategory.Id,
-            baseDate.AddDays(1),
-            TimeRange.Create(new TimeOnly(11, 0), new TimeOnly(12, 0)),
-            Guid.CreateVersion7()
-        );
-
-        Context.Appointments.Add(protectedAppointment);
-        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
-
-        // Act
-        var (items, totalCount) = await _sut.GetByPatientIdInCategoriesExcludingProtectedAsync(
-            patient.Id,
-            [AppointmentCategory.GeneralMedicine],
-            [ProtectedCategory.MentalHealthCounseling],
-            pageNumber: 1,
-            pageSize: 10,
-            TestContext.Current.CancellationToken
-        );
-
-        // Assert
-        totalCount.Should().Be(1);
-
-        items
-            .Should()
-            .BeEquivalentTo(
-                [allowedAppointment],
-                options => options.WithStrictOrdering().Excluding(a => a.DomainEvents)
-            );
-    }
-
-    [Fact]
-    public async Task GetByPatientIdInCategoriesExcludingProtectedAsync_ShouldReturnAppointment_WhenItsProtectedCategoryIsNotInExcludedList()
-    {
-        // Arrange
-        var doctorUser = await CreateUserAsync(UserRole.Doctor);
-        var doctor = await CreateDoctorAsync(doctorUser.Id);
-        var patient = await CreatePatientAsync();
-
-        var notExcludedType = await CreateAppointmentTypeAsync(
-            AppointmentCategory.GeneralMedicine,
-            ProtectedCategory.SubstanceAbuseTreatment
-        );
-        var excludedType = await CreateAppointmentTypeAsync(
-            AppointmentCategory.GeneralMedicine,
-            ProtectedCategory.MentalHealthCounseling
-        );
-
-        var baseDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime);
-
-        var notExcludedAppointment = Appointment.Schedule(
-            patient.Id,
-            doctor.Id,
-            notExcludedType.Id,
-            baseDate.AddDays(1),
-            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
-            Guid.CreateVersion7()
-        );
-
-        Context.Appointments.Add(notExcludedAppointment);
-        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
-
-        var excludedAppointment = Appointment.Schedule(
-            patient.Id,
-            doctor.Id,
-            excludedType.Id,
-            baseDate.AddDays(1),
-            TimeRange.Create(new TimeOnly(11, 0), new TimeOnly(12, 0)),
-            Guid.CreateVersion7()
-        );
-
-        Context.Appointments.Add(excludedAppointment);
-        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
-
-        // Act
-        var (items, totalCount) = await _sut.GetByPatientIdInCategoriesExcludingProtectedAsync(
-            patient.Id,
-            [AppointmentCategory.GeneralMedicine],
-            [ProtectedCategory.MentalHealthCounseling],
-            pageNumber: 1,
-            pageSize: 10,
-            TestContext.Current.CancellationToken
-        );
-
-        // Assert
-        totalCount.Should().Be(1);
-
-        items
-            .Should()
-            .BeEquivalentTo(
-                [notExcludedAppointment],
-                options => options.WithStrictOrdering().Excluding(a => a.DomainEvents)
-            );
-    }
-
-    [Fact]
-    public async Task GetByPatientIdInCategoriesExcludingProtectedAsync_ShouldReturnAppointmentsOrderedByScheduledDateThenTimeStart()
+    public async Task GetByPatientIdInCategoriesAsync_ShouldReturnAppointmentsOrderedByScheduledDateThenTimeStart()
     {
         // Arrange
         var doctorUser = await CreateUserAsync(UserRole.Doctor);
@@ -986,10 +860,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Act
-        var (items, totalCount) = await _sut.GetByPatientIdInCategoriesExcludingProtectedAsync(
+        var (items, totalCount) = await _sut.GetByPatientIdInCategoriesAsync(
             patient.Id,
             [AppointmentCategory.GeneralMedicine],
-            [],
             pageNumber: 1,
             pageSize: 10,
             TestContext.Current.CancellationToken
@@ -1007,7 +880,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
     }
 
     [Fact]
-    public async Task GetByPatientIdInCategoriesExcludingProtectedAsync_ShouldOrderBySequenceNumberAscending_WhenScheduledDateAndTimeStartAreEqual()
+    public async Task GetByPatientIdInCategoriesAsync_ShouldOrderBySequenceNumberAscending_WhenScheduledDateAndTimeStartAreEqual()
     {
         // Arrange
         var doctorUser = await CreateUserAsync(UserRole.Doctor);
@@ -1057,10 +930,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Act
-        var (items, totalCount) = await _sut.GetByPatientIdInCategoriesExcludingProtectedAsync(
+        var (items, totalCount) = await _sut.GetByPatientIdInCategoriesAsync(
             patient.Id,
             [AppointmentCategory.GeneralMedicine],
-            [],
             pageNumber: 1,
             pageSize: 10,
             TestContext.Current.CancellationToken
@@ -1078,7 +950,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
     }
 
     [Fact]
-    public async Task GetByPatientIdInCategoriesExcludingProtectedAsync_ShouldReturnSecondPage()
+    public async Task GetByPatientIdInCategoriesAsync_ShouldReturnSecondPage()
     {
         // Arrange
         var doctorUser = await CreateUserAsync(UserRole.Doctor);
@@ -1128,10 +1000,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Act
-        var (items, totalCount) = await _sut.GetByPatientIdInCategoriesExcludingProtectedAsync(
+        var (items, totalCount) = await _sut.GetByPatientIdInCategoriesAsync(
             patient.Id,
             [AppointmentCategory.GeneralMedicine],
-            [],
             pageNumber: 2,
             pageSize: 2,
             TestContext.Current.CancellationToken
@@ -1148,7 +1019,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
     }
 
     [Fact]
-    public async Task GetByPatientIdInCategoriesExcludingProtectedAsync_ShouldReturnEmpty_WhenAllowedListIsEmpty()
+    public async Task GetByPatientIdInCategoriesAsync_ShouldReturnEmpty_WhenAllowedListIsEmpty()
     {
         // Arrange
         var doctorUser = await CreateUserAsync(UserRole.Doctor);
@@ -1171,9 +1042,8 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         // Act
-        var (items, totalCount) = await _sut.GetByPatientIdInCategoriesExcludingProtectedAsync(
+        var (items, totalCount) = await _sut.GetByPatientIdInCategoriesAsync(
             patient.Id,
-            [],
             [],
             pageNumber: 1,
             pageSize: 10,
@@ -1183,6 +1053,707 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         // Assert
         totalCount.Should().Be(0);
         items.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task GetMinorVisibleAppointmentsAsync_ShouldReturnOnlyAppointmentsForRequestedPatient()
+    {
+        // Arrange
+        var doctorUser = await CreateUserAsync(UserRole.Doctor);
+        var doctor = await CreateDoctorAsync(doctorUser.Id);
+
+        var patient1 = await CreatePatientAsync();
+        var patient2 = await CreatePatientAsync();
+
+        var type1 = await CreateAppointmentTypeAsync(AppointmentCategory.GeneralMedicine);
+        var type2 = await CreateAppointmentTypeAsync(AppointmentCategory.GeneralMedicine);
+
+        var baseDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime);
+        var requesterId = Guid.CreateVersion7();
+
+        var appointment1 = Appointment.Schedule(
+            patient1.Id,
+            doctor.Id,
+            type1.Id,
+            baseDate.AddDays(1),
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            Guid.CreateVersion7()
+        );
+
+        Context.Appointments.Add(appointment1);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var appointment2 = Appointment.Schedule(
+            patient2.Id,
+            doctor.Id,
+            type2.Id,
+            baseDate.AddDays(1),
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            Guid.CreateVersion7()
+        );
+
+        Context.Appointments.Add(appointment2);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var (items, totalCount) = await _sut.GetMinorVisibleAppointmentsAsync(
+            patient1.Id,
+            [],
+            [],
+            [],
+            requesterId,
+            pageNumber: 1,
+            pageSize: 10,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        totalCount.Should().Be(1);
+        items
+            .Should()
+            .ContainSingle()
+            .Which.Should()
+            .BeEquivalentTo(appointment1, options => options.Excluding(a => a.DomainEvents));
+    }
+
+    [Fact]
+    public async Task GetMinorVisibleAppointmentsAsync_ShouldReturnAppointment_WhenIdIsExplicitlyAuthorized()
+    {
+        // Arrange
+        var doctorUser = await CreateUserAsync(UserRole.Doctor);
+        var doctor = await CreateDoctorAsync(doctorUser.Id);
+        var patient = await CreatePatientAsync();
+
+        var hiddenType1 = await CreateAppointmentTypeAsync(
+            AppointmentCategory.GeneralMedicine,
+            ProtectedCategory.MentalHealthCounseling
+        );
+
+        var hiddenType2 = await CreateAppointmentTypeAsync(
+            AppointmentCategory.GeneralMedicine,
+            ProtectedCategory.MentalHealthCounseling
+        );
+
+        var baseDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime);
+        var requesterId = Guid.CreateVersion7();
+
+        var grantedAppointment = Appointment.Schedule(
+            patient.Id,
+            doctor.Id,
+            hiddenType1.Id,
+            baseDate.AddDays(1),
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            Guid.CreateVersion7()
+        );
+
+        Context.Appointments.Add(grantedAppointment);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var hiddenAppointment = Appointment.Schedule(
+            patient.Id,
+            doctor.Id,
+            hiddenType2.Id,
+            baseDate.AddDays(1),
+            TimeRange.Create(new TimeOnly(11, 0), new TimeOnly(12, 0)),
+            Guid.CreateVersion7()
+        );
+
+        Context.Appointments.Add(hiddenAppointment);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var (items, totalCount) = await _sut.GetMinorVisibleAppointmentsAsync(
+            patient.Id,
+            [ProtectedCategory.MentalHealthCounseling],
+            [],
+            [grantedAppointment.Id],
+            requesterId,
+            pageNumber: 1,
+            pageSize: 10,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        totalCount.Should().Be(1);
+        items
+            .Should()
+            .ContainSingle()
+            .Which.Should()
+            .BeEquivalentTo(grantedAppointment, options => options.Excluding(a => a.DomainEvents));
+    }
+
+    [Fact]
+    public async Task GetMinorVisibleAppointmentsAsync_ShouldReturnAppointment_WhenScheduledByRequester_EvenIfProtectedAndExcluded()
+    {
+        // Arrange
+        var doctorUser = await CreateUserAsync(UserRole.Doctor);
+        var doctor = await CreateDoctorAsync(doctorUser.Id);
+        var patient = await CreatePatientAsync();
+
+        var hiddenType = await CreateAppointmentTypeAsync(
+            AppointmentCategory.GeneralMedicine,
+            ProtectedCategory.MentalHealthCounseling
+        );
+
+        var baseDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime);
+        var requesterId = Guid.CreateVersion7();
+
+        var appointment = Appointment.Schedule(
+            patient.Id,
+            doctor.Id,
+            hiddenType.Id,
+            baseDate.AddDays(1),
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            requesterId
+        );
+
+        Context.Appointments.Add(appointment);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var (items, totalCount) = await _sut.GetMinorVisibleAppointmentsAsync(
+            patient.Id,
+            [ProtectedCategory.MentalHealthCounseling],
+            [],
+            [],
+            requesterId,
+            pageNumber: 1,
+            pageSize: 10,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        totalCount.Should().Be(1);
+        items
+            .Should()
+            .ContainSingle()
+            .Which.Should()
+            .BeEquivalentTo(appointment, options => options.Excluding(a => a.DomainEvents));
+    }
+
+    [Fact]
+    public async Task GetMinorVisibleAppointmentsAsync_ShouldReturnAppointment_WhenTypeHasNoProtectedCategory()
+    {
+        // Arrange
+        var doctorUser = await CreateUserAsync(UserRole.Doctor);
+        var doctor = await CreateDoctorAsync(doctorUser.Id);
+        var patient = await CreatePatientAsync();
+        var unprotectedType = await CreateAppointmentTypeAsync(AppointmentCategory.GeneralMedicine);
+        var baseDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime);
+        var requesterId = Guid.CreateVersion7();
+
+        var appointment = Appointment.Schedule(
+            patient.Id,
+            doctor.Id,
+            unprotectedType.Id,
+            baseDate.AddDays(1),
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            Guid.CreateVersion7()
+        );
+
+        Context.Appointments.Add(appointment);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var (items, totalCount) = await _sut.GetMinorVisibleAppointmentsAsync(
+            patient.Id,
+            [ProtectedCategory.MentalHealthCounseling],
+            [],
+            [],
+            requesterId,
+            pageNumber: 1,
+            pageSize: 10,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        totalCount.Should().Be(1);
+        items
+            .Should()
+            .ContainSingle()
+            .Which.Should()
+            .BeEquivalentTo(appointment, options => options.Excluding(a => a.DomainEvents));
+    }
+
+    [Fact]
+    public async Task GetMinorVisibleAppointmentsAsync_ShouldReturnAppointment_WhenProtectedCategoryIsNotExcluded()
+    {
+        // Arrange
+        var doctorUser = await CreateUserAsync(UserRole.Doctor);
+        var doctor = await CreateDoctorAsync(doctorUser.Id);
+        var patient = await CreatePatientAsync(); // patient has 30 years old
+
+        // Isolates the not excluded branch: SubstanceAbuseTreatment is absent from
+        // excludedCategories, so the row stays visible without any grant. In production
+        // excludedCategories comes from ProtectedCategoryPolicy.GetProtectedCategoriesFor
+        // and the handler rejects adults with MinorHistoryRequiresMinor, so an adult never
+        // reaches this query and the policy returns empty at 18. From 12 to 17 both
+        // MentalHealthCounseling and SubstanceAbuseTreatment require consent at 12, so both
+        // would be excluded and this same row would stay hidden unless covered by an
+        // authorized category, an authorized appointment id, or the scheduler exception.
+        var protectedType = await CreateAppointmentTypeAsync(
+            AppointmentCategory.GeneralMedicine,
+            ProtectedCategory.SubstanceAbuseTreatment
+        );
+
+        var baseDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime);
+        var requesterId = Guid.CreateVersion7();
+
+        var appointment = Appointment.Schedule(
+            patient.Id,
+            doctor.Id,
+            protectedType.Id,
+            baseDate.AddDays(1),
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            Guid.CreateVersion7()
+        );
+
+        Context.Appointments.Add(appointment);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var (items, totalCount) = await _sut.GetMinorVisibleAppointmentsAsync(
+            patient.Id,
+            [ProtectedCategory.MentalHealthCounseling],
+            [],
+            [],
+            requesterId,
+            pageNumber: 1,
+            pageSize: 10,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        totalCount.Should().Be(1);
+        items
+            .Should()
+            .ContainSingle()
+            .Which.Should()
+            .BeEquivalentTo(appointment, options => options.Excluding(a => a.DomainEvents));
+    }
+
+    [Fact]
+    public async Task GetMinorVisibleAppointmentsAsync_ShouldReturnAppointment_WhenExcludedButAuthorized()
+    {
+        // Arrange
+        var doctorUser = await CreateUserAsync(UserRole.Doctor);
+        var doctor = await CreateDoctorAsync(doctorUser.Id);
+        var patient = await CreatePatientAsync();
+        var protectedType = await CreateAppointmentTypeAsync(
+            AppointmentCategory.GeneralMedicine,
+            ProtectedCategory.MentalHealthCounseling
+        );
+
+        var baseDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime);
+        var requesterId = Guid.CreateVersion7();
+
+        var appointment = Appointment.Schedule(
+            patient.Id,
+            doctor.Id,
+            protectedType.Id,
+            baseDate.AddDays(1),
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            Guid.CreateVersion7()
+        );
+
+        Context.Appointments.Add(appointment);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var (items, totalCount) = await _sut.GetMinorVisibleAppointmentsAsync(
+            patient.Id,
+            [ProtectedCategory.MentalHealthCounseling],
+            [ProtectedCategory.MentalHealthCounseling],
+            [],
+            requesterId,
+            pageNumber: 1,
+            pageSize: 10,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        totalCount.Should().Be(1);
+        items
+            .Should()
+            .ContainSingle()
+            .Which.Should()
+            .BeEquivalentTo(appointment, options => options.Excluding(a => a.DomainEvents));
+    }
+
+    [Fact]
+    public async Task GetMinorVisibleAppointmentsAsync_ShouldReturnEmpty_WhenExcludedAndNotAuthorized()
+    {
+        // Arrange
+        var doctorUser = await CreateUserAsync(UserRole.Doctor);
+        var doctor = await CreateDoctorAsync(doctorUser.Id);
+        var patient = await CreatePatientAsync();
+        var protectedType = await CreateAppointmentTypeAsync(
+            AppointmentCategory.GeneralMedicine,
+            ProtectedCategory.MentalHealthCounseling
+        );
+
+        var baseDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime);
+        var requesterId = Guid.CreateVersion7();
+
+        var appointment = Appointment.Schedule(
+            patient.Id,
+            doctor.Id,
+            protectedType.Id,
+            baseDate.AddDays(1),
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            Guid.CreateVersion7()
+        );
+
+        Context.Appointments.Add(appointment);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var (items, totalCount) = await _sut.GetMinorVisibleAppointmentsAsync(
+            patient.Id,
+            [ProtectedCategory.MentalHealthCounseling],
+            [],
+            [],
+            requesterId,
+            pageNumber: 1,
+            pageSize: 10,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        totalCount.Should().Be(0);
+        items.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task GetMinorVisibleAppointmentsAsync_ShouldReturnEmpty_WhenTypeIsHidden_EvenIfAnotherVisibleTypeExists()
+    {
+        // Arrange
+        var doctorUser = await CreateUserAsync(UserRole.Doctor);
+        var doctor = await CreateDoctorAsync(doctorUser.Id);
+        var patient = await CreatePatientAsync();
+
+        var hiddenType = await CreateAppointmentTypeAsync(
+            AppointmentCategory.GeneralMedicine,
+            ProtectedCategory.MentalHealthCounseling
+        );
+
+        await CreateAppointmentTypeAsync(AppointmentCategory.GeneralMedicine);
+
+        var baseDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime);
+        var requesterId = Guid.CreateVersion7();
+
+        var hiddenAppointment = Appointment.Schedule(
+            patient.Id,
+            doctor.Id,
+            hiddenType.Id,
+            baseDate.AddDays(1),
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            Guid.CreateVersion7()
+        );
+
+        Context.Appointments.Add(hiddenAppointment);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var (items, totalCount) = await _sut.GetMinorVisibleAppointmentsAsync(
+            patient.Id,
+            [ProtectedCategory.MentalHealthCounseling],
+            [],
+            [],
+            requesterId,
+            pageNumber: 1,
+            pageSize: 10,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        totalCount.Should().Be(0);
+        items.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task GetMinorVisibleAppointmentsAsync_ShouldReturnAppointmentsOrderedByScheduledDateThenTimeStart()
+    {
+        // Arrange
+        var doctorUser = await CreateUserAsync(UserRole.Doctor);
+        var doctor = await CreateDoctorAsync(doctorUser.Id);
+        var patient = await CreatePatientAsync();
+
+        var type1 = await CreateAppointmentTypeAsync(AppointmentCategory.GeneralMedicine);
+        var type2 = await CreateAppointmentTypeAsync(AppointmentCategory.GeneralMedicine);
+        var type3 = await CreateAppointmentTypeAsync(AppointmentCategory.GeneralMedicine);
+
+        var baseDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime);
+        var requesterId = Guid.CreateVersion7();
+
+        var appointment1 = Appointment.Schedule(
+            patient.Id,
+            doctor.Id,
+            type1.Id,
+            baseDate.AddDays(1),
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            Guid.CreateVersion7()
+        );
+
+        Context.Appointments.Add(appointment1);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var appointment2 = Appointment.Schedule(
+            patient.Id,
+            doctor.Id,
+            type2.Id,
+            baseDate.AddDays(1),
+            TimeRange.Create(new TimeOnly(11, 0), new TimeOnly(12, 0)),
+            Guid.CreateVersion7()
+        );
+
+        Context.Appointments.Add(appointment2);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var appointment3 = Appointment.Schedule(
+            patient.Id,
+            doctor.Id,
+            type3.Id,
+            baseDate.AddDays(2),
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            Guid.CreateVersion7()
+        );
+
+        Context.Appointments.Add(appointment3);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var (items, totalCount) = await _sut.GetMinorVisibleAppointmentsAsync(
+            patient.Id,
+            [],
+            [],
+            [],
+            requesterId,
+            pageNumber: 1,
+            pageSize: 10,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        totalCount.Should().Be(3);
+        items
+            .Should()
+            .BeEquivalentTo(
+                [appointment1, appointment2, appointment3],
+                options => options.WithStrictOrdering().Excluding(a => a.DomainEvents)
+            );
+    }
+
+    [Fact]
+    public async Task GetMinorVisibleAppointmentsAsync_ShouldOrderBySequenceNumberAscending_WhenScheduledDateAndTimeStartAreEqual()
+    {
+        // Arrange
+        var doctorUser = await CreateUserAsync(UserRole.Doctor);
+        var doctor = await CreateDoctorAsync(doctorUser.Id);
+        var patient = await CreatePatientAsync();
+        var type1 = await CreateAppointmentTypeAsync(AppointmentCategory.GeneralMedicine);
+        var type2 = await CreateAppointmentTypeAsync(AppointmentCategory.GeneralMedicine);
+        var type3 = await CreateAppointmentTypeAsync(AppointmentCategory.GeneralMedicine);
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime.AddDays(1));
+        var requesterId = Guid.CreateVersion7();
+
+        var appointment1 = Appointment.Schedule(
+            patient.Id,
+            doctor.Id,
+            type1.Id,
+            scheduledDate,
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            Guid.CreateVersion7()
+        );
+
+        Context.Appointments.Add(appointment1);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var appointment2 = Appointment.Schedule(
+            patient.Id,
+            doctor.Id,
+            type2.Id,
+            scheduledDate,
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            Guid.CreateVersion7()
+        );
+
+        Context.Appointments.Add(appointment2);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var appointment3 = Appointment.Schedule(
+            patient.Id,
+            doctor.Id,
+            type3.Id,
+            scheduledDate,
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            Guid.CreateVersion7()
+        );
+
+        Context.Appointments.Add(appointment3);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var (items, totalCount) = await _sut.GetMinorVisibleAppointmentsAsync(
+            patient.Id,
+            [],
+            [],
+            [],
+            requesterId,
+            pageNumber: 1,
+            pageSize: 10,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        totalCount.Should().Be(3);
+        items
+            .Should()
+            .BeEquivalentTo(
+                [appointment1, appointment2, appointment3],
+                options => options.WithStrictOrdering().Excluding(a => a.DomainEvents)
+            );
+    }
+
+    [Fact]
+    public async Task GetMinorVisibleAppointmentsAsync_ShouldReturnPaginatedAppointments()
+    {
+        // Arrange
+        var doctorUser = await CreateUserAsync(UserRole.Doctor);
+        var doctor = await CreateDoctorAsync(doctorUser.Id);
+        var patient = await CreatePatientAsync();
+        var type1 = await CreateAppointmentTypeAsync(AppointmentCategory.GeneralMedicine);
+        var type2 = await CreateAppointmentTypeAsync(AppointmentCategory.GeneralMedicine);
+        var type3 = await CreateAppointmentTypeAsync(AppointmentCategory.GeneralMedicine);
+        var baseDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime);
+        var requesterId = Guid.CreateVersion7();
+
+        var appointment1 = Appointment.Schedule(
+            patient.Id,
+            doctor.Id,
+            type1.Id,
+            baseDate.AddDays(1),
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            Guid.CreateVersion7()
+        );
+
+        Context.Appointments.Add(appointment1);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var appointment2 = Appointment.Schedule(
+            patient.Id,
+            doctor.Id,
+            type2.Id,
+            baseDate.AddDays(1),
+            TimeRange.Create(new TimeOnly(11, 0), new TimeOnly(12, 0)),
+            Guid.CreateVersion7()
+        );
+
+        Context.Appointments.Add(appointment2);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var appointment3 = Appointment.Schedule(
+            patient.Id,
+            doctor.Id,
+            type3.Id,
+            baseDate.AddDays(2),
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            Guid.CreateVersion7()
+        );
+
+        Context.Appointments.Add(appointment3);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var (items, totalCount) = await _sut.GetMinorVisibleAppointmentsAsync(
+            patient.Id,
+            [],
+            [],
+            [],
+            requesterId,
+            pageNumber: 1,
+            pageSize: 2,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        totalCount.Should().Be(3);
+        items
+            .Should()
+            .BeEquivalentTo(
+                [appointment1, appointment2],
+                options => options.WithStrictOrdering().Excluding(a => a.DomainEvents)
+            );
+    }
+
+    [Fact]
+    public async Task GetMinorVisibleAppointmentsAsync_ShouldReturnSecondPage()
+    {
+        // Arrange
+        var doctorUser = await CreateUserAsync(UserRole.Doctor);
+        var doctor = await CreateDoctorAsync(doctorUser.Id);
+        var patient = await CreatePatientAsync();
+        var type1 = await CreateAppointmentTypeAsync(AppointmentCategory.GeneralMedicine);
+        var type2 = await CreateAppointmentTypeAsync(AppointmentCategory.GeneralMedicine);
+        var type3 = await CreateAppointmentTypeAsync(AppointmentCategory.GeneralMedicine);
+        var baseDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime);
+        var requesterId = Guid.CreateVersion7();
+
+        var appointment1 = Appointment.Schedule(
+            patient.Id,
+            doctor.Id,
+            type1.Id,
+            baseDate.AddDays(1),
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            Guid.CreateVersion7()
+        );
+
+        Context.Appointments.Add(appointment1);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var appointment2 = Appointment.Schedule(
+            patient.Id,
+            doctor.Id,
+            type2.Id,
+            baseDate.AddDays(1),
+            TimeRange.Create(new TimeOnly(11, 0), new TimeOnly(12, 0)),
+            Guid.CreateVersion7()
+        );
+
+        Context.Appointments.Add(appointment2);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        var appointment3 = Appointment.Schedule(
+            patient.Id,
+            doctor.Id,
+            type3.Id,
+            baseDate.AddDays(2),
+            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
+            Guid.CreateVersion7()
+        );
+
+        Context.Appointments.Add(appointment3);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var (items, totalCount) = await _sut.GetMinorVisibleAppointmentsAsync(
+            patient.Id,
+            [],
+            [],
+            [],
+            requesterId,
+            pageNumber: 2,
+            pageSize: 2,
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        totalCount.Should().Be(3);
+        items
+            .Should()
+            .ContainSingle()
+            .Which.Should()
+            .BeEquivalentTo(appointment3, options => options.Excluding(a => a.DomainEvents));
     }
 
     [Fact]

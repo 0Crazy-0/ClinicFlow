@@ -39,21 +39,31 @@ public interface IAppointmentRepository
     /// <remarks>
     /// Both filters resolve in SQL before pagination, so the total count only reflects
     /// visible appointments. An empty allowed list matches nothing by design.
-    /// An appointment type is visible when its category is allowed and its protected
-    /// care category is either absent or not excluded. The guardian based exceptions
-    /// of the medical record consent regime are deliberately not evaluated here: they
-    /// depend on per record state held by <see cref="MedicalRecord"/> (guardian initiated
-    /// treatment and guardian involvement determinations), which an appointment does not
-    /// carry. An appointment type protected by age is therefore always hidden from
-    /// family member listings.
     /// </remarks>
-    Task<(
-        IReadOnlyList<Appointment> Items,
-        int TotalCount
-    )> GetByPatientIdInCategoriesExcludingProtectedAsync(
+    Task<(IReadOnlyList<Appointment> Items, int TotalCount)> GetByPatientIdInCategoriesAsync(
         Guid patientId,
         IReadOnlyCollection<AppointmentCategory> allowedCategories,
+        int pageNumber,
+        int pageSize,
+        CancellationToken cancellationToken = default
+    );
+
+    /// <remarks>
+    /// Minor only visibility for family member listings. A row is visible when its type
+    /// holds no protected category, when its category is not excluded for the patient's
+    /// age, when a category or specific appointment grant covers it, or when the
+    /// requester scheduled it. The scheduler exception always applies here: every active
+    /// membership over a minor carries Parent or Guardian authority with Full access by
+    /// domain invariant, so identity equality is the only scheduler condition left. No
+    /// appointment category filter applies either: minor memberships are always Full by
+    /// the same invariant.
+    /// </remarks>
+    Task<(IReadOnlyList<Appointment> Items, int TotalCount)> GetMinorVisibleAppointmentsAsync(
+        Guid patientId,
         IReadOnlyCollection<ProtectedCategory> excludedCategories,
+        IReadOnlyCollection<ProtectedCategory> authorizedCategories,
+        IReadOnlyCollection<Guid> authorizedAppointmentIds,
+        Guid requesterUserId,
         int pageNumber,
         int pageSize,
         CancellationToken cancellationToken = default
