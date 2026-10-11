@@ -462,6 +462,84 @@ public class GetMinorFamilyMemberAppointmentsByPatientIdQueryHandlerTests
         );
     }
 
+    [Fact]
+    public async Task Handle_ShouldThrowEntityNotFoundException_WhenPatientIsMissing()
+    {
+        // Arrange
+        var requesterUserId = Guid.CreateVersion7();
+        var patientId = Guid.CreateVersion7();
+        var query = new GetMinorFamilyMemberAppointmentsByPatientIdQuery(
+            requesterUserId,
+            patientId,
+            1,
+            10
+        );
+
+        var membership = FamilyMembership.CreateFamilyMember(
+            patientId,
+            requesterUserId,
+            PatientRelationship.Parent,
+            LegalAuthorityType.Parent,
+            FamilyMembershipAccessLevel.Full,
+            15,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        _familyMembershipRepositoryMock
+            .Setup(x =>
+                x.GetActiveMembershipAsync(
+                    requesterUserId,
+                    patientId,
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(membership);
+
+        _patientRepositoryMock
+            .Setup(x => x.GetByIdAsync(patientId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Patient?)null);
+
+        // Act
+        var act = async () => await _sut.Handle(query, TestContext.Current.CancellationToken);
+
+        // Assert
+        var exceptionAssertion = await act.Should()
+            .ThrowAsync<EntityNotFoundException>()
+            .WithMessage(DomainErrors.General.NotFound);
+        exceptionAssertion.Which.EntityName.Should().Be(nameof(Patient));
+
+        _patientRepositoryMock.Verify(
+            x => x.GetByIdAsync(patientId, It.IsAny<CancellationToken>()),
+            Times.Once
+        );
+
+        _consentGrantRepositoryMock.Verify(
+            x =>
+                x.GetEffectiveCategoriesAsync(
+                    It.IsAny<Guid>(),
+                    It.IsAny<Guid>(),
+                    It.IsAny<DateTime>(),
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Never
+        );
+
+        _appointmentRepositoryMock.Verify(
+            x =>
+                x.GetMinorVisibleAppointmentsAsync(
+                    It.IsAny<Guid>(),
+                    It.IsAny<IReadOnlyCollection<ProtectedCategory>>(),
+                    It.IsAny<IReadOnlyCollection<ProtectedCategory>>(),
+                    It.IsAny<IReadOnlyCollection<Guid>>(),
+                    It.IsAny<Guid>(),
+                    It.IsAny<int>(),
+                    It.IsAny<int>(),
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Never
+        );
+    }
+
     private Patient CreatePatient(int age)
     {
         var patient = Patient.CreateProfile(
