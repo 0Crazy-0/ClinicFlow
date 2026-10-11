@@ -120,7 +120,7 @@ Change type of field '_patientUsersById' from 'IReadOnlyDictionary' to 'Dictiona
 
 **Resolution:** This is a design-time factory for EF Core CLI migrations only. The connection string is intentional for local development. This class is not used in production and will be removed once the API layer provides its own DI configuration.
 
-### `S107`. Too many constructor parameters
+### `S107`. Too many parameters
 
 **Files:** `CancelAppointmentByPatientCommandHandler.cs`, `RescheduleByPatientCommandHandler.cs`, `ScheduleByPatientCommandHandler.cs` (Application)
 
@@ -137,6 +137,14 @@ Constructor has 8 parameters, which is greater than the 7 authorized.
 ```
 
 **Resolution:** Intentional by design. The private constructor captures the complete initial state of this core entity, where each parameter maps to a distinct, non-mergeable invariant. Wrapping them in a DTO or parameter object would only camouflage the count without reducing actual complexity, while obscuring the factory intent. Same reasoning as the Application handler `S107` cases above.
+
+**File:** `AppointmentRepository.cs` (Infrastructure/Persistence/Repositories)
+
+```
+Method has 8 parameters, which is greater than the 7 authorized.
+```
+
+**Resolution:** Intentional by design. `GetMinorVisibleAppointmentsAsync` takes one parameter per distinct, non-mergeable visibility input of the minor family listing: patient scope, age-based excluded categories, grant-authorized categories, grant-authorized appointment ids, scheduler identity, and pagination, plus the conventional cancellation token. Grouping them into a filter object would only camouflage the count without reducing actual complexity, while obscuring the query intent at the call site. Same reasoning as the constructor `S107` cases above. The matching interface declaration lives in the Domain layer, which must remain free of tooling annotations, so this is resolved through the SonarCloud UI rather than source suppression.
 
 ### `S4144`. Identical method implementations
 
