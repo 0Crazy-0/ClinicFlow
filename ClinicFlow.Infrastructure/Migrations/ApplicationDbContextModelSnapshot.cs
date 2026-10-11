@@ -139,9 +139,68 @@ namespace ClinicFlow.Infrastructure.Migrations
                         .IsUnique()
                         .HasFilter("\"Status\" IN ('Scheduled', 'RequiresReassignment')");
 
-                    b.ToTable("Appointments", (string)null);
+                    b.ToTable("Appointments");
 
                     b.HasAnnotation("CustomIndex:CompositeIndexes", "[{\"paths\":[\"DoctorId\",\"ScheduledDate\",\"TimeRange.Start\",\"SequenceNumber\"],\"unique\":false},{\"paths\":[\"PatientId\",\"ScheduledDate\",\"TimeRange.Start\",\"SequenceNumber\"],\"unique\":false},{\"paths\":[\"ScheduledDate\",\"TimeRange.Start\",\"SequenceNumber\"],\"unique\":false}]");
+                });
+
+            modelBuilder.Entity("ClinicFlow.Domain.Entities.AppointmentConsentGrant", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("AppointmentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<Guid>("PatientId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int?>("ProtectedCareCategory")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("RecipientMembershipId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("RevokedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Scope")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<long>("SequenceNumber")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("SequenceNumber"));
+
+                    b.Property<DateTime>("SignedAt")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<Guid>("SignedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppointmentId");
+
+                    b.HasIndex("RecipientMembershipId");
+
+                    b.HasIndex("SignedByUserId");
+
+                    b.HasIndex("PatientId", "RecipientMembershipId", "Scope");
+
+                    b.ToTable("AppointmentConsentGrants");
                 });
 
             modelBuilder.Entity("ClinicFlow.Domain.Entities.AppointmentTypeDefinition", b =>
@@ -246,7 +305,7 @@ namespace ClinicFlow.Infrastructure.Migrations
                     b.HasIndex("Code")
                         .IsUnique();
 
-                    b.ToTable("ClinicalFormTemplates", (string)null);
+                    b.ToTable("ClinicalFormTemplates");
                 });
 
             modelBuilder.Entity("ClinicFlow.Domain.Entities.Doctor", b =>
@@ -337,7 +396,7 @@ namespace ClinicFlow.Infrastructure.Migrations
 
                     b.HasIndex("MedicalRecordId");
 
-                    b.ToTable("DynamicClinicalDetail", (string)null);
+                    b.ToTable("DynamicClinicalDetail");
                 });
 
             modelBuilder.Entity("ClinicFlow.Domain.Entities.FamilyMembership", b =>
@@ -398,7 +457,7 @@ namespace ClinicFlow.Infrastructure.Migrations
 
                     b.HasIndex("UserId", "PatientId", "Status", "Role");
 
-                    b.ToTable("FamilyMemberships", (string)null);
+                    b.ToTable("FamilyMemberships");
                 });
 
             modelBuilder.Entity("ClinicFlow.Domain.Entities.MedicalRecord", b =>
@@ -452,7 +511,7 @@ namespace ClinicFlow.Infrastructure.Migrations
                     b.HasIndex("PatientId", "SequenceNumber")
                         .IsDescending(false, true);
 
-                    b.ToTable("MedicalRecords", (string)null);
+                    b.ToTable("MedicalRecords");
                 });
 
             modelBuilder.Entity("ClinicFlow.Domain.Entities.MedicalRecordConsentGrant", b =>
@@ -507,7 +566,7 @@ namespace ClinicFlow.Infrastructure.Migrations
                     b.HasIndex("PatientId", "SequenceNumber")
                         .IsDescending(false, true);
 
-                    b.ToTable("MedicalRecordConsentGrants", (string)null);
+                    b.ToTable("MedicalRecordConsentGrants");
                 });
 
             modelBuilder.Entity("ClinicFlow.Domain.Entities.MedicalSpecialty", b =>
@@ -547,7 +606,7 @@ namespace ClinicFlow.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("MedicalSpecialties", (string)null);
+                    b.ToTable("MedicalSpecialties");
                 });
 
             modelBuilder.Entity("ClinicFlow.Domain.Entities.Patient", b =>
@@ -591,7 +650,7 @@ namespace ClinicFlow.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Patients", (string)null);
+                    b.ToTable("Patients");
                 });
 
             modelBuilder.Entity("ClinicFlow.Domain.Entities.PatientPenalty", b =>
@@ -644,7 +703,7 @@ namespace ClinicFlow.Infrastructure.Migrations
 
                     b.HasIndex("IsRemoved", "Type", "BlockedUntil", "SequenceNumber");
 
-                    b.ToTable("PatientPenalties", (string)null);
+                    b.ToTable("PatientPenalties");
                 });
 
             modelBuilder.Entity("ClinicFlow.Domain.Entities.Schedule", b =>
@@ -680,7 +739,7 @@ namespace ClinicFlow.Infrastructure.Migrations
                     b.HasIndex("DoctorId", "DayOfWeek")
                         .IsUnique();
 
-                    b.ToTable("Schedules", (string)null);
+                    b.ToTable("Schedules");
                 });
 
             modelBuilder.Entity("ClinicFlow.Domain.Entities.User", b =>
@@ -739,7 +798,7 @@ namespace ClinicFlow.Infrastructure.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("AppointmentTypeDefinitionClinicalFormTemplate", b =>
@@ -778,6 +837,32 @@ namespace ClinicFlow.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("ClinicFlow.Domain.Entities.AppointmentConsentGrant", b =>
+                {
+                    b.HasOne("ClinicFlow.Domain.Entities.Appointment", null)
+                        .WithMany()
+                        .HasForeignKey("AppointmentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("ClinicFlow.Domain.Entities.Patient", null)
+                        .WithMany()
+                        .HasForeignKey("PatientId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ClinicFlow.Domain.Entities.FamilyMembership", null)
+                        .WithMany()
+                        .HasForeignKey("RecipientMembershipId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("ClinicFlow.Domain.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("SignedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("ClinicFlow.Domain.Entities.AppointmentTypeDefinition", b =>
                 {
                     b.OwnsOne("ClinicFlow.Domain.ValueObjects.AgeEligibilityPolicy", "AgePolicy", b1 =>
@@ -799,7 +884,7 @@ namespace ClinicFlow.Infrastructure.Migrations
 
                             b1.HasKey("AppointmentTypeDefinitionId");
 
-                            b1.ToTable("AppointmentTypes", (string)null);
+                            b1.ToTable("AppointmentTypes");
 
                             b1.WithOwner()
                                 .HasForeignKey("AppointmentTypeDefinitionId");
@@ -843,7 +928,7 @@ namespace ClinicFlow.Infrastructure.Migrations
 
                             b1.HasKey("DoctorId");
 
-                            b1.ToTable("Doctors", (string)null);
+                            b1.ToTable("Doctors");
 
                             b1.WithOwner()
                                 .HasForeignKey("DoctorId");
@@ -946,7 +1031,7 @@ namespace ClinicFlow.Infrastructure.Migrations
 
                             b1.HasKey("PatientId");
 
-                            b1.ToTable("Patients", (string)null);
+                            b1.ToTable("Patients");
 
                             b1.WithOwner()
                                 .HasForeignKey("PatientId");
@@ -993,7 +1078,7 @@ namespace ClinicFlow.Infrastructure.Migrations
 
                             b1.HasKey("ScheduleId");
 
-                            b1.ToTable("Schedules", (string)null);
+                            b1.ToTable("Schedules");
 
                             b1.WithOwner()
                                 .HasForeignKey("ScheduleId");

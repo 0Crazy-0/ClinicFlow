@@ -1,12 +1,12 @@
 using ClinicFlow.Domain.Common;
 using FluentValidation;
 
-namespace ClinicFlow.Application.Appointments.Queries.GetFamilyMemberAppointmentsByPatientId;
+namespace ClinicFlow.Application.Appointments.Queries.GetAdultFamilyMemberAppointmentsByPatientId;
 
-public sealed class GetFamilyMemberAppointmentsByPatientIdQueryValidator
-    : AbstractValidator<GetFamilyMemberAppointmentsByPatientIdQuery>
+public sealed class GetAdultFamilyMemberAppointmentsByPatientIdQueryValidator
+    : AbstractValidator<GetAdultFamilyMemberAppointmentsByPatientIdQuery>
 {
-    public GetFamilyMemberAppointmentsByPatientIdQueryValidator()
+    public GetAdultFamilyMemberAppointmentsByPatientIdQueryValidator()
     {
         RuleFor(x => x.RequesterUserId)
             .NotEmpty()

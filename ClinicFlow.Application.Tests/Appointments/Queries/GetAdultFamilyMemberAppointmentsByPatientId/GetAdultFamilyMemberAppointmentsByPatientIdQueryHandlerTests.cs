@@ -1,30 +1,28 @@
 using AwesomeAssertions;
 using ClinicFlow.Application.Appointments.Queries.DTOs;
-using ClinicFlow.Application.Appointments.Queries.GetFamilyMemberAppointmentsByPatientId;
-using ClinicFlow.Application.Tests.Shared;
+using ClinicFlow.Application.Appointments.Queries.GetAdultFamilyMemberAppointmentsByPatientId;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces.Repositories;
-using ClinicFlow.Domain.Services.Policies;
 using ClinicFlow.Domain.ValueObjects;
 using Microsoft.Extensions.Time.Testing;
 using Moq;
 
-namespace ClinicFlow.Application.Tests.Appointments.Queries.GetFamilyMemberAppointmentsByPatientId;
+namespace ClinicFlow.Application.Tests.Appointments.Queries.GetAdultFamilyMemberAppointmentsByPatientId;
 
-public class GetFamilyMemberAppointmentsByPatientIdQueryHandlerTests
+public class GetAdultFamilyMemberAppointmentsByPatientIdQueryHandlerTests
 {
     private readonly FakeTimeProvider _fakeTime = new();
     private readonly Mock<IFamilyMembershipRepository> _familyMembershipRepositoryMock = new();
     private readonly Mock<IPatientRepository> _patientRepositoryMock = new();
     private readonly Mock<IAppointmentRepository> _appointmentRepositoryMock = new();
-    private readonly GetFamilyMemberAppointmentsByPatientIdQueryHandler _sut;
+    private readonly GetAdultFamilyMemberAppointmentsByPatientIdQueryHandler _sut;
 
-    public GetFamilyMemberAppointmentsByPatientIdQueryHandlerTests()
+    public GetAdultFamilyMemberAppointmentsByPatientIdQueryHandlerTests()
     {
-        _sut = new GetFamilyMemberAppointmentsByPatientIdQueryHandler(
+        _sut = new GetAdultFamilyMemberAppointmentsByPatientIdQueryHandler(
             _familyMembershipRepositoryMock.Object,
             _patientRepositoryMock.Object,
             _appointmentRepositoryMock.Object,
@@ -38,7 +36,7 @@ public class GetFamilyMemberAppointmentsByPatientIdQueryHandlerTests
         // Arrange
         var requesterUserId = Guid.CreateVersion7();
         var patientId = Guid.CreateVersion7();
-        var query = new GetFamilyMemberAppointmentsByPatientIdQuery(
+        var query = new GetAdultFamilyMemberAppointmentsByPatientIdQuery(
             requesterUserId,
             patientId,
             1,
@@ -60,7 +58,7 @@ public class GetFamilyMemberAppointmentsByPatientIdQueryHandlerTests
             requesterIsAuthorized: true
         );
 
-        var patient = CreatePatient(patientId, 30);
+        var patient = CreatePatient(30);
 
         var appointment = Appointment.Schedule(
             patientId,
@@ -72,8 +70,6 @@ public class GetFamilyMemberAppointmentsByPatientIdQueryHandlerTests
         );
 
         var appointments = new List<Appointment> { appointment };
-        var allowedCaptured = new List<IReadOnlyCollection<AppointmentCategory>>();
-        var excludedCaptured = new List<IReadOnlyCollection<ProtectedCategory>>();
 
         _familyMembershipRepositoryMock
             .Setup(x =>
@@ -91,10 +87,9 @@ public class GetFamilyMemberAppointmentsByPatientIdQueryHandlerTests
 
         _appointmentRepositoryMock
             .Setup(x =>
-                x.GetByPatientIdInCategoriesExcludingProtectedAsync(
+                x.GetByPatientIdInCategoriesAsync(
                     patientId,
-                    Capture.In(allowedCaptured),
-                    Capture.In(excludedCaptured),
+                    It.IsAny<IReadOnlyCollection<AppointmentCategory>>(),
                     1,
                     10,
                     It.IsAny<CancellationToken>()
@@ -125,27 +120,11 @@ public class GetFamilyMemberAppointmentsByPatientIdQueryHandlerTests
         result.PageNumber.Should().Be(1);
         result.TotalPages.Should().Be(1);
 
-        allowedCaptured.Single().Should().BeEquivalentTo([AppointmentCategory.GeneralMedicine]);
-        excludedCaptured
-            .Single()
-            .Should()
-            .BeEquivalentTo(ProtectedCategoryPolicy.GetProtectedCategoriesFor(30));
-
-        _familyMembershipRepositoryMock.Verify(
-            x =>
-                x.GetActiveMembershipAsync(
-                    requesterUserId,
-                    patientId,
-                    It.IsAny<CancellationToken>()
-                ),
-            Times.Once
-        );
         _appointmentRepositoryMock.Verify(
             x =>
-                x.GetByPatientIdInCategoriesExcludingProtectedAsync(
+                x.GetByPatientIdInCategoriesAsync(
                     patientId,
                     It.IsAny<IReadOnlyCollection<AppointmentCategory>>(),
-                    It.IsAny<IReadOnlyCollection<ProtectedCategory>>(),
                     1,
                     10,
                     It.IsAny<CancellationToken>()
@@ -155,28 +134,45 @@ public class GetFamilyMemberAppointmentsByPatientIdQueryHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ShouldReturnEmptyPaginatedList_WhenNoVisibleAppointments()
+    public async Task Handle_ShouldReturnFilteredPaginatedList_WhenPatientIsExactlyAdultAge()
     {
         // Arrange
         var requesterUserId = Guid.CreateVersion7();
         var patientId = Guid.CreateVersion7();
-        var query = new GetFamilyMemberAppointmentsByPatientIdQuery(
+        var query = new GetAdultFamilyMemberAppointmentsByPatientIdQuery(
             requesterUserId,
             patientId,
             1,
             10
         );
+
         var membership = FamilyMembership.CreateFamilyMember(
             patientId,
             requesterUserId,
             PatientRelationship.Child,
             LegalAuthorityType.None,
-            FamilyMembershipAccessLevel.Full,
+            FamilyMembershipAccessLevel.Restricted,
             30,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
-        var patient = CreatePatient(patientId, 30);
+        membership.AddAllowedAppointmentCategory(
+            AppointmentCategory.GeneralMedicine,
+            requesterIsAuthorized: true
+        );
+
+        var patient = CreatePatient(DomainRules.AdultAge);
+
+        var appointment = Appointment.Schedule(
+            patientId,
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
+            TimeRange.Create(new TimeOnly(9), new TimeOnly(10)),
+            Guid.CreateVersion7()
+        );
+
+        var appointments = new List<Appointment> { appointment };
 
         _familyMembershipRepositoryMock
             .Setup(x =>
@@ -194,25 +190,110 @@ public class GetFamilyMemberAppointmentsByPatientIdQueryHandlerTests
 
         _appointmentRepositoryMock
             .Setup(x =>
-                x.GetByPatientIdInCategoriesExcludingProtectedAsync(
+                x.GetByPatientIdInCategoriesAsync(
                     patientId,
                     It.IsAny<IReadOnlyCollection<AppointmentCategory>>(),
-                    It.IsAny<IReadOnlyCollection<ProtectedCategory>>(),
                     1,
                     10,
                     It.IsAny<CancellationToken>()
                 )
             )
-            .ReturnsAsync((new List<Appointment>(), 0));
+            .ReturnsAsync((appointments, 1));
 
         // Act
         var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
-        result.Items.Should().BeEmpty();
-        result.TotalCount.Should().Be(0);
+        var expectedDtos = appointments.Select(a => new PatientAppointmentDto(
+            a.Id,
+            a.PatientId,
+            a.DoctorId,
+            a.AppointmentTypeId,
+            a.ScheduledDate,
+            a.TimeRange.Start,
+            a.TimeRange.End,
+            a.Status,
+            a.PatientNotes,
+            a.ReceptionistNotes,
+            a.GuardianNotes
+        ));
+
+        result.Items.Should().BeEquivalentTo(expectedDtos);
+        result.TotalCount.Should().Be(1);
         result.PageNumber.Should().Be(1);
-        result.TotalPages.Should().Be(0);
+        result.TotalPages.Should().Be(1);
+
+        _appointmentRepositoryMock.Verify(
+            x =>
+                x.GetByPatientIdInCategoriesAsync(
+                    patientId,
+                    It.IsAny<IReadOnlyCollection<AppointmentCategory>>(),
+                    1,
+                    10,
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Once
+        );
+    }
+
+    [Fact]
+    public async Task Handle_ShouldThrowDomainValidationException_WhenPatientIsMinor()
+    {
+        // Arrange
+        var requesterUserId = Guid.CreateVersion7();
+        var patientId = Guid.CreateVersion7();
+        var query = new GetAdultFamilyMemberAppointmentsByPatientIdQuery(
+            requesterUserId,
+            patientId,
+            1,
+            10
+        );
+
+        var membership = FamilyMembership.CreateFamilyMember(
+            patientId,
+            requesterUserId,
+            PatientRelationship.Parent,
+            LegalAuthorityType.Parent,
+            FamilyMembershipAccessLevel.Full,
+            15,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        var patient = CreatePatient(DomainRules.AdultAge - 1);
+
+        _familyMembershipRepositoryMock
+            .Setup(x =>
+                x.GetActiveMembershipAsync(
+                    requesterUserId,
+                    patientId,
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(membership);
+
+        _patientRepositoryMock
+            .Setup(x => x.GetByIdAsync(patientId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(patient);
+
+        // Act
+        var act = async () => await _sut.Handle(query, TestContext.Current.CancellationToken);
+
+        // Assert
+        await act.Should()
+            .ThrowAsync<DomainValidationException>()
+            .WithMessage(DomainErrors.Appointment.AdultHistoryRequiresAdult);
+
+        _appointmentRepositoryMock.Verify(
+            x =>
+                x.GetByPatientIdInCategoriesAsync(
+                    It.IsAny<Guid>(),
+                    It.IsAny<IReadOnlyCollection<AppointmentCategory>>(),
+                    It.IsAny<int>(),
+                    It.IsAny<int>(),
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Never
+        );
     }
 
     [Fact]
@@ -221,7 +302,7 @@ public class GetFamilyMemberAppointmentsByPatientIdQueryHandlerTests
         // Arrange
         var requesterUserId = Guid.CreateVersion7();
         var patientId = Guid.CreateVersion7();
-        var query = new GetFamilyMemberAppointmentsByPatientIdQuery(
+        var query = new GetAdultFamilyMemberAppointmentsByPatientIdQuery(
             requesterUserId,
             patientId,
             1,
@@ -247,53 +328,31 @@ public class GetFamilyMemberAppointmentsByPatientIdQueryHandlerTests
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(FamilyMembership));
 
-        _familyMembershipRepositoryMock.Verify(
-            x =>
-                x.GetActiveMembershipAsync(
-                    requesterUserId,
-                    patientId,
-                    It.IsAny<CancellationToken>()
-                ),
-            Times.Once
-        );
-
         _patientRepositoryMock.Verify(
             x => x.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()),
-            Times.Never
-        );
-
-        _appointmentRepositoryMock.Verify(
-            x =>
-                x.GetByPatientIdInCategoriesExcludingProtectedAsync(
-                    It.IsAny<Guid>(),
-                    It.IsAny<IReadOnlyCollection<AppointmentCategory>>(),
-                    It.IsAny<IReadOnlyCollection<ProtectedCategory>>(),
-                    It.IsAny<int>(),
-                    It.IsAny<int>(),
-                    It.IsAny<CancellationToken>()
-                ),
             Times.Never
         );
     }
 
     [Fact]
-    public async Task Handle_ShouldThrowEntityNotFoundException_WhenPatientNotFound()
+    public async Task Handle_ShouldThrowEntityNotFoundException_WhenPatientIsMissing()
     {
         // Arrange
         var requesterUserId = Guid.CreateVersion7();
         var patientId = Guid.CreateVersion7();
-        var query = new GetFamilyMemberAppointmentsByPatientIdQuery(
+        var query = new GetAdultFamilyMemberAppointmentsByPatientIdQuery(
             requesterUserId,
             patientId,
             1,
             10
         );
+
         var membership = FamilyMembership.CreateFamilyMember(
             patientId,
             requesterUserId,
             PatientRelationship.Child,
             LegalAuthorityType.None,
-            FamilyMembershipAccessLevel.Full,
+            FamilyMembershipAccessLevel.Restricted,
             30,
             _fakeTime.GetUtcNow().UtcDateTime
         );
@@ -321,12 +380,16 @@ public class GetFamilyMemberAppointmentsByPatientIdQueryHandlerTests
             .WithMessage(DomainErrors.General.NotFound);
         exceptionAssertion.Which.EntityName.Should().Be(nameof(Patient));
 
+        _patientRepositoryMock.Verify(
+            x => x.GetByIdAsync(patientId, It.IsAny<CancellationToken>()),
+            Times.Once
+        );
+
         _appointmentRepositoryMock.Verify(
             x =>
-                x.GetByPatientIdInCategoriesExcludingProtectedAsync(
+                x.GetByPatientIdInCategoriesAsync(
                     It.IsAny<Guid>(),
                     It.IsAny<IReadOnlyCollection<AppointmentCategory>>(),
-                    It.IsAny<IReadOnlyCollection<ProtectedCategory>>(),
                     It.IsAny<int>(),
                     It.IsAny<int>(),
                     It.IsAny<CancellationToken>()
@@ -335,15 +398,13 @@ public class GetFamilyMemberAppointmentsByPatientIdQueryHandlerTests
         );
     }
 
-    private Patient CreatePatient(Guid id, int age)
+    private Patient CreatePatient(int age)
     {
         var patient = Patient.CreateProfile(
             PersonName.Create("Test"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-age)),
             _fakeTime.GetUtcNow().UtcDateTime
         );
-
-        patient.SetId(id);
 
         return patient;
     }

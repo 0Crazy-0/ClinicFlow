@@ -53,6 +53,8 @@ public static class DomainErrors
         public const string Duplicate = "DUPLICATE_APPOINTMENT";
         public const string CannotUpdateNotes = "UPDATE_NOTES_NOT_ALLOWED";
         public const string GuardianRequiresMinor = "GUARDIAN_REQUIRES_MINOR";
+        public const string AdultHistoryRequiresAdult = "ADULT_HISTORY_REQUIRES_ADULT";
+        public const string MinorHistoryRequiresMinor = "MINOR_HISTORY_REQUIRES_MINOR";
         public const string InvalidCompletionDate = "COMPLETION_DATE_BEFORE_APPOINTMENT_START";
         public const string CompletionBeforeActualStart = "COMPLETION_BEFORE_ACTUAL_START";
         public const string InvalidStartDate = "START_DATE_MISMATCH";
@@ -219,6 +221,31 @@ public static class DomainErrors
             "FAMILY_MEMBERSHIP_LEGAL_AUTHORITY_REQUIRES_MINOR";
         public const string MinorRequiresLegalAuthority =
             "FAMILY_MEMBERSHIP_MINOR_REQUIRES_LEGAL_AUTHORITY";
+    }
+
+    public static class AppointmentConsentGrant
+    {
+        public const string UnauthorizedCreation =
+            "APPOINTMENT_CONSENT_GRANT_UNAUTHORIZED_CREATION";
+        public const string PatientMustBeMinor = "APPOINTMENT_CONSENT_GRANT_PATIENT_MUST_BE_MINOR";
+        public const string ScopeMismatch = "APPOINTMENT_CONSENT_GRANT_SCOPE_MISMATCH";
+        public const string CategoryNotGrantable =
+            "APPOINTMENT_CONSENT_GRANT_CATEGORY_NOT_GRANTABLE";
+        public const string AppointmentNotGrantable =
+            "APPOINTMENT_CONSENT_GRANT_APPOINTMENT_NOT_GRANTABLE";
+        public const string AppointmentPatientMismatch =
+            "APPOINTMENT_CONSENT_GRANT_APPOINTMENT_PATIENT_MISMATCH";
+        public const string RecipientMustBeActive =
+            "APPOINTMENT_CONSENT_GRANT_RECIPIENT_MUST_BE_ACTIVE";
+        public const string RecipientPatientMismatch =
+            "APPOINTMENT_CONSENT_GRANT_RECIPIENT_PATIENT_MISMATCH";
+        public const string RecipientCannotBeSelf =
+            "APPOINTMENT_CONSENT_GRANT_RECIPIENT_CANNOT_BE_SELF";
+        public const string AlreadyExists = "APPOINTMENT_CONSENT_GRANT_ALREADY_EXISTS";
+        public const string UnauthorizedRevocation =
+            "APPOINTMENT_CONSENT_GRANT_UNAUTHORIZED_REVOCATION";
+        public const string AlreadyRevoked = "APPOINTMENT_CONSENT_GRANT_ALREADY_REVOKED";
+        public const string AlreadyExpired = "APPOINTMENT_CONSENT_GRANT_ALREADY_EXPIRED";
     }
 
     public static class MedicalRecordConsentGrant

@@ -1,18 +1,18 @@
-using ClinicFlow.Application.Appointments.Queries.GetFamilyMemberAppointmentsByPatientId;
+using ClinicFlow.Application.Appointments.Queries.GetMinorFamilyMemberAppointmentsByPatientId;
 using ClinicFlow.Domain.Common;
 using FluentValidation.TestHelper;
 
-namespace ClinicFlow.Application.Tests.Appointments.Queries.GetFamilyMemberAppointmentsByPatientId;
+namespace ClinicFlow.Application.Tests.Appointments.Queries.GetMinorFamilyMemberAppointmentsByPatientId;
 
-public class GetFamilyMemberAppointmentsByPatientIdQueryValidatorTests
+public class GetMinorFamilyMemberAppointmentsByPatientIdQueryValidatorTests
 {
-    private readonly GetFamilyMemberAppointmentsByPatientIdQueryValidator _sut = new();
+    private readonly GetMinorFamilyMemberAppointmentsByPatientIdQueryValidator _sut = new();
 
     [Fact]
     public void Validate_ShouldNotHaveError_WhenQueryIsValid()
     {
         // Arrange
-        var query = new GetFamilyMemberAppointmentsByPatientIdQuery(
+        var query = new GetMinorFamilyMemberAppointmentsByPatientIdQuery(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             1,
@@ -30,7 +30,7 @@ public class GetFamilyMemberAppointmentsByPatientIdQueryValidatorTests
     public void Validate_ShouldHaveError_WhenRequesterUserIdIsEmpty()
     {
         // Arrange
-        var query = new GetFamilyMemberAppointmentsByPatientIdQuery(
+        var query = new GetMinorFamilyMemberAppointmentsByPatientIdQuery(
             Guid.Empty,
             Guid.CreateVersion7(),
             1,
@@ -50,7 +50,7 @@ public class GetFamilyMemberAppointmentsByPatientIdQueryValidatorTests
     public void Validate_ShouldHaveError_WhenPatientIdIsEmpty()
     {
         // Arrange
-        var query = new GetFamilyMemberAppointmentsByPatientIdQuery(
+        var query = new GetMinorFamilyMemberAppointmentsByPatientIdQuery(
             Guid.CreateVersion7(),
             Guid.Empty,
             1,
@@ -72,7 +72,7 @@ public class GetFamilyMemberAppointmentsByPatientIdQueryValidatorTests
     public void Validate_ShouldHaveError_WhenPageNumberIsLessThanOne(int pageNumber)
     {
         // Arrange
-        var query = new GetFamilyMemberAppointmentsByPatientIdQuery(
+        var query = new GetMinorFamilyMemberAppointmentsByPatientIdQuery(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             pageNumber,
@@ -95,7 +95,7 @@ public class GetFamilyMemberAppointmentsByPatientIdQueryValidatorTests
     public void Validate_ShouldHaveError_WhenPageSizeIsOutOfRange(int pageSize)
     {
         // Arrange
-        var query = new GetFamilyMemberAppointmentsByPatientIdQuery(
+        var query = new GetMinorFamilyMemberAppointmentsByPatientIdQuery(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             1,

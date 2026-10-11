@@ -17,11 +17,14 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<FamilyMembership> FamilyMemberships => Set<FamilyMembership>();
     public DbSet<PatientPenalty> PatientPenalties => Set<PatientPenalty>();
     public DbSet<Appointment> Appointments => Set<Appointment>();
+    public DbSet<AppointmentConsentGrant> AppointmentConsentGrants =>
+        Set<AppointmentConsentGrant>();
     public DbSet<AppointmentTypeDefinition> AppointmentTypes => Set<AppointmentTypeDefinition>();
     public DbSet<ClinicalFormTemplate> ClinicalFormTemplates => Set<ClinicalFormTemplate>();
     public DbSet<MedicalRecord> MedicalRecords => Set<MedicalRecord>();
     public DbSet<MedicalRecordConsentGrant> MedicalRecordConsentGrants =>
         Set<MedicalRecordConsentGrant>();
+
     public DbSet<MedicalSpecialty> MedicalSpecialties => Set<MedicalSpecialty>();
     public DbSet<Schedule> Schedules => Set<Schedule>();
 

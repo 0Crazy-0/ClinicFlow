@@ -4,25 +4,23 @@ using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces.Repositories;
-using ClinicFlow.Domain.Services.Policies;
 using MediatR;
 
-namespace ClinicFlow.Application.Appointments.Queries.GetFamilyMemberAppointmentsByPatientId;
+namespace ClinicFlow.Application.Appointments.Queries.GetAdultFamilyMemberAppointmentsByPatientId;
 
-public sealed class GetFamilyMemberAppointmentsByPatientIdQueryHandler(
+public sealed class GetAdultFamilyMemberAppointmentsByPatientIdQueryHandler(
     IFamilyMembershipRepository familyMembershipRepository,
     IPatientRepository patientRepository,
     IAppointmentRepository appointmentRepository,
     TimeProvider timeProvider
 )
     : IRequestHandler<
-        GetFamilyMemberAppointmentsByPatientIdQuery,
+        GetAdultFamilyMemberAppointmentsByPatientIdQuery,
         PaginatedList<PatientAppointmentDto>
     >
 {
-    /// <inheritdoc />
     public async Task<PaginatedList<PatientAppointmentDto>> Handle(
-        GetFamilyMemberAppointmentsByPatientIdQuery request,
+        GetAdultFamilyMemberAppointmentsByPatientIdQuery request,
         CancellationToken cancellationToken
     )
     {
@@ -50,17 +48,16 @@ public sealed class GetFamilyMemberAppointmentsByPatientIdQueryHandler(
 
         var patientAge = patient.GetAge(DateOnly.FromDateTime(timeProvider.GetLocalNow().DateTime));
 
-        var excludedCategories = ProtectedCategoryPolicy.GetProtectedCategoriesFor(patientAge);
+        if (patientAge < DomainRules.AdultAge)
+            throw new DomainValidationException(DomainErrors.Appointment.AdultHistoryRequiresAdult);
 
-        var (items, totalCount) =
-            await appointmentRepository.GetByPatientIdInCategoriesExcludingProtectedAsync(
-                request.PatientId,
-                allowedCategories,
-                excludedCategories,
-                request.PageNumber,
-                request.PageSize,
-                cancellationToken
-            );
+        var (items, totalCount) = await appointmentRepository.GetByPatientIdInCategoriesAsync(
+            request.PatientId,
+            allowedCategories,
+            request.PageNumber,
+            request.PageSize,
+            cancellationToken
+        );
 
         var dtos = items
             .Select(a => new PatientAppointmentDto(
