@@ -27,7 +27,6 @@ public class ScheduleByStaffCommandValidatorTests
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0),
-            false,
             false
         );
 
@@ -50,7 +49,6 @@ public class ScheduleByStaffCommandValidatorTests
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0),
-            false,
             false
         );
 
@@ -75,7 +73,6 @@ public class ScheduleByStaffCommandValidatorTests
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0),
-            false,
             false
         );
 
@@ -100,7 +97,6 @@ public class ScheduleByStaffCommandValidatorTests
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0),
-            false,
             false
         );
 
@@ -125,7 +121,6 @@ public class ScheduleByStaffCommandValidatorTests
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0),
-            false,
             false
         );
 
@@ -150,7 +145,6 @@ public class ScheduleByStaffCommandValidatorTests
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(-1)),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0),
-            false,
             false
         );
 
@@ -175,7 +169,6 @@ public class ScheduleByStaffCommandValidatorTests
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(12, 0),
             new TimeOnly(11, 0),
-            false,
             false
         );
 

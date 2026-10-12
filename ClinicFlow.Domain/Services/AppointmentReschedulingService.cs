@@ -143,12 +143,11 @@ public static class AppointmentReschedulingService
                 DomainErrors.Appointment.UnauthorizedScheduling
             );
 
-        if (!args.IsOverbook)
-            doctorSchedule.EnsureDoctorIsAvailable(
-                appointment.DoctorId,
-                args.NewDate.DayOfWeek,
-                args.NewTimeRange
-            );
+        doctorSchedule.EnsureDoctorIsAvailable(
+            appointment.DoctorId,
+            args.NewDate.DayOfWeek,
+            args.NewTimeRange
+        );
 
         appointment.Reschedule(args.NewDate, args.NewTimeRange);
     }
@@ -168,12 +167,11 @@ public static class AppointmentReschedulingService
         if (clearance is null)
             throw new BusinessRuleValidationException(DomainErrors.Reschedule.MissingClearance);
 
-        if (!args.IsOverbook)
-            doctorSchedule.EnsureDoctorIsAvailable(
-                appointment.DoctorId,
-                args.NewDate.DayOfWeek,
-                args.NewTimeRange
-            );
+        doctorSchedule.EnsureDoctorIsAvailable(
+            appointment.DoctorId,
+            args.NewDate.DayOfWeek,
+            args.NewTimeRange
+        );
 
         appointment.Reschedule(args.NewDate, args.NewTimeRange);
     }

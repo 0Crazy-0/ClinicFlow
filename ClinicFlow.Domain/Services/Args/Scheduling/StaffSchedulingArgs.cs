@@ -11,5 +11,4 @@ public sealed record StaffSchedulingArgs
     public DateOnly ScheduledDate { get; init; }
     public required TimeRange TimeRange { get; init; }
     public bool HasGuardianConsentVerified { get; init; }
-    public bool IsOverbook { get; init; }
 }

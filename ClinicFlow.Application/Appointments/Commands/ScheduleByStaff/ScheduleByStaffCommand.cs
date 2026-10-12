@@ -10,6 +10,5 @@ public sealed record ScheduleByStaffCommand(
     DateOnly ScheduledDate,
     TimeOnly StartTime,
     TimeOnly EndTime,
-    bool HasGuardianConsentVerified,
-    bool IsOverbook
+    bool HasGuardianConsentVerified
 ) : IRequest<Guid> { }

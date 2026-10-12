@@ -165,7 +165,6 @@ public class ScheduleByDoctorTests
             TargetPatient = target,
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange = CreateTimeRange(),
-            IsOverbook = false,
             HasGuardianConsentVerified = false,
         };
 
@@ -187,39 +186,7 @@ public class ScheduleByDoctorTests
     }
 
     [Fact]
-    public void ScheduleByDoctor_ShouldBypassAvailability_WhenOverbook()
-    {
-        // Arrange
-        var appointmentType = CreateAppointmentType();
-        var doctor = CreateDoctor();
-        var target = CreateSelfPatient();
-        var args = new DoctorSchedulingArgs
-        {
-            InitiatorDoctor = doctor,
-            TargetPatient = target,
-            ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
-            TimeRange = CreateTimeRange(),
-            IsOverbook = true,
-        };
-
-        var doctorSchedule = CreateSchedule();
-
-        // Act
-        var appointment = AppointmentSchedulingService.ScheduleByDoctor(
-            appointmentType,
-            args,
-            doctorSchedule,
-            SchedulingClearance.Granted()
-        );
-
-        // Assert
-        appointment.Should().NotBeNull();
-        appointment.Status.Should().Be(AppointmentStatus.Scheduled);
-        appointment.ScheduledByUserId.Should().Be(args.InitiatorDoctor.UserId);
-    }
-
-    [Fact]
-    public void ScheduleByDoctor_ShouldEnforceAvailability_WhenNotOverbook()
+    public void ScheduleByDoctor_ShouldEnforceAvailability_WhenValid()
     {
         // Arrange
         var appointmentType = CreateAppointmentType();
@@ -231,7 +198,6 @@ public class ScheduleByDoctorTests
             TargetPatient = target,
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange = TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(18, 0)),
-            IsOverbook = false,
         };
 
         var scheduleForDifferentDoctor = CreateSchedule();
@@ -252,7 +218,7 @@ public class ScheduleByDoctorTests
     }
 
     [Fact]
-    public void ScheduleByDoctor_ShouldSucceed_WhenNotOverbookAndValid()
+    public void ScheduleByDoctor_ShouldSucceed_WhenValid()
     {
         // Arrange
         var appointmentType = CreateAppointmentType();
@@ -264,7 +230,6 @@ public class ScheduleByDoctorTests
             TargetPatient = target,
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange = CreateTimeRange(),
-            IsOverbook = false,
         };
 
         var doctorSchedule = Schedule.Create(
