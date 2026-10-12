@@ -115,6 +115,7 @@ public class RescheduleByStaffCommandHandlerTests
                     doctorId,
                     newDate,
                     It.IsAny<TimeRange>(),
+                    It.IsAny<Guid?>(),
                     It.IsAny<CancellationToken>()
                 )
             )
@@ -314,6 +315,7 @@ public class RescheduleByStaffCommandHandlerTests
                     appointment.DoctorId,
                     command.NewDate,
                     It.IsAny<TimeRange>(),
+                    It.IsAny<Guid?>(),
                     It.IsAny<CancellationToken>()
                 )
             )

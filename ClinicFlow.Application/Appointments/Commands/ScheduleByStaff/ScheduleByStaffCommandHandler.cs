@@ -89,7 +89,7 @@ public sealed class ScheduleByStaffCommandHandler(
                 request.DoctorId,
                 request.ScheduledDate,
                 timeRange,
-                cancellationToken
+                cancellationToken: cancellationToken
             )
         )
         {

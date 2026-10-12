@@ -146,6 +146,7 @@ public class RescheduleByGuardianCommandHandlerTests
                     doctorId,
                     newDate,
                     It.IsAny<TimeRange>(),
+                    It.IsAny<Guid?>(),
                     It.IsAny<CancellationToken>()
                 )
             )
@@ -577,6 +578,7 @@ public class RescheduleByGuardianCommandHandlerTests
                     appointment.DoctorId,
                     newDate,
                     It.IsAny<TimeRange>(),
+                    It.IsAny<Guid?>(),
                     It.IsAny<CancellationToken>()
                 )
             )
@@ -681,6 +683,7 @@ public class RescheduleByGuardianCommandHandlerTests
                     doctorId,
                     newDate,
                     It.IsAny<TimeRange>(),
+                    It.IsAny<Guid?>(),
                     It.IsAny<CancellationToken>()
                 )
             )

@@ -91,6 +91,7 @@ public class ReassignAppointmentCommandHandlerTests
                     newDoctor.Id,
                     newDate,
                     It.IsAny<TimeRange>(),
+                    It.IsAny<Guid?>(),
                     It.IsAny<CancellationToken>()
                 )
             )
@@ -285,6 +286,7 @@ public class ReassignAppointmentCommandHandlerTests
                     newDoctor.Id,
                     newDate,
                     It.IsAny<TimeRange>(),
+                    It.IsAny<Guid?>(),
                     It.IsAny<CancellationToken>()
                 )
             )

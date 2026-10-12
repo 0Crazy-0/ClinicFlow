@@ -86,10 +86,18 @@ public interface IAppointmentRepository
         DateTime referenceTime,
         CancellationToken cancellationToken = default
     );
+
+    /// <remarks>
+    /// A null exclusion checks every overlapping appointment. Callers moving an
+    /// existing appointment pass its identifier because the check runs before the
+    /// new slot is applied and the appointment would otherwise conflict with itself.
+    /// Callers creating a new appointment leave the exclusion null.
+    /// </remarks>
     Task<bool> HasConflictAsync(
         Guid doctorId,
         DateOnly scheduledDate,
         TimeRange timeRange,
+        Guid? excludeAppointmentId = null,
         CancellationToken cancellationToken = default
     );
 

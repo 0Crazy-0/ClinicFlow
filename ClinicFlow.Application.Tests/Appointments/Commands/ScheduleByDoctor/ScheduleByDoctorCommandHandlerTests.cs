@@ -98,6 +98,7 @@ public class ScheduleByDoctorCommandHandlerTests
                     doctor.Id,
                     scheduledDate,
                     It.IsAny<TimeRange>(),
+                    It.IsAny<Guid?>(),
                     It.IsAny<CancellationToken>()
                 )
             )
@@ -187,6 +188,7 @@ public class ScheduleByDoctorCommandHandlerTests
                     doctor.Id,
                     scheduledDate,
                     It.IsAny<TimeRange>(),
+                    It.IsAny<Guid?>(),
                     It.IsAny<CancellationToken>()
                 )
             )
@@ -506,6 +508,7 @@ public class ScheduleByDoctorCommandHandlerTests
                     doctor.Id,
                     command.ScheduledDate,
                     It.IsAny<TimeRange>(),
+                    It.IsAny<Guid?>(),
                     It.IsAny<CancellationToken>()
                 )
             )

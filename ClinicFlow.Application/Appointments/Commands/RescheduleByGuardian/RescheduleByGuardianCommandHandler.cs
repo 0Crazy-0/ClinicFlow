@@ -104,6 +104,7 @@ public sealed class RescheduleByGuardianCommandHandler(
                         appointment.DoctorId,
                         request.NewDate,
                         newTimeRange,
+                        request.AppointmentId,
                         cancellationToken
                     )
                 )

@@ -79,6 +79,7 @@ public sealed class RescheduleByDoctorCommandHandler(
                 appointment.DoctorId,
                 request.NewDate,
                 newTimeRange,
+                request.AppointmentId,
                 cancellationToken
             )
         )
