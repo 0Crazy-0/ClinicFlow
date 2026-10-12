@@ -202,7 +202,7 @@ public class AppointmentConsentGrantServiceTests
         // Assert
         act.Should()
             .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.MedicalRecordConsentGrant.UnauthorizedCreation);
+            .WithMessage(DomainErrors.AppointmentConsentGrant.UnauthorizedCreation);
     }
 
     [Fact]
@@ -308,7 +308,7 @@ public class AppointmentConsentGrantServiceTests
         // Assert
         act.Should()
             .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.MedicalRecordConsentGrant.RecipientCannotBeSelf);
+            .WithMessage(DomainErrors.AppointmentConsentGrant.RecipientCannotBeSelf);
     }
 
     [Fact]
@@ -602,7 +602,7 @@ public class AppointmentConsentGrantServiceTests
         // Assert
         act.Should()
             .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.MedicalRecordConsentGrant.UnauthorizedCreation);
+            .WithMessage(DomainErrors.AppointmentConsentGrant.UnauthorizedCreation);
     }
 
     [Fact]
@@ -820,7 +820,7 @@ public class AppointmentConsentGrantServiceTests
         // Assert
         act.Should()
             .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.MedicalRecordConsentGrant.RecipientCannotBeSelf);
+            .WithMessage(DomainErrors.AppointmentConsentGrant.RecipientCannotBeSelf);
     }
 
     [Fact]

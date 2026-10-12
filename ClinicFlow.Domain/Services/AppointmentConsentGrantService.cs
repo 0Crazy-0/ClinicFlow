@@ -27,7 +27,8 @@ public static class AppointmentConsentGrantService
 
         context.RequesterMembership.EnsureConsentGrantSigner(
             args.RequesterUserId,
-            context.Patient.Id
+            context.Patient.Id,
+            DomainErrors.AppointmentConsentGrant.UnauthorizedCreation
         );
 
         var patientAge = context.Patient.GetAge(DateOnly.FromDateTime(args.ReferenceTime));
@@ -46,7 +47,12 @@ public static class AppointmentConsentGrantService
                 DomainErrors.AppointmentConsentGrant.CategoryNotGrantable
             );
 
-        context.RecipientMembership.EnsureConsentGrantRecipient(context.Patient.Id);
+        context.RecipientMembership.EnsureConsentGrantRecipient(
+            context.Patient.Id,
+            DomainErrors.AppointmentConsentGrant.RecipientMustBeActive,
+            DomainErrors.AppointmentConsentGrant.RecipientPatientMismatch,
+            DomainErrors.AppointmentConsentGrant.RecipientCannotBeSelf
+        );
 
         if (context.HasEffectiveGrant)
             throw new DomainValidationException(DomainErrors.AppointmentConsentGrant.AlreadyExists);
@@ -75,7 +81,8 @@ public static class AppointmentConsentGrantService
 
         context.RequesterMembership.EnsureConsentGrantSigner(
             args.RequesterUserId,
-            context.Patient.Id
+            context.Patient.Id,
+            DomainErrors.AppointmentConsentGrant.UnauthorizedCreation
         );
 
         var patientAge = context.Patient.GetAge(DateOnly.FromDateTime(args.ReferenceTime));
@@ -107,7 +114,12 @@ public static class AppointmentConsentGrantService
                 DomainErrors.AppointmentConsentGrant.AppointmentNotGrantable
             );
 
-        context.RecipientMembership.EnsureConsentGrantRecipient(context.Patient.Id);
+        context.RecipientMembership.EnsureConsentGrantRecipient(
+            context.Patient.Id,
+            DomainErrors.AppointmentConsentGrant.RecipientMustBeActive,
+            DomainErrors.AppointmentConsentGrant.RecipientPatientMismatch,
+            DomainErrors.AppointmentConsentGrant.RecipientCannotBeSelf
+        );
 
         if (context.HasEffectiveGrant)
             throw new DomainValidationException(DomainErrors.AppointmentConsentGrant.AlreadyExists);

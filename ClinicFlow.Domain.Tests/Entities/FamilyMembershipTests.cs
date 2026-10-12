@@ -2027,7 +2027,13 @@ public class FamilyMembershipTests
 
         // Act & Assert
         membership
-            .Invoking(m => m.EnsureConsentGrantSigner(userId, patientId))
+            .Invoking(m =>
+                m.EnsureConsentGrantSigner(
+                    userId,
+                    patientId,
+                    DomainErrors.MedicalRecordConsentGrant.UnauthorizedCreation
+                )
+            )
             .Should()
             .NotThrow();
     }
@@ -2043,7 +2049,12 @@ public class FamilyMembershipTests
         );
 
         // Act
-        var act = () => membership.EnsureConsentGrantSigner(Guid.Empty, Guid.CreateVersion7());
+        var act = () =>
+            membership.EnsureConsentGrantSigner(
+                Guid.Empty,
+                Guid.CreateVersion7(),
+                DomainErrors.MedicalRecordConsentGrant.UnauthorizedCreation
+            );
 
         // Assert
         act.Should()
@@ -2062,7 +2073,39 @@ public class FamilyMembershipTests
         );
 
         // Act
-        var act = () => membership.EnsureConsentGrantSigner(Guid.CreateVersion7(), Guid.Empty);
+        var act = () =>
+            membership.EnsureConsentGrantSigner(
+                Guid.CreateVersion7(),
+                Guid.Empty,
+                DomainErrors.MedicalRecordConsentGrant.UnauthorizedCreation
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void EnsureConsentGrantSigner_ShouldThrowException_WhenUnauthorizedCreationCodeIsEmpty(
+        string? unauthorizedCreationCode
+    )
+    {
+        // Arrange
+        var patientId = Guid.CreateVersion7();
+        var userId = Guid.CreateVersion7();
+        var membership = FamilyMembership.CreateSelf(
+            patientId,
+            userId,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        // Act
+        var act = () =>
+            membership.EnsureConsentGrantSigner(userId, patientId, unauthorizedCreationCode!);
 
         // Assert
         act.Should()
@@ -2086,7 +2129,12 @@ public class FamilyMembershipTests
         membership.CloseSelfMembership(_fakeTime.GetUtcNow().UtcDateTime);
 
         // Act
-        var act = () => membership.EnsureConsentGrantSigner(userId, patientId);
+        var act = () =>
+            membership.EnsureConsentGrantSigner(
+                userId,
+                patientId,
+                DomainErrors.MedicalRecordConsentGrant.UnauthorizedCreation
+            );
 
         // Assert
         act.Should()
@@ -2107,7 +2155,12 @@ public class FamilyMembershipTests
         );
 
         // Act
-        var act = () => membership.EnsureConsentGrantSigner(userId, Guid.CreateVersion7());
+        var act = () =>
+            membership.EnsureConsentGrantSigner(
+                userId,
+                Guid.CreateVersion7(),
+                DomainErrors.MedicalRecordConsentGrant.UnauthorizedCreation
+            );
 
         // Assert
         act.Should()
@@ -2132,7 +2185,12 @@ public class FamilyMembershipTests
         );
 
         // Act
-        var act = () => membership.EnsureConsentGrantSigner(userId, patientId);
+        var act = () =>
+            membership.EnsureConsentGrantSigner(
+                userId,
+                patientId,
+                DomainErrors.MedicalRecordConsentGrant.UnauthorizedCreation
+            );
 
         // Assert
         act.Should()
@@ -2153,7 +2211,12 @@ public class FamilyMembershipTests
         );
 
         // Act
-        var act = () => membership.EnsureConsentGrantSigner(Guid.CreateVersion7(), patientId);
+        var act = () =>
+            membership.EnsureConsentGrantSigner(
+                Guid.CreateVersion7(),
+                patientId,
+                DomainErrors.MedicalRecordConsentGrant.UnauthorizedCreation
+            );
 
         // Assert
         act.Should()
@@ -2177,7 +2240,17 @@ public class FamilyMembershipTests
         );
 
         // Act & Assert
-        membership.Invoking(m => m.EnsureConsentGrantRecipient(patientId)).Should().NotThrow();
+        membership
+            .Invoking(m =>
+                m.EnsureConsentGrantRecipient(
+                    patientId,
+                    DomainErrors.MedicalRecordConsentGrant.RecipientMustBeActive,
+                    DomainErrors.MedicalRecordConsentGrant.RecipientPatientMismatch,
+                    DomainErrors.MedicalRecordConsentGrant.RecipientCannotBeSelf
+                )
+            )
+            .Should()
+            .NotThrow();
     }
 
     [Fact]
@@ -2187,7 +2260,13 @@ public class FamilyMembershipTests
         var membership = CreateRestrictedMembership();
 
         // Act
-        var act = () => membership.EnsureConsentGrantRecipient(Guid.Empty);
+        var act = () =>
+            membership.EnsureConsentGrantRecipient(
+                Guid.Empty,
+                DomainErrors.MedicalRecordConsentGrant.RecipientMustBeActive,
+                DomainErrors.MedicalRecordConsentGrant.RecipientPatientMismatch,
+                DomainErrors.MedicalRecordConsentGrant.RecipientCannotBeSelf
+            );
 
         // Assert
         act.Should()
@@ -2219,7 +2298,13 @@ public class FamilyMembershipTests
         );
 
         // Act
-        var act = () => membership.EnsureConsentGrantRecipient(patientId);
+        var act = () =>
+            membership.EnsureConsentGrantRecipient(
+                patientId,
+                DomainErrors.MedicalRecordConsentGrant.RecipientMustBeActive,
+                DomainErrors.MedicalRecordConsentGrant.RecipientPatientMismatch,
+                DomainErrors.MedicalRecordConsentGrant.RecipientCannotBeSelf
+            );
 
         // Assert
         act.Should()
@@ -2242,12 +2327,123 @@ public class FamilyMembershipTests
         );
 
         // Act
-        var act = () => membership.EnsureConsentGrantRecipient(Guid.CreateVersion7());
+        var act = () =>
+            membership.EnsureConsentGrantRecipient(
+                Guid.CreateVersion7(),
+                DomainErrors.MedicalRecordConsentGrant.RecipientMustBeActive,
+                DomainErrors.MedicalRecordConsentGrant.RecipientPatientMismatch,
+                DomainErrors.MedicalRecordConsentGrant.RecipientCannotBeSelf
+            );
 
         // Assert
         act.Should()
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.MedicalRecordConsentGrant.RecipientPatientMismatch);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void EnsureConsentGrantRecipient_ShouldThrowException_WhenRecipientMustBeActiveCodeIsEmpty(
+        string? recipientMustBeActiveCode
+    )
+    {
+        // Arrange
+        var patientId = Guid.CreateVersion7();
+        var membership = FamilyMembership.CreateFamilyMember(
+            patientId,
+            Guid.CreateVersion7(),
+            PatientRelationship.Child,
+            LegalAuthorityType.None,
+            FamilyMembershipAccessLevel.Full,
+            30,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        // Act
+        var act = () =>
+            membership.EnsureConsentGrantRecipient(
+                patientId,
+                recipientMustBeActiveCode!,
+                DomainErrors.MedicalRecordConsentGrant.RecipientPatientMismatch,
+                DomainErrors.MedicalRecordConsentGrant.RecipientCannotBeSelf
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void EnsureConsentGrantRecipient_ShouldThrowException_WhenRecipientPatientMismatchCodeIsEmpty(
+        string? recipientPatientMismatchCode
+    )
+    {
+        // Arrange
+        var patientId = Guid.CreateVersion7();
+        var membership = FamilyMembership.CreateFamilyMember(
+            patientId,
+            Guid.CreateVersion7(),
+            PatientRelationship.Child,
+            LegalAuthorityType.None,
+            FamilyMembershipAccessLevel.Full,
+            30,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        // Act
+        var act = () =>
+            membership.EnsureConsentGrantRecipient(
+                patientId,
+                DomainErrors.MedicalRecordConsentGrant.RecipientMustBeActive,
+                recipientPatientMismatchCode!,
+                DomainErrors.MedicalRecordConsentGrant.RecipientCannotBeSelf
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void EnsureConsentGrantRecipient_ShouldThrowException_WhenRecipientCannotBeSelfCodeIsEmpty(
+        string? recipientCannotBeSelfCode
+    )
+    {
+        // Arrange
+        var patientId = Guid.CreateVersion7();
+        var membership = FamilyMembership.CreateFamilyMember(
+            patientId,
+            Guid.CreateVersion7(),
+            PatientRelationship.Child,
+            LegalAuthorityType.None,
+            FamilyMembershipAccessLevel.Full,
+            30,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        // Act
+        var act = () =>
+            membership.EnsureConsentGrantRecipient(
+                patientId,
+                DomainErrors.MedicalRecordConsentGrant.RecipientMustBeActive,
+                DomainErrors.MedicalRecordConsentGrant.RecipientPatientMismatch,
+                recipientCannotBeSelfCode!
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Fact]
@@ -2262,7 +2458,13 @@ public class FamilyMembershipTests
         );
 
         // Act
-        var act = () => membership.EnsureConsentGrantRecipient(patientId);
+        var act = () =>
+            membership.EnsureConsentGrantRecipient(
+                patientId,
+                DomainErrors.MedicalRecordConsentGrant.RecipientMustBeActive,
+                DomainErrors.MedicalRecordConsentGrant.RecipientPatientMismatch,
+                DomainErrors.MedicalRecordConsentGrant.RecipientCannotBeSelf
+            );
 
         // Assert
         act.Should()
