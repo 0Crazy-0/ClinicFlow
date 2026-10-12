@@ -248,9 +248,7 @@ Validates that the registration services no longer enforce the administrative cl
 - `ClosePatientAccountCommandHandlerTests`: Ensures the error message correctly references the user domain when active family members prevent account closure.
 
 Confirms the removal of the deleted profile validation logic without affecting the remaining creation flows:
-- `AddCompleteFamilyMemberCommandHandlerTests`
 - `AddFamilyMemberCommandHandlerTests`
-- `CreateCompletePatientProfileCommandHandlerTests`
 - `CreatePatientProfileCommandHandlerTests`
 ```
 
