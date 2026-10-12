@@ -2480,7 +2480,83 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             scheduledDate,
             TimeRange.Create(new TimeOnly(10, 30), new TimeOnly(11, 30)),
-            TestContext.Current.CancellationToken
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        hasConflict.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task HasConflictAsync_ShouldReturnFalse_WhenOverlappingAppointmentIsExcluded()
+    {
+        // Arrange
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime.AddDays(1));
+
+        var (existingAppointment, doctor, _) = await CreateAppointmentDraftAsync(
+            scheduledDate,
+            TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0))
+        );
+
+        Context.Appointments.Add(existingAppointment);
+
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var hasConflict = await _sut.HasConflictAsync(
+            doctor.Id,
+            scheduledDate,
+            TimeRange.Create(new TimeOnly(10, 30), new TimeOnly(11, 30)),
+            existingAppointment.Id,
+            cancellationToken: TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        hasConflict.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task HasConflictAsync_ShouldReturnTrue_WhenOverlappingAppointmentExistsOtherThanExcluded()
+    {
+        // Arrange
+        var (doctor, patient, apptType) = await SeedCommonEntitiesAsync();
+        var otherPatient = await CreatePatientAsync();
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime.AddDays(1));
+
+        var excludedAppointment = Appointment.Schedule(
+            patient.Id,
+            doctor.Id,
+            apptType.Id,
+            scheduledDate,
+            TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0)),
+            Guid.CreateVersion7()
+        );
+        excludedAppointment.ClearDomainEvents();
+
+        var conflictingAppointment = Appointment.Schedule(
+            otherPatient.Id,
+            doctor.Id,
+            apptType.Id,
+            scheduledDate,
+            TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0)),
+            Guid.CreateVersion7()
+        );
+
+        conflictingAppointment.ClearDomainEvents();
+
+        Context.Appointments.Add(excludedAppointment);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        Context.Appointments.Add(conflictingAppointment);
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        // Act
+        var hasConflict = await _sut.HasConflictAsync(
+            doctor.Id,
+            scheduledDate,
+            TimeRange.Create(new TimeOnly(10, 30), new TimeOnly(11, 30)),
+            excludedAppointment.Id,
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         // Assert
@@ -2507,7 +2583,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             scheduledDate,
             TimeRange.Create(new TimeOnly(11, 0), new TimeOnly(12, 0)),
-            TestContext.Current.CancellationToken
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         // Assert
@@ -2534,7 +2610,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             scheduledDate,
             TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0)),
-            TestContext.Current.CancellationToken
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         // Assert
@@ -2563,7 +2639,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             scheduledDate,
             TimeRange.Create(new TimeOnly(10, 30), new TimeOnly(11, 30)),
-            TestContext.Current.CancellationToken
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         // Assert
@@ -2593,7 +2669,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctorA.Id,
             scheduledDate,
             TimeRange.Create(new TimeOnly(10, 30), new TimeOnly(11, 30)),
-            TestContext.Current.CancellationToken
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         // Assert
@@ -2621,7 +2697,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             scheduledDate,
             TimeRange.Create(new TimeOnly(10, 30), new TimeOnly(11, 30)),
-            TestContext.Current.CancellationToken
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         // Assert
@@ -2650,7 +2726,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             scheduledDate,
             TimeRange.Create(new TimeOnly(10, 30), new TimeOnly(11, 30)),
-            TestContext.Current.CancellationToken
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         // Assert
@@ -2678,7 +2754,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             doctor.Id,
             scheduledDate,
             TimeRange.Create(new TimeOnly(10, 30), new TimeOnly(11, 30)),
-            TestContext.Current.CancellationToken
+            cancellationToken: TestContext.Current.CancellationToken
         );
 
         // Assert

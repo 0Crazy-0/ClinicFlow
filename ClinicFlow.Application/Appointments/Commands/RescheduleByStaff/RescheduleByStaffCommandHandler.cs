@@ -75,11 +75,11 @@ public sealed class RescheduleByStaffCommandHandler(
             );
 
         if (
-            !request.IsOverbook
-            && await appointmentRepository.HasConflictAsync(
+            await appointmentRepository.HasConflictAsync(
                 appointment.DoctorId,
                 request.NewDate,
                 newTimeRange,
+                request.AppointmentId,
                 cancellationToken
             )
         )
@@ -104,7 +104,6 @@ public sealed class RescheduleByStaffCommandHandler(
                 InitiatorUserId = request.InitiatorUserId,
                 NewDate = request.NewDate,
                 NewTimeRange = newTimeRange,
-                IsOverbook = request.IsOverbook,
             },
             doctorSchedule,
             clearance

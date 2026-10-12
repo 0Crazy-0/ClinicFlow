@@ -132,7 +132,6 @@ public class RescheduleByDoctorTests
             InitiatorDoctor = invalidDoctor,
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
             NewTimeRange = CreateTimeRange(10, 11),
-            IsOverbook = false,
         };
 
         var doctorSchedule = CreateSchedule();
@@ -153,39 +152,7 @@ public class RescheduleByDoctorTests
     }
 
     [Fact]
-    public void RescheduleByDoctor_ShouldBypassAvailability_WhenOverbook()
-    {
-        // Arrange
-        var doctorId = Guid.CreateVersion7();
-        var appointment = CreateAppointment(doctorId);
-
-        var doctor = CreateDoctor(doctorId);
-        var args = new DoctorReschedulingArgs
-        {
-            InitiatorDoctor = doctor,
-            NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
-            NewTimeRange = CreateTimeRange(18, 19),
-            IsOverbook = true,
-        };
-
-        var doctorSchedule = CreateSchedule();
-
-        // Act
-        AppointmentReschedulingService.RescheduleByDoctor(
-            appointment,
-            args,
-            doctorSchedule,
-            SchedulingClearance.Granted()
-        );
-
-        // Assert
-        appointment.DomainEvents.OfType<AppointmentRescheduledEvent>().Should().ContainSingle();
-        appointment.ScheduledDate.Should().Be(args.NewDate);
-        appointment.TimeRange.Should().Be(args.NewTimeRange);
-    }
-
-    [Fact]
-    public void RescheduleByDoctor_ShouldEnforceAvailability_WhenNotOverbook()
+    public void RescheduleByDoctor_ShouldEnforceAvailability_WhenValid()
     {
         // Arrange
         var doctorId = Guid.CreateVersion7();
@@ -197,7 +164,6 @@ public class RescheduleByDoctorTests
             InitiatorDoctor = doctor,
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
             NewTimeRange = CreateTimeRange(18, 19),
-            IsOverbook = false,
         };
 
         var doctorSchedule = CreateSchedule();
@@ -230,7 +196,6 @@ public class RescheduleByDoctorTests
             InitiatorDoctor = doctor,
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
             NewTimeRange = CreateTimeRange(10, 11),
-            IsOverbook = false,
         };
 
         var doctorSchedule = Schedule.Create(

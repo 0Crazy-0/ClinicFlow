@@ -114,7 +114,7 @@ public sealed class ScheduleByPatientCommandHandler(
                         request.DoctorId,
                         request.ScheduledDate,
                         timeRange,
-                        cancellationToken
+                        cancellationToken: cancellationToken
                     )
                 )
                 {

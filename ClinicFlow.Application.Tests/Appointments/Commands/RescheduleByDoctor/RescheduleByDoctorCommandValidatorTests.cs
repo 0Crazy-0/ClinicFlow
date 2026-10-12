@@ -24,8 +24,7 @@ public class RescheduleByDoctorCommandValidatorTests
             Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
-            new TimeOnly(11, 0),
-            false
+            new TimeOnly(11, 0)
         );
 
         // Act
@@ -44,8 +43,7 @@ public class RescheduleByDoctorCommandValidatorTests
             Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
-            new TimeOnly(11, 0),
-            false
+            new TimeOnly(11, 0)
         );
 
         // Act
@@ -66,8 +64,7 @@ public class RescheduleByDoctorCommandValidatorTests
             Guid.Empty,
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
-            new TimeOnly(11, 0),
-            false
+            new TimeOnly(11, 0)
         );
 
         // Act
@@ -88,8 +85,7 @@ public class RescheduleByDoctorCommandValidatorTests
             Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(-1)),
             new TimeOnly(10, 0),
-            new TimeOnly(11, 0),
-            false
+            new TimeOnly(11, 0)
         );
 
         // Act
@@ -110,8 +106,7 @@ public class RescheduleByDoctorCommandValidatorTests
             Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(12, 0),
-            new TimeOnly(11, 0),
-            false
+            new TimeOnly(11, 0)
         );
 
         // Act

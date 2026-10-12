@@ -151,12 +151,11 @@ public static class AppointmentSchedulingService
             args.HasGuardianConsentVerified
         );
 
-        if (!args.IsOverbook)
-            doctorSchedule.EnsureDoctorIsAvailable(
-                args.InitiatorDoctor.Id,
-                args.ScheduledDate.DayOfWeek,
-                args.TimeRange
-            );
+        doctorSchedule.EnsureDoctorIsAvailable(
+            args.InitiatorDoctor.Id,
+            args.ScheduledDate.DayOfWeek,
+            args.TimeRange
+        );
 
         return Appointment.Schedule(
             args.TargetPatient.Id,
@@ -191,12 +190,11 @@ public static class AppointmentSchedulingService
             args.HasGuardianConsentVerified
         );
 
-        if (!args.IsOverbook)
-            doctorSchedule.EnsureDoctorIsAvailable(
-                args.DoctorId,
-                args.ScheduledDate.DayOfWeek,
-                args.TimeRange
-            );
+        doctorSchedule.EnsureDoctorIsAvailable(
+            args.DoctorId,
+            args.ScheduledDate.DayOfWeek,
+            args.TimeRange
+        );
 
         return Appointment.Schedule(
             args.TargetPatient.Id,

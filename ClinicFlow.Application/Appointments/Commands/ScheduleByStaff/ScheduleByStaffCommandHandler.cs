@@ -85,12 +85,11 @@ public sealed class ScheduleByStaffCommandHandler(
         }
 
         if (
-            !request.IsOverbook
-            && await appointmentRepository.HasConflictAsync(
+            await appointmentRepository.HasConflictAsync(
                 request.DoctorId,
                 request.ScheduledDate,
                 timeRange,
-                cancellationToken
+                cancellationToken: cancellationToken
             )
         )
         {
@@ -117,7 +116,6 @@ public sealed class ScheduleByStaffCommandHandler(
                 ScheduledDate = request.ScheduledDate,
                 TimeRange = timeRange,
                 HasGuardianConsentVerified = request.HasGuardianConsentVerified,
-                IsOverbook = request.IsOverbook,
             },
             doctorSchedule,
             clearance

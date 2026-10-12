@@ -75,7 +75,7 @@ public sealed class ReassignAppointmentCommandHandler(
                 newDoctor.Id,
                 request.NewDate,
                 newTimeRange,
-                cancellationToken
+                cancellationToken: cancellationToken
             )
         )
         {

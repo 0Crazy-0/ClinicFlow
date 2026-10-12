@@ -101,7 +101,7 @@ public class RescheduleByStaffTests
     }
 
     [Fact]
-    public void RescheduleByStaff_ShouldBypassAvailability_WhenOverbook()
+    public void RescheduleByStaff_ShouldEnforceAvailability_WhenValid()
     {
         // Arrange
         var appointment = CreateAppointment();
@@ -110,36 +110,6 @@ public class RescheduleByStaffTests
         {
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
             NewTimeRange = CreateTimeRange(),
-            IsOverbook = true,
-        };
-
-        var doctorSchedule = CreateSchedule();
-
-        // Act
-        AppointmentReschedulingService.RescheduleByStaff(
-            appointment,
-            args,
-            doctorSchedule,
-            SchedulingClearance.Granted()
-        );
-
-        // Assert
-        appointment.DomainEvents.OfType<AppointmentRescheduledEvent>().Should().ContainSingle();
-        appointment.ScheduledDate.Should().Be(args.NewDate);
-        appointment.TimeRange.Should().Be(args.NewTimeRange);
-    }
-
-    [Fact]
-    public void RescheduleByStaff_ShouldEnforceAvailability_WhenNotOverbook()
-    {
-        // Arrange
-        var appointment = CreateAppointment();
-
-        var args = new StaffReschedulingArgs
-        {
-            NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
-            NewTimeRange = CreateTimeRange(),
-            IsOverbook = false,
         };
 
         var scheduleForDifferentDoctor = CreateSchedule();
@@ -169,7 +139,6 @@ public class RescheduleByStaffTests
         {
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
             NewTimeRange = TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0)),
-            IsOverbook = false,
         };
 
         var doctorSchedule = Schedule.Create(

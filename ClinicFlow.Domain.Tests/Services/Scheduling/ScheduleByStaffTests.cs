@@ -139,7 +139,6 @@ public class ScheduleByStaffTests
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange = CreateTimeRange(),
-            IsOverbook = false,
             HasGuardianConsentVerified = false,
         };
 
@@ -188,7 +187,6 @@ public class ScheduleByStaffTests
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange = CreateTimeRange(),
-            IsOverbook = false,
             HasGuardianConsentVerified = false,
         };
 
@@ -210,41 +208,7 @@ public class ScheduleByStaffTests
     }
 
     [Fact]
-    public void ScheduleByStaff_ShouldBypassAvailability_WhenOverbook()
-    {
-        // Arrange
-        var appointmentType = CreateAppointmentType();
-        var target = CreateSelfPatient();
-        var args = new StaffSchedulingArgs
-        {
-            TargetPatient = target,
-            InitiatorUserId = Guid.CreateVersion7(),
-            DoctorId = Guid.CreateVersion7(),
-            ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
-            TimeRange = CreateTimeRange(),
-            IsOverbook = true,
-            HasGuardianConsentVerified = false,
-        };
-
-        var doctorSchedule = CreateSchedule();
-
-        // Act
-        var appointment = AppointmentSchedulingService.ScheduleByStaff(
-            appointmentType,
-            args,
-            doctorSchedule,
-            SchedulingClearance.Granted()
-        );
-
-        // Assert
-        appointment.DomainEvents.OfType<AppointmentScheduledEvent>().Should().ContainSingle();
-        appointment.Should().NotBeNull();
-        appointment.Status.Should().Be(AppointmentStatus.Scheduled);
-        appointment.ScheduledByUserId.Should().Be(args.InitiatorUserId);
-    }
-
-    [Fact]
-    public void ScheduleByStaff_ShouldEnforceAvailability_WhenNotOverbook()
+    public void ScheduleByStaff_ShouldEnforceAvailability_WhenValid()
     {
         // Arrange
         var appointmentType = CreateAppointmentType();
@@ -255,7 +219,6 @@ public class ScheduleByStaffTests
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange = TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(18, 0)),
-            IsOverbook = false,
             HasGuardianConsentVerified = false,
         };
 
@@ -289,7 +252,6 @@ public class ScheduleByStaffTests
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             TimeRange = CreateTimeRange(),
-            IsOverbook = false,
             HasGuardianConsentVerified = false,
         };
 

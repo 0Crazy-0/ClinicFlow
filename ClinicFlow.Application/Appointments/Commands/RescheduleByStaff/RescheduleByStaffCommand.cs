@@ -7,6 +7,5 @@ public sealed record RescheduleByStaffCommand(
     Guid AppointmentId,
     DateOnly NewDate,
     TimeOnly NewStartTime,
-    TimeOnly NewEndTime,
-    bool IsOverbook
+    TimeOnly NewEndTime
 ) : IRequest;

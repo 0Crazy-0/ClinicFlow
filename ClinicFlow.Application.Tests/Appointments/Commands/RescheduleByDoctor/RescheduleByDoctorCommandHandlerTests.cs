@@ -53,8 +53,7 @@ public class RescheduleByDoctorCommandHandlerTests
             Guid.CreateVersion7(),
             newDate,
             newStartTime,
-            newEndTime,
-            false
+            newEndTime
         );
 
         var doctorId = Guid.CreateVersion7();
@@ -108,6 +107,7 @@ public class RescheduleByDoctorCommandHandlerTests
                     doctorId,
                     newDate,
                     It.IsAny<TimeRange>(),
+                    It.IsAny<Guid?>(),
                     It.IsAny<CancellationToken>()
                 )
             )
@@ -131,8 +131,7 @@ public class RescheduleByDoctorCommandHandlerTests
             Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
-            new TimeOnly(11, 0),
-            false
+            new TimeOnly(11, 0)
         );
 
         _appointmentRepositoryMock
@@ -160,8 +159,7 @@ public class RescheduleByDoctorCommandHandlerTests
             Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
-            new TimeOnly(11, 0),
-            false
+            new TimeOnly(11, 0)
         );
 
         var appointment = CreateAppointment(
@@ -198,8 +196,7 @@ public class RescheduleByDoctorCommandHandlerTests
             Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
-            new TimeOnly(11, 0),
-            false
+            new TimeOnly(11, 0)
         );
 
         var doctorId = Guid.CreateVersion7();
@@ -237,8 +234,7 @@ public class RescheduleByDoctorCommandHandlerTests
             Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
-            new TimeOnly(11, 0),
-            false
+            new TimeOnly(11, 0)
         );
 
         var doctorId = Guid.CreateVersion7();
@@ -283,8 +279,7 @@ public class RescheduleByDoctorCommandHandlerTests
             Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
-            new TimeOnly(11, 0),
-            false
+            new TimeOnly(11, 0)
         );
 
         var doctorId = Guid.CreateVersion7();
@@ -320,6 +315,7 @@ public class RescheduleByDoctorCommandHandlerTests
                     doctorId,
                     command.NewDate,
                     It.IsAny<TimeRange>(),
+                    It.IsAny<Guid?>(),
                     It.IsAny<CancellationToken>()
                 )
             )
@@ -361,8 +357,7 @@ public class RescheduleByDoctorCommandHandlerTests
             Guid.CreateVersion7(),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
-            new TimeOnly(11, 0),
-            false
+            new TimeOnly(11, 0)
         );
 
         var patientId = Guid.CreateVersion7();

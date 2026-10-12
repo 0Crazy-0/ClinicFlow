@@ -54,7 +54,6 @@ public class ScheduleByDoctorCommandHandlerTests
             scheduledDate,
             startTime,
             endTime,
-            false,
             false
         );
 
@@ -99,6 +98,7 @@ public class ScheduleByDoctorCommandHandlerTests
                     doctor.Id,
                     scheduledDate,
                     It.IsAny<TimeRange>(),
+                    It.IsAny<Guid?>(),
                     It.IsAny<CancellationToken>()
                 )
             )
@@ -144,7 +144,6 @@ public class ScheduleByDoctorCommandHandlerTests
             scheduledDate,
             startTime,
             endTime,
-            false,
             false
         );
 
@@ -189,6 +188,7 @@ public class ScheduleByDoctorCommandHandlerTests
                     doctor.Id,
                     scheduledDate,
                     It.IsAny<TimeRange>(),
+                    It.IsAny<Guid?>(),
                     It.IsAny<CancellationToken>()
                 )
             )
@@ -225,7 +225,6 @@ public class ScheduleByDoctorCommandHandlerTests
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0),
-            false,
             false
         );
         _doctorRepositoryMock
@@ -259,7 +258,6 @@ public class ScheduleByDoctorCommandHandlerTests
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0),
-            false,
             false
         );
 
@@ -300,7 +298,6 @@ public class ScheduleByDoctorCommandHandlerTests
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0),
-            false,
             false
         );
 
@@ -347,7 +344,6 @@ public class ScheduleByDoctorCommandHandlerTests
             scheduledDate,
             new TimeOnly(10, 0),
             new TimeOnly(11, 0),
-            false,
             false
         );
 
@@ -408,7 +404,6 @@ public class ScheduleByDoctorCommandHandlerTests
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10),
             new TimeOnly(11),
-            false,
             false
         );
 
@@ -484,7 +479,6 @@ public class ScheduleByDoctorCommandHandlerTests
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             new TimeOnly(10, 0),
             new TimeOnly(11, 0),
-            false,
             false
         );
 
@@ -514,6 +508,7 @@ public class ScheduleByDoctorCommandHandlerTests
                     doctor.Id,
                     command.ScheduledDate,
                     It.IsAny<TimeRange>(),
+                    It.IsAny<Guid?>(),
                     It.IsAny<CancellationToken>()
                 )
             )

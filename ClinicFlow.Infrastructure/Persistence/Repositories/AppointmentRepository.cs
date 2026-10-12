@@ -232,10 +232,12 @@ public sealed class AppointmentRepository(ApplicationDbContext dbContext) : IApp
             cancellationToken
         );
 
+    /// <inheritdoc/>
     public async Task<bool> HasConflictAsync(
         Guid doctorId,
         DateOnly scheduledDate,
         TimeRange timeRange,
+        Guid? excludeAppointmentId = null,
         CancellationToken cancellationToken = default
     ) =>
         await dbContext.Appointments.AnyAsync(
@@ -245,6 +247,7 @@ public sealed class AppointmentRepository(ApplicationDbContext dbContext) : IApp
                 && a.Status != AppointmentStatus.Cancelled
                 && a.Status != AppointmentStatus.LateCancellation
                 && a.Status != AppointmentStatus.RequiresReassignment
+                && (excludeAppointmentId == null || a.Id != excludeAppointmentId)
                 && a.TimeRange.Start < timeRange.End
                 && timeRange.Start < a.TimeRange.End,
             cancellationToken
