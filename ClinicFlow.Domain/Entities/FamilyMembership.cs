@@ -353,10 +353,15 @@ public class FamilyMembership : BaseEntity
     /// can authorize disclosure of their protected care under
     /// <see href="https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=CIV&sectionNum=56.11">Cal. Civ. Code § 56.11(b)(3)(A)</see>.
     /// </summary>
-    internal void EnsureConsentGrantSigner(Guid requesterUserId, Guid patientId)
+    internal void EnsureConsentGrantSigner(
+        Guid requesterUserId,
+        Guid patientId,
+        string unauthorizedCreationCode
+    )
     {
         Guard.NotEmpty(requesterUserId);
         Guard.NotEmpty(patientId);
+        Guard.NotNullOrWhiteSpace(unauthorizedCreationCode);
 
         if (
             Status is not FamilyMembershipStatus.Active
@@ -364,9 +369,7 @@ public class FamilyMembership : BaseEntity
             || Role is not PatientRelationship.Self
             || UserId != requesterUserId
         )
-            throw new DomainValidationException(
-                DomainErrors.MedicalRecordConsentGrant.UnauthorizedCreation
-            );
+            throw new DomainValidationException(unauthorizedCreationCode);
     }
 
     /// <summary>
@@ -374,24 +377,26 @@ public class FamilyMembership : BaseEntity
     /// consent grant. Requires an active membership over the same patient with a role other
     /// than Self, since the patient authorizes a family member, never themselves.
     /// </summary>
-    internal void EnsureConsentGrantRecipient(Guid patientId)
+    internal void EnsureConsentGrantRecipient(
+        Guid patientId,
+        string recipientMustBeActiveCode,
+        string recipientPatientMismatchCode,
+        string recipientCannotBeSelfCode
+    )
     {
         Guard.NotEmpty(patientId);
+        Guard.NotNullOrWhiteSpace(recipientMustBeActiveCode);
+        Guard.NotNullOrWhiteSpace(recipientPatientMismatchCode);
+        Guard.NotNullOrWhiteSpace(recipientCannotBeSelfCode);
 
         if (Status is not FamilyMembershipStatus.Active)
-            throw new DomainValidationException(
-                DomainErrors.MedicalRecordConsentGrant.RecipientMustBeActive
-            );
+            throw new DomainValidationException(recipientMustBeActiveCode);
 
         if (PatientId != patientId)
-            throw new DomainValidationException(
-                DomainErrors.MedicalRecordConsentGrant.RecipientPatientMismatch
-            );
+            throw new DomainValidationException(recipientPatientMismatchCode);
 
         if (Role is PatientRelationship.Self)
-            throw new DomainValidationException(
-                DomainErrors.MedicalRecordConsentGrant.RecipientCannotBeSelf
-            );
+            throw new DomainValidationException(recipientCannotBeSelfCode);
     }
 
     public void Revoke(

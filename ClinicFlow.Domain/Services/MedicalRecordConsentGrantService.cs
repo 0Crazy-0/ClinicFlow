@@ -34,7 +34,8 @@ public static class MedicalRecordConsentGrantService
 
         context.RequesterMembership.EnsureConsentGrantSigner(
             args.RequesterUserId,
-            context.Patient.Id
+            context.Patient.Id,
+            DomainErrors.MedicalRecordConsentGrant.UnauthorizedCreation
         );
 
         var patientAge = context.Patient.GetAge(DateOnly.FromDateTime(args.ReferenceTime));
@@ -63,7 +64,12 @@ public static class MedicalRecordConsentGrantService
                 DomainErrors.MedicalRecordConsentGrant.CategoryNotGrantable
             );
 
-        context.RecipientMembership.EnsureConsentGrantRecipient(context.Patient.Id);
+        context.RecipientMembership.EnsureConsentGrantRecipient(
+            context.Patient.Id,
+            DomainErrors.MedicalRecordConsentGrant.RecipientMustBeActive,
+            DomainErrors.MedicalRecordConsentGrant.RecipientPatientMismatch,
+            DomainErrors.MedicalRecordConsentGrant.RecipientCannotBeSelf
+        );
 
         if (context.HasEffectiveGrant)
             throw new DomainValidationException(
