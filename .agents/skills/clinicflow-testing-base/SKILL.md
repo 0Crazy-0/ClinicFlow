@@ -42,7 +42,7 @@ The system under test is always named `_sut`:
 
 ```csharp
 private readonly BlockPatientCommandValidator _sut;
-private readonly CreateCompletePatientProfileCommandHandler _sut;
+private readonly CreatePatientProfileCommandHandler _sut;
 ```
 
 ## Framework and Libraries
