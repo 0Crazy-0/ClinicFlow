@@ -1,3 +1,4 @@
+using ArchUnitNET.Domain;
 using ArchUnitNET.xUnitV3;
 using ClinicFlow.Architecture.Tests.Common;
 using static ArchUnitNET.Fluent.ArchRuleDefinition;
@@ -13,11 +14,21 @@ public class TestClassesSealingTests
     [Fact]
     public void TestClasses_ShouldNotBeSealed_InAnyLayer()
     {
-        var rule = MethodMembers()
+        var rule = Classes()
             .That()
-            .HaveAnyAttributes(typeof(FactAttribute), typeof(TheoryAttribute))
+            .FollowCustomPredicate(
+                static cls =>
+                    cls.MembersIncludingInherited.OfType<MethodMember>()
+                        .Any(static m =>
+                            m.Attributes.Any(static a =>
+                                a.FullName == typeof(FactAttribute).FullName
+                                || a.FullName == typeof(TheoryAttribute).FullName
+                            )
+                        ),
+                "have test methods (including inherited)"
+            )
             .Should()
-            .BeDeclaredIn(Classes().That().AreNotSealed())
+            .NotBeSealed()
             .Because(
                 "sealed is reserved for well-justified production classes only, so no "
                     + "test class in any layer may be sealed"
