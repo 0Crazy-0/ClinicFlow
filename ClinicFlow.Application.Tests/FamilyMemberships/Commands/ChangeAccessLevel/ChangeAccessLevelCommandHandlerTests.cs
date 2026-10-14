@@ -39,6 +39,7 @@ public class ChangeAccessLevelCommandHandlerTests
         var patient = Patient.CreateProfile(
             PersonName.Create("Jane Doe"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-25)),
+            BiologicalSex.Male,
             _fakeTime.GetUtcNow().UtcDateTime
         );
         var membership = CreateFamilyMembership(patient.Id, targetUserId);
@@ -87,6 +88,7 @@ public class ChangeAccessLevelCommandHandlerTests
         var patient = Patient.CreateProfile(
             PersonName.Create("John Doe"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10)),
+            BiologicalSex.Male,
             _fakeTime.GetUtcNow().UtcDateTime
         );
         var membership = CreateFamilyMembership(patient.Id, targetUserId);

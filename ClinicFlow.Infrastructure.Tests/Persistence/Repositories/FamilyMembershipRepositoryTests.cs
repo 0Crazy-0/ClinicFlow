@@ -902,6 +902,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
         var patient = Patient.CreateProfile(
             PersonName.Create("Patient"),
             new DateOnly(1990, 1, 1),
+            BiologicalSex.Male,
             _fakeTime.GetLocalNow().DateTime
         );
 

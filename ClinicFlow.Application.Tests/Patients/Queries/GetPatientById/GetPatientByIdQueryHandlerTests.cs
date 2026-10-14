@@ -3,6 +3,7 @@ using ClinicFlow.Application.Patients.Queries.DTOs;
 using ClinicFlow.Application.Patients.Queries.GetPatientById;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
+using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.ValueObjects;
@@ -31,6 +32,7 @@ public class GetPatientByIdQueryHandlerTests
         var patient = Patient.CreateProfile(
             PersonName.Create("John Doe"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            BiologicalSex.Male,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -57,7 +59,8 @@ public class GetPatientByIdQueryHandlerTests
             patient.Allergies,
             patient.ChronicConditions,
             patient.Contact?.Name.ToString(),
-            patient.Contact?.Phone.ToString()
+            patient.Contact?.Phone.ToString(),
+            patient.SexAtBirth
         );
 
         result.Should().BeEquivalentTo(expectedDto);
@@ -75,6 +78,7 @@ public class GetPatientByIdQueryHandlerTests
         var patient = Patient.CreateProfile(
             PersonName.Create("John Doe"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            BiologicalSex.Male,
             _fakeTime.GetUtcNow().UtcDateTime
         );
         var patientId = patient.Id;
@@ -97,7 +101,8 @@ public class GetPatientByIdQueryHandlerTests
             patient.Allergies,
             patient.ChronicConditions,
             patient.Contact?.Name.ToString(),
-            patient.Contact?.Phone.ToString()
+            patient.Contact?.Phone.ToString(),
+            patient.SexAtBirth
         );
 
         result.Should().BeEquivalentTo(expectedDto);

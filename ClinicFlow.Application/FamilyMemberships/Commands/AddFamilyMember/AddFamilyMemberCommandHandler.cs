@@ -87,6 +87,7 @@ public sealed class AddFamilyMemberCommandHandler(
                         AccessLevel = request.AccessLevel,
                         FullName = fullName,
                         DateOfBirth = request.DateOfBirth,
+                        SexAtBirth = request.SexAtBirth,
                         ReferenceTime = referenceTime,
                     }
                 );

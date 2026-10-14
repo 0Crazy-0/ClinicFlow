@@ -32,7 +32,8 @@ public sealed class GetPatientByIdQueryHandler(IPatientRepository patientReposit
             patient.Allergies,
             patient.ChronicConditions,
             patient.Contact?.Name.ToString(),
-            patient.Contact?.Phone.ToString()
+            patient.Contact?.Phone.ToString(),
+            patient.SexAtBirth
         );
     }
 }

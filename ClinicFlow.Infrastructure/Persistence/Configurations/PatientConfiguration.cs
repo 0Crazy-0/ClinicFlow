@@ -15,6 +15,8 @@ public sealed class PatientConfiguration : IEntityTypeConfiguration<Patient>
             .HasConversion(name => name.FullName, val => PersonName.Create(val))
             .HasMaxLength(PersonName.MaximumLength);
 
+        builder.Property(p => p.SexAtBirth).HasConversion<string>();
+
         builder
             .Property(p => p.BloodGroup)
             .HasConversion(bt => bt.Value, val => BloodType.Create(val))

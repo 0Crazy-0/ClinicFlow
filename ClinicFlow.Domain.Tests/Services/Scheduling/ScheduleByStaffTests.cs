@@ -129,6 +129,7 @@ public class ScheduleByStaffTests
         var incompletePatient = Patient.CreateProfile(
             PersonName.Create("Test"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            BiologicalSex.Male,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -175,6 +176,7 @@ public class ScheduleByStaffTests
         var target = Patient.CreateProfile(
             PersonName.Create("Test"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-15)),
+            BiologicalSex.Male,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -308,6 +310,7 @@ public class ScheduleByStaffTests
         var patient = Patient.CreateProfile(
             PersonName.Create("Test"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            BiologicalSex.Male,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 

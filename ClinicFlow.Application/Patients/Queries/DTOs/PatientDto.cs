@@ -1,3 +1,5 @@
+using ClinicFlow.Domain.Enums;
+
 namespace ClinicFlow.Application.Patients.Queries.DTOs;
 
 /// <param name="BloodType">The patient's blood type (e.g. "O+", "AB-").</param>
@@ -9,5 +11,6 @@ public sealed record PatientDto(
     string? Allergies,
     string? ChronicConditions,
     string? EmergencyContactName,
-    string? EmergencyContactPhone
+    string? EmergencyContactPhone,
+    BiologicalSex SexAtBirth
 );

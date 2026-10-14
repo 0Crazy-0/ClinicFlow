@@ -1,5 +1,6 @@
 using AwesomeAssertions;
 using ClinicFlow.Domain.Entities;
+using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Contexts;
 using ClinicFlow.Domain.ValueObjects;
@@ -134,6 +135,7 @@ public class FamilyMembershipAccessAuthorizationServiceTests
         var patient = Patient.CreateProfile(
             PersonName.Create("John Doe"),
             DateOnly.FromDateTime(referenceTime.AddYears(-yearsOld)),
+            BiologicalSex.Male,
             referenceTime
         );
 

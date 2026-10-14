@@ -1,4 +1,6 @@
 using ClinicFlow.Domain.Common;
+using ClinicFlow.Domain.Enums;
+using ClinicFlow.Domain.Events.Patients;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Exceptions.Patients;
 using ClinicFlow.Domain.ValueObjects;
@@ -11,9 +13,13 @@ namespace ClinicFlow.Domain.Entities;
 /// </summary>
 public class Patient : BaseEntity
 {
+    public const int MaxCorrectionReasonLength = 500;
+
     public PersonName FullName { get; private set; } = null!;
 
     public DateOnly DateOfBirth { get; private set; }
+
+    public BiologicalSex SexAtBirth { get; private set; }
 
     public BloodType BloodGroup { get; private set; } = null!;
 
@@ -28,25 +34,31 @@ public class Patient : BaseEntity
     // EF Core constructor
     private Patient() { }
 
-    private Patient(PersonName fullName, DateOnly dateOfBirth)
+    private Patient(PersonName fullName, DateOnly dateOfBirth, BiologicalSex biologicalSex)
         : this()
     {
         FullName = fullName;
         DateOfBirth = dateOfBirth;
+        SexAtBirth = biologicalSex;
     }
 
     internal static Patient CreateProfile(
         PersonName fullName,
         DateOnly dateOfBirth,
+        BiologicalSex biologicalSex,
         DateTime referenceTime
     )
     {
         Guard.NotNull(fullName);
+        Guard.IsDefined(biologicalSex);
+
+        if (biologicalSex is BiologicalSex.Unspecified)
+            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
 
         if (dateOfBirth > DateOnly.FromDateTime(referenceTime))
             throw new DomainValidationException(DomainErrors.Validation.ValueCannotBeInFuture);
 
-        return new Patient(fullName, dateOfBirth);
+        return new Patient(fullName, dateOfBirth, biologicalSex);
     }
 
     public void UpdateMedicalProfile(
@@ -58,6 +70,47 @@ public class Patient : BaseEntity
         BloodGroup = bloodType;
         Allergies = allergies ?? string.Empty;
         ChronicConditions = chronicConditions ?? string.Empty;
+    }
+
+    /// <summary>
+    /// Corrects a birth registration error in the recorded biological sex.
+    /// Not a sex change: the original value was wrong and is replaced, keeping an audit event.
+    /// </summary>
+    public void CorrectBiologicalSex(
+        BiologicalSex correctedSex,
+        string reason,
+        Guid correctedByDoctorId,
+        DateTime correctedAt
+    )
+    {
+        Guard.IsDefined(correctedSex);
+
+        if (correctedSex is BiologicalSex.Unspecified)
+            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+
+        Guard.NotNullOrWhiteSpace(reason);
+        Guard.NotEmpty(correctedByDoctorId);
+
+        if (reason.Length > MaxCorrectionReasonLength)
+            throw new DomainValidationException(DomainErrors.Validation.ValueTooLong);
+
+        if (correctedSex == SexAtBirth)
+            throw new BusinessRuleValidationException(DomainErrors.Patient.BiologicalSexUnchanged);
+
+        var previousSex = SexAtBirth;
+
+        SexAtBirth = correctedSex;
+
+        AddDomainEvent(
+            new PatientBiologicalSexCorrectedEvent(
+                Id,
+                previousSex,
+                correctedSex,
+                correctedByDoctorId,
+                reason,
+                correctedAt
+            )
+        );
     }
 
     public void UpdateEmergencyContact(EmergencyContact emergencyContact) =>

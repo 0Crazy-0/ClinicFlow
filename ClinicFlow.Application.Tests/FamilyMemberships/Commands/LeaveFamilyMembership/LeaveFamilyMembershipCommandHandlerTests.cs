@@ -44,6 +44,7 @@ public class LeaveFamilyMembershipCommandHandlerTests
         var patient = Patient.CreateProfile(
             PersonName.Create("Adult Member"),
             dateOfBirth: DateOnly.FromDateTime(leaveTime.AddYears(-20)),
+            BiologicalSex.Male,
             startedAt
         );
 

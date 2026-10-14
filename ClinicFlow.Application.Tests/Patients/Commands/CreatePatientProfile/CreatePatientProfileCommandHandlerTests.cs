@@ -58,7 +58,8 @@ public class CreatePatientProfileCommandHandlerTests
             Guid.CreateVersion7(),
             "John",
             "Doe",
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30))
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            BiologicalSex.Male
         );
 
         _patientRepositoryMock
@@ -89,6 +90,7 @@ public class CreatePatientProfileCommandHandlerTests
         capturedPatient.Should().NotBeNull();
         capturedPatient.FullName.ToString().Should().Be($"{command.FirstName} {command.LastName}");
         capturedPatient.DateOfBirth.Should().Be(command.DateOfBirth);
+        capturedPatient.SexAtBirth.Should().Be(command.SexAtBirth);
         capturedPatient.BloodGroup.Should().BeNull();
         capturedPatient.Contact.Should().BeNull();
 
@@ -106,7 +108,8 @@ public class CreatePatientProfileCommandHandlerTests
             Guid.CreateVersion7(),
             "John",
             "Doe",
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30))
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            BiologicalSex.Male
         );
 
         _patientRepositoryMock

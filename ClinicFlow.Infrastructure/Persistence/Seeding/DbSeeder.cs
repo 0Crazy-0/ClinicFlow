@@ -433,6 +433,7 @@ public static class DbSeeder
             var patient = Patient.CreateProfile(
                 PersonName.Create(faker.Name.FullName()),
                 DateOnly.FromDateTime(faker.Date.Past(21, refTime.AddYears(-18))),
+                i % 2 == 0 ? BiologicalSex.Male : BiologicalSex.Female,
                 refTime
             );
             patient.UpdateMedicalProfile(
@@ -457,6 +458,7 @@ public static class DbSeeder
             var patient = Patient.CreateProfile(
                 PersonName.Create(faker.Name.FullName()),
                 DateOnly.FromDateTime(faker.Date.Past(40, refTime.AddYears(-40))),
+                i % 2 == 0 ? BiologicalSex.Male : BiologicalSex.Female,
                 refTime
             );
             patient.UpdateMedicalProfile(
@@ -505,6 +507,7 @@ public static class DbSeeder
             var patient = Patient.CreateProfile(
                 PersonName.Create(faker.Name.FullName()),
                 DateOnly.FromDateTime(faker.Date.Past(age, refTime.AddYears(-age))),
+                i % 2 == 0 ? BiologicalSex.Male : BiologicalSex.Female,
                 refTime
             );
             patient.UpdateMedicalProfile(

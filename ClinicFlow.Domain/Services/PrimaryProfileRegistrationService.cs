@@ -23,9 +23,17 @@ public static class PrimaryProfileRegistrationService
                 DomainErrors.FamilyMembership.PatientAlreadyHasActiveMembership
             );
 
+        if (args.ExistingPatient is not null && args.ExistingPatient.SexAtBirth != args.SexAtBirth)
+            throw new DomainValidationException(DomainErrors.Patient.DataMismatch);
+
         var patient =
             args.ExistingPatient
-            ?? Patient.CreateProfile(args.FullName, args.DateOfBirth, args.ReferenceTime);
+            ?? Patient.CreateProfile(
+                args.FullName,
+                args.DateOfBirth,
+                args.SexAtBirth,
+                args.ReferenceTime
+            );
 
         if (patient.GetAge(DateOnly.FromDateTime(args.ReferenceTime)) < MinimumSelfAge)
             throw new DomainValidationException(

@@ -737,6 +737,7 @@ public class AppointmentCancellationServiceTests
         var patient = Patient.CreateProfile(
             PersonName.Create("Test"),
             dateOfBirth,
+            BiologicalSex.Male,
             _fakeTime.GetUtcNow().UtcDateTime
         );
         patient.SetId(id);

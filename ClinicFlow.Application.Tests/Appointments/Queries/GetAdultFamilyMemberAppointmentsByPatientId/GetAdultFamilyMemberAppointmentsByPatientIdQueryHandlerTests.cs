@@ -403,6 +403,7 @@ public class GetAdultFamilyMemberAppointmentsByPatientIdQueryHandlerTests
         var patient = Patient.CreateProfile(
             PersonName.Create("Test"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-age)),
+            BiologicalSex.Male,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 

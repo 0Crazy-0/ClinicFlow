@@ -43,6 +43,7 @@ public class FamilyMemberRegistrationServiceTests
         var existingPatient = Patient.CreateProfile(
             PersonName.Create("Test Patient"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            BiologicalSex.Male,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -139,6 +140,33 @@ public class FamilyMemberRegistrationServiceTests
             .WithMessage(DomainErrors.FamilyMembership.MaxActiveFamilyMembersExceeded);
     }
 
+    [Fact]
+    public void Register_ShouldThrowDataMismatch_WhenExistingPatientSexDiffers()
+    {
+        // Arrange
+        var existingPatient = Patient.CreateProfile(
+            PersonName.Create("Test Patient"),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            BiologicalSex.Male,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        var ownerUserId = Guid.CreateVersion7();
+        var args = CreateArgs(ownerUserId, PatientRelationship.Child) with
+        {
+            ExistingPatient = existingPatient,
+            SexAtBirth = BiologicalSex.Female,
+        };
+
+        // Act
+        var act = () => FamilyMemberRegistrationService.Register(args);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Patient.DataMismatch);
+    }
+
     private FamilyMemberRegistrationArgs CreateArgs(Guid ownerUserId, PatientRelationship role) =>
         new()
         {
@@ -148,6 +176,7 @@ public class FamilyMemberRegistrationServiceTests
             AccessLevel = FamilyMembershipAccessLevel.Full,
             FullName = PersonName.Create("Test Patient"),
             DateOfBirth = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            SexAtBirth = BiologicalSex.Male,
             ReferenceTime = _fakeTime.GetUtcNow().UtcDateTime,
         };
 }

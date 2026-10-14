@@ -1,4 +1,5 @@
 using ClinicFlow.Domain.Common;
+using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.ValueObjects;
 using FluentValidation;
 
@@ -27,5 +28,10 @@ public sealed class CreatePatientProfileCommandValidator
         RuleFor(x => x.DateOfBirth)
             .LessThanOrEqualTo(_ => DateOnly.FromDateTime(timeProvider.GetLocalNow().DateTime))
             .WithMessage(DomainErrors.Validation.ValueCannotBeInFuture);
+        RuleFor(x => x.SexAtBirth)
+            .IsInEnum()
+            .WithMessage(DomainErrors.Validation.InvalidEnumValue)
+            .NotEqual(BiologicalSex.Unspecified)
+            .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 }

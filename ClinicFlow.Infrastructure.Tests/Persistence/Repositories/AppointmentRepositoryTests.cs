@@ -1777,6 +1777,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         var minorPatient = Patient.CreateProfile(
             PersonName.Create("Minor Child"),
             DateOnly.FromDateTime(refTime.AddYears(-5)),
+            BiologicalSex.Male,
             refTime
         );
         minorPatient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
@@ -1834,6 +1835,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         var minorPatient = Patient.CreateProfile(
             PersonName.Create("Minor Child"),
             DateOnly.FromDateTime(refTime.AddYears(-5)),
+            BiologicalSex.Male,
             refTime
         );
         minorPatient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
@@ -1885,6 +1887,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         var adultPatient = Patient.CreateProfile(
             PersonName.Create("Adult Patient"),
             DateOnly.FromDateTime(refTime.AddYears(-25)),
+            BiologicalSex.Male,
             refTime
         );
 
@@ -1927,6 +1930,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         var minorPatient = Patient.CreateProfile(
             PersonName.Create("Minor Child"),
             DateOnly.FromDateTime(refTime.AddYears(-5)),
+            BiologicalSex.Male,
             refTime
         );
         minorPatient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
@@ -1978,6 +1982,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         var minorPatient = Patient.CreateProfile(
             PersonName.Create("Minor Child"),
             DateOnly.FromDateTime(refTime.AddYears(-5)),
+            BiologicalSex.Male,
             refTime
         );
         minorPatient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
@@ -2036,6 +2041,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         var minorPatient = Patient.CreateProfile(
             PersonName.Create("Minor Child"),
             DateOnly.FromDateTime(refTime.AddYears(-5)),
+            BiologicalSex.Male,
             refTime
         );
         minorPatient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
@@ -2093,6 +2099,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         var minorPatient = Patient.CreateProfile(
             PersonName.Create("Minor Child"),
             DateOnly.FromDateTime(refTime.AddYears(-5)),
+            BiologicalSex.Male,
             refTime
         );
         minorPatient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
@@ -2150,6 +2157,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         var minorPatient = Patient.CreateProfile(
             PersonName.Create("Minor Child"),
             DateOnly.FromDateTime(refTime.AddYears(-5)),
+            BiologicalSex.Male,
             refTime
         );
         minorPatient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
@@ -3080,6 +3088,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         var patient = Patient.CreateProfile(
             PersonName.Create("John Doe"),
             DateOnly.FromDateTime(refTime.AddYears(-30)),
+            BiologicalSex.Male,
             refTime
         );
 

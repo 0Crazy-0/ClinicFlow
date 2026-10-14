@@ -323,6 +323,7 @@ public class RescheduleByGuardianTests
         var patientAdult = Patient.CreateProfile(
             PersonName.Create("Adult"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-25)),
+            BiologicalSex.Male,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -385,6 +386,7 @@ public class RescheduleByGuardianTests
         var target = Patient.CreateProfile(
             PersonName.Create("Child"),
             newDate.AddYears(-FamilyMembership.MinimumAdultAge),
+            BiologicalSex.Male,
             _fakeTime.GetUtcNow().UtcDateTime
         );
         target.UpdateMedicalProfile(BloodType.Create("A+"), "", "");
@@ -741,6 +743,7 @@ public class RescheduleByGuardianTests
         var patient = Patient.CreateProfile(
             PersonName.Create("Child"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10)),
+            BiologicalSex.Male,
             _fakeTime.GetUtcNow().UtcDateTime
         );
         patient.UpdateMedicalProfile(BloodType.Create("A+"), "", "");

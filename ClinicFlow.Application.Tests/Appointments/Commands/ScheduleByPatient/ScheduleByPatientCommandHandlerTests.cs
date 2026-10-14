@@ -1031,6 +1031,7 @@ public class ScheduleByPatientCommandHandlerTests
         var patient = Patient.CreateProfile(
             PersonName.Create("Test Patient"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            BiologicalSex.Male,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
