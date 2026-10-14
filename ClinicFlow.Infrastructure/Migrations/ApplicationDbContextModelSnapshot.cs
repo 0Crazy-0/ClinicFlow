@@ -116,7 +116,7 @@ namespace ClinicFlow.Infrastructure.Migrations
                         .HasColumnType("xid")
                         .HasColumnName("xmin");
 
-                    b.ComplexProperty(typeof(Dictionary<string, object>), "TimeRange", "ClinicFlow.Domain.Entities.Appointment.TimeRange#TimeRange", b1 =>
+                    b.ComplexProperty(typeof(Dictionary<string, object>), "TimeSlot", "ClinicFlow.Domain.Entities.Appointment.TimeSlot#TimeRange", b1 =>
                         {
                             b1.IsRequired();
 
@@ -141,7 +141,7 @@ namespace ClinicFlow.Infrastructure.Migrations
 
                     b.ToTable("Appointments");
 
-                    b.HasAnnotation("CustomIndex:CompositeIndexes", "[{\"paths\":[\"DoctorId\",\"ScheduledDate\",\"TimeRange.Start\",\"SequenceNumber\"],\"unique\":false},{\"paths\":[\"PatientId\",\"ScheduledDate\",\"TimeRange.Start\",\"SequenceNumber\"],\"unique\":false},{\"paths\":[\"ScheduledDate\",\"TimeRange.Start\",\"SequenceNumber\"],\"unique\":false}]");
+                    b.HasAnnotation("CustomIndex:CompositeIndexes", "[{\"paths\":[\"DoctorId\",\"ScheduledDate\",\"TimeSlot.Start\",\"SequenceNumber\"],\"unique\":false},{\"paths\":[\"PatientId\",\"ScheduledDate\",\"TimeSlot.Start\",\"SequenceNumber\"],\"unique\":false},{\"paths\":[\"ScheduledDate\",\"TimeSlot.Start\",\"SequenceNumber\"],\"unique\":false}]");
                 });
 
             modelBuilder.Entity("ClinicFlow.Domain.Entities.AppointmentConsentGrant", b =>
@@ -619,7 +619,7 @@ namespace ClinicFlow.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("BloodType")
+                    b.Property<string>("BloodGroup")
                         .IsRequired()
                         .HasMaxLength(5)
                         .HasColumnType("character varying(5)");
@@ -712,10 +712,6 @@ namespace ClinicFlow.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("DayOfWeek")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<Guid>("DoctorId")
                         .HasColumnType("uuid");
 
@@ -734,9 +730,13 @@ namespace ClinicFlow.Infrastructure.Migrations
                         .HasColumnType("xid")
                         .HasColumnName("xmin");
 
+                    b.Property<string>("Weekday")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("DoctorId", "DayOfWeek")
+                    b.HasIndex("DoctorId", "Weekday")
                         .IsUnique();
 
                     b.ToTable("Schedules");
@@ -772,7 +772,7 @@ namespace ClinicFlow.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("PhoneNumber")
+                    b.Property<string>("Phone")
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)");
@@ -908,7 +908,7 @@ namespace ClinicFlow.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.OwnsOne("ClinicFlow.Domain.ValueObjects.ConsultationRoom", "ConsultationRoom", b1 =>
+                    b.OwnsOne("ClinicFlow.Domain.ValueObjects.ConsultationRoom", "Room", b1 =>
                         {
                             b1.Property<Guid>("DoctorId")
                                 .HasColumnType("uuid");
@@ -934,7 +934,7 @@ namespace ClinicFlow.Infrastructure.Migrations
                                 .HasForeignKey("DoctorId");
                         });
 
-                    b.Navigation("ConsultationRoom")
+                    b.Navigation("Room")
                         .IsRequired();
                 });
 
@@ -1012,7 +1012,7 @@ namespace ClinicFlow.Infrastructure.Migrations
 
             modelBuilder.Entity("ClinicFlow.Domain.Entities.Patient", b =>
                 {
-                    b.OwnsOne("ClinicFlow.Domain.ValueObjects.EmergencyContact", "EmergencyContact", b1 =>
+                    b.OwnsOne("ClinicFlow.Domain.ValueObjects.EmergencyContact", "Contact", b1 =>
                         {
                             b1.Property<Guid>("PatientId")
                                 .HasColumnType("uuid");
@@ -1023,7 +1023,7 @@ namespace ClinicFlow.Infrastructure.Migrations
                                 .HasColumnType("character varying(100)")
                                 .HasColumnName("EmergencyContactName");
 
-                            b1.Property<string>("PhoneNumber")
+                            b1.Property<string>("Phone")
                                 .IsRequired()
                                 .HasMaxLength(20)
                                 .HasColumnType("character varying(20)")
@@ -1037,7 +1037,7 @@ namespace ClinicFlow.Infrastructure.Migrations
                                 .HasForeignKey("PatientId");
                         });
 
-                    b.Navigation("EmergencyContact")
+                    b.Navigation("Contact")
                         .IsRequired();
                 });
 
@@ -1063,7 +1063,7 @@ namespace ClinicFlow.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.OwnsOne("ClinicFlow.Domain.ValueObjects.TimeRange", "TimeRange", b1 =>
+                    b.OwnsOne("ClinicFlow.Domain.ValueObjects.TimeRange", "TimeSlot", b1 =>
                         {
                             b1.Property<Guid>("ScheduleId")
                                 .HasColumnType("uuid");
@@ -1084,7 +1084,7 @@ namespace ClinicFlow.Infrastructure.Migrations
                                 .HasForeignKey("ScheduleId");
                         });
 
-                    b.Navigation("TimeRange")
+                    b.Navigation("TimeSlot")
                         .IsRequired();
                 });
 
