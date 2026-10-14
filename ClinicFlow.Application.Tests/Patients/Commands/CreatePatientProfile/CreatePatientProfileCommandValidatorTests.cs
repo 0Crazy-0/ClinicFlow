@@ -230,4 +230,25 @@ public class CreatePatientProfileCommandValidatorTests
             .ShouldHaveValidationErrorFor(x => x.SexAtBirth)
             .WithErrorMessage(DomainErrors.Validation.InvalidEnumValue);
     }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenBiologicalSexIsUnspecified()
+    {
+        // Arrange
+        var command = new CreatePatientProfileCommand(
+            Guid.CreateVersion7(),
+            "John",
+            "Doe",
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            BiologicalSex.Unspecified
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.SexAtBirth)
+            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
+    }
 }

@@ -88,6 +88,26 @@ public class CorrectBiologicalSexByDoctorCommandValidatorTests
             .WithErrorMessage(DomainErrors.Validation.InvalidEnumValue);
     }
 
+    [Fact]
+    public void Validate_ShouldHaveError_WhenCorrectedSexIsUnspecified()
+    {
+        // Arrange
+        var command = new CorrectBiologicalSexByDoctorCommand(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            BiologicalSex.Unspecified,
+            "reason"
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.CorrectedSex)
+            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
+    }
+
     [Theory]
     [InlineData(null)]
     [InlineData("")]

@@ -128,6 +128,24 @@ public class PatientTests
     }
 
     [Fact]
+    public void CreateProfile_ShouldThrowDomainValidationException_WhenBiologicalSexIsUnspecified()
+    {
+        // Arrange & Act
+        var act = () =>
+            Patient.CreateProfile(
+                PersonName.Create("John Doe"),
+                DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+                BiologicalSex.Unspecified,
+                _fakeTime.GetUtcNow().UtcDateTime
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
     public void CreateProfile_ShouldNotThrowException_WhenDateOfBirthIsEqualToReferenceTimeDate()
     {
         // Arrange
@@ -332,6 +350,32 @@ public class PatientTests
         act.Should()
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.Validation.InvalidEnumValue);
+    }
+
+    [Fact]
+    public void CorrectBiologicalSex_ShouldThrowDomainValidationException_WhenCorrectedSexIsUnspecified()
+    {
+        // Arrange
+        var patient = Patient.CreateProfile(
+            PersonName.Create("John Doe"),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            BiologicalSex.Male,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        // Act
+        var act = () =>
+            patient.CorrectBiologicalSex(
+                BiologicalSex.Unspecified,
+                "reason",
+                Guid.CreateVersion7(),
+                _fakeTime.GetUtcNow().UtcDateTime
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Theory]
