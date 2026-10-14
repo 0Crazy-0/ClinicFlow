@@ -5,7 +5,7 @@ using ClinicFlow.Domain.ValueObjects;
 namespace ClinicFlow.Domain.Events.Appointments;
 
 public sealed record AppointmentRescheduledEvent(
-    Appointment Appointment,
+    Appointment SubjectAppointment,
     DateOnly PreviousDate,
     TimeRange PreviousTimeRange
 ) : IDomainEvent;

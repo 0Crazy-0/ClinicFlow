@@ -3,5 +3,5 @@ using ClinicFlow.Domain.Entities;
 
 namespace ClinicFlow.Domain.Events.Appointments;
 
-public sealed record AppointmentCompletedEvent(Appointment Appointment, DateTime CompletedAt)
+public sealed record AppointmentCompletedEvent(Appointment SubjectAppointment, DateTime CompletedAt)
     : IDomainEvent;

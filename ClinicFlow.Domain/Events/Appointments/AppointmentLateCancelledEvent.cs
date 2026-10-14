@@ -4,7 +4,7 @@ using ClinicFlow.Domain.Entities;
 namespace ClinicFlow.Domain.Events.Appointments;
 
 public sealed record AppointmentLateCancelledEvent(
-    Appointment Appointment,
+    Appointment SubjectAppointment,
     Guid CancelledByUserId,
     string? Reason
 ) : IDomainEvent;
