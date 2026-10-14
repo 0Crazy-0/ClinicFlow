@@ -3,5 +3,5 @@ using MediatR;
 
 namespace ClinicFlow.Application.Schedules.Queries.GetScheduleByDoctorAndDay;
 
-public sealed record GetScheduleByDoctorAndDayQuery(Guid DoctorId, DayOfWeek DayOfWeek)
+public sealed record GetScheduleByDoctorAndDayQuery(Guid DoctorId, DayOfWeek Weekday)
     : IRequest<ScheduleDto?>;

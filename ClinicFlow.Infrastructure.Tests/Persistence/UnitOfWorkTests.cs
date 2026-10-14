@@ -62,7 +62,7 @@ public class UnitOfWorkTests : IDisposable
 
         dbUser.Should().NotBeNull();
         dbUser.Email.Should().Be(email);
-        dbUser.PhoneNumber.Should().Be(phone);
+        dbUser.Phone.Should().Be(phone);
         dbUser.Role.Should().Be(UserRole.Patient);
     }
 

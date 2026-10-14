@@ -153,8 +153,8 @@ public class AppointmentGenerator(AppointmentSeedingArgs args, DateTime baseDate
         int index
     )
     {
-        var scheduleStart = schedule.TimeRange.Start.Hour;
-        var scheduleEnd = schedule.TimeRange.End.Hour;
+        var scheduleStart = schedule.TimeSlot.Start.Hour;
+        var scheduleEnd = schedule.TimeSlot.End.Hour;
         var durationTimeSpan = TimeSpan.FromMinutes(apptType.Duration.Minutes);
         var durationHours = (int)Math.Ceiling(durationTimeSpan.TotalHours);
         var maxStart = Math.Max(scheduleStart, scheduleEnd - durationHours);
@@ -190,7 +190,7 @@ public class AppointmentGenerator(AppointmentSeedingArgs args, DateTime baseDate
 
         if (isPast)
         {
-            var date = GetNextWeekday(baseDate, schedule.DayOfWeek);
+            var date = GetNextWeekday(baseDate, schedule.Weekday);
             var dateOnly = DateOnly.FromDateTime(date);
             var weeksBack = (index * 17 % 26) + 1;
             return dateOnly.AddDays(-7 * weeksBack);
@@ -199,7 +199,7 @@ public class AppointmentGenerator(AppointmentSeedingArgs args, DateTime baseDate
         var baseDateOnly = DateOnly.FromDateTime(baseDate);
         var currentWeekStart = baseDateOnly.AddDays(-(int)baseDateOnly.DayOfWeek);
         var futureWeekStart = currentWeekStart.AddDays(7 * (doctorOccurrence + 1));
-        return futureWeekStart.AddDays((int)schedule.DayOfWeek);
+        return futureWeekStart.AddDays((int)schedule.Weekday);
     }
 
     private static bool IsActiveStatus(AppointmentStatus status) =>

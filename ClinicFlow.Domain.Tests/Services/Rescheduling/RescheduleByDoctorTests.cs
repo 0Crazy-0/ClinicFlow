@@ -77,7 +77,7 @@ public class RescheduleByDoctorTests
                 CreateAppointment(),
                 CreateValidDoctorReschedulingArgs() with
                 {
-                    NewTimeRange = null!,
+                    NewTimeSlot = null!,
                 },
                 CreateSchedule(),
                 SchedulingClearance.Granted()
@@ -131,7 +131,7 @@ public class RescheduleByDoctorTests
         {
             InitiatorDoctor = invalidDoctor,
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
-            NewTimeRange = CreateTimeRange(10, 11),
+            NewTimeSlot = CreateTimeRange(10, 11),
         };
 
         var doctorSchedule = CreateSchedule();
@@ -163,7 +163,7 @@ public class RescheduleByDoctorTests
         {
             InitiatorDoctor = doctor,
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
-            NewTimeRange = CreateTimeRange(18, 19),
+            NewTimeSlot = CreateTimeRange(18, 19),
         };
 
         var doctorSchedule = CreateSchedule();
@@ -195,7 +195,7 @@ public class RescheduleByDoctorTests
         {
             InitiatorDoctor = doctor,
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
-            NewTimeRange = CreateTimeRange(10, 11),
+            NewTimeSlot = CreateTimeRange(10, 11),
         };
 
         var doctorSchedule = Schedule.Create(
@@ -215,14 +215,14 @@ public class RescheduleByDoctorTests
         // Assert
         appointment.DomainEvents.OfType<AppointmentRescheduledEvent>().Should().ContainSingle();
         appointment.ScheduledDate.Should().Be(args.NewDate);
-        appointment.TimeRange.Should().Be(args.NewTimeRange);
+        appointment.TimeSlot.Should().Be(args.NewTimeSlot);
     }
 
     private static DoctorReschedulingArgs CreateValidDoctorReschedulingArgs() =>
         new()
         {
             InitiatorDoctor = CreateDoctor(Guid.CreateVersion7()),
-            NewTimeRange = CreateTimeRange(10, 11),
+            NewTimeSlot = CreateTimeRange(10, 11),
         };
 
     private static TimeRange CreateTimeRange(int startHour, int endHour) =>

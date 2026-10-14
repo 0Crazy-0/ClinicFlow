@@ -16,12 +16,12 @@ public sealed class PatientConfiguration : IEntityTypeConfiguration<Patient>
             .HasMaxLength(PersonName.MaximumLength);
 
         builder
-            .Property(p => p.BloodType)
+            .Property(p => p.BloodGroup)
             .HasConversion(bt => bt.Value, val => BloodType.Create(val))
             .HasMaxLength(5);
 
         builder.OwnsOne(
-            p => p.EmergencyContact,
+            p => p.Contact,
             contact =>
             {
                 contact
@@ -30,7 +30,7 @@ public sealed class PatientConfiguration : IEntityTypeConfiguration<Patient>
                     .HasColumnName(ColumnNames.Patient.EmergencyContactName)
                     .HasMaxLength(PersonName.MaximumLength);
                 contact
-                    .Property(c => c.PhoneNumber)
+                    .Property(c => c.Phone)
                     .HasConversion(phone => phone.Value, val => PhoneNumber.Create(val))
                     .HasColumnName(ColumnNames.Patient.EmergencyContactPhone)
                     .HasMaxLength(PhoneNumber.MaximumLength);

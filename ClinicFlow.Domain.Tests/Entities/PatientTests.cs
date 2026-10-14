@@ -35,10 +35,10 @@ public class PatientTests
         patient.Should().NotBeNull();
         patient.FullName.Should().Be(PersonName.Create("John Doe"));
         patient.DateOfBirth.Should().Be(dateOfBirth);
-        patient.BloodType.Should().Be(bloodType);
+        patient.BloodGroup.Should().Be(bloodType);
         patient.Allergies.Should().Be(allergies);
         patient.ChronicConditions.Should().Be(chronicConditions);
-        patient.EmergencyContact.Should().Be(emergencyContact);
+        patient.Contact.Should().Be(emergencyContact);
     }
 
     [Fact]
@@ -177,7 +177,7 @@ public class PatientTests
         patient.UpdateMedicalProfile(bloodType, null!, null!);
 
         // Assert
-        patient.BloodType.Should().Be(bloodType);
+        patient.BloodGroup.Should().Be(bloodType);
         patient.Allergies.Should().Be(string.Empty);
         patient.ChronicConditions.Should().Be(string.Empty);
     }

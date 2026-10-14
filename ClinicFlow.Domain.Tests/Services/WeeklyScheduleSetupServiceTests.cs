@@ -31,14 +31,14 @@ public class WeeklyScheduleSetupServiceTests
         result.Should().AllSatisfy(s => s.DoctorId.Should().Be(doctorId));
         result.Should().AllSatisfy(s => s.IsActive.Should().BeTrue());
 
-        result[0].DayOfWeek.Should().Be(DayOfWeek.Monday);
-        result[0].TimeRange.Start.Should().Be(new TimeOnly(8, 0));
-        result[0].TimeRange.End.Should().Be(new TimeOnly(13, 0));
+        result[0].Weekday.Should().Be(DayOfWeek.Monday);
+        result[0].TimeSlot.Start.Should().Be(new TimeOnly(8, 0));
+        result[0].TimeSlot.End.Should().Be(new TimeOnly(13, 0));
 
-        result[1].DayOfWeek.Should().Be(DayOfWeek.Wednesday);
-        result[2].DayOfWeek.Should().Be(DayOfWeek.Friday);
-        result[2].TimeRange.Start.Should().Be(new TimeOnly(14, 0));
-        result[2].TimeRange.End.Should().Be(new TimeOnly(18, 0));
+        result[1].Weekday.Should().Be(DayOfWeek.Wednesday);
+        result[2].Weekday.Should().Be(DayOfWeek.Friday);
+        result[2].TimeSlot.Start.Should().Be(new TimeOnly(14, 0));
+        result[2].TimeSlot.End.Should().Be(new TimeOnly(18, 0));
     }
 
     [Fact]
@@ -70,7 +70,7 @@ public class WeeklyScheduleSetupServiceTests
             .Throw<ScheduleAlreadyExistsException>()
             .WithMessage(DomainErrors.Schedule.ScheduleAlreadyExists);
         exceptionAssertion.Which.DoctorId.Should().Be(doctorId);
-        exceptionAssertion.Which.DayOfWeek.Should().Be(DayOfWeek.Monday);
+        exceptionAssertion.Which.Weekday.Should().Be(DayOfWeek.Monday);
     }
 
     [Fact]
@@ -99,7 +99,7 @@ public class WeeklyScheduleSetupServiceTests
 
         // Assert
         result.Should().ContainSingle();
-        result[0].DayOfWeek.Should().Be(DayOfWeek.Monday);
+        result[0].Weekday.Should().Be(DayOfWeek.Monday);
         result[0].IsActive.Should().BeTrue();
     }
 }

@@ -13,20 +13,20 @@ public class Schedule : BaseEntity
 {
     public Guid DoctorId { get; init; }
 
-    public DayOfWeek DayOfWeek { get; private set; }
+    public DayOfWeek Weekday { get; private set; }
 
-    public TimeRange TimeRange { get; private set; }
+    public TimeRange TimeSlot { get; private set; }
 
     public bool IsActive { get; private set; }
 
     // EF Core constructor
-    private Schedule() => TimeRange = null!;
+    private Schedule() => TimeSlot = null!;
 
     private Schedule(Guid doctorId, DayOfWeek dayOfWeek, TimeRange timeRange)
     {
         DoctorId = doctorId;
-        DayOfWeek = dayOfWeek;
-        TimeRange = timeRange;
+        Weekday = dayOfWeek;
+        TimeSlot = timeRange;
         IsActive = true;
     }
 
@@ -55,11 +55,11 @@ public class Schedule : BaseEntity
 
         IsActive = false;
 
-        AddDomainEvent(new ScheduleDeactivatedEvent(Id, DoctorId, DayOfWeek));
+        AddDomainEvent(new ScheduleDeactivatedEvent(Id, DoctorId, Weekday));
     }
 
     internal bool CoversTimeRange(TimeRange requestedRange) =>
-        IsActive && TimeRange.Covers(requestedRange);
+        IsActive && TimeSlot.Covers(requestedRange);
 
     internal void EnsureDoctorIsAvailable(Guid doctorId, DayOfWeek dayOfWeek, TimeRange timeRange)
     {
@@ -79,7 +79,7 @@ public class Schedule : BaseEntity
     {
         if (
             existingSchedules.Any(s =>
-                s.DoctorId == doctorId && s.DayOfWeek == dayOfWeek && s.IsActive
+                s.DoctorId == doctorId && s.Weekday == dayOfWeek && s.IsActive
             )
         )
             throw new ScheduleAlreadyExistsException(

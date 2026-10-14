@@ -27,7 +27,7 @@ public sealed class GetLockedOutUsersQueryHandler(
             .Select(user => new UserDto(
                 user.Id,
                 user.Email.Value,
-                user.PhoneNumber.Value,
+                user.Phone.Value,
                 user.Role,
                 user.IsActive,
                 user.IsPhoneVerified,

@@ -94,7 +94,7 @@ public class ScheduleByPatientTests
                 CreateAppointmentType(),
                 CreateValidPatientSchedulingArgs() with
                 {
-                    TimeRange = null!,
+                    RequestedTimeSlot = null!,
                 },
                 new PatientSchedulingContext
                 {
@@ -181,7 +181,7 @@ public class ScheduleByPatientTests
             TargetPatient = target,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
-            TimeRange = CreateTimeRange(),
+            RequestedTimeSlot = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
             InitiatorUserId = Guid.CreateVersion7(),
         };
@@ -248,7 +248,7 @@ public class ScheduleByPatientTests
             TargetPatient = familyMember,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
-            TimeRange = CreateTimeRange(),
+            RequestedTimeSlot = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
             InitiatorUserId = Guid.CreateVersion7(),
         };
@@ -280,7 +280,7 @@ public class ScheduleByPatientTests
         appointment.PatientId.Should().Be(familyMember.Id);
         appointment.DoctorId.Should().Be(args.DoctorId);
         appointment.ScheduledDate.Should().Be(args.ScheduledDate);
-        appointment.TimeRange.Should().Be(args.TimeRange);
+        appointment.TimeSlot.Should().Be(args.RequestedTimeSlot);
         appointment.Status.Should().Be(AppointmentStatus.Scheduled);
         appointment.ScheduledByUserId.Should().Be(args.InitiatorUserId);
     }
@@ -297,7 +297,7 @@ public class ScheduleByPatientTests
             InitiatorUserId = Guid.CreateVersion7(),
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
-            TimeRange = CreateTimeRange(),
+            RequestedTimeSlot = CreateTimeRange(),
             IsInitiatorPhoneVerified = false,
         };
 
@@ -339,7 +339,7 @@ public class ScheduleByPatientTests
             TargetPatient = incompletePatient,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
-            TimeRange = CreateTimeRange(),
+            RequestedTimeSlot = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
             InitiatorUserId = Guid.CreateVersion7(),
         };
@@ -377,7 +377,7 @@ public class ScheduleByPatientTests
             TargetPatient = target,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
-            TimeRange = CreateTimeRange(),
+            RequestedTimeSlot = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
             InitiatorUserId = Guid.CreateVersion7(),
         };
@@ -439,7 +439,7 @@ public class ScheduleByPatientTests
             TargetPatient = target,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
-            TimeRange = CreateTimeRange(),
+            RequestedTimeSlot = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
             InitiatorUserId = Guid.CreateVersion7(),
         };
@@ -493,7 +493,7 @@ public class ScheduleByPatientTests
             TargetPatient = target,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
-            TimeRange = CreateTimeRange(),
+            RequestedTimeSlot = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
             InitiatorUserId = Guid.CreateVersion7(),
         };
@@ -553,7 +553,7 @@ public class ScheduleByPatientTests
             TargetPatient = target,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
-            TimeRange = CreateTimeRange(),
+            RequestedTimeSlot = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
             InitiatorUserId = Guid.CreateVersion7(),
         };
@@ -597,7 +597,7 @@ public class ScheduleByPatientTests
             TargetPatient = target,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
-            TimeRange = TimeRange.Create(new TimeOnly(18, 0), new TimeOnly(19, 0)),
+            RequestedTimeSlot = TimeRange.Create(new TimeOnly(18, 0), new TimeOnly(19, 0)),
             IsInitiatorPhoneVerified = true,
             InitiatorUserId = Guid.CreateVersion7(),
         };
@@ -637,7 +637,7 @@ public class ScheduleByPatientTests
             TargetPatient = target,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
-            TimeRange = CreateTimeRange(),
+            RequestedTimeSlot = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
             InitiatorUserId = Guid.CreateVersion7(),
             PatientNotes = "Patient note",
@@ -669,7 +669,7 @@ public class ScheduleByPatientTests
         appointment.PatientId.Should().Be(target.Id);
         appointment.DoctorId.Should().Be(args.DoctorId);
         appointment.ScheduledDate.Should().Be(args.ScheduledDate);
-        appointment.TimeRange.Should().Be(args.TimeRange);
+        appointment.TimeSlot.Should().Be(args.RequestedTimeSlot);
         appointment.Status.Should().Be(AppointmentStatus.Scheduled);
         appointment.ScheduledByUserId.Should().Be(args.InitiatorUserId);
         appointment.DomainEvents.OfType<AppointmentScheduledEvent>().Should().ContainSingle();
@@ -686,7 +686,7 @@ public class ScheduleByPatientTests
             TargetPatient = target,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
-            TimeRange = CreateTimeRange(),
+            RequestedTimeSlot = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
             InitiatorUserId = Guid.CreateVersion7(),
             PatientNotes = null,
@@ -718,7 +718,7 @@ public class ScheduleByPatientTests
         appointment.PatientId.Should().Be(target.Id);
         appointment.DoctorId.Should().Be(args.DoctorId);
         appointment.ScheduledDate.Should().Be(args.ScheduledDate);
-        appointment.TimeRange.Should().Be(args.TimeRange);
+        appointment.TimeSlot.Should().Be(args.RequestedTimeSlot);
         appointment.Status.Should().Be(AppointmentStatus.Scheduled);
         appointment.ScheduledByUserId.Should().Be(args.InitiatorUserId);
         appointment.DomainEvents.OfType<AppointmentScheduledEvent>().Should().ContainSingle();
@@ -735,7 +735,7 @@ public class ScheduleByPatientTests
             TargetPatient = target,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
-            TimeRange = CreateTimeRange(),
+            RequestedTimeSlot = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
             InitiatorUserId = Guid.CreateVersion7(),
         };
@@ -766,7 +766,7 @@ public class ScheduleByPatientTests
         appointment.PatientId.Should().Be(target.Id);
         appointment.DoctorId.Should().Be(args.DoctorId);
         appointment.ScheduledDate.Should().Be(args.ScheduledDate);
-        appointment.TimeRange.Should().Be(args.TimeRange);
+        appointment.TimeSlot.Should().Be(args.RequestedTimeSlot);
         appointment.Status.Should().Be(AppointmentStatus.Scheduled);
         appointment.ScheduledByUserId.Should().Be(args.InitiatorUserId);
         appointment.PatientNotes.Should().BeEmpty();
@@ -805,7 +805,7 @@ public class ScheduleByPatientTests
         new()
         {
             TargetPatient = CreateSelfPatient(),
-            TimeRange = CreateTimeRange(),
+            RequestedTimeSlot = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
             InitiatorUserId = Guid.CreateVersion7(),
         };

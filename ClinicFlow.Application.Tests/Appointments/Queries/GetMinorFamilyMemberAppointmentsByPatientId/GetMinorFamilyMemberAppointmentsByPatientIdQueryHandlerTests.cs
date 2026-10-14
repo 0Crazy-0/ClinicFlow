@@ -130,8 +130,8 @@ public class GetMinorFamilyMemberAppointmentsByPatientIdQueryHandlerTests
             appointment.DoctorId,
             appointment.AppointmentTypeId,
             appointment.ScheduledDate,
-            appointment.TimeRange.Start,
-            appointment.TimeRange.End,
+            appointment.TimeSlot.Start,
+            appointment.TimeSlot.End,
             appointment.Status,
             appointment.ReceptionistNotes,
             appointment.GuardianNotes
@@ -236,8 +236,8 @@ public class GetMinorFamilyMemberAppointmentsByPatientIdQueryHandlerTests
             appointment.DoctorId,
             appointment.AppointmentTypeId,
             appointment.ScheduledDate,
-            appointment.TimeRange.Start,
-            appointment.TimeRange.End,
+            appointment.TimeSlot.Start,
+            appointment.TimeSlot.End,
             appointment.Status,
             appointment.ReceptionistNotes,
             appointment.GuardianNotes

@@ -15,7 +15,7 @@ public sealed class GetScheduleByDoctorAndDayQueryHandler(IScheduleRepository sc
     {
         var schedule = await scheduleRepository.GetActiveByDoctorAndDayAsync(
             request.DoctorId,
-            request.DayOfWeek,
+            request.Weekday,
             cancellationToken
         );
 
@@ -24,9 +24,9 @@ public sealed class GetScheduleByDoctorAndDayQueryHandler(IScheduleRepository sc
             : new ScheduleDto(
                 schedule.Id,
                 schedule.DoctorId,
-                schedule.DayOfWeek,
-                schedule.TimeRange.Start,
-                schedule.TimeRange.End,
+                schedule.Weekday,
+                schedule.TimeSlot.Start,
+                schedule.TimeSlot.End,
                 schedule.IsActive
             );
     }

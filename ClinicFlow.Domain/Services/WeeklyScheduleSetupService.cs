@@ -21,10 +21,10 @@ public static class WeeklyScheduleSetupService
         [
             .. slots.Select(slot =>
             {
-                Schedule.EnsureNoDuplicateDay(existingSchedules, doctorId, slot.DayOfWeek);
+                Schedule.EnsureNoDuplicateDay(existingSchedules, doctorId, slot.Weekday);
                 return Schedule.Create(
                     doctorId,
-                    slot.DayOfWeek,
+                    slot.Weekday,
                     TimeRange.Create(slot.StartTime, slot.EndTime)
                 );
             }),

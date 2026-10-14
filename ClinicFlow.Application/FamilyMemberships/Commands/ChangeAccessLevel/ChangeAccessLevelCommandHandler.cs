@@ -50,7 +50,7 @@ public sealed class ChangeAccessLevelCommandHandler(
         var isAuthorized = FamilyMembershipAccessAuthorizationService.CanManageFamilyMembership(
             new FamilyMembershipManagementAuthorizationContext
             {
-                Patient = patient,
+                TargetPatient = patient,
                 ReferenceTime = referenceTime,
                 RequesterUserId = request.RequesterUserId,
                 TargetUserId = request.TargetUserId,

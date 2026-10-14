@@ -32,7 +32,7 @@ public class AppointmentConsentGrantServiceTests
         var category = ProtectedCategory.MentalHealthCounseling;
         var context = new AppointmentCategoryConsentGrantContext
         {
-            Patient = patient,
+            TargetPatient = patient,
             RequesterMembership = requesterMembership,
             RecipientMembership = recipientMembership,
             ProtectedCareCategory = category,
@@ -82,7 +82,7 @@ public class AppointmentConsentGrantServiceTests
         var requesterUserId = Guid.CreateVersion7();
         var context = new AppointmentCategoryConsentGrantContext
         {
-            Patient = patient,
+            TargetPatient = patient,
             RequesterMembership = FamilyMembership.CreateSelf(
                 patient.Id,
                 requesterUserId,
@@ -108,7 +108,7 @@ public class AppointmentConsentGrantServiceTests
         var requesterUserId = Guid.CreateVersion7();
         var context = new AppointmentCategoryConsentGrantContext
         {
-            Patient = null!,
+            TargetPatient = null!,
             RequesterMembership = FamilyMembership.CreateSelf(
                 patient.Id,
                 requesterUserId,
@@ -134,7 +134,7 @@ public class AppointmentConsentGrantServiceTests
         var patient = CreateMinorPatient();
         var context = new AppointmentCategoryConsentGrantContext
         {
-            Patient = patient,
+            TargetPatient = patient,
             RequesterMembership = null!,
             RecipientMembership = CreateRecipientMembership(patient.Id),
             ProtectedCareCategory = ProtectedCategory.MentalHealthCounseling,
@@ -160,7 +160,7 @@ public class AppointmentConsentGrantServiceTests
         var requesterUserId = Guid.CreateVersion7();
         var context = new AppointmentCategoryConsentGrantContext
         {
-            Patient = patient,
+            TargetPatient = patient,
             RequesterMembership = FamilyMembership.CreateSelf(
                 patient.Id,
                 requesterUserId,
@@ -188,7 +188,7 @@ public class AppointmentConsentGrantServiceTests
         var requesterMembership = CreateRecipientMembership(patient.Id);
         var context = new AppointmentCategoryConsentGrantContext
         {
-            Patient = patient,
+            TargetPatient = patient,
             RequesterMembership = requesterMembership,
             RecipientMembership = CreateRecipientMembership(patient.Id),
             ProtectedCareCategory = ProtectedCategory.MentalHealthCounseling,
@@ -220,7 +220,7 @@ public class AppointmentConsentGrantServiceTests
         var requesterUserId = Guid.CreateVersion7();
         var context = new AppointmentCategoryConsentGrantContext
         {
-            Patient = patient,
+            TargetPatient = patient,
             RequesterMembership = FamilyMembership.CreateSelf(
                 patient.Id,
                 requesterUserId,
@@ -255,7 +255,7 @@ public class AppointmentConsentGrantServiceTests
         var requesterUserId = Guid.CreateVersion7();
         var context = new AppointmentCategoryConsentGrantContext
         {
-            Patient = patient,
+            TargetPatient = patient,
             RequesterMembership = FamilyMembership.CreateSelf(
                 patient.Id,
                 requesterUserId,
@@ -286,7 +286,7 @@ public class AppointmentConsentGrantServiceTests
         var requesterUserId = Guid.CreateVersion7();
         var context = new AppointmentCategoryConsentGrantContext
         {
-            Patient = patient,
+            TargetPatient = patient,
             RequesterMembership = FamilyMembership.CreateSelf(
                 patient.Id,
                 requesterUserId,
@@ -320,7 +320,7 @@ public class AppointmentConsentGrantServiceTests
         var requesterUserId = Guid.CreateVersion7();
         var context = new AppointmentCategoryConsentGrantContext
         {
-            Patient = patient,
+            TargetPatient = patient,
             RequesterMembership = FamilyMembership.CreateSelf(
                 patient.Id,
                 requesterUserId,
@@ -360,10 +360,10 @@ public class AppointmentConsentGrantServiceTests
         var appointment = CreateAppointment(patient.Id, appointmentType.Id);
         var context = new SpecificAppointmentConsentGrantContext
         {
-            Patient = patient,
+            TargetPatient = patient,
             RequesterMembership = requesterMembership,
             RecipientMembership = recipientMembership,
-            Appointment = appointment,
+            TargetAppointment = appointment,
             AppointmentType = appointmentType,
             HasEffectiveGrant = false,
         };
@@ -412,14 +412,14 @@ public class AppointmentConsentGrantServiceTests
         var appointmentType = CreateProtectedAppointmentType();
         var context = new SpecificAppointmentConsentGrantContext
         {
-            Patient = patient,
+            TargetPatient = patient,
             RequesterMembership = FamilyMembership.CreateSelf(
                 patient.Id,
                 requesterUserId,
                 _fakeTime.GetUtcNow().UtcDateTime
             ),
             RecipientMembership = CreateRecipientMembership(patient.Id),
-            Appointment = CreateAppointment(patient.Id, appointmentType.Id),
+            TargetAppointment = CreateAppointment(patient.Id, appointmentType.Id),
             AppointmentType = appointmentType,
             HasEffectiveGrant = false,
         };
@@ -441,14 +441,14 @@ public class AppointmentConsentGrantServiceTests
 
         var context = new SpecificAppointmentConsentGrantContext
         {
-            Patient = null!,
+            TargetPatient = null!,
             RequesterMembership = FamilyMembership.CreateSelf(
                 patient.Id,
                 requesterUserId,
                 _fakeTime.GetUtcNow().UtcDateTime
             ),
             RecipientMembership = CreateRecipientMembership(patient.Id),
-            Appointment = CreateAppointment(patient.Id, appointmentType.Id),
+            TargetAppointment = CreateAppointment(patient.Id, appointmentType.Id),
             AppointmentType = appointmentType,
             HasEffectiveGrant = false,
         };
@@ -470,10 +470,10 @@ public class AppointmentConsentGrantServiceTests
         var appointmentType = CreateProtectedAppointmentType();
         var context = new SpecificAppointmentConsentGrantContext
         {
-            Patient = patient,
+            TargetPatient = patient,
             RequesterMembership = null!,
             RecipientMembership = CreateRecipientMembership(patient.Id),
-            Appointment = CreateAppointment(patient.Id, appointmentType.Id),
+            TargetAppointment = CreateAppointment(patient.Id, appointmentType.Id),
             AppointmentType = appointmentType,
             HasEffectiveGrant = false,
         };
@@ -498,14 +498,14 @@ public class AppointmentConsentGrantServiceTests
         var appointmentType = CreateProtectedAppointmentType();
         var context = new SpecificAppointmentConsentGrantContext
         {
-            Patient = patient,
+            TargetPatient = patient,
             RequesterMembership = FamilyMembership.CreateSelf(
                 patient.Id,
                 requesterUserId,
                 _fakeTime.GetUtcNow().UtcDateTime
             ),
             RecipientMembership = null!,
-            Appointment = CreateAppointment(patient.Id, appointmentType.Id),
+            TargetAppointment = CreateAppointment(patient.Id, appointmentType.Id),
             AppointmentType = appointmentType,
             HasEffectiveGrant = false,
         };
@@ -527,14 +527,14 @@ public class AppointmentConsentGrantServiceTests
         var requesterUserId = Guid.CreateVersion7();
         var context = new SpecificAppointmentConsentGrantContext
         {
-            Patient = patient,
+            TargetPatient = patient,
             RequesterMembership = FamilyMembership.CreateSelf(
                 patient.Id,
                 requesterUserId,
                 _fakeTime.GetUtcNow().UtcDateTime
             ),
             RecipientMembership = CreateRecipientMembership(patient.Id),
-            Appointment = null!,
+            TargetAppointment = null!,
             AppointmentType = CreateProtectedAppointmentType(),
             HasEffectiveGrant = false,
         };
@@ -556,14 +556,14 @@ public class AppointmentConsentGrantServiceTests
         var appointmentType = CreateProtectedAppointmentType();
         var context = new SpecificAppointmentConsentGrantContext
         {
-            Patient = patient,
+            TargetPatient = patient,
             RequesterMembership = FamilyMembership.CreateSelf(
                 patient.Id,
                 requesterUserId,
                 _fakeTime.GetUtcNow().UtcDateTime
             ),
             RecipientMembership = CreateRecipientMembership(patient.Id),
-            Appointment = CreateAppointment(patient.Id, appointmentType.Id),
+            TargetAppointment = CreateAppointment(patient.Id, appointmentType.Id),
             AppointmentType = null!,
             HasEffectiveGrant = false,
         };
@@ -587,10 +587,10 @@ public class AppointmentConsentGrantServiceTests
 
         var context = new SpecificAppointmentConsentGrantContext
         {
-            Patient = patient,
+            TargetPatient = patient,
             RequesterMembership = requesterMembership,
             RecipientMembership = CreateRecipientMembership(patient.Id),
-            Appointment = CreateAppointment(patient.Id, appointmentType.Id),
+            TargetAppointment = CreateAppointment(patient.Id, appointmentType.Id),
             AppointmentType = appointmentType,
             HasEffectiveGrant = false,
         };
@@ -622,14 +622,14 @@ public class AppointmentConsentGrantServiceTests
         var appointmentType = CreateProtectedAppointmentType();
         var context = new SpecificAppointmentConsentGrantContext
         {
-            Patient = patient,
+            TargetPatient = patient,
             RequesterMembership = FamilyMembership.CreateSelf(
                 patient.Id,
                 requesterUserId,
                 referenceTime
             ),
             RecipientMembership = CreateRecipientMembership(patient.Id),
-            Appointment = CreateAppointment(patient.Id, appointmentType.Id),
+            TargetAppointment = CreateAppointment(patient.Id, appointmentType.Id),
             AppointmentType = appointmentType,
             HasEffectiveGrant = false,
         };
@@ -654,14 +654,14 @@ public class AppointmentConsentGrantServiceTests
         var appointmentType = CreateProtectedAppointmentType();
         var context = new SpecificAppointmentConsentGrantContext
         {
-            Patient = patient,
+            TargetPatient = patient,
             RequesterMembership = FamilyMembership.CreateSelf(
                 patient.Id,
                 requesterUserId,
                 referenceTime
             ),
             RecipientMembership = CreateRecipientMembership(patient.Id),
-            Appointment = CreateAppointment(Guid.CreateVersion7(), appointmentType.Id),
+            TargetAppointment = CreateAppointment(Guid.CreateVersion7(), appointmentType.Id),
             AppointmentType = appointmentType,
             HasEffectiveGrant = false,
         };
@@ -687,14 +687,14 @@ public class AppointmentConsentGrantServiceTests
         var appointmentType = CreateProtectedAppointmentType();
         var context = new SpecificAppointmentConsentGrantContext
         {
-            Patient = patient,
+            TargetPatient = patient,
             RequesterMembership = FamilyMembership.CreateSelf(
                 patient.Id,
                 requesterUserId,
                 referenceTime
             ),
             RecipientMembership = CreateRecipientMembership(patient.Id),
-            Appointment = CreateAppointment(patient.Id, Guid.CreateVersion7()),
+            TargetAppointment = CreateAppointment(patient.Id, Guid.CreateVersion7()),
             AppointmentType = appointmentType,
             HasEffectiveGrant = false,
         };
@@ -728,14 +728,14 @@ public class AppointmentConsentGrantServiceTests
 
         var context = new SpecificAppointmentConsentGrantContext
         {
-            Patient = patient,
+            TargetPatient = patient,
             RequesterMembership = FamilyMembership.CreateSelf(
                 patient.Id,
                 requesterUserId,
                 referenceTime
             ),
             RecipientMembership = CreateRecipientMembership(patient.Id),
-            Appointment = CreateAppointment(patient.Id, appointmentType.Id),
+            TargetAppointment = CreateAppointment(patient.Id, appointmentType.Id),
             AppointmentType = appointmentType,
             HasEffectiveGrant = false,
         };
@@ -765,14 +765,14 @@ public class AppointmentConsentGrantServiceTests
         var appointmentType = CreateProtectedAppointmentType(); // Protected category is MentalHealthCounseling, which is not grantable for a 10 year old patient.
         var context = new SpecificAppointmentConsentGrantContext
         {
-            Patient = patient,
+            TargetPatient = patient,
             RequesterMembership = FamilyMembership.CreateSelf(
                 patient.Id,
                 requesterUserId,
                 referenceTime
             ),
             RecipientMembership = CreateRecipientMembership(patient.Id),
-            Appointment = CreateAppointment(patient.Id, appointmentType.Id),
+            TargetAppointment = CreateAppointment(patient.Id, appointmentType.Id),
             AppointmentType = appointmentType,
             HasEffectiveGrant = false,
         };
@@ -797,7 +797,7 @@ public class AppointmentConsentGrantServiceTests
         var appointmentType = CreateProtectedAppointmentType();
         var context = new SpecificAppointmentConsentGrantContext
         {
-            Patient = patient,
+            TargetPatient = patient,
             RequesterMembership = FamilyMembership.CreateSelf(
                 patient.Id,
                 requesterUserId,
@@ -808,7 +808,7 @@ public class AppointmentConsentGrantServiceTests
                 Guid.CreateVersion7(),
                 referenceTime
             ),
-            Appointment = CreateAppointment(patient.Id, appointmentType.Id),
+            TargetAppointment = CreateAppointment(patient.Id, appointmentType.Id),
             AppointmentType = appointmentType,
             HasEffectiveGrant = false,
         };
@@ -833,14 +833,14 @@ public class AppointmentConsentGrantServiceTests
         var appointmentType = CreateProtectedAppointmentType();
         var context = new SpecificAppointmentConsentGrantContext
         {
-            Patient = patient,
+            TargetPatient = patient,
             RequesterMembership = FamilyMembership.CreateSelf(
                 patient.Id,
                 requesterUserId,
                 referenceTime
             ),
             RecipientMembership = CreateRecipientMembership(patient.Id),
-            Appointment = CreateAppointment(patient.Id, appointmentType.Id),
+            TargetAppointment = CreateAppointment(patient.Id, appointmentType.Id),
             AppointmentType = appointmentType,
             HasEffectiveGrant = true,
         };

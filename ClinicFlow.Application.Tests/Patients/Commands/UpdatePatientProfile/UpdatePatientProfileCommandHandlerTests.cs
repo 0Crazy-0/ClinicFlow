@@ -57,11 +57,11 @@ public class UpdatePatientProfileCommandHandlerTests
         // Assert
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
 
-        patient.BloodType.ToString().Should().Be(command.BloodType);
+        patient.BloodGroup.ToString().Should().Be(command.BloodType);
         patient.Allergies.Should().Be(command.Allergies);
         patient.ChronicConditions.Should().Be(command.ChronicConditions);
-        patient.EmergencyContact.Name.ToString().Should().Be(command.EmergencyContactName);
-        patient.EmergencyContact.PhoneNumber.ToString().Should().Be(command.EmergencyContactPhone);
+        patient.Contact.Name.ToString().Should().Be(command.EmergencyContactName);
+        patient.Contact.Phone.ToString().Should().Be(command.EmergencyContactPhone);
     }
 
     [Fact]

@@ -22,11 +22,11 @@ public sealed class CreateScheduleCommandHandler(
             cancellationToken
         );
 
-        Schedule.EnsureNoDuplicateDay(existingSchedules, request.DoctorId, request.DayOfWeek);
+        Schedule.EnsureNoDuplicateDay(existingSchedules, request.DoctorId, request.Weekday);
 
         var schedule = Schedule.Create(
             request.DoctorId,
-            request.DayOfWeek,
+            request.Weekday,
             TimeRange.Create(request.StartTime, request.EndTime)
         );
 

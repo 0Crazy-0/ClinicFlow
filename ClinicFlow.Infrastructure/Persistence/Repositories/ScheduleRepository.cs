@@ -45,7 +45,7 @@ public sealed class ScheduleRepository(ApplicationDbContext dbContext) : ISchedu
         CancellationToken cancellationToken = default
     ) =>
         await dbContext.Schedules.FirstOrDefaultAsync(
-            s => s.DoctorId == doctorId && s.DayOfWeek == day && s.IsActive,
+            s => s.DoctorId == doctorId && s.Weekday == day && s.IsActive,
             cancellationToken
         );
 
@@ -57,7 +57,7 @@ public sealed class ScheduleRepository(ApplicationDbContext dbContext) : ISchedu
         await dbContext
             .Schedules.AsNoTracking()
             .Where(s => s.DoctorId == doctorId)
-            .OrderBy(s => s.DayOfWeek)
+            .OrderBy(s => s.Weekday)
             .ToListAsync(cancellationToken);
 
     public async Task<IReadOnlyList<Schedule>> GetActiveByDoctorIdAsync(
@@ -66,6 +66,6 @@ public sealed class ScheduleRepository(ApplicationDbContext dbContext) : ISchedu
     ) =>
         await dbContext
             .Schedules.Where(s => s.DoctorId == doctorId && s.IsActive)
-            .OrderBy(s => s.DayOfWeek)
+            .OrderBy(s => s.Weekday)
             .ToListAsync(cancellationToken);
 }

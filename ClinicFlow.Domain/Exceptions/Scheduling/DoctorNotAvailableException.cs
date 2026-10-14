@@ -6,5 +6,5 @@ public class DoctorNotAvailableException(string errorCode, Guid doctorId, DayOfW
     : DomainException(errorCode)
 {
     public Guid DoctorId { get; } = doctorId;
-    public DayOfWeek DayOfWeek { get; } = dayOfWeek;
+    public DayOfWeek Weekday { get; } = dayOfWeek;
 }

@@ -6,12 +6,12 @@ public record EmergencyContact
 {
     public PersonName Name { get; }
 
-    public PhoneNumber PhoneNumber { get; }
+    public PhoneNumber Phone { get; }
 
-    private EmergencyContact(PersonName name, PhoneNumber phoneNumber)
+    private EmergencyContact(PersonName name, PhoneNumber phone)
     {
         Name = name;
-        PhoneNumber = phoneNumber;
+        Phone = phone;
     }
 
     internal static EmergencyContact Create(string name, string phoneNumber)
@@ -31,5 +31,5 @@ public record EmergencyContact
     }
 
     /// <inheritdoc/>
-    public override string ToString() => $"{Name} ({PhoneNumber})";
+    public override string ToString() => $"{Name} ({Phone})";
 }

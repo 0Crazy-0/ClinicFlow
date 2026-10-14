@@ -15,7 +15,7 @@ public class EmergencyContactTests
 
         // Assert
         contact.Name.FullName.Should().Be("Jane Doe");
-        contact.PhoneNumber.Value.Should().Be("+1234567890");
+        contact.Phone.Value.Should().Be("+1234567890");
     }
 
     [Theory]

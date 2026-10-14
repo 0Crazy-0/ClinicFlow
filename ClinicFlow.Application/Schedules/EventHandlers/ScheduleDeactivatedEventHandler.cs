@@ -29,13 +29,13 @@ public sealed class ScheduleDeactivatedEventHandler(
 
         var activeSchedule = await scheduleRepository.GetActiveByDoctorAndDayAsync(
             domainEvent.DoctorId,
-            domainEvent.DayOfWeek,
+            domainEvent.Weekday,
             cancellationToken
         );
 
         var appointmentsToReassign = futureAppointments
-            .Where(a => a.ScheduledDate.DayOfWeek == domainEvent.DayOfWeek)
-            .Where(a => activeSchedule is null || !activeSchedule.CoversTimeRange(a.TimeRange));
+            .Where(a => a.ScheduledDate.DayOfWeek == domainEvent.Weekday)
+            .Where(a => activeSchedule is null || !activeSchedule.CoversTimeRange(a.TimeSlot));
 
         foreach (var appointment in appointmentsToReassign)
             appointment.MarkAsRequiresReassignment();

@@ -52,7 +52,7 @@ public class RegisterDoctorUserCommandHandlerTests
         capturedUser.Should().NotBeNull();
         capturedUser.Email.Value.Should().Be(command.Email);
         capturedUser.PasswordHash.Should().Be("hashed_password");
-        capturedUser.PhoneNumber.Value.Should().Be(command.PhoneNumber);
+        capturedUser.Phone.Value.Should().Be(command.PhoneNumber);
         capturedUser.Role.Should().Be(UserRole.Doctor);
         capturedUser.IsActive.Should().BeTrue();
     }

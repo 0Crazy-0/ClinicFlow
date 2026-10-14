@@ -114,7 +114,7 @@ public sealed class ScheduleByStaffCommandHandler(
                 TargetPatient = targetPatient,
                 DoctorId = request.DoctorId,
                 ScheduledDate = request.ScheduledDate,
-                TimeRange = timeRange,
+                RequestedTimeSlot = timeRange,
                 HasGuardianConsentVerified = request.HasGuardianConsentVerified,
             },
             doctorSchedule,

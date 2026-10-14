@@ -22,7 +22,7 @@ public class User : BaseEntity
     // Stryker disable once String
     public string PasswordHash { get; private set; } = string.Empty;
 
-    public PhoneNumber PhoneNumber { get; private set; } = null!;
+    public PhoneNumber Phone { get; private set; } = null!;
 
     public bool IsActive { get; private set; }
 
@@ -45,7 +45,7 @@ public class User : BaseEntity
     {
         Email = email;
         PasswordHash = passwordHash;
-        PhoneNumber = phoneNumber;
+        Phone = phoneNumber;
         Role = role;
     }
 

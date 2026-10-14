@@ -89,8 +89,8 @@ public class CreatePatientProfileCommandHandlerTests
         capturedPatient.Should().NotBeNull();
         capturedPatient.FullName.ToString().Should().Be($"{command.FirstName} {command.LastName}");
         capturedPatient.DateOfBirth.Should().Be(command.DateOfBirth);
-        capturedPatient.BloodType.Should().BeNull();
-        capturedPatient.EmergencyContact.Should().BeNull();
+        capturedPatient.BloodGroup.Should().BeNull();
+        capturedPatient.Contact.Should().BeNull();
 
         capturedMembership.Should().NotBeNull();
         capturedMembership.PatientId.Should().Be(capturedPatient.Id);

@@ -113,7 +113,7 @@ public sealed class ScheduleByDoctorCommandHandler(
                 InitiatorDoctor = initiatorDoctor,
                 TargetPatient = targetPatient,
                 ScheduledDate = request.ScheduledDate,
-                TimeRange = timeRange,
+                RequestedTimeSlot = timeRange,
                 HasGuardianConsentVerified = request.HasGuardianConsentVerified,
             },
             doctorSchedule,

@@ -21,7 +21,7 @@ public class Doctor : SoftDeletableEntity
     // Stryker disable once String
     public string Biography { get; private set; } = string.Empty;
 
-    public ConsultationRoom ConsultationRoom { get; private set; } = null!;
+    public ConsultationRoom Room { get; private set; } = null!;
 
     // EF Core constructor
     private Doctor() { }
@@ -40,7 +40,7 @@ public class Doctor : SoftDeletableEntity
         LicenseNumber = licenseNumber;
         MedicalSpecialtyId = medicalSpecialtyId;
         Biography = biography;
-        ConsultationRoom = consultationRoom;
+        Room = consultationRoom;
     }
 
     internal static Doctor Create(
@@ -69,7 +69,7 @@ public class Doctor : SoftDeletableEntity
     public void UpdateProfile(string biography, ConsultationRoom consultationRoom)
     {
         Biography = biography;
-        ConsultationRoom = consultationRoom;
+        Room = consultationRoom;
     }
 
     /// <remarks>
@@ -92,6 +92,6 @@ public class Doctor : SoftDeletableEntity
 
         UndoDeletion();
         Biography = biography;
-        ConsultationRoom = consultationRoom;
+        Room = consultationRoom;
     }
 }

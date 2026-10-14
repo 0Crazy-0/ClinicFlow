@@ -38,7 +38,7 @@ public sealed class AppointmentRepository(ApplicationDbContext dbContext) : IApp
 
         var totalCount = await query.CountAsync(cancellationToken);
         var items = await query
-            .OrderBy(a => a.TimeRange.Start)
+            .OrderBy(a => a.TimeSlot.Start)
             .ThenBy(a => a.SequenceNumber)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
@@ -65,7 +65,7 @@ public sealed class AppointmentRepository(ApplicationDbContext dbContext) : IApp
         var totalCount = await query.CountAsync(cancellationToken);
         var items = await query
             .OrderBy(a => a.ScheduledDate)
-            .ThenBy(a => a.TimeRange.Start)
+            .ThenBy(a => a.TimeSlot.Start)
             .ThenBy(a => a.SequenceNumber)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
@@ -88,7 +88,7 @@ public sealed class AppointmentRepository(ApplicationDbContext dbContext) : IApp
         var totalCount = await query.CountAsync(cancellationToken);
         var items = await query
             .OrderBy(a => a.ScheduledDate)
-            .ThenBy(a => a.TimeRange.Start)
+            .ThenBy(a => a.TimeSlot.Start)
             .ThenBy(a => a.SequenceNumber)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
@@ -121,7 +121,7 @@ public sealed class AppointmentRepository(ApplicationDbContext dbContext) : IApp
         var totalCount = await query.CountAsync(cancellationToken);
         var items = await query
             .OrderBy(a => a.ScheduledDate)
-            .ThenBy(a => a.TimeRange.Start)
+            .ThenBy(a => a.TimeSlot.Start)
             .ThenBy(a => a.SequenceNumber)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
@@ -164,7 +164,7 @@ public sealed class AppointmentRepository(ApplicationDbContext dbContext) : IApp
         var totalCount = await query.CountAsync(cancellationToken);
         var items = await query
             .OrderBy(a => a.ScheduledDate)
-            .ThenBy(a => a.TimeRange.Start)
+            .ThenBy(a => a.TimeSlot.Start)
             .ThenBy(a => a.SequenceNumber)
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize)
@@ -193,7 +193,7 @@ public sealed class AppointmentRepository(ApplicationDbContext dbContext) : IApp
                 )
                 && (
                     a.ScheduledDate > today
-                    || (a.ScheduledDate == today && a.TimeRange.Start > nowTime)
+                    || (a.ScheduledDate == today && a.TimeSlot.Start > nowTime)
                 )
             )
             .Join(
@@ -248,8 +248,8 @@ public sealed class AppointmentRepository(ApplicationDbContext dbContext) : IApp
                 && a.Status != AppointmentStatus.LateCancellation
                 && a.Status != AppointmentStatus.RequiresReassignment
                 && (excludeAppointmentId == null || a.Id != excludeAppointmentId)
-                && a.TimeRange.Start < timeRange.End
-                && timeRange.Start < a.TimeRange.End,
+                && a.TimeSlot.Start < timeRange.End
+                && timeRange.Start < a.TimeSlot.End,
             cancellationToken
         );
 
@@ -280,7 +280,7 @@ public sealed class AppointmentRepository(ApplicationDbContext dbContext) : IApp
                 a.Status == AppointmentStatus.RequiresReassignment
                 && (
                     a.ScheduledDate < referenceDate
-                    || (a.ScheduledDate == referenceDate && a.TimeRange.Start < referenceTimeOnly)
+                    || (a.ScheduledDate == referenceDate && a.TimeSlot.Start < referenceTimeOnly)
                 )
             )
             .ToListAsync(cancellationToken);

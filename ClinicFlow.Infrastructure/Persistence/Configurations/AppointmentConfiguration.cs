@@ -16,7 +16,7 @@ public sealed class AppointmentConfiguration : IEntityTypeConfiguration<Appointm
         builder.Property(a => a.CompletedAt).HasColumnType("timestamp without time zone");
 
         builder.ComplexProperty(
-            a => a.TimeRange,
+            a => a.TimeSlot,
             range =>
             {
                 range.Property(r => r.Start).HasColumnName(ColumnNames.Appointment.StartTime);
@@ -51,7 +51,7 @@ public sealed class AppointmentConfiguration : IEntityTypeConfiguration<Appointm
         {
             a.DoctorId,
             a.ScheduledDate,
-            a.TimeRange.Start,
+            a.TimeSlot.Start,
             a.SequenceNumber,
         });
 
@@ -59,14 +59,14 @@ public sealed class AppointmentConfiguration : IEntityTypeConfiguration<Appointm
         {
             a.PatientId,
             a.ScheduledDate,
-            a.TimeRange.Start,
+            a.TimeSlot.Start,
             a.SequenceNumber,
         });
 
         builder.HasComplexCompositeIndex(a => new
         {
             a.ScheduledDate,
-            a.TimeRange.Start,
+            a.TimeSlot.Start,
             a.SequenceNumber,
         });
     }

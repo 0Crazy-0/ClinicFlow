@@ -31,7 +31,7 @@ public class Appointment : BaseEntity
 
     public DateOnly ScheduledDate { get; private set; }
 
-    public TimeRange TimeRange { get; private set; }
+    public TimeRange TimeSlot { get; private set; }
 
     public AppointmentStatus Status { get; private set; }
 
@@ -72,7 +72,7 @@ public class Appointment : BaseEntity
     public Guid ScheduledByUserId { get; private set; }
 
     // EF Core constructor
-    private Appointment() => TimeRange = null!;
+    private Appointment() => TimeSlot = null!;
 
     private Appointment(
         Guid patientId,
@@ -87,7 +87,7 @@ public class Appointment : BaseEntity
         DoctorId = doctorId;
         AppointmentTypeId = appointmentTypeId;
         ScheduledDate = scheduledDate;
-        TimeRange = timeRange;
+        TimeSlot = timeRange;
         Status = AppointmentStatus.Scheduled;
         RescheduleCount = 0;
         ScheduledByUserId = scheduledByUserId;
@@ -130,10 +130,10 @@ public class Appointment : BaseEntity
             );
 
         var previousDate = ScheduledDate;
-        var previousTimeRange = TimeRange;
+        var previousTimeRange = TimeSlot;
 
         ScheduledDate = newDate;
-        TimeRange = newTimeRange;
+        TimeSlot = newTimeRange;
         RescheduleCount++;
 
         AddDomainEvent(new AppointmentRescheduledEvent(this, previousDate, previousTimeRange));
@@ -176,7 +176,7 @@ public class Appointment : BaseEntity
         if (checkedInDate != ScheduledDate)
             throw new DomainValidationException(DomainErrors.Appointment.InvalidCheckInDate);
 
-        if (checkedInAt >= ScheduledDate.ToDateTime(TimeRange.End))
+        if (checkedInAt >= ScheduledDate.ToDateTime(TimeSlot.End))
             throw new DomainValidationException(DomainErrors.Appointment.CheckInAfterEndTime);
 
         if (Status is not AppointmentStatus.Scheduled)
@@ -201,7 +201,7 @@ public class Appointment : BaseEntity
         if (DateOnly.FromDateTime(startedAt) != ScheduledDate)
             throw new DomainValidationException(DomainErrors.Appointment.InvalidStartDate);
 
-        if (startedAt < ScheduledDate.ToDateTime(TimeRange.Start))
+        if (startedAt < ScheduledDate.ToDateTime(TimeSlot.Start))
             throw new DomainValidationException(DomainErrors.Appointment.InvalidStartDate);
 
         if (initiatorDoctorId != DoctorId)
@@ -218,7 +218,7 @@ public class Appointment : BaseEntity
 
     internal void Complete(DateTime completedAt)
     {
-        if (completedAt < ScheduledDate.ToDateTime(TimeRange.Start))
+        if (completedAt < ScheduledDate.ToDateTime(TimeSlot.Start))
             throw new DomainValidationException(DomainErrors.Appointment.InvalidCompletionDate);
 
         if (StartedAt.HasValue && completedAt < StartedAt.Value)
@@ -260,7 +260,7 @@ public class Appointment : BaseEntity
 
         DoctorId = newDoctorId;
         ScheduledDate = newDate;
-        TimeRange = newTimeRange;
+        TimeSlot = newTimeRange;
         Status = AppointmentStatus.Scheduled;
 
         AddDomainEvent(new AppointmentReassignedEvent(this, previousDoctorId));

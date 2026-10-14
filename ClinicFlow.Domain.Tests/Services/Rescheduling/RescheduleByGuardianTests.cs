@@ -117,7 +117,7 @@ public class RescheduleByGuardianTests
                 CreateAppointment(Guid.CreateVersion7()),
                 CreateValidGuardianReschedulingArgs() with
                 {
-                    NewTimeRange = null!,
+                    NewTimeSlot = null!,
                 },
                 new PatientReschedulingContext
                 {
@@ -205,7 +205,7 @@ public class RescheduleByGuardianTests
             InitiatorMembership = CreateParentMembership(authorId),
             InitiatorUserId = authorId,
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
-            NewTimeRange = CreateTimeRange(),
+            NewTimeSlot = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
         };
 
@@ -243,7 +243,7 @@ public class RescheduleByGuardianTests
             InitiatorMembership = CreateSelfMembership(),
             InitiatorUserId = Guid.CreateVersion7(),
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
-            NewTimeRange = CreateTimeRange(),
+            NewTimeSlot = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
         };
 
@@ -288,7 +288,7 @@ public class RescheduleByGuardianTests
             ),
             InitiatorUserId = userId,
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
-            NewTimeRange = CreateTimeRange(),
+            NewTimeSlot = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
         };
 
@@ -348,7 +348,7 @@ public class RescheduleByGuardianTests
             InitiatorMembership = CreateParentMembership(authorId),
             InitiatorUserId = authorId,
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
-            NewTimeRange = CreateTimeRange(),
+            NewTimeSlot = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
             NewGuardianNotes = null,
         };
@@ -408,7 +408,7 @@ public class RescheduleByGuardianTests
             InitiatorMembership = CreateParentMembership(authorId),
             InitiatorUserId = authorId,
             NewDate = newDate,
-            NewTimeRange = CreateTimeRange(),
+            NewTimeSlot = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
             NewGuardianNotes = null,
         };
@@ -464,7 +464,7 @@ public class RescheduleByGuardianTests
             InitiatorMembership = CreateParentMembership(otherGuardianId),
             InitiatorUserId = otherGuardianId,
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
-            NewTimeRange = CreateTimeRange(),
+            NewTimeSlot = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
             NewGuardianNotes = "new notes",
         };
@@ -507,7 +507,7 @@ public class RescheduleByGuardianTests
             InitiatorMembership = CreateParentMembership(authorId),
             InitiatorUserId = authorId,
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
-            NewTimeRange = CreateTimeRange(),
+            NewTimeSlot = CreateTimeRange(),
             IsInitiatorPhoneVerified = false,
         };
 
@@ -546,7 +546,7 @@ public class RescheduleByGuardianTests
             InitiatorMembership = CreateParentMembership(authorId),
             InitiatorUserId = authorId,
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
-            NewTimeRange = CreateTimeRange(),
+            NewTimeSlot = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
         };
 
@@ -594,7 +594,7 @@ public class RescheduleByGuardianTests
             InitiatorMembership = CreateParentMembership(authorId),
             InitiatorUserId = authorId,
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
-            NewTimeRange = TimeRange.Create(new TimeOnly(18, 0), new TimeOnly(19, 0)),
+            NewTimeSlot = TimeRange.Create(new TimeOnly(18, 0), new TimeOnly(19, 0)),
             IsInitiatorPhoneVerified = true,
         };
 
@@ -642,7 +642,7 @@ public class RescheduleByGuardianTests
             InitiatorMembership = CreateParentMembership(authorId),
             InitiatorUserId = authorId,
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
-            NewTimeRange = CreateTimeRange(),
+            NewTimeSlot = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
             NewGuardianNotes = "new notes",
         };
@@ -692,7 +692,7 @@ public class RescheduleByGuardianTests
             InitiatorMembership = CreateParentMembership(authorId),
             InitiatorUserId = authorId,
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
-            NewTimeRange = CreateTimeRange(),
+            NewTimeSlot = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
             NewGuardianNotes = null,
         };
@@ -771,7 +771,7 @@ public class RescheduleByGuardianTests
             TargetPatient = CreateMinorPatient(),
             InitiatorMembership = CreateParentMembership(Guid.CreateVersion7()),
             InitiatorUserId = Guid.CreateVersion7(),
-            NewTimeRange = CreateTimeRange(),
+            NewTimeSlot = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
         };
 

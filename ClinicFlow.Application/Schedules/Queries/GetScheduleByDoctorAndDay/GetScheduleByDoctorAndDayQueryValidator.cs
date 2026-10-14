@@ -9,6 +9,6 @@ public sealed class GetScheduleByDoctorAndDayQueryValidator
     public GetScheduleByDoctorAndDayQueryValidator()
     {
         RuleFor(x => x.DoctorId).NotEmpty().WithMessage(DomainErrors.Validation.InvalidValue);
-        RuleFor(x => x.DayOfWeek).IsInEnum().WithMessage(DomainErrors.Validation.InvalidEnumValue);
+        RuleFor(x => x.Weekday).IsInEnum().WithMessage(DomainErrors.Validation.InvalidEnumValue);
     }
 }

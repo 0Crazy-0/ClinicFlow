@@ -77,7 +77,7 @@ public class ScheduleByStaffTests
                 CreateAppointmentType(),
                 CreateValidStaffSchedulingArgs() with
                 {
-                    TimeRange = null!,
+                    RequestedTimeSlot = null!,
                 },
                 CreateSchedule(),
                 SchedulingClearance.Granted()
@@ -138,7 +138,7 @@ public class ScheduleByStaffTests
             InitiatorUserId = Guid.CreateVersion7(),
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
-            TimeRange = CreateTimeRange(),
+            RequestedTimeSlot = CreateTimeRange(),
             HasGuardianConsentVerified = false,
         };
 
@@ -186,7 +186,7 @@ public class ScheduleByStaffTests
             TargetPatient = target,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
-            TimeRange = CreateTimeRange(),
+            RequestedTimeSlot = CreateTimeRange(),
             HasGuardianConsentVerified = false,
         };
 
@@ -218,7 +218,7 @@ public class ScheduleByStaffTests
             TargetPatient = target,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
-            TimeRange = TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(18, 0)),
+            RequestedTimeSlot = TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(18, 0)),
             HasGuardianConsentVerified = false,
         };
 
@@ -251,7 +251,7 @@ public class ScheduleByStaffTests
             InitiatorUserId = Guid.CreateVersion7(),
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
-            TimeRange = CreateTimeRange(),
+            RequestedTimeSlot = CreateTimeRange(),
             HasGuardianConsentVerified = false,
         };
 
@@ -275,13 +275,13 @@ public class ScheduleByStaffTests
         appointment.PatientId.Should().Be(target.Id);
         appointment.DoctorId.Should().Be(args.DoctorId);
         appointment.ScheduledDate.Should().Be(args.ScheduledDate);
-        appointment.TimeRange.Should().Be(args.TimeRange);
+        appointment.TimeSlot.Should().Be(args.RequestedTimeSlot);
         appointment.Status.Should().Be(AppointmentStatus.Scheduled);
         appointment.ScheduledByUserId.Should().Be(args.InitiatorUserId);
     }
 
     private StaffSchedulingArgs CreateValidStaffSchedulingArgs() =>
-        new() { TargetPatient = CreateSelfPatient(), TimeRange = CreateTimeRange() };
+        new() { TargetPatient = CreateSelfPatient(), RequestedTimeSlot = CreateTimeRange() };
 
     private static TimeRange CreateTimeRange() =>
         TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0));

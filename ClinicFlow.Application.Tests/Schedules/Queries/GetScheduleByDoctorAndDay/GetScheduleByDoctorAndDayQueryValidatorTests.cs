@@ -39,7 +39,7 @@ public class GetScheduleByDoctorAndDayQueryValidatorTests
 
         // Assert
         result
-            .ShouldHaveValidationErrorFor(x => x.DayOfWeek)
+            .ShouldHaveValidationErrorFor(x => x.Weekday)
             .WithErrorMessage(DomainErrors.Validation.InvalidEnumValue);
     }
 
@@ -54,6 +54,6 @@ public class GetScheduleByDoctorAndDayQueryValidatorTests
 
         // Assert
         result.ShouldNotHaveValidationErrorFor(x => x.DoctorId);
-        result.ShouldNotHaveValidationErrorFor(x => x.DayOfWeek);
+        result.ShouldNotHaveValidationErrorFor(x => x.Weekday);
     }
 }

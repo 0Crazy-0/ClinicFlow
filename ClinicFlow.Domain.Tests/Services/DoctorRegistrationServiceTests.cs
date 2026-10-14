@@ -21,7 +21,7 @@ public class DoctorRegistrationServiceTests
             LicenseNumber = MedicalLicenseNumber.Create("12345"),
             MedicalSpecialtyId = Guid.CreateVersion7(),
             Biography = "Cardiologist",
-            ConsultationRoom = ConsultationRoom.Create(1, "Room A", 1),
+            Room = ConsultationRoom.Create(1, "Room A", 1),
         };
 
         // Act
@@ -34,7 +34,7 @@ public class DoctorRegistrationServiceTests
         doctor.LicenseNumber.Should().Be(args.LicenseNumber);
         doctor.MedicalSpecialtyId.Should().Be(args.MedicalSpecialtyId);
         doctor.Biography.Should().Be(args.Biography);
-        doctor.ConsultationRoom.Should().Be(args.ConsultationRoom);
+        doctor.Room.Should().Be(args.Room);
     }
 
     [Fact]
@@ -57,7 +57,7 @@ public class DoctorRegistrationServiceTests
             LicenseNumber = MedicalLicenseNumber.Create("12345"),
             MedicalSpecialtyId = Guid.CreateVersion7(),
             Biography = "Cardiologist",
-            ConsultationRoom = ConsultationRoom.Create(1, "Room A", 1),
+            Room = ConsultationRoom.Create(1, "Room A", 1),
         };
 
         // Act

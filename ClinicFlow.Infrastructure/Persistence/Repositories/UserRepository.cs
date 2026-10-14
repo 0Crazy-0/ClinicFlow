@@ -56,7 +56,7 @@ public sealed class UserRepository(ApplicationDbContext dbContext) : IUserReposi
         var normalizedPhoneNumber = PhoneNumber.Create(phoneNumber);
 
         return await dbContext.Users.AnyAsync(
-            user => user.PhoneNumber == normalizedPhoneNumber,
+            user => user.Phone == normalizedPhoneNumber,
             cancellationToken
         );
     }
@@ -92,7 +92,7 @@ public sealed class UserRepository(ApplicationDbContext dbContext) : IUserReposi
 
             query = query.Where(user =>
                 EF.Functions.ILike(user.Email, searchPattern, escapeChar)
-                || EF.Functions.ILike(user.PhoneNumber, searchPattern, escapeChar)
+                || EF.Functions.ILike(user.Phone, searchPattern, escapeChar)
             );
         }
 

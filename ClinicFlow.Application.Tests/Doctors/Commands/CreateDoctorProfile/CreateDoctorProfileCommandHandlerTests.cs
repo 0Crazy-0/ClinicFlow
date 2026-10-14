@@ -64,9 +64,9 @@ public class CreateDoctorProfileCommandHandlerTests
         capturedDoctor.LicenseNumber.Value.Should().Be(command.LicenseNumber);
         capturedDoctor.MedicalSpecialtyId.Should().Be(command.MedicalSpecialtyId);
         capturedDoctor.Biography.Should().Be(command.Biography);
-        capturedDoctor.ConsultationRoom.Number.Should().Be(command.ConsultationRoomNumber);
-        capturedDoctor.ConsultationRoom.Name.Should().Be(command.ConsultationRoomName);
-        capturedDoctor.ConsultationRoom.Floor.Should().Be(command.ConsultationRoomFloor);
+        capturedDoctor.Room.Number.Should().Be(command.ConsultationRoomNumber);
+        capturedDoctor.Room.Name.Should().Be(command.ConsultationRoomName);
+        capturedDoctor.Room.Floor.Should().Be(command.ConsultationRoomFloor);
     }
 
     [Fact]

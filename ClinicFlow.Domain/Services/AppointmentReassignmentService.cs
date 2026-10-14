@@ -18,15 +18,15 @@ public static class AppointmentReassignmentService
     {
         ArgumentNullException.ThrowIfNull(appointment);
         ArgumentNullException.ThrowIfNull(args);
-        ArgumentNullException.ThrowIfNull(args.NewTimeRange);
+        ArgumentNullException.ThrowIfNull(args.NewTimeSlot);
         ArgumentNullException.ThrowIfNull(newDoctorSchedule);
 
         newDoctorSchedule.EnsureDoctorIsAvailable(
             args.NewDoctorId,
             args.NewDate.DayOfWeek,
-            args.NewTimeRange
+            args.NewTimeSlot
         );
 
-        appointment.Reassign(args.NewDoctorId, args.NewDate, args.NewTimeRange);
+        appointment.Reassign(args.NewDoctorId, args.NewDate, args.NewTimeSlot);
     }
 }

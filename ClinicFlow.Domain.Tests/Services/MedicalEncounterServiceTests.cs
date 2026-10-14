@@ -135,7 +135,7 @@ public class MedicalEncounterServiceTests
                 record,
                 CreateValidContext() with
                 {
-                    Appointment = null!,
+                    TargetAppointment = null!,
                 }
             );
 
@@ -155,7 +155,7 @@ public class MedicalEncounterServiceTests
                 record,
                 CreateValidContext() with
                 {
-                    AppointmentTypeDefinition = null!,
+                    AppointmentType = null!,
                 }
             );
 
@@ -174,8 +174,8 @@ public class MedicalEncounterServiceTests
         var context = new MedicalEncounterContext
         {
             ExpectedDoctor = CreateDoctor(expectedDoctorId),
-            Appointment = CreateAppointment(appointmentId),
-            AppointmentTypeDefinition = CreateAppointmentType(),
+            TargetAppointment = CreateAppointment(appointmentId),
+            AppointmentType = CreateAppointmentType(),
             CompletedAt = _fakeTime.GetUtcNow().UtcDateTime,
         };
 
@@ -199,8 +199,8 @@ public class MedicalEncounterServiceTests
         var context = new MedicalEncounterContext
         {
             ExpectedDoctor = CreateDoctor(doctorId),
-            Appointment = CreateAppointment(expectedAppointmentId),
-            AppointmentTypeDefinition = CreateAppointmentType(),
+            TargetAppointment = CreateAppointment(expectedAppointmentId),
+            AppointmentType = CreateAppointmentType(),
             CompletedAt = _fakeTime.GetUtcNow().UtcDateTime,
         };
 
@@ -230,8 +230,8 @@ public class MedicalEncounterServiceTests
         var context = new MedicalEncounterContext
         {
             ExpectedDoctor = CreateDoctor(doctorId),
-            Appointment = CreateAppointment(appointmentId),
-            AppointmentTypeDefinition = appointmentType,
+            TargetAppointment = CreateAppointment(appointmentId),
+            AppointmentType = appointmentType,
             CompletedAt = _fakeTime.GetUtcNow().UtcDateTime,
         };
 
@@ -256,8 +256,8 @@ public class MedicalEncounterServiceTests
         var context = new MedicalEncounterContext
         {
             ExpectedDoctor = CreateDoctor(doctorId),
-            Appointment = CreateAppointment(appointmentId),
-            AppointmentTypeDefinition = appointmentType,
+            TargetAppointment = CreateAppointment(appointmentId),
+            AppointmentType = appointmentType,
             CompletedAt = _fakeTime.GetUtcNow().UtcDateTime,
         };
 
@@ -285,8 +285,8 @@ public class MedicalEncounterServiceTests
         var context = new MedicalEncounterContext
         {
             ExpectedDoctor = CreateDoctor(doctorId),
-            Appointment = CreateAppointment(appointmentId),
-            AppointmentTypeDefinition = appointmentType,
+            TargetAppointment = CreateAppointment(appointmentId),
+            AppointmentType = appointmentType,
             CompletedAt = _fakeTime.GetUtcNow().UtcDateTime,
         };
 
@@ -294,9 +294,9 @@ public class MedicalEncounterServiceTests
         _sut.ValidateAndCompleteRecord(record, context);
 
         // Assert
-        context.Appointment.Status.Should().Be(AppointmentStatus.Completed);
+        context.TargetAppointment.Status.Should().Be(AppointmentStatus.Completed);
         context
-            .Appointment.DomainEvents.OfType<AppointmentCompletedEvent>()
+            .TargetAppointment.DomainEvents.OfType<AppointmentCompletedEvent>()
             .Should()
             .ContainSingle();
     }
@@ -614,8 +614,8 @@ public class MedicalEncounterServiceTests
         new()
         {
             ExpectedDoctor = CreateDoctor(Guid.CreateVersion7()),
-            Appointment = CreateAppointment(Guid.CreateVersion7()),
-            AppointmentTypeDefinition = CreateAppointmentType(),
+            TargetAppointment = CreateAppointment(Guid.CreateVersion7()),
+            AppointmentType = CreateAppointmentType(),
             CompletedAt = _fakeTime.GetUtcNow().UtcDateTime,
         };
 
@@ -665,7 +665,7 @@ public class MedicalEncounterServiceTests
         );
 
         appointment.SetId(id);
-        appointment.CheckIn(appointment.ScheduledDate.ToDateTime(appointment.TimeRange.Start));
+        appointment.CheckIn(appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start));
         appointment.Start(
             appointment.DoctorId,
             appointment.ScheduledDate.ToDateTime(new TimeOnly(10, 15))
@@ -685,7 +685,7 @@ public class MedicalEncounterServiceTests
             Guid.CreateVersion7()
         );
 
-        appointment.CheckIn(appointment.ScheduledDate.ToDateTime(appointment.TimeRange.Start));
+        appointment.CheckIn(appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start));
         appointment.Start(
             appointment.DoctorId,
             appointment.ScheduledDate.ToDateTime(new TimeOnly(10, 15))

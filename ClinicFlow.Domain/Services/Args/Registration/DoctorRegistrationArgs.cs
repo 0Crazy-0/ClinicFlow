@@ -9,5 +9,5 @@ public sealed record DoctorRegistrationArgs
     public required MedicalLicenseNumber LicenseNumber { get; init; }
     public Guid MedicalSpecialtyId { get; init; }
     public required string Biography { get; init; }
-    public required ConsultationRoom ConsultationRoom { get; init; }
+    public required ConsultationRoom Room { get; init; }
 }
