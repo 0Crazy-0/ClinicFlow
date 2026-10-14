@@ -164,6 +164,33 @@ public class PrimaryProfileRegistrationServiceTests
             .WithMessage(DomainErrors.FamilyMembership.PatientTooYoungForSelfMembership);
     }
 
+    [Fact]
+    public void Register_ShouldThrowDataMismatch_WhenExistingPatientSexDiffers()
+    {
+        // Arrange
+        var existingPatient = Patient.CreateProfile(
+            PersonName.Create("Test Patient"),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            BiologicalSex.Male,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        var userId = Guid.CreateVersion7();
+        var args = CreateArgs(userId) with
+        {
+            ExistingPatient = existingPatient,
+            SexAtBirth = BiologicalSex.Female,
+        };
+
+        // Act
+        var act = () => PrimaryProfileRegistrationService.Register(args);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Patient.DataMismatch);
+    }
+
     private PrimaryProfileRegistrationArgs CreateArgs(Guid userId) =>
         new()
         {
