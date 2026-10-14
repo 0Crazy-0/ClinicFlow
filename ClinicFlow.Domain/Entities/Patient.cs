@@ -1,4 +1,6 @@
 using ClinicFlow.Domain.Common;
+using ClinicFlow.Domain.Enums;
+using ClinicFlow.Domain.Events.Patients;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Exceptions.Patients;
 using ClinicFlow.Domain.ValueObjects;
@@ -15,6 +17,8 @@ public class Patient : BaseEntity
 
     public DateOnly DateOfBirth { get; private set; }
 
+    public BiologicalSex SexAtBirth { get; private set; }
+
     public BloodType BloodGroup { get; private set; } = null!;
 
     // Stryker disable once String
@@ -28,25 +32,28 @@ public class Patient : BaseEntity
     // EF Core constructor
     private Patient() { }
 
-    private Patient(PersonName fullName, DateOnly dateOfBirth)
+    private Patient(PersonName fullName, DateOnly dateOfBirth, BiologicalSex biologicalSex)
         : this()
     {
         FullName = fullName;
         DateOfBirth = dateOfBirth;
+        SexAtBirth = biologicalSex;
     }
 
     internal static Patient CreateProfile(
         PersonName fullName,
         DateOnly dateOfBirth,
+        BiologicalSex biologicalSex,
         DateTime referenceTime
     )
     {
         Guard.NotNull(fullName);
+        Guard.IsDefined(biologicalSex);
 
         if (dateOfBirth > DateOnly.FromDateTime(referenceTime))
             throw new DomainValidationException(DomainErrors.Validation.ValueCannotBeInFuture);
 
-        return new Patient(fullName, dateOfBirth);
+        return new Patient(fullName, dateOfBirth, biologicalSex);
     }
 
     public void UpdateMedicalProfile(

@@ -353,6 +353,7 @@ public class GrantAppointmentCategoryConsentCommandHandlerTests
         Patient.CreateProfile(
             PersonName.Create("Jane Doe"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime).AddYears(-15),
+            BiologicalSex.Male,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 

@@ -309,6 +309,7 @@ public class ScheduleByGuardianTests
         var incompletePatient = Patient.CreateProfile(
             PersonName.Create("Child"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10)),
+            BiologicalSex.Male,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -482,6 +483,7 @@ public class ScheduleByGuardianTests
         var patientAdult = Patient.CreateProfile(
             PersonName.Create("Adult"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-25)),
+            BiologicalSex.Male,
             _fakeTime.GetUtcNow().UtcDateTime
         );
         patientAdult.UpdateMedicalProfile(BloodType.Create("A+"), "", "");
@@ -532,6 +534,7 @@ public class ScheduleByGuardianTests
         var target = Patient.CreateProfile(
             PersonName.Create("Child"),
             scheduledDate.AddYears(-FamilyMembership.MinimumAdultAge),
+            BiologicalSex.Male,
             _fakeTime.GetUtcNow().UtcDateTime
         );
         target.UpdateMedicalProfile(BloodType.Create("A+"), "", "");
@@ -708,6 +711,7 @@ public class ScheduleByGuardianTests
         var patient = Patient.CreateProfile(
             PersonName.Create("Child"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10)),
+            BiologicalSex.Male,
             _fakeTime.GetUtcNow().UtcDateTime
         );
         patient.UpdateMedicalProfile(BloodType.Create("A+"), "", "");

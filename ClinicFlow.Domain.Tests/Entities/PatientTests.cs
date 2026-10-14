@@ -1,6 +1,8 @@
 using AwesomeAssertions;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
+using ClinicFlow.Domain.Enums;
+using ClinicFlow.Domain.Events.Patients;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Exceptions.Patients;
 using ClinicFlow.Domain.ValueObjects;
@@ -16,16 +18,19 @@ public class PatientTests
     public void CreateProfile_ShouldCreatePatient_WhenValidParameters()
     {
         // Arrange
+        var fullName = PersonName.Create("John Doe");
         var dateOfBirth = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30));
         var bloodType = BloodType.Create("O+");
         var allergies = "Penicillin";
         var chronicConditions = "None";
         var emergencyContact = EmergencyContact.Create("Mom", "555-5555");
+        var sexAtBirth = BiologicalSex.Female;
 
         // Act
         var patient = Patient.CreateProfile(
-            PersonName.Create("John Doe"),
+            fullName,
             dateOfBirth,
+            sexAtBirth,
             _fakeTime.GetUtcNow().UtcDateTime
         );
         patient.UpdateMedicalProfile(bloodType, allergies, chronicConditions);
@@ -33,12 +38,39 @@ public class PatientTests
 
         // Assert
         patient.Should().NotBeNull();
-        patient.FullName.Should().Be(PersonName.Create("John Doe"));
+        patient.FullName.Should().Be(fullName);
         patient.DateOfBirth.Should().Be(dateOfBirth);
+        patient.SexAtBirth.Should().Be(sexAtBirth);
         patient.BloodGroup.Should().Be(bloodType);
         patient.Allergies.Should().Be(allergies);
         patient.ChronicConditions.Should().Be(chronicConditions);
         patient.Contact.Should().Be(emergencyContact);
+    }
+
+    [Theory]
+    [InlineData(BiologicalSex.Male)]
+    [InlineData(BiologicalSex.Female)]
+    public void CreateProfile_ShouldSetBiologicalSex_WhenValidParameters(
+        BiologicalSex biologicalSex
+    )
+    {
+        // Arrange
+        var fullName = PersonName.Create("John Doe");
+        var dateOfBirth = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30));
+
+        // Act
+        var patient = Patient.CreateProfile(
+            fullName,
+            dateOfBirth,
+            biologicalSex,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        // Assert
+        patient.Should().NotBeNull();
+        patient.FullName.Should().Be(fullName);
+        patient.DateOfBirth.Should().Be(dateOfBirth);
+        patient.SexAtBirth.Should().Be(biologicalSex);
     }
 
     [Fact]
@@ -49,6 +81,7 @@ public class PatientTests
             Patient.CreateProfile(
                 PersonName.Create("John Doe"),
                 DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
+                BiologicalSex.Male,
                 _fakeTime.GetUtcNow().UtcDateTime
             );
 
@@ -66,6 +99,7 @@ public class PatientTests
             Patient.CreateProfile(
                 null!,
                 DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+                BiologicalSex.Male,
                 _fakeTime.GetUtcNow().UtcDateTime
             );
 
@@ -73,6 +107,24 @@ public class PatientTests
         act.Should()
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
+    public void CreateProfile_ShouldThrowDomainValidationException_WhenBiologicalSexIsUndefined()
+    {
+        // Arrange & Act
+        var act = () =>
+            Patient.CreateProfile(
+                PersonName.Create("Crazy"),
+                DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-67)),
+                (BiologicalSex)967,
+                _fakeTime.GetUtcNow().UtcDateTime
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.InvalidEnumValue);
     }
 
     [Fact]
@@ -84,7 +136,12 @@ public class PatientTests
 
         // Act
         var act = () =>
-            Patient.CreateProfile(PersonName.Create("John Doe"), dateOfBirth, referenceTime);
+            Patient.CreateProfile(
+                PersonName.Create("John Doe"),
+                dateOfBirth,
+                BiologicalSex.Male,
+                referenceTime
+            );
 
         // Assert
         act.Should().NotThrow();
@@ -97,6 +154,7 @@ public class PatientTests
         var patient = Patient.CreateProfile(
             PersonName.Create("John Doe"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            BiologicalSex.Male,
             _fakeTime.GetUtcNow().UtcDateTime
         );
         patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
@@ -113,6 +171,7 @@ public class PatientTests
         var patient = Patient.CreateProfile(
             PersonName.Create("John Doe"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            BiologicalSex.Male,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -131,6 +190,7 @@ public class PatientTests
         var patient = Patient.CreateProfile(
             PersonName.Create("John Doe"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            BiologicalSex.Male,
             _fakeTime.GetUtcNow().UtcDateTime
         );
         patient.UpdateEmergencyContact(EmergencyContact.Create("Mom", "555-5555"));
@@ -150,6 +210,7 @@ public class PatientTests
         var patient = Patient.CreateProfile(
             PersonName.Create("John Doe"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            BiologicalSex.Male,
             _fakeTime.GetUtcNow().UtcDateTime
         );
         patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
@@ -169,6 +230,7 @@ public class PatientTests
         var patient = Patient.CreateProfile(
             PersonName.Create("John Doe"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            BiologicalSex.Male,
             _fakeTime.GetUtcNow().UtcDateTime
         );
         var bloodType = BloodType.Create("A-");
@@ -191,6 +253,7 @@ public class PatientTests
         var patient = Patient.CreateProfile(
             PersonName.Create("John Doe"),
             DateOnly.FromDateTime(referenceTime.AddYears(-yearsAgo)),
+            BiologicalSex.Male,
             referenceTime
         );
 
@@ -209,6 +272,7 @@ public class PatientTests
         var patient = Patient.CreateProfile(
             PersonName.Create("John Doe"),
             new DateOnly(2000, 6, 20),
+            BiologicalSex.Male,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 

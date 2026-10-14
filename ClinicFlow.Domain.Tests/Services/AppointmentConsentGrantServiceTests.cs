@@ -215,6 +215,7 @@ public class AppointmentConsentGrantServiceTests
             DateOnly
                 .FromDateTime(_fakeTime.GetUtcNow().UtcDateTime)
                 .AddYears(-DomainRules.AdultAge),
+            BiologicalSex.Male,
             _fakeTime.GetUtcNow().UtcDateTime
         );
         var requesterUserId = Guid.CreateVersion7();
@@ -249,6 +250,7 @@ public class AppointmentConsentGrantServiceTests
         var patient = Patient.CreateProfile(
             PersonName.Create("Jane Doe"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime).AddYears(-10),
+            BiologicalSex.Male,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -615,6 +617,7 @@ public class AppointmentConsentGrantServiceTests
             DateOnly
                 .FromDateTime(_fakeTime.GetUtcNow().UtcDateTime)
                 .AddYears(-DomainRules.AdultAge),
+            BiologicalSex.Male,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -758,6 +761,7 @@ public class AppointmentConsentGrantServiceTests
         var patient = Patient.CreateProfile(
             PersonName.Create("Jane Doe"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime).AddYears(-10),
+            BiologicalSex.Male,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -869,6 +873,7 @@ public class AppointmentConsentGrantServiceTests
         Patient.CreateProfile(
             PersonName.Create("Crazy"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime).AddYears(-15),
+            BiologicalSex.Male,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 

@@ -27,6 +27,7 @@ public class PrimaryProfileRegistrationServiceTests
         // Assert
         patient.FullName.Should().Be(args.FullName);
         patient.DateOfBirth.Should().Be(args.DateOfBirth);
+        patient.SexAtBirth.Should().Be(args.SexAtBirth);
 
         membership.PatientId.Should().Be(patient.Id);
         membership.UserId.Should().Be(userId);
@@ -42,6 +43,7 @@ public class PrimaryProfileRegistrationServiceTests
         var existingPatient = Patient.CreateProfile(
             PersonName.Create("Test Patient"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            BiologicalSex.Male,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -146,6 +148,7 @@ public class PrimaryProfileRegistrationServiceTests
         var existingPatient = Patient.CreateProfile(
             PersonName.Create("Test Patient"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-11)),
+            BiologicalSex.Male,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -167,6 +170,7 @@ public class PrimaryProfileRegistrationServiceTests
             UserId = userId,
             FullName = PersonName.Create("Test Patient"),
             DateOfBirth = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            SexAtBirth = BiologicalSex.Male,
             ReferenceTime = _fakeTime.GetUtcNow().UtcDateTime,
         };
 }

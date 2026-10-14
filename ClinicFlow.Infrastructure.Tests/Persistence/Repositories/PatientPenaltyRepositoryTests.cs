@@ -838,6 +838,7 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
         var patient = Patient.CreateProfile(
             PersonName.Create("John Doe"),
             DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime.AddYears(-30)),
+            BiologicalSex.Male,
             _fakeTime.GetLocalNow().DateTime
         );
 

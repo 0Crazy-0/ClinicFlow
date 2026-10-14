@@ -1,5 +1,6 @@
 using ClinicFlow.Application.Patients.Commands.CreatePatientProfile;
 using ClinicFlow.Domain.Common;
+using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.ValueObjects;
 using FluentValidation.TestHelper;
 using Microsoft.Extensions.Time.Testing;
@@ -24,7 +25,8 @@ public class CreatePatientProfileCommandValidatorTests
             Guid.CreateVersion7(),
             "John",
             "Doe",
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30))
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            BiologicalSex.Male
         );
 
         // Act
@@ -42,7 +44,8 @@ public class CreatePatientProfileCommandValidatorTests
             Guid.Empty,
             "John",
             "Doe",
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30))
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            BiologicalSex.Male
         );
 
         // Act
@@ -65,7 +68,8 @@ public class CreatePatientProfileCommandValidatorTests
             Guid.CreateVersion7(),
             firstName!,
             "Doe",
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30))
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            BiologicalSex.Male
         );
 
         // Act
@@ -85,7 +89,8 @@ public class CreatePatientProfileCommandValidatorTests
             Guid.CreateVersion7(),
             "J",
             "Doe",
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30))
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            BiologicalSex.Male
         );
 
         // Act
@@ -105,7 +110,8 @@ public class CreatePatientProfileCommandValidatorTests
             Guid.CreateVersion7(),
             new string('A', PersonName.MaximumLength + 1),
             "Doe",
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30))
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            BiologicalSex.Male
         );
 
         // Act
@@ -128,7 +134,8 @@ public class CreatePatientProfileCommandValidatorTests
             Guid.CreateVersion7(),
             "John",
             lastName!,
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30))
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            BiologicalSex.Male
         );
 
         // Act
@@ -148,7 +155,8 @@ public class CreatePatientProfileCommandValidatorTests
             Guid.CreateVersion7(),
             "John",
             "D",
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30))
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            BiologicalSex.Male
         );
 
         // Act
@@ -168,7 +176,8 @@ public class CreatePatientProfileCommandValidatorTests
             Guid.CreateVersion7(),
             "John",
             new string('A', PersonName.MaximumLength + 1),
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30))
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            BiologicalSex.Male
         );
 
         // Act
@@ -188,7 +197,8 @@ public class CreatePatientProfileCommandValidatorTests
             Guid.CreateVersion7(),
             "John",
             "Doe",
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1))
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
+            BiologicalSex.Male
         );
 
         // Act
@@ -198,5 +208,26 @@ public class CreatePatientProfileCommandValidatorTests
         result
             .ShouldHaveValidationErrorFor(x => x.DateOfBirth)
             .WithErrorMessage(DomainErrors.Validation.ValueCannotBeInFuture);
+    }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenBiologicalSexIsInvalid()
+    {
+        // Arrange
+        var command = new CreatePatientProfileCommand(
+            Guid.CreateVersion7(),
+            "John",
+            "Doe",
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            (BiologicalSex)999
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.SexAtBirth)
+            .WithErrorMessage(DomainErrors.Validation.InvalidEnumValue);
     }
 }

@@ -34,7 +34,12 @@ public static class FamilyMemberRegistrationService
 
         var patient =
             args.ExistingPatient
-            ?? Patient.CreateProfile(args.FullName, args.DateOfBirth, args.ReferenceTime);
+            ?? Patient.CreateProfile(
+                args.FullName,
+                args.DateOfBirth,
+                args.SexAtBirth,
+                args.ReferenceTime
+            );
 
         var membership = FamilyMembership.CreateFamilyMember(
             patient.Id,

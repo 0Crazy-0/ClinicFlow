@@ -616,6 +616,7 @@ public class RescheduleByPatientTests
         var target = Patient.CreateProfile(
             PersonName.Create("Test"),
             newDate.AddYears(-FamilyMembership.MinimumAdultAge),
+            BiologicalSex.Male,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -766,6 +767,7 @@ public class RescheduleByPatientTests
         var patient = Patient.CreateProfile(
             PersonName.Create("Child"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10)),
+            BiologicalSex.Male,
             _fakeTime.GetUtcNow().UtcDateTime
         );
         patient.UpdateMedicalProfile(BloodType.Create("A+"), "", "");
@@ -813,6 +815,7 @@ public class RescheduleByPatientTests
         var patient = Patient.CreateProfile(
             PersonName.Create("Test"),
             dateOfBirth,
+            BiologicalSex.Male,
             _fakeTime.GetUtcNow().UtcDateTime
         );
         patient.UpdateMedicalProfile(BloodType.Create("A+"), "", "");

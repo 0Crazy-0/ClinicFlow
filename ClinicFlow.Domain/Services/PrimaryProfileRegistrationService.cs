@@ -25,7 +25,12 @@ public static class PrimaryProfileRegistrationService
 
         var patient =
             args.ExistingPatient
-            ?? Patient.CreateProfile(args.FullName, args.DateOfBirth, args.ReferenceTime);
+            ?? Patient.CreateProfile(
+                args.FullName,
+                args.DateOfBirth,
+                args.SexAtBirth,
+                args.ReferenceTime
+            );
 
         if (patient.GetAge(DateOnly.FromDateTime(args.ReferenceTime)) < MinimumSelfAge)
             throw new DomainValidationException(

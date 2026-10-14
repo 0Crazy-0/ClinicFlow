@@ -612,6 +612,7 @@ public class GetFamilyMemberMedicalRecordsByPatientIdQueryHandlerTests
         return Patient.CreateProfile(
             PersonName.Create("John Doe"),
             DateOnly.FromDateTime(referenceTime.AddYears(-age)),
+            BiologicalSex.Male,
             referenceTime
         );
     }

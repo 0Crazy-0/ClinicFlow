@@ -43,6 +43,7 @@ public class FamilyMemberRegistrationServiceTests
         var existingPatient = Patient.CreateProfile(
             PersonName.Create("Test Patient"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            BiologicalSex.Male,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -148,6 +149,7 @@ public class FamilyMemberRegistrationServiceTests
             AccessLevel = FamilyMembershipAccessLevel.Full,
             FullName = PersonName.Create("Test Patient"),
             DateOfBirth = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            SexAtBirth = BiologicalSex.Male,
             ReferenceTime = _fakeTime.GetUtcNow().UtcDateTime,
         };
 }

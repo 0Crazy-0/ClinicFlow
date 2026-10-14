@@ -238,6 +238,7 @@ public class ScheduleByPatientTests
         var familyMember = Patient.CreateProfile(
             PersonName.Create("Spouse"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            BiologicalSex.Male,
             _fakeTime.GetUtcNow().UtcDateTime
         );
         familyMember.UpdateMedicalProfile(BloodType.Create("A+"), "", "");
@@ -332,6 +333,7 @@ public class ScheduleByPatientTests
         var incompletePatient = Patient.CreateProfile(
             PersonName.Create("Test"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            BiologicalSex.Male,
             _fakeTime.GetUtcNow().UtcDateTime
         );
         var args = new PatientSchedulingArgs
@@ -429,6 +431,7 @@ public class ScheduleByPatientTests
         var target = Patient.CreateProfile(
             PersonName.Create("Test"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-15)),
+            BiologicalSex.Male,
             _fakeTime.GetUtcNow().UtcDateTime
         );
         target.UpdateMedicalProfile(BloodType.Create("A+"), "", "");
@@ -482,6 +485,7 @@ public class ScheduleByPatientTests
         var target = Patient.CreateProfile(
             PersonName.Create("Child"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10)),
+            BiologicalSex.Male,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -543,6 +547,7 @@ public class ScheduleByPatientTests
         var target = Patient.CreateProfile(
             PersonName.Create("Child"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10)),
+            BiologicalSex.Male,
             _fakeTime.GetUtcNow().UtcDateTime
         );
         target.UpdateMedicalProfile(BloodType.Create("A+"), "", "");
@@ -835,6 +840,7 @@ public class ScheduleByPatientTests
         var patient = Patient.CreateProfile(
             PersonName.Create("Test"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            BiologicalSex.Male,
             _fakeTime.GetUtcNow().UtcDateTime
         );
         patient.UpdateMedicalProfile(BloodType.Create("A+"), "", "");

@@ -16,5 +16,6 @@ public sealed record FamilyMemberRegistrationArgs
     public FamilyMembershipAccessLevel AccessLevel { get; init; }
     public required PersonName FullName { get; init; }
     public DateOnly DateOfBirth { get; init; }
+    public BiologicalSex SexAtBirth { get; init; }
     public DateTime ReferenceTime { get; init; }
 }

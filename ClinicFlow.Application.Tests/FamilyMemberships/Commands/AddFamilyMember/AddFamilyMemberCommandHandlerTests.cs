@@ -63,12 +63,14 @@ public class AddFamilyMemberCommandHandlerTests
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-5)),
             PatientRelationship.Parent,
             LegalAuthorityType.Parent,
-            FamilyMembershipAccessLevel.Full
+            FamilyMembershipAccessLevel.Full,
+            BiologicalSex.Female
         );
 
         var ownerPatient = Patient.CreateProfile(
             PersonName.Create("Parent Doe"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-35)),
+            BiologicalSex.Male,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -119,6 +121,7 @@ public class AddFamilyMemberCommandHandlerTests
         capturedPatient.Should().NotBeNull();
         capturedPatient.FullName.ToString().Should().Be($"{command.FirstName} {command.LastName}");
         capturedPatient.DateOfBirth.Should().Be(command.DateOfBirth);
+        capturedPatient.SexAtBirth.Should().Be(command.SexAtBirth);
 
         capturedMembership.Should().NotBeNull();
         capturedMembership.PatientId.Should().Be(capturedPatient.Id);
@@ -139,12 +142,14 @@ public class AddFamilyMemberCommandHandlerTests
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-5)),
             PatientRelationship.Parent,
             LegalAuthorityType.Parent,
-            FamilyMembershipAccessLevel.Full
+            FamilyMembershipAccessLevel.Full,
+            BiologicalSex.Female
         );
 
         var ownerPatient = Patient.CreateProfile(
             PersonName.Create("Parent Doe"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-35)),
+            BiologicalSex.Male,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -212,7 +217,8 @@ public class AddFamilyMemberCommandHandlerTests
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-5)),
             PatientRelationship.Parent,
             LegalAuthorityType.Parent,
-            FamilyMembershipAccessLevel.Full
+            FamilyMembershipAccessLevel.Full,
+            BiologicalSex.Female
         );
 
         _familyMembershipRepositoryMock
@@ -264,7 +270,8 @@ public class AddFamilyMemberCommandHandlerTests
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-5)),
             PatientRelationship.Parent,
             LegalAuthorityType.Parent,
-            FamilyMembershipAccessLevel.Full
+            FamilyMembershipAccessLevel.Full,
+            BiologicalSex.Female
         );
 
         var ownerPatientId = Guid.CreateVersion7();

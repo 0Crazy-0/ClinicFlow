@@ -44,5 +44,6 @@ public sealed class AddFamilyMemberCommandValidator : AbstractValidator<AddFamil
         RuleFor(x => x.LegalAuthority)
             .IsInEnum()
             .WithMessage(DomainErrors.Validation.InvalidEnumValue);
+        RuleFor(x => x.SexAtBirth).IsInEnum().WithMessage(DomainErrors.Validation.InvalidEnumValue);
     }
 }

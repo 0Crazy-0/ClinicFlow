@@ -27,5 +27,6 @@ public sealed class CreatePatientProfileCommandValidator
         RuleFor(x => x.DateOfBirth)
             .LessThanOrEqualTo(_ => DateOnly.FromDateTime(timeProvider.GetLocalNow().DateTime))
             .WithMessage(DomainErrors.Validation.ValueCannotBeInFuture);
+        RuleFor(x => x.SexAtBirth).IsInEnum().WithMessage(DomainErrors.Validation.InvalidEnumValue);
     }
 }

@@ -922,6 +922,7 @@ public class ScheduleByGuardianCommandHandlerTests
         var patient = Patient.CreateProfile(
             PersonName.Create("Minor Patient"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10)),
+            BiologicalSex.Male,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 

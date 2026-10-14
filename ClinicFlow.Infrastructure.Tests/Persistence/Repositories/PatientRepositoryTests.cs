@@ -1,5 +1,6 @@
 using AwesomeAssertions;
 using ClinicFlow.Domain.Entities;
+using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.ValueObjects;
 using ClinicFlow.Infrastructure.Persistence;
 using ClinicFlow.Infrastructure.Persistence.Repositories;
@@ -36,6 +37,7 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         var patient = Patient.CreateProfile(
             PersonName.Create("New Patient"),
             new DateOnly(1990, 1, 1),
+            BiologicalSex.Male,
             _fakeTime.GetLocalNow().DateTime
         );
 
@@ -61,6 +63,7 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         var patient = Patient.CreateProfile(
             PersonName.Create("New Patient"),
             new DateOnly(1990, 1, 1),
+            BiologicalSex.Male,
             _fakeTime.GetLocalNow().DateTime
         );
 
@@ -142,6 +145,7 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         var patient = Patient.CreateProfile(
             PersonName.Create("fullName"),
             new DateOnly(1990, 1, 1),
+            BiologicalSex.Male,
             _fakeTime.GetLocalNow().DateTime
         );
 
