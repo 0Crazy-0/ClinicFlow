@@ -3,5 +3,7 @@ using ClinicFlow.Domain.Entities;
 
 namespace ClinicFlow.Domain.Events.Appointments;
 
-public sealed record AppointmentReassignedEvent(Appointment Appointment, Guid PreviousDoctorId)
-    : IDomainEvent;
+public sealed record AppointmentReassignedEvent(
+    Appointment SubjectAppointment,
+    Guid PreviousDoctorId
+) : IDomainEvent;

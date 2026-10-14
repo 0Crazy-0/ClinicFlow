@@ -3,4 +3,4 @@ using ClinicFlow.Domain.Entities;
 
 namespace ClinicFlow.Domain.Events.Appointments;
 
-public sealed record AppointmentSystemCancelledEvent(Appointment Appointment) : IDomainEvent;
+public sealed record AppointmentSystemCancelledEvent(Appointment SubjectAppointment) : IDomainEvent;

@@ -20,7 +20,7 @@ public sealed class AppointmentMarkedAsNoShowEventHandler(
         CancellationToken cancellationToken
     )
     {
-        var appointment = notification.DomainEvent.Appointment;
+        var appointment = notification.DomainEvent.SubjectAppointment;
 
         var existingPenalties = await patientPenaltyRepository.GetHistoryByPatientIdAsync(
             appointment.PatientId,
