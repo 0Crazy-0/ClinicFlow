@@ -1,5 +1,6 @@
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
+using ClinicFlow.Domain.Enums;
 using FluentValidation;
 
 namespace ClinicFlow.Application.Patients.Commands.CorrectBiologicalSexByDoctor;
@@ -15,7 +16,9 @@ public sealed class CorrectBiologicalSexByDoctorCommandValidator
             .WithMessage(DomainErrors.Validation.InvalidValue);
         RuleFor(x => x.CorrectedSex)
             .IsInEnum()
-            .WithMessage(DomainErrors.Validation.InvalidEnumValue);
+            .WithMessage(DomainErrors.Validation.InvalidEnumValue)
+            .NotEqual(BiologicalSex.Unspecified)
+            .WithMessage(DomainErrors.Validation.ValueRequired);
         RuleFor(x => x.Reason)
             .NotEmpty()
             .WithMessage(DomainErrors.Validation.ValueRequired)

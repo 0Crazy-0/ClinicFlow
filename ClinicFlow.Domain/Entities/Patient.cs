@@ -52,6 +52,9 @@ public class Patient : BaseEntity
         Guard.NotNull(fullName);
         Guard.IsDefined(biologicalSex);
 
+        if (biologicalSex is BiologicalSex.Unspecified)
+            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+
         if (dateOfBirth > DateOnly.FromDateTime(referenceTime))
             throw new DomainValidationException(DomainErrors.Validation.ValueCannotBeInFuture);
 
@@ -81,6 +84,10 @@ public class Patient : BaseEntity
     )
     {
         Guard.IsDefined(correctedSex);
+
+        if (correctedSex is BiologicalSex.Unspecified)
+            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+
         Guard.NotNullOrWhiteSpace(reason);
         Guard.NotEmpty(correctedByDoctorId);
 
