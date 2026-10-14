@@ -1,3 +1,4 @@
+using System.Globalization;
 using AwesomeAssertions;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
@@ -84,7 +85,26 @@ public class ScheduleByStaffTests
             );
 
         // Assert
-        act.Should().Throw<ArgumentNullException>();
+        act.Should().Throw<ArgumentNullException>().WithParameterName("args.RequestedTimeSlot");
+    }
+
+    [Fact]
+    public void ScheduleByStaff_ShouldThrowArgumentNullException_WhenClinicTimeZoneIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentSchedulingService.ScheduleByStaff(
+                CreateAppointmentType(),
+                CreateValidStaffSchedulingArgs() with
+                {
+                    ClinicTimeZone = null!,
+                },
+                CreateSchedule(),
+                SchedulingClearance.Granted()
+            );
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>().WithParameterName("args.ClinicTimeZone");
     }
 
     [Fact]
@@ -122,6 +142,46 @@ public class ScheduleByStaffTests
     }
 
     [Fact]
+    public void ScheduleByStaff_ShouldThrowBusinessRuleValidationException_WhenSlotIsAmbiguous()
+    {
+        // Arrange
+        _fakeTime.SetUtcNow(
+            DateTimeOffset.Parse("2026-11-01T12:00:00Z", CultureInfo.InvariantCulture)
+        );
+        var ambiguousDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+        var appointmentType = CreateAppointmentType();
+        var target = CreateSelfPatient();
+        var args = new StaffSchedulingArgs
+        {
+            TargetPatient = target,
+            InitiatorUserId = Guid.CreateVersion7(),
+            DoctorId = Guid.CreateVersion7(),
+            ScheduledDate = ambiguousDate,
+            RequestedTimeSlot = TimeRange.Create(new TimeOnly(1, 0), new TimeOnly(1, 30)),
+            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
+        };
+        var doctorSchedule = Schedule.Create(
+            args.DoctorId,
+            ambiguousDate.DayOfWeek,
+            TimeRange.Create(new TimeOnly(0, 0), new TimeOnly(23, 59))
+        );
+
+        // Act
+        var act = () =>
+            AppointmentSchedulingService.ScheduleByStaff(
+                appointmentType,
+                args,
+                doctorSchedule,
+                SchedulingClearance.Granted()
+            );
+
+        // Assert
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.Scheduling.AmbiguousTimeSlot);
+    }
+
+    [Fact]
     public void ScheduleByStaff_ShouldThrowIncompleteProfileException_WhenProfileIncomplete()
     {
         // Arrange
@@ -141,6 +201,7 @@ public class ScheduleByStaffTests
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             RequestedTimeSlot = CreateTimeRange(),
             HasGuardianConsentVerified = false,
+            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         var doctorSchedule = CreateSchedule();
@@ -190,6 +251,7 @@ public class ScheduleByStaffTests
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             RequestedTimeSlot = CreateTimeRange(),
             HasGuardianConsentVerified = false,
+            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         var doctorSchedule = CreateSchedule();
@@ -222,6 +284,7 @@ public class ScheduleByStaffTests
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             RequestedTimeSlot = TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(18, 0)),
             HasGuardianConsentVerified = false,
+            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         var scheduleForDifferentDoctor = CreateSchedule();
@@ -255,6 +318,7 @@ public class ScheduleByStaffTests
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             RequestedTimeSlot = CreateTimeRange(),
             HasGuardianConsentVerified = false,
+            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         var doctorSchedule = Schedule.Create(
@@ -283,7 +347,12 @@ public class ScheduleByStaffTests
     }
 
     private StaffSchedulingArgs CreateValidStaffSchedulingArgs() =>
-        new() { TargetPatient = CreateSelfPatient(), RequestedTimeSlot = CreateTimeRange() };
+        new()
+        {
+            TargetPatient = CreateSelfPatient(),
+            RequestedTimeSlot = CreateTimeRange(),
+            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
+        };
 
     private static TimeRange CreateTimeRange() =>
         TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0));

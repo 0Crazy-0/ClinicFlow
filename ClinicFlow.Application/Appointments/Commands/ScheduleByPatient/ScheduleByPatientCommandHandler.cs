@@ -27,6 +27,7 @@ public sealed class ScheduleByPatientCommandHandler(
     IUserRepository userRepository,
     IFamilyMembershipRepository familyMembershipRepository,
     IRegionalSchedulingService regionalSchedulingService,
+    TimeProvider timeProvider,
     IUnitOfWork unitOfWork
 ) : IRequestHandler<ScheduleByPatientCommand, Guid>
 {
@@ -159,6 +160,7 @@ public sealed class ScheduleByPatientCommandHandler(
                         DoctorSchedule = doctorSchedule,
                         InitiatorMembership = initiatorMembership,
                         RequestedCategory = appointmentType.Category,
+                        ClinicTimeZone = timeProvider.LocalTimeZone,
                     },
                     clearance
                 );

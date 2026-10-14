@@ -65,6 +65,8 @@ public static class DomainErrors
     public static class Scheduling
     {
         public const string MissingClearance = "MISSING_SCHEDULING_CLEARANCE";
+        public const string AmbiguousTimeSlot = "AMBIGUOUS_TIME_SLOT";
+        public const string InvalidTimeSlot = "INVALID_TIME_SLOT";
     }
 
     public static class Reschedule

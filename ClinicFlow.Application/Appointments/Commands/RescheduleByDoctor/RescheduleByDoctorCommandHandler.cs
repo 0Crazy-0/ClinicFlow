@@ -19,6 +19,7 @@ public sealed class RescheduleByDoctorCommandHandler(
     IAppointmentTypeDefinitionRepository appointmentTypeRepository,
     IScheduleRepository scheduleRepository,
     IRegionalSchedulingService regionalSchedulingService,
+    TimeProvider timeProvider,
     IUnitOfWork unitOfWork
 ) : IRequestHandler<RescheduleByDoctorCommand>
 {
@@ -104,6 +105,7 @@ public sealed class RescheduleByDoctorCommandHandler(
                 InitiatorDoctor = initiatorDoctor,
                 NewDate = request.NewDate,
                 NewTimeSlot = newTimeRange,
+                ClinicTimeZone = timeProvider.LocalTimeZone,
             },
             doctorSchedule,
             clearance

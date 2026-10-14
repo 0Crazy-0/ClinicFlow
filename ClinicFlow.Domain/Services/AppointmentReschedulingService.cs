@@ -6,6 +6,7 @@ using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Exceptions.Patients;
 using ClinicFlow.Domain.Services.Args.Rescheduling;
 using ClinicFlow.Domain.Services.Contexts;
+using ClinicFlow.Domain.Services.Policies;
 using ClinicFlow.Domain.ValueObjects;
 
 namespace ClinicFlow.Domain.Services;
@@ -32,9 +33,16 @@ public static class AppointmentReschedulingService
         ArgumentNullException.ThrowIfNull(context);
         ArgumentNullException.ThrowIfNull(context.DoctorSchedule);
         ArgumentNullException.ThrowIfNull(context.InitiatorMembership);
+        ArgumentNullException.ThrowIfNull(context.ClinicTimeZone);
 
         if (clearance is null)
             throw new BusinessRuleValidationException(DomainErrors.Reschedule.MissingClearance);
+
+        DaylightTransitionPolicy.EnsureSchedulable(
+            args.NewDate,
+            args.NewTimeSlot,
+            context.ClinicTimeZone
+        );
 
         if (args.TargetPatient.Id != appointment.PatientId)
             throw new DomainValidationException(DomainErrors.Appointment.DataMismatch);
@@ -83,9 +91,16 @@ public static class AppointmentReschedulingService
         ArgumentNullException.ThrowIfNull(args.NewTimeSlot);
         ArgumentNullException.ThrowIfNull(context);
         ArgumentNullException.ThrowIfNull(context.DoctorSchedule);
+        ArgumentNullException.ThrowIfNull(context.ClinicTimeZone);
 
         if (clearance is null)
             throw new BusinessRuleValidationException(DomainErrors.Reschedule.MissingClearance);
+
+        DaylightTransitionPolicy.EnsureSchedulable(
+            args.NewDate,
+            args.NewTimeSlot,
+            context.ClinicTimeZone
+        );
 
         if (args.TargetPatient.Id != appointment.PatientId)
             throw new DomainValidationException(DomainErrors.Appointment.DataMismatch);
@@ -133,10 +148,17 @@ public static class AppointmentReschedulingService
         ArgumentNullException.ThrowIfNull(args);
         ArgumentNullException.ThrowIfNull(args.InitiatorDoctor);
         ArgumentNullException.ThrowIfNull(args.NewTimeSlot);
+        ArgumentNullException.ThrowIfNull(args.ClinicTimeZone);
         ArgumentNullException.ThrowIfNull(doctorSchedule);
 
         if (clearance is null)
             throw new BusinessRuleValidationException(DomainErrors.Reschedule.MissingClearance);
+
+        DaylightTransitionPolicy.EnsureSchedulable(
+            args.NewDate,
+            args.NewTimeSlot,
+            args.ClinicTimeZone
+        );
 
         if (args.InitiatorDoctor.Id != appointment.DoctorId)
             throw new AppointmentSchedulingUnauthorizedException(
@@ -162,10 +184,17 @@ public static class AppointmentReschedulingService
         ArgumentNullException.ThrowIfNull(appointment);
         ArgumentNullException.ThrowIfNull(args);
         ArgumentNullException.ThrowIfNull(args.NewTimeSlot);
+        ArgumentNullException.ThrowIfNull(args.ClinicTimeZone);
         ArgumentNullException.ThrowIfNull(doctorSchedule);
 
         if (clearance is null)
             throw new BusinessRuleValidationException(DomainErrors.Reschedule.MissingClearance);
+
+        DaylightTransitionPolicy.EnsureSchedulable(
+            args.NewDate,
+            args.NewTimeSlot,
+            args.ClinicTimeZone
+        );
 
         doctorSchedule.EnsureDoctorIsAvailable(
             appointment.DoctorId,

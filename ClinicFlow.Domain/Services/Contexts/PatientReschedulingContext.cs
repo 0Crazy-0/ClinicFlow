@@ -13,4 +13,5 @@ public sealed record class PatientReschedulingContext
     public required FamilyMembership InitiatorMembership { get; init; }
     public AppointmentCategory RequestedCategory { get; init; }
     public LegalAuthorityType? CreatorLegalAuthority { get; init; }
+    public required TimeZoneInfo ClinicTimeZone { get; init; }
 }

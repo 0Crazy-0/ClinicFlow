@@ -1,3 +1,4 @@
+using System.Globalization;
 using AwesomeAssertions;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
@@ -32,6 +33,7 @@ public class ScheduleByPatientTests
                     DoctorSchedule = CreateSchedule(),
                     InitiatorMembership = CreateSelfMembership(),
                     RequestedCategory = AppointmentCategory.Other,
+                    ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
                 },
                 SchedulingClearance.Granted()
             );
@@ -53,6 +55,7 @@ public class ScheduleByPatientTests
                     DoctorSchedule = CreateSchedule(),
                     InitiatorMembership = CreateSelfMembership(),
                     RequestedCategory = AppointmentCategory.Other,
+                    ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
                 },
                 SchedulingClearance.Granted()
             );
@@ -77,6 +80,7 @@ public class ScheduleByPatientTests
                     DoctorSchedule = CreateSchedule(),
                     InitiatorMembership = CreateSelfMembership(),
                     RequestedCategory = AppointmentCategory.Other,
+                    ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
                 },
                 SchedulingClearance.Granted()
             );
@@ -101,12 +105,13 @@ public class ScheduleByPatientTests
                     DoctorSchedule = CreateSchedule(),
                     InitiatorMembership = CreateSelfMembership(),
                     RequestedCategory = AppointmentCategory.Other,
+                    ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
                 },
                 SchedulingClearance.Granted()
             );
 
         // Assert
-        act.Should().Throw<ArgumentNullException>();
+        act.Should().Throw<ArgumentNullException>().WithParameterName("args.RequestedTimeSlot");
     }
 
     [Fact]
@@ -138,12 +143,35 @@ public class ScheduleByPatientTests
                     DoctorSchedule = null!,
                     InitiatorMembership = CreateSelfMembership(),
                     RequestedCategory = AppointmentCategory.Other,
+                    ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
                 },
                 SchedulingClearance.Granted()
             );
 
         // Assert
         act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void ScheduleByPatient_ShouldThrowArgumentNullException_WhenContextClinicTimeZoneIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentSchedulingService.ScheduleByPatient(
+                CreateAppointmentType(),
+                CreateValidPatientSchedulingArgs(),
+                new PatientSchedulingContext
+                {
+                    DoctorSchedule = CreateSchedule(),
+                    InitiatorMembership = CreateSelfMembership(),
+                    RequestedCategory = AppointmentCategory.Other,
+                    ClinicTimeZone = null!,
+                },
+                SchedulingClearance.Granted()
+            );
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>().WithParameterName("context.ClinicTimeZone");
     }
 
     [Fact]
@@ -159,6 +187,7 @@ public class ScheduleByPatientTests
                     DoctorSchedule = CreateSchedule(),
                     InitiatorMembership = CreateSelfMembership(),
                     RequestedCategory = AppointmentCategory.Other,
+                    ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
                 },
                 null!
             );
@@ -167,6 +196,52 @@ public class ScheduleByPatientTests
         act.Should()
             .Throw<BusinessRuleValidationException>()
             .WithMessage(DomainErrors.Scheduling.MissingClearance);
+    }
+
+    [Fact]
+    public void ScheduleByPatient_ShouldThrowBusinessRuleValidationException_WhenSlotIsAmbiguous()
+    {
+        // Arrange
+        _fakeTime.SetUtcNow(
+            DateTimeOffset.Parse("2026-11-01T12:00:00Z", CultureInfo.InvariantCulture)
+        );
+        var ambiguousDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+        var appointmentType = CreateAppointmentType();
+        var target = CreateSelfPatient();
+        var args = new PatientSchedulingArgs
+        {
+            TargetPatient = target,
+            DoctorId = Guid.CreateVersion7(),
+            ScheduledDate = ambiguousDate,
+            RequestedTimeSlot = TimeRange.Create(new TimeOnly(1, 0), new TimeOnly(1, 30)),
+            IsInitiatorPhoneVerified = true,
+            InitiatorUserId = Guid.CreateVersion7(),
+        };
+        var context = new PatientSchedulingContext
+        {
+            DoctorSchedule = Schedule.Create(
+                args.DoctorId,
+                ambiguousDate.DayOfWeek,
+                TimeRange.Create(new TimeOnly(0, 0), new TimeOnly(23, 59))
+            ),
+            InitiatorMembership = CreateSelfMembership(),
+            RequestedCategory = AppointmentCategory.Other,
+            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
+        };
+
+        // Act
+        var act = () =>
+            AppointmentSchedulingService.ScheduleByPatient(
+                appointmentType,
+                args,
+                context,
+                SchedulingClearance.Granted()
+            );
+
+        // Assert
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.Scheduling.AmbiguousTimeSlot);
     }
 
     [Fact]
@@ -191,6 +266,7 @@ public class ScheduleByPatientTests
             DoctorSchedule = CreateSchedule(),
             InitiatorMembership = CreateViewOnlyMembership(),
             RequestedCategory = AppointmentCategory.Other,
+            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         // Act
@@ -221,6 +297,7 @@ public class ScheduleByPatientTests
                     DoctorSchedule = CreateSchedule(),
                     InitiatorMembership = null!,
                     RequestedCategory = AppointmentCategory.Other,
+                    ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
                 },
                 SchedulingClearance.Granted()
             );
@@ -265,6 +342,7 @@ public class ScheduleByPatientTests
             DoctorSchedule = doctorSchedule,
             InitiatorMembership = CreateSelfMembership(),
             RequestedCategory = AppointmentCategory.Other,
+            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         // Act
@@ -307,6 +385,7 @@ public class ScheduleByPatientTests
             DoctorSchedule = CreateSchedule(),
             InitiatorMembership = CreateSelfMembership(),
             RequestedCategory = AppointmentCategory.Other,
+            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         // Act
@@ -351,6 +430,7 @@ public class ScheduleByPatientTests
             DoctorSchedule = CreateSchedule(),
             InitiatorMembership = CreateSelfMembership(),
             RequestedCategory = AppointmentCategory.Other,
+            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         // Act
@@ -400,6 +480,7 @@ public class ScheduleByPatientTests
             DoctorSchedule = CreateSchedule(),
             InitiatorMembership = CreateSelfMembership(),
             RequestedCategory = AppointmentCategory.Other,
+            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         // Act
@@ -452,6 +533,7 @@ public class ScheduleByPatientTests
             DoctorSchedule = CreateSchedule(),
             InitiatorMembership = CreateSelfMembership(),
             RequestedCategory = AppointmentCategory.Other,
+            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         // Act
@@ -513,6 +595,7 @@ public class ScheduleByPatientTests
             DoctorSchedule = doctorSchedule,
             InitiatorMembership = CreateParentMembership(),
             RequestedCategory = AppointmentCategory.Other,
+            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         // Act
@@ -574,6 +657,7 @@ public class ScheduleByPatientTests
             DoctorSchedule = doctorSchedule,
             InitiatorMembership = CreateSelfMembership(),
             RequestedCategory = AppointmentCategory.Other,
+            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         // Act
@@ -614,6 +698,7 @@ public class ScheduleByPatientTests
             DoctorSchedule = scheduleForDifferentDoctor,
             InitiatorMembership = CreateSelfMembership(),
             RequestedCategory = AppointmentCategory.Other,
+            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         // Act
@@ -659,6 +744,7 @@ public class ScheduleByPatientTests
             DoctorSchedule = doctorSchedule,
             InitiatorMembership = CreateSelfMembership(),
             RequestedCategory = AppointmentCategory.Other,
+            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         // Act
@@ -708,6 +794,7 @@ public class ScheduleByPatientTests
             DoctorSchedule = doctorSchedule,
             InitiatorMembership = CreateSelfMembership(),
             RequestedCategory = AppointmentCategory.Other,
+            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         // Act
@@ -756,6 +843,7 @@ public class ScheduleByPatientTests
             DoctorSchedule = doctorSchedule,
             InitiatorMembership = CreateSelfMembership(),
             RequestedCategory = AppointmentCategory.Other,
+            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         // Act

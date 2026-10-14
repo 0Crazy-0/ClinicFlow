@@ -10,4 +10,5 @@ public sealed record DoctorSchedulingArgs
     public DateOnly ScheduledDate { get; init; }
     public required TimeRange RequestedTimeSlot { get; init; }
     public bool HasGuardianConsentVerified { get; init; }
+    public required TimeZoneInfo ClinicTimeZone { get; init; }
 }

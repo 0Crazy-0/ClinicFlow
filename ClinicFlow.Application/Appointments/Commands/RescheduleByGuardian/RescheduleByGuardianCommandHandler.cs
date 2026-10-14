@@ -24,6 +24,7 @@ public sealed class RescheduleByGuardianCommandHandler(
     IUserRepository userRepository,
     IFamilyMembershipRepository familyMembershipRepository,
     IRegionalSchedulingService regionalSchedulingService,
+    TimeProvider timeProvider,
     IUnitOfWork unitOfWork
 ) : IRequestHandler<RescheduleByGuardianCommand>
 {
@@ -150,6 +151,7 @@ public sealed class RescheduleByGuardianCommandHandler(
                         DoctorSchedule = doctorSchedule,
                         InitiatorMembership = initiatorMembership,
                         RequestedCategory = appointmentType.Category,
+                        ClinicTimeZone = timeProvider.LocalTimeZone,
                     },
                     clearance
                 );

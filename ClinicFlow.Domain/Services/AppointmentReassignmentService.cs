@@ -1,5 +1,6 @@
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Services.Args.Reassignment;
+using ClinicFlow.Domain.Services.Policies;
 
 namespace ClinicFlow.Domain.Services;
 
@@ -19,7 +20,14 @@ public static class AppointmentReassignmentService
         ArgumentNullException.ThrowIfNull(appointment);
         ArgumentNullException.ThrowIfNull(args);
         ArgumentNullException.ThrowIfNull(args.NewTimeSlot);
+        ArgumentNullException.ThrowIfNull(args.ClinicTimeZone);
         ArgumentNullException.ThrowIfNull(newDoctorSchedule);
+
+        DaylightTransitionPolicy.EnsureSchedulable(
+            args.NewDate,
+            args.NewTimeSlot,
+            args.ClinicTimeZone
+        );
 
         newDoctorSchedule.EnsureDoctorIsAvailable(
             args.NewDoctorId,

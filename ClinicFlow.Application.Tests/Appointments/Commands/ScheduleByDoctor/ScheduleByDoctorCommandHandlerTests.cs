@@ -36,6 +36,7 @@ public class ScheduleByDoctorCommandHandlerTests
             _scheduleRepositoryMock.Object,
             _appointmentRepositoryMock.Object,
             _regionalSchedulingServiceMock.Object,
+            _fakeTime,
             _unitOfWorkMock.Object
         );
     }

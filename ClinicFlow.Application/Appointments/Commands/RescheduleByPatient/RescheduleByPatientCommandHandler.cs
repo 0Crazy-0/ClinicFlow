@@ -27,6 +27,7 @@ public sealed class RescheduleByPatientCommandHandler(
     IUserRepository userRepository,
     IFamilyMembershipRepository familyMembershipRepository,
     IRegionalSchedulingService regionalSchedulingService,
+    TimeProvider timeProvider,
     IUnitOfWork unitOfWork
 ) : IRequestHandler<RescheduleByPatientCommand>
 {
@@ -159,6 +160,7 @@ public sealed class RescheduleByPatientCommandHandler(
                         InitiatorMembership = initiatorMembership,
                         RequestedCategory = appointmentType.Category,
                         CreatorLegalAuthority = creatorMembership?.LegalAuthority,
+                        ClinicTimeZone = timeProvider.LocalTimeZone,
                     },
                     clearance
                 );

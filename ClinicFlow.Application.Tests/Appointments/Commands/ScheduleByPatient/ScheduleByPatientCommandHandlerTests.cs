@@ -59,6 +59,7 @@ public class ScheduleByPatientCommandHandlerTests
             _userRepositoryMock.Object,
             _familyMembershipRepositoryMock.Object,
             _regionalSchedulingServiceMock.Object,
+            _fakeTime,
             _unitOfWorkMock.Object
         );
     }

@@ -34,6 +34,7 @@ public class ReassignAppointmentCommandHandlerTests
             _appointmentRepositoryMock.Object,
             _doctorRepositoryMock.Object,
             _scheduleRepositoryMock.Object,
+            _fakeTime,
             _unitOfWorkMock.Object
         );
     }
