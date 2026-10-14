@@ -32,6 +32,9 @@ public static class FamilyMemberRegistrationService
                 DomainErrors.FamilyMembership.MaxActiveFamilyMembersExceeded
             );
 
+        if (args.ExistingPatient is not null && args.ExistingPatient.SexAtBirth != args.SexAtBirth)
+            throw new DomainValidationException(DomainErrors.Patient.DataMismatch);
+
         var patient =
             args.ExistingPatient
             ?? Patient.CreateProfile(
