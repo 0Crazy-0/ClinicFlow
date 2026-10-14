@@ -74,6 +74,26 @@ Domain ← Application ← Infrastructure ← API
 - Entities use the **Factory Method** pattern. Construction is done through static `Create(...)` or `Schedule(...)` methods, never through direct `new` (constructors are parameterless and protected/private for ORM compatibility).
 - Entity methods that **require a Domain Service** to function must be `internal`. Methods that work independently are `public`. This visibility convention communicates architectural intent.
 
+### Property Naming. Role over Type
+
+- Never name a property exactly the same as its type. The property name must describe the role the value plays inside the owning entity, not repeat the type name. Matching names create ambiguity between the member and the type in readings, reviews, and EF Core mappings.
+- Apply this to entities, value objects, Args, and Contexts.
+
+```csharp
+// ❌ Forbidden: property name repeats the type name
+public TimeRange TimeRange { get; private set; }
+public ConsultationRoom ConsultationRoom { get; private set; }
+public EmergencyContact EmergencyContact { get; private set; }
+
+// ✅ Allowed: name describes the role inside the owner
+public TimeRange TimeSlot { get; private set; }             // Appointment, Schedule
+public ConsultationRoom Room { get; private set; }          // Doctor
+public EmergencyContact Contact { get; private set; }      // Patient
+public BloodType BloodGroup { get; private set; }          // Patient
+public PhoneNumber Phone { get; private set; }              // User, EmergencyContact
+public DayOfWeek Weekday { get; private set; }              // Schedule
+```
+
 ### Domain Errors
 
 All error messages are standardized constants in `DomainErrors` (`ClinicFlow.Domain/Common/DomainErrors.cs`), organized by subdomain:
@@ -311,6 +331,7 @@ internal void MarkAsNoShow() { }
 ### Prohibited Actions
 
 - Never install packages in `ClinicFlow.Domain`.
+- Never name a property exactly like its type (see [Property Naming. Role over Type](#property-naming-role-over-type)).
 - Never write inline identical input validations in entities or value objects. Use `Guard`.
 - Never add branching logic (multiple business outcomes) in the Application layer handlers. Single-condition guard clauses are allowed: they either throw a domain exception or let execution continue (see [Conditional Logic Prohibition](#conditional-logic-prohibition)).
 - Never create test helpers with conditional logic.
