@@ -109,6 +109,7 @@ public static class DomainErrors
         public const string ProfileIncomplete = "PATIENT_PROFILE_INCOMPLETE";
         public const string UnauthorizedAccess = "PATIENT_UNAUTHORIZED_ACCESS";
         public const string PrimaryPatientRequired = "PRIMARY_PATIENT_REQUIRED";
+        public const string BiologicalSexUnchanged = "BIOLOGICAL_SEX_UNCHANGED";
     }
 
     public static class Doctor

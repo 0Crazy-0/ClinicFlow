@@ -13,6 +13,8 @@ namespace ClinicFlow.Domain.Entities;
 /// </summary>
 public class Patient : BaseEntity
 {
+    public const int MaxCorrectionReasonLength = 500;
+
     public PersonName FullName { get; private set; } = null!;
 
     public DateOnly DateOfBirth { get; private set; }
@@ -65,6 +67,43 @@ public class Patient : BaseEntity
         BloodGroup = bloodType;
         Allergies = allergies ?? string.Empty;
         ChronicConditions = chronicConditions ?? string.Empty;
+    }
+
+    /// <summary>
+    /// Corrects a birth registration error in the recorded biological sex.
+    /// Not a sex change: the original value was wrong and is replaced, keeping an audit event.
+    /// </summary>
+    public void CorrectBiologicalSex(
+        BiologicalSex correctedSex,
+        string reason,
+        Guid correctedByDoctorId,
+        DateTime correctedAt
+    )
+    {
+        Guard.IsDefined(correctedSex);
+        Guard.NotNullOrWhiteSpace(reason);
+        Guard.NotEmpty(correctedByDoctorId);
+
+        if (reason.Length > MaxCorrectionReasonLength)
+            throw new DomainValidationException(DomainErrors.Validation.ValueTooLong);
+
+        if (correctedSex == SexAtBirth)
+            throw new BusinessRuleValidationException(DomainErrors.Patient.BiologicalSexUnchanged);
+
+        var previousSex = SexAtBirth;
+
+        SexAtBirth = correctedSex;
+
+        AddDomainEvent(
+            new PatientBiologicalSexCorrectedEvent(
+                Id,
+                previousSex,
+                correctedSex,
+                correctedByDoctorId,
+                reason,
+                correctedAt
+            )
+        );
     }
 
     public void UpdateEmergencyContact(EmergencyContact emergencyContact) =>

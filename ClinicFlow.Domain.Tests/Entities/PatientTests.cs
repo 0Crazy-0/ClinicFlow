@@ -245,6 +245,205 @@ public class PatientTests
     }
 
     [Fact]
+    public void CorrectBiologicalSex_ShouldUpdateValueAndEmitEvent_WhenNewSexDiffers()
+    {
+        // Arrange
+        var patient = Patient.CreateProfile(
+            PersonName.Create("John Doe"),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            BiologicalSex.Male,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        var correctedByDoctorId = Guid.CreateVersion7();
+        var reason = "reason";
+        var correctedAt = _fakeTime.GetUtcNow().UtcDateTime;
+
+        // Act
+        patient.CorrectBiologicalSex(
+            BiologicalSex.Female,
+            reason,
+            correctedByDoctorId,
+            correctedAt
+        );
+
+        // Assert
+        patient.SexAtBirth.Should().Be(BiologicalSex.Female);
+        patient.DomainEvents.OfType<PatientBiologicalSexCorrectedEvent>().Should().ContainSingle();
+
+        var evt = patient.DomainEvents.OfType<PatientBiologicalSexCorrectedEvent>().Single();
+        evt.PatientId.Should().Be(patient.Id);
+        evt.PreviousSex.Should().Be(BiologicalSex.Male);
+        evt.CorrectedSex.Should().Be(BiologicalSex.Female);
+        evt.CorrectedByDoctorId.Should().Be(correctedByDoctorId);
+        evt.Reason.Should().Be(reason);
+        evt.CorrectedAt.Should().Be(correctedAt);
+    }
+
+    [Fact]
+    public void CorrectBiologicalSex_ShouldThrowBusinessRuleValidationException_WhenSameAsCurrent()
+    {
+        // Arrange
+        var patient = Patient.CreateProfile(
+            PersonName.Create("John Doe"),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            BiologicalSex.Female,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        // Act
+        var act = () =>
+            patient.CorrectBiologicalSex(
+                BiologicalSex.Female,
+                "No change",
+                Guid.CreateVersion7(),
+                _fakeTime.GetUtcNow().UtcDateTime
+            );
+
+        // Assert
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.Patient.BiologicalSexUnchanged);
+
+        patient.DomainEvents.OfType<PatientBiologicalSexCorrectedEvent>().Should().BeEmpty();
+    }
+
+    [Fact]
+    public void CorrectBiologicalSex_ShouldThrowDomainValidationException_WhenCorrectedSexIsUndefined()
+    {
+        // Arrange
+        var patient = Patient.CreateProfile(
+            PersonName.Create("John Doe"),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            BiologicalSex.Male,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        // Act
+        var act = () =>
+            patient.CorrectBiologicalSex(
+                (BiologicalSex)967,
+                "reason",
+                Guid.CreateVersion7(),
+                _fakeTime.GetUtcNow().UtcDateTime
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.InvalidEnumValue);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void CorrectBiologicalSex_ShouldThrowDomainValidationException_WhenReasonIsEmpty(
+        string? reason
+    )
+    {
+        // Arrange
+        var patient = Patient.CreateProfile(
+            PersonName.Create("John Doe"),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            BiologicalSex.Male,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        // Act
+        var act = () =>
+            patient.CorrectBiologicalSex(
+                BiologicalSex.Female,
+                reason!,
+                Guid.CreateVersion7(),
+                _fakeTime.GetUtcNow().UtcDateTime
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void CorrectBiologicalSex_ShouldThrowDomainValidationException_WhenCorrectedByDoctorIdIsEmpty()
+    {
+        // Arrange
+        var patient = Patient.CreateProfile(
+            PersonName.Create("John Doe"),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            BiologicalSex.Male,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        // Act
+        var act = () =>
+            patient.CorrectBiologicalSex(
+                BiologicalSex.Female,
+                "reason",
+                Guid.Empty,
+                _fakeTime.GetUtcNow().UtcDateTime
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void CorrectBiologicalSex_ShouldThrowDomainValidationException_WhenReasonIsTooLong()
+    {
+        // Arrange
+        var patient = Patient.CreateProfile(
+            PersonName.Create("John Doe"),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            BiologicalSex.Male,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        // Act
+        var act = () =>
+            patient.CorrectBiologicalSex(
+                BiologicalSex.Female,
+                new string('A', Patient.MaxCorrectionReasonLength + 1),
+                Guid.CreateVersion7(),
+                _fakeTime.GetUtcNow().UtcDateTime
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueTooLong);
+    }
+
+    [Fact]
+    public void CorrectBiologicalSex_ShouldNotThrowException_WhenReasonIsAtMaxLength()
+    {
+        // Arrange
+        var patient = Patient.CreateProfile(
+            PersonName.Create("John Doe"),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            BiologicalSex.Male,
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+        var reason = new string('A', Patient.MaxCorrectionReasonLength);
+
+        // Act
+        var act = () =>
+            patient.CorrectBiologicalSex(
+                BiologicalSex.Female,
+                reason,
+                Guid.CreateVersion7(),
+                _fakeTime.GetUtcNow().UtcDateTime
+            );
+
+        // Assert
+        act.Should().NotThrow();
+        patient.SexAtBirth.Should().Be(BiologicalSex.Female);
+    }
+
+    [Fact]
     public void GetAge_ShouldReturnCorrectAge()
     {
         // Arrange
