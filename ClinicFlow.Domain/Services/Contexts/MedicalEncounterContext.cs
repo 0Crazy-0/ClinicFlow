@@ -8,7 +8,7 @@ namespace ClinicFlow.Domain.Services.Contexts;
 public sealed record class MedicalEncounterContext
 {
     public required Doctor ExpectedDoctor { get; init; }
-    public required Appointment Appointment { get; init; }
-    public required AppointmentTypeDefinition AppointmentTypeDefinition { get; init; }
+    public required Appointment TargetAppointment { get; init; }
+    public required AppointmentTypeDefinition AppointmentType { get; init; }
     public DateTime CompletedAt { get; init; }
 }

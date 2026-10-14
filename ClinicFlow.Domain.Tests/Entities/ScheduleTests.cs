@@ -24,8 +24,8 @@ public class ScheduleTests
         // Assert
         schedule.Should().NotBeNull();
         schedule.DoctorId.Should().Be(doctorId);
-        schedule.DayOfWeek.Should().Be(dayOfWeek);
-        schedule.TimeRange.Should().Be(timeRange);
+        schedule.Weekday.Should().Be(dayOfWeek);
+        schedule.TimeSlot.Should().Be(timeRange);
         schedule.IsActive.Should().BeTrue();
     }
 
@@ -149,7 +149,7 @@ public class ScheduleTests
 
         domainEvent.ScheduleId.Should().Be(schedule.Id);
         domainEvent.DoctorId.Should().Be(doctorId);
-        domainEvent.DayOfWeek.Should().Be(DayOfWeek.Monday);
+        domainEvent.Weekday.Should().Be(DayOfWeek.Monday);
     }
 
     [Fact]
@@ -199,7 +199,7 @@ public class ScheduleTests
             .Throw<ScheduleAlreadyExistsException>()
             .WithMessage(DomainErrors.Schedule.ScheduleAlreadyExists);
         exceptionAssertion.Which.DoctorId.Should().Be(doctorId);
-        exceptionAssertion.Which.DayOfWeek.Should().Be(DayOfWeek.Monday);
+        exceptionAssertion.Which.Weekday.Should().Be(DayOfWeek.Monday);
     }
 
     [Fact]
@@ -308,7 +308,7 @@ public class ScheduleTests
             .Throw<DoctorNotAvailableException>()
             .WithMessage(DomainErrors.Schedule.DoctorNotAvailable);
         exceptionAssertion.Which.DoctorId.Should().Be(otherDoctorId);
-        exceptionAssertion.Which.DayOfWeek.Should().Be(DayOfWeek.Monday);
+        exceptionAssertion.Which.Weekday.Should().Be(DayOfWeek.Monday);
     }
 
     [Fact]
@@ -327,7 +327,7 @@ public class ScheduleTests
             .Throw<DoctorNotAvailableException>()
             .WithMessage(DomainErrors.Schedule.DoctorNotAvailable);
         exceptionAssertion.Which.DoctorId.Should().Be(doctorId);
-        exceptionAssertion.Which.DayOfWeek.Should().Be(DayOfWeek.Monday);
+        exceptionAssertion.Which.Weekday.Should().Be(DayOfWeek.Monday);
     }
 
     private static Schedule CreateSchedule() =>

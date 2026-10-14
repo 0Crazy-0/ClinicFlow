@@ -26,7 +26,7 @@ public sealed class VerifyPhoneCommandHandler(
             );
 
         var isValid = await phoneVerificationService.VerifyCodeAsync(
-            user.PhoneNumber,
+            user.Phone,
             request.Code,
             cancellationToken
         );

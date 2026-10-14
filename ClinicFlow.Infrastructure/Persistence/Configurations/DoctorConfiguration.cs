@@ -44,7 +44,7 @@ public sealed class DoctorConfiguration : IEntityTypeConfiguration<Doctor>
             .HasMaxLength(MedicalLicenseNumber.MaximumLength);
 
         builder.OwnsOne(
-            d => d.ConsultationRoom,
+            d => d.Room,
             room =>
             {
                 room.Property(r => r.Number)

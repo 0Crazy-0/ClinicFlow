@@ -56,7 +56,7 @@ public class RescheduleByStaffTests
                 CreateAppointment(),
                 CreateValidStaffReschedulingArgs() with
                 {
-                    NewTimeRange = null!,
+                    NewTimeSlot = null!,
                 },
                 CreateSchedule(),
                 SchedulingClearance.Granted()
@@ -109,7 +109,7 @@ public class RescheduleByStaffTests
         var args = new StaffReschedulingArgs
         {
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
-            NewTimeRange = CreateTimeRange(),
+            NewTimeSlot = CreateTimeRange(),
         };
 
         var scheduleForDifferentDoctor = CreateSchedule();
@@ -138,7 +138,7 @@ public class RescheduleByStaffTests
         var args = new StaffReschedulingArgs
         {
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
-            NewTimeRange = TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0)),
+            NewTimeSlot = TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0)),
         };
 
         var doctorSchedule = Schedule.Create(
@@ -158,11 +158,11 @@ public class RescheduleByStaffTests
         // Assert
         appointment.DomainEvents.OfType<AppointmentRescheduledEvent>().Should().ContainSingle();
         appointment.ScheduledDate.Should().Be(args.NewDate);
-        appointment.TimeRange.Should().Be(args.NewTimeRange);
+        appointment.TimeSlot.Should().Be(args.NewTimeSlot);
     }
 
     private static StaffReschedulingArgs CreateValidStaffReschedulingArgs() =>
-        new() { NewTimeRange = TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0)) };
+        new() { NewTimeSlot = TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0)) };
 
     private static TimeRange CreateTimeRange() =>
         TimeRange.Create(new TimeOnly(18, 0), new TimeOnly(19, 0));

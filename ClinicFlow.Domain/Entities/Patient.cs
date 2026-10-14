@@ -15,7 +15,7 @@ public class Patient : BaseEntity
 
     public DateOnly DateOfBirth { get; private set; }
 
-    public BloodType BloodType { get; private set; } = null!;
+    public BloodType BloodGroup { get; private set; } = null!;
 
     // Stryker disable once String
     public string Allergies { get; private set; } = string.Empty;
@@ -23,7 +23,7 @@ public class Patient : BaseEntity
     // Stryker disable once String
     public string ChronicConditions { get; private set; } = string.Empty;
 
-    public EmergencyContact EmergencyContact { get; private set; } = null!;
+    public EmergencyContact Contact { get; private set; } = null!;
 
     // EF Core constructor
     private Patient() { }
@@ -55,17 +55,17 @@ public class Patient : BaseEntity
         string chronicConditions
     )
     {
-        BloodType = bloodType;
+        BloodGroup = bloodType;
         Allergies = allergies ?? string.Empty;
         ChronicConditions = chronicConditions ?? string.Empty;
     }
 
     public void UpdateEmergencyContact(EmergencyContact emergencyContact) =>
-        EmergencyContact = emergencyContact;
+        Contact = emergencyContact;
 
     internal void EnsureCompleteProfile()
     {
-        if (BloodType is null || EmergencyContact is null)
+        if (BloodGroup is null || Contact is null)
             throw new IncompleteProfileException(DomainErrors.Patient.ProfileIncomplete);
     }
 

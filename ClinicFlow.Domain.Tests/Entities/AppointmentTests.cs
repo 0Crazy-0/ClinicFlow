@@ -41,7 +41,7 @@ public class AppointmentTests
         appointment.DoctorId.Should().Be(doctorId);
         appointment.AppointmentTypeId.Should().Be(appointmentTypeId);
         appointment.ScheduledDate.Should().Be(scheduledDate);
-        appointment.TimeRange.Should().Be(timeRange);
+        appointment.TimeSlot.Should().Be(timeRange);
         appointment.Status.Should().Be(AppointmentStatus.Scheduled);
         appointment.PatientNotes.Should().BeEmpty();
         appointment.ScheduledByUserId.Should().Be(scheduledByUserId);
@@ -442,7 +442,7 @@ public class AppointmentTests
 
         // Assert
         appointment.ScheduledDate.Should().Be(newDate);
-        appointment.TimeRange.Should().Be(newTimeRange);
+        appointment.TimeSlot.Should().Be(newTimeRange);
     }
 
     [Fact]
@@ -536,7 +536,7 @@ public class AppointmentTests
         // Arrange
         var appointment = CreateAppointment();
         var checkedInAt = appointment
-            .ScheduledDate.ToDateTime(appointment.TimeRange.End)
+            .ScheduledDate.ToDateTime(appointment.TimeSlot.End)
             .AddMinutes(minutesAfterEnd);
 
         // Act
@@ -678,7 +678,7 @@ public class AppointmentTests
         var act = () =>
             appointment.Start(
                 appointment.DoctorId,
-                appointment.ScheduledDate.ToDateTime(appointment.TimeRange.Start).AddSeconds(-1)
+                appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start).AddSeconds(-1)
             );
 
         // Assert
@@ -728,7 +728,7 @@ public class AppointmentTests
         var act = () =>
             appointment.Start(
                 Guid.CreateVersion7(),
-                appointment.ScheduledDate.ToDateTime(appointment.TimeRange.Start)
+                appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start)
             );
 
         // Assert
@@ -747,7 +747,7 @@ public class AppointmentTests
         var act = () =>
             appointment.Start(
                 appointment.DoctorId,
-                appointment.ScheduledDate.ToDateTime(appointment.TimeRange.Start)
+                appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start)
             );
 
         // Assert
@@ -765,7 +765,7 @@ public class AppointmentTests
         appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
         appointment.Start(
             appointment.DoctorId,
-            appointment.ScheduledDate.ToDateTime(appointment.TimeRange.Start)
+            appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start)
         );
 
         // Act
@@ -787,7 +787,7 @@ public class AppointmentTests
         appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
         appointment.Start(
             appointment.DoctorId,
-            appointment.ScheduledDate.ToDateTime(appointment.TimeRange.Start)
+            appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start)
         );
 
         // Act
@@ -811,11 +811,11 @@ public class AppointmentTests
         appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
         appointment.Start(
             appointment.DoctorId,
-            appointment.ScheduledDate.ToDateTime(appointment.TimeRange.Start)
+            appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start)
         );
 
         // Act
-        var completedAt = appointment.ScheduledDate.ToDateTime(appointment.TimeRange.Start);
+        var completedAt = appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start);
         appointment.Complete(completedAt);
 
         // Assert
@@ -934,7 +934,7 @@ public class AppointmentTests
         // Assert
         appointment.DoctorId.Should().Be(newDoctorId);
         appointment.ScheduledDate.Should().Be(newDate);
-        appointment.TimeRange.Should().Be(newTimeRange);
+        appointment.TimeSlot.Should().Be(newTimeRange);
         appointment.Status.Should().Be(AppointmentStatus.Scheduled);
         appointment.DomainEvents.OfType<AppointmentReassignedEvent>().Should().ContainSingle();
     }

@@ -13,7 +13,7 @@ public sealed class SetupWeeklyScheduleCommandValidator
         RuleForEach(x => x.Slots)
             .ChildRules(slot =>
             {
-                slot.RuleFor(x => x.DayOfWeek)
+                slot.RuleFor(x => x.Weekday)
                     .IsInEnum()
                     .WithMessage(DomainErrors.Validation.InvalidEnumValue);
                 slot.RuleFor(x => x.EndTime)

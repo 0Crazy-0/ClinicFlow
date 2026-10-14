@@ -6,5 +6,5 @@ public class ScheduleAlreadyExistsException(string errorCode, Guid doctorId, Day
     : DomainException(errorCode)
 {
     public Guid DoctorId { get; } = doctorId;
-    public DayOfWeek DayOfWeek { get; } = dayOfWeek;
+    public DayOfWeek Weekday { get; } = dayOfWeek;
 }

@@ -24,7 +24,7 @@ public sealed class GetUserByIdQueryHandler(IUserRepository userRepository)
         return new UserDto(
             user.Id,
             user.Email.Value,
-            user.PhoneNumber.Value,
+            user.Phone.Value,
             user.Role,
             user.IsActive,
             user.IsPhoneVerified,

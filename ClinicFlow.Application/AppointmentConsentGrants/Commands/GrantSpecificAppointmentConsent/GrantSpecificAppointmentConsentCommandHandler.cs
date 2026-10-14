@@ -102,10 +102,10 @@ public sealed class GrantSpecificAppointmentConsentCommandHandler(
                 var grant = AppointmentConsentGrantService.GrantAppointment(
                     new SpecificAppointmentConsentGrantContext
                     {
-                        Patient = patient,
+                        TargetPatient = patient,
                         RequesterMembership = requesterMembership,
                         RecipientMembership = recipientMembership,
-                        Appointment = appointment,
+                        TargetAppointment = appointment,
                         AppointmentType = appointmentType,
                         HasEffectiveGrant = hasEffectiveGrant,
                     },

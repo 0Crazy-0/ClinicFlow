@@ -63,8 +63,8 @@ public sealed class CompleteMedicalEncounterCommandHandler(
         var context = new MedicalEncounterContext
         {
             ExpectedDoctor = doctor,
-            Appointment = appointment,
-            AppointmentTypeDefinition = appointmentType,
+            TargetAppointment = appointment,
+            AppointmentType = appointmentType,
             CompletedAt = timeProvider.GetLocalNow().DateTime,
         };
 

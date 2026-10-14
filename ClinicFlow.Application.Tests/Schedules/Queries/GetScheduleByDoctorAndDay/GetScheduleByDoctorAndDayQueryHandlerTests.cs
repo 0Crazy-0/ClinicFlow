@@ -46,9 +46,9 @@ public class GetScheduleByDoctorAndDayQueryHandlerTests
         var expectedDto = new ScheduleDto(
             schedule.Id,
             schedule.DoctorId,
-            schedule.DayOfWeek,
-            schedule.TimeRange.Start,
-            schedule.TimeRange.End,
+            schedule.Weekday,
+            schedule.TimeSlot.Start,
+            schedule.TimeSlot.End,
             schedule.IsActive
         );
 

@@ -77,7 +77,7 @@ public sealed class GrantAppointmentCategoryConsentCommandHandler(
                 var grant = AppointmentConsentGrantService.GrantCategory(
                     new AppointmentCategoryConsentGrantContext
                     {
-                        Patient = patient,
+                        TargetPatient = patient,
                         RequesterMembership = requesterMembership,
                         RecipientMembership = recipientMembership,
                         ProtectedCareCategory = request.ProtectedCareCategory,

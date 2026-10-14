@@ -58,9 +58,9 @@ public class UpdateDoctorProfileCommandHandlerTests
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
 
         doctor.Biography.Should().Be(command.Biography);
-        doctor.ConsultationRoom.Number.Should().Be(command.ConsultationRoomNumber);
-        doctor.ConsultationRoom.Name.Should().Be(command.ConsultationRoomName);
-        doctor.ConsultationRoom.Floor.Should().Be(command.ConsultationRoomFloor);
+        doctor.Room.Number.Should().Be(command.ConsultationRoomNumber);
+        doctor.Room.Name.Should().Be(command.ConsultationRoomName);
+        doctor.Room.Floor.Should().Be(command.ConsultationRoomFloor);
     }
 
     [Fact]

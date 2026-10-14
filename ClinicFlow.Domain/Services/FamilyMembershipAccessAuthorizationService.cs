@@ -27,7 +27,8 @@ public static class FamilyMembershipAccessAuthorizationService
             return false;
 
         var patientIsMinor =
-            context.Patient.GetAge(DateOnly.FromDateTime(context.ReferenceTime)) < MinimumAdultAge;
+            context.TargetPatient.GetAge(DateOnly.FromDateTime(context.ReferenceTime))
+            < MinimumAdultAge;
 
         if (patientIsMinor)
             return false;

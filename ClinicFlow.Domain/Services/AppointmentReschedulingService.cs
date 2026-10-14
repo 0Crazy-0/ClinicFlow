@@ -28,7 +28,7 @@ public static class AppointmentReschedulingService
         ArgumentNullException.ThrowIfNull(appointment);
         ArgumentNullException.ThrowIfNull(args);
         ArgumentNullException.ThrowIfNull(args.TargetPatient);
-        ArgumentNullException.ThrowIfNull(args.NewTimeRange);
+        ArgumentNullException.ThrowIfNull(args.NewTimeSlot);
         ArgumentNullException.ThrowIfNull(context);
         ArgumentNullException.ThrowIfNull(context.DoctorSchedule);
         ArgumentNullException.ThrowIfNull(context.InitiatorMembership);
@@ -60,10 +60,10 @@ public static class AppointmentReschedulingService
         context.DoctorSchedule.EnsureDoctorIsAvailable(
             appointment.DoctorId,
             args.NewDate.DayOfWeek,
-            args.NewTimeRange
+            args.NewTimeSlot
         );
 
-        appointment.Reschedule(args.NewDate, args.NewTimeRange);
+        appointment.Reschedule(args.NewDate, args.NewTimeSlot);
 
         if (args.NewPatientNotes is not null)
             appointment.UpdatePatientNotes(args.NewPatientNotes);
@@ -80,7 +80,7 @@ public static class AppointmentReschedulingService
         ArgumentNullException.ThrowIfNull(args);
         ArgumentNullException.ThrowIfNull(args.TargetPatient);
         ArgumentNullException.ThrowIfNull(args.InitiatorMembership);
-        ArgumentNullException.ThrowIfNull(args.NewTimeRange);
+        ArgumentNullException.ThrowIfNull(args.NewTimeSlot);
         ArgumentNullException.ThrowIfNull(context);
         ArgumentNullException.ThrowIfNull(context.DoctorSchedule);
 
@@ -113,10 +113,10 @@ public static class AppointmentReschedulingService
         context.DoctorSchedule.EnsureDoctorIsAvailable(
             appointment.DoctorId,
             args.NewDate.DayOfWeek,
-            args.NewTimeRange
+            args.NewTimeSlot
         );
 
-        appointment.Reschedule(args.NewDate, args.NewTimeRange);
+        appointment.Reschedule(args.NewDate, args.NewTimeSlot);
 
         if (args.NewGuardianNotes is not null)
             appointment.UpdateGuardianNotes(args.NewGuardianNotes, args.InitiatorUserId);
@@ -132,7 +132,7 @@ public static class AppointmentReschedulingService
         ArgumentNullException.ThrowIfNull(appointment);
         ArgumentNullException.ThrowIfNull(args);
         ArgumentNullException.ThrowIfNull(args.InitiatorDoctor);
-        ArgumentNullException.ThrowIfNull(args.NewTimeRange);
+        ArgumentNullException.ThrowIfNull(args.NewTimeSlot);
         ArgumentNullException.ThrowIfNull(doctorSchedule);
 
         if (clearance is null)
@@ -146,10 +146,10 @@ public static class AppointmentReschedulingService
         doctorSchedule.EnsureDoctorIsAvailable(
             appointment.DoctorId,
             args.NewDate.DayOfWeek,
-            args.NewTimeRange
+            args.NewTimeSlot
         );
 
-        appointment.Reschedule(args.NewDate, args.NewTimeRange);
+        appointment.Reschedule(args.NewDate, args.NewTimeSlot);
     }
 
     public static void RescheduleByStaff(
@@ -161,7 +161,7 @@ public static class AppointmentReschedulingService
     {
         ArgumentNullException.ThrowIfNull(appointment);
         ArgumentNullException.ThrowIfNull(args);
-        ArgumentNullException.ThrowIfNull(args.NewTimeRange);
+        ArgumentNullException.ThrowIfNull(args.NewTimeSlot);
         ArgumentNullException.ThrowIfNull(doctorSchedule);
 
         if (clearance is null)
@@ -170,9 +170,9 @@ public static class AppointmentReschedulingService
         doctorSchedule.EnsureDoctorIsAvailable(
             appointment.DoctorId,
             args.NewDate.DayOfWeek,
-            args.NewTimeRange
+            args.NewTimeSlot
         );
 
-        appointment.Reschedule(args.NewDate, args.NewTimeRange);
+        appointment.Reschedule(args.NewDate, args.NewTimeSlot);
     }
 }

@@ -9,7 +9,7 @@ public sealed record PatientSchedulingArgs
     public Guid InitiatorUserId { get; init; }
     public Guid DoctorId { get; init; }
     public DateOnly ScheduledDate { get; init; }
-    public required TimeRange TimeRange { get; init; }
+    public required TimeRange RequestedTimeSlot { get; init; }
     public bool IsInitiatorPhoneVerified { get; init; }
     public string? PatientNotes { get; init; }
 }

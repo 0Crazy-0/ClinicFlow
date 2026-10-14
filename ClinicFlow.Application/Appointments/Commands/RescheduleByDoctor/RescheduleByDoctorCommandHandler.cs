@@ -103,7 +103,7 @@ public sealed class RescheduleByDoctorCommandHandler(
             {
                 InitiatorDoctor = initiatorDoctor,
                 NewDate = request.NewDate,
-                NewTimeRange = newTimeRange,
+                NewTimeSlot = newTimeRange,
             },
             doctorSchedule,
             clearance

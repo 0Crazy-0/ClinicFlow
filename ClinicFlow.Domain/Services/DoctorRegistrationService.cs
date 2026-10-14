@@ -18,7 +18,7 @@ public static class DoctorRegistrationService
             args.LicenseNumber,
             args.MedicalSpecialtyId,
             args.Biography,
-            args.ConsultationRoom
+            args.Room
         );
     }
 }

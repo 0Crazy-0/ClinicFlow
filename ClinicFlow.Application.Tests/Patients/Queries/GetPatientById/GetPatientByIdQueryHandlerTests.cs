@@ -53,11 +53,11 @@ public class GetPatientByIdQueryHandlerTests
             patient.Id,
             patient.FullName.FullName,
             patient.DateOfBirth,
-            patient.BloodType?.Value,
+            patient.BloodGroup?.Value,
             patient.Allergies,
             patient.ChronicConditions,
-            patient.EmergencyContact?.Name.ToString(),
-            patient.EmergencyContact?.PhoneNumber.ToString()
+            patient.Contact?.Name.ToString(),
+            patient.Contact?.Phone.ToString()
         );
 
         result.Should().BeEquivalentTo(expectedDto);
@@ -93,11 +93,11 @@ public class GetPatientByIdQueryHandlerTests
             patient.Id,
             patient.FullName.FullName,
             patient.DateOfBirth,
-            patient.BloodType?.Value,
+            patient.BloodGroup?.Value,
             patient.Allergies,
             patient.ChronicConditions,
-            patient.EmergencyContact?.Name.ToString(),
-            patient.EmergencyContact?.PhoneNumber.ToString()
+            patient.Contact?.Name.ToString(),
+            patient.Contact?.Phone.ToString()
         );
 
         result.Should().BeEquivalentTo(expectedDto);

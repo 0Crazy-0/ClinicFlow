@@ -149,7 +149,7 @@ public sealed class ScheduleByPatientCommandHandler(
                         InitiatorUserId = request.InitiatorUserId,
                         DoctorId = request.DoctorId,
                         ScheduledDate = request.ScheduledDate,
-                        TimeRange = timeRange,
+                        RequestedTimeSlot = timeRange,
                         IsInitiatorPhoneVerified = user.IsPhoneVerified,
                         PatientNotes = request.PatientNotes,
                     },

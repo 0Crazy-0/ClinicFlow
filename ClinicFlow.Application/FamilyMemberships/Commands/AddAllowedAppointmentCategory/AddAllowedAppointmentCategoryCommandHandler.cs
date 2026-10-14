@@ -51,7 +51,7 @@ public sealed class AddAllowedAppointmentCategoryCommandHandler(
         var isAuthorized = FamilyMembershipAccessAuthorizationService.CanManageFamilyMembership(
             new FamilyMembershipManagementAuthorizationContext
             {
-                Patient = patient,
+                TargetPatient = patient,
                 ReferenceTime = timeProvider.GetLocalNow().DateTime,
                 RequesterUserId = request.RequesterUserId,
                 TargetUserId = request.TargetUserId,

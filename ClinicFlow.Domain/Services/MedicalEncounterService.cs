@@ -48,20 +48,20 @@ public class MedicalEncounterService(
         ArgumentNullException.ThrowIfNull(record);
         ArgumentNullException.ThrowIfNull(context);
         ArgumentNullException.ThrowIfNull(context.ExpectedDoctor);
-        ArgumentNullException.ThrowIfNull(context.Appointment);
-        ArgumentNullException.ThrowIfNull(context.AppointmentTypeDefinition);
+        ArgumentNullException.ThrowIfNull(context.TargetAppointment);
+        ArgumentNullException.ThrowIfNull(context.AppointmentType);
 
         if (record.DoctorId != context.ExpectedDoctor.Id)
             throw new BusinessRuleValidationException(DomainErrors.MedicalEncounter.DoctorMismatch);
 
-        if (record.AppointmentId != context.Appointment.Id)
+        if (record.AppointmentId != context.TargetAppointment.Id)
             throw new BusinessRuleValidationException(
                 DomainErrors.MedicalEncounter.AppointmentMismatch
             );
 
-        validationPolicy.Validate(context.AppointmentTypeDefinition, record.ClinicalDetails);
+        validationPolicy.Validate(context.AppointmentType, record.ClinicalDetails);
 
-        context.Appointment.Complete(context.CompletedAt);
+        context.TargetAppointment.Complete(context.CompletedAt);
     }
 
     public void AppendClinicalDetail(

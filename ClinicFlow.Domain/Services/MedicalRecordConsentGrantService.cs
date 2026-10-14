@@ -27,30 +27,30 @@ public static class MedicalRecordConsentGrantService
     {
         ArgumentNullException.ThrowIfNull(context);
         ArgumentNullException.ThrowIfNull(args);
-        ArgumentNullException.ThrowIfNull(context.Patient);
+        ArgumentNullException.ThrowIfNull(context.TargetPatient);
         ArgumentNullException.ThrowIfNull(context.RequesterMembership);
-        ArgumentNullException.ThrowIfNull(context.MedicalRecord);
+        ArgumentNullException.ThrowIfNull(context.TargetMedicalRecord);
         ArgumentNullException.ThrowIfNull(context.RecipientMembership);
 
         context.RequesterMembership.EnsureConsentGrantSigner(
             args.RequesterUserId,
-            context.Patient.Id,
+            context.TargetPatient.Id,
             DomainErrors.MedicalRecordConsentGrant.UnauthorizedCreation
         );
 
-        var patientAge = context.Patient.GetAge(DateOnly.FromDateTime(args.ReferenceTime));
+        var patientAge = context.TargetPatient.GetAge(DateOnly.FromDateTime(args.ReferenceTime));
 
         if (patientAge >= DomainRules.AdultAge)
             throw new DomainValidationException(
                 DomainErrors.MedicalRecordConsentGrant.PatientMustBeMinor
             );
 
-        if (context.MedicalRecord.PatientId != context.Patient.Id)
+        if (context.TargetMedicalRecord.PatientId != context.TargetPatient.Id)
             throw new DomainValidationException(
                 DomainErrors.MedicalRecordConsentGrant.RecordPatientMismatch
             );
 
-        if (context.MedicalRecord.ProtectedCareCategory is null)
+        if (context.TargetMedicalRecord.ProtectedCareCategory is null)
             throw new DomainValidationException(
                 DomainErrors.MedicalRecordConsentGrant.RecordMustHaveProtectedCategory
             );
@@ -58,14 +58,14 @@ public static class MedicalRecordConsentGrantService
         if (
             !ProtectedCategoryPolicy
                 .GetProtectedCategoriesFor(patientAge)
-                .Contains(context.MedicalRecord.ProtectedCareCategory.Value)
+                .Contains(context.TargetMedicalRecord.ProtectedCareCategory.Value)
         )
             throw new DomainValidationException(
                 DomainErrors.MedicalRecordConsentGrant.CategoryNotGrantable
             );
 
         context.RecipientMembership.EnsureConsentGrantRecipient(
-            context.Patient.Id,
+            context.TargetPatient.Id,
             DomainErrors.MedicalRecordConsentGrant.RecipientMustBeActive,
             DomainErrors.MedicalRecordConsentGrant.RecipientPatientMismatch,
             DomainErrors.MedicalRecordConsentGrant.RecipientCannotBeSelf
@@ -77,9 +77,9 @@ public static class MedicalRecordConsentGrantService
             );
 
         return MedicalRecordConsentGrant.Create(
-            context.Patient.Id,
+            context.TargetPatient.Id,
             context.RecipientMembership.Id,
-            context.MedicalRecord.Id,
+            context.TargetMedicalRecord.Id,
             context.RequesterMembership.UserId,
             args.ReferenceTime
         );

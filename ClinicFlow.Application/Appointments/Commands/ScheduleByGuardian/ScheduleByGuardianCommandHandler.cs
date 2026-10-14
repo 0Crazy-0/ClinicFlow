@@ -146,7 +146,7 @@ public sealed class ScheduleByGuardianCommandHandler(
                         InitiatorUserId = request.InitiatorUserId,
                         DoctorId = request.DoctorId,
                         ScheduledDate = request.ScheduledDate,
-                        TimeRange = timeRange,
+                        RequestedTimeSlot = timeRange,
                         IsInitiatorPhoneVerified = user.IsPhoneVerified,
                         GuardianNotes = request.GuardianNotes,
                     },

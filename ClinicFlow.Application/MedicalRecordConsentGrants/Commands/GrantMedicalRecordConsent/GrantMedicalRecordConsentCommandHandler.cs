@@ -89,9 +89,9 @@ public sealed class GrantMedicalRecordConsentCommandHandler(
                 var grant = MedicalRecordConsentGrantService.Grant(
                     new MedicalRecordConsentGrantContext
                     {
-                        Patient = patient,
+                        TargetPatient = patient,
                         RequesterMembership = requesterMembership,
-                        MedicalRecord = record,
+                        TargetMedicalRecord = record,
                         RecipientMembership = recipientMembership,
                         HasEffectiveGrant = hasEffectiveGrant,
                     },

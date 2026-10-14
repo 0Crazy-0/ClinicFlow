@@ -21,17 +21,17 @@ public static class AppointmentConsentGrantService
     {
         ArgumentNullException.ThrowIfNull(context);
         ArgumentNullException.ThrowIfNull(args);
-        ArgumentNullException.ThrowIfNull(context.Patient);
+        ArgumentNullException.ThrowIfNull(context.TargetPatient);
         ArgumentNullException.ThrowIfNull(context.RequesterMembership);
         ArgumentNullException.ThrowIfNull(context.RecipientMembership);
 
         context.RequesterMembership.EnsureConsentGrantSigner(
             args.RequesterUserId,
-            context.Patient.Id,
+            context.TargetPatient.Id,
             DomainErrors.AppointmentConsentGrant.UnauthorizedCreation
         );
 
-        var patientAge = context.Patient.GetAge(DateOnly.FromDateTime(args.ReferenceTime));
+        var patientAge = context.TargetPatient.GetAge(DateOnly.FromDateTime(args.ReferenceTime));
 
         if (patientAge >= DomainRules.AdultAge)
             throw new DomainValidationException(
@@ -48,7 +48,7 @@ public static class AppointmentConsentGrantService
             );
 
         context.RecipientMembership.EnsureConsentGrantRecipient(
-            context.Patient.Id,
+            context.TargetPatient.Id,
             DomainErrors.AppointmentConsentGrant.RecipientMustBeActive,
             DomainErrors.AppointmentConsentGrant.RecipientPatientMismatch,
             DomainErrors.AppointmentConsentGrant.RecipientCannotBeSelf
@@ -58,7 +58,7 @@ public static class AppointmentConsentGrantService
             throw new DomainValidationException(DomainErrors.AppointmentConsentGrant.AlreadyExists);
 
         return AppointmentConsentGrant.CreateForCategory(
-            context.Patient.Id,
+            context.TargetPatient.Id,
             context.RecipientMembership.Id,
             context.ProtectedCareCategory,
             context.RequesterMembership.UserId,
@@ -73,31 +73,31 @@ public static class AppointmentConsentGrantService
     {
         ArgumentNullException.ThrowIfNull(context);
         ArgumentNullException.ThrowIfNull(args);
-        ArgumentNullException.ThrowIfNull(context.Patient);
+        ArgumentNullException.ThrowIfNull(context.TargetPatient);
         ArgumentNullException.ThrowIfNull(context.RequesterMembership);
         ArgumentNullException.ThrowIfNull(context.RecipientMembership);
-        ArgumentNullException.ThrowIfNull(context.Appointment);
+        ArgumentNullException.ThrowIfNull(context.TargetAppointment);
         ArgumentNullException.ThrowIfNull(context.AppointmentType);
 
         context.RequesterMembership.EnsureConsentGrantSigner(
             args.RequesterUserId,
-            context.Patient.Id,
+            context.TargetPatient.Id,
             DomainErrors.AppointmentConsentGrant.UnauthorizedCreation
         );
 
-        var patientAge = context.Patient.GetAge(DateOnly.FromDateTime(args.ReferenceTime));
+        var patientAge = context.TargetPatient.GetAge(DateOnly.FromDateTime(args.ReferenceTime));
 
         if (patientAge >= DomainRules.AdultAge)
             throw new DomainValidationException(
                 DomainErrors.AppointmentConsentGrant.PatientMustBeMinor
             );
 
-        if (context.Appointment.PatientId != context.Patient.Id)
+        if (context.TargetAppointment.PatientId != context.TargetPatient.Id)
             throw new DomainValidationException(
                 DomainErrors.AppointmentConsentGrant.AppointmentPatientMismatch
             );
 
-        if (context.AppointmentType.Id != context.Appointment.AppointmentTypeId)
+        if (context.AppointmentType.Id != context.TargetAppointment.AppointmentTypeId)
             throw new DomainValidationException(
                 DomainErrors.AppointmentConsentGrant.AppointmentPatientMismatch
             );
@@ -115,7 +115,7 @@ public static class AppointmentConsentGrantService
             );
 
         context.RecipientMembership.EnsureConsentGrantRecipient(
-            context.Patient.Id,
+            context.TargetPatient.Id,
             DomainErrors.AppointmentConsentGrant.RecipientMustBeActive,
             DomainErrors.AppointmentConsentGrant.RecipientPatientMismatch,
             DomainErrors.AppointmentConsentGrant.RecipientCannotBeSelf
@@ -125,9 +125,9 @@ public static class AppointmentConsentGrantService
             throw new DomainValidationException(DomainErrors.AppointmentConsentGrant.AlreadyExists);
 
         return AppointmentConsentGrant.CreateForAppointment(
-            context.Patient.Id,
+            context.TargetPatient.Id,
             context.RecipientMembership.Id,
-            context.Appointment.Id,
+            context.TargetAppointment.Id,
             context.RequesterMembership.UserId,
             args.ReferenceTime
         );

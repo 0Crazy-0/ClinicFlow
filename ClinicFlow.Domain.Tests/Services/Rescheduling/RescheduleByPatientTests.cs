@@ -94,7 +94,7 @@ public class RescheduleByPatientTests
                 CreateAppointment(),
                 CreateValidPatientReschedulingArgs() with
                 {
-                    NewTimeRange = null!,
+                    NewTimeSlot = null!,
                 },
                 new PatientReschedulingContext
                 {
@@ -206,7 +206,7 @@ public class RescheduleByPatientTests
         {
             TargetPatient = target,
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
-            NewTimeRange = CreateTimeRange(),
+            NewTimeSlot = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
             InitiatorUserId = Guid.CreateVersion7(),
         };
@@ -243,7 +243,7 @@ public class RescheduleByPatientTests
         {
             TargetPatient = target,
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
-            NewTimeRange = CreateTimeRange(),
+            NewTimeSlot = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
             InitiatorUserId = Guid.CreateVersion7(),
         };
@@ -288,7 +288,7 @@ public class RescheduleByPatientTests
         {
             TargetPatient = target,
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
-            NewTimeRange = CreateTimeRange(),
+            NewTimeSlot = CreateTimeRange(),
             IsInitiatorPhoneVerified = false,
             InitiatorUserId = Guid.CreateVersion7(),
         };
@@ -325,7 +325,7 @@ public class RescheduleByPatientTests
         {
             TargetPatient = target,
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
-            NewTimeRange = CreateTimeRange(),
+            NewTimeSlot = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
             InitiatorUserId = Guid.CreateVersion7(),
         };
@@ -371,7 +371,7 @@ public class RescheduleByPatientTests
         {
             TargetPatient = target,
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
-            NewTimeRange = TimeRange.Create(new TimeOnly(18, 0), new TimeOnly(19, 0)),
+            NewTimeSlot = TimeRange.Create(new TimeOnly(18, 0), new TimeOnly(19, 0)),
             IsInitiatorPhoneVerified = true,
             InitiatorUserId = Guid.CreateVersion7(),
         };
@@ -408,7 +408,7 @@ public class RescheduleByPatientTests
         {
             TargetPatient = target,
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
-            NewTimeRange = CreateTimeRange(),
+            NewTimeSlot = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
             InitiatorUserId = Guid.CreateVersion7(),
         };
@@ -431,7 +431,7 @@ public class RescheduleByPatientTests
         // Assert
         appointment.DomainEvents.OfType<AppointmentRescheduledEvent>().Should().ContainSingle();
         appointment.ScheduledDate.Should().Be(args.NewDate);
-        appointment.TimeRange.Should().Be(args.NewTimeRange);
+        appointment.TimeSlot.Should().Be(args.NewTimeSlot);
     }
 
     [Fact]
@@ -447,7 +447,7 @@ public class RescheduleByPatientTests
         {
             TargetPatient = target,
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
-            NewTimeRange = CreateTimeRange(),
+            NewTimeSlot = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
             InitiatorUserId = Guid.CreateVersion7(),
             NewPatientNotes = "Rescheduled notes",
@@ -485,7 +485,7 @@ public class RescheduleByPatientTests
         {
             TargetPatient = target,
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
-            NewTimeRange = CreateTimeRange(),
+            NewTimeSlot = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
             InitiatorUserId = Guid.CreateVersion7(),
             NewPatientNotes = null,
@@ -533,7 +533,7 @@ public class RescheduleByPatientTests
             TargetPatient = target,
             InitiatorUserId = minorId,
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
-            NewTimeRange = CreateTimeRange(),
+            NewTimeSlot = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
         };
 
@@ -582,7 +582,7 @@ public class RescheduleByPatientTests
             TargetPatient = target,
             InitiatorUserId = Guid.CreateVersion7(),
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
-            NewTimeRange = CreateTimeRange(),
+            NewTimeSlot = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
         };
 
@@ -605,7 +605,7 @@ public class RescheduleByPatientTests
         // Assert
         appointment.DomainEvents.OfType<AppointmentRescheduledEvent>().Should().ContainSingle();
         appointment.ScheduledDate.Should().Be(args.NewDate);
-        appointment.TimeRange.Should().Be(args.NewTimeRange);
+        appointment.TimeSlot.Should().Be(args.NewTimeSlot);
     }
 
     [Fact]
@@ -639,7 +639,7 @@ public class RescheduleByPatientTests
             TargetPatient = target,
             InitiatorUserId = Guid.CreateVersion7(),
             NewDate = newDate,
-            NewTimeRange = CreateTimeRange(),
+            NewTimeSlot = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
         };
 
@@ -662,7 +662,7 @@ public class RescheduleByPatientTests
         // Assert
         appointment.DomainEvents.OfType<AppointmentRescheduledEvent>().Should().ContainSingle();
         appointment.ScheduledDate.Should().Be(args.NewDate);
-        appointment.TimeRange.Should().Be(args.NewTimeRange);
+        appointment.TimeSlot.Should().Be(args.NewTimeSlot);
     }
 
     [Fact]
@@ -687,7 +687,7 @@ public class RescheduleByPatientTests
             TargetPatient = target,
             InitiatorUserId = Guid.CreateVersion7(),
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
-            NewTimeRange = CreateTimeRange(),
+            NewTimeSlot = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
         };
 
@@ -710,7 +710,7 @@ public class RescheduleByPatientTests
         // Assert
         appointment.DomainEvents.OfType<AppointmentRescheduledEvent>().Should().ContainSingle();
         appointment.ScheduledDate.Should().Be(args.NewDate);
-        appointment.TimeRange.Should().Be(args.NewTimeRange);
+        appointment.TimeSlot.Should().Be(args.NewTimeSlot);
     }
 
     [Fact]
@@ -735,7 +735,7 @@ public class RescheduleByPatientTests
             TargetPatient = target,
             InitiatorUserId = minorId,
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
-            NewTimeRange = CreateTimeRange(),
+            NewTimeSlot = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
         };
 
@@ -758,7 +758,7 @@ public class RescheduleByPatientTests
         // Assert
         appointment.DomainEvents.OfType<AppointmentRescheduledEvent>().Should().ContainSingle();
         appointment.ScheduledDate.Should().Be(args.NewDate);
-        appointment.TimeRange.Should().Be(args.NewTimeRange);
+        appointment.TimeSlot.Should().Be(args.NewTimeSlot);
     }
 
     private Patient CreateMinorPatient()
@@ -786,7 +786,7 @@ public class RescheduleByPatientTests
         {
             TargetPatient = CreateSelfPatient(),
             InitiatorUserId = Guid.CreateVersion7(),
-            NewTimeRange = CreateTimeRange(),
+            NewTimeSlot = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
         };
 

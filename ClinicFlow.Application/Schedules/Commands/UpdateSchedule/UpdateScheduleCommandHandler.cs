@@ -22,7 +22,7 @@ public sealed class UpdateScheduleCommandHandler(
         var currentSchedule =
             await scheduleRepository.GetActiveByDoctorAndDayAsync(
                 request.DoctorId,
-                request.DayOfWeek,
+                request.Weekday,
                 cancellationToken
             )
             ?? throw new EntityNotFoundException(
@@ -35,7 +35,7 @@ public sealed class UpdateScheduleCommandHandler(
 
         var newSchedule = Schedule.Create(
             request.DoctorId,
-            request.DayOfWeek,
+            request.Weekday,
             TimeRange.Create(request.StartTime, request.EndTime)
         );
 

@@ -30,7 +30,7 @@ public class DoctorTests
         doctor.LicenseNumber.Should().Be(licenseNumber);
         doctor.MedicalSpecialtyId.Should().Be(specialtyId);
         doctor.Biography.Should().Be(biography);
-        doctor.ConsultationRoom.Should().Be(room);
+        doctor.Room.Should().Be(room);
     }
 
     [Fact]
@@ -114,7 +114,7 @@ public class DoctorTests
 
         // Assert
         doctor.Biography.Should().Be(newBiography);
-        doctor.ConsultationRoom.Should().Be(newRoom);
+        doctor.Room.Should().Be(newRoom);
     }
 
     [Fact]
@@ -162,7 +162,7 @@ public class DoctorTests
         // Assert
         doctor.IsDeleted.Should().BeFalse();
         doctor.Biography.Should().Be(newBiography);
-        doctor.ConsultationRoom.Should().Be(newRoom);
+        doctor.Room.Should().Be(newRoom);
     }
 
     [Fact]

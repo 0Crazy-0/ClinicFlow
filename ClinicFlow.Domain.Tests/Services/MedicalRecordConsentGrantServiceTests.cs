@@ -31,9 +31,9 @@ public class MedicalRecordConsentGrantServiceTests
         var medicalRecord = CreateProtectedRecord(patient.Id);
         var context = new MedicalRecordConsentGrantContext
         {
-            Patient = patient,
+            TargetPatient = patient,
             RequesterMembership = requesterMembership,
-            MedicalRecord = medicalRecord,
+            TargetMedicalRecord = medicalRecord,
             RecipientMembership = recipientMembership,
             HasEffectiveGrant = false,
         };
@@ -76,13 +76,13 @@ public class MedicalRecordConsentGrantServiceTests
         var requesterUserId = Guid.CreateVersion7();
         var context = new MedicalRecordConsentGrantContext
         {
-            Patient = patient,
+            TargetPatient = patient,
             RequesterMembership = FamilyMembership.CreateSelf(
                 patient.Id,
                 requesterUserId,
                 _fakeTime.GetUtcNow().UtcDateTime
             ),
-            MedicalRecord = CreateProtectedRecord(patient.Id),
+            TargetMedicalRecord = CreateProtectedRecord(patient.Id),
             RecipientMembership = CreateRecipientMembership(patient.Id),
             HasEffectiveGrant = false,
         };
@@ -102,13 +102,13 @@ public class MedicalRecordConsentGrantServiceTests
         var requesterUserId = Guid.CreateVersion7();
         var context = new MedicalRecordConsentGrantContext
         {
-            Patient = null!,
+            TargetPatient = null!,
             RequesterMembership = FamilyMembership.CreateSelf(
                 patient.Id,
                 requesterUserId,
                 _fakeTime.GetUtcNow().UtcDateTime
             ),
-            MedicalRecord = CreateProtectedRecord(patient.Id),
+            TargetMedicalRecord = CreateProtectedRecord(patient.Id),
             RecipientMembership = CreateRecipientMembership(patient.Id),
             HasEffectiveGrant = false,
         };
@@ -128,9 +128,9 @@ public class MedicalRecordConsentGrantServiceTests
         var patient = CreateMinorPatient();
         var context = new MedicalRecordConsentGrantContext
         {
-            Patient = patient,
+            TargetPatient = patient,
             RequesterMembership = null!,
-            MedicalRecord = CreateProtectedRecord(patient.Id),
+            TargetMedicalRecord = CreateProtectedRecord(patient.Id),
             RecipientMembership = CreateRecipientMembership(patient.Id),
             HasEffectiveGrant = false,
         };
@@ -151,13 +151,13 @@ public class MedicalRecordConsentGrantServiceTests
         var requesterUserId = Guid.CreateVersion7();
         var context = new MedicalRecordConsentGrantContext
         {
-            Patient = patient,
+            TargetPatient = patient,
             RequesterMembership = FamilyMembership.CreateSelf(
                 patient.Id,
                 requesterUserId,
                 _fakeTime.GetUtcNow().UtcDateTime
             ),
-            MedicalRecord = null!,
+            TargetMedicalRecord = null!,
             RecipientMembership = CreateRecipientMembership(patient.Id),
             HasEffectiveGrant = false,
         };
@@ -179,13 +179,13 @@ public class MedicalRecordConsentGrantServiceTests
         var requesterUserId = Guid.CreateVersion7();
         var context = new MedicalRecordConsentGrantContext
         {
-            Patient = patient,
+            TargetPatient = patient,
             RequesterMembership = FamilyMembership.CreateSelf(
                 patient.Id,
                 requesterUserId,
                 _fakeTime.GetUtcNow().UtcDateTime
             ),
-            MedicalRecord = CreateProtectedRecord(patient.Id),
+            TargetMedicalRecord = CreateProtectedRecord(patient.Id),
             RecipientMembership = null!,
             HasEffectiveGrant = false,
         };
@@ -208,9 +208,9 @@ public class MedicalRecordConsentGrantServiceTests
         var requesterMembership = CreateRecipientMembership(patient.Id); // Requester is a family member, not self
         var context = new MedicalRecordConsentGrantContext
         {
-            Patient = patient,
+            TargetPatient = patient,
             RequesterMembership = requesterMembership,
-            MedicalRecord = CreateProtectedRecord(patient.Id),
+            TargetMedicalRecord = CreateProtectedRecord(patient.Id),
             RecipientMembership = CreateRecipientMembership(patient.Id),
             HasEffectiveGrant = false,
         };
@@ -241,13 +241,13 @@ public class MedicalRecordConsentGrantServiceTests
         var requesterUserId = Guid.CreateVersion7();
         var context = new MedicalRecordConsentGrantContext
         {
-            Patient = patient,
+            TargetPatient = patient,
             RequesterMembership = FamilyMembership.CreateSelf(
                 patient.Id,
                 requesterUserId,
                 referenceTime
             ),
-            MedicalRecord = CreateProtectedRecord(patient.Id),
+            TargetMedicalRecord = CreateProtectedRecord(patient.Id),
             RecipientMembership = CreateRecipientMembership(patient.Id),
             HasEffectiveGrant = false,
         };
@@ -271,13 +271,13 @@ public class MedicalRecordConsentGrantServiceTests
         var requesterUserId = Guid.CreateVersion7();
         var context = new MedicalRecordConsentGrantContext
         {
-            Patient = patient,
+            TargetPatient = patient,
             RequesterMembership = FamilyMembership.CreateSelf(
                 patient.Id,
                 requesterUserId,
                 referenceTime
             ),
-            MedicalRecord = CreateProtectedRecord(Guid.CreateVersion7()),
+            TargetMedicalRecord = CreateProtectedRecord(Guid.CreateVersion7()),
             RecipientMembership = CreateRecipientMembership(patient.Id),
             HasEffectiveGrant = false,
         };
@@ -310,13 +310,13 @@ public class MedicalRecordConsentGrantServiceTests
 
         var context = new MedicalRecordConsentGrantContext
         {
-            Patient = patient,
+            TargetPatient = patient,
             RequesterMembership = FamilyMembership.CreateSelf(
                 patient.Id,
                 requesterUserId,
                 referenceTime
             ),
-            MedicalRecord = record,
+            TargetMedicalRecord = record,
             RecipientMembership = CreateRecipientMembership(patient.Id),
             HasEffectiveGrant = false,
         };
@@ -345,13 +345,13 @@ public class MedicalRecordConsentGrantServiceTests
         var requesterUserId = Guid.CreateVersion7();
         var context = new MedicalRecordConsentGrantContext
         {
-            Patient = patient,
+            TargetPatient = patient,
             RequesterMembership = FamilyMembership.CreateSelf(
                 patient.Id,
                 requesterUserId,
                 referenceTime
             ),
-            MedicalRecord = CreateProtectedRecord(patient.Id), // the category is MentalHealthCounseling, which is not grantable for a 10 year-old
+            TargetMedicalRecord = CreateProtectedRecord(patient.Id), // the category is MentalHealthCounseling, which is not grantable for a 10 year-old
             RecipientMembership = CreateRecipientMembership(patient.Id),
             HasEffectiveGrant = false,
         };
@@ -375,13 +375,13 @@ public class MedicalRecordConsentGrantServiceTests
         var requesterUserId = Guid.CreateVersion7();
         var context = new MedicalRecordConsentGrantContext
         {
-            Patient = patient,
+            TargetPatient = patient,
             RequesterMembership = FamilyMembership.CreateSelf(
                 patient.Id,
                 requesterUserId,
                 referenceTime
             ),
-            MedicalRecord = CreateProtectedRecord(patient.Id),
+            TargetMedicalRecord = CreateProtectedRecord(patient.Id),
             RecipientMembership = FamilyMembership.CreateSelf(
                 patient.Id,
                 Guid.CreateVersion7(),
@@ -409,13 +409,13 @@ public class MedicalRecordConsentGrantServiceTests
         var requesterUserId = Guid.CreateVersion7();
         var context = new MedicalRecordConsentGrantContext
         {
-            Patient = patient,
+            TargetPatient = patient,
             RequesterMembership = FamilyMembership.CreateSelf(
                 patient.Id,
                 requesterUserId,
                 referenceTime
             ),
-            MedicalRecord = CreateProtectedRecord(patient.Id),
+            TargetMedicalRecord = CreateProtectedRecord(patient.Id),
             RecipientMembership = CreateRecipientMembership(patient.Id),
             HasEffectiveGrant = true,
         };

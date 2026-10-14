@@ -92,7 +92,7 @@ public sealed class ReassignAppointmentCommandHandler(
             {
                 NewDoctorId = newDoctor.Id,
                 NewDate = request.NewDate,
-                NewTimeRange = newTimeRange,
+                NewTimeSlot = newTimeRange,
             },
             newDoctorSchedule
         );

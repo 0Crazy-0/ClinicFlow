@@ -8,7 +8,7 @@ public sealed class CreateScheduleCommandValidator : AbstractValidator<CreateSch
     public CreateScheduleCommandValidator()
     {
         RuleFor(x => x.DoctorId).NotEmpty().WithMessage(DomainErrors.Validation.InvalidValue);
-        RuleFor(x => x.DayOfWeek).IsInEnum().WithMessage(DomainErrors.Validation.InvalidEnumValue);
+        RuleFor(x => x.Weekday).IsInEnum().WithMessage(DomainErrors.Validation.InvalidEnumValue);
         RuleFor(x => x.EndTime)
             .GreaterThan(x => x.StartTime)
             .WithMessage(DomainErrors.Validation.EndTimeMustBeAfterStartTime);

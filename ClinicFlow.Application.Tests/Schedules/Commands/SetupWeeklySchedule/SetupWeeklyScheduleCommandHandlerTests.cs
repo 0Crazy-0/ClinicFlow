@@ -80,7 +80,7 @@ public class SetupWeeklyScheduleCommandHandlerTests
         var expectedSchedules = command.Slots.Select(slot => new
         {
             DoctorId = doctorId,
-            slot.DayOfWeek,
+            slot.Weekday,
             slot.StartTime,
             slot.EndTime,
         });
@@ -89,9 +89,9 @@ public class SetupWeeklyScheduleCommandHandlerTests
             .Select(s => new
             {
                 s.DoctorId,
-                s.DayOfWeek,
-                StartTime = s.TimeRange.Start,
-                EndTime = s.TimeRange.End,
+                s.Weekday,
+                StartTime = s.TimeSlot.Start,
+                EndTime = s.TimeSlot.End,
             })
             .Should()
             .BeEquivalentTo(expectedSchedules);

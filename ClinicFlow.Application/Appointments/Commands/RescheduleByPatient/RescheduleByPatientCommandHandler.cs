@@ -148,7 +148,7 @@ public sealed class RescheduleByPatientCommandHandler(
                         TargetPatient = targetPatient,
                         InitiatorUserId = request.InitiatorUserId,
                         NewDate = request.NewDate,
-                        NewTimeRange = newTimeRange,
+                        NewTimeSlot = newTimeRange,
                         IsInitiatorPhoneVerified = user.IsPhoneVerified,
                         NewPatientNotes = request.NewPatientNotes,
                     },

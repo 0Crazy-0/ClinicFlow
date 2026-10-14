@@ -30,7 +30,7 @@ public class AppointmentReassignmentServiceTests
             {
                 NewDoctorId = newDoctorId,
                 NewDate = newDate,
-                NewTimeRange = newTimeRange,
+                NewTimeSlot = newTimeRange,
             },
             CreateSchedule(newDoctorId, newDate.DayOfWeek, 9, 17)
         );
@@ -38,7 +38,7 @@ public class AppointmentReassignmentServiceTests
         // Assert
         appointment.DoctorId.Should().Be(newDoctorId);
         appointment.ScheduledDate.Should().Be(newDate);
-        appointment.TimeRange.Should().Be(newTimeRange);
+        appointment.TimeSlot.Should().Be(newTimeRange);
         appointment.DomainEvents.OfType<AppointmentReassignedEvent>().Should().ContainSingle();
     }
 
@@ -53,7 +53,7 @@ public class AppointmentReassignmentServiceTests
                 {
                     NewDoctorId = Guid.CreateVersion7(),
                     NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime).AddDays(1),
-                    NewTimeRange = CreateTimeRange(10, 11),
+                    NewTimeSlot = CreateTimeRange(10, 11),
                 },
                 CreateSchedule(Guid.CreateVersion7(), DayOfWeek.Monday, 9, 17)
             );
@@ -88,7 +88,7 @@ public class AppointmentReassignmentServiceTests
                 {
                     NewDoctorId = Guid.CreateVersion7(),
                     NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime).AddDays(1),
-                    NewTimeRange = null!,
+                    NewTimeSlot = null!,
                 },
                 CreateSchedule(Guid.CreateVersion7(), DayOfWeek.Monday, 9, 17)
             );
@@ -108,7 +108,7 @@ public class AppointmentReassignmentServiceTests
                 {
                     NewDoctorId = Guid.CreateVersion7(),
                     NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime).AddDays(1),
-                    NewTimeRange = CreateTimeRange(10, 11),
+                    NewTimeSlot = CreateTimeRange(10, 11),
                 },
                 null!
             );
@@ -133,7 +133,7 @@ public class AppointmentReassignmentServiceTests
                 {
                     NewDoctorId = newDoctorId,
                     NewDate = newDate,
-                    NewTimeRange = CreateTimeRange(18, 19),
+                    NewTimeSlot = CreateTimeRange(18, 19),
                 },
                 CreateSchedule(newDoctorId, newDate.DayOfWeek, 9, 17)
             );

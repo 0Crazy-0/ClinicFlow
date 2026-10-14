@@ -140,7 +140,7 @@ public sealed class RescheduleByGuardianCommandHandler(
                         InitiatorMembership = initiatorMembership,
                         InitiatorUserId = request.InitiatorUserId,
                         NewDate = request.NewDate,
-                        NewTimeRange = newTimeRange,
+                        NewTimeSlot = newTimeRange,
                         IsInitiatorPhoneVerified = user.IsPhoneVerified,
                         NewGuardianNotes = request.NewGuardianNotes,
                     },

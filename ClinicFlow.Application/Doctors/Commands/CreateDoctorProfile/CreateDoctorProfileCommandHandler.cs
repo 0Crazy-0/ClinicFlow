@@ -31,7 +31,7 @@ public sealed class CreateDoctorProfileCommandHandler(
             LicenseNumber = MedicalLicenseNumber.Create(request.LicenseNumber),
             MedicalSpecialtyId = request.MedicalSpecialtyId,
             Biography = request.Biography,
-            ConsultationRoom = ConsultationRoom.Create(
+            Room = ConsultationRoom.Create(
                 request.ConsultationRoomNumber,
                 request.ConsultationRoomName,
                 request.ConsultationRoomFloor

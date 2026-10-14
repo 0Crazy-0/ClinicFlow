@@ -26,9 +26,6 @@ public sealed class SendPhoneVerificationCommandHandler(
                 request.UserId
             );
 
-        await phoneVerificationService.SendVerificationCodeAsync(
-            user.PhoneNumber,
-            cancellationToken
-        );
+        await phoneVerificationService.SendVerificationCodeAsync(user.Phone, cancellationToken);
     }
 }

@@ -121,17 +121,15 @@ public class DbSeederTests(PostgresFixture fixture) : IAsyncLifetime
         var fullEnd = new TimeOnly(16, 0);
 
         schedules
-            .Count(s => s.TimeRange.Start == morningStart && s.TimeRange.End == new TimeOnly(13, 0))
+            .Count(s => s.TimeSlot.Start == morningStart && s.TimeSlot.End == new TimeOnly(13, 0))
             .Should()
             .Be(21);
         schedules
-            .Count(s =>
-                s.TimeRange.Start == afternoonStart && s.TimeRange.End == new TimeOnly(19, 0)
-            )
+            .Count(s => s.TimeSlot.Start == afternoonStart && s.TimeSlot.End == new TimeOnly(19, 0))
             .Should()
             .Be(19);
         schedules
-            .Count(s => s.TimeRange.Start == fullStart && s.TimeRange.End == fullEnd)
+            .Count(s => s.TimeSlot.Start == fullStart && s.TimeSlot.End == fullEnd)
             .Should()
             .Be(27);
 
@@ -221,10 +219,10 @@ public class DbSeederTests(PostgresFixture fixture) : IAsyncLifetime
             .Should()
             .AllSatisfy(p =>
             {
-                p.BloodType.Should().NotBeNull();
-                p.EmergencyContact.Should().NotBeNull();
-                p.EmergencyContact.Name.Should().NotBeNull();
-                p.EmergencyContact.PhoneNumber.Should().NotBeNull();
+                p.BloodGroup.Should().NotBeNull();
+                p.Contact.Should().NotBeNull();
+                p.Contact.Name.Should().NotBeNull();
+                p.Contact.Phone.Should().NotBeNull();
                 p.DateOfBirth.ToDateTime(TimeOnly.MinValue)
                     .Should()
                     .BeBefore(_fakeTime.GetLocalNow().DateTime);
@@ -269,8 +267,8 @@ public class DbSeederTests(PostgresFixture fixture) : IAsyncLifetime
             .AllSatisfy(s =>
             {
                 s.DoctorId.Should().NotBeEmpty();
-                s.TimeRange.Should().NotBeNull();
-                s.TimeRange.Start.Should().BeBefore(s.TimeRange.End);
+                s.TimeSlot.Should().NotBeNull();
+                s.TimeSlot.Start.Should().BeBefore(s.TimeSlot.End);
             });
 
         var inactiveCount = schedules.Count(s => !s.IsActive);
@@ -446,13 +444,13 @@ public class DbSeederTests(PostgresFixture fixture) : IAsyncLifetime
             .AllSatisfy(appt =>
             {
                 var doctorSchedule = schedules.FirstOrDefault(s =>
-                    s.DoctorId == appt.DoctorId && s.DayOfWeek == appt.ScheduledDate.DayOfWeek
+                    s.DoctorId == appt.DoctorId && s.Weekday == appt.ScheduledDate.DayOfWeek
                 );
 
                 doctorSchedule.Should().NotBeNull();
 
-                appt.TimeRange.Start.Should().BeOnOrAfter(doctorSchedule.TimeRange.Start);
-                appt.TimeRange.End.Should().BeOnOrBefore(doctorSchedule.TimeRange.End);
+                appt.TimeSlot.Start.Should().BeOnOrAfter(doctorSchedule.TimeSlot.Start);
+                appt.TimeSlot.End.Should().BeOnOrBefore(doctorSchedule.TimeSlot.End);
             });
     }
 

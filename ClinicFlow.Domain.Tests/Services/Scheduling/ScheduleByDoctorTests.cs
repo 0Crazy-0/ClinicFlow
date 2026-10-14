@@ -95,7 +95,7 @@ public class ScheduleByDoctorTests
                 CreateAppointmentType(),
                 CreateValidDoctorSchedulingArgs() with
                 {
-                    TimeRange = null!,
+                    RequestedTimeSlot = null!,
                 },
                 CreateSchedule(),
                 SchedulingClearance.Granted()
@@ -164,7 +164,7 @@ public class ScheduleByDoctorTests
             InitiatorDoctor = doctor,
             TargetPatient = target,
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
-            TimeRange = CreateTimeRange(),
+            RequestedTimeSlot = CreateTimeRange(),
             HasGuardianConsentVerified = false,
         };
 
@@ -197,7 +197,7 @@ public class ScheduleByDoctorTests
             InitiatorDoctor = doctor,
             TargetPatient = target,
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
-            TimeRange = TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(18, 0)),
+            RequestedTimeSlot = TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(18, 0)),
         };
 
         var scheduleForDifferentDoctor = CreateSchedule();
@@ -229,7 +229,7 @@ public class ScheduleByDoctorTests
             InitiatorDoctor = doctor,
             TargetPatient = target,
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
-            TimeRange = CreateTimeRange(),
+            RequestedTimeSlot = CreateTimeRange(),
         };
 
         var doctorSchedule = Schedule.Create(
@@ -252,7 +252,7 @@ public class ScheduleByDoctorTests
         appointment.PatientId.Should().Be(target.Id);
         appointment.DoctorId.Should().Be(args.InitiatorDoctor.Id);
         appointment.ScheduledDate.Should().Be(args.ScheduledDate);
-        appointment.TimeRange.Should().Be(args.TimeRange);
+        appointment.TimeSlot.Should().Be(args.RequestedTimeSlot);
         appointment.Status.Should().Be(AppointmentStatus.Scheduled);
         appointment.ScheduledByUserId.Should().Be(args.InitiatorDoctor.UserId);
     }
@@ -262,7 +262,7 @@ public class ScheduleByDoctorTests
         {
             InitiatorDoctor = CreateDoctor(),
             TargetPatient = CreateSelfPatient(),
-            TimeRange = CreateTimeRange(),
+            RequestedTimeSlot = CreateTimeRange(),
         };
 
     private static TimeRange CreateTimeRange() =>

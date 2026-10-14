@@ -27,7 +27,7 @@ public sealed class SetupWeeklyScheduleCommandHandler(
                 );
 
                 var slots = request
-                    .Slots.Select(s => new WeeklyScheduleSlot(s.DayOfWeek, s.StartTime, s.EndTime))
+                    .Slots.Select(s => new WeeklyScheduleSlot(s.Weekday, s.StartTime, s.EndTime))
                     .ToList();
 
                 var schedules = WeeklyScheduleSetupService

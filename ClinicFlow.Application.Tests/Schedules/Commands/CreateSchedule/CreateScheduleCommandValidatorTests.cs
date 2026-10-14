@@ -67,7 +67,7 @@ public class CreateScheduleCommandValidatorTests
 
         // Assert
         result
-            .ShouldHaveValidationErrorFor(x => x.DayOfWeek)
+            .ShouldHaveValidationErrorFor(x => x.Weekday)
             .WithErrorMessage(DomainErrors.Validation.InvalidEnumValue);
     }
 

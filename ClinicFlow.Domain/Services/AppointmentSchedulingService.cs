@@ -26,7 +26,7 @@ public static class AppointmentSchedulingService
         ArgumentNullException.ThrowIfNull(appointmentType);
         ArgumentNullException.ThrowIfNull(args);
         ArgumentNullException.ThrowIfNull(args.TargetPatient);
-        ArgumentNullException.ThrowIfNull(args.TimeRange);
+        ArgumentNullException.ThrowIfNull(args.RequestedTimeSlot);
         ArgumentNullException.ThrowIfNull(context);
         ArgumentNullException.ThrowIfNull(context.DoctorSchedule);
         ArgumentNullException.ThrowIfNull(context.InitiatorMembership);
@@ -50,7 +50,7 @@ public static class AppointmentSchedulingService
         context.DoctorSchedule.EnsureDoctorIsAvailable(
             args.DoctorId,
             args.ScheduledDate.DayOfWeek,
-            args.TimeRange
+            args.RequestedTimeSlot
         );
 
         var appointment = Appointment.Schedule(
@@ -58,7 +58,7 @@ public static class AppointmentSchedulingService
             args.DoctorId,
             appointmentType.Id,
             args.ScheduledDate,
-            args.TimeRange,
+            args.RequestedTimeSlot,
             args.InitiatorUserId
         );
 
@@ -78,7 +78,7 @@ public static class AppointmentSchedulingService
         ArgumentNullException.ThrowIfNull(appointmentType);
         ArgumentNullException.ThrowIfNull(args);
         ArgumentNullException.ThrowIfNull(args.TargetPatient);
-        ArgumentNullException.ThrowIfNull(args.TimeRange);
+        ArgumentNullException.ThrowIfNull(args.RequestedTimeSlot);
         ArgumentNullException.ThrowIfNull(context);
         ArgumentNullException.ThrowIfNull(context.DoctorSchedule);
         ArgumentNullException.ThrowIfNull(context.InitiatorMembership);
@@ -105,7 +105,7 @@ public static class AppointmentSchedulingService
         context.DoctorSchedule.EnsureDoctorIsAvailable(
             args.DoctorId,
             args.ScheduledDate.DayOfWeek,
-            args.TimeRange
+            args.RequestedTimeSlot
         );
 
         var isMinorAtScheduledDate =
@@ -119,7 +119,7 @@ public static class AppointmentSchedulingService
             args.DoctorId,
             appointmentType.Id,
             args.ScheduledDate,
-            args.TimeRange,
+            args.RequestedTimeSlot,
             args.InitiatorUserId
         );
 
@@ -140,7 +140,7 @@ public static class AppointmentSchedulingService
         ArgumentNullException.ThrowIfNull(args);
         ArgumentNullException.ThrowIfNull(args.InitiatorDoctor);
         ArgumentNullException.ThrowIfNull(args.TargetPatient);
-        ArgumentNullException.ThrowIfNull(args.TimeRange);
+        ArgumentNullException.ThrowIfNull(args.RequestedTimeSlot);
         ArgumentNullException.ThrowIfNull(doctorSchedule);
 
         if (clearance is null)
@@ -154,7 +154,7 @@ public static class AppointmentSchedulingService
         doctorSchedule.EnsureDoctorIsAvailable(
             args.InitiatorDoctor.Id,
             args.ScheduledDate.DayOfWeek,
-            args.TimeRange
+            args.RequestedTimeSlot
         );
 
         return Appointment.Schedule(
@@ -162,7 +162,7 @@ public static class AppointmentSchedulingService
             args.InitiatorDoctor.Id,
             appointmentType.Id,
             args.ScheduledDate,
-            args.TimeRange,
+            args.RequestedTimeSlot,
             args.InitiatorDoctor.UserId
         );
     }
@@ -177,7 +177,7 @@ public static class AppointmentSchedulingService
         ArgumentNullException.ThrowIfNull(appointmentType);
         ArgumentNullException.ThrowIfNull(args);
         ArgumentNullException.ThrowIfNull(args.TargetPatient);
-        ArgumentNullException.ThrowIfNull(args.TimeRange);
+        ArgumentNullException.ThrowIfNull(args.RequestedTimeSlot);
         ArgumentNullException.ThrowIfNull(doctorSchedule);
 
         if (clearance is null)
@@ -193,7 +193,7 @@ public static class AppointmentSchedulingService
         doctorSchedule.EnsureDoctorIsAvailable(
             args.DoctorId,
             args.ScheduledDate.DayOfWeek,
-            args.TimeRange
+            args.RequestedTimeSlot
         );
 
         return Appointment.Schedule(
@@ -201,7 +201,7 @@ public static class AppointmentSchedulingService
             args.DoctorId,
             appointmentType.Id,
             args.ScheduledDate,
-            args.TimeRange,
+            args.RequestedTimeSlot,
             args.InitiatorUserId
         );
     }

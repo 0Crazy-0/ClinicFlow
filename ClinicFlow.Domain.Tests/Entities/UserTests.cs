@@ -28,7 +28,7 @@ public class UserTests
         user.Should().NotBeNull();
         user.Email.Should().Be(email);
         user.PasswordHash.Should().Be(passwordHash);
-        user.PhoneNumber.Should().Be(phone);
+        user.Phone.Should().Be(phone);
         user.Role.Should().Be(role);
         user.IsActive.Should().BeTrue();
         user.IsPhoneVerified.Should().BeFalse();

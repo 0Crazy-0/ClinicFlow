@@ -67,9 +67,9 @@ public class UpdateScheduleCommandHandlerTests
         existingSchedule.IsActive.Should().BeFalse();
         capturedSchedule.Should().NotBeNull();
         capturedSchedule.DoctorId.Should().Be(doctorId);
-        capturedSchedule.DayOfWeek.Should().Be(DayOfWeek.Monday);
-        capturedSchedule.TimeRange.Start.Should().Be(command.StartTime);
-        capturedSchedule.TimeRange.End.Should().Be(command.EndTime);
+        capturedSchedule.Weekday.Should().Be(DayOfWeek.Monday);
+        capturedSchedule.TimeSlot.Start.Should().Be(command.StartTime);
+        capturedSchedule.TimeSlot.End.Should().Be(command.EndTime);
         capturedSchedule.IsActive.Should().BeTrue();
     }
 

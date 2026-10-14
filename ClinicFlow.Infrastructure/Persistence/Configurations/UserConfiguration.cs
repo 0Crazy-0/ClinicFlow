@@ -17,7 +17,7 @@ public sealed class UserConfiguration : IEntityTypeConfiguration<User>
             .HasMaxLength(EmailAddress.MaximumLength);
 
         builder
-            .Property(u => u.PhoneNumber)
+            .Property(u => u.Phone)
             .HasConversion(phone => phone.Value, val => PhoneNumber.Create(val))
             .HasMaxLength(PhoneNumber.MaximumLength);
 

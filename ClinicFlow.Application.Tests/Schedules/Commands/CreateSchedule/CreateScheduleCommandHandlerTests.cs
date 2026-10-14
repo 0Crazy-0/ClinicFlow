@@ -53,9 +53,9 @@ public class CreateScheduleCommandHandlerTests
         result.Should().NotBeEmpty();
         capturedSchedule.Should().NotBeNull();
         capturedSchedule.DoctorId.Should().Be(command.DoctorId);
-        capturedSchedule.DayOfWeek.Should().Be(command.DayOfWeek);
-        capturedSchedule.TimeRange.Start.Should().Be(command.StartTime);
-        capturedSchedule.TimeRange.End.Should().Be(command.EndTime);
+        capturedSchedule.Weekday.Should().Be(command.Weekday);
+        capturedSchedule.TimeSlot.Start.Should().Be(command.StartTime);
+        capturedSchedule.TimeSlot.End.Should().Be(command.EndTime);
         capturedSchedule.IsActive.Should().BeTrue();
     }
 
@@ -115,7 +115,7 @@ public class CreateScheduleCommandHandlerTests
             .ThrowAsync<ScheduleAlreadyExistsException>()
             .WithMessage(DomainErrors.Schedule.ScheduleAlreadyExists);
         exceptionAssertion.Which.DoctorId.Should().Be(doctorId);
-        exceptionAssertion.Which.DayOfWeek.Should().Be(DayOfWeek.Monday);
+        exceptionAssertion.Which.Weekday.Should().Be(DayOfWeek.Monday);
 
         _scheduleRepositoryMock.Verify(
             x => x.CreateAsync(It.IsAny<Schedule>(), It.IsAny<CancellationToken>()),

@@ -92,8 +92,8 @@ public sealed class GetMinorFamilyMemberAppointmentsByPatientIdQueryHandler(
                 a.DoctorId,
                 a.AppointmentTypeId,
                 a.ScheduledDate,
-                a.TimeRange.Start,
-                a.TimeRange.End,
+                a.TimeSlot.Start,
+                a.TimeSlot.End,
                 a.Status,
                 a.ReceptionistNotes,
                 a.GuardianNotes

@@ -139,7 +139,7 @@ public class FamilyMembershipAccessAuthorizationServiceTests
 
         return new FamilyMembershipManagementAuthorizationContext
         {
-            Patient = patient,
+            TargetPatient = patient,
             ReferenceTime = referenceTime,
             RequesterUserId = requesterUserId,
             TargetUserId = targetUserId,
