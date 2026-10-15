@@ -1,3 +1,4 @@
+using System.Globalization;
 using AwesomeAssertions;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
@@ -32,6 +33,7 @@ public class RescheduleByPatientTests
                     DoctorSchedule = CreateSchedule(),
                     InitiatorMembership = CreateSelfMembership(),
                     RequestedCategory = AppointmentCategory.Other,
+                    ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
                 },
                 SchedulingClearance.Granted()
             );
@@ -53,6 +55,7 @@ public class RescheduleByPatientTests
                     DoctorSchedule = CreateSchedule(),
                     InitiatorMembership = CreateSelfMembership(),
                     RequestedCategory = AppointmentCategory.Other,
+                    ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
                 },
                 SchedulingClearance.Granted()
             );
@@ -77,6 +80,7 @@ public class RescheduleByPatientTests
                     DoctorSchedule = CreateSchedule(),
                     InitiatorMembership = CreateSelfMembership(),
                     RequestedCategory = AppointmentCategory.Other,
+                    ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
                 },
                 SchedulingClearance.Granted()
             );
@@ -101,12 +105,13 @@ public class RescheduleByPatientTests
                     DoctorSchedule = CreateSchedule(),
                     InitiatorMembership = CreateSelfMembership(),
                     RequestedCategory = AppointmentCategory.Other,
+                    ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
                 },
                 SchedulingClearance.Granted()
             );
 
         // Assert
-        act.Should().Throw<ArgumentNullException>();
+        act.Should().Throw<ArgumentNullException>().WithParameterName("args.NewTimeSlot");
     }
 
     [Fact]
@@ -138,6 +143,7 @@ public class RescheduleByPatientTests
                     DoctorSchedule = null!,
                     InitiatorMembership = CreateSelfMembership(),
                     RequestedCategory = AppointmentCategory.Other,
+                    ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
                 },
                 SchedulingClearance.Granted()
             );
@@ -158,6 +164,7 @@ public class RescheduleByPatientTests
             DoctorSchedule = CreateSchedule(),
             InitiatorMembership = null!,
             RequestedCategory = AppointmentCategory.Other,
+            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         // Act
@@ -174,6 +181,34 @@ public class RescheduleByPatientTests
     }
 
     [Fact]
+    public void RescheduleByPatient_ShouldThrowArgumentNullException_WhenContextClinicTimeZoneIsNull()
+    {
+        // Arrange
+        var target = CreateSelfPatient();
+        var appointment = CreateAppointment(target.Id);
+        var args = CreateValidPatientReschedulingArgs() with { TargetPatient = target };
+        var context = new PatientReschedulingContext
+        {
+            DoctorSchedule = CreateSchedule(),
+            InitiatorMembership = CreateSelfMembership(),
+            RequestedCategory = AppointmentCategory.Other,
+            ClinicTimeZone = null!,
+        };
+
+        // Act
+        var act = () =>
+            AppointmentReschedulingService.RescheduleByPatient(
+                appointment,
+                args,
+                context,
+                SchedulingClearance.Granted()
+            );
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>().WithParameterName("context.ClinicTimeZone");
+    }
+
+    [Fact]
     public void RescheduleByPatient_ShouldThrowBusinessRuleValidationException_WhenClearanceIsNull()
     {
         // Arrange & Act
@@ -186,6 +221,7 @@ public class RescheduleByPatientTests
                     DoctorSchedule = CreateSchedule(),
                     InitiatorMembership = CreateSelfMembership(),
                     RequestedCategory = AppointmentCategory.Other,
+                    ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
                 },
                 null!
             );
@@ -194,6 +230,49 @@ public class RescheduleByPatientTests
         act.Should()
             .Throw<BusinessRuleValidationException>()
             .WithMessage(DomainErrors.Reschedule.MissingClearance);
+    }
+
+    [Fact]
+    public void RescheduleByPatient_ShouldThrowBusinessRuleValidationException_WhenSlotIsAmbiguous()
+    {
+        // Arrange
+        _fakeTime.SetUtcNow(
+            DateTimeOffset.Parse("2026-11-01T12:00:00Z", CultureInfo.InvariantCulture)
+        );
+
+        var ambiguousDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+        var target = CreateSelfPatient();
+        var appointment = CreateAppointment(target.Id);
+
+        var args = new PatientReschedulingArgs
+        {
+            TargetPatient = target,
+            InitiatorUserId = appointment.ScheduledByUserId,
+            NewDate = ambiguousDate,
+            NewTimeSlot = TimeRange.Create(new TimeOnly(1, 0), new TimeOnly(1, 30)),
+            IsInitiatorPhoneVerified = true,
+        };
+        var context = new PatientReschedulingContext
+        {
+            DoctorSchedule = CreateSchedule(appointment.DoctorId, ambiguousDate.DayOfWeek),
+            InitiatorMembership = CreateSelfMembership(),
+            RequestedCategory = AppointmentCategory.Other,
+            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
+        };
+
+        // Act
+        var act = () =>
+            AppointmentReschedulingService.RescheduleByPatient(
+                appointment,
+                args,
+                context,
+                SchedulingClearance.Granted()
+            );
+
+        // Assert
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.Scheduling.AmbiguousTimeSlot);
     }
 
     [Fact]
@@ -216,6 +295,7 @@ public class RescheduleByPatientTests
             DoctorSchedule = CreateSchedule(),
             InitiatorMembership = CreateSelfMembership(),
             RequestedCategory = AppointmentCategory.Other,
+            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         // Act
@@ -261,6 +341,7 @@ public class RescheduleByPatientTests
                 _fakeTime.GetUtcNow().UtcDateTime
             ),
             RequestedCategory = AppointmentCategory.Other,
+            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         // Act
@@ -298,6 +379,7 @@ public class RescheduleByPatientTests
             DoctorSchedule = CreateSchedule(),
             InitiatorMembership = CreateSelfMembership(),
             RequestedCategory = AppointmentCategory.Other,
+            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         // Act
@@ -346,6 +428,7 @@ public class RescheduleByPatientTests
             DoctorSchedule = CreateSchedule(),
             InitiatorMembership = CreateSelfMembership(),
             RequestedCategory = AppointmentCategory.Other,
+            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         // Act
@@ -381,6 +464,7 @@ public class RescheduleByPatientTests
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek),
             InitiatorMembership = CreateSelfMembership(),
             RequestedCategory = AppointmentCategory.Other,
+            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         // Act
@@ -418,6 +502,7 @@ public class RescheduleByPatientTests
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek),
             InitiatorMembership = CreateSelfMembership(),
             RequestedCategory = AppointmentCategory.Other,
+            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         // Act
@@ -458,6 +543,7 @@ public class RescheduleByPatientTests
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek),
             InitiatorMembership = CreateSelfMembership(),
             RequestedCategory = AppointmentCategory.Other,
+            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         // Act
@@ -496,6 +582,7 @@ public class RescheduleByPatientTests
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek),
             InitiatorMembership = CreateSelfMembership(),
             RequestedCategory = AppointmentCategory.Other,
+            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         // Act
@@ -542,6 +629,7 @@ public class RescheduleByPatientTests
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek),
             InitiatorMembership = CreateSelfMembership(),
             RequestedCategory = AppointmentCategory.Other,
+            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
             CreatorLegalAuthority = LegalAuthorityType.Parent,
         };
 
@@ -591,6 +679,7 @@ public class RescheduleByPatientTests
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek),
             InitiatorMembership = CreateSelfMembership(),
             RequestedCategory = AppointmentCategory.Other,
+            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
             CreatorLegalAuthority = LegalAuthorityType.Parent,
         };
 
@@ -649,6 +738,7 @@ public class RescheduleByPatientTests
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek),
             InitiatorMembership = CreateSelfMembership(),
             RequestedCategory = AppointmentCategory.Other,
+            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
             CreatorLegalAuthority = LegalAuthorityType.Parent,
         };
 
@@ -697,6 +787,7 @@ public class RescheduleByPatientTests
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek),
             InitiatorMembership = CreateSelfMembership(),
             RequestedCategory = AppointmentCategory.Other,
+            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
             CreatorLegalAuthority = LegalAuthorityType.None,
         };
 
@@ -745,6 +836,7 @@ public class RescheduleByPatientTests
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek),
             InitiatorMembership = CreateSelfMembership(),
             RequestedCategory = AppointmentCategory.Other,
+            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
             CreatorLegalAuthority = LegalAuthorityType.Parent,
         };
 

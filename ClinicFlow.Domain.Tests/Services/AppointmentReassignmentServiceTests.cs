@@ -1,7 +1,9 @@
+using System.Globalization;
 using AwesomeAssertions;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Events.Appointments;
+using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Exceptions.Scheduling;
 using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Args.Reassignment;
@@ -31,6 +33,7 @@ public class AppointmentReassignmentServiceTests
                 NewDoctorId = newDoctorId,
                 NewDate = newDate,
                 NewTimeSlot = newTimeRange,
+                ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
             },
             CreateSchedule(newDoctorId, newDate.DayOfWeek, 9, 17)
         );
@@ -54,6 +57,7 @@ public class AppointmentReassignmentServiceTests
                     NewDoctorId = Guid.CreateVersion7(),
                     NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime).AddDays(1),
                     NewTimeSlot = CreateTimeRange(10, 11),
+                    ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
                 },
                 CreateSchedule(Guid.CreateVersion7(), DayOfWeek.Monday, 9, 17)
             );
@@ -89,12 +93,34 @@ public class AppointmentReassignmentServiceTests
                     NewDoctorId = Guid.CreateVersion7(),
                     NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime).AddDays(1),
                     NewTimeSlot = null!,
+                    ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
                 },
                 CreateSchedule(Guid.CreateVersion7(), DayOfWeek.Monday, 9, 17)
             );
 
         // Assert
-        act.Should().Throw<ArgumentNullException>();
+        act.Should().Throw<ArgumentNullException>().WithParameterName("args.NewTimeSlot");
+    }
+
+    [Fact]
+    public void Reassign_ShouldThrowArgumentNullException_WhenClinicTimeZoneIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentReassignmentService.Reassign(
+                CreateDisplacedAppointment(),
+                new AppointmentReassignmentArgs
+                {
+                    NewDoctorId = Guid.CreateVersion7(),
+                    NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime).AddDays(1),
+                    NewTimeSlot = CreateTimeRange(10, 11),
+                    ClinicTimeZone = null!,
+                },
+                CreateSchedule(Guid.CreateVersion7(), DayOfWeek.Monday, 9, 17)
+            );
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>().WithParameterName("args.ClinicTimeZone");
     }
 
     [Fact]
@@ -109,12 +135,45 @@ public class AppointmentReassignmentServiceTests
                     NewDoctorId = Guid.CreateVersion7(),
                     NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime).AddDays(1),
                     NewTimeSlot = CreateTimeRange(10, 11),
+                    ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
                 },
                 null!
             );
 
         // Assert
         act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void Reassign_ShouldThrowBusinessRuleValidationException_WhenSlotIsAmbiguous()
+    {
+        // Arrange
+        _fakeTime.SetUtcNow(
+            DateTimeOffset.Parse("2026-11-01T12:00:00Z", CultureInfo.InvariantCulture)
+        );
+
+        var ambiguousDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+        var appointment = CreateDisplacedAppointment();
+        var newDoctorId = Guid.CreateVersion7();
+
+        // Act
+        var act = () =>
+            AppointmentReassignmentService.Reassign(
+                appointment,
+                new AppointmentReassignmentArgs
+                {
+                    NewDoctorId = newDoctorId,
+                    NewDate = ambiguousDate,
+                    NewTimeSlot = TimeRange.Create(new TimeOnly(1, 0), new TimeOnly(1, 30)),
+                    ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
+                },
+                CreateSchedule(newDoctorId, ambiguousDate.DayOfWeek, 0, 23)
+            );
+
+        // Assert
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.Scheduling.AmbiguousTimeSlot);
     }
 
     [Fact]
@@ -134,6 +193,7 @@ public class AppointmentReassignmentServiceTests
                     NewDoctorId = newDoctorId,
                     NewDate = newDate,
                     NewTimeSlot = CreateTimeRange(18, 19),
+                    ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
                 },
                 CreateSchedule(newDoctorId, newDate.DayOfWeek, 9, 17)
             );

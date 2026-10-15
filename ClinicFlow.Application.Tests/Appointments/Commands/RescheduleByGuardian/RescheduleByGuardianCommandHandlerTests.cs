@@ -60,6 +60,7 @@ public class RescheduleByGuardianCommandHandlerTests
             _userRepositoryMock.Object,
             _familyMembershipRepositoryMock.Object,
             _regionalSchedulingServiceMock.Object,
+            _fakeTime,
             _unitOfWorkMock.Object
         );
     }

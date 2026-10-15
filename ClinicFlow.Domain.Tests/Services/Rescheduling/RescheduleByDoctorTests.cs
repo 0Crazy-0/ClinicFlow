@@ -1,3 +1,4 @@
+using System.Globalization;
 using AwesomeAssertions;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
@@ -84,7 +85,26 @@ public class RescheduleByDoctorTests
             );
 
         // Assert
-        act.Should().Throw<ArgumentNullException>();
+        act.Should().Throw<ArgumentNullException>().WithParameterName("args.NewTimeSlot");
+    }
+
+    [Fact]
+    public void RescheduleByDoctor_ShouldThrowArgumentNullException_WhenClinicTimeZoneIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentReschedulingService.RescheduleByDoctor(
+                CreateAppointment(),
+                CreateValidDoctorReschedulingArgs() with
+                {
+                    ClinicTimeZone = null!,
+                },
+                CreateSchedule(),
+                SchedulingClearance.Granted()
+            );
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>().WithParameterName("args.ClinicTimeZone");
     }
 
     [Fact]
@@ -122,6 +142,48 @@ public class RescheduleByDoctorTests
     }
 
     [Fact]
+    public void RescheduleByDoctor_ShouldThrowBusinessRuleValidationException_WhenSlotIsAmbiguous()
+    {
+        // Arrange
+        _fakeTime.SetUtcNow(
+            DateTimeOffset.Parse("2026-11-01T12:00:00Z", CultureInfo.InvariantCulture)
+        );
+
+        var ambiguousDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+        var doctorId = Guid.CreateVersion7();
+        var appointment = CreateAppointment(doctorId);
+        var doctor = CreateDoctor(doctorId);
+
+        var args = new DoctorReschedulingArgs
+        {
+            InitiatorDoctor = doctor,
+            NewDate = ambiguousDate,
+            NewTimeSlot = TimeRange.Create(new TimeOnly(1, 0), new TimeOnly(1, 30)),
+            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
+        };
+
+        var doctorSchedule = Schedule.Create(
+            doctorId,
+            ambiguousDate.DayOfWeek,
+            CreateTimeRange(0, 23)
+        );
+
+        // Act
+        var act = () =>
+            AppointmentReschedulingService.RescheduleByDoctor(
+                appointment,
+                args,
+                doctorSchedule,
+                SchedulingClearance.Granted()
+            );
+
+        // Assert
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.Scheduling.AmbiguousTimeSlot);
+    }
+
+    [Fact]
     public void RescheduleByDoctor_ShouldThrowUnauthorized_WhenDoctorMismatch()
     {
         // Arrange
@@ -132,6 +194,7 @@ public class RescheduleByDoctorTests
             InitiatorDoctor = invalidDoctor,
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
             NewTimeSlot = CreateTimeRange(10, 11),
+            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         var doctorSchedule = CreateSchedule();
@@ -164,6 +227,7 @@ public class RescheduleByDoctorTests
             InitiatorDoctor = doctor,
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
             NewTimeSlot = CreateTimeRange(18, 19),
+            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         var doctorSchedule = CreateSchedule();
@@ -196,6 +260,7 @@ public class RescheduleByDoctorTests
             InitiatorDoctor = doctor,
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
             NewTimeSlot = CreateTimeRange(10, 11),
+            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         var doctorSchedule = Schedule.Create(
@@ -223,6 +288,7 @@ public class RescheduleByDoctorTests
         {
             InitiatorDoctor = CreateDoctor(Guid.CreateVersion7()),
             NewTimeSlot = CreateTimeRange(10, 11),
+            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
     private static TimeRange CreateTimeRange(int startHour, int endHour) =>

@@ -36,6 +36,7 @@ public class RescheduleByStaffCommandHandlerTests
             _appointmentTypeRepositoryMock.Object,
             _scheduleRepositoryMock.Object,
             _regionalSchedulingServiceMock.Object,
+            _fakeTime,
             _unitOfWorkMock.Object
         );
     }

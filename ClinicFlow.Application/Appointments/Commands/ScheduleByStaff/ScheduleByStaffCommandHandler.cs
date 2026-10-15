@@ -19,6 +19,7 @@ public sealed class ScheduleByStaffCommandHandler(
     IScheduleRepository scheduleRepository,
     IAppointmentRepository appointmentRepository,
     IRegionalSchedulingService regionalSchedulingService,
+    TimeProvider timeProvider,
     IUnitOfWork unitOfWork
 ) : IRequestHandler<ScheduleByStaffCommand, Guid>
 {
@@ -116,6 +117,7 @@ public sealed class ScheduleByStaffCommandHandler(
                 ScheduledDate = request.ScheduledDate,
                 RequestedTimeSlot = timeRange,
                 HasGuardianConsentVerified = request.HasGuardianConsentVerified,
+                ClinicTimeZone = timeProvider.LocalTimeZone,
             },
             doctorSchedule,
             clearance

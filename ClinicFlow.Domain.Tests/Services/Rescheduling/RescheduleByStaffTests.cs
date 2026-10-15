@@ -1,3 +1,4 @@
+using System.Globalization;
 using AwesomeAssertions;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
@@ -63,7 +64,26 @@ public class RescheduleByStaffTests
             );
 
         // Assert
-        act.Should().Throw<ArgumentNullException>();
+        act.Should().Throw<ArgumentNullException>().WithParameterName("args.NewTimeSlot");
+    }
+
+    [Fact]
+    public void RescheduleByStaff_ShouldThrowArgumentNullException_WhenClinicTimeZoneIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentReschedulingService.RescheduleByStaff(
+                CreateAppointment(),
+                CreateValidStaffReschedulingArgs() with
+                {
+                    ClinicTimeZone = null!,
+                },
+                CreateSchedule(),
+                SchedulingClearance.Granted()
+            );
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>().WithParameterName("args.ClinicTimeZone");
     }
 
     [Fact]
@@ -101,6 +121,45 @@ public class RescheduleByStaffTests
     }
 
     [Fact]
+    public void RescheduleByStaff_ShouldThrowBusinessRuleValidationException_WhenSlotIsAmbiguous()
+    {
+        // Arrange
+        _fakeTime.SetUtcNow(
+            DateTimeOffset.Parse("2026-11-01T12:00:00Z", CultureInfo.InvariantCulture)
+        );
+
+        var ambiguousDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+        var appointment = CreateAppointment();
+
+        var args = new StaffReschedulingArgs
+        {
+            NewDate = ambiguousDate,
+            NewTimeSlot = TimeRange.Create(new TimeOnly(1, 0), new TimeOnly(1, 30)),
+            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
+        };
+
+        var doctorSchedule = Schedule.Create(
+            appointment.DoctorId,
+            ambiguousDate.DayOfWeek,
+            TimeRange.Create(new TimeOnly(0, 0), new TimeOnly(23, 59))
+        );
+
+        // Act
+        var act = () =>
+            AppointmentReschedulingService.RescheduleByStaff(
+                appointment,
+                args,
+                doctorSchedule,
+                SchedulingClearance.Granted()
+            );
+
+        // Assert
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.Scheduling.AmbiguousTimeSlot);
+    }
+
+    [Fact]
     public void RescheduleByStaff_ShouldEnforceAvailability_WhenValid()
     {
         // Arrange
@@ -110,6 +169,7 @@ public class RescheduleByStaffTests
         {
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
             NewTimeSlot = CreateTimeRange(),
+            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         var scheduleForDifferentDoctor = CreateSchedule();
@@ -139,6 +199,7 @@ public class RescheduleByStaffTests
         {
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
             NewTimeSlot = TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0)),
+            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         var doctorSchedule = Schedule.Create(
@@ -162,7 +223,11 @@ public class RescheduleByStaffTests
     }
 
     private static StaffReschedulingArgs CreateValidStaffReschedulingArgs() =>
-        new() { NewTimeSlot = TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0)) };
+        new()
+        {
+            NewTimeSlot = TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0)),
+            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
+        };
 
     private static TimeRange CreateTimeRange() =>
         TimeRange.Create(new TimeOnly(18, 0), new TimeOnly(19, 0));

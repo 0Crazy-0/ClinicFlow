@@ -15,6 +15,7 @@ public sealed class ReassignAppointmentCommandHandler(
     IAppointmentRepository appointmentRepository,
     IDoctorRepository doctorRepository,
     IScheduleRepository scheduleRepository,
+    TimeProvider timeProvider,
     IUnitOfWork unitOfWork
 ) : IRequestHandler<ReassignAppointmentCommand>
 {
@@ -93,6 +94,7 @@ public sealed class ReassignAppointmentCommandHandler(
                 NewDoctorId = newDoctor.Id,
                 NewDate = request.NewDate,
                 NewTimeSlot = newTimeRange,
+                ClinicTimeZone = timeProvider.LocalTimeZone,
             },
             newDoctorSchedule
         );
