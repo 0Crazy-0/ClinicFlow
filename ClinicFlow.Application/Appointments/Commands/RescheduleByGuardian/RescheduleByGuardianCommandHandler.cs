@@ -137,20 +137,19 @@ public sealed class RescheduleByGuardianCommandHandler(
                     appointment,
                     new GuardianReschedulingArgs
                     {
-                        TargetPatient = targetPatient,
-                        InitiatorMembership = initiatorMembership,
-                        InitiatorUserId = request.InitiatorUserId,
                         NewDate = request.NewDate,
                         NewTimeSlot = newTimeRange,
-                        IsInitiatorPhoneVerified = user.IsPhoneVerified,
                         NewGuardianNotes = request.NewGuardianNotes,
                     },
                     new PatientReschedulingContext
                     {
+                        TargetPatient = targetPatient,
+                        AppointmentType = appointmentType,
+                        InitiatorUserId = request.InitiatorUserId,
+                        IsInitiatorPhoneVerified = user.IsPhoneVerified,
                         Penalties = penalties,
                         DoctorSchedule = doctorSchedule,
                         InitiatorMembership = initiatorMembership,
-                        RequestedCategory = appointmentType.Category,
                         ClinicTimeZone = timeProvider.LocalTimeZone,
                     },
                     clearance

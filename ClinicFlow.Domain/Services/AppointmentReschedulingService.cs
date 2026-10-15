@@ -28,9 +28,10 @@ public static class AppointmentReschedulingService
     {
         ArgumentNullException.ThrowIfNull(appointment);
         ArgumentNullException.ThrowIfNull(args);
-        ArgumentNullException.ThrowIfNull(args.TargetPatient);
         ArgumentNullException.ThrowIfNull(args.NewTimeSlot);
         ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(context.TargetPatient);
+        ArgumentNullException.ThrowIfNull(context.AppointmentType);
         ArgumentNullException.ThrowIfNull(context.DoctorSchedule);
         ArgumentNullException.ThrowIfNull(context.InitiatorMembership);
         ArgumentNullException.ThrowIfNull(context.ClinicTimeZone);
@@ -44,21 +45,21 @@ public static class AppointmentReschedulingService
             context.ClinicTimeZone
         );
 
-        if (args.TargetPatient.Id != appointment.PatientId)
+        if (context.TargetPatient.Id != appointment.PatientId)
             throw new DomainValidationException(DomainErrors.Appointment.DataMismatch);
 
-        context.InitiatorMembership.EnsureAppointmentAccess(context.RequestedCategory);
+        context.InitiatorMembership.EnsureAppointmentAccess(context.AppointmentType.Category);
 
         if (
-            args.TargetPatient.GetAge(args.NewDate) < FamilyMembership.MinimumAdultAge
-            && appointment.ScheduledByUserId != args.InitiatorUserId
+            context.TargetPatient.GetAge(args.NewDate) < FamilyMembership.MinimumAdultAge
+            && appointment.ScheduledByUserId != context.InitiatorUserId
             && context.CreatorLegalAuthority
                 is LegalAuthorityType.Parent
                     or LegalAuthorityType.Guardian
         )
             throw new PatientAccessUnauthorizedException(DomainErrors.Patient.UnauthorizedAccess);
 
-        if (!args.IsInitiatorPhoneVerified)
+        if (!context.IsInitiatorPhoneVerified)
             throw new AppointmentSchedulingUnauthorizedException(
                 DomainErrors.Appointment.PhoneNotVerified
             );
@@ -86,11 +87,12 @@ public static class AppointmentReschedulingService
     {
         ArgumentNullException.ThrowIfNull(appointment);
         ArgumentNullException.ThrowIfNull(args);
-        ArgumentNullException.ThrowIfNull(args.TargetPatient);
-        ArgumentNullException.ThrowIfNull(args.InitiatorMembership);
         ArgumentNullException.ThrowIfNull(args.NewTimeSlot);
         ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(context.TargetPatient);
+        ArgumentNullException.ThrowIfNull(context.AppointmentType);
         ArgumentNullException.ThrowIfNull(context.DoctorSchedule);
+        ArgumentNullException.ThrowIfNull(context.InitiatorMembership);
         ArgumentNullException.ThrowIfNull(context.ClinicTimeZone);
 
         if (clearance is null)
@@ -102,23 +104,23 @@ public static class AppointmentReschedulingService
             context.ClinicTimeZone
         );
 
-        if (args.TargetPatient.Id != appointment.PatientId)
+        if (context.TargetPatient.Id != appointment.PatientId)
             throw new DomainValidationException(DomainErrors.Appointment.DataMismatch);
 
-        args.InitiatorMembership.EnsureGuardianAccess();
+        context.InitiatorMembership.EnsureGuardianAccess();
 
         var isMinorAtNewDate =
-            args.TargetPatient.GetAge(args.NewDate) < FamilyMembership.MinimumAdultAge;
+            context.TargetPatient.GetAge(args.NewDate) < FamilyMembership.MinimumAdultAge;
 
         if (!isMinorAtNewDate)
             throw new DomainValidationException(DomainErrors.Appointment.GuardianRequiresMinor);
 
         if (args.NewGuardianNotes is not null && appointment.GuardianNotesAuthorUserId is not null)
-            args.InitiatorMembership.EnsureGuardianNotesEditAccess(
+            context.InitiatorMembership.EnsureGuardianNotesEditAccess(
                 appointment.GuardianNotesAuthorUserId.Value
             );
 
-        if (!args.IsInitiatorPhoneVerified)
+        if (!context.IsInitiatorPhoneVerified)
             throw new AppointmentSchedulingUnauthorizedException(
                 DomainErrors.Appointment.PhoneNotVerified
             );
@@ -134,22 +136,23 @@ public static class AppointmentReschedulingService
         appointment.Reschedule(args.NewDate, args.NewTimeSlot);
 
         if (args.NewGuardianNotes is not null)
-            appointment.UpdateGuardianNotes(args.NewGuardianNotes, args.InitiatorUserId);
+            appointment.UpdateGuardianNotes(args.NewGuardianNotes, context.InitiatorUserId);
     }
 
     public static void RescheduleByDoctor(
         Appointment appointment,
         DoctorReschedulingArgs args,
-        Schedule doctorSchedule,
+        DoctorReschedulingContext context,
         SchedulingClearance clearance
     )
     {
         ArgumentNullException.ThrowIfNull(appointment);
         ArgumentNullException.ThrowIfNull(args);
-        ArgumentNullException.ThrowIfNull(args.InitiatorDoctor);
         ArgumentNullException.ThrowIfNull(args.NewTimeSlot);
-        ArgumentNullException.ThrowIfNull(args.ClinicTimeZone);
-        ArgumentNullException.ThrowIfNull(doctorSchedule);
+        ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(context.InitiatorDoctor);
+        ArgumentNullException.ThrowIfNull(context.DoctorSchedule);
+        ArgumentNullException.ThrowIfNull(context.ClinicTimeZone);
 
         if (clearance is null)
             throw new BusinessRuleValidationException(DomainErrors.Reschedule.MissingClearance);
@@ -157,15 +160,15 @@ public static class AppointmentReschedulingService
         DaylightTransitionPolicy.EnsureSchedulable(
             args.NewDate,
             args.NewTimeSlot,
-            args.ClinicTimeZone
+            context.ClinicTimeZone
         );
 
-        if (args.InitiatorDoctor.Id != appointment.DoctorId)
+        if (context.InitiatorDoctor.Id != appointment.DoctorId)
             throw new AppointmentSchedulingUnauthorizedException(
                 DomainErrors.Appointment.UnauthorizedScheduling
             );
 
-        doctorSchedule.EnsureDoctorIsAvailable(
+        context.DoctorSchedule.EnsureDoctorIsAvailable(
             appointment.DoctorId,
             args.NewDate.DayOfWeek,
             args.NewTimeSlot
@@ -177,15 +180,16 @@ public static class AppointmentReschedulingService
     public static void RescheduleByStaff(
         Appointment appointment,
         StaffReschedulingArgs args,
-        Schedule doctorSchedule,
+        StaffReschedulingContext context,
         SchedulingClearance clearance
     )
     {
         ArgumentNullException.ThrowIfNull(appointment);
         ArgumentNullException.ThrowIfNull(args);
         ArgumentNullException.ThrowIfNull(args.NewTimeSlot);
-        ArgumentNullException.ThrowIfNull(args.ClinicTimeZone);
-        ArgumentNullException.ThrowIfNull(doctorSchedule);
+        ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(context.DoctorSchedule);
+        ArgumentNullException.ThrowIfNull(context.ClinicTimeZone);
 
         if (clearance is null)
             throw new BusinessRuleValidationException(DomainErrors.Reschedule.MissingClearance);
@@ -193,10 +197,10 @@ public static class AppointmentReschedulingService
         DaylightTransitionPolicy.EnsureSchedulable(
             args.NewDate,
             args.NewTimeSlot,
-            args.ClinicTimeZone
+            context.ClinicTimeZone
         );
 
-        doctorSchedule.EnsureDoctorIsAvailable(
+        context.DoctorSchedule.EnsureDoctorIsAvailable(
             appointment.DoctorId,
             args.NewDate.DayOfWeek,
             args.NewTimeSlot

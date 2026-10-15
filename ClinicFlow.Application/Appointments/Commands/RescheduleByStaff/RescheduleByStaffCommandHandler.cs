@@ -7,6 +7,7 @@ using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.Interfaces.Services;
 using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Args.Rescheduling;
+using ClinicFlow.Domain.Services.Contexts;
 using ClinicFlow.Domain.ValueObjects;
 using MediatR;
 
@@ -100,14 +101,12 @@ public sealed class RescheduleByStaffCommandHandler(
 
         AppointmentReschedulingService.RescheduleByStaff(
             appointment,
-            new StaffReschedulingArgs
+            new StaffReschedulingArgs { NewDate = request.NewDate, NewTimeSlot = newTimeRange },
+            new StaffReschedulingContext
             {
-                InitiatorUserId = request.InitiatorUserId,
-                NewDate = request.NewDate,
-                NewTimeSlot = newTimeRange,
+                DoctorSchedule = doctorSchedule,
                 ClinicTimeZone = timeProvider.LocalTimeZone,
             },
-            doctorSchedule,
             clearance
         );
 

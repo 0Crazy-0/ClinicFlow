@@ -8,6 +8,7 @@ using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Exceptions.Scheduling;
 using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Args.Rescheduling;
+using ClinicFlow.Domain.Services.Contexts;
 using ClinicFlow.Domain.Tests.Shared;
 using ClinicFlow.Domain.ValueObjects;
 using Microsoft.Extensions.Time.Testing;
@@ -25,8 +26,8 @@ public class RescheduleByDoctorTests
         var act = () =>
             AppointmentReschedulingService.RescheduleByDoctor(
                 null!,
-                CreateValidDoctorReschedulingArgs(),
-                CreateSchedule(),
+                CreateValidArgs(),
+                CreateValidContext(),
                 SchedulingClearance.Granted()
             );
 
@@ -42,7 +43,23 @@ public class RescheduleByDoctorTests
             AppointmentReschedulingService.RescheduleByDoctor(
                 CreateAppointment(),
                 null!,
-                CreateSchedule(),
+                CreateValidContext(),
+                SchedulingClearance.Granted()
+            );
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void RescheduleByDoctor_ShouldThrowArgumentNullException_WhenContextIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentReschedulingService.RescheduleByDoctor(
+                CreateAppointment(),
+                CreateValidArgs(),
+                null!,
                 SchedulingClearance.Granted()
             );
 
@@ -57,11 +74,11 @@ public class RescheduleByDoctorTests
         var act = () =>
             AppointmentReschedulingService.RescheduleByDoctor(
                 CreateAppointment(),
-                CreateValidDoctorReschedulingArgs() with
+                CreateValidArgs(),
+                CreateValidContext() with
                 {
                     InitiatorDoctor = null!,
                 },
-                CreateSchedule(),
                 SchedulingClearance.Granted()
             );
 
@@ -76,11 +93,11 @@ public class RescheduleByDoctorTests
         var act = () =>
             AppointmentReschedulingService.RescheduleByDoctor(
                 CreateAppointment(),
-                CreateValidDoctorReschedulingArgs() with
+                CreateValidArgs() with
                 {
                     NewTimeSlot = null!,
                 },
-                CreateSchedule(),
+                CreateValidContext(),
                 SchedulingClearance.Granted()
             );
 
@@ -95,16 +112,16 @@ public class RescheduleByDoctorTests
         var act = () =>
             AppointmentReschedulingService.RescheduleByDoctor(
                 CreateAppointment(),
-                CreateValidDoctorReschedulingArgs() with
+                CreateValidArgs(),
+                CreateValidContext() with
                 {
                     ClinicTimeZone = null!,
                 },
-                CreateSchedule(),
                 SchedulingClearance.Granted()
             );
 
         // Assert
-        act.Should().Throw<ArgumentNullException>().WithParameterName("args.ClinicTimeZone");
+        act.Should().Throw<ArgumentNullException>().WithParameterName("context.ClinicTimeZone");
     }
 
     [Fact]
@@ -114,8 +131,11 @@ public class RescheduleByDoctorTests
         var act = () =>
             AppointmentReschedulingService.RescheduleByDoctor(
                 CreateAppointment(),
-                CreateValidDoctorReschedulingArgs(),
-                null!,
+                CreateValidArgs(),
+                CreateValidContext() with
+                {
+                    DoctorSchedule = null!,
+                },
                 SchedulingClearance.Granted()
             );
 
@@ -130,8 +150,8 @@ public class RescheduleByDoctorTests
         var act = () =>
             AppointmentReschedulingService.RescheduleByDoctor(
                 CreateAppointment(),
-                CreateValidDoctorReschedulingArgs(),
-                CreateSchedule(),
+                CreateValidArgs(),
+                CreateValidContext(),
                 null!
             );
 
@@ -156,24 +176,27 @@ public class RescheduleByDoctorTests
 
         var args = new DoctorReschedulingArgs
         {
-            InitiatorDoctor = doctor,
             NewDate = ambiguousDate,
             NewTimeSlot = TimeRange.Create(new TimeOnly(1, 0), new TimeOnly(1, 30)),
-            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
-        var doctorSchedule = Schedule.Create(
-            doctorId,
-            ambiguousDate.DayOfWeek,
-            CreateTimeRange(0, 23)
-        );
+        var context = new DoctorReschedulingContext
+        {
+            InitiatorDoctor = doctor,
+            DoctorSchedule = Schedule.Create(
+                doctorId,
+                ambiguousDate.DayOfWeek,
+                CreateTimeRange(0, 23)
+            ),
+            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
+        };
 
         // Act
         var act = () =>
             AppointmentReschedulingService.RescheduleByDoctor(
                 appointment,
                 args,
-                doctorSchedule,
+                context,
                 SchedulingClearance.Granted()
             );
 
@@ -191,20 +214,23 @@ public class RescheduleByDoctorTests
         var invalidDoctor = CreateDoctor(Guid.CreateVersion7());
         var args = new DoctorReschedulingArgs
         {
-            InitiatorDoctor = invalidDoctor,
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
             NewTimeSlot = CreateTimeRange(10, 11),
-            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
-        var doctorSchedule = CreateSchedule();
+        var context = new DoctorReschedulingContext
+        {
+            InitiatorDoctor = invalidDoctor,
+            DoctorSchedule = CreateSchedule(),
+            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
+        };
 
         // Act
         var act = () =>
             AppointmentReschedulingService.RescheduleByDoctor(
                 appointment,
                 args,
-                doctorSchedule,
+                context,
                 SchedulingClearance.Granted()
             );
 
@@ -224,20 +250,23 @@ public class RescheduleByDoctorTests
 
         var args = new DoctorReschedulingArgs
         {
-            InitiatorDoctor = doctor,
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
             NewTimeSlot = CreateTimeRange(18, 19),
-            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
-        var doctorSchedule = CreateSchedule();
+        var context = new DoctorReschedulingContext
+        {
+            InitiatorDoctor = doctor,
+            DoctorSchedule = CreateSchedule(),
+            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
+        };
 
         // Act
         var act = () =>
             AppointmentReschedulingService.RescheduleByDoctor(
                 appointment,
                 args,
-                doctorSchedule,
+                context,
                 SchedulingClearance.Granted()
             );
 
@@ -257,23 +286,26 @@ public class RescheduleByDoctorTests
 
         var args = new DoctorReschedulingArgs
         {
-            InitiatorDoctor = doctor,
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
             NewTimeSlot = CreateTimeRange(10, 11),
-            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
-        var doctorSchedule = Schedule.Create(
-            doctorId,
-            args.NewDate.DayOfWeek,
-            CreateTimeRange(9, 17)
-        );
+        var context = new DoctorReschedulingContext
+        {
+            InitiatorDoctor = doctor,
+            DoctorSchedule = Schedule.Create(
+                doctorId,
+                args.NewDate.DayOfWeek,
+                CreateTimeRange(9, 17)
+            ),
+            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
+        };
 
         // Act
         AppointmentReschedulingService.RescheduleByDoctor(
             appointment,
             args,
-            doctorSchedule,
+            context,
             SchedulingClearance.Granted()
         );
 
@@ -283,11 +315,18 @@ public class RescheduleByDoctorTests
         appointment.TimeSlot.Should().Be(args.NewTimeSlot);
     }
 
-    private static DoctorReschedulingArgs CreateValidDoctorReschedulingArgs() =>
+    private DoctorReschedulingArgs CreateValidArgs() =>
+        new()
+        {
+            NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
+            NewTimeSlot = CreateTimeRange(10, 11),
+        };
+
+    private DoctorReschedulingContext CreateValidContext() =>
         new()
         {
             InitiatorDoctor = CreateDoctor(Guid.CreateVersion7()),
-            NewTimeSlot = CreateTimeRange(10, 11),
+            DoctorSchedule = CreateSchedule(),
             ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 

@@ -146,19 +146,19 @@ public sealed class RescheduleByPatientCommandHandler(
                     appointment,
                     new PatientReschedulingArgs
                     {
-                        TargetPatient = targetPatient,
-                        InitiatorUserId = request.InitiatorUserId,
                         NewDate = request.NewDate,
                         NewTimeSlot = newTimeRange,
-                        IsInitiatorPhoneVerified = user.IsPhoneVerified,
                         NewPatientNotes = request.NewPatientNotes,
                     },
                     new PatientReschedulingContext
                     {
+                        TargetPatient = targetPatient,
+                        AppointmentType = appointmentType,
+                        InitiatorUserId = request.InitiatorUserId,
+                        IsInitiatorPhoneVerified = user.IsPhoneVerified,
                         Penalties = penalties,
                         DoctorSchedule = doctorSchedule,
                         InitiatorMembership = initiatorMembership,
-                        RequestedCategory = appointmentType.Category,
                         CreatorLegalAuthority = creatorMembership?.LegalAuthority,
                         ClinicTimeZone = timeProvider.LocalTimeZone,
                     },
