@@ -122,4 +122,64 @@ public class DaylightTransitionPolicyTests
             .Throw<BusinessRuleValidationException>()
             .WithMessage(DomainErrors.Scheduling.InvalidTimeSlot);
     }
+
+    [Fact]
+    public void EnsureSchedulable_ShouldThrowBusinessRuleValidationException_WhenEndIsInvalid()
+    {
+        // Arrange
+        _fakeTime.SetUtcNow(
+            DateTimeOffset.Parse("2026-03-08T12:00:00Z", CultureInfo.InvariantCulture)
+        );
+
+        var date = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+        var slot = TimeRange.Create(new TimeOnly(1, 30), new TimeOnly(2, 30));
+
+        // Act
+        var act = () => DaylightTransitionPolicy.EnsureSchedulable(date, slot, ClinicTimeZone);
+
+        // Assert
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.Scheduling.InvalidTimeSlot);
+    }
+
+    [Fact]
+    public void EnsureSchedulable_ShouldThrowBusinessRuleValidationException_WhenSlotSpansSpringForwardGap()
+    {
+        // Arrange
+        _fakeTime.SetUtcNow(
+            DateTimeOffset.Parse("2026-03-08T12:00:00Z", CultureInfo.InvariantCulture)
+        );
+
+        var date = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+        var slot = TimeRange.Create(new TimeOnly(1, 30), new TimeOnly(3, 30));
+
+        // Act
+        var act = () => DaylightTransitionPolicy.EnsureSchedulable(date, slot, ClinicTimeZone);
+
+        // Assert
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.Scheduling.InvalidTimeSlot);
+    }
+
+    [Fact]
+    public void EnsureSchedulable_ShouldThrowBusinessRuleValidationException_WhenSlotSpansFallBackOverlap()
+    {
+        // Arrange
+        _fakeTime.SetUtcNow(
+            DateTimeOffset.Parse("2026-11-01T12:00:00Z", CultureInfo.InvariantCulture)
+        );
+
+        var date = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+        var slot = TimeRange.Create(new TimeOnly(0, 30), new TimeOnly(2, 30));
+
+        // Act
+        var act = () => DaylightTransitionPolicy.EnsureSchedulable(date, slot, ClinicTimeZone);
+
+        // Assert
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.Scheduling.AmbiguousTimeSlot);
+    }
 }

@@ -5,7 +5,8 @@ using ClinicFlow.Domain.ValueObjects;
 namespace ClinicFlow.Domain.Services.Policies;
 
 /// <summary>
-/// Rejects wall-clock slots that cannot be mapped to a single UTC instant in the clinic timezone.
+/// Rejects slots that cannot be mapped to a single UTC instant in the clinic timezone.
+/// Applies to the entire interval, so a slot spanning a daylight transition is rejected even when both endpoints are valid.
 /// </summary>
 internal static class DaylightTransitionPolicy
 {
@@ -25,6 +26,15 @@ internal static class DaylightTransitionPolicy
             throw new BusinessRuleValidationException(DomainErrors.Scheduling.InvalidTimeSlot);
 
         if (clinicTimeZone.IsAmbiguousTime(start) || clinicTimeZone.IsAmbiguousTime(end))
+            throw new BusinessRuleValidationException(DomainErrors.Scheduling.AmbiguousTimeSlot);
+
+        var startOffset = clinicTimeZone.GetUtcOffset(start);
+        var endOffset = clinicTimeZone.GetUtcOffset(end);
+
+        if (endOffset > startOffset)
+            throw new BusinessRuleValidationException(DomainErrors.Scheduling.InvalidTimeSlot);
+
+        if (endOffset < startOffset)
             throw new BusinessRuleValidationException(DomainErrors.Scheduling.AmbiguousTimeSlot);
     }
 }
