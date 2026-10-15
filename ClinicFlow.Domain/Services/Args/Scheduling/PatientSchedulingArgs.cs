@@ -1,15 +1,11 @@
-using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.ValueObjects;
 
 namespace ClinicFlow.Domain.Services.Args.Scheduling;
 
 public sealed record PatientSchedulingArgs
 {
-    public required Patient TargetPatient { get; init; }
-    public Guid InitiatorUserId { get; init; }
     public Guid DoctorId { get; init; }
     public DateOnly ScheduledDate { get; init; }
     public required TimeRange RequestedTimeSlot { get; init; }
-    public bool IsInitiatorPhoneVerified { get; init; }
     public string? PatientNotes { get; init; }
 }

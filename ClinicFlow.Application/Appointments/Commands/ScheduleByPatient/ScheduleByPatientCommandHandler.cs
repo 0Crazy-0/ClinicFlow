@@ -143,23 +143,22 @@ public sealed class ScheduleByPatientCommandHandler(
                     );
 
                 var appointment = AppointmentSchedulingService.ScheduleByPatient(
-                    appointmentType,
                     new PatientSchedulingArgs
                     {
-                        TargetPatient = targetPatient,
-                        InitiatorUserId = request.InitiatorUserId,
                         DoctorId = request.DoctorId,
                         ScheduledDate = request.ScheduledDate,
                         RequestedTimeSlot = timeRange,
-                        IsInitiatorPhoneVerified = user.IsPhoneVerified,
                         PatientNotes = request.PatientNotes,
                     },
                     new PatientSchedulingContext
                     {
+                        TargetPatient = targetPatient,
+                        AppointmentType = appointmentType,
+                        InitiatorUserId = request.InitiatorUserId,
+                        IsInitiatorPhoneVerified = user.IsPhoneVerified,
                         Penalties = penalties,
                         DoctorSchedule = doctorSchedule,
                         InitiatorMembership = initiatorMembership,
-                        RequestedCategory = appointmentType.Category,
                         ClinicTimeZone = timeProvider.LocalTimeZone,
                     },
                     clearance

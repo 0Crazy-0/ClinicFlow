@@ -140,23 +140,22 @@ public sealed class ScheduleByGuardianCommandHandler(
                     );
 
                 var appointment = AppointmentSchedulingService.ScheduleByGuardian(
-                    appointmentType,
                     new GuardianSchedulingArgs
                     {
-                        TargetPatient = targetPatient,
-                        InitiatorUserId = request.InitiatorUserId,
                         DoctorId = request.DoctorId,
                         ScheduledDate = request.ScheduledDate,
                         RequestedTimeSlot = timeRange,
-                        IsInitiatorPhoneVerified = user.IsPhoneVerified,
                         GuardianNotes = request.GuardianNotes,
                     },
                     new PatientSchedulingContext
                     {
+                        TargetPatient = targetPatient,
+                        AppointmentType = appointmentType,
+                        InitiatorUserId = request.InitiatorUserId,
+                        IsInitiatorPhoneVerified = user.IsPhoneVerified,
                         Penalties = penalties,
                         DoctorSchedule = doctorSchedule,
                         InitiatorMembership = initiatorMembership,
-                        RequestedCategory = appointmentType.Category,
                         ClinicTimeZone = timeProvider.LocalTimeZone,
                     },
                     clearance

@@ -7,6 +7,7 @@ using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.Interfaces.Services;
 using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Args.Scheduling;
+using ClinicFlow.Domain.Services.Contexts;
 using ClinicFlow.Domain.ValueObjects;
 using MediatR;
 
@@ -108,17 +109,20 @@ public sealed class ScheduleByDoctorCommandHandler(
         );
 
         var appointment = AppointmentSchedulingService.ScheduleByDoctor(
-            appointmentType,
             new DoctorSchedulingArgs
             {
-                InitiatorDoctor = initiatorDoctor,
-                TargetPatient = targetPatient,
                 ScheduledDate = request.ScheduledDate,
                 RequestedTimeSlot = timeRange,
                 HasGuardianConsentVerified = request.HasGuardianConsentVerified,
+            },
+            new DoctorSchedulingContext
+            {
+                InitiatorDoctor = initiatorDoctor,
+                TargetPatient = targetPatient,
+                AppointmentType = appointmentType,
+                DoctorSchedule = doctorSchedule,
                 ClinicTimeZone = timeProvider.LocalTimeZone,
             },
-            doctorSchedule,
             clearance
         );
 

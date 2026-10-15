@@ -26,14 +26,10 @@ public class ScheduleByGuardianTests
         // Arrange & Act
         var act = () =>
             AppointmentSchedulingService.ScheduleByGuardian(
-                null!,
-                CreateValidGuardianSchedulingArgs(),
-                new PatientSchedulingContext
+                CreateValidArgs(),
+                CreateValidContext() with
                 {
-                    DoctorSchedule = CreateSchedule(),
-                    InitiatorMembership = CreateSelfMembership(),
-                    RequestedCategory = AppointmentCategory.Other,
-                    ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
+                    AppointmentType = null!,
                 },
                 SchedulingClearance.Granted()
             );
@@ -48,15 +44,8 @@ public class ScheduleByGuardianTests
         // Arrange & Act
         var act = () =>
             AppointmentSchedulingService.ScheduleByGuardian(
-                CreateAppointmentType(),
                 null!,
-                new PatientSchedulingContext
-                {
-                    DoctorSchedule = CreateSchedule(),
-                    InitiatorMembership = CreateSelfMembership(),
-                    RequestedCategory = AppointmentCategory.Other,
-                    ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
-                },
+                CreateValidContext(),
                 SchedulingClearance.Granted()
             );
 
@@ -70,17 +59,10 @@ public class ScheduleByGuardianTests
         // Arrange & Act
         var act = () =>
             AppointmentSchedulingService.ScheduleByGuardian(
-                CreateAppointmentType(),
-                CreateValidGuardianSchedulingArgs() with
+                CreateValidArgs(),
+                CreateValidContext() with
                 {
                     TargetPatient = null!,
-                },
-                new PatientSchedulingContext
-                {
-                    DoctorSchedule = CreateSchedule(),
-                    InitiatorMembership = CreateSelfMembership(),
-                    RequestedCategory = AppointmentCategory.Other,
-                    ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
                 },
                 SchedulingClearance.Granted()
             );
@@ -95,14 +77,10 @@ public class ScheduleByGuardianTests
         // Arrange & Act
         var act = () =>
             AppointmentSchedulingService.ScheduleByGuardian(
-                CreateAppointmentType(),
-                CreateValidGuardianSchedulingArgs(),
-                new PatientSchedulingContext
+                CreateValidArgs(),
+                CreateValidContext() with
                 {
-                    DoctorSchedule = CreateSchedule(),
                     InitiatorMembership = null!,
-                    RequestedCategory = AppointmentCategory.Other,
-                    ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
                 },
                 SchedulingClearance.Granted()
             );
@@ -117,18 +95,11 @@ public class ScheduleByGuardianTests
         // Arrange & Act
         var act = () =>
             AppointmentSchedulingService.ScheduleByGuardian(
-                CreateAppointmentType(),
-                CreateValidGuardianSchedulingArgs() with
+                CreateValidArgs() with
                 {
                     RequestedTimeSlot = null!,
                 },
-                new PatientSchedulingContext
-                {
-                    DoctorSchedule = CreateSchedule(),
-                    InitiatorMembership = CreateSelfMembership(),
-                    RequestedCategory = AppointmentCategory.Other,
-                    ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
-                },
+                CreateValidContext(),
                 SchedulingClearance.Granted()
             );
 
@@ -142,8 +113,7 @@ public class ScheduleByGuardianTests
         // Arrange & Act
         var act = () =>
             AppointmentSchedulingService.ScheduleByGuardian(
-                CreateAppointmentType(),
-                CreateValidGuardianSchedulingArgs(),
+                CreateValidArgs(),
                 null!,
                 SchedulingClearance.Granted()
             );
@@ -158,14 +128,10 @@ public class ScheduleByGuardianTests
         // Arrange & Act
         var act = () =>
             AppointmentSchedulingService.ScheduleByGuardian(
-                CreateAppointmentType(),
-                CreateValidGuardianSchedulingArgs(),
-                new PatientSchedulingContext
+                CreateValidArgs(),
+                CreateValidContext() with
                 {
                     DoctorSchedule = null!,
-                    InitiatorMembership = CreateSelfMembership(),
-                    RequestedCategory = AppointmentCategory.Other,
-                    ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
                 },
                 SchedulingClearance.Granted()
             );
@@ -180,13 +146,9 @@ public class ScheduleByGuardianTests
         // Arrange & Act
         var act = () =>
             AppointmentSchedulingService.ScheduleByGuardian(
-                CreateAppointmentType(),
-                CreateValidGuardianSchedulingArgs(),
-                new PatientSchedulingContext
+                CreateValidArgs(),
+                CreateValidContext() with
                 {
-                    DoctorSchedule = CreateSchedule(),
-                    InitiatorMembership = CreateSelfMembership(),
-                    RequestedCategory = AppointmentCategory.Other,
                     ClinicTimeZone = null!,
                 },
                 SchedulingClearance.Granted()
@@ -202,18 +164,15 @@ public class ScheduleByGuardianTests
         // Arrange & Act
         var act = () =>
             AppointmentSchedulingService.ScheduleByGuardian(
-                CreateAppointmentType(),
-                new GuardianSchedulingArgs
+                new GuardianSchedulingArgs { RequestedTimeSlot = CreateTimeRange() },
+                new PatientSchedulingContext
                 {
                     TargetPatient = CreateMinorPatient(),
                     InitiatorUserId = Guid.CreateVersion7(),
-                    RequestedTimeSlot = CreateTimeRange(),
-                },
-                new PatientSchedulingContext
-                {
+                    IsInitiatorPhoneVerified = true,
                     DoctorSchedule = CreateSchedule(),
                     InitiatorMembership = CreateSelfMembership(),
-                    RequestedCategory = AppointmentCategory.Other,
+                    AppointmentType = CreateAppointmentType(),
                     ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
                 },
                 null!
@@ -239,30 +198,29 @@ public class ScheduleByGuardianTests
 
         var args = new GuardianSchedulingArgs
         {
-            TargetPatient = target,
-            InitiatorUserId = Guid.CreateVersion7(),
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = ambiguousDate,
             RequestedTimeSlot = TimeRange.Create(new TimeOnly(1, 0), new TimeOnly(1, 30)),
-            IsInitiatorPhoneVerified = true,
         };
 
         var context = new PatientSchedulingContext
         {
+            TargetPatient = target,
+            InitiatorUserId = Guid.CreateVersion7(),
+            IsInitiatorPhoneVerified = true,
             DoctorSchedule = Schedule.Create(
                 args.DoctorId,
                 ambiguousDate.DayOfWeek,
                 TimeRange.Create(new TimeOnly(0, 0), new TimeOnly(23, 59))
             ),
             InitiatorMembership = CreateParentMembership(),
-            RequestedCategory = AppointmentCategory.Other,
+            AppointmentType = appointmentType,
             ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         // Act
         var act = () =>
             AppointmentSchedulingService.ScheduleByGuardian(
-                appointmentType,
                 args,
                 context,
                 SchedulingClearance.Granted()
@@ -278,26 +236,22 @@ public class ScheduleByGuardianTests
     public void ScheduleByGuardian_ShouldThrowUnauthorized_WhenInitiatorIsNotGuardian()
     {
         // Arrange
-        var args = new GuardianSchedulingArgs
-        {
-            TargetPatient = CreateMinorPatient(),
-            InitiatorUserId = Guid.CreateVersion7(),
-            RequestedTimeSlot = CreateTimeRange(),
-            IsInitiatorPhoneVerified = true,
-        };
+        var args = new GuardianSchedulingArgs { RequestedTimeSlot = CreateTimeRange() };
 
         var context = new PatientSchedulingContext
         {
+            TargetPatient = CreateMinorPatient(),
+            InitiatorUserId = Guid.CreateVersion7(),
+            IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(),
             InitiatorMembership = CreateSelfMembership(),
-            RequestedCategory = AppointmentCategory.Other,
+            AppointmentType = CreateAppointmentType(),
             ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         // Act
         var act = () =>
             AppointmentSchedulingService.ScheduleByGuardian(
-                CreateAppointmentType(),
                 args,
                 context,
                 SchedulingClearance.Granted()
@@ -314,26 +268,22 @@ public class ScheduleByGuardianTests
     {
         // Arrange
         var userId = Guid.CreateVersion7();
-        var args = new GuardianSchedulingArgs
-        {
-            TargetPatient = CreateMinorPatient(),
-            InitiatorUserId = userId,
-            RequestedTimeSlot = CreateTimeRange(),
-            IsInitiatorPhoneVerified = true,
-        };
+        var args = new GuardianSchedulingArgs { RequestedTimeSlot = CreateTimeRange() };
 
         var context = new PatientSchedulingContext
         {
+            TargetPatient = CreateMinorPatient(),
+            InitiatorUserId = userId,
+            IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(),
             InitiatorMembership = CreateSelfMembership(),
-            RequestedCategory = AppointmentCategory.Other,
+            AppointmentType = CreateAppointmentType(),
             ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         // Act
         var act = () =>
             AppointmentSchedulingService.ScheduleByGuardian(
-                CreateAppointmentType(),
                 args,
                 context,
                 SchedulingClearance.Granted()
@@ -352,26 +302,25 @@ public class ScheduleByGuardianTests
         var authorId = Guid.CreateVersion7();
         var args = new GuardianSchedulingArgs
         {
-            TargetPatient = CreateMinorPatient(),
-            InitiatorUserId = authorId,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             RequestedTimeSlot = CreateTimeRange(),
-            IsInitiatorPhoneVerified = false,
         };
 
         var context = new PatientSchedulingContext
         {
+            TargetPatient = CreateMinorPatient(),
+            InitiatorUserId = authorId,
+            IsInitiatorPhoneVerified = false,
             DoctorSchedule = CreateSchedule(),
             InitiatorMembership = CreateParentMembership(),
-            RequestedCategory = AppointmentCategory.Other,
+            AppointmentType = CreateAppointmentType(),
             ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         // Act
         var act = () =>
             AppointmentSchedulingService.ScheduleByGuardian(
-                CreateAppointmentType(),
                 args,
                 context,
                 SchedulingClearance.Granted()
@@ -397,26 +346,25 @@ public class ScheduleByGuardianTests
 
         var args = new GuardianSchedulingArgs
         {
-            TargetPatient = incompletePatient,
-            InitiatorUserId = authorId,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             RequestedTimeSlot = CreateTimeRange(),
-            IsInitiatorPhoneVerified = true,
         };
 
         var context = new PatientSchedulingContext
         {
+            TargetPatient = incompletePatient,
+            InitiatorUserId = authorId,
+            IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(),
             InitiatorMembership = CreateParentMembership(),
-            RequestedCategory = AppointmentCategory.Other,
+            AppointmentType = CreateAppointmentType(),
             ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         // Act
         var act = () =>
             AppointmentSchedulingService.ScheduleByGuardian(
-                CreateAppointmentType(),
                 args,
                 context,
                 SchedulingClearance.Granted()
@@ -436,12 +384,9 @@ public class ScheduleByGuardianTests
         var target = CreateMinorPatient();
         var args = new GuardianSchedulingArgs
         {
-            TargetPatient = target,
-            InitiatorUserId = authorId,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             RequestedTimeSlot = CreateTimeRange(),
-            IsInitiatorPhoneVerified = true,
         };
 
         var penalties = new[]
@@ -456,17 +401,19 @@ public class ScheduleByGuardianTests
 
         var context = new PatientSchedulingContext
         {
+            TargetPatient = target,
+            InitiatorUserId = authorId,
+            IsInitiatorPhoneVerified = true,
             Penalties = penalties,
             DoctorSchedule = CreateSchedule(),
             InitiatorMembership = CreateParentMembership(),
-            RequestedCategory = AppointmentCategory.Other,
+            AppointmentType = CreateAppointmentType(),
             ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         // Act
         var act = () =>
             AppointmentSchedulingService.ScheduleByGuardian(
-                CreateAppointmentType(),
                 args,
                 context,
                 SchedulingClearance.Granted()
@@ -492,26 +439,25 @@ public class ScheduleByGuardianTests
         var authorId = Guid.CreateVersion7();
         var args = new GuardianSchedulingArgs
         {
-            TargetPatient = CreateMinorPatient(),
-            InitiatorUserId = authorId,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             RequestedTimeSlot = CreateTimeRange(),
-            IsInitiatorPhoneVerified = true,
         };
 
         var context = new PatientSchedulingContext
         {
+            TargetPatient = CreateMinorPatient(),
+            InitiatorUserId = authorId,
+            IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(),
             InitiatorMembership = CreateParentMembership(),
-            RequestedCategory = AppointmentCategory.Other,
+            AppointmentType = appointmentType,
             ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         // Act
         var act = () =>
             AppointmentSchedulingService.ScheduleByGuardian(
-                appointmentType,
                 args,
                 context,
                 SchedulingClearance.Granted()
@@ -530,26 +476,25 @@ public class ScheduleByGuardianTests
         var authorId = Guid.CreateVersion7();
         var args = new GuardianSchedulingArgs
         {
-            TargetPatient = CreateMinorPatient(),
-            InitiatorUserId = authorId,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             RequestedTimeSlot = TimeRange.Create(new TimeOnly(18, 0), new TimeOnly(19, 0)),
-            IsInitiatorPhoneVerified = true,
         };
 
         var context = new PatientSchedulingContext
         {
+            TargetPatient = CreateMinorPatient(),
+            InitiatorUserId = authorId,
+            IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(),
             InitiatorMembership = CreateParentMembership(),
-            RequestedCategory = AppointmentCategory.Other,
+            AppointmentType = CreateAppointmentType(),
             ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         // Act
         var act = () =>
             AppointmentSchedulingService.ScheduleByGuardian(
-                CreateAppointmentType(),
                 args,
                 context,
                 SchedulingClearance.Granted()
@@ -577,31 +522,30 @@ public class ScheduleByGuardianTests
 
         var args = new GuardianSchedulingArgs
         {
-            TargetPatient = patientAdult,
-            InitiatorUserId = authorId,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             RequestedTimeSlot = CreateTimeRange(),
-            IsInitiatorPhoneVerified = true,
             GuardianNotes = null,
         };
 
         var context = new PatientSchedulingContext
         {
+            TargetPatient = patientAdult,
+            InitiatorUserId = authorId,
+            IsInitiatorPhoneVerified = true,
             DoctorSchedule = Schedule.Create(
                 args.DoctorId,
                 args.ScheduledDate.DayOfWeek,
                 TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(17, 0))
             ),
             InitiatorMembership = CreateParentMembership(),
-            RequestedCategory = AppointmentCategory.Other,
+            AppointmentType = CreateAppointmentType(),
             ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         // Act
         var act = () =>
             AppointmentSchedulingService.ScheduleByGuardian(
-                CreateAppointmentType(),
                 args,
                 context,
                 SchedulingClearance.Granted()
@@ -630,31 +574,30 @@ public class ScheduleByGuardianTests
         var authorId = Guid.CreateVersion7();
         var args = new GuardianSchedulingArgs
         {
-            TargetPatient = target,
-            InitiatorUserId = authorId,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = scheduledDate,
             RequestedTimeSlot = CreateTimeRange(),
-            IsInitiatorPhoneVerified = true,
             GuardianNotes = null,
         };
 
         var context = new PatientSchedulingContext
         {
+            TargetPatient = target,
+            InitiatorUserId = authorId,
+            IsInitiatorPhoneVerified = true,
             DoctorSchedule = Schedule.Create(
                 args.DoctorId,
                 args.ScheduledDate.DayOfWeek,
                 TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(17, 0))
             ),
             InitiatorMembership = CreateParentMembership(),
-            RequestedCategory = AppointmentCategory.Other,
+            AppointmentType = CreateAppointmentType(),
             ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         // Act
         var act = () =>
             AppointmentSchedulingService.ScheduleByGuardian(
-                CreateAppointmentType(),
                 args,
                 context,
                 SchedulingClearance.Granted()
@@ -683,12 +626,9 @@ public class ScheduleByGuardianTests
         var authorId = Guid.CreateVersion7();
         var args = new GuardianSchedulingArgs
         {
-            TargetPatient = target,
-            InitiatorUserId = authorId,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             RequestedTimeSlot = CreateTimeRange(),
-            IsInitiatorPhoneVerified = true,
             GuardianNotes = "notes",
         };
 
@@ -700,15 +640,17 @@ public class ScheduleByGuardianTests
 
         var context = new PatientSchedulingContext
         {
+            TargetPatient = target,
+            InitiatorUserId = authorId,
+            IsInitiatorPhoneVerified = true,
             DoctorSchedule = doctorSchedule,
             InitiatorMembership = CreateParentMembership(),
-            RequestedCategory = AppointmentCategory.Other,
+            AppointmentType = appointmentType,
             ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         // Act
         var appointment = AppointmentSchedulingService.ScheduleByGuardian(
-            appointmentType,
             args,
             context,
             SchedulingClearance.Granted()
@@ -736,30 +678,29 @@ public class ScheduleByGuardianTests
         var authorId = Guid.CreateVersion7();
         var args = new GuardianSchedulingArgs
         {
-            TargetPatient = target,
-            InitiatorUserId = authorId,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             RequestedTimeSlot = CreateTimeRange(),
-            IsInitiatorPhoneVerified = true,
             GuardianNotes = null,
         };
 
         var context = new PatientSchedulingContext
         {
+            TargetPatient = target,
+            InitiatorUserId = authorId,
+            IsInitiatorPhoneVerified = true,
             DoctorSchedule = Schedule.Create(
                 args.DoctorId,
                 args.ScheduledDate.DayOfWeek,
                 TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(17, 0))
             ),
             InitiatorMembership = CreateParentMembership(),
-            RequestedCategory = AppointmentCategory.Other,
+            AppointmentType = appointmentType,
             ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         // Act
         var appointment = AppointmentSchedulingService.ScheduleByGuardian(
-            appointmentType,
             args,
             context,
             SchedulingClearance.Granted()
@@ -810,13 +751,25 @@ public class ScheduleByGuardianTests
         return patient;
     }
 
-    private GuardianSchedulingArgs CreateValidGuardianSchedulingArgs() =>
+    private GuardianSchedulingArgs CreateValidArgs() =>
+        new()
+        {
+            DoctorId = Guid.CreateVersion7(),
+            ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
+            RequestedTimeSlot = CreateTimeRange(),
+            GuardianNotes = "Note",
+        };
+
+    private PatientSchedulingContext CreateValidContext() =>
         new()
         {
             TargetPatient = CreateMinorPatient(),
+            AppointmentType = CreateAppointmentType(),
             InitiatorUserId = Guid.CreateVersion7(),
-            RequestedTimeSlot = CreateTimeRange(),
             IsInitiatorPhoneVerified = true,
+            DoctorSchedule = CreateSchedule(),
+            InitiatorMembership = CreateParentMembership(),
+            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
     private static TimeRange CreateTimeRange() =>
