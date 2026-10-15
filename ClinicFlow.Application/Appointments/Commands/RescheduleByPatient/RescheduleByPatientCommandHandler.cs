@@ -154,7 +154,6 @@ public sealed class RescheduleByPatientCommandHandler(
                     {
                         TargetPatient = targetPatient,
                         AppointmentType = appointmentType,
-                        InitiatorUserId = request.InitiatorUserId,
                         IsInitiatorPhoneVerified = user.IsPhoneVerified,
                         Penalties = penalties,
                         DoctorSchedule = doctorSchedule,

@@ -230,7 +230,6 @@ public class RescheduleByGuardianTests
         {
             TargetPatient = target,
             AppointmentType = CreateAppointmentType(),
-            InitiatorUserId = authorId,
             IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(appointment.DoctorId, ambiguousDate.DayOfWeek),
             InitiatorMembership = CreateSelfMembership(),
@@ -259,7 +258,6 @@ public class RescheduleByGuardianTests
         // Arrange
         var appointment = CreateAppointment(Guid.CreateVersion7());
         var target = CreateMinorPatient();
-        var authorId = Guid.CreateVersion7();
         var args = new GuardianReschedulingArgs
         {
             NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
@@ -270,7 +268,6 @@ public class RescheduleByGuardianTests
         {
             TargetPatient = target,
             AppointmentType = CreateAppointmentType(),
-            InitiatorUserId = authorId,
             IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek),
             InitiatorMembership = CreateSelfMembership(),
@@ -309,7 +306,6 @@ public class RescheduleByGuardianTests
         {
             TargetPatient = target,
             AppointmentType = CreateAppointmentType(),
-            InitiatorUserId = Guid.CreateVersion7(),
             IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek),
             InitiatorMembership = CreateSelfMembership(),
@@ -336,7 +332,6 @@ public class RescheduleByGuardianTests
     {
         // Arrange
         var target = CreateMinorPatient();
-        var userId = Guid.CreateVersion7();
         var appointment = CreateAppointment(target.Id);
         var originalDate = appointment.ScheduledDate;
 
@@ -350,7 +345,6 @@ public class RescheduleByGuardianTests
         {
             TargetPatient = target,
             AppointmentType = CreateAppointmentType(),
-            InitiatorUserId = userId,
             IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek),
             InitiatorMembership = CreateSelfMembership(),
@@ -412,7 +406,6 @@ public class RescheduleByGuardianTests
         {
             TargetPatient = patientAdult,
             AppointmentType = CreateAppointmentType(),
-            InitiatorUserId = authorId,
             IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek),
             InitiatorMembership = CreateParentMembership(authorId),
@@ -474,7 +467,6 @@ public class RescheduleByGuardianTests
         {
             TargetPatient = target,
             AppointmentType = CreateAppointmentType(),
-            InitiatorUserId = authorId,
             IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek),
             InitiatorMembership = CreateParentMembership(authorId),
@@ -530,7 +522,6 @@ public class RescheduleByGuardianTests
         {
             TargetPatient = target,
             AppointmentType = CreateAppointmentType(),
-            InitiatorUserId = otherGuardianId,
             IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek),
             InitiatorMembership = CreateParentMembership(otherGuardianId),
@@ -572,7 +563,6 @@ public class RescheduleByGuardianTests
         {
             TargetPatient = target,
             AppointmentType = CreateAppointmentType(),
-            InitiatorUserId = authorId,
             IsInitiatorPhoneVerified = false,
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek),
             InitiatorMembership = CreateParentMembership(authorId),
@@ -621,7 +611,6 @@ public class RescheduleByGuardianTests
         {
             TargetPatient = target,
             AppointmentType = CreateAppointmentType(),
-            InitiatorUserId = authorId,
             IsInitiatorPhoneVerified = true,
             Penalties = penalties,
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek),
@@ -659,7 +648,6 @@ public class RescheduleByGuardianTests
         {
             TargetPatient = target,
             AppointmentType = CreateAppointmentType(),
-            InitiatorUserId = authorId,
             IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek),
             InitiatorMembership = CreateParentMembership(authorId),
@@ -710,7 +698,6 @@ public class RescheduleByGuardianTests
         {
             TargetPatient = target,
             AppointmentType = CreateAppointmentType(),
-            InitiatorUserId = authorId,
             IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek),
             InitiatorMembership = CreateParentMembership(authorId),
@@ -760,7 +747,6 @@ public class RescheduleByGuardianTests
         {
             TargetPatient = target,
             AppointmentType = CreateAppointmentType(),
-            InitiatorUserId = authorId,
             IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek),
             InitiatorMembership = CreateParentMembership(authorId),
@@ -811,7 +797,6 @@ public class RescheduleByGuardianTests
         {
             TargetPatient = target,
             AppointmentType = CreateAppointmentType(),
-            InitiatorUserId = otherGuardianId,
             IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek),
             InitiatorMembership = CreateParentMembership(otherGuardianId),
@@ -861,7 +846,6 @@ public class RescheduleByGuardianTests
         {
             TargetPatient = target,
             AppointmentType = CreateAppointmentType(),
-            InitiatorUserId = authorId,
             IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek),
             InitiatorMembership = CreateParentMembership(authorId),
@@ -942,7 +926,6 @@ public class RescheduleByGuardianTests
         {
             TargetPatient = CreateMinorPatient(),
             AppointmentType = CreateAppointmentType(),
-            InitiatorUserId = Guid.CreateVersion7(),
             IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(),
             InitiatorMembership = CreateParentMembership(Guid.CreateVersion7()),

@@ -52,7 +52,7 @@ public static class AppointmentReschedulingService
 
         if (
             context.TargetPatient.GetAge(args.NewDate) < FamilyMembership.MinimumAdultAge
-            && appointment.ScheduledByUserId != context.InitiatorUserId
+            && appointment.ScheduledByUserId != context.InitiatorMembership.UserId
             && context.CreatorLegalAuthority
                 is LegalAuthorityType.Parent
                     or LegalAuthorityType.Guardian
@@ -136,7 +136,10 @@ public static class AppointmentReschedulingService
         appointment.Reschedule(args.NewDate, args.NewTimeSlot);
 
         if (args.NewGuardianNotes is not null)
-            appointment.UpdateGuardianNotes(args.NewGuardianNotes, context.InitiatorUserId);
+            appointment.UpdateGuardianNotes(
+                args.NewGuardianNotes,
+                context.InitiatorMembership.UserId
+            );
     }
 
     public static void RescheduleByDoctor(
