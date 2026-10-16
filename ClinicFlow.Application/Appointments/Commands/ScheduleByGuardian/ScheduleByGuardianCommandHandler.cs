@@ -151,7 +151,6 @@ public sealed class ScheduleByGuardianCommandHandler(
                     {
                         TargetPatient = targetPatient,
                         AppointmentType = appointmentType,
-                        InitiatorUserId = request.InitiatorUserId,
                         IsInitiatorPhoneVerified = user.IsPhoneVerified,
                         Penalties = penalties,
                         DoctorSchedule = doctorSchedule,

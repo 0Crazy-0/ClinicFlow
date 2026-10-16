@@ -9,7 +9,6 @@ public sealed record class PatientSchedulingContext
 {
     public required Patient TargetPatient { get; init; }
     public required AppointmentTypeDefinition AppointmentType { get; init; }
-    public Guid InitiatorUserId { get; init; }
     public bool IsInitiatorPhoneVerified { get; init; }
     public IReadOnlyList<PatientPenalty> Penalties { get; init; } = [];
     public required Schedule DoctorSchedule { get; init; }

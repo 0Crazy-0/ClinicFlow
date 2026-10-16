@@ -166,7 +166,6 @@ public class ScheduleByPatientTests
         );
         var ambiguousDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
         var target = CreateSelfPatient();
-        var initiatorUserId = Guid.CreateVersion7();
         var args = new PatientSchedulingArgs
         {
             DoctorId = Guid.CreateVersion7(),
@@ -177,7 +176,6 @@ public class ScheduleByPatientTests
         {
             TargetPatient = target,
             AppointmentType = CreateAppointmentType(),
-            InitiatorUserId = initiatorUserId,
             IsInitiatorPhoneVerified = true,
             DoctorSchedule = Schedule.Create(
                 args.DoctorId,
@@ -218,7 +216,6 @@ public class ScheduleByPatientTests
         {
             TargetPatient = target,
             AppointmentType = CreateAppointmentType(),
-            InitiatorUserId = Guid.CreateVersion7(),
             IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(),
             InitiatorMembership = CreateViewOnlyMembership(),
@@ -288,7 +285,6 @@ public class ScheduleByPatientTests
         var context = new PatientSchedulingContext
         {
             TargetPatient = familyMember,
-            InitiatorUserId = Guid.CreateVersion7(),
             IsInitiatorPhoneVerified = true,
             DoctorSchedule = doctorSchedule,
             InitiatorMembership = CreateSelfMembership(),
@@ -311,7 +307,7 @@ public class ScheduleByPatientTests
         appointment.ScheduledDate.Should().Be(args.ScheduledDate);
         appointment.TimeSlot.Should().Be(args.RequestedTimeSlot);
         appointment.Status.Should().Be(AppointmentStatus.Scheduled);
-        appointment.ScheduledByUserId.Should().Be(context.InitiatorUserId);
+        appointment.ScheduledByUserId.Should().Be(context.InitiatorMembership.UserId);
     }
 
     [Fact]
@@ -330,7 +326,6 @@ public class ScheduleByPatientTests
         var context = new PatientSchedulingContext
         {
             TargetPatient = target,
-            InitiatorUserId = Guid.CreateVersion7(),
             IsInitiatorPhoneVerified = false,
             DoctorSchedule = CreateSchedule(),
             InitiatorMembership = CreateSelfMembership(),
@@ -374,7 +369,6 @@ public class ScheduleByPatientTests
         var context = new PatientSchedulingContext
         {
             TargetPatient = incompletePatient,
-            InitiatorUserId = Guid.CreateVersion7(),
             IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(),
             InitiatorMembership = CreateSelfMembership(),
@@ -422,7 +416,6 @@ public class ScheduleByPatientTests
         var context = new PatientSchedulingContext
         {
             TargetPatient = target,
-            InitiatorUserId = Guid.CreateVersion7(),
             IsInitiatorPhoneVerified = true,
             Penalties = penalties,
             DoctorSchedule = CreateSchedule(),
@@ -475,7 +468,6 @@ public class ScheduleByPatientTests
         var context = new PatientSchedulingContext
         {
             TargetPatient = target,
-            InitiatorUserId = Guid.CreateVersion7(),
             IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(),
             InitiatorMembership = CreateSelfMembership(),
@@ -536,7 +528,6 @@ public class ScheduleByPatientTests
         var context = new PatientSchedulingContext
         {
             TargetPatient = target,
-            InitiatorUserId = Guid.CreateVersion7(),
             IsInitiatorPhoneVerified = true,
             DoctorSchedule = doctorSchedule,
             InitiatorMembership = CreateParentMembership(),
@@ -597,7 +588,6 @@ public class ScheduleByPatientTests
         var context = new PatientSchedulingContext
         {
             TargetPatient = target,
-            InitiatorUserId = Guid.CreateVersion7(),
             IsInitiatorPhoneVerified = true,
             DoctorSchedule = doctorSchedule,
             InitiatorMembership = CreateSelfMembership(),
@@ -637,7 +627,6 @@ public class ScheduleByPatientTests
         var context = new PatientSchedulingContext
         {
             TargetPatient = target,
-            InitiatorUserId = Guid.CreateVersion7(),
             IsInitiatorPhoneVerified = true,
             DoctorSchedule = scheduleForDifferentDoctor,
             InitiatorMembership = CreateSelfMembership(),
@@ -682,7 +671,6 @@ public class ScheduleByPatientTests
         var context = new PatientSchedulingContext
         {
             TargetPatient = target,
-            InitiatorUserId = Guid.CreateVersion7(),
             IsInitiatorPhoneVerified = true,
             DoctorSchedule = doctorSchedule,
             InitiatorMembership = CreateSelfMembership(),
@@ -704,7 +692,7 @@ public class ScheduleByPatientTests
         appointment.ScheduledDate.Should().Be(args.ScheduledDate);
         appointment.TimeSlot.Should().Be(args.RequestedTimeSlot);
         appointment.Status.Should().Be(AppointmentStatus.Scheduled);
-        appointment.ScheduledByUserId.Should().Be(context.InitiatorUserId);
+        appointment.ScheduledByUserId.Should().Be(context.InitiatorMembership.UserId);
         appointment.DomainEvents.OfType<AppointmentScheduledEvent>().Should().ContainSingle();
     }
 
@@ -731,7 +719,6 @@ public class ScheduleByPatientTests
         var context = new PatientSchedulingContext
         {
             TargetPatient = target,
-            InitiatorUserId = Guid.CreateVersion7(),
             IsInitiatorPhoneVerified = true,
             DoctorSchedule = doctorSchedule,
             InitiatorMembership = CreateSelfMembership(),
@@ -753,7 +740,7 @@ public class ScheduleByPatientTests
         appointment.ScheduledDate.Should().Be(args.ScheduledDate);
         appointment.TimeSlot.Should().Be(args.RequestedTimeSlot);
         appointment.Status.Should().Be(AppointmentStatus.Scheduled);
-        appointment.ScheduledByUserId.Should().Be(context.InitiatorUserId);
+        appointment.ScheduledByUserId.Should().Be(context.InitiatorMembership.UserId);
         appointment.DomainEvents.OfType<AppointmentScheduledEvent>().Should().ContainSingle();
     }
 
@@ -779,7 +766,6 @@ public class ScheduleByPatientTests
         var context = new PatientSchedulingContext
         {
             TargetPatient = target,
-            InitiatorUserId = Guid.CreateVersion7(),
             IsInitiatorPhoneVerified = true,
             DoctorSchedule = doctorSchedule,
             InitiatorMembership = CreateSelfMembership(),
@@ -801,7 +787,7 @@ public class ScheduleByPatientTests
         appointment.ScheduledDate.Should().Be(args.ScheduledDate);
         appointment.TimeSlot.Should().Be(args.RequestedTimeSlot);
         appointment.Status.Should().Be(AppointmentStatus.Scheduled);
-        appointment.ScheduledByUserId.Should().Be(context.InitiatorUserId);
+        appointment.ScheduledByUserId.Should().Be(context.InitiatorMembership.UserId);
         appointment.PatientNotes.Should().BeEmpty();
     }
 
@@ -848,7 +834,6 @@ public class ScheduleByPatientTests
         {
             TargetPatient = CreateSelfPatient(),
             AppointmentType = CreateAppointmentType(),
-            InitiatorUserId = Guid.CreateVersion7(),
             IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(),
             InitiatorMembership = CreateSelfMembership(),

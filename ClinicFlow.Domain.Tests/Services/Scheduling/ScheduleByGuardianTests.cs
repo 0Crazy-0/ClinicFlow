@@ -168,7 +168,6 @@ public class ScheduleByGuardianTests
                 new PatientSchedulingContext
                 {
                     TargetPatient = CreateMinorPatient(),
-                    InitiatorUserId = Guid.CreateVersion7(),
                     IsInitiatorPhoneVerified = true,
                     DoctorSchedule = CreateSchedule(),
                     InitiatorMembership = CreateSelfMembership(),
@@ -206,7 +205,6 @@ public class ScheduleByGuardianTests
         var context = new PatientSchedulingContext
         {
             TargetPatient = target,
-            InitiatorUserId = Guid.CreateVersion7(),
             IsInitiatorPhoneVerified = true,
             DoctorSchedule = Schedule.Create(
                 args.DoctorId,
@@ -241,42 +239,9 @@ public class ScheduleByGuardianTests
         var context = new PatientSchedulingContext
         {
             TargetPatient = CreateMinorPatient(),
-            InitiatorUserId = Guid.CreateVersion7(),
             IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(),
-            InitiatorMembership = CreateSelfMembership(),
-            AppointmentType = CreateAppointmentType(),
-            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
-        };
-
-        // Act
-        var act = () =>
-            AppointmentSchedulingService.ScheduleByGuardian(
-                args,
-                context,
-                SchedulingClearance.Granted()
-            );
-
-        // Assert
-        act.Should()
-            .Throw<PatientAccessUnauthorizedException>()
-            .WithMessage(DomainErrors.Patient.UnauthorizedAccess);
-    }
-
-    [Fact]
-    public void ScheduleByGuardian_ShouldThrowUnauthorized_WhenInitiatorIsSelf()
-    {
-        // Arrange
-        var userId = Guid.CreateVersion7();
-        var args = new GuardianSchedulingArgs { RequestedTimeSlot = CreateTimeRange() };
-
-        var context = new PatientSchedulingContext
-        {
-            TargetPatient = CreateMinorPatient(),
-            InitiatorUserId = userId,
-            IsInitiatorPhoneVerified = true,
-            DoctorSchedule = CreateSchedule(),
-            InitiatorMembership = CreateSelfMembership(),
+            InitiatorMembership = CreateSelfMembership(), // Guardian is self
             AppointmentType = CreateAppointmentType(),
             ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
@@ -299,7 +264,6 @@ public class ScheduleByGuardianTests
     public void ScheduleByGuardian_ShouldThrowUnauthorized_WhenPhoneIsNotVerified()
     {
         // Arrange
-        var authorId = Guid.CreateVersion7();
         var args = new GuardianSchedulingArgs
         {
             DoctorId = Guid.CreateVersion7(),
@@ -310,7 +274,6 @@ public class ScheduleByGuardianTests
         var context = new PatientSchedulingContext
         {
             TargetPatient = CreateMinorPatient(),
-            InitiatorUserId = authorId,
             IsInitiatorPhoneVerified = false,
             DoctorSchedule = CreateSchedule(),
             InitiatorMembership = CreateParentMembership(),
@@ -336,7 +299,6 @@ public class ScheduleByGuardianTests
     public void ScheduleByGuardian_ShouldThrowIncompleteProfileException_WhenProfileIncomplete()
     {
         // Arrange
-        var authorId = Guid.CreateVersion7();
         var incompletePatient = Patient.CreateProfile(
             PersonName.Create("Child"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10)),
@@ -354,7 +316,6 @@ public class ScheduleByGuardianTests
         var context = new PatientSchedulingContext
         {
             TargetPatient = incompletePatient,
-            InitiatorUserId = authorId,
             IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(),
             InitiatorMembership = CreateParentMembership(),
@@ -380,7 +341,6 @@ public class ScheduleByGuardianTests
     public void ScheduleByGuardian_ShouldThrowPatientBlockedException_WhenHasPenalties()
     {
         // Arrange
-        var authorId = Guid.CreateVersion7();
         var target = CreateMinorPatient();
         var args = new GuardianSchedulingArgs
         {
@@ -402,7 +362,6 @@ public class ScheduleByGuardianTests
         var context = new PatientSchedulingContext
         {
             TargetPatient = target,
-            InitiatorUserId = authorId,
             IsInitiatorPhoneVerified = true,
             Penalties = penalties,
             DoctorSchedule = CreateSchedule(),
@@ -436,7 +395,6 @@ public class ScheduleByGuardianTests
             AgeEligibilityPolicy.Create(18, null, false)
         );
 
-        var authorId = Guid.CreateVersion7();
         var args = new GuardianSchedulingArgs
         {
             DoctorId = Guid.CreateVersion7(),
@@ -447,7 +405,6 @@ public class ScheduleByGuardianTests
         var context = new PatientSchedulingContext
         {
             TargetPatient = CreateMinorPatient(),
-            InitiatorUserId = authorId,
             IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(),
             InitiatorMembership = CreateParentMembership(),
@@ -473,7 +430,6 @@ public class ScheduleByGuardianTests
     public void ScheduleByGuardian_ShouldThrowDoctorNotAvailableException_WhenNotAvailable()
     {
         // Arrange
-        var authorId = Guid.CreateVersion7();
         var args = new GuardianSchedulingArgs
         {
             DoctorId = Guid.CreateVersion7(),
@@ -484,7 +440,6 @@ public class ScheduleByGuardianTests
         var context = new PatientSchedulingContext
         {
             TargetPatient = CreateMinorPatient(),
-            InitiatorUserId = authorId,
             IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(),
             InitiatorMembership = CreateParentMembership(),
@@ -510,7 +465,6 @@ public class ScheduleByGuardianTests
     public void ScheduleByGuardian_ShouldThrowValidation_WhenPatientIsAdult()
     {
         // Arrange
-        var authorId = Guid.CreateVersion7();
         var patientAdult = Patient.CreateProfile(
             PersonName.Create("Adult"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-25)),
@@ -531,7 +485,6 @@ public class ScheduleByGuardianTests
         var context = new PatientSchedulingContext
         {
             TargetPatient = patientAdult,
-            InitiatorUserId = authorId,
             IsInitiatorPhoneVerified = true,
             DoctorSchedule = Schedule.Create(
                 args.DoctorId,
@@ -571,7 +524,6 @@ public class ScheduleByGuardianTests
         target.UpdateMedicalProfile(BloodType.Create("A+"), "", "");
         target.UpdateEmergencyContact(EmergencyContact.Create("Name", "1234567890"));
 
-        var authorId = Guid.CreateVersion7();
         var args = new GuardianSchedulingArgs
         {
             DoctorId = Guid.CreateVersion7(),
@@ -583,7 +535,6 @@ public class ScheduleByGuardianTests
         var context = new PatientSchedulingContext
         {
             TargetPatient = target,
-            InitiatorUserId = authorId,
             IsInitiatorPhoneVerified = true,
             DoctorSchedule = Schedule.Create(
                 args.DoctorId,
@@ -641,10 +592,17 @@ public class ScheduleByGuardianTests
         var context = new PatientSchedulingContext
         {
             TargetPatient = target,
-            InitiatorUserId = authorId,
             IsInitiatorPhoneVerified = true,
             DoctorSchedule = doctorSchedule,
-            InitiatorMembership = CreateParentMembership(),
+            InitiatorMembership = FamilyMembership.CreateFamilyMember(
+                target.Id,
+                authorId,
+                PatientRelationship.Parent,
+                LegalAuthorityType.Parent,
+                FamilyMembershipAccessLevel.Full,
+                10,
+                _fakeTime.GetUtcNow().UtcDateTime
+            ),
             AppointmentType = appointmentType,
             ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
@@ -687,14 +645,21 @@ public class ScheduleByGuardianTests
         var context = new PatientSchedulingContext
         {
             TargetPatient = target,
-            InitiatorUserId = authorId,
             IsInitiatorPhoneVerified = true,
             DoctorSchedule = Schedule.Create(
                 args.DoctorId,
                 args.ScheduledDate.DayOfWeek,
                 TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(17, 0))
             ),
-            InitiatorMembership = CreateParentMembership(),
+            InitiatorMembership = FamilyMembership.CreateFamilyMember(
+                target.Id,
+                authorId,
+                PatientRelationship.Parent,
+                LegalAuthorityType.Parent,
+                FamilyMembershipAccessLevel.Full,
+                10,
+                _fakeTime.GetUtcNow().UtcDateTime
+            ),
             AppointmentType = appointmentType,
             ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
@@ -765,7 +730,6 @@ public class ScheduleByGuardianTests
         {
             TargetPatient = CreateMinorPatient(),
             AppointmentType = CreateAppointmentType(),
-            InitiatorUserId = Guid.CreateVersion7(),
             IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(),
             InitiatorMembership = CreateParentMembership(),

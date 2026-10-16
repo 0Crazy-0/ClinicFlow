@@ -68,7 +68,7 @@ public static class AppointmentSchedulingService
             context.AppointmentType.Id,
             args.ScheduledDate,
             args.RequestedTimeSlot,
-            context.InitiatorUserId
+            context.InitiatorMembership.UserId
         );
 
         if (args.PatientNotes is not null)
@@ -135,11 +135,11 @@ public static class AppointmentSchedulingService
             context.AppointmentType.Id,
             args.ScheduledDate,
             args.RequestedTimeSlot,
-            context.InitiatorUserId
+            context.InitiatorMembership.UserId
         );
 
         if (args.GuardianNotes is not null)
-            appointment.UpdateGuardianNotes(args.GuardianNotes, context.InitiatorUserId);
+            appointment.UpdateGuardianNotes(args.GuardianNotes, context.InitiatorMembership.UserId);
 
         return appointment;
     }
