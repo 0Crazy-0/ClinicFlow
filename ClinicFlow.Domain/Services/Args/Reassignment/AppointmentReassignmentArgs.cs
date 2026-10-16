@@ -7,5 +7,4 @@ public sealed record AppointmentReassignmentArgs
     public Guid NewDoctorId { get; init; }
     public DateOnly NewDate { get; init; }
     public required TimeRange NewTimeSlot { get; init; }
-    public required TimeZoneInfo ClinicTimeZone { get; init; }
 }
