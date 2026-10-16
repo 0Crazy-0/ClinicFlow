@@ -1,6 +1,6 @@
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Services.Args.Reassignment;
-using ClinicFlow.Domain.Services.Contexts;
+using ClinicFlow.Domain.Services.Contexts.Reassignment;
 using ClinicFlow.Domain.Services.Policies;
 
 namespace ClinicFlow.Domain.Services;

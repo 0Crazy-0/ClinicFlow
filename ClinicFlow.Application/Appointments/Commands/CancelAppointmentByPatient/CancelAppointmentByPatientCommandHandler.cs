@@ -6,7 +6,7 @@ using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Args.Cancellation;
-using ClinicFlow.Domain.Services.Contexts;
+using ClinicFlow.Domain.Services.Contexts.Cancellation;
 using MediatR;
 
 namespace ClinicFlow.Application.Appointments.Commands.CancelAppointmentByPatient;

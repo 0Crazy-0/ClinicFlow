@@ -1,6 +1,6 @@
 using ClinicFlow.Domain.Entities;
 
-namespace ClinicFlow.Domain.Services.Contexts;
+namespace ClinicFlow.Domain.Services.Contexts.MedicalEncounter;
 
 /// <summary>
 /// Encapsulates the context required to validate and complete a medical encounter.

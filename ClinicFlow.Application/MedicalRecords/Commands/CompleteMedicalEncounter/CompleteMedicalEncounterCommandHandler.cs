@@ -4,7 +4,7 @@ using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.Services;
-using ClinicFlow.Domain.Services.Contexts;
+using ClinicFlow.Domain.Services.Contexts.MedicalEncounter;
 using MediatR;
 
 namespace ClinicFlow.Application.MedicalRecords.Commands.CompleteMedicalEncounter;

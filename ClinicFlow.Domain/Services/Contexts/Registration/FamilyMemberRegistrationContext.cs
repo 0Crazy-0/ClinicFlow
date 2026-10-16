@@ -1,6 +1,6 @@
 using ClinicFlow.Domain.Entities;
 
-namespace ClinicFlow.Domain.Services.Contexts;
+namespace ClinicFlow.Domain.Services.Contexts.Registration;
 
 public sealed record class FamilyMemberRegistrationContext
 {

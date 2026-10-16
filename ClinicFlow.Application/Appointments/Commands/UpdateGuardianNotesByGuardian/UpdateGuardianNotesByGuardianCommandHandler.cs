@@ -6,7 +6,7 @@ using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Args.GuardianNotes;
-using ClinicFlow.Domain.Services.Contexts;
+using ClinicFlow.Domain.Services.Contexts.GuardianNotes;
 using MediatR;
 
 namespace ClinicFlow.Application.Appointments.Commands.UpdateGuardianNotesByGuardian;

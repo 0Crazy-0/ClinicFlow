@@ -3,7 +3,8 @@ using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Services.Args.GuardianInvolvement;
-using ClinicFlow.Domain.Services.Contexts;
+using ClinicFlow.Domain.Services.Contexts.GuardianInvolvement;
+using ClinicFlow.Domain.Services.Contexts.MedicalEncounter;
 using ClinicFlow.Domain.Services.Policies;
 
 namespace ClinicFlow.Domain.Services;

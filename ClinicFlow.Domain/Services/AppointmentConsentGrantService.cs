@@ -1,7 +1,7 @@
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Exceptions.Base;
-using ClinicFlow.Domain.Services.Contexts;
+using ClinicFlow.Domain.Services.Contexts.Consent;
 using ClinicFlow.Domain.Services.Policies;
 
 namespace ClinicFlow.Domain.Services;

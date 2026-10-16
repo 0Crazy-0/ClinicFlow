@@ -7,7 +7,7 @@ using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Exceptions.Scheduling;
 using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Args.Reassignment;
-using ClinicFlow.Domain.Services.Contexts;
+using ClinicFlow.Domain.Services.Contexts.Reassignment;
 using ClinicFlow.Domain.ValueObjects;
 using Microsoft.Extensions.Time.Testing;
 
@@ -218,7 +218,7 @@ public class AppointmentReassignmentServiceTests
             NewTimeSlot = CreateTimeRange(10, 11),
         };
 
-    private AppointmentReassignmentContext CreateValidContext() =>
+    private static AppointmentReassignmentContext CreateValidContext() =>
         new()
         {
             NewDoctorSchedule = CreateSchedule(Guid.CreateVersion7(), DayOfWeek.Monday, 9, 17),

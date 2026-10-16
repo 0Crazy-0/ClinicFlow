@@ -1,6 +1,6 @@
 using ClinicFlow.Domain.Entities;
 
-namespace ClinicFlow.Domain.Services.Contexts;
+namespace ClinicFlow.Domain.Services.Contexts.Cancellation;
 
 /// <summary>
 /// Encapsulates the world state required to validate an appointment cancellation.

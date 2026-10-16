@@ -1,12 +1,11 @@
 using ClinicFlow.Domain.Entities;
-using ClinicFlow.Domain.Enums;
 
-namespace ClinicFlow.Domain.Services.Contexts;
+namespace ClinicFlow.Domain.Services.Contexts.Scheduling;
 
 /// <summary>
-/// Encapsulates the context required exclusively for patient-initiated appointment rescheduling.
+/// Encapsulates the context required exclusively for patient-initiated appointment scheduling.
 /// </summary>
-public sealed record class PatientReschedulingContext
+public sealed record class PatientSchedulingContext
 {
     public required Patient TargetPatient { get; init; }
     public required AppointmentTypeDefinition AppointmentType { get; init; }
@@ -14,6 +13,5 @@ public sealed record class PatientReschedulingContext
     public IReadOnlyList<PatientPenalty> Penalties { get; init; } = [];
     public required Schedule DoctorSchedule { get; init; }
     public required FamilyMembership InitiatorMembership { get; init; }
-    public LegalAuthorityType? CreatorLegalAuthority { get; init; }
     public required TimeZoneInfo ClinicTimeZone { get; init; }
 }
