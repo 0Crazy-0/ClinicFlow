@@ -322,7 +322,7 @@ public class RescheduleByDoctorTests
             NewTimeSlot = CreateTimeRange(10, 11),
         };
 
-    private DoctorReschedulingContext CreateValidContext() =>
+    private static DoctorReschedulingContext CreateValidContext() =>
         new()
         {
             InitiatorDoctor = CreateDoctor(Guid.CreateVersion7()),

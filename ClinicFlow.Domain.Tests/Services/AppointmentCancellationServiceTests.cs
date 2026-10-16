@@ -820,7 +820,7 @@ public class AppointmentCancellationServiceTests
         return patient;
     }
 
-    private PatientCancellationArgs CreateValidArgs() => new() { Reason = "Patient reason" };
+    private static PatientCancellationArgs CreateValidArgs() => new() { Reason = "Patient reason" };
 
     private AppointmentCancellationContext CreateValidContext() =>
         new()
