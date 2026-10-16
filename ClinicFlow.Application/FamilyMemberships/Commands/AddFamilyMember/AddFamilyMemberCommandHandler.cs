@@ -6,6 +6,7 @@ using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Args.Registration;
+using ClinicFlow.Domain.Services.Contexts;
 using ClinicFlow.Domain.ValueObjects;
 using MediatR;
 
@@ -77,17 +78,20 @@ public sealed class AddFamilyMemberCommandHandler(
                 var (patient, membership) = FamilyMemberRegistrationService.Register(
                     new FamilyMemberRegistrationArgs
                     {
-                        ExistingPatient = existingProfile,
-                        HasExistingMembershipWithOwner = hasExistingMembershipWithOwner,
-                        ActiveFamilyMemberCount = activeCount,
-                        OwnerAgeInYears = ownerAge,
-                        OwnerUserId = request.UserId,
                         Role = request.Relationship,
                         LegalAuthority = request.LegalAuthority,
                         AccessLevel = request.AccessLevel,
                         FullName = fullName,
                         DateOfBirth = request.DateOfBirth,
                         SexAtBirth = request.SexAtBirth,
+                    },
+                    new FamilyMemberRegistrationContext
+                    {
+                        ExistingPatient = existingProfile,
+                        HasExistingMembershipWithOwner = hasExistingMembershipWithOwner,
+                        ActiveFamilyMemberCount = activeCount,
+                        OwnerAgeInYears = ownerAge,
+                        OwnerUserId = request.UserId,
                         ReferenceTime = referenceTime,
                     }
                 );

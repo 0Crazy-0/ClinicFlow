@@ -2,6 +2,7 @@ using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Services.Args.Registration;
+using ClinicFlow.Domain.Services.Contexts;
 
 namespace ClinicFlow.Domain.Services;
 
@@ -16,42 +17,50 @@ public static class FamilyMemberRegistrationService
     public const int MinimumOwnerAge = DomainRules.AdultAge;
 
     public static (Patient Patient, FamilyMembership Membership) Register(
-        FamilyMemberRegistrationArgs args
+        FamilyMemberRegistrationArgs args,
+        FamilyMemberRegistrationContext context
     )
     {
-        if (args.OwnerAgeInYears < MinimumOwnerAge)
+        ArgumentNullException.ThrowIfNull(args);
+        ArgumentNullException.ThrowIfNull(args.FullName);
+        ArgumentNullException.ThrowIfNull(context);
+
+        if (context.OwnerAgeInYears < MinimumOwnerAge)
             throw new DomainValidationException(DomainErrors.FamilyMembership.OwnerMustBeAdult);
 
-        if (args.HasExistingMembershipWithOwner)
+        if (context.HasExistingMembershipWithOwner)
             throw new DomainValidationException(
                 DomainErrors.FamilyMembership.PatientAlreadyHasActiveMembership
             );
 
-        if (args.ActiveFamilyMemberCount >= MaxActiveFamilyMembers)
+        if (context.ActiveFamilyMemberCount >= MaxActiveFamilyMembers)
             throw new DomainValidationException(
                 DomainErrors.FamilyMembership.MaxActiveFamilyMembersExceeded
             );
 
-        if (args.ExistingPatient is not null && args.ExistingPatient.SexAtBirth != args.SexAtBirth)
+        if (
+            context.ExistingPatient is not null
+            && context.ExistingPatient.SexAtBirth != args.SexAtBirth
+        )
             throw new DomainValidationException(DomainErrors.Patient.DataMismatch);
 
         var patient =
-            args.ExistingPatient
+            context.ExistingPatient
             ?? Patient.CreateProfile(
                 args.FullName,
                 args.DateOfBirth,
                 args.SexAtBirth,
-                args.ReferenceTime
+                context.ReferenceTime
             );
 
         var membership = FamilyMembership.CreateFamilyMember(
             patient.Id,
-            args.OwnerUserId,
+            context.OwnerUserId,
             args.Role,
             args.LegalAuthority,
             args.AccessLevel,
-            patient.GetAge(DateOnly.FromDateTime(args.ReferenceTime)),
-            args.ReferenceTime
+            patient.GetAge(DateOnly.FromDateTime(context.ReferenceTime)),
+            context.ReferenceTime
         );
 
         return (patient, membership);
