@@ -2,6 +2,7 @@ using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Args.Registration;
+using ClinicFlow.Domain.Services.Contexts.Registration;
 using ClinicFlow.Domain.ValueObjects;
 using MediatR;
 
@@ -24,21 +25,25 @@ public sealed class CreateDoctorProfileCommandHandler(
         );
 
         var fullName = PersonName.Create($"{request.FirstName} {request.LastName}");
-        var args = new DoctorRegistrationArgs
-        {
-            UserId = request.UserId,
-            FullName = fullName,
-            LicenseNumber = MedicalLicenseNumber.Create(request.LicenseNumber),
-            MedicalSpecialtyId = request.MedicalSpecialtyId,
-            Biography = request.Biography,
-            Room = ConsultationRoom.Create(
-                request.ConsultationRoomNumber,
-                request.ConsultationRoomName,
-                request.ConsultationRoomFloor
-            ),
-        };
-
-        var doctor = DoctorRegistrationService.Register(args, existingDoctor);
+        var doctor = DoctorRegistrationService.Register(
+            new DoctorRegistrationArgs
+            {
+                FullName = fullName,
+                LicenseNumber = MedicalLicenseNumber.Create(request.LicenseNumber),
+                MedicalSpecialtyId = request.MedicalSpecialtyId,
+                Biography = request.Biography,
+                Room = ConsultationRoom.Create(
+                    request.ConsultationRoomNumber,
+                    request.ConsultationRoomName,
+                    request.ConsultationRoomFloor
+                ),
+            },
+            new DoctorRegistrationContext
+            {
+                ExistingDoctor = existingDoctor,
+                UserId = request.UserId,
+            }
+        );
 
         await doctorRepository.CreateAsync(doctor, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);

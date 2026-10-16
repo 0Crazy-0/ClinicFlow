@@ -3,7 +3,7 @@ using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Exceptions.Appointments;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Services.Args.Scheduling;
-using ClinicFlow.Domain.Services.Contexts;
+using ClinicFlow.Domain.Services.Contexts.Scheduling;
 using ClinicFlow.Domain.Services.Policies;
 using ClinicFlow.Domain.ValueObjects;
 
@@ -18,17 +18,16 @@ namespace ClinicFlow.Domain.Services;
 public static class AppointmentSchedulingService
 {
     public static Appointment ScheduleByPatient(
-        AppointmentTypeDefinition appointmentType,
         PatientSchedulingArgs args,
         PatientSchedulingContext context,
         SchedulingClearance clearance
     )
     {
-        ArgumentNullException.ThrowIfNull(appointmentType);
         ArgumentNullException.ThrowIfNull(args);
-        ArgumentNullException.ThrowIfNull(args.TargetPatient);
         ArgumentNullException.ThrowIfNull(args.RequestedTimeSlot);
         ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(context.TargetPatient);
+        ArgumentNullException.ThrowIfNull(context.AppointmentType);
         ArgumentNullException.ThrowIfNull(context.DoctorSchedule);
         ArgumentNullException.ThrowIfNull(context.InitiatorMembership);
         ArgumentNullException.ThrowIfNull(context.ClinicTimeZone);
@@ -42,18 +41,20 @@ public static class AppointmentSchedulingService
             context.ClinicTimeZone
         );
 
-        context.InitiatorMembership.EnsureAppointmentAccess(context.RequestedCategory);
+        context.InitiatorMembership.EnsureAppointmentAccess(context.AppointmentType.Category);
 
-        if (!args.IsInitiatorPhoneVerified)
+        if (!context.IsInitiatorPhoneVerified)
             throw new AppointmentSchedulingUnauthorizedException(
                 DomainErrors.Appointment.PhoneNotVerified
             );
 
-        args.TargetPatient.EnsureCompleteProfile();
+        context.TargetPatient.EnsureCompleteProfile();
 
         new PenaltyHistory(context.Penalties).EnsureNotBlocked(args.ScheduledDate);
 
-        appointmentType.ValidatePatientEligibility(args.TargetPatient.GetAge(args.ScheduledDate));
+        context.AppointmentType.ValidatePatientEligibility(
+            context.TargetPatient.GetAge(args.ScheduledDate)
+        );
 
         context.DoctorSchedule.EnsureDoctorIsAvailable(
             args.DoctorId,
@@ -62,12 +63,12 @@ public static class AppointmentSchedulingService
         );
 
         var appointment = Appointment.Schedule(
-            args.TargetPatient.Id,
+            context.TargetPatient.Id,
             args.DoctorId,
-            appointmentType.Id,
+            context.AppointmentType.Id,
             args.ScheduledDate,
             args.RequestedTimeSlot,
-            args.InitiatorUserId
+            context.InitiatorMembership.UserId
         );
 
         if (args.PatientNotes is not null)
@@ -77,17 +78,16 @@ public static class AppointmentSchedulingService
     }
 
     public static Appointment ScheduleByGuardian(
-        AppointmentTypeDefinition appointmentType,
         GuardianSchedulingArgs args,
         PatientSchedulingContext context,
         SchedulingClearance clearance
     )
     {
-        ArgumentNullException.ThrowIfNull(appointmentType);
         ArgumentNullException.ThrowIfNull(args);
-        ArgumentNullException.ThrowIfNull(args.TargetPatient);
         ArgumentNullException.ThrowIfNull(args.RequestedTimeSlot);
         ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(context.TargetPatient);
+        ArgumentNullException.ThrowIfNull(context.AppointmentType);
         ArgumentNullException.ThrowIfNull(context.DoctorSchedule);
         ArgumentNullException.ThrowIfNull(context.InitiatorMembership);
         ArgumentNullException.ThrowIfNull(context.ClinicTimeZone);
@@ -103,17 +103,17 @@ public static class AppointmentSchedulingService
 
         context.InitiatorMembership.EnsureGuardianAccess();
 
-        if (!args.IsInitiatorPhoneVerified)
+        if (!context.IsInitiatorPhoneVerified)
             throw new AppointmentSchedulingUnauthorizedException(
                 DomainErrors.Appointment.PhoneNotVerified
             );
 
-        args.TargetPatient.EnsureCompleteProfile();
+        context.TargetPatient.EnsureCompleteProfile();
 
         new PenaltyHistory(context.Penalties).EnsureNotBlocked(args.ScheduledDate);
 
-        appointmentType.ValidatePatientEligibility(
-            args.TargetPatient.GetAge(args.ScheduledDate),
+        context.AppointmentType.ValidatePatientEligibility(
+            context.TargetPatient.GetAge(args.ScheduledDate),
             true
         );
 
@@ -124,40 +124,40 @@ public static class AppointmentSchedulingService
         );
 
         var isMinorAtScheduledDate =
-            args.TargetPatient.GetAge(args.ScheduledDate) < FamilyMembership.MinimumAdultAge;
+            context.TargetPatient.GetAge(args.ScheduledDate) < FamilyMembership.MinimumAdultAge;
 
         if (!isMinorAtScheduledDate)
             throw new DomainValidationException(DomainErrors.Appointment.GuardianRequiresMinor);
 
         var appointment = Appointment.Schedule(
-            args.TargetPatient.Id,
+            context.TargetPatient.Id,
             args.DoctorId,
-            appointmentType.Id,
+            context.AppointmentType.Id,
             args.ScheduledDate,
             args.RequestedTimeSlot,
-            args.InitiatorUserId
+            context.InitiatorMembership.UserId
         );
 
         if (args.GuardianNotes is not null)
-            appointment.UpdateGuardianNotes(args.GuardianNotes, args.InitiatorUserId);
+            appointment.UpdateGuardianNotes(args.GuardianNotes, context.InitiatorMembership.UserId);
 
         return appointment;
     }
 
     public static Appointment ScheduleByDoctor(
-        AppointmentTypeDefinition appointmentType,
         DoctorSchedulingArgs args,
-        Schedule doctorSchedule,
+        DoctorSchedulingContext context,
         SchedulingClearance clearance
     )
     {
-        ArgumentNullException.ThrowIfNull(appointmentType);
         ArgumentNullException.ThrowIfNull(args);
-        ArgumentNullException.ThrowIfNull(args.InitiatorDoctor);
-        ArgumentNullException.ThrowIfNull(args.TargetPatient);
         ArgumentNullException.ThrowIfNull(args.RequestedTimeSlot);
-        ArgumentNullException.ThrowIfNull(args.ClinicTimeZone);
-        ArgumentNullException.ThrowIfNull(doctorSchedule);
+        ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(context.InitiatorDoctor);
+        ArgumentNullException.ThrowIfNull(context.TargetPatient);
+        ArgumentNullException.ThrowIfNull(context.AppointmentType);
+        ArgumentNullException.ThrowIfNull(context.DoctorSchedule);
+        ArgumentNullException.ThrowIfNull(context.ClinicTimeZone);
 
         if (clearance is null)
             throw new BusinessRuleValidationException(DomainErrors.Scheduling.MissingClearance);
@@ -165,43 +165,43 @@ public static class AppointmentSchedulingService
         DaylightTransitionPolicy.EnsureSchedulable(
             args.ScheduledDate,
             args.RequestedTimeSlot,
-            args.ClinicTimeZone
+            context.ClinicTimeZone
         );
 
-        appointmentType.ValidatePatientEligibility(
-            args.TargetPatient.GetAge(args.ScheduledDate),
+        context.AppointmentType.ValidatePatientEligibility(
+            context.TargetPatient.GetAge(args.ScheduledDate),
             args.HasGuardianConsentVerified
         );
 
-        doctorSchedule.EnsureDoctorIsAvailable(
-            args.InitiatorDoctor.Id,
+        context.DoctorSchedule.EnsureDoctorIsAvailable(
+            context.InitiatorDoctor.Id,
             args.ScheduledDate.DayOfWeek,
             args.RequestedTimeSlot
         );
 
         return Appointment.Schedule(
-            args.TargetPatient.Id,
-            args.InitiatorDoctor.Id,
-            appointmentType.Id,
+            context.TargetPatient.Id,
+            context.InitiatorDoctor.Id,
+            context.AppointmentType.Id,
             args.ScheduledDate,
             args.RequestedTimeSlot,
-            args.InitiatorDoctor.UserId
+            context.InitiatorDoctor.UserId
         );
     }
 
     public static Appointment ScheduleByStaff(
-        AppointmentTypeDefinition appointmentType,
         StaffSchedulingArgs args,
-        Schedule doctorSchedule,
+        StaffSchedulingContext context,
         SchedulingClearance clearance
     )
     {
-        ArgumentNullException.ThrowIfNull(appointmentType);
         ArgumentNullException.ThrowIfNull(args);
-        ArgumentNullException.ThrowIfNull(args.TargetPatient);
         ArgumentNullException.ThrowIfNull(args.RequestedTimeSlot);
-        ArgumentNullException.ThrowIfNull(args.ClinicTimeZone);
-        ArgumentNullException.ThrowIfNull(doctorSchedule);
+        ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(context.TargetPatient);
+        ArgumentNullException.ThrowIfNull(context.AppointmentType);
+        ArgumentNullException.ThrowIfNull(context.DoctorSchedule);
+        ArgumentNullException.ThrowIfNull(context.ClinicTimeZone);
 
         if (clearance is null)
             throw new BusinessRuleValidationException(DomainErrors.Scheduling.MissingClearance);
@@ -209,29 +209,29 @@ public static class AppointmentSchedulingService
         DaylightTransitionPolicy.EnsureSchedulable(
             args.ScheduledDate,
             args.RequestedTimeSlot,
-            args.ClinicTimeZone
+            context.ClinicTimeZone
         );
 
-        args.TargetPatient.EnsureCompleteProfile();
+        context.TargetPatient.EnsureCompleteProfile();
 
-        appointmentType.ValidatePatientEligibility(
-            args.TargetPatient.GetAge(args.ScheduledDate),
+        context.AppointmentType.ValidatePatientEligibility(
+            context.TargetPatient.GetAge(args.ScheduledDate),
             args.HasGuardianConsentVerified
         );
 
-        doctorSchedule.EnsureDoctorIsAvailable(
+        context.DoctorSchedule.EnsureDoctorIsAvailable(
             args.DoctorId,
             args.ScheduledDate.DayOfWeek,
             args.RequestedTimeSlot
         );
 
         return Appointment.Schedule(
-            args.TargetPatient.Id,
+            context.TargetPatient.Id,
             args.DoctorId,
-            appointmentType.Id,
+            context.AppointmentType.Id,
             args.ScheduledDate,
             args.RequestedTimeSlot,
-            args.InitiatorUserId
+            context.InitiatorUserId
         );
     }
 }

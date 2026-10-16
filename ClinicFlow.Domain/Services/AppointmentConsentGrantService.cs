@@ -1,8 +1,7 @@
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Exceptions.Base;
-using ClinicFlow.Domain.Services.Args.Consent;
-using ClinicFlow.Domain.Services.Contexts;
+using ClinicFlow.Domain.Services.Contexts.Consent;
 using ClinicFlow.Domain.Services.Policies;
 
 namespace ClinicFlow.Domain.Services;
@@ -15,23 +14,21 @@ namespace ClinicFlow.Domain.Services;
 public static class AppointmentConsentGrantService
 {
     public static AppointmentConsentGrant GrantCategory(
-        AppointmentCategoryConsentGrantContext context,
-        GrantAppointmentCategoryConsentArgs args
+        AppointmentCategoryConsentGrantContext context
     )
     {
         ArgumentNullException.ThrowIfNull(context);
-        ArgumentNullException.ThrowIfNull(args);
         ArgumentNullException.ThrowIfNull(context.TargetPatient);
         ArgumentNullException.ThrowIfNull(context.RequesterMembership);
         ArgumentNullException.ThrowIfNull(context.RecipientMembership);
 
         context.RequesterMembership.EnsureConsentGrantSigner(
-            args.RequesterUserId,
+            context.RequesterUserId,
             context.TargetPatient.Id,
             DomainErrors.AppointmentConsentGrant.UnauthorizedCreation
         );
 
-        var patientAge = context.TargetPatient.GetAge(DateOnly.FromDateTime(args.ReferenceTime));
+        var patientAge = context.TargetPatient.GetAge(DateOnly.FromDateTime(context.ReferenceTime));
 
         if (patientAge >= DomainRules.AdultAge)
             throw new DomainValidationException(
@@ -62,17 +59,15 @@ public static class AppointmentConsentGrantService
             context.RecipientMembership.Id,
             context.ProtectedCareCategory,
             context.RequesterMembership.UserId,
-            args.ReferenceTime
+            context.ReferenceTime
         );
     }
 
     public static AppointmentConsentGrant GrantAppointment(
-        SpecificAppointmentConsentGrantContext context,
-        GrantSpecificAppointmentConsentArgs args
+        SpecificAppointmentConsentGrantContext context
     )
     {
         ArgumentNullException.ThrowIfNull(context);
-        ArgumentNullException.ThrowIfNull(args);
         ArgumentNullException.ThrowIfNull(context.TargetPatient);
         ArgumentNullException.ThrowIfNull(context.RequesterMembership);
         ArgumentNullException.ThrowIfNull(context.RecipientMembership);
@@ -80,12 +75,12 @@ public static class AppointmentConsentGrantService
         ArgumentNullException.ThrowIfNull(context.AppointmentType);
 
         context.RequesterMembership.EnsureConsentGrantSigner(
-            args.RequesterUserId,
+            context.RequesterUserId,
             context.TargetPatient.Id,
             DomainErrors.AppointmentConsentGrant.UnauthorizedCreation
         );
 
-        var patientAge = context.TargetPatient.GetAge(DateOnly.FromDateTime(args.ReferenceTime));
+        var patientAge = context.TargetPatient.GetAge(DateOnly.FromDateTime(context.ReferenceTime));
 
         if (patientAge >= DomainRules.AdultAge)
             throw new DomainValidationException(
@@ -129,7 +124,7 @@ public static class AppointmentConsentGrantService
             context.RecipientMembership.Id,
             context.TargetAppointment.Id,
             context.RequesterMembership.UserId,
-            args.ReferenceTime
+            context.ReferenceTime
         );
     }
 }

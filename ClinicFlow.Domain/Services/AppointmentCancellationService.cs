@@ -4,7 +4,7 @@ using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Appointments;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Services.Args.Cancellation;
-using ClinicFlow.Domain.Services.Contexts;
+using ClinicFlow.Domain.Services.Contexts.Cancellation;
 
 namespace ClinicFlow.Domain.Services;
 
@@ -15,79 +15,91 @@ public static class AppointmentCancellationService
 {
     public static void CancelByPatient(
         Appointment appointment,
-        AppointmentCancellationContext context,
-        PatientCancellationArgs args
+        PatientCancellationArgs args,
+        AppointmentCancellationContext context
     )
     {
         ArgumentNullException.ThrowIfNull(appointment);
         ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(context.TargetPatient);
+        ArgumentNullException.ThrowIfNull(context.AppointmentType);
         ArgumentNullException.ThrowIfNull(context.Specialty);
-        ArgumentNullException.ThrowIfNull(args);
-        ArgumentNullException.ThrowIfNull(args.TargetPatient);
         ArgumentNullException.ThrowIfNull(context.InitiatorMembership);
+        ArgumentNullException.ThrowIfNull(args);
 
-        context.InitiatorMembership.EnsureAppointmentAccess(context.RequestedCategory);
+        context.InitiatorMembership.EnsureAppointmentAccess(context.AppointmentType.Category);
 
-        if (appointment.PatientId != args.TargetPatient.Id)
+        if (appointment.PatientId != context.TargetPatient.Id)
             throw new DomainValidationException(DomainErrors.Appointment.DataMismatch);
 
-        if (context.Purpose is AppointmentPurpose.Procedure)
+        if (context.AppointmentType.Purpose is AppointmentPurpose.Procedure)
             throw new AppointmentCancellationUnauthorizedException(
                 DomainErrors.Appointment.CannotCancel
             );
 
-        if (context.Purpose is AppointmentPurpose.Emergency)
+        if (context.AppointmentType.Purpose is AppointmentPurpose.Emergency)
             ValidateEmergencyCancellation(
-                args.TargetPatient,
+                context.TargetPatient,
                 context.InitiatorMembership,
-                DateOnly.FromDateTime(args.CancelledAt)
+                DateOnly.FromDateTime(context.CancelledAt)
             );
 
         if (
             context.Specialty.IsCancellationAllowed(
                 appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start),
-                args.CancelledAt
+                context.CancelledAt
             )
         )
         {
             appointment.Cancel(
-                args.InitiatorUserId,
+                context.InitiatorMembership.UserId,
                 args.Reason,
-                DateOnly.FromDateTime(args.CancelledAt)
+                DateOnly.FromDateTime(context.CancelledAt)
             );
         }
         else
         {
             appointment.CancelLate(
-                args.InitiatorUserId,
+                context.InitiatorMembership.UserId,
                 args.Reason,
-                DateOnly.FromDateTime(args.CancelledAt)
+                DateOnly.FromDateTime(context.CancelledAt)
             );
         }
     }
 
-    public static void CancelByDoctor(Appointment appointment, DoctorCancellationArgs args)
+    public static void CancelByDoctor(
+        Appointment appointment,
+        DoctorCancellationArgs args,
+        DoctorCancellationContext context
+    )
     {
         ArgumentNullException.ThrowIfNull(appointment);
         ArgumentNullException.ThrowIfNull(args);
+        ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(context.InitiatorDoctor);
 
-        if (args.InitiatorDoctorId != appointment.DoctorId)
+        if (context.InitiatorDoctor.Id != appointment.DoctorId)
             throw new AppointmentCancellationUnauthorizedException(
                 DomainErrors.Appointment.UnauthorizedCancellation
             );
 
         appointment.Cancel(
-            args.InitiatorUserId,
+            context.InitiatorDoctor.UserId,
             args.Reason,
-            DateOnly.FromDateTime(args.CancelledAt)
+            DateOnly.FromDateTime(context.CancelledAt)
         );
     }
 
-    public static void CancelByStaff(Appointment appointment, StaffCancellationArgs args)
+    public static void CancelByStaff(
+        Appointment appointment,
+        StaffCancellationArgs args,
+        StaffCancellationContext context
+    )
     {
         ArgumentNullException.ThrowIfNull(appointment);
         ArgumentNullException.ThrowIfNull(args);
         ArgumentNullException.ThrowIfNull(args.Reason);
+        ArgumentNullException.ThrowIfNull(context);
 
         if (string.IsNullOrWhiteSpace(args.Reason))
             throw new BusinessRuleValidationException(
@@ -95,9 +107,9 @@ public static class AppointmentCancellationService
             );
 
         appointment.Cancel(
-            args.InitiatorUserId,
+            context.InitiatorUserId,
             args.Reason,
-            DateOnly.FromDateTime(args.CancelledAt)
+            DateOnly.FromDateTime(context.CancelledAt)
         );
     }
 

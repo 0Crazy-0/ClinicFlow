@@ -6,6 +6,7 @@ using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Exceptions.Patients;
 using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Args.GuardianNotes;
+using ClinicFlow.Domain.Services.Contexts.GuardianNotes;
 using ClinicFlow.Domain.ValueObjects;
 using Microsoft.Extensions.Time.Testing;
 
@@ -22,7 +23,8 @@ public class AppointmentGuardianNotesServiceTests
         var act = () =>
             AppointmentGuardianNotesService.UpdateByGuardian(
                 null!,
-                CreateValidUpdateGuardianNotesArgs()
+                CreateValidArgs(),
+                CreateValidContext()
             );
 
         // Assert
@@ -36,6 +38,22 @@ public class AppointmentGuardianNotesServiceTests
         var act = () =>
             AppointmentGuardianNotesService.UpdateByGuardian(
                 CreateAppointment(Guid.CreateVersion7()),
+                null!,
+                CreateValidContext()
+            );
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void UpdateByGuardian_ShouldThrowArgumentNullException_WhenContextIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentGuardianNotesService.UpdateByGuardian(
+                CreateAppointment(Guid.CreateVersion7()),
+                CreateValidArgs(),
                 null!
             );
 
@@ -50,7 +68,8 @@ public class AppointmentGuardianNotesServiceTests
         var act = () =>
             AppointmentGuardianNotesService.UpdateByGuardian(
                 CreateAppointment(Guid.CreateVersion7()),
-                CreateValidUpdateGuardianNotesArgs() with
+                CreateValidArgs(),
+                CreateValidContext() with
                 {
                     TargetPatient = null!,
                 }
@@ -67,7 +86,8 @@ public class AppointmentGuardianNotesServiceTests
         var act = () =>
             AppointmentGuardianNotesService.UpdateByGuardian(
                 CreateAppointment(Guid.CreateVersion7()),
-                CreateValidUpdateGuardianNotesArgs() with
+                CreateValidArgs(),
+                CreateValidContext() with
                 {
                     InitiatorMembership = null!,
                 }
@@ -84,16 +104,16 @@ public class AppointmentGuardianNotesServiceTests
         var appointment = CreateAppointment(Guid.CreateVersion7()); // patientId is different from target patient
         var target = CreateMinorPatient();
         var authorId = Guid.CreateVersion7();
-        var args = new UpdateGuardianNotesArgs
+        var args = new UpdateGuardianNotesArgs { Notes = "Note" };
+        var context = new UpdateGuardianNotesContext
         {
             TargetPatient = target,
             InitiatorMembership = CreateParentMembership(target.Id, authorId),
-            InitiatorUserId = authorId,
-            Notes = "Note",
         };
 
         // Act
-        var act = () => AppointmentGuardianNotesService.UpdateByGuardian(appointment, args);
+        var act = () =>
+            AppointmentGuardianNotesService.UpdateByGuardian(appointment, args, context);
 
         // Assert
         act.Should()
@@ -108,16 +128,16 @@ public class AppointmentGuardianNotesServiceTests
         var target = CreateMinorPatient();
         var appointment = CreateAppointment(target.Id);
         var authorId = Guid.CreateVersion7();
-        var args = new UpdateGuardianNotesArgs
+        var args = new UpdateGuardianNotesArgs { Notes = "Note" };
+        var context = new UpdateGuardianNotesContext
         {
             TargetPatient = target,
             InitiatorMembership = CreateParentMembership(Guid.CreateVersion7(), authorId),
-            InitiatorUserId = authorId,
-            Notes = "Note",
         };
 
         // Act
-        var act = () => AppointmentGuardianNotesService.UpdateByGuardian(appointment, args);
+        var act = () =>
+            AppointmentGuardianNotesService.UpdateByGuardian(appointment, args, context);
 
         // Assert
         act.Should()
@@ -135,16 +155,15 @@ public class AppointmentGuardianNotesServiceTests
 
         appointment.UpdateGuardianNotes("Original", authorId);
 
-        var args = new UpdateGuardianNotesArgs
+        var args = new UpdateGuardianNotesArgs { Notes = "Updated note" };
+        var context = new UpdateGuardianNotesContext
         {
             TargetPatient = target,
             InitiatorMembership = CreateParentMembership(target.Id, authorId),
-            InitiatorUserId = authorId,
-            Notes = "Updated note",
         };
 
         // Act
-        AppointmentGuardianNotesService.UpdateByGuardian(appointment, args);
+        AppointmentGuardianNotesService.UpdateByGuardian(appointment, args, context);
 
         // Assert
         appointment.GuardianNotes.Should().Be(args.Notes);
@@ -160,16 +179,15 @@ public class AppointmentGuardianNotesServiceTests
         var authorId = Guid.CreateVersion7();
         var appointment = CreateAppointment(target.Id);
 
-        var args = new UpdateGuardianNotesArgs
+        var args = new UpdateGuardianNotesArgs { Notes = "First note" };
+        var context = new UpdateGuardianNotesContext
         {
             TargetPatient = target,
             InitiatorMembership = CreateParentMembership(target.Id, authorId),
-            InitiatorUserId = authorId,
-            Notes = "First note",
         };
 
         // Act
-        AppointmentGuardianNotesService.UpdateByGuardian(appointment, args);
+        AppointmentGuardianNotesService.UpdateByGuardian(appointment, args, context);
 
         // Assert
         appointment.GuardianNotes.Should().Be(args.Notes);
@@ -188,16 +206,16 @@ public class AppointmentGuardianNotesServiceTests
         var appointment = CreateAppointment(target.Id);
         appointment.UpdateGuardianNotes("Original", authorId);
 
-        var args = new UpdateGuardianNotesArgs
+        var args = new UpdateGuardianNotesArgs { Notes = "Outsider attempt" };
+        var context = new UpdateGuardianNotesContext
         {
             TargetPatient = target,
             InitiatorMembership = CreateParentMembership(target.Id, otherGuardianId),
-            InitiatorUserId = otherGuardianId,
-            Notes = "Outsider attempt",
         };
 
         // Act
-        var act = () => AppointmentGuardianNotesService.UpdateByGuardian(appointment, args);
+        var act = () =>
+            AppointmentGuardianNotesService.UpdateByGuardian(appointment, args, context);
 
         // Assert
         act.Should()
@@ -215,7 +233,8 @@ public class AppointmentGuardianNotesServiceTests
         var userId = Guid.CreateVersion7();
         var appointment = CreateAppointment(target.Id);
 
-        var args = new UpdateGuardianNotesArgs
+        var args = new UpdateGuardianNotesArgs { Notes = "Note" };
+        var context = new UpdateGuardianNotesContext
         {
             TargetPatient = target,
             InitiatorMembership = FamilyMembership.CreateSelf(
@@ -223,12 +242,11 @@ public class AppointmentGuardianNotesServiceTests
                 userId,
                 _fakeTime.GetUtcNow().UtcDateTime
             ),
-            InitiatorUserId = userId,
-            Notes = "Note",
         };
 
         // Act
-        var act = () => AppointmentGuardianNotesService.UpdateByGuardian(appointment, args);
+        var act = () =>
+            AppointmentGuardianNotesService.UpdateByGuardian(appointment, args, context);
 
         // Assert
         act.Should()
@@ -244,7 +262,8 @@ public class AppointmentGuardianNotesServiceTests
         var userId = Guid.CreateVersion7();
         var appointment = CreateAppointment(target.Id);
 
-        var args = new UpdateGuardianNotesArgs
+        var args = new UpdateGuardianNotesArgs { Notes = "Note" };
+        var context = new UpdateGuardianNotesContext
         {
             TargetPatient = target,
             InitiatorMembership = FamilyMembership.CreateFamilyMember(
@@ -256,12 +275,11 @@ public class AppointmentGuardianNotesServiceTests
                 30,
                 _fakeTime.GetUtcNow().UtcDateTime
             ),
-            InitiatorUserId = userId,
-            Notes = "Note",
         };
 
         // Act
-        var act = () => AppointmentGuardianNotesService.UpdateByGuardian(appointment, args);
+        var act = () =>
+            AppointmentGuardianNotesService.UpdateByGuardian(appointment, args, context);
 
         // Assert
         act.Should()
@@ -283,16 +301,16 @@ public class AppointmentGuardianNotesServiceTests
         var authorId = Guid.CreateVersion7();
         var appointment = CreateAppointment(patientAdult.Id);
 
-        var args = new UpdateGuardianNotesArgs
+        var args = new UpdateGuardianNotesArgs { Notes = "Note for adult" };
+        var context = new UpdateGuardianNotesContext
         {
             TargetPatient = patientAdult,
             InitiatorMembership = CreateParentMembership(patientAdult.Id, authorId),
-            InitiatorUserId = authorId,
-            Notes = "Note for adult",
         };
 
         // Act
-        var act = () => AppointmentGuardianNotesService.UpdateByGuardian(appointment, args);
+        var act = () =>
+            AppointmentGuardianNotesService.UpdateByGuardian(appointment, args, context);
 
         // Assert
         act.Should()
@@ -321,16 +339,16 @@ public class AppointmentGuardianNotesServiceTests
         var authorId = Guid.CreateVersion7();
         var appointment = CreateAppointment(target.Id);
 
-        var args = new UpdateGuardianNotesArgs
+        var args = new UpdateGuardianNotesArgs { Notes = "Note" };
+        var context = new UpdateGuardianNotesContext
         {
             TargetPatient = target,
             InitiatorMembership = CreateParentMembership(target.Id, authorId),
-            InitiatorUserId = authorId,
-            Notes = "Note",
         };
 
         // Act
-        var act = () => AppointmentGuardianNotesService.UpdateByGuardian(appointment, args);
+        var act = () =>
+            AppointmentGuardianNotesService.UpdateByGuardian(appointment, args, context);
 
         // Assert
         act.Should()
@@ -350,16 +368,16 @@ public class AppointmentGuardianNotesServiceTests
         var appointment = CreateAppointment(target.Id);
         appointment.MarkAsRequiresReassignment();
 
-        var args = new UpdateGuardianNotesArgs
+        var args = new UpdateGuardianNotesArgs { Notes = "Note" };
+        var context = new UpdateGuardianNotesContext
         {
             TargetPatient = target,
             InitiatorMembership = CreateParentMembership(target.Id, authorId),
-            InitiatorUserId = authorId,
-            Notes = "Note",
         };
 
         // Act
-        var act = () => AppointmentGuardianNotesService.UpdateByGuardian(appointment, args);
+        var act = () =>
+            AppointmentGuardianNotesService.UpdateByGuardian(appointment, args, context);
 
         // Assert
         act.Should()
@@ -392,7 +410,9 @@ public class AppointmentGuardianNotesServiceTests
         return patient;
     }
 
-    private UpdateGuardianNotesArgs CreateValidUpdateGuardianNotesArgs()
+    private static UpdateGuardianNotesArgs CreateValidArgs() => new() { Notes = "Note" };
+
+    private UpdateGuardianNotesContext CreateValidContext()
     {
         var target = CreateMinorPatient();
 
@@ -400,8 +420,6 @@ public class AppointmentGuardianNotesServiceTests
         {
             TargetPatient = target,
             InitiatorMembership = CreateParentMembership(target.Id, Guid.CreateVersion7()),
-            InitiatorUserId = Guid.CreateVersion7(),
-            Notes = "Note",
         };
     }
 

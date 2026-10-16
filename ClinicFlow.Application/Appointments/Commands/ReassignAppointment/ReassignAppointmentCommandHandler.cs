@@ -6,6 +6,7 @@ using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Args.Reassignment;
+using ClinicFlow.Domain.Services.Contexts.Reassignment;
 using ClinicFlow.Domain.ValueObjects;
 using MediatR;
 
@@ -94,9 +95,12 @@ public sealed class ReassignAppointmentCommandHandler(
                 NewDoctorId = newDoctor.Id,
                 NewDate = request.NewDate,
                 NewTimeSlot = newTimeRange,
-                ClinicTimeZone = timeProvider.LocalTimeZone,
             },
-            newDoctorSchedule
+            new AppointmentReassignmentContext
+            {
+                NewDoctorSchedule = newDoctorSchedule,
+                ClinicTimeZone = timeProvider.LocalTimeZone,
+            }
         );
 
         await unitOfWork.SaveChangesAsync(cancellationToken);

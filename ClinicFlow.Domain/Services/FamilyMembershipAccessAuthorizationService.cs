@@ -1,5 +1,5 @@
 using ClinicFlow.Domain.Common;
-using ClinicFlow.Domain.Services.Contexts;
+using ClinicFlow.Domain.Services.Contexts.FamilyMembershipManagement;
 
 namespace ClinicFlow.Domain.Services;
 

@@ -10,7 +10,7 @@ using ClinicFlow.Domain.Exceptions.Patients;
 using ClinicFlow.Domain.Exceptions.Scheduling;
 using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Args.Scheduling;
-using ClinicFlow.Domain.Services.Contexts;
+using ClinicFlow.Domain.Services.Contexts.Scheduling;
 using ClinicFlow.Domain.ValueObjects;
 using Microsoft.Extensions.Time.Testing;
 
@@ -26,14 +26,10 @@ public class ScheduleByPatientTests
         // Arrange & Act
         var act = () =>
             AppointmentSchedulingService.ScheduleByPatient(
-                null!,
-                CreateValidPatientSchedulingArgs(),
-                new PatientSchedulingContext
+                CreateValidArgs(),
+                CreateValidContext() with
                 {
-                    DoctorSchedule = CreateSchedule(),
-                    InitiatorMembership = CreateSelfMembership(),
-                    RequestedCategory = AppointmentCategory.Other,
-                    ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
+                    AppointmentType = null!,
                 },
                 SchedulingClearance.Granted()
             );
@@ -48,15 +44,8 @@ public class ScheduleByPatientTests
         // Arrange & Act
         var act = () =>
             AppointmentSchedulingService.ScheduleByPatient(
-                CreateAppointmentType(),
                 null!,
-                new PatientSchedulingContext
-                {
-                    DoctorSchedule = CreateSchedule(),
-                    InitiatorMembership = CreateSelfMembership(),
-                    RequestedCategory = AppointmentCategory.Other,
-                    ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
-                },
+                CreateValidContext(),
                 SchedulingClearance.Granted()
             );
 
@@ -70,17 +59,10 @@ public class ScheduleByPatientTests
         // Arrange & Act
         var act = () =>
             AppointmentSchedulingService.ScheduleByPatient(
-                CreateAppointmentType(),
-                CreateValidPatientSchedulingArgs() with
+                CreateValidArgs(),
+                CreateValidContext() with
                 {
                     TargetPatient = null!,
-                },
-                new PatientSchedulingContext
-                {
-                    DoctorSchedule = CreateSchedule(),
-                    InitiatorMembership = CreateSelfMembership(),
-                    RequestedCategory = AppointmentCategory.Other,
-                    ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
                 },
                 SchedulingClearance.Granted()
             );
@@ -95,18 +77,11 @@ public class ScheduleByPatientTests
         // Arrange & Act
         var act = () =>
             AppointmentSchedulingService.ScheduleByPatient(
-                CreateAppointmentType(),
-                CreateValidPatientSchedulingArgs() with
+                CreateValidArgs() with
                 {
                     RequestedTimeSlot = null!,
                 },
-                new PatientSchedulingContext
-                {
-                    DoctorSchedule = CreateSchedule(),
-                    InitiatorMembership = CreateSelfMembership(),
-                    RequestedCategory = AppointmentCategory.Other,
-                    ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
-                },
+                CreateValidContext(),
                 SchedulingClearance.Granted()
             );
 
@@ -120,8 +95,7 @@ public class ScheduleByPatientTests
         // Arrange & Act
         var act = () =>
             AppointmentSchedulingService.ScheduleByPatient(
-                CreateAppointmentType(),
-                CreateValidPatientSchedulingArgs(),
+                CreateValidArgs(),
                 null!,
                 SchedulingClearance.Granted()
             );
@@ -136,14 +110,10 @@ public class ScheduleByPatientTests
         // Arrange & Act
         var act = () =>
             AppointmentSchedulingService.ScheduleByPatient(
-                CreateAppointmentType(),
-                CreateValidPatientSchedulingArgs(),
-                new PatientSchedulingContext
+                CreateValidArgs(),
+                CreateValidContext() with
                 {
                     DoctorSchedule = null!,
-                    InitiatorMembership = CreateSelfMembership(),
-                    RequestedCategory = AppointmentCategory.Other,
-                    ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
                 },
                 SchedulingClearance.Granted()
             );
@@ -158,13 +128,9 @@ public class ScheduleByPatientTests
         // Arrange & Act
         var act = () =>
             AppointmentSchedulingService.ScheduleByPatient(
-                CreateAppointmentType(),
-                CreateValidPatientSchedulingArgs(),
-                new PatientSchedulingContext
+                CreateValidArgs(),
+                CreateValidContext() with
                 {
-                    DoctorSchedule = CreateSchedule(),
-                    InitiatorMembership = CreateSelfMembership(),
-                    RequestedCategory = AppointmentCategory.Other,
                     ClinicTimeZone = null!,
                 },
                 SchedulingClearance.Granted()
@@ -180,15 +146,8 @@ public class ScheduleByPatientTests
         // Arrange & Act
         var act = () =>
             AppointmentSchedulingService.ScheduleByPatient(
-                CreateAppointmentType(),
-                CreateValidPatientSchedulingArgs(),
-                new PatientSchedulingContext
-                {
-                    DoctorSchedule = CreateSchedule(),
-                    InitiatorMembership = CreateSelfMembership(),
-                    RequestedCategory = AppointmentCategory.Other,
-                    ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
-                },
+                CreateValidArgs(),
+                CreateValidContext(),
                 null!
             );
 
@@ -206,33 +165,30 @@ public class ScheduleByPatientTests
             DateTimeOffset.Parse("2026-11-01T12:00:00Z", CultureInfo.InvariantCulture)
         );
         var ambiguousDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
-        var appointmentType = CreateAppointmentType();
         var target = CreateSelfPatient();
         var args = new PatientSchedulingArgs
         {
-            TargetPatient = target,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = ambiguousDate,
             RequestedTimeSlot = TimeRange.Create(new TimeOnly(1, 0), new TimeOnly(1, 30)),
-            IsInitiatorPhoneVerified = true,
-            InitiatorUserId = Guid.CreateVersion7(),
         };
         var context = new PatientSchedulingContext
         {
+            TargetPatient = target,
+            AppointmentType = CreateAppointmentType(),
+            IsInitiatorPhoneVerified = true,
             DoctorSchedule = Schedule.Create(
                 args.DoctorId,
                 ambiguousDate.DayOfWeek,
                 TimeRange.Create(new TimeOnly(0, 0), new TimeOnly(23, 59))
             ),
             InitiatorMembership = CreateSelfMembership(),
-            RequestedCategory = AppointmentCategory.Other,
             ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         // Act
         var act = () =>
             AppointmentSchedulingService.ScheduleByPatient(
-                appointmentType,
                 args,
                 context,
                 SchedulingClearance.Granted()
@@ -248,31 +204,27 @@ public class ScheduleByPatientTests
     public void ScheduleByPatient_ShouldThrowUnauthorized_WhenMembershipDeniesCategory()
     {
         // Arrange
-        var appointmentType = CreateAppointmentType();
-        var initiator = CreateSelfPatient();
         var target = CreateSelfPatient();
         var args = new PatientSchedulingArgs
         {
-            TargetPatient = target,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             RequestedTimeSlot = CreateTimeRange(),
-            IsInitiatorPhoneVerified = true,
-            InitiatorUserId = Guid.CreateVersion7(),
         };
 
         var context = new PatientSchedulingContext
         {
+            TargetPatient = target,
+            AppointmentType = CreateAppointmentType(),
+            IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(),
             InitiatorMembership = CreateViewOnlyMembership(),
-            RequestedCategory = AppointmentCategory.Other,
             ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         // Act
         var act = () =>
             AppointmentSchedulingService.ScheduleByPatient(
-                appointmentType,
                 args,
                 context,
                 SchedulingClearance.Granted()
@@ -290,14 +242,10 @@ public class ScheduleByPatientTests
         // Arrange & Act
         var act = () =>
             AppointmentSchedulingService.ScheduleByPatient(
-                CreateAppointmentType(),
-                CreateValidPatientSchedulingArgs(),
-                new PatientSchedulingContext
+                CreateValidArgs(),
+                CreateValidContext() with
                 {
-                    DoctorSchedule = CreateSchedule(),
                     InitiatorMembership = null!,
-                    RequestedCategory = AppointmentCategory.Other,
-                    ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
                 },
                 SchedulingClearance.Granted()
             );
@@ -323,12 +271,9 @@ public class ScheduleByPatientTests
 
         var args = new PatientSchedulingArgs
         {
-            TargetPatient = familyMember,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             RequestedTimeSlot = CreateTimeRange(),
-            IsInitiatorPhoneVerified = true,
-            InitiatorUserId = Guid.CreateVersion7(),
         };
 
         var doctorSchedule = Schedule.Create(
@@ -339,15 +284,16 @@ public class ScheduleByPatientTests
 
         var context = new PatientSchedulingContext
         {
+            TargetPatient = familyMember,
+            IsInitiatorPhoneVerified = true,
             DoctorSchedule = doctorSchedule,
             InitiatorMembership = CreateSelfMembership(),
-            RequestedCategory = AppointmentCategory.Other,
+            AppointmentType = appointmentType,
             ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         // Act
         var appointment = AppointmentSchedulingService.ScheduleByPatient(
-            appointmentType,
             args,
             context,
             SchedulingClearance.Granted()
@@ -361,7 +307,7 @@ public class ScheduleByPatientTests
         appointment.ScheduledDate.Should().Be(args.ScheduledDate);
         appointment.TimeSlot.Should().Be(args.RequestedTimeSlot);
         appointment.Status.Should().Be(AppointmentStatus.Scheduled);
-        appointment.ScheduledByUserId.Should().Be(args.InitiatorUserId);
+        appointment.ScheduledByUserId.Should().Be(context.InitiatorMembership.UserId);
     }
 
     [Fact]
@@ -372,26 +318,24 @@ public class ScheduleByPatientTests
         var target = CreateSelfPatient();
         var args = new PatientSchedulingArgs
         {
-            TargetPatient = target,
-            InitiatorUserId = Guid.CreateVersion7(),
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             RequestedTimeSlot = CreateTimeRange(),
-            IsInitiatorPhoneVerified = false,
         };
 
         var context = new PatientSchedulingContext
         {
+            TargetPatient = target,
+            IsInitiatorPhoneVerified = false,
             DoctorSchedule = CreateSchedule(),
             InitiatorMembership = CreateSelfMembership(),
-            RequestedCategory = AppointmentCategory.Other,
+            AppointmentType = appointmentType,
             ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         // Act
         var act = () =>
             AppointmentSchedulingService.ScheduleByPatient(
-                appointmentType,
                 args,
                 context,
                 SchedulingClearance.Granted()
@@ -417,26 +361,24 @@ public class ScheduleByPatientTests
         );
         var args = new PatientSchedulingArgs
         {
-            TargetPatient = incompletePatient,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             RequestedTimeSlot = CreateTimeRange(),
-            IsInitiatorPhoneVerified = true,
-            InitiatorUserId = Guid.CreateVersion7(),
         };
 
         var context = new PatientSchedulingContext
         {
+            TargetPatient = incompletePatient,
+            IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(),
             InitiatorMembership = CreateSelfMembership(),
-            RequestedCategory = AppointmentCategory.Other,
+            AppointmentType = appointmentType,
             ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         // Act
         var act = () =>
             AppointmentSchedulingService.ScheduleByPatient(
-                appointmentType,
                 args,
                 context,
                 SchedulingClearance.Granted()
@@ -456,12 +398,9 @@ public class ScheduleByPatientTests
         var target = CreateSelfPatient();
         var args = new PatientSchedulingArgs
         {
-            TargetPatient = target,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             RequestedTimeSlot = CreateTimeRange(),
-            IsInitiatorPhoneVerified = true,
-            InitiatorUserId = Guid.CreateVersion7(),
         };
 
         var penalties = new[]
@@ -476,17 +415,18 @@ public class ScheduleByPatientTests
 
         var context = new PatientSchedulingContext
         {
+            TargetPatient = target,
+            IsInitiatorPhoneVerified = true,
             Penalties = penalties,
             DoctorSchedule = CreateSchedule(),
             InitiatorMembership = CreateSelfMembership(),
-            RequestedCategory = AppointmentCategory.Other,
+            AppointmentType = appointmentType,
             ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         // Act
         var act = () =>
             AppointmentSchedulingService.ScheduleByPatient(
-                appointmentType,
                 args,
                 context,
                 SchedulingClearance.Granted()
@@ -520,26 +460,24 @@ public class ScheduleByPatientTests
 
         var args = new PatientSchedulingArgs
         {
-            TargetPatient = target,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             RequestedTimeSlot = CreateTimeRange(),
-            IsInitiatorPhoneVerified = true,
-            InitiatorUserId = Guid.CreateVersion7(),
         };
 
         var context = new PatientSchedulingContext
         {
+            TargetPatient = target,
+            IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(),
             InitiatorMembership = CreateSelfMembership(),
-            RequestedCategory = AppointmentCategory.Other,
+            AppointmentType = appointmentType,
             ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         // Act
         var act = () =>
             AppointmentSchedulingService.ScheduleByPatient(
-                appointmentType,
                 args,
                 context,
                 SchedulingClearance.Granted()
@@ -576,12 +514,9 @@ public class ScheduleByPatientTests
 
         var args = new PatientSchedulingArgs
         {
-            TargetPatient = target,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             RequestedTimeSlot = CreateTimeRange(),
-            IsInitiatorPhoneVerified = true,
-            InitiatorUserId = Guid.CreateVersion7(),
         };
 
         var doctorSchedule = Schedule.Create(
@@ -592,16 +527,17 @@ public class ScheduleByPatientTests
 
         var context = new PatientSchedulingContext
         {
+            TargetPatient = target,
+            IsInitiatorPhoneVerified = true,
             DoctorSchedule = doctorSchedule,
             InitiatorMembership = CreateParentMembership(),
-            RequestedCategory = AppointmentCategory.Other,
+            AppointmentType = appointmentType,
             ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         // Act
         var act = () =>
             AppointmentSchedulingService.ScheduleByPatient(
-                appointmentType,
                 args,
                 context,
                 SchedulingClearance.Granted()
@@ -638,12 +574,9 @@ public class ScheduleByPatientTests
 
         var args = new PatientSchedulingArgs
         {
-            TargetPatient = target,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             RequestedTimeSlot = CreateTimeRange(),
-            IsInitiatorPhoneVerified = true,
-            InitiatorUserId = Guid.CreateVersion7(),
         };
 
         var doctorSchedule = Schedule.Create(
@@ -654,16 +587,17 @@ public class ScheduleByPatientTests
 
         var context = new PatientSchedulingContext
         {
+            TargetPatient = target,
+            IsInitiatorPhoneVerified = true,
             DoctorSchedule = doctorSchedule,
             InitiatorMembership = CreateSelfMembership(),
-            RequestedCategory = AppointmentCategory.Other,
+            AppointmentType = appointmentType,
             ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         // Act
         var act = () =>
             AppointmentSchedulingService.ScheduleByPatient(
-                appointmentType,
                 args,
                 context,
                 SchedulingClearance.Granted()
@@ -683,28 +617,26 @@ public class ScheduleByPatientTests
         var target = CreateSelfPatient();
         var args = new PatientSchedulingArgs
         {
-            TargetPatient = target,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             RequestedTimeSlot = TimeRange.Create(new TimeOnly(18, 0), new TimeOnly(19, 0)),
-            IsInitiatorPhoneVerified = true,
-            InitiatorUserId = Guid.CreateVersion7(),
         };
 
         var scheduleForDifferentDoctor = CreateSchedule();
 
         var context = new PatientSchedulingContext
         {
+            TargetPatient = target,
+            IsInitiatorPhoneVerified = true,
             DoctorSchedule = scheduleForDifferentDoctor,
             InitiatorMembership = CreateSelfMembership(),
-            RequestedCategory = AppointmentCategory.Other,
+            AppointmentType = appointmentType,
             ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         // Act
         var act = () =>
             AppointmentSchedulingService.ScheduleByPatient(
-                appointmentType,
                 args,
                 context,
                 SchedulingClearance.Granted()
@@ -724,12 +656,9 @@ public class ScheduleByPatientTests
         var target = CreateSelfPatient();
         var args = new PatientSchedulingArgs
         {
-            TargetPatient = target,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             RequestedTimeSlot = CreateTimeRange(),
-            IsInitiatorPhoneVerified = true,
-            InitiatorUserId = Guid.CreateVersion7(),
             PatientNotes = "Patient note",
         };
 
@@ -741,15 +670,16 @@ public class ScheduleByPatientTests
 
         var context = new PatientSchedulingContext
         {
+            TargetPatient = target,
+            IsInitiatorPhoneVerified = true,
             DoctorSchedule = doctorSchedule,
             InitiatorMembership = CreateSelfMembership(),
-            RequestedCategory = AppointmentCategory.Other,
+            AppointmentType = appointmentType,
             ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         // Act
         var appointment = AppointmentSchedulingService.ScheduleByPatient(
-            appointmentType,
             args,
             context,
             SchedulingClearance.Granted()
@@ -762,7 +692,7 @@ public class ScheduleByPatientTests
         appointment.ScheduledDate.Should().Be(args.ScheduledDate);
         appointment.TimeSlot.Should().Be(args.RequestedTimeSlot);
         appointment.Status.Should().Be(AppointmentStatus.Scheduled);
-        appointment.ScheduledByUserId.Should().Be(args.InitiatorUserId);
+        appointment.ScheduledByUserId.Should().Be(context.InitiatorMembership.UserId);
         appointment.DomainEvents.OfType<AppointmentScheduledEvent>().Should().ContainSingle();
     }
 
@@ -774,12 +704,9 @@ public class ScheduleByPatientTests
         var target = CreateSelfPatient();
         var args = new PatientSchedulingArgs
         {
-            TargetPatient = target,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             RequestedTimeSlot = CreateTimeRange(),
-            IsInitiatorPhoneVerified = true,
-            InitiatorUserId = Guid.CreateVersion7(),
             PatientNotes = null,
         };
 
@@ -791,15 +718,16 @@ public class ScheduleByPatientTests
 
         var context = new PatientSchedulingContext
         {
+            TargetPatient = target,
+            IsInitiatorPhoneVerified = true,
             DoctorSchedule = doctorSchedule,
             InitiatorMembership = CreateSelfMembership(),
-            RequestedCategory = AppointmentCategory.Other,
+            AppointmentType = appointmentType,
             ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         // Act
         var appointment = AppointmentSchedulingService.ScheduleByPatient(
-            appointmentType,
             args,
             context,
             SchedulingClearance.Granted()
@@ -812,7 +740,7 @@ public class ScheduleByPatientTests
         appointment.ScheduledDate.Should().Be(args.ScheduledDate);
         appointment.TimeSlot.Should().Be(args.RequestedTimeSlot);
         appointment.Status.Should().Be(AppointmentStatus.Scheduled);
-        appointment.ScheduledByUserId.Should().Be(args.InitiatorUserId);
+        appointment.ScheduledByUserId.Should().Be(context.InitiatorMembership.UserId);
         appointment.DomainEvents.OfType<AppointmentScheduledEvent>().Should().ContainSingle();
     }
 
@@ -824,12 +752,9 @@ public class ScheduleByPatientTests
         var target = CreateSelfPatient();
         var args = new PatientSchedulingArgs
         {
-            TargetPatient = target,
             DoctorId = Guid.CreateVersion7(),
             ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
             RequestedTimeSlot = CreateTimeRange(),
-            IsInitiatorPhoneVerified = true,
-            InitiatorUserId = Guid.CreateVersion7(),
         };
 
         var doctorSchedule = Schedule.Create(
@@ -840,15 +765,16 @@ public class ScheduleByPatientTests
 
         var context = new PatientSchedulingContext
         {
+            TargetPatient = target,
+            IsInitiatorPhoneVerified = true,
             DoctorSchedule = doctorSchedule,
             InitiatorMembership = CreateSelfMembership(),
-            RequestedCategory = AppointmentCategory.Other,
+            AppointmentType = appointmentType,
             ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
         // Act
         var appointment = AppointmentSchedulingService.ScheduleByPatient(
-            appointmentType,
             args,
             context,
             SchedulingClearance.Granted()
@@ -861,7 +787,7 @@ public class ScheduleByPatientTests
         appointment.ScheduledDate.Should().Be(args.ScheduledDate);
         appointment.TimeSlot.Should().Be(args.RequestedTimeSlot);
         appointment.Status.Should().Be(AppointmentStatus.Scheduled);
-        appointment.ScheduledByUserId.Should().Be(args.InitiatorUserId);
+        appointment.ScheduledByUserId.Should().Be(context.InitiatorMembership.UserId);
         appointment.PatientNotes.Should().BeEmpty();
     }
 
@@ -894,13 +820,24 @@ public class ScheduleByPatientTests
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
-    private PatientSchedulingArgs CreateValidPatientSchedulingArgs() =>
+    private PatientSchedulingArgs CreateValidArgs() =>
+        new()
+        {
+            DoctorId = Guid.CreateVersion7(),
+            ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
+            RequestedTimeSlot = CreateTimeRange(),
+            PatientNotes = "Note",
+        };
+
+    private PatientSchedulingContext CreateValidContext() =>
         new()
         {
             TargetPatient = CreateSelfPatient(),
-            RequestedTimeSlot = CreateTimeRange(),
+            AppointmentType = CreateAppointmentType(),
             IsInitiatorPhoneVerified = true,
-            InitiatorUserId = Guid.CreateVersion7(),
+            DoctorSchedule = CreateSchedule(),
+            InitiatorMembership = CreateSelfMembership(),
+            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
     private static TimeRange CreateTimeRange() =>

@@ -1,14 +1,10 @@
-using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.ValueObjects;
 
 namespace ClinicFlow.Domain.Services.Args.Rescheduling;
 
 public sealed record PatientReschedulingArgs
 {
-    public required Patient TargetPatient { get; init; }
-    public Guid InitiatorUserId { get; init; }
     public DateOnly NewDate { get; init; }
     public required TimeRange NewTimeSlot { get; init; }
-    public bool IsInitiatorPhoneVerified { get; init; }
     public string? NewPatientNotes { get; init; }
 }

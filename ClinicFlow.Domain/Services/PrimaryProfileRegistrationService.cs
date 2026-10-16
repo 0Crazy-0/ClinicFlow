@@ -2,6 +2,7 @@ using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Services.Args.Registration;
+using ClinicFlow.Domain.Services.Contexts.Registration;
 
 namespace ClinicFlow.Domain.Services;
 
@@ -15,32 +16,44 @@ public static class PrimaryProfileRegistrationService
     public const int MinimumSelfAge = 12;
 
     public static (Patient Patient, FamilyMembership Membership) Register(
-        PrimaryProfileRegistrationArgs args
+        PrimaryProfileRegistrationArgs args,
+        PrimaryProfileRegistrationContext context
     )
     {
-        if (args.HasExistingSelfMembership)
+        ArgumentNullException.ThrowIfNull(args);
+        ArgumentNullException.ThrowIfNull(args.FullName);
+        ArgumentNullException.ThrowIfNull(context);
+
+        if (context.HasExistingSelfMembership)
             throw new DomainValidationException(
                 DomainErrors.FamilyMembership.PatientAlreadyHasActiveMembership
             );
 
-        if (args.ExistingPatient is not null && args.ExistingPatient.SexAtBirth != args.SexAtBirth)
+        if (
+            context.ExistingPatient is not null
+            && context.ExistingPatient.SexAtBirth != args.SexAtBirth
+        )
             throw new DomainValidationException(DomainErrors.Patient.DataMismatch);
 
         var patient =
-            args.ExistingPatient
+            context.ExistingPatient
             ?? Patient.CreateProfile(
                 args.FullName,
                 args.DateOfBirth,
                 args.SexAtBirth,
-                args.ReferenceTime
+                context.ReferenceTime
             );
 
-        if (patient.GetAge(DateOnly.FromDateTime(args.ReferenceTime)) < MinimumSelfAge)
+        if (patient.GetAge(DateOnly.FromDateTime(context.ReferenceTime)) < MinimumSelfAge)
             throw new DomainValidationException(
                 DomainErrors.FamilyMembership.PatientTooYoungForSelfMembership
             );
 
-        var membership = FamilyMembership.CreateSelf(patient.Id, args.UserId, args.ReferenceTime);
+        var membership = FamilyMembership.CreateSelf(
+            patient.Id,
+            context.UserId,
+            context.ReferenceTime
+        );
 
         return (patient, membership);
     }

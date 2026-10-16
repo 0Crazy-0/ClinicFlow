@@ -8,7 +8,7 @@ using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.Interfaces.Services;
 using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Args.Rescheduling;
-using ClinicFlow.Domain.Services.Contexts;
+using ClinicFlow.Domain.Services.Contexts.Rescheduling;
 using ClinicFlow.Domain.ValueObjects;
 using MediatR;
 
@@ -137,20 +137,18 @@ public sealed class RescheduleByGuardianCommandHandler(
                     appointment,
                     new GuardianReschedulingArgs
                     {
-                        TargetPatient = targetPatient,
-                        InitiatorMembership = initiatorMembership,
-                        InitiatorUserId = request.InitiatorUserId,
                         NewDate = request.NewDate,
                         NewTimeSlot = newTimeRange,
-                        IsInitiatorPhoneVerified = user.IsPhoneVerified,
                         NewGuardianNotes = request.NewGuardianNotes,
                     },
                     new PatientReschedulingContext
                     {
+                        TargetPatient = targetPatient,
+                        AppointmentType = appointmentType,
+                        IsInitiatorPhoneVerified = user.IsPhoneVerified,
                         Penalties = penalties,
                         DoctorSchedule = doctorSchedule,
                         InitiatorMembership = initiatorMembership,
-                        RequestedCategory = appointmentType.Category,
                         ClinicTimeZone = timeProvider.LocalTimeZone,
                     },
                     clearance

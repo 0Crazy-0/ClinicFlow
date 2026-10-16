@@ -4,8 +4,7 @@ using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Services;
-using ClinicFlow.Domain.Services.Args.Consent;
-using ClinicFlow.Domain.Services.Contexts;
+using ClinicFlow.Domain.Services.Contexts.Consent;
 using ClinicFlow.Domain.ValueObjects;
 using Microsoft.Extensions.Time.Testing;
 
@@ -32,20 +31,17 @@ public class AppointmentConsentGrantServiceTests
         var category = ProtectedCategory.MentalHealthCounseling;
         var context = new AppointmentCategoryConsentGrantContext
         {
+            RequesterUserId = requesterUserId,
+            ReferenceTime = referenceTime,
             TargetPatient = patient,
             RequesterMembership = requesterMembership,
             RecipientMembership = recipientMembership,
             ProtectedCareCategory = category,
             HasEffectiveGrant = false,
         };
-        var args = new GrantAppointmentCategoryConsentArgs
-        {
-            RequesterUserId = requesterUserId,
-            ReferenceTime = referenceTime,
-        };
 
         // Act
-        var grant = AppointmentConsentGrantService.GrantCategory(context, args);
+        var grant = AppointmentConsentGrantService.GrantCategory(context);
 
         // Assert
         grant.PatientId.Should().Be(patient.Id);
@@ -62,39 +58,9 @@ public class AppointmentConsentGrantServiceTests
     public void GrantCategory_ShouldThrowArgumentNullException_WhenContextIsNull()
     {
         // Arrange
-        var args = CreateValidCategoryArgs(
-            Guid.CreateVersion7(),
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
 
         // Act
-        var act = () => AppointmentConsentGrantService.GrantCategory(null!, args);
-
-        // Assert
-        act.Should().Throw<ArgumentNullException>();
-    }
-
-    [Fact]
-    public void GrantCategory_ShouldThrowArgumentNullException_WhenArgsIsNull()
-    {
-        // Arrange
-        var patient = CreateMinorPatient();
-        var requesterUserId = Guid.CreateVersion7();
-        var context = new AppointmentCategoryConsentGrantContext
-        {
-            TargetPatient = patient,
-            RequesterMembership = FamilyMembership.CreateSelf(
-                patient.Id,
-                requesterUserId,
-                _fakeTime.GetUtcNow().UtcDateTime
-            ),
-            RecipientMembership = CreateRecipientMembership(patient.Id),
-            ProtectedCareCategory = ProtectedCategory.MentalHealthCounseling,
-            HasEffectiveGrant = false,
-        };
-
-        // Act
-        var act = () => AppointmentConsentGrantService.GrantCategory(context, null!);
+        var act = () => AppointmentConsentGrantService.GrantCategory(null!);
 
         // Assert
         act.Should().Throw<ArgumentNullException>();
@@ -108,6 +74,8 @@ public class AppointmentConsentGrantServiceTests
         var requesterUserId = Guid.CreateVersion7();
         var context = new AppointmentCategoryConsentGrantContext
         {
+            RequesterUserId = requesterUserId,
+            ReferenceTime = _fakeTime.GetUtcNow().UtcDateTime,
             TargetPatient = null!,
             RequesterMembership = FamilyMembership.CreateSelf(
                 patient.Id,
@@ -118,10 +86,9 @@ public class AppointmentConsentGrantServiceTests
             ProtectedCareCategory = ProtectedCategory.MentalHealthCounseling,
             HasEffectiveGrant = false,
         };
-        var args = CreateValidCategoryArgs(requesterUserId, _fakeTime.GetUtcNow().UtcDateTime);
 
         // Act
-        var act = () => AppointmentConsentGrantService.GrantCategory(context, args);
+        var act = () => AppointmentConsentGrantService.GrantCategory(context);
 
         // Assert
         act.Should().Throw<ArgumentNullException>();
@@ -134,19 +101,17 @@ public class AppointmentConsentGrantServiceTests
         var patient = CreateMinorPatient();
         var context = new AppointmentCategoryConsentGrantContext
         {
+            RequesterUserId = Guid.CreateVersion7(),
+            ReferenceTime = _fakeTime.GetUtcNow().UtcDateTime,
             TargetPatient = patient,
             RequesterMembership = null!,
             RecipientMembership = CreateRecipientMembership(patient.Id),
             ProtectedCareCategory = ProtectedCategory.MentalHealthCounseling,
             HasEffectiveGrant = false,
         };
-        var args = CreateValidCategoryArgs(
-            Guid.CreateVersion7(),
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
 
         // Act
-        var act = () => AppointmentConsentGrantService.GrantCategory(context, args);
+        var act = () => AppointmentConsentGrantService.GrantCategory(context);
 
         // Assert
         act.Should().Throw<ArgumentNullException>();
@@ -160,6 +125,8 @@ public class AppointmentConsentGrantServiceTests
         var requesterUserId = Guid.CreateVersion7();
         var context = new AppointmentCategoryConsentGrantContext
         {
+            RequesterUserId = requesterUserId,
+            ReferenceTime = _fakeTime.GetUtcNow().UtcDateTime,
             TargetPatient = patient,
             RequesterMembership = FamilyMembership.CreateSelf(
                 patient.Id,
@@ -170,10 +137,9 @@ public class AppointmentConsentGrantServiceTests
             ProtectedCareCategory = ProtectedCategory.MentalHealthCounseling,
             HasEffectiveGrant = false,
         };
-        var args = CreateValidCategoryArgs(requesterUserId, _fakeTime.GetUtcNow().UtcDateTime);
 
         // Act
-        var act = () => AppointmentConsentGrantService.GrantCategory(context, args);
+        var act = () => AppointmentConsentGrantService.GrantCategory(context);
 
         // Assert
         act.Should().Throw<ArgumentNullException>();
@@ -188,16 +154,17 @@ public class AppointmentConsentGrantServiceTests
         var requesterMembership = CreateRecipientMembership(patient.Id);
         var context = new AppointmentCategoryConsentGrantContext
         {
+            RequesterUserId = requesterMembership.UserId,
+            ReferenceTime = referenceTime,
             TargetPatient = patient,
             RequesterMembership = requesterMembership,
             RecipientMembership = CreateRecipientMembership(patient.Id),
             ProtectedCareCategory = ProtectedCategory.MentalHealthCounseling,
             HasEffectiveGrant = false,
         };
-        var args = CreateValidCategoryArgs(requesterMembership.UserId, referenceTime);
 
         // Act
-        var act = () => AppointmentConsentGrantService.GrantCategory(context, args);
+        var act = () => AppointmentConsentGrantService.GrantCategory(context);
 
         // Assert
         act.Should()
@@ -221,6 +188,8 @@ public class AppointmentConsentGrantServiceTests
         var requesterUserId = Guid.CreateVersion7();
         var context = new AppointmentCategoryConsentGrantContext
         {
+            RequesterUserId = requesterUserId,
+            ReferenceTime = referenceTime,
             TargetPatient = patient,
             RequesterMembership = FamilyMembership.CreateSelf(
                 patient.Id,
@@ -231,10 +200,9 @@ public class AppointmentConsentGrantServiceTests
             ProtectedCareCategory = ProtectedCategory.MentalHealthCounseling,
             HasEffectiveGrant = false,
         };
-        var args = CreateValidCategoryArgs(requesterUserId, referenceTime);
 
         // Act
-        var act = () => AppointmentConsentGrantService.GrantCategory(context, args);
+        var act = () => AppointmentConsentGrantService.GrantCategory(context);
 
         // Assert
         act.Should()
@@ -257,6 +225,8 @@ public class AppointmentConsentGrantServiceTests
         var requesterUserId = Guid.CreateVersion7();
         var context = new AppointmentCategoryConsentGrantContext
         {
+            RequesterUserId = requesterUserId,
+            ReferenceTime = referenceTime,
             TargetPatient = patient,
             RequesterMembership = FamilyMembership.CreateSelf(
                 patient.Id,
@@ -268,10 +238,8 @@ public class AppointmentConsentGrantServiceTests
             HasEffectiveGrant = false,
         };
 
-        var args = CreateValidCategoryArgs(requesterUserId, referenceTime);
-
         // Act
-        var act = () => AppointmentConsentGrantService.GrantCategory(context, args);
+        var act = () => AppointmentConsentGrantService.GrantCategory(context);
 
         // Assert
         act.Should()
@@ -288,6 +256,8 @@ public class AppointmentConsentGrantServiceTests
         var requesterUserId = Guid.CreateVersion7();
         var context = new AppointmentCategoryConsentGrantContext
         {
+            RequesterUserId = requesterUserId,
+            ReferenceTime = referenceTime,
             TargetPatient = patient,
             RequesterMembership = FamilyMembership.CreateSelf(
                 patient.Id,
@@ -302,10 +272,9 @@ public class AppointmentConsentGrantServiceTests
             ProtectedCareCategory = ProtectedCategory.MentalHealthCounseling,
             HasEffectiveGrant = false,
         };
-        var args = CreateValidCategoryArgs(requesterUserId, referenceTime);
 
         // Act
-        var act = () => AppointmentConsentGrantService.GrantCategory(context, args);
+        var act = () => AppointmentConsentGrantService.GrantCategory(context);
 
         // Assert
         act.Should()
@@ -322,6 +291,8 @@ public class AppointmentConsentGrantServiceTests
         var requesterUserId = Guid.CreateVersion7();
         var context = new AppointmentCategoryConsentGrantContext
         {
+            RequesterUserId = requesterUserId,
+            ReferenceTime = referenceTime,
             TargetPatient = patient,
             RequesterMembership = FamilyMembership.CreateSelf(
                 patient.Id,
@@ -332,10 +303,9 @@ public class AppointmentConsentGrantServiceTests
             ProtectedCareCategory = ProtectedCategory.MentalHealthCounseling,
             HasEffectiveGrant = true,
         };
-        var args = CreateValidCategoryArgs(requesterUserId, referenceTime);
 
         // Act
-        var act = () => AppointmentConsentGrantService.GrantCategory(context, args);
+        var act = () => AppointmentConsentGrantService.GrantCategory(context);
 
         // Assert
         act.Should()
@@ -362,6 +332,8 @@ public class AppointmentConsentGrantServiceTests
         var appointment = CreateAppointment(patient.Id, appointmentType.Id);
         var context = new SpecificAppointmentConsentGrantContext
         {
+            RequesterUserId = requesterUserId,
+            ReferenceTime = referenceTime,
             TargetPatient = patient,
             RequesterMembership = requesterMembership,
             RecipientMembership = recipientMembership,
@@ -369,14 +341,9 @@ public class AppointmentConsentGrantServiceTests
             AppointmentType = appointmentType,
             HasEffectiveGrant = false,
         };
-        var args = new GrantSpecificAppointmentConsentArgs
-        {
-            RequesterUserId = requesterUserId,
-            ReferenceTime = referenceTime,
-        };
 
         // Act
-        var grant = AppointmentConsentGrantService.GrantAppointment(context, args);
+        var grant = AppointmentConsentGrantService.GrantAppointment(context);
 
         // Assert
         grant.PatientId.Should().Be(patient.Id);
@@ -393,41 +360,9 @@ public class AppointmentConsentGrantServiceTests
     public void GrantAppointment_ShouldThrowArgumentNullException_WhenContextIsNull()
     {
         // Arrange
-        var args = CreateValidAppointmentArgs(
-            Guid.CreateVersion7(),
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
 
         // Act
-        var act = () => AppointmentConsentGrantService.GrantAppointment(null!, args);
-
-        // Assert
-        act.Should().Throw<ArgumentNullException>();
-    }
-
-    [Fact]
-    public void GrantAppointment_ShouldThrowArgumentNullException_WhenArgsIsNull()
-    {
-        // Arrange
-        var patient = CreateMinorPatient();
-        var requesterUserId = Guid.CreateVersion7();
-        var appointmentType = CreateProtectedAppointmentType();
-        var context = new SpecificAppointmentConsentGrantContext
-        {
-            TargetPatient = patient,
-            RequesterMembership = FamilyMembership.CreateSelf(
-                patient.Id,
-                requesterUserId,
-                _fakeTime.GetUtcNow().UtcDateTime
-            ),
-            RecipientMembership = CreateRecipientMembership(patient.Id),
-            TargetAppointment = CreateAppointment(patient.Id, appointmentType.Id),
-            AppointmentType = appointmentType,
-            HasEffectiveGrant = false,
-        };
-
-        // Act
-        var act = () => AppointmentConsentGrantService.GrantAppointment(context, null!);
+        var act = () => AppointmentConsentGrantService.GrantAppointment(null!);
 
         // Assert
         act.Should().Throw<ArgumentNullException>();
@@ -443,6 +378,8 @@ public class AppointmentConsentGrantServiceTests
 
         var context = new SpecificAppointmentConsentGrantContext
         {
+            RequesterUserId = requesterUserId,
+            ReferenceTime = _fakeTime.GetUtcNow().UtcDateTime,
             TargetPatient = null!,
             RequesterMembership = FamilyMembership.CreateSelf(
                 patient.Id,
@@ -455,10 +392,8 @@ public class AppointmentConsentGrantServiceTests
             HasEffectiveGrant = false,
         };
 
-        var args = CreateValidAppointmentArgs(requesterUserId, _fakeTime.GetUtcNow().UtcDateTime);
-
         // Act
-        var act = () => AppointmentConsentGrantService.GrantAppointment(context, args);
+        var act = () => AppointmentConsentGrantService.GrantAppointment(context);
 
         // Assert
         act.Should().Throw<ArgumentNullException>();
@@ -472,6 +407,8 @@ public class AppointmentConsentGrantServiceTests
         var appointmentType = CreateProtectedAppointmentType();
         var context = new SpecificAppointmentConsentGrantContext
         {
+            RequesterUserId = Guid.CreateVersion7(),
+            ReferenceTime = _fakeTime.GetUtcNow().UtcDateTime,
             TargetPatient = patient,
             RequesterMembership = null!,
             RecipientMembership = CreateRecipientMembership(patient.Id),
@@ -479,13 +416,9 @@ public class AppointmentConsentGrantServiceTests
             AppointmentType = appointmentType,
             HasEffectiveGrant = false,
         };
-        var args = CreateValidAppointmentArgs(
-            Guid.CreateVersion7(),
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
 
         // Act
-        var act = () => AppointmentConsentGrantService.GrantAppointment(context, args);
+        var act = () => AppointmentConsentGrantService.GrantAppointment(context);
 
         // Assert
         act.Should().Throw<ArgumentNullException>();
@@ -500,6 +433,8 @@ public class AppointmentConsentGrantServiceTests
         var appointmentType = CreateProtectedAppointmentType();
         var context = new SpecificAppointmentConsentGrantContext
         {
+            RequesterUserId = requesterUserId,
+            ReferenceTime = _fakeTime.GetUtcNow().UtcDateTime,
             TargetPatient = patient,
             RequesterMembership = FamilyMembership.CreateSelf(
                 patient.Id,
@@ -512,10 +447,8 @@ public class AppointmentConsentGrantServiceTests
             HasEffectiveGrant = false,
         };
 
-        var args = CreateValidAppointmentArgs(requesterUserId, _fakeTime.GetUtcNow().UtcDateTime);
-
         // Act
-        var act = () => AppointmentConsentGrantService.GrantAppointment(context, args);
+        var act = () => AppointmentConsentGrantService.GrantAppointment(context);
 
         // Assert
         act.Should().Throw<ArgumentNullException>();
@@ -529,6 +462,8 @@ public class AppointmentConsentGrantServiceTests
         var requesterUserId = Guid.CreateVersion7();
         var context = new SpecificAppointmentConsentGrantContext
         {
+            RequesterUserId = requesterUserId,
+            ReferenceTime = _fakeTime.GetUtcNow().UtcDateTime,
             TargetPatient = patient,
             RequesterMembership = FamilyMembership.CreateSelf(
                 patient.Id,
@@ -540,10 +475,9 @@ public class AppointmentConsentGrantServiceTests
             AppointmentType = CreateProtectedAppointmentType(),
             HasEffectiveGrant = false,
         };
-        var args = CreateValidAppointmentArgs(requesterUserId, _fakeTime.GetUtcNow().UtcDateTime);
 
         // Act
-        var act = () => AppointmentConsentGrantService.GrantAppointment(context, args);
+        var act = () => AppointmentConsentGrantService.GrantAppointment(context);
 
         // Assert
         act.Should().Throw<ArgumentNullException>();
@@ -558,6 +492,8 @@ public class AppointmentConsentGrantServiceTests
         var appointmentType = CreateProtectedAppointmentType();
         var context = new SpecificAppointmentConsentGrantContext
         {
+            RequesterUserId = requesterUserId,
+            ReferenceTime = _fakeTime.GetUtcNow().UtcDateTime,
             TargetPatient = patient,
             RequesterMembership = FamilyMembership.CreateSelf(
                 patient.Id,
@@ -569,10 +505,9 @@ public class AppointmentConsentGrantServiceTests
             AppointmentType = null!,
             HasEffectiveGrant = false,
         };
-        var args = CreateValidAppointmentArgs(requesterUserId, _fakeTime.GetUtcNow().UtcDateTime);
 
         // Act
-        var act = () => AppointmentConsentGrantService.GrantAppointment(context, args);
+        var act = () => AppointmentConsentGrantService.GrantAppointment(context);
 
         // Assert
         act.Should().Throw<ArgumentNullException>();
@@ -589,6 +524,8 @@ public class AppointmentConsentGrantServiceTests
 
         var context = new SpecificAppointmentConsentGrantContext
         {
+            RequesterUserId = requesterMembership.UserId,
+            ReferenceTime = referenceTime,
             TargetPatient = patient,
             RequesterMembership = requesterMembership,
             RecipientMembership = CreateRecipientMembership(patient.Id),
@@ -596,10 +533,9 @@ public class AppointmentConsentGrantServiceTests
             AppointmentType = appointmentType,
             HasEffectiveGrant = false,
         };
-        var args = CreateValidAppointmentArgs(requesterMembership.UserId, referenceTime);
 
         // Act
-        var act = () => AppointmentConsentGrantService.GrantAppointment(context, args);
+        var act = () => AppointmentConsentGrantService.GrantAppointment(context);
 
         // Assert
         act.Should()
@@ -625,6 +561,8 @@ public class AppointmentConsentGrantServiceTests
         var appointmentType = CreateProtectedAppointmentType();
         var context = new SpecificAppointmentConsentGrantContext
         {
+            RequesterUserId = requesterUserId,
+            ReferenceTime = referenceTime,
             TargetPatient = patient,
             RequesterMembership = FamilyMembership.CreateSelf(
                 patient.Id,
@@ -636,10 +574,9 @@ public class AppointmentConsentGrantServiceTests
             AppointmentType = appointmentType,
             HasEffectiveGrant = false,
         };
-        var args = CreateValidAppointmentArgs(requesterUserId, referenceTime);
 
         // Act
-        var act = () => AppointmentConsentGrantService.GrantAppointment(context, args);
+        var act = () => AppointmentConsentGrantService.GrantAppointment(context);
 
         // Assert
         act.Should()
@@ -657,6 +594,8 @@ public class AppointmentConsentGrantServiceTests
         var appointmentType = CreateProtectedAppointmentType();
         var context = new SpecificAppointmentConsentGrantContext
         {
+            RequesterUserId = requesterUserId,
+            ReferenceTime = referenceTime,
             TargetPatient = patient,
             RequesterMembership = FamilyMembership.CreateSelf(
                 patient.Id,
@@ -669,10 +608,8 @@ public class AppointmentConsentGrantServiceTests
             HasEffectiveGrant = false,
         };
 
-        var args = CreateValidAppointmentArgs(requesterUserId, referenceTime);
-
         // Act
-        var act = () => AppointmentConsentGrantService.GrantAppointment(context, args);
+        var act = () => AppointmentConsentGrantService.GrantAppointment(context);
 
         // Assert
         act.Should()
@@ -690,6 +627,8 @@ public class AppointmentConsentGrantServiceTests
         var appointmentType = CreateProtectedAppointmentType();
         var context = new SpecificAppointmentConsentGrantContext
         {
+            RequesterUserId = requesterUserId,
+            ReferenceTime = referenceTime,
             TargetPatient = patient,
             RequesterMembership = FamilyMembership.CreateSelf(
                 patient.Id,
@@ -701,10 +640,9 @@ public class AppointmentConsentGrantServiceTests
             AppointmentType = appointmentType,
             HasEffectiveGrant = false,
         };
-        var args = CreateValidAppointmentArgs(requesterUserId, referenceTime);
 
         // Act
-        var act = () => AppointmentConsentGrantService.GrantAppointment(context, args);
+        var act = () => AppointmentConsentGrantService.GrantAppointment(context);
 
         // Assert
         act.Should()
@@ -731,6 +669,8 @@ public class AppointmentConsentGrantServiceTests
 
         var context = new SpecificAppointmentConsentGrantContext
         {
+            RequesterUserId = requesterUserId,
+            ReferenceTime = referenceTime,
             TargetPatient = patient,
             RequesterMembership = FamilyMembership.CreateSelf(
                 patient.Id,
@@ -742,10 +682,9 @@ public class AppointmentConsentGrantServiceTests
             AppointmentType = appointmentType,
             HasEffectiveGrant = false,
         };
-        var args = CreateValidAppointmentArgs(requesterUserId, referenceTime);
 
         // Act
-        var act = () => AppointmentConsentGrantService.GrantAppointment(context, args);
+        var act = () => AppointmentConsentGrantService.GrantAppointment(context);
 
         // Assert
         act.Should()
@@ -769,6 +708,8 @@ public class AppointmentConsentGrantServiceTests
         var appointmentType = CreateProtectedAppointmentType(); // Protected category is MentalHealthCounseling, which is not grantable for a 10 year old patient.
         var context = new SpecificAppointmentConsentGrantContext
         {
+            RequesterUserId = requesterUserId,
+            ReferenceTime = referenceTime,
             TargetPatient = patient,
             RequesterMembership = FamilyMembership.CreateSelf(
                 patient.Id,
@@ -780,10 +721,9 @@ public class AppointmentConsentGrantServiceTests
             AppointmentType = appointmentType,
             HasEffectiveGrant = false,
         };
-        var args = CreateValidAppointmentArgs(requesterUserId, referenceTime);
 
         // Act
-        var act = () => AppointmentConsentGrantService.GrantAppointment(context, args);
+        var act = () => AppointmentConsentGrantService.GrantAppointment(context);
 
         // Assert
         act.Should()
@@ -801,6 +741,8 @@ public class AppointmentConsentGrantServiceTests
         var appointmentType = CreateProtectedAppointmentType();
         var context = new SpecificAppointmentConsentGrantContext
         {
+            RequesterUserId = requesterUserId,
+            ReferenceTime = referenceTime,
             TargetPatient = patient,
             RequesterMembership = FamilyMembership.CreateSelf(
                 patient.Id,
@@ -816,10 +758,9 @@ public class AppointmentConsentGrantServiceTests
             AppointmentType = appointmentType,
             HasEffectiveGrant = false,
         };
-        var args = CreateValidAppointmentArgs(requesterUserId, referenceTime);
 
         // Act
-        var act = () => AppointmentConsentGrantService.GrantAppointment(context, args);
+        var act = () => AppointmentConsentGrantService.GrantAppointment(context);
 
         // Assert
         act.Should()
@@ -837,6 +778,8 @@ public class AppointmentConsentGrantServiceTests
         var appointmentType = CreateProtectedAppointmentType();
         var context = new SpecificAppointmentConsentGrantContext
         {
+            RequesterUserId = requesterUserId,
+            ReferenceTime = referenceTime,
             TargetPatient = patient,
             RequesterMembership = FamilyMembership.CreateSelf(
                 patient.Id,
@@ -848,26 +791,15 @@ public class AppointmentConsentGrantServiceTests
             AppointmentType = appointmentType,
             HasEffectiveGrant = true,
         };
-        var args = CreateValidAppointmentArgs(requesterUserId, referenceTime);
 
         // Act
-        var act = () => AppointmentConsentGrantService.GrantAppointment(context, args);
+        var act = () => AppointmentConsentGrantService.GrantAppointment(context);
 
         // Assert
         act.Should()
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.AppointmentConsentGrant.AlreadyExists);
     }
-
-    private static GrantAppointmentCategoryConsentArgs CreateValidCategoryArgs(
-        Guid requesterUserId,
-        DateTime referenceTime
-    ) => new() { RequesterUserId = requesterUserId, ReferenceTime = referenceTime };
-
-    private static GrantSpecificAppointmentConsentArgs CreateValidAppointmentArgs(
-        Guid requesterUserId,
-        DateTime referenceTime
-    ) => new() { RequesterUserId = requesterUserId, ReferenceTime = referenceTime };
 
     private Patient CreateMinorPatient() =>
         Patient.CreateProfile(

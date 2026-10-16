@@ -8,7 +8,7 @@ using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.Interfaces.Services;
 using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Args.Rescheduling;
-using ClinicFlow.Domain.Services.Contexts;
+using ClinicFlow.Domain.Services.Contexts.Rescheduling;
 using ClinicFlow.Domain.ValueObjects;
 using MediatR;
 
@@ -146,19 +146,18 @@ public sealed class RescheduleByPatientCommandHandler(
                     appointment,
                     new PatientReschedulingArgs
                     {
-                        TargetPatient = targetPatient,
-                        InitiatorUserId = request.InitiatorUserId,
                         NewDate = request.NewDate,
                         NewTimeSlot = newTimeRange,
-                        IsInitiatorPhoneVerified = user.IsPhoneVerified,
                         NewPatientNotes = request.NewPatientNotes,
                     },
                     new PatientReschedulingContext
                     {
+                        TargetPatient = targetPatient,
+                        AppointmentType = appointmentType,
+                        IsInitiatorPhoneVerified = user.IsPhoneVerified,
                         Penalties = penalties,
                         DoctorSchedule = doctorSchedule,
                         InitiatorMembership = initiatorMembership,
-                        RequestedCategory = appointmentType.Category,
                         CreatorLegalAuthority = creatorMembership?.LegalAuthority,
                         ClinicTimeZone = timeProvider.LocalTimeZone,
                     },

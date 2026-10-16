@@ -5,8 +5,7 @@ using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.Services;
-using ClinicFlow.Domain.Services.Args.Consent;
-using ClinicFlow.Domain.Services.Contexts;
+using ClinicFlow.Domain.Services.Contexts.Consent;
 using MediatR;
 
 namespace ClinicFlow.Application.MedicalRecordConsentGrants.Commands.GrantMedicalRecordConsent;
@@ -94,9 +93,6 @@ public sealed class GrantMedicalRecordConsentCommandHandler(
                         TargetMedicalRecord = record,
                         RecipientMembership = recipientMembership,
                         HasEffectiveGrant = hasEffectiveGrant,
-                    },
-                    new GrantMedicalRecordConsentArgs
-                    {
                         RequesterUserId = request.RequesterUserId,
                         ReferenceTime = referenceTime,
                     }

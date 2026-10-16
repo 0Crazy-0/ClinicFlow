@@ -8,7 +8,7 @@ using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.Interfaces.Services;
 using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Args.Scheduling;
-using ClinicFlow.Domain.Services.Contexts;
+using ClinicFlow.Domain.Services.Contexts.Scheduling;
 using ClinicFlow.Domain.ValueObjects;
 using MediatR;
 
@@ -140,23 +140,21 @@ public sealed class ScheduleByGuardianCommandHandler(
                     );
 
                 var appointment = AppointmentSchedulingService.ScheduleByGuardian(
-                    appointmentType,
                     new GuardianSchedulingArgs
                     {
-                        TargetPatient = targetPatient,
-                        InitiatorUserId = request.InitiatorUserId,
                         DoctorId = request.DoctorId,
                         ScheduledDate = request.ScheduledDate,
                         RequestedTimeSlot = timeRange,
-                        IsInitiatorPhoneVerified = user.IsPhoneVerified,
                         GuardianNotes = request.GuardianNotes,
                     },
                     new PatientSchedulingContext
                     {
+                        TargetPatient = targetPatient,
+                        AppointmentType = appointmentType,
+                        IsInitiatorPhoneVerified = user.IsPhoneVerified,
                         Penalties = penalties,
                         DoctorSchedule = doctorSchedule,
                         InitiatorMembership = initiatorMembership,
-                        RequestedCategory = appointmentType.Category,
                         ClinicTimeZone = timeProvider.LocalTimeZone,
                     },
                     clearance
