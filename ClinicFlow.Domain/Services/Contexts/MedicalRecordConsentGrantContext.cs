@@ -9,4 +9,6 @@ public sealed record MedicalRecordConsentGrantContext
     public required MedicalRecord TargetMedicalRecord { get; init; }
     public required FamilyMembership RecipientMembership { get; init; }
     public bool HasEffectiveGrant { get; init; }
+    public Guid RequesterUserId { get; init; }
+    public DateTime ReferenceTime { get; init; }
 }

@@ -1,7 +1,6 @@
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Exceptions.Base;
-using ClinicFlow.Domain.Services.Args.Consent;
 using ClinicFlow.Domain.Services.Contexts;
 using ClinicFlow.Domain.Services.Policies;
 
@@ -20,25 +19,21 @@ namespace ClinicFlow.Domain.Services;
 /// </remarks>
 public static class MedicalRecordConsentGrantService
 {
-    public static MedicalRecordConsentGrant Grant(
-        MedicalRecordConsentGrantContext context,
-        GrantMedicalRecordConsentArgs args
-    )
+    public static MedicalRecordConsentGrant Grant(MedicalRecordConsentGrantContext context)
     {
         ArgumentNullException.ThrowIfNull(context);
-        ArgumentNullException.ThrowIfNull(args);
         ArgumentNullException.ThrowIfNull(context.TargetPatient);
         ArgumentNullException.ThrowIfNull(context.RequesterMembership);
         ArgumentNullException.ThrowIfNull(context.TargetMedicalRecord);
         ArgumentNullException.ThrowIfNull(context.RecipientMembership);
 
         context.RequesterMembership.EnsureConsentGrantSigner(
-            args.RequesterUserId,
+            context.RequesterUserId,
             context.TargetPatient.Id,
             DomainErrors.MedicalRecordConsentGrant.UnauthorizedCreation
         );
 
-        var patientAge = context.TargetPatient.GetAge(DateOnly.FromDateTime(args.ReferenceTime));
+        var patientAge = context.TargetPatient.GetAge(DateOnly.FromDateTime(context.ReferenceTime));
 
         if (patientAge >= DomainRules.AdultAge)
             throw new DomainValidationException(
@@ -81,7 +76,7 @@ public static class MedicalRecordConsentGrantService
             context.RecipientMembership.Id,
             context.TargetMedicalRecord.Id,
             context.RequesterMembership.UserId,
-            args.ReferenceTime
+            context.ReferenceTime
         );
     }
 }
