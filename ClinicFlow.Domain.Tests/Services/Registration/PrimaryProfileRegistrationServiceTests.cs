@@ -5,6 +5,7 @@ using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Args.Registration;
+using ClinicFlow.Domain.Services.Contexts;
 using ClinicFlow.Domain.ValueObjects;
 using Microsoft.Extensions.Time.Testing;
 
@@ -19,10 +20,11 @@ public class PrimaryProfileRegistrationServiceTests
     {
         // Arrange
         var userId = Guid.CreateVersion7();
-        var args = CreateArgs(userId);
+        var args = CreateValidArgs();
+        var context = CreateValidContext(userId);
 
         // Act
-        var (patient, membership) = PrimaryProfileRegistrationService.Register(args);
+        var (patient, membership) = PrimaryProfileRegistrationService.Register(args, context);
 
         // Assert
         patient.FullName.Should().Be(args.FullName);
@@ -33,7 +35,7 @@ public class PrimaryProfileRegistrationServiceTests
         membership.UserId.Should().Be(userId);
         membership.Role.Should().Be(PatientRelationship.Self);
         membership.Status.Should().Be(FamilyMembershipStatus.Active);
-        membership.StartedAt.Should().Be(args.ReferenceTime);
+        membership.StartedAt.Should().Be(context.ReferenceTime);
     }
 
     [Fact]
@@ -48,10 +50,11 @@ public class PrimaryProfileRegistrationServiceTests
         );
 
         var userId = Guid.CreateVersion7();
-        var args = CreateArgs(userId) with { ExistingPatient = existingPatient };
+        var args = CreateValidArgs();
+        var context = CreateValidContext(userId) with { ExistingPatient = existingPatient };
 
         // Act
-        var (patient, membership) = PrimaryProfileRegistrationService.Register(args);
+        var (patient, membership) = PrimaryProfileRegistrationService.Register(args, context);
 
         // Assert
         patient.Should().BeEquivalentTo(existingPatient);
@@ -60,7 +63,7 @@ public class PrimaryProfileRegistrationServiceTests
         membership.UserId.Should().Be(userId);
         membership.Role.Should().Be(PatientRelationship.Self);
         membership.Status.Should().Be(FamilyMembershipStatus.Active);
-        membership.StartedAt.Should().Be(args.ReferenceTime);
+        membership.StartedAt.Should().Be(context.ReferenceTime);
     }
 
     [Fact]
@@ -68,20 +71,21 @@ public class PrimaryProfileRegistrationServiceTests
     {
         // Arrange
         var userId = Guid.CreateVersion7();
-        var args = CreateArgs(userId) with
+        var args = CreateValidArgs() with
         {
             DateOfBirth = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-13)),
         };
+        var context = CreateValidContext(userId);
 
         // Act
-        var (patient, membership) = PrimaryProfileRegistrationService.Register(args);
+        var (patient, membership) = PrimaryProfileRegistrationService.Register(args, context);
 
         // Assert
         membership.PatientId.Should().Be(patient.Id);
         membership.UserId.Should().Be(userId);
         membership.Role.Should().Be(PatientRelationship.Self);
         membership.Status.Should().Be(FamilyMembershipStatus.Active);
-        membership.StartedAt.Should().Be(args.ReferenceTime);
+        membership.StartedAt.Should().Be(context.ReferenceTime);
     }
 
     [Fact]
@@ -89,21 +93,69 @@ public class PrimaryProfileRegistrationServiceTests
     {
         // Arrange
         var userId = Guid.CreateVersion7();
-        var args = CreateArgs(userId) with
+        var args = CreateValidArgs() with
         {
             DateOfBirth = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-12)),
         };
+        var context = CreateValidContext(userId);
 
         // Act
-        var (patient, membership) = PrimaryProfileRegistrationService.Register(args);
+        var (patient, membership) = PrimaryProfileRegistrationService.Register(args, context);
 
         // Assert
-        patient.GetAge(DateOnly.FromDateTime(args.ReferenceTime)).Should().Be(12);
+        patient.GetAge(DateOnly.FromDateTime(context.ReferenceTime)).Should().Be(12);
         membership.PatientId.Should().Be(patient.Id);
         membership.UserId.Should().Be(userId);
         membership.Role.Should().Be(PatientRelationship.Self);
         membership.Status.Should().Be(FamilyMembershipStatus.Active);
-        membership.StartedAt.Should().Be(args.ReferenceTime);
+        membership.StartedAt.Should().Be(context.ReferenceTime);
+    }
+
+    [Fact]
+    public void Register_ShouldThrowArgumentNullException_WhenArgsIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            PrimaryProfileRegistrationService.Register(
+                null!,
+                CreateValidContext(Guid.CreateVersion7())
+            );
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void Register_ShouldThrowArgumentNullException_WhenFullNameIsNull()
+    {
+        // Arrange
+        var args = CreateValidArgs() with
+        {
+            FullName = null!,
+        };
+
+        // Act
+        var act = () =>
+            PrimaryProfileRegistrationService.Register(
+                args,
+                CreateValidContext(Guid.CreateVersion7())
+            );
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void Register_ShouldThrowArgumentNullException_WhenContextIsNull()
+    {
+        // Arrange
+        var args = CreateValidArgs();
+
+        // Act
+        var act = () => PrimaryProfileRegistrationService.Register(args, null!);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>();
     }
 
     [Fact]
@@ -111,10 +163,11 @@ public class PrimaryProfileRegistrationServiceTests
     {
         // Arrange
         var userId = Guid.CreateVersion7();
-        var args = CreateArgs(userId) with { HasExistingSelfMembership = true };
+        var args = CreateValidArgs();
+        var context = CreateValidContext(userId) with { HasExistingSelfMembership = true };
 
         // Act
-        var act = () => PrimaryProfileRegistrationService.Register(args);
+        var act = () => PrimaryProfileRegistrationService.Register(args, context);
 
         // Assert
         act.Should()
@@ -127,13 +180,14 @@ public class PrimaryProfileRegistrationServiceTests
     {
         // Arrange
         var userId = Guid.CreateVersion7();
-        var args = CreateArgs(userId) with
+        var args = CreateValidArgs() with
         {
             DateOfBirth = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-11)),
         };
+        var context = CreateValidContext(userId);
 
         // Act
-        var act = () => PrimaryProfileRegistrationService.Register(args);
+        var act = () => PrimaryProfileRegistrationService.Register(args, context);
 
         // Assert
         act.Should()
@@ -153,10 +207,11 @@ public class PrimaryProfileRegistrationServiceTests
         );
 
         var userId = Guid.CreateVersion7();
-        var args = CreateArgs(userId) with { ExistingPatient = existingPatient };
+        var args = CreateValidArgs();
+        var context = CreateValidContext(userId) with { ExistingPatient = existingPatient };
 
         // Act
-        var act = () => PrimaryProfileRegistrationService.Register(args);
+        var act = () => PrimaryProfileRegistrationService.Register(args, context);
 
         // Assert
         act.Should()
@@ -176,14 +231,11 @@ public class PrimaryProfileRegistrationServiceTests
         );
 
         var userId = Guid.CreateVersion7();
-        var args = CreateArgs(userId) with
-        {
-            ExistingPatient = existingPatient,
-            SexAtBirth = BiologicalSex.Female,
-        };
+        var args = CreateValidArgs() with { SexAtBirth = BiologicalSex.Female };
+        var context = CreateValidContext(userId) with { ExistingPatient = existingPatient };
 
         // Act
-        var act = () => PrimaryProfileRegistrationService.Register(args);
+        var act = () => PrimaryProfileRegistrationService.Register(args, context);
 
         // Assert
         act.Should()
@@ -191,13 +243,14 @@ public class PrimaryProfileRegistrationServiceTests
             .WithMessage(DomainErrors.Patient.DataMismatch);
     }
 
-    private PrimaryProfileRegistrationArgs CreateArgs(Guid userId) =>
+    private PrimaryProfileRegistrationArgs CreateValidArgs() =>
         new()
         {
-            UserId = userId,
             FullName = PersonName.Create("Test Patient"),
             DateOfBirth = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             SexAtBirth = BiologicalSex.Male,
-            ReferenceTime = _fakeTime.GetUtcNow().UtcDateTime,
         };
+
+    private PrimaryProfileRegistrationContext CreateValidContext(Guid userId) =>
+        new() { UserId = userId, ReferenceTime = _fakeTime.GetUtcNow().UtcDateTime };
 }

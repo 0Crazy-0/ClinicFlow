@@ -3,6 +3,7 @@ using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Args.Registration;
+using ClinicFlow.Domain.Services.Contexts;
 using ClinicFlow.Domain.ValueObjects;
 using MediatR;
 
@@ -47,12 +48,15 @@ public sealed class CreatePatientProfileCommandHandler(
                 var (patient, membership) = PrimaryProfileRegistrationService.Register(
                     new PrimaryProfileRegistrationArgs
                     {
-                        ExistingPatient = existingProfile,
-                        HasExistingSelfMembership = hasExistingSelfMembership,
-                        UserId = request.UserId,
                         FullName = fullName,
                         DateOfBirth = request.DateOfBirth,
                         SexAtBirth = request.SexAtBirth,
+                    },
+                    new PrimaryProfileRegistrationContext
+                    {
+                        ExistingPatient = existingProfile,
+                        HasExistingSelfMembership = hasExistingSelfMembership,
+                        UserId = request.UserId,
                         ReferenceTime = timeProvider.GetLocalNow().DateTime,
                     }
                 );
