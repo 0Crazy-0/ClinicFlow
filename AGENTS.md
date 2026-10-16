@@ -135,7 +135,7 @@ Domain services use a **Context + Args** pattern to separate state from intent:
 **Context** = what exists in the world for validation (one per operation, role-agnostic):
 
 ```csharp
-// Services/Contexts/PatientReschedulingContext.cs
+// Services/Contexts/Rescheduling/PatientReschedulingContext.cs
 public sealed record class PatientReschedulingContext
 {
     public IReadOnlyList<PatientPenalty> Penalties { get; init; } = [];
