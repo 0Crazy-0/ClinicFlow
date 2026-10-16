@@ -6,6 +6,7 @@ using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Args.GuardianNotes;
+using ClinicFlow.Domain.Services.Contexts;
 using MediatR;
 
 namespace ClinicFlow.Application.Appointments.Commands.UpdateGuardianNotesByGuardian;
@@ -51,12 +52,11 @@ public sealed class UpdateGuardianNotesByGuardianCommandHandler(
 
         AppointmentGuardianNotesService.UpdateByGuardian(
             appointment,
-            new UpdateGuardianNotesArgs
+            new UpdateGuardianNotesArgs { Notes = request.Notes },
+            new UpdateGuardianNotesContext
             {
                 TargetPatient = targetPatient,
                 InitiatorMembership = membership,
-                InitiatorUserId = request.InitiatorUserId,
-                Notes = request.Notes,
             }
         );
 
