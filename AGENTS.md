@@ -132,31 +132,37 @@ DomainException (abstract base)
 
 Domain services use a **Context + Args** pattern to separate state from intent:
 
-**Context** = what exists in the world for validation (one per operation, role-agnostic):
+**Context** = what exists in the world for validation (entities recovered by Application, derived flags/counts, identity, clock/timezone). One per operation, often per role to mirror Args:
 
 ```csharp
 // Services/Contexts/Rescheduling/PatientReschedulingContext.cs
 public sealed record class PatientReschedulingContext
 {
+    public required Patient TargetPatient { get; init; }
+    public required AppointmentTypeDefinition AppointmentType { get; init; }
+    public bool IsInitiatorPhoneVerified { get; init; }
     public IReadOnlyList<PatientPenalty> Penalties { get; init; } = [];
     public required Schedule DoctorSchedule { get; init; }
+    public required FamilyMembership InitiatorMembership { get; init; }
+    public required TimeZoneInfo ClinicTimeZone { get; init; }
 }
 ```
 
-**Args** = what the actor wants to do (one per role, encapsulates actor-specific intent):
+**Args** = what the actor wants to do (new data only: dates, slots, notes, Reason, form data, clinical judgments, destination selection). Never entities, identity, or clock values:
 
 ```csharp
-// Services/Args/Cancellation/DoctorCancellationArgs.cs
-public sealed record DoctorCancellationArgs
+// Services/Args/Scheduling/DoctorSchedulingArgs.cs
+public sealed record DoctorSchedulingArgs
 {
-    public Doctor? InitiatorDoctor { get; init; }
-    public required MedicalSpecialty Specialty { get; init; }
-    public string? Reason { get; init; }
-    public DateTime CancelledAt { get; init; }
+    public DateOnly ScheduledDate { get; init; }
+    public required TimeRange RequestedTimeSlot { get; init; }
+    public bool HasGuardianConsentVerified { get; init; }
 }
 ```
 
-**When to use Args:** If a method would have 4 or more parameters, encapsulate them in an Args record. Each role (Doctor, Patient, Staff) gets its own Args reflecting that role's business rules.
+**When to use Args:** If a method needs both world state and actor intent, split them: Context carries the world, Args carries the intent, even when one side is small (e.g., `PatientCancellationArgs` holds only `Reason`). Each role (Doctor, Patient, Staff, Guardian) gets its own Args reflecting that role's business rules. When there is no actor intent beyond the world itself (e.g., consent grants), the service takes only the Context and no Args record exists.
+
+Mutating services keep the subject entity as an explicit first parameter (`appointment`, `record`); it is not part of the Context.
 
 ### Domain Events
 
