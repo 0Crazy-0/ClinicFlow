@@ -105,7 +105,10 @@ public class FamilyMemberRegistrationServiceTests
     public void Register_ShouldThrowArgumentNullException_WhenFullNameIsNull()
     {
         // Arrange
-        var args = CreateValidArgs(PatientRelationship.Child) with { FullName = null! };
+        var args = CreateValidArgs(PatientRelationship.Child) with
+        {
+            FullName = null!,
+        };
 
         // Act
         var act = () =>
