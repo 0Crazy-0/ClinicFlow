@@ -83,18 +83,13 @@ public sealed class CancelAppointmentByPatientCommandHandler(
 
         AppointmentCancellationService.CancelByPatient(
             appointment,
+            new PatientCancellationArgs { Reason = request.Reason },
             new AppointmentCancellationContext
             {
-                Specialty = specialty,
-                Purpose = appointmentType.Purpose,
-                InitiatorMembership = initiatorMembership,
-                RequestedCategory = appointmentType.Category,
-            },
-            new PatientCancellationArgs
-            {
                 TargetPatient = targetPatient,
-                InitiatorUserId = request.InitiatorUserId,
-                Reason = request.Reason,
+                AppointmentType = appointmentType,
+                Specialty = specialty,
+                InitiatorMembership = initiatorMembership,
                 CancelledAt = timeProvider.GetLocalNow().DateTime,
             }
         );

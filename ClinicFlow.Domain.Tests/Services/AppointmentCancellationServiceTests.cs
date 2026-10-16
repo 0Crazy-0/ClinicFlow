@@ -26,12 +26,8 @@ public class AppointmentCancellationServiceTests
         var act = () =>
             AppointmentCancellationService.CancelByStaff(
                 null!,
-                new StaffCancellationArgs
-                {
-                    InitiatorUserId = Guid.CreateVersion7(),
-                    Reason = "Valid reason",
-                    CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
-                }
+                new StaffCancellationArgs { Reason = "Valid reason" },
+                CreateValidStaffContext()
             );
 
         // Assert
@@ -45,7 +41,12 @@ public class AppointmentCancellationServiceTests
         var appointment = CreateAppointment();
 
         // Act
-        var act = () => AppointmentCancellationService.CancelByStaff(appointment, null!);
+        var act = () =>
+            AppointmentCancellationService.CancelByStaff(
+                appointment,
+                null!,
+                CreateValidStaffContext()
+            );
 
         // Assert
         act.Should().Throw<ArgumentNullException>();
@@ -56,15 +57,29 @@ public class AppointmentCancellationServiceTests
     {
         // Arrange
         var appointment = CreateAppointment();
-        var args = new StaffCancellationArgs
-        {
-            InitiatorUserId = Guid.CreateVersion7(),
-            Reason = null!,
-            CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
-        };
+        var args = new StaffCancellationArgs { Reason = null! };
 
         // Act
-        var act = () => AppointmentCancellationService.CancelByStaff(appointment, args);
+        var act = () =>
+            AppointmentCancellationService.CancelByStaff(
+                appointment,
+                args,
+                CreateValidStaffContext()
+            );
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void CancelByStaff_ShouldThrowArgumentNullException_WhenContextIsNull()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        var args = new StaffCancellationArgs { Reason = "Valid reason" };
+
+        // Act
+        var act = () => AppointmentCancellationService.CancelByStaff(appointment, args, null!);
 
         // Assert
         act.Should().Throw<ArgumentNullException>();
@@ -76,15 +91,18 @@ public class AppointmentCancellationServiceTests
         // Arrange
         var appointment = CreateAppointment();
         var initiatorUserId = Guid.CreateVersion7();
-        var args = new StaffCancellationArgs
-        {
-            InitiatorUserId = initiatorUserId,
-            Reason = "Admin Reason",
-            CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
-        };
+        var args = new StaffCancellationArgs { Reason = "Admin Reason" };
 
         // Act
-        AppointmentCancellationService.CancelByStaff(appointment, args);
+        AppointmentCancellationService.CancelByStaff(
+            appointment,
+            args,
+            new StaffCancellationContext
+            {
+                InitiatorUserId = initiatorUserId,
+                CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
+            }
+        );
 
         // Assert
         appointment.Status.Should().Be(AppointmentStatus.Cancelled);
@@ -97,15 +115,18 @@ public class AppointmentCancellationServiceTests
         // Arrange
         var appointment = CreateAppointment();
         var initiatorUserId = Guid.CreateVersion7();
-        var args = new StaffCancellationArgs
-        {
-            InitiatorUserId = initiatorUserId,
-            Reason = "Receptionist Reason",
-            CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
-        };
+        var args = new StaffCancellationArgs { Reason = "Receptionist Reason" };
 
         // Act
-        AppointmentCancellationService.CancelByStaff(appointment, args);
+        AppointmentCancellationService.CancelByStaff(
+            appointment,
+            args,
+            new StaffCancellationContext
+            {
+                InitiatorUserId = initiatorUserId,
+                CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
+            }
+        );
 
         // Assert
         appointment.Status.Should().Be(AppointmentStatus.Cancelled);
@@ -120,15 +141,15 @@ public class AppointmentCancellationServiceTests
     {
         // Arrange
         var appointment = CreateAppointment();
-        var args = new StaffCancellationArgs
-        {
-            InitiatorUserId = Guid.CreateVersion7(),
-            Reason = reason!,
-            CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
-        };
+        var args = new StaffCancellationArgs { Reason = reason! };
 
         // Act
-        var act = () => AppointmentCancellationService.CancelByStaff(appointment, args);
+        var act = () =>
+            AppointmentCancellationService.CancelByStaff(
+                appointment,
+                args,
+                CreateValidStaffContext()
+            );
 
         // Assert
         act.Should()
@@ -143,11 +164,10 @@ public class AppointmentCancellationServiceTests
         var act = () =>
             AppointmentCancellationService.CancelByDoctor(
                 null!,
-                new DoctorCancellationArgs
+                new DoctorCancellationArgs { Reason = "Doctor reason" },
+                new DoctorCancellationContext
                 {
-                    InitiatorDoctorId = Guid.CreateVersion7(),
-                    InitiatorUserId = Guid.CreateVersion7(),
-                    Reason = "Valid reason",
+                    InitiatorDoctor = CreateDoctor(),
                     CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
                 }
             );
@@ -163,7 +183,56 @@ public class AppointmentCancellationServiceTests
         var appointment = CreateAppointment();
 
         // Act
-        var act = () => AppointmentCancellationService.CancelByDoctor(appointment, null!);
+        var act = () =>
+            AppointmentCancellationService.CancelByDoctor(
+                appointment,
+                null!,
+                new DoctorCancellationContext
+                {
+                    InitiatorDoctor = CreateDoctor(),
+                    CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
+                }
+            );
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void CancelByDoctor_ShouldThrowArgumentNullException_WhenContextIsNull()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+
+        // Act
+        var act = () =>
+            AppointmentCancellationService.CancelByDoctor(
+                appointment,
+                new DoctorCancellationArgs { Reason = "Doctor reason" },
+                null!
+            );
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void CancelByDoctor_ShouldThrowArgumentNullException_WhenInitiatorDoctorIsNull()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+
+        // Act
+        var act = () =>
+            AppointmentCancellationService.CancelByDoctor(
+                appointment,
+                new DoctorCancellationArgs { Reason = "Doctor reason" },
+                new DoctorCancellationContext
+                {
+                    InitiatorDoctor = null!,
+                    CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
+                }
+            );
 
         // Assert
         act.Should().Throw<ArgumentNullException>();
@@ -185,16 +254,18 @@ public class AppointmentCancellationServiceTests
 
         doctor.SetId(appointment.DoctorId);
 
-        var args = new DoctorCancellationArgs
-        {
-            InitiatorDoctorId = doctor.Id,
-            InitiatorUserId = doctor.UserId,
-            Reason = "Doctor Reason",
-            CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
-        };
+        var args = new DoctorCancellationArgs { Reason = "Doctor Reason" };
 
         // Act
-        AppointmentCancellationService.CancelByDoctor(appointment, args);
+        AppointmentCancellationService.CancelByDoctor(
+            appointment,
+            args,
+            new DoctorCancellationContext
+            {
+                InitiatorDoctor = doctor,
+                CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
+            }
+        );
 
         // Assert
         appointment.Status.Should().Be(AppointmentStatus.Cancelled);
@@ -217,16 +288,19 @@ public class AppointmentCancellationServiceTests
 
         otherDoctor.SetId(otherDoctorId);
 
-        var args = new DoctorCancellationArgs
-        {
-            InitiatorDoctorId = otherDoctor.Id, // different from appointment.DoctorId, triggers Unauthorized
-            InitiatorUserId = otherDoctor.UserId,
-            Reason = "Doctor reason",
-            CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
-        };
+        var args = new DoctorCancellationArgs { Reason = "Doctor reason" };
 
         // Act
-        var act = () => AppointmentCancellationService.CancelByDoctor(appointment, args);
+        var act = () =>
+            AppointmentCancellationService.CancelByDoctor(
+                appointment,
+                args,
+                new DoctorCancellationContext
+                {
+                    InitiatorDoctor = otherDoctor,
+                    CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
+                }
+            );
 
         // Assert
         act.Should()
@@ -241,8 +315,8 @@ public class AppointmentCancellationServiceTests
         var act = () =>
             AppointmentCancellationService.CancelByPatient(
                 null!,
-                CreateValidCancellationContext(),
-                CreateValidPatientCancellationArgs()
+                CreateValidArgs(),
+                CreateValidContext()
             );
 
         // Assert
@@ -256,8 +330,8 @@ public class AppointmentCancellationServiceTests
         var act = () =>
             AppointmentCancellationService.CancelByPatient(
                 CreateAppointment(),
-                null!,
-                CreateValidPatientCancellationArgs()
+                CreateValidArgs(),
+                null!
             );
 
         // Assert
@@ -271,11 +345,29 @@ public class AppointmentCancellationServiceTests
         var act = () =>
             AppointmentCancellationService.CancelByPatient(
                 CreateAppointment(),
-                CreateValidCancellationContext() with
+                CreateValidArgs(),
+                CreateValidContext() with
                 {
                     Specialty = null!,
-                },
-                CreateValidPatientCancellationArgs()
+                }
+            );
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void CancelByPatient_ShouldThrowArgumentNullException_WhenContextAppointmentTypeIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentCancellationService.CancelByPatient(
+                CreateAppointment(),
+                CreateValidArgs(),
+                CreateValidContext() with
+                {
+                    AppointmentType = null!,
+                }
             );
 
         // Assert
@@ -289,8 +381,8 @@ public class AppointmentCancellationServiceTests
         var act = () =>
             AppointmentCancellationService.CancelByPatient(
                 CreateAppointment(),
-                CreateValidCancellationContext(),
-                null!
+                null!,
+                CreateValidContext()
             );
 
         // Assert
@@ -304,8 +396,8 @@ public class AppointmentCancellationServiceTests
         var act = () =>
             AppointmentCancellationService.CancelByPatient(
                 CreateAppointment(),
-                CreateValidCancellationContext(),
-                CreateValidPatientCancellationArgs() with
+                CreateValidArgs(),
+                CreateValidContext() with
                 {
                     TargetPatient = null!,
                 }
@@ -322,11 +414,11 @@ public class AppointmentCancellationServiceTests
         var act = () =>
             AppointmentCancellationService.CancelByPatient(
                 CreateAppointment(),
-                CreateValidCancellationContext() with
+                CreateValidArgs(),
+                CreateValidContext() with
                 {
                     InitiatorMembership = null!,
-                },
-                CreateValidPatientCancellationArgs()
+                }
             );
 
         // Assert
@@ -347,22 +439,21 @@ public class AppointmentCancellationServiceTests
 
         var context = new AppointmentCancellationContext
         {
-            Purpose = purpose,
+            TargetPatient = patient,
+            AppointmentType = CreateAppointmentType(purpose),
+            CancelledAt = cancelledAt,
             Specialty = CreateSpecialty(),
-            InitiatorMembership = CreateSelfMembership(),
-            RequestedCategory = AppointmentCategory.Other,
+            InitiatorMembership = FamilyMembership.CreateSelf(
+                patientId,
+                initiatorUserId,
+                _fakeTime.GetUtcNow().UtcDateTime
+            ),
         };
 
-        var args = new PatientCancellationArgs
-        {
-            TargetPatient = patient,
-            InitiatorUserId = initiatorUserId,
-            Reason = "Patient reason",
-            CancelledAt = cancelledAt,
-        };
+        var args = new PatientCancellationArgs { Reason = "Patient reason" };
 
         // Act
-        AppointmentCancellationService.CancelByPatient(appointment, context, args);
+        AppointmentCancellationService.CancelByPatient(appointment, args, context);
 
         // Assert
         appointment.Status.Should().Be(AppointmentStatus.Cancelled);
@@ -384,7 +475,9 @@ public class AppointmentCancellationServiceTests
 
         var context = new AppointmentCancellationContext
         {
-            Purpose = AppointmentPurpose.Emergency,
+            TargetPatient = patient,
+            AppointmentType = CreateAppointmentType(AppointmentPurpose.Emergency),
+            CancelledAt = cancelledAt,
             Specialty = CreateSpecialty(),
             InitiatorMembership = FamilyMembership.CreateFamilyMember(
                 patientId,
@@ -395,19 +488,12 @@ public class AppointmentCancellationServiceTests
                 10,
                 _fakeTime.GetUtcNow().UtcDateTime
             ),
-            RequestedCategory = AppointmentCategory.Other,
         };
 
-        var args = new PatientCancellationArgs
-        {
-            TargetPatient = patient,
-            InitiatorUserId = initiatorUserId,
-            Reason = "Patient reason",
-            CancelledAt = cancelledAt,
-        };
+        var args = new PatientCancellationArgs { Reason = "Patient reason" };
 
         // Act
-        AppointmentCancellationService.CancelByPatient(appointment, context, args);
+        AppointmentCancellationService.CancelByPatient(appointment, args, context);
 
         // Assert
         appointment.Status.Should().Be(AppointmentStatus.Cancelled);
@@ -428,22 +514,17 @@ public class AppointmentCancellationServiceTests
 
         var context = new AppointmentCancellationContext
         {
-            Purpose = AppointmentPurpose.Procedure,
+            TargetPatient = patient,
+            AppointmentType = CreateAppointmentType(AppointmentPurpose.Procedure),
+            CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
             Specialty = CreateSpecialty(),
             InitiatorMembership = CreateSelfMembership(),
-            RequestedCategory = AppointmentCategory.Other,
         };
 
-        var args = new PatientCancellationArgs
-        {
-            TargetPatient = patient,
-            InitiatorUserId = initiatorUserId,
-            Reason = "Patient reason",
-            CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
-        };
+        var args = new PatientCancellationArgs { Reason = "Patient reason" };
 
         // Act
-        var act = () => AppointmentCancellationService.CancelByPatient(appointment, context, args);
+        var act = () => AppointmentCancellationService.CancelByPatient(appointment, args, context);
 
         // Assert
         act.Should()
@@ -469,21 +550,16 @@ public class AppointmentCancellationServiceTests
 
         var context = new AppointmentCancellationContext
         {
-            Purpose = AppointmentPurpose.Checkup,
+            TargetPatient = patient,
+            AppointmentType = CreateAppointmentType(AppointmentPurpose.Checkup),
+            CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
             Specialty = CreateSpecialty(),
             InitiatorMembership = membership,
-            RequestedCategory = AppointmentCategory.Other,
         };
-        var args = new PatientCancellationArgs
-        {
-            TargetPatient = patient,
-            InitiatorUserId = Guid.CreateVersion7(),
-            Reason = "Patient reason",
-            CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
-        };
+        var args = new PatientCancellationArgs { Reason = "Patient reason" };
 
         // Act
-        var act = () => AppointmentCancellationService.CancelByPatient(appointment, context, args);
+        var act = () => AppointmentCancellationService.CancelByPatient(appointment, args, context);
 
         // Assert
         act.Should()
@@ -502,7 +578,9 @@ public class AppointmentCancellationServiceTests
 
         var context = new AppointmentCancellationContext
         {
-            Purpose = AppointmentPurpose.Emergency,
+            TargetPatient = patient,
+            AppointmentType = CreateAppointmentType(AppointmentPurpose.Emergency),
+            CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
             Specialty = CreateSpecialty(),
             InitiatorMembership = FamilyMembership.CreateFamilyMember(
                 patientId,
@@ -513,19 +591,12 @@ public class AppointmentCancellationServiceTests
                 30,
                 _fakeTime.GetUtcNow().UtcDateTime
             ),
-            RequestedCategory = AppointmentCategory.Other,
         };
 
-        var args = new PatientCancellationArgs
-        {
-            TargetPatient = patient,
-            InitiatorUserId = initiatorUserId,
-            Reason = "Patient reason",
-            CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
-        };
+        var args = new PatientCancellationArgs { Reason = "Patient reason" };
 
         // Act
-        var act = () => AppointmentCancellationService.CancelByPatient(appointment, context, args);
+        var act = () => AppointmentCancellationService.CancelByPatient(appointment, args, context);
 
         // Assert
         act.Should()
@@ -544,7 +615,9 @@ public class AppointmentCancellationServiceTests
 
         var context = new AppointmentCancellationContext
         {
-            Purpose = AppointmentPurpose.Emergency,
+            TargetPatient = patient,
+            AppointmentType = CreateAppointmentType(AppointmentPurpose.Emergency),
+            CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
             Specialty = CreateSpecialty(),
 
             // Membership created when the patient was a minor and still Active.
@@ -558,19 +631,12 @@ public class AppointmentCancellationServiceTests
                 DomainRules.AdultAge - 1,
                 _fakeTime.GetUtcNow().UtcDateTime
             ),
-            RequestedCategory = AppointmentCategory.Other,
         };
 
-        var args = new PatientCancellationArgs
-        {
-            TargetPatient = patient,
-            InitiatorUserId = initiatorUserId,
-            Reason = "Patient reason",
-            CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
-        };
+        var args = new PatientCancellationArgs { Reason = "Patient reason" };
 
         // Act
-        var act = () => AppointmentCancellationService.CancelByPatient(appointment, context, args);
+        var act = () => AppointmentCancellationService.CancelByPatient(appointment, args, context);
 
         // Assert
         act.Should()
@@ -589,7 +655,9 @@ public class AppointmentCancellationServiceTests
 
         var context = new AppointmentCancellationContext
         {
-            Purpose = AppointmentPurpose.Emergency,
+            TargetPatient = patient,
+            AppointmentType = CreateAppointmentType(AppointmentPurpose.Emergency),
+            CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
             Specialty = CreateSpecialty(),
 
             // Membership created when the patient was a minor and still Active.
@@ -603,19 +671,12 @@ public class AppointmentCancellationServiceTests
                 DomainRules.AdultAge - 1,
                 _fakeTime.GetUtcNow().UtcDateTime
             ),
-            RequestedCategory = AppointmentCategory.Other,
         };
 
-        var args = new PatientCancellationArgs
-        {
-            TargetPatient = patient,
-            InitiatorUserId = initiatorUserId,
-            Reason = "Patient reason",
-            CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
-        };
+        var args = new PatientCancellationArgs { Reason = "Patient reason" };
 
         // Act
-        var act = () => AppointmentCancellationService.CancelByPatient(appointment, context, args);
+        var act = () => AppointmentCancellationService.CancelByPatient(appointment, args, context);
 
         // Assert
         act.Should()
@@ -633,22 +694,17 @@ public class AppointmentCancellationServiceTests
         var appointment = CreateAppointment(); // patientId = Guid.CreateVersion7()
         var context = new AppointmentCancellationContext
         {
-            Purpose = AppointmentPurpose.Checkup,
+            TargetPatient = patient,
+            AppointmentType = CreateAppointmentType(AppointmentPurpose.Checkup),
+            CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
             Specialty = CreateSpecialty(),
             InitiatorMembership = CreateSelfMembership(),
-            RequestedCategory = AppointmentCategory.Other,
         };
 
-        var args = new PatientCancellationArgs
-        {
-            TargetPatient = patient,
-            InitiatorUserId = initiatorUserId,
-            Reason = "Patient reason",
-            CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
-        };
+        var args = new PatientCancellationArgs { Reason = "Patient reason" };
 
         // Act
-        var act = () => AppointmentCancellationService.CancelByPatient(appointment, context, args);
+        var act = () => AppointmentCancellationService.CancelByPatient(appointment, args, context);
 
         // Assert
         act.Should()
@@ -680,22 +736,21 @@ public class AppointmentCancellationServiceTests
 
         var context = new AppointmentCancellationContext
         {
-            Purpose = AppointmentPurpose.Checkup,
+            TargetPatient = patient,
+            AppointmentType = CreateAppointmentType(AppointmentPurpose.Checkup),
+            CancelledAt = cancelledAt,
             Specialty = CreateSpecialty(),
-            InitiatorMembership = CreateSelfMembership(),
-            RequestedCategory = AppointmentCategory.Other,
+            InitiatorMembership = FamilyMembership.CreateSelf(
+                patientId,
+                initiatorUserId,
+                _fakeTime.GetUtcNow().UtcDateTime
+            ),
         };
 
-        var args = new PatientCancellationArgs
-        {
-            TargetPatient = patient,
-            InitiatorUserId = initiatorUserId,
-            Reason = "Too late",
-            CancelledAt = cancelledAt,
-        };
+        var args = new PatientCancellationArgs { Reason = "Too late" };
 
         // Act
-        AppointmentCancellationService.CancelByPatient(appointment, context, args);
+        AppointmentCancellationService.CancelByPatient(appointment, args, context);
 
         // Assert
         appointment.Status.Should().Be(AppointmentStatus.LateCancellation);
@@ -704,6 +759,28 @@ public class AppointmentCancellationServiceTests
         appointment.CancellationReason.Should().Be(args.Reason);
         appointment.DomainEvents.OfType<AppointmentLateCancelledEvent>().Should().ContainSingle();
     }
+
+    private static AppointmentTypeDefinition CreateAppointmentType(
+        AppointmentPurpose purpose = AppointmentPurpose.Checkup
+    ) =>
+        AppointmentTypeDefinition.Create(
+            AppointmentCategory.Other,
+            purpose,
+            "Checkup",
+            "Description",
+            EncounterDuration.FromMinutes(30),
+            null
+        );
+
+    private static Doctor CreateDoctor() =>
+        Doctor.Create(
+            Guid.CreateVersion7(),
+            PersonName.Create("Test Doctor"),
+            MedicalLicenseNumber.Create("12345"),
+            Guid.CreateVersion7(),
+            "555-0000",
+            ConsultationRoom.Create(1, "Room A", 1)
+        );
 
     private static MedicalSpecialty CreateSpecialty() =>
         MedicalSpecialty.Create("Test Specialty", "Test Description", 30, 24);
@@ -744,26 +821,23 @@ public class AppointmentCancellationServiceTests
         return patient;
     }
 
-    private PatientCancellationArgs CreateValidPatientCancellationArgs()
-    {
-        var patient = CreatePatient(Guid.CreateVersion7(), 30);
+    private PatientCancellationArgs CreateValidArgs() => new() { Reason = "Patient reason" };
 
-        return new PatientCancellationArgs
-        {
-            TargetPatient = patient,
-            InitiatorUserId = Guid.CreateVersion7(),
-            Reason = "Patient reason",
-            CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
-        };
-    }
-
-    private AppointmentCancellationContext CreateValidCancellationContext() =>
+    private AppointmentCancellationContext CreateValidContext() =>
         new()
         {
-            Purpose = AppointmentPurpose.Checkup,
+            TargetPatient = CreatePatient(Guid.CreateVersion7(), 30),
+            AppointmentType = CreateAppointmentType(),
             Specialty = CreateSpecialty(),
             InitiatorMembership = CreateSelfMembership(),
-            RequestedCategory = AppointmentCategory.Other,
+            CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
+        };
+
+    private StaffCancellationContext CreateValidStaffContext() =>
+        new()
+        {
+            InitiatorUserId = Guid.CreateVersion7(),
+            CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
         };
 
     private FamilyMembership CreateSelfMembership() =>

@@ -1,5 +1,4 @@
 using ClinicFlow.Domain.Entities;
-using ClinicFlow.Domain.Enums;
 
 namespace ClinicFlow.Domain.Services.Contexts;
 
@@ -9,8 +8,9 @@ namespace ClinicFlow.Domain.Services.Contexts;
 /// </summary>
 public sealed record class AppointmentCancellationContext
 {
+    public required Patient TargetPatient { get; init; }
+    public required AppointmentTypeDefinition AppointmentType { get; init; }
     public required MedicalSpecialty Specialty { get; init; }
-    public AppointmentPurpose Purpose { get; init; }
     public required FamilyMembership InitiatorMembership { get; init; }
-    public AppointmentCategory RequestedCategory { get; init; }
+    public DateTime CancelledAt { get; init; }
 }

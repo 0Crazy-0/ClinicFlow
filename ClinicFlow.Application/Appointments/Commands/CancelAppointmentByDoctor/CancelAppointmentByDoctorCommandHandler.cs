@@ -5,6 +5,7 @@ using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Args.Cancellation;
+using ClinicFlow.Domain.Services.Contexts;
 using MediatR;
 
 namespace ClinicFlow.Application.Appointments.Commands.CancelAppointmentByDoctor;
@@ -40,11 +41,10 @@ public sealed class CancelAppointmentByDoctorCommandHandler(
 
         AppointmentCancellationService.CancelByDoctor(
             appointment,
-            new DoctorCancellationArgs
+            new DoctorCancellationArgs { Reason = request.Reason },
+            new DoctorCancellationContext
             {
-                InitiatorDoctorId = initiatorDoctor.Id,
-                InitiatorUserId = request.InitiatorUserId,
-                Reason = request.Reason,
+                InitiatorDoctor = initiatorDoctor,
                 CancelledAt = timeProvider.GetLocalNow().DateTime,
             }
         );
