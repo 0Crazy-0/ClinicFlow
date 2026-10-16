@@ -688,7 +688,6 @@ public class AppointmentCancellationServiceTests
     public void CancelByPatient_ShouldThrowValidationException_WhenDataMismatch()
     {
         // Arrange
-        var initiatorUserId = Guid.CreateVersion7();
         var patientId = Guid.CreateVersion7();
         var patient = CreatePatient(patientId, 30);
         var appointment = CreateAppointment(); // patientId = Guid.CreateVersion7()
