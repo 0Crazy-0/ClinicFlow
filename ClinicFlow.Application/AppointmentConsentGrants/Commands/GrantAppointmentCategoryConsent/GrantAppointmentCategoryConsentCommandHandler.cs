@@ -5,7 +5,6 @@ using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.Services;
-using ClinicFlow.Domain.Services.Args.Consent;
 using ClinicFlow.Domain.Services.Contexts;
 using MediatR;
 
@@ -82,9 +81,6 @@ public sealed class GrantAppointmentCategoryConsentCommandHandler(
                         RecipientMembership = recipientMembership,
                         ProtectedCareCategory = request.ProtectedCareCategory,
                         HasEffectiveGrant = hasEffectiveGrant,
-                    },
-                    new GrantAppointmentCategoryConsentArgs
-                    {
                         RequesterUserId = request.RequesterUserId,
                         ReferenceTime = referenceTime,
                     }

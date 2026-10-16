@@ -10,4 +10,6 @@ public sealed record AppointmentCategoryConsentGrantContext
     public required FamilyMembership RecipientMembership { get; init; }
     public required ProtectedCategory ProtectedCareCategory { get; init; }
     public bool HasEffectiveGrant { get; init; }
+    public Guid RequesterUserId { get; init; }
+    public DateTime ReferenceTime { get; init; }
 }
