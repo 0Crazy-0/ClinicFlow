@@ -91,19 +91,22 @@ public class MedicalEncounterService(
     public static void RecordGuardianInvolvementDetermination(
         MedicalRecord record,
         Appointment appointment,
-        DoctorGuardianInvolvementArgs args
+        DoctorGuardianInvolvementArgs args,
+        DoctorGuardianInvolvementContext context
     )
     {
         ArgumentNullException.ThrowIfNull(record);
         ArgumentNullException.ThrowIfNull(appointment);
         ArgumentNullException.ThrowIfNull(args);
+        ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(context.InitiatorDoctor);
 
         if (record.AppointmentId != appointment.Id)
             throw new BusinessRuleValidationException(
                 DomainErrors.MedicalEncounter.AppointmentMismatch
             );
 
-        if (args.InitiatorDoctorId != appointment.DoctorId)
+        if (context.InitiatorDoctor.Id != appointment.DoctorId)
             throw new DomainValidationException(DomainErrors.Appointment.UnauthorizedDoctor);
 
         if (appointment.Status is not (AppointmentStatus.InProgress or AppointmentStatus.Completed))

@@ -404,11 +404,8 @@ public class MedicalEncounterServiceTests
             MedicalEncounterService.RecordGuardianInvolvementDetermination(
                 null!,
                 CreateAppointment(),
-                new DoctorGuardianInvolvementArgs
-                {
-                    InitiatorDoctorId = Guid.CreateVersion7(),
-                    GuardianInvolvementDeemedAppropriate = true,
-                }
+                CreateValidInvolvementArgs(),
+                CreateValidInvolvementContext()
             );
 
         // Assert
@@ -423,11 +420,8 @@ public class MedicalEncounterServiceTests
             MedicalEncounterService.RecordGuardianInvolvementDetermination(
                 CreateMedicalRecord(),
                 null!,
-                new DoctorGuardianInvolvementArgs
-                {
-                    InitiatorDoctorId = Guid.CreateVersion7(),
-                    GuardianInvolvementDeemedAppropriate = true,
-                }
+                CreateValidInvolvementArgs(),
+                CreateValidInvolvementContext()
             );
 
         // Assert
@@ -442,7 +436,43 @@ public class MedicalEncounterServiceTests
             MedicalEncounterService.RecordGuardianInvolvementDetermination(
                 CreateMedicalRecord(),
                 CreateAppointment(),
+                null!,
+                CreateValidInvolvementContext()
+            );
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void RecordGuardianInvolvementDetermination_ShouldThrowArgumentNullException_WhenContextIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            MedicalEncounterService.RecordGuardianInvolvementDetermination(
+                CreateMedicalRecord(),
+                CreateAppointment(),
+                CreateValidInvolvementArgs(),
                 null!
+            );
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void RecordGuardianInvolvementDetermination_ShouldThrowArgumentNullException_WhenInitiatorDoctorIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            MedicalEncounterService.RecordGuardianInvolvementDetermination(
+                CreateMedicalRecord(),
+                CreateAppointment(),
+                CreateValidInvolvementArgs(),
+                CreateValidInvolvementContext() with
+                {
+                    InitiatorDoctor = null!,
+                }
             );
 
         // Assert
@@ -468,11 +498,8 @@ public class MedicalEncounterServiceTests
             MedicalEncounterService.RecordGuardianInvolvementDetermination(
                 record,
                 appointment,
-                new DoctorGuardianInvolvementArgs
-                {
-                    InitiatorDoctorId = Guid.CreateVersion7(),
-                    GuardianInvolvementDeemedAppropriate = true,
-                }
+                CreateValidInvolvementArgs(),
+                CreateValidInvolvementContext()
             );
 
         // Assert
@@ -493,8 +520,11 @@ public class MedicalEncounterServiceTests
 
         var args = new DoctorGuardianInvolvementArgs
         {
-            InitiatorDoctorId = Guid.CreateVersion7(),
             GuardianInvolvementDeemedAppropriate = true,
+        };
+        var context = new DoctorGuardianInvolvementContext
+        {
+            InitiatorDoctor = CreateDoctor(Guid.CreateVersion7()),
         };
 
         // Act
@@ -502,7 +532,8 @@ public class MedicalEncounterServiceTests
             MedicalEncounterService.RecordGuardianInvolvementDetermination(
                 record,
                 appointment,
-                args
+                args,
+                context
             );
 
         // Assert
@@ -533,10 +564,10 @@ public class MedicalEncounterServiceTests
             MedicalEncounterService.RecordGuardianInvolvementDetermination(
                 record,
                 scheduledAppointment,
-                new DoctorGuardianInvolvementArgs
+                new DoctorGuardianInvolvementArgs { GuardianInvolvementDeemedAppropriate = true },
+                new DoctorGuardianInvolvementContext
                 {
-                    InitiatorDoctorId = scheduledAppointment.DoctorId,
-                    GuardianInvolvementDeemedAppropriate = true,
+                    InitiatorDoctor = CreateDoctor(scheduledAppointment.DoctorId),
                 }
             );
 
@@ -560,10 +591,10 @@ public class MedicalEncounterServiceTests
         MedicalEncounterService.RecordGuardianInvolvementDetermination(
             record,
             appointment,
-            new DoctorGuardianInvolvementArgs
+            new DoctorGuardianInvolvementArgs { GuardianInvolvementDeemedAppropriate = true },
+            new DoctorGuardianInvolvementContext
             {
-                InitiatorDoctorId = appointment.DoctorId,
-                GuardianInvolvementDeemedAppropriate = true,
+                InitiatorDoctor = CreateDoctor(appointment.DoctorId),
             }
         );
 
@@ -586,10 +617,10 @@ public class MedicalEncounterServiceTests
         MedicalEncounterService.RecordGuardianInvolvementDetermination(
             record,
             appointment,
-            new DoctorGuardianInvolvementArgs
+            new DoctorGuardianInvolvementArgs { GuardianInvolvementDeemedAppropriate = false },
+            new DoctorGuardianInvolvementContext
             {
-                InitiatorDoctorId = appointment.DoctorId,
-                GuardianInvolvementDeemedAppropriate = false,
+                InitiatorDoctor = CreateDoctor(appointment.DoctorId),
             }
         );
 
@@ -618,6 +649,12 @@ public class MedicalEncounterServiceTests
             AppointmentType = CreateAppointmentType(),
             CompletedAt = _fakeTime.GetUtcNow().UtcDateTime,
         };
+
+    private static DoctorGuardianInvolvementArgs CreateValidInvolvementArgs() =>
+        new() { GuardianInvolvementDeemedAppropriate = true };
+
+    private static DoctorGuardianInvolvementContext CreateValidInvolvementContext() =>
+        new() { InitiatorDoctor = CreateDoctor(Guid.CreateVersion7()) };
 
     private static MedicalRecord CreateMedicalRecord(Guid doctorId, Guid appointmentId) =>
         MedicalRecord.Create(

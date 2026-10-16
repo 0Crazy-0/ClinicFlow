@@ -5,6 +5,7 @@ using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Args.GuardianInvolvement;
+using ClinicFlow.Domain.Services.Contexts;
 using MediatR;
 
 namespace ClinicFlow.Application.MedicalRecords.Commands.SetGuardianInvolvementDeterminationByDoctor;
@@ -51,9 +52,9 @@ public sealed class SetGuardianInvolvementDeterminationByDoctorCommandHandler(
             appointment,
             new DoctorGuardianInvolvementArgs
             {
-                InitiatorDoctorId = initiatorDoctor.Id,
                 GuardianInvolvementDeemedAppropriate = request.GuardianInvolvementDeemedAppropriate,
-            }
+            },
+            new DoctorGuardianInvolvementContext { InitiatorDoctor = initiatorDoctor }
         );
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
