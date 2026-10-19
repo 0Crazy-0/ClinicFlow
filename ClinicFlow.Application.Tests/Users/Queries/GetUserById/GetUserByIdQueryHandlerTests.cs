@@ -49,7 +49,6 @@ public class GetUserByIdQueryHandlerTests
             user.Phone.Value,
             user.Role,
             user.IsActive,
-            user.IsPhoneVerified,
             user.LastLoginAt,
             user.FailedLoginAttempts,
             user.LockoutEnd

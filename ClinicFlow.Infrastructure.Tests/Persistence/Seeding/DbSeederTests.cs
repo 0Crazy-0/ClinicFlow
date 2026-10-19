@@ -70,13 +70,6 @@ public class DbSeederTests(PostgresFixture fixture) : IAsyncLifetime
         users.Count(u => u.LastLoginAt.HasValue).Should().BeGreaterThan(0);
         users.Count(u => !u.LastLoginAt.HasValue).Should().BeGreaterThan(0);
 
-        users.Count(u => u.IsPhoneVerified).Should().BeGreaterThan(0);
-        users.Count(u => !u.IsPhoneVerified).Should().BeGreaterThan(0);
-        users
-            .Count(u => u.IsPhoneVerified)
-            .Should()
-            .BeGreaterThan(users.Count(u => !u.IsPhoneVerified));
-
         users.Count(u => u.FailedLoginAttempts > 0).Should().BeGreaterThan(0);
         users.Count(u => u.FailedLoginAttempts is 0).Should().BeGreaterThan(0);
 

@@ -48,7 +48,6 @@ public static class DomainErrors
         public const string CannotStart = "START_NOT_ALLOWED";
         public const string CannotComplete = "COMPLETE_NOT_ALLOWED";
         public const string UnauthorizedDoctor = "UNAUTHORIZED_DOCTOR";
-        public const string PhoneNotVerified = "PHONE_NOT_VERIFIED";
         public const string CannotReassign = "REASSIGNMENT_NOT_ALLOWED";
         public const string Duplicate = "DUPLICATE_APPOINTMENT";
         public const string CannotUpdateNotes = "UPDATE_NOTES_NOT_ALLOWED";
@@ -142,8 +141,6 @@ public static class DomainErrors
 
     public static class User
     {
-        public const string PhoneAlreadyVerified = "PHONE_ALREADY_VERIFIED";
-        public const string InvalidVerificationCode = "INVALID_VERIFICATION_CODE";
         public const string AccountInactive = "ACCOUNT_INACTIVE";
         public const string AccountLockedOut = "ACCOUNT_LOCKED_OUT";
         public const string CannotCloseAccountWithActiveFamilyMembers =

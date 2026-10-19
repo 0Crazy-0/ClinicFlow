@@ -4,7 +4,6 @@ using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Events.Appointments;
-using ClinicFlow.Domain.Exceptions.Appointments;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Exceptions.Patients;
 using ClinicFlow.Domain.Exceptions.Scheduling;
@@ -176,7 +175,6 @@ public class ScheduleByPatientTests
         {
             TargetPatient = target,
             AppointmentType = CreateAppointmentType(),
-            IsInitiatorPhoneVerified = true,
             DoctorSchedule = Schedule.Create(
                 args.DoctorId,
                 ambiguousDate.DayOfWeek,
@@ -216,7 +214,6 @@ public class ScheduleByPatientTests
         {
             TargetPatient = target,
             AppointmentType = CreateAppointmentType(),
-            IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(),
             InitiatorMembership = CreateViewOnlyMembership(),
             ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
@@ -285,7 +282,6 @@ public class ScheduleByPatientTests
         var context = new PatientSchedulingContext
         {
             TargetPatient = familyMember,
-            IsInitiatorPhoneVerified = true,
             DoctorSchedule = doctorSchedule,
             InitiatorMembership = CreateSelfMembership(),
             AppointmentType = appointmentType,
@@ -311,43 +307,6 @@ public class ScheduleByPatientTests
     }
 
     [Fact]
-    public void ScheduleByPatient_ShouldThrowUnauthorized_WhenPhoneIsNotVerified()
-    {
-        // Arrange
-        var appointmentType = CreateAppointmentType();
-        var target = CreateSelfPatient();
-        var args = new PatientSchedulingArgs
-        {
-            DoctorId = Guid.CreateVersion7(),
-            ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
-            RequestedTimeSlot = CreateTimeRange(),
-        };
-
-        var context = new PatientSchedulingContext
-        {
-            TargetPatient = target,
-            IsInitiatorPhoneVerified = false,
-            DoctorSchedule = CreateSchedule(),
-            InitiatorMembership = CreateSelfMembership(),
-            AppointmentType = appointmentType,
-            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
-        };
-
-        // Act
-        var act = () =>
-            AppointmentSchedulingService.ScheduleByPatient(
-                args,
-                context,
-                SchedulingClearance.Granted()
-            );
-
-        // Assert
-        act.Should()
-            .Throw<AppointmentSchedulingUnauthorizedException>()
-            .WithMessage(DomainErrors.Appointment.PhoneNotVerified);
-    }
-
-    [Fact]
     public void ScheduleByPatient_ShouldThrowIncompleteProfileException_WhenProfileIncomplete()
     {
         // Arrange
@@ -369,7 +328,6 @@ public class ScheduleByPatientTests
         var context = new PatientSchedulingContext
         {
             TargetPatient = incompletePatient,
-            IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(),
             InitiatorMembership = CreateSelfMembership(),
             AppointmentType = appointmentType,
@@ -416,7 +374,6 @@ public class ScheduleByPatientTests
         var context = new PatientSchedulingContext
         {
             TargetPatient = target,
-            IsInitiatorPhoneVerified = true,
             Penalties = penalties,
             DoctorSchedule = CreateSchedule(),
             InitiatorMembership = CreateSelfMembership(),
@@ -468,7 +425,6 @@ public class ScheduleByPatientTests
         var context = new PatientSchedulingContext
         {
             TargetPatient = target,
-            IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(),
             InitiatorMembership = CreateSelfMembership(),
             AppointmentType = appointmentType,
@@ -528,7 +484,6 @@ public class ScheduleByPatientTests
         var context = new PatientSchedulingContext
         {
             TargetPatient = target,
-            IsInitiatorPhoneVerified = true,
             DoctorSchedule = doctorSchedule,
             InitiatorMembership = CreateParentMembership(),
             AppointmentType = appointmentType,
@@ -588,7 +543,6 @@ public class ScheduleByPatientTests
         var context = new PatientSchedulingContext
         {
             TargetPatient = target,
-            IsInitiatorPhoneVerified = true,
             DoctorSchedule = doctorSchedule,
             InitiatorMembership = CreateSelfMembership(),
             AppointmentType = appointmentType,
@@ -627,7 +581,6 @@ public class ScheduleByPatientTests
         var context = new PatientSchedulingContext
         {
             TargetPatient = target,
-            IsInitiatorPhoneVerified = true,
             DoctorSchedule = scheduleForDifferentDoctor,
             InitiatorMembership = CreateSelfMembership(),
             AppointmentType = appointmentType,
@@ -671,7 +624,6 @@ public class ScheduleByPatientTests
         var context = new PatientSchedulingContext
         {
             TargetPatient = target,
-            IsInitiatorPhoneVerified = true,
             DoctorSchedule = doctorSchedule,
             InitiatorMembership = CreateSelfMembership(),
             AppointmentType = appointmentType,
@@ -719,7 +671,6 @@ public class ScheduleByPatientTests
         var context = new PatientSchedulingContext
         {
             TargetPatient = target,
-            IsInitiatorPhoneVerified = true,
             DoctorSchedule = doctorSchedule,
             InitiatorMembership = CreateSelfMembership(),
             AppointmentType = appointmentType,
@@ -766,7 +717,6 @@ public class ScheduleByPatientTests
         var context = new PatientSchedulingContext
         {
             TargetPatient = target,
-            IsInitiatorPhoneVerified = true,
             DoctorSchedule = doctorSchedule,
             InitiatorMembership = CreateSelfMembership(),
             AppointmentType = appointmentType,
@@ -834,7 +784,6 @@ public class ScheduleByPatientTests
         {
             TargetPatient = CreateSelfPatient(),
             AppointmentType = CreateAppointmentType(),
-            IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(),
             InitiatorMembership = CreateSelfMembership(),
             ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),

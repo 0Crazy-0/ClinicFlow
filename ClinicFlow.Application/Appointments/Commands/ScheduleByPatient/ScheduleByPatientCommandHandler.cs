@@ -24,7 +24,6 @@ public sealed class ScheduleByPatientCommandHandler(
     IAppointmentTypeDefinitionRepository appointmentTypeRepository,
     IScheduleRepository scheduleRepository,
     IAppointmentRepository appointmentRepository,
-    IUserRepository userRepository,
     IFamilyMembershipRepository familyMembershipRepository,
     IRegionalSchedulingService regionalSchedulingService,
     TimeProvider timeProvider,
@@ -51,14 +50,6 @@ public sealed class ScheduleByPatientCommandHandler(
                 DomainErrors.General.NotFound,
                 nameof(Doctor),
                 request.DoctorId
-            );
-
-        var user =
-            await userRepository.GetByIdAsync(request.InitiatorUserId, cancellationToken)
-            ?? throw new EntityNotFoundException(
-                DomainErrors.General.NotFound,
-                nameof(User),
-                request.InitiatorUserId
             );
 
         var appointmentType =
@@ -154,7 +145,6 @@ public sealed class ScheduleByPatientCommandHandler(
                     {
                         TargetPatient = targetPatient,
                         AppointmentType = appointmentType,
-                        IsInitiatorPhoneVerified = user.IsPhoneVerified,
                         Penalties = penalties,
                         DoctorSchedule = doctorSchedule,
                         InitiatorMembership = initiatorMembership,

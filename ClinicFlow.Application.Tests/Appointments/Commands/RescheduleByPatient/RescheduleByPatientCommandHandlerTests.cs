@@ -26,7 +26,6 @@ public class RescheduleByPatientCommandHandlerTests
         new();
     private readonly Mock<IScheduleRepository> _scheduleRepositoryMock = new();
     private readonly Mock<IPatientPenaltyRepository> _penaltyRepositoryMock = new();
-    private readonly Mock<IUserRepository> _userRepositoryMock = new();
     private readonly Mock<IFamilyMembershipRepository> _familyMembershipRepositoryMock = new();
     private readonly Mock<IRegionalSchedulingService> _regionalSchedulingServiceMock = new();
     private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
@@ -57,7 +56,6 @@ public class RescheduleByPatientCommandHandlerTests
             _appointmentTypeRepositoryMock.Object,
             _scheduleRepositoryMock.Object,
             _penaltyRepositoryMock.Object,
-            _userRepositoryMock.Object,
             _familyMembershipRepositoryMock.Object,
             _regionalSchedulingServiceMock.Object,
             _fakeTime,
@@ -102,7 +100,6 @@ public class RescheduleByPatientCommandHandlerTests
         );
 
         var doctor = CreateDoctor();
-        var user = CreateVerifiedUser();
         var appointmentType = AppointmentTypeDefinition.Create(
             AppointmentCategory.Other,
             AppointmentPurpose.Checkup,
@@ -164,9 +161,6 @@ public class RescheduleByPatientCommandHandlerTests
                 )
             )
             .ReturnsAsync(false);
-        _userRepositoryMock
-            .Setup(r => r.GetByIdAsync(command.InitiatorUserId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(user);
         _familyMembershipRepositoryMock
             .Setup(r =>
                 r.GetActiveMembershipAsync(
@@ -239,7 +233,6 @@ public class RescheduleByPatientCommandHandlerTests
         minorPatient.SetId(patientId);
 
         var doctor = CreateDoctor();
-        var user = CreateVerifiedUser();
         var appointmentType = AppointmentTypeDefinition.Create(
             AppointmentCategory.Other,
             AppointmentPurpose.Checkup,
@@ -264,9 +257,6 @@ public class RescheduleByPatientCommandHandlerTests
         _doctorRepositoryMock
             .Setup(r => r.GetByIdAsync(doctorId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(doctor);
-        _userRepositoryMock
-            .Setup(r => r.GetByIdAsync(command.InitiatorUserId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(user);
         _appointmentTypeRepositoryMock
             .Setup(r => r.GetByIdAsync(typeId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(appointmentType);
@@ -498,74 +488,6 @@ public class RescheduleByPatientCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ShouldThrowEntityNotFoundException_WhenUserNotFound()
-    {
-        // Arrange
-        var command = new RescheduleByPatientCommand(
-            Guid.CreateVersion7(),
-            Guid.CreateVersion7(),
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
-            new TimeOnly(10, 0),
-            new TimeOnly(11, 0)
-        );
-
-        var appointment = CreateAppointment();
-        var targetPatient = CreatePatient(appointment.PatientId);
-        var doctor = CreateDoctor();
-
-        _appointmentRepositoryMock
-            .Setup(r => r.GetByIdAsync(command.AppointmentId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(appointment);
-
-        _patientRepositoryMock
-            .Setup(r => r.GetByIdAsync(appointment.PatientId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(targetPatient);
-
-        _familyMembershipRepositoryMock
-            .Setup(r =>
-                r.GetActiveSelfMembershipByUserIdAsync(
-                    command.InitiatorUserId,
-                    It.IsAny<CancellationToken>()
-                )
-            )
-            .ReturnsAsync(
-                FamilyMembership.CreateSelf(
-                    appointment.PatientId,
-                    command.InitiatorUserId,
-                    _fakeTime.GetUtcNow().UtcDateTime
-                )
-            );
-
-        _doctorRepositoryMock
-            .Setup(r => r.GetByIdAsync(appointment.DoctorId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(doctor);
-
-        _userRepositoryMock
-            .Setup(r => r.GetByIdAsync(command.InitiatorUserId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync((User?)null);
-
-        // Act
-        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
-
-        // Assert
-        var exceptionAssertion = await act.Should()
-            .ThrowAsync<EntityNotFoundException>()
-            .WithMessage(DomainErrors.General.NotFound);
-        exceptionAssertion.Which.EntityName.Should().Be(nameof(User));
-
-        _unitOfWorkMock.Verify(
-            u =>
-                u.ExecuteWithLockAsync(
-                    It.IsAny<Guid>(),
-                    It.IsAny<Func<CancellationToken, Task>>(),
-                    It.IsAny<CancellationToken>()
-                ),
-            Times.Never
-        );
-        _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
-    }
-
-    [Fact]
     public async Task Handle_ShouldThrowEntityNotFoundException_WhenAppointmentTypeNotFound()
     {
         // Arrange
@@ -580,8 +502,6 @@ public class RescheduleByPatientCommandHandlerTests
         var appointment = CreateAppointment();
         var targetPatient = CreatePatient(appointment.PatientId);
         var doctor = CreateDoctor();
-        var user = CreateVerifiedUser();
-
         _appointmentRepositoryMock
             .Setup(r => r.GetByIdAsync(command.AppointmentId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(appointment);
@@ -608,10 +528,6 @@ public class RescheduleByPatientCommandHandlerTests
         _doctorRepositoryMock
             .Setup(r => r.GetByIdAsync(appointment.DoctorId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(doctor);
-
-        _userRepositoryMock
-            .Setup(r => r.GetByIdAsync(command.InitiatorUserId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(user);
 
         _appointmentTypeRepositoryMock
             .Setup(r =>
@@ -671,7 +587,6 @@ public class RescheduleByPatientCommandHandlerTests
 
         var targetPatient = CreatePatient(patientId);
         var doctor = CreateDoctor();
-        var user = CreateVerifiedUser();
         var appointmentType = AppointmentTypeDefinition.Create(
             AppointmentCategory.Other,
             AppointmentPurpose.Checkup,
@@ -707,9 +622,6 @@ public class RescheduleByPatientCommandHandlerTests
         _appointmentTypeRepositoryMock
             .Setup(r => r.GetByIdAsync(typeId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(appointmentType);
-        _userRepositoryMock
-            .Setup(r => r.GetByIdAsync(command.InitiatorUserId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(user);
         _appointmentRepositoryMock
             .Setup(r =>
                 r.HasConflictAsync(
@@ -786,7 +698,6 @@ public class RescheduleByPatientCommandHandlerTests
 
         var targetPatient = CreatePatient(patientId);
         var doctor = CreateDoctor();
-        var user = CreateVerifiedUser();
         var appointmentType = AppointmentTypeDefinition.Create(
             AppointmentCategory.Other,
             AppointmentPurpose.Checkup,
@@ -822,9 +733,6 @@ public class RescheduleByPatientCommandHandlerTests
         _appointmentTypeRepositoryMock
             .Setup(r => r.GetByIdAsync(typeId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(appointmentType);
-        _userRepositoryMock
-            .Setup(r => r.GetByIdAsync(command.InitiatorUserId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(user);
         _scheduleRepositoryMock
             .Setup(r =>
                 r.GetActiveByDoctorAndDayAsync(
@@ -883,7 +791,6 @@ public class RescheduleByPatientCommandHandlerTests
 
         var targetPatient = CreatePatient(patientId);
         var doctor = CreateDoctor();
-        var user = CreateVerifiedUser();
         var appointmentType = AppointmentTypeDefinition.Create(
             AppointmentCategory.Other,
             AppointmentPurpose.Checkup,
@@ -907,9 +814,6 @@ public class RescheduleByPatientCommandHandlerTests
         _doctorRepositoryMock
             .Setup(r => r.GetByIdAsync(doctorId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(doctor);
-        _userRepositoryMock
-            .Setup(r => r.GetByIdAsync(command.InitiatorUserId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(user);
         _appointmentTypeRepositoryMock
             .Setup(r => r.GetByIdAsync(typeId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(appointmentType);
@@ -969,20 +873,6 @@ public class RescheduleByPatientCommandHandlerTests
             Times.Once
         );
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
-    }
-
-    private static User CreateVerifiedUser()
-    {
-        var user = User.Create(
-            EmailAddress.Create("test@clinic.com"),
-            "hashedpassword",
-            PhoneNumber.Create("555-1234"),
-            UserRole.Patient
-        );
-
-        user.MarkPhoneAsVerified(true);
-
-        return user;
     }
 
     private static Doctor CreateDoctor() =>

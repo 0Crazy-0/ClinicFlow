@@ -4,7 +4,6 @@ using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Events.Appointments;
-using ClinicFlow.Domain.Exceptions.Appointments;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Exceptions.Patients;
 using ClinicFlow.Domain.Exceptions.Scheduling;
@@ -168,7 +167,6 @@ public class ScheduleByGuardianTests
                 new PatientSchedulingContext
                 {
                     TargetPatient = CreateMinorPatient(),
-                    IsInitiatorPhoneVerified = true,
                     DoctorSchedule = CreateSchedule(),
                     InitiatorMembership = CreateSelfMembership(),
                     AppointmentType = CreateAppointmentType(),
@@ -205,7 +203,6 @@ public class ScheduleByGuardianTests
         var context = new PatientSchedulingContext
         {
             TargetPatient = target,
-            IsInitiatorPhoneVerified = true,
             DoctorSchedule = Schedule.Create(
                 args.DoctorId,
                 ambiguousDate.DayOfWeek,
@@ -239,7 +236,6 @@ public class ScheduleByGuardianTests
         var context = new PatientSchedulingContext
         {
             TargetPatient = CreateMinorPatient(),
-            IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(),
             InitiatorMembership = CreateSelfMembership(), // Guardian is self
             AppointmentType = CreateAppointmentType(),
@@ -258,41 +254,6 @@ public class ScheduleByGuardianTests
         act.Should()
             .Throw<PatientAccessUnauthorizedException>()
             .WithMessage(DomainErrors.Patient.UnauthorizedAccess);
-    }
-
-    [Fact]
-    public void ScheduleByGuardian_ShouldThrowUnauthorized_WhenPhoneIsNotVerified()
-    {
-        // Arrange
-        var args = new GuardianSchedulingArgs
-        {
-            DoctorId = Guid.CreateVersion7(),
-            ScheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
-            RequestedTimeSlot = CreateTimeRange(),
-        };
-
-        var context = new PatientSchedulingContext
-        {
-            TargetPatient = CreateMinorPatient(),
-            IsInitiatorPhoneVerified = false,
-            DoctorSchedule = CreateSchedule(),
-            InitiatorMembership = CreateParentMembership(),
-            AppointmentType = CreateAppointmentType(),
-            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
-        };
-
-        // Act
-        var act = () =>
-            AppointmentSchedulingService.ScheduleByGuardian(
-                args,
-                context,
-                SchedulingClearance.Granted()
-            );
-
-        // Assert
-        act.Should()
-            .Throw<AppointmentSchedulingUnauthorizedException>()
-            .WithMessage(DomainErrors.Appointment.PhoneNotVerified);
     }
 
     [Fact]
@@ -316,7 +277,6 @@ public class ScheduleByGuardianTests
         var context = new PatientSchedulingContext
         {
             TargetPatient = incompletePatient,
-            IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(),
             InitiatorMembership = CreateParentMembership(),
             AppointmentType = CreateAppointmentType(),
@@ -362,7 +322,6 @@ public class ScheduleByGuardianTests
         var context = new PatientSchedulingContext
         {
             TargetPatient = target,
-            IsInitiatorPhoneVerified = true,
             Penalties = penalties,
             DoctorSchedule = CreateSchedule(),
             InitiatorMembership = CreateParentMembership(),
@@ -405,7 +364,6 @@ public class ScheduleByGuardianTests
         var context = new PatientSchedulingContext
         {
             TargetPatient = CreateMinorPatient(),
-            IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(),
             InitiatorMembership = CreateParentMembership(),
             AppointmentType = appointmentType,
@@ -440,7 +398,6 @@ public class ScheduleByGuardianTests
         var context = new PatientSchedulingContext
         {
             TargetPatient = CreateMinorPatient(),
-            IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(),
             InitiatorMembership = CreateParentMembership(),
             AppointmentType = CreateAppointmentType(),
@@ -485,7 +442,6 @@ public class ScheduleByGuardianTests
         var context = new PatientSchedulingContext
         {
             TargetPatient = patientAdult,
-            IsInitiatorPhoneVerified = true,
             DoctorSchedule = Schedule.Create(
                 args.DoctorId,
                 args.ScheduledDate.DayOfWeek,
@@ -535,7 +491,6 @@ public class ScheduleByGuardianTests
         var context = new PatientSchedulingContext
         {
             TargetPatient = target,
-            IsInitiatorPhoneVerified = true,
             DoctorSchedule = Schedule.Create(
                 args.DoctorId,
                 args.ScheduledDate.DayOfWeek,
@@ -592,7 +547,6 @@ public class ScheduleByGuardianTests
         var context = new PatientSchedulingContext
         {
             TargetPatient = target,
-            IsInitiatorPhoneVerified = true,
             DoctorSchedule = doctorSchedule,
             InitiatorMembership = FamilyMembership.CreateFamilyMember(
                 target.Id,
@@ -645,7 +599,6 @@ public class ScheduleByGuardianTests
         var context = new PatientSchedulingContext
         {
             TargetPatient = target,
-            IsInitiatorPhoneVerified = true,
             DoctorSchedule = Schedule.Create(
                 args.DoctorId,
                 args.ScheduledDate.DayOfWeek,
@@ -730,7 +683,6 @@ public class ScheduleByGuardianTests
         {
             TargetPatient = CreateMinorPatient(),
             AppointmentType = CreateAppointmentType(),
-            IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(),
             InitiatorMembership = CreateParentMembership(),
             ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),

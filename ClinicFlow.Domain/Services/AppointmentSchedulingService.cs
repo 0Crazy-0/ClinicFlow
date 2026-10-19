@@ -1,6 +1,5 @@
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
-using ClinicFlow.Domain.Exceptions.Appointments;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Services.Args.Scheduling;
 using ClinicFlow.Domain.Services.Contexts.Scheduling;
@@ -42,11 +41,6 @@ public static class AppointmentSchedulingService
         );
 
         context.InitiatorMembership.EnsureAppointmentAccess(context.AppointmentType.Category);
-
-        if (!context.IsInitiatorPhoneVerified)
-            throw new AppointmentSchedulingUnauthorizedException(
-                DomainErrors.Appointment.PhoneNotVerified
-            );
 
         context.TargetPatient.EnsureCompleteProfile();
 
@@ -102,11 +96,6 @@ public static class AppointmentSchedulingService
         );
 
         context.InitiatorMembership.EnsureGuardianAccess();
-
-        if (!context.IsInitiatorPhoneVerified)
-            throw new AppointmentSchedulingUnauthorizedException(
-                DomainErrors.Appointment.PhoneNotVerified
-            );
 
         context.TargetPatient.EnsureCompleteProfile();
 
