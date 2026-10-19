@@ -59,11 +59,6 @@ public static class AppointmentReschedulingService
         )
             throw new PatientAccessUnauthorizedException(DomainErrors.Patient.UnauthorizedAccess);
 
-        if (!context.IsInitiatorPhoneVerified)
-            throw new AppointmentSchedulingUnauthorizedException(
-                DomainErrors.Appointment.PhoneNotVerified
-            );
-
         new PenaltyHistory(context.Penalties).EnsureNotBlocked(args.NewDate);
 
         context.DoctorSchedule.EnsureDoctorIsAvailable(
@@ -118,11 +113,6 @@ public static class AppointmentReschedulingService
         if (args.NewGuardianNotes is not null && appointment.GuardianNotesAuthorUserId is not null)
             context.InitiatorMembership.EnsureGuardianNotesEditAccess(
                 appointment.GuardianNotesAuthorUserId.Value
-            );
-
-        if (!context.IsInitiatorPhoneVerified)
-            throw new AppointmentSchedulingUnauthorizedException(
-                DomainErrors.Appointment.PhoneNotVerified
             );
 
         new PenaltyHistory(context.Penalties).EnsureNotBlocked(args.NewDate);

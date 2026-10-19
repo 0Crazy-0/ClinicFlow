@@ -4,7 +4,6 @@ using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Events.Appointments;
-using ClinicFlow.Domain.Exceptions.Appointments;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Exceptions.Patients;
 using ClinicFlow.Domain.Exceptions.Scheduling;
@@ -155,7 +154,6 @@ public class RescheduleByPatientTests
         {
             TargetPatient = target,
             AppointmentType = CreateAppointmentType(),
-            IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(),
             InitiatorMembership = null!,
             ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
@@ -185,7 +183,6 @@ public class RescheduleByPatientTests
         {
             TargetPatient = target,
             AppointmentType = CreateAppointmentType(),
-            IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(),
             InitiatorMembership = CreateSelfMembership(),
             ClinicTimeZone = null!,
@@ -243,7 +240,6 @@ public class RescheduleByPatientTests
         {
             TargetPatient = target,
             AppointmentType = CreateAppointmentType(),
-            IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(appointment.DoctorId, ambiguousDate.DayOfWeek),
             InitiatorMembership = CreateSelfMembership(),
             ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
@@ -280,7 +276,6 @@ public class RescheduleByPatientTests
         {
             TargetPatient = target,
             AppointmentType = CreateAppointmentType(),
-            IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(),
             InitiatorMembership = CreateSelfMembership(),
             ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
@@ -317,7 +312,6 @@ public class RescheduleByPatientTests
         {
             TargetPatient = target,
             AppointmentType = CreateAppointmentType(),
-            IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(),
             InitiatorMembership = FamilyMembership.CreateFamilyMember(
                 Guid.CreateVersion7(),
@@ -347,43 +341,6 @@ public class RescheduleByPatientTests
     }
 
     [Fact]
-    public void RescheduleByPatient_ShouldThrowUnauthorized_WhenPhoneIsNotVerified()
-    {
-        // Arrange
-        var target = CreateSelfPatient();
-        var appointment = CreateAppointment(target.Id);
-        var args = new PatientReschedulingArgs
-        {
-            NewDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3)),
-            NewTimeSlot = CreateTimeRange(),
-        };
-
-        var context = new PatientReschedulingContext
-        {
-            TargetPatient = target,
-            AppointmentType = CreateAppointmentType(),
-            IsInitiatorPhoneVerified = false,
-            DoctorSchedule = CreateSchedule(),
-            InitiatorMembership = CreateSelfMembership(),
-            ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
-        };
-
-        // Act
-        var act = () =>
-            AppointmentReschedulingService.RescheduleByPatient(
-                appointment,
-                args,
-                context,
-                SchedulingClearance.Granted()
-            );
-
-        // Assert
-        act.Should()
-            .Throw<AppointmentSchedulingUnauthorizedException>()
-            .WithMessage(DomainErrors.Appointment.PhoneNotVerified);
-    }
-
-    [Fact]
     public void RescheduleByPatient_ShouldThrowPatientBlockedException_WhenHasPenalties()
     {
         // Arrange
@@ -409,7 +366,6 @@ public class RescheduleByPatientTests
         {
             TargetPatient = target,
             AppointmentType = CreateAppointmentType(),
-            IsInitiatorPhoneVerified = true,
             Penalties = penalties,
             DoctorSchedule = CreateSchedule(),
             InitiatorMembership = CreateSelfMembership(),
@@ -445,7 +401,6 @@ public class RescheduleByPatientTests
         {
             TargetPatient = target,
             AppointmentType = CreateAppointmentType(),
-            IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek),
             InitiatorMembership = CreateSelfMembership(),
             ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
@@ -482,7 +437,6 @@ public class RescheduleByPatientTests
         {
             TargetPatient = target,
             AppointmentType = CreateAppointmentType(),
-            IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek),
             InitiatorMembership = CreateSelfMembership(),
             ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
@@ -522,7 +476,6 @@ public class RescheduleByPatientTests
         {
             TargetPatient = target,
             AppointmentType = CreateAppointmentType(),
-            IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek),
             InitiatorMembership = CreateSelfMembership(),
             ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
@@ -560,7 +513,6 @@ public class RescheduleByPatientTests
         {
             TargetPatient = target,
             AppointmentType = CreateAppointmentType(),
-            IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek),
             InitiatorMembership = CreateSelfMembership(),
             ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
@@ -605,7 +557,6 @@ public class RescheduleByPatientTests
         {
             TargetPatient = target,
             AppointmentType = CreateAppointmentType(),
-            IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek),
             InitiatorMembership = CreateSelfMembership(),
             ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
@@ -654,7 +605,6 @@ public class RescheduleByPatientTests
         {
             TargetPatient = target,
             AppointmentType = CreateAppointmentType(),
-            IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek),
             InitiatorMembership = CreateSelfMembership(),
             ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
@@ -712,7 +662,6 @@ public class RescheduleByPatientTests
         {
             TargetPatient = target,
             AppointmentType = CreateAppointmentType(),
-            IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek),
             InitiatorMembership = CreateSelfMembership(),
             ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
@@ -760,7 +709,6 @@ public class RescheduleByPatientTests
         {
             TargetPatient = target,
             AppointmentType = CreateAppointmentType(),
-            IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek),
             InitiatorMembership = CreateSelfMembership(),
             ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
@@ -808,7 +756,6 @@ public class RescheduleByPatientTests
         {
             TargetPatient = target,
             AppointmentType = CreateAppointmentType(),
-            IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(appointment.DoctorId, args.NewDate.DayOfWeek),
             InitiatorMembership = FamilyMembership.CreateSelf(
                 target.Id,
@@ -866,7 +813,6 @@ public class RescheduleByPatientTests
         {
             TargetPatient = CreateSelfPatient(),
             AppointmentType = CreateAppointmentType(),
-            IsInitiatorPhoneVerified = true,
             DoctorSchedule = CreateSchedule(),
             InitiatorMembership = CreateSelfMembership(),
             ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),

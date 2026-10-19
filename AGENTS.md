@@ -140,7 +140,6 @@ public sealed record class PatientReschedulingContext
 {
     public required Patient TargetPatient { get; init; }
     public required AppointmentTypeDefinition AppointmentType { get; init; }
-    public bool IsInitiatorPhoneVerified { get; init; }
     public IReadOnlyList<PatientPenalty> Penalties { get; init; } = [];
     public required Schedule DoctorSchedule { get; init; }
     public required FamilyMembership InitiatorMembership { get; init; }

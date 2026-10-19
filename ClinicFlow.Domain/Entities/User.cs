@@ -26,8 +26,6 @@ public class User : BaseEntity
 
     public bool IsActive { get; private set; }
 
-    public bool IsPhoneVerified { get; private set; }
-
     public int FailedLoginAttempts { get; private set; }
 
     public DateTime? LockoutEnd { get; private set; }
@@ -36,7 +34,6 @@ public class User : BaseEntity
     private User()
     {
         IsActive = true;
-        IsPhoneVerified = false;
         FailedLoginAttempts = 0;
     }
 
@@ -59,18 +56,6 @@ public class User : BaseEntity
         Guard.NotNullOrWhiteSpace(passwordHash);
 
         return new User(email, passwordHash, phoneNumber, role);
-    }
-
-    /// <param name="isVerificationCodeValid">The result of the external verification check.</param>
-    public void MarkPhoneAsVerified(bool isVerificationCodeValid)
-    {
-        if (!isVerificationCodeValid)
-            throw new DomainValidationException(DomainErrors.User.InvalidVerificationCode);
-
-        if (IsPhoneVerified)
-            throw new DomainValidationException(DomainErrors.User.PhoneAlreadyVerified);
-
-        IsPhoneVerified = true;
     }
 
     internal void RecordLogin(DateTime loginTime)

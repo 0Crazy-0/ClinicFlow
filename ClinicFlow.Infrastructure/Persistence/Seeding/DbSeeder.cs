@@ -220,7 +220,6 @@ public static class DbSeeder
                 PhoneNumber.Create(seederContext.GenerateUniquePhoneNumber()),
                 UserRole.Admin
             );
-            user.MarkPhoneAsVerified(true);
             user.RecordLogin(
                 refTime.AddDays(-adminLoginOffsets[i].Days).AddHours(-adminLoginOffsets[i].Hours)
             );
@@ -248,7 +247,6 @@ public static class DbSeeder
                 PhoneNumber.Create(seederContext.GenerateUniquePhoneNumber()),
                 UserRole.Receptionist
             );
-            user.MarkPhoneAsVerified(true);
             user.RecordLogin(
                 refTime
                     .AddDays(-receptionistLoginOffsets[i].Days)
@@ -268,9 +266,6 @@ public static class DbSeeder
             );
 
             var profile = _doctorVariantCycle[i % _doctorVariantCycle.Length];
-
-            if (profile.IsPhoneVerified)
-                user.MarkPhoneAsVerified(true);
 
             if (profile.DaysAgoLastLogin.HasValue)
                 user.RecordLogin(
@@ -751,9 +746,6 @@ public static class DbSeeder
     {
         var profile = _variantCycle[index % _variantCycle.Length];
 
-        if (profile.IsPhoneVerified)
-            user.MarkPhoneAsVerified(true);
-
         if (profile.DaysAgoLastLogin.HasValue)
             user.RecordLogin(
                 refTime.AddDays(-profile.DaysAgoLastLogin.Value).AddHours(-(index % 24))
@@ -791,18 +783,17 @@ public static class DbSeeder
 
     private static readonly UserVariantProfile[] _doctorVariantCycle =
     [
-        new(true, 0, 1, 0),
-        new(true, 0, 3, 0),
-        new(false, 0, 5, 0),
-        new(true, 0, 2, 0),
-        new(true, 0, null, 0),
-        new(true, 0, 7, 0),
-        new(false, 0, 10, 0),
-        new(true, 0, 4, 0),
+        new(0, 1, 0),
+        new(0, 3, 0),
+        new(0, 5, 0),
+        new(0, 2, 0),
+        new(0, null, 0),
+        new(0, 7, 0),
+        new(0, 10, 0),
+        new(0, 4, 0),
     ];
 
     private readonly record struct UserVariantProfile(
-        bool IsPhoneVerified,
         int FailedLoginAttempts,
         int? DaysAgoLastLogin,
         int FailedLoginHoursAgo
@@ -810,21 +801,21 @@ public static class DbSeeder
 
     private static readonly UserVariantProfile[] _variantCycle =
     [
-        new(true, 0, null, 0),
-        new(true, 0, 3, 0),
-        new(true, 1, 5, 2),
-        new(true, 3, 7, 6),
-        new(true, 5, null, 0), // LockoutEnd ≈ refTime + 15min (active lockout)
-        new(false, 0, null, 0),
-        new(true, 0, 1, 0),
-        new(true, 2, 10, 12),
-        new(true, 0, 2, 0),
-        new(true, 5, 4, 48), // LockoutEnd ≈ refTime - 48h + 15min (expired lockout)
-        new(true, 0, 15, 0),
-        new(false, 1, 6, 3),
-        new(true, 0, 8, 0),
-        new(true, 4, 12, 24),
-        new(true, 0, 9, 0),
+        new(0, null, 0),
+        new(0, 3, 0),
+        new(1, 5, 2),
+        new(3, 7, 6),
+        new(5, null, 0), // LockoutEnd ≈ refTime + 15min (active lockout)
+        new(0, null, 0),
+        new(0, 1, 0),
+        new(2, 10, 12),
+        new(0, 2, 0),
+        new(5, 4, 48), // LockoutEnd ≈ refTime - 48h + 15min (expired lockout)
+        new(0, 15, 0),
+        new(1, 6, 3),
+        new(0, 8, 0),
+        new(4, 12, 24),
+        new(0, 9, 0),
     ];
 
     private sealed class SeederContext
