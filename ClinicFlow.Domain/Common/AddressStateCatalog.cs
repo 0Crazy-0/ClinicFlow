@@ -46,6 +46,7 @@ public static class AddressStateCatalog
         throw new DomainValidationException(DomainErrors.Address.StateNotInCatalog);
     }
 
+    // Stryker disable String: see docs/tooling/stryker.md, section "6. AddressStateCatalog Official Display Names"
     private static readonly (AddressState State, string DisplayName)[] MexicoEntries =
     [
         (AddressState.Aguascalientes, "Aguascalientes"),
@@ -82,6 +83,7 @@ public static class AddressStateCatalog
         (AddressState.Zacatecas, "Zacatecas"),
     ];
 
+    // Stryker disable String: see docs/tooling/stryker.md, section "6. AddressStateCatalog Official Display Names"
     private static readonly (AddressState State, string DisplayName)[] UnitedStatesEntries =
     [
         (AddressState.Alabama, "Alabama"),
@@ -136,6 +138,7 @@ public static class AddressStateCatalog
         (AddressState.Wyoming, "Wyoming"),
     ];
 
+    // Stryker disable String: see docs/tooling/stryker.md, section "6. AddressStateCatalog Official Display Names"
     private static readonly (AddressState State, string DisplayName)[] CanadaEntries =
     [
         (AddressState.Alberta, "Alberta"),
