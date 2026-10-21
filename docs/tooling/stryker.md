@@ -428,6 +428,25 @@ The analysis rests on a structural invariant already enforced by tests: `GetStat
 4. **Conclusion:**
    Suppressed via `// Stryker disable once Equality` on the Canada check and `// Stryker disable once Statement` on the catch-all throw, each pointing back to this section. Both comments were verified in a fresh local Domain run after being added: the `Equality` mutant that previously reported as `Survived` and the `Statement` mutant that previously reported as `NoCoverage` both now report as `Ignored`, confirming the comments are effective and correctly placed. The behavioral half of `GetCountry` remains fully under test via `GetCountry_ShouldReturnCountry_WhenStateIsDefined` (one representative state per country) and the `Guard.IsDefined` rejection tests.
 
+### 8. `Address` Postal Code Switch Default
+
+**File:** [Address.cs](../../ClinicFlow.Domain/ValueObjects/Address.cs)
+
+```csharp
+// Stryker disable once Boolean: see docs/tooling/stryker.md, section "8. Address Postal Code Switch Default"
+_ => false,
+```
+
+Observed mutant (report `StrykerOutput/2026-10-20.17-24-48`): one `Boolean` mutation (`_ => false` to `_ => true`) reporting as `NoCoverage`.
+
+#### Rationale
+
+The arm is unreachable by design: `MatchesCountryPostalCode` is `private static`, and its only caller (`Create`) runs `Guard.IsDefined(country)` before it, so `country` is always one of `Mexico`, `UnitedStates`, or `Canada`, the three explicit arms above. No test can reach the default, and the mutant cannot be killed.
+
+The default is kept anyway as defensive code against a future enum extension (documented structural decision, same spirit as the exhaustive-tail rejection in [section 7](#7-addressstatecatalog-getcountry-exhaustive-mapping), where removing the catch-all was rejected so new values fail fast instead of getting a silent answer). Deleting the arm would also make a new country compile silently as an unreachable `false` default until someone notices the switch.
+
+#### Conclusion
+Suppressed via `// Stryker disable once Boolean`. The behavioral arms are covered: every `Create` postal-code path is validated for one representative per country format.
 ---
 
 ## Local Verification Protocol
