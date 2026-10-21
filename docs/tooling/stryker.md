@@ -351,6 +351,83 @@ Observed mutants on these lines (report `StrykerOutput/2026-10-07.18-17-14`): Eq
 4. **Conclusion:**
    Suppressed via `// Stryker disable once all`, scoped strictly to the new retry guard in each overload. 
 
+### 6. `AddressStateCatalog` Official Display Names
+
+**File:** [AddressStateCatalog.cs](../../ClinicFlow.Domain/Common/AddressStateCatalog.cs)
+
+```csharp
+// Stryker disable String: see docs/tooling/stryker.md, section "6. AddressStateCatalog Official Display Names"
+private static readonly (AddressState State, string DisplayName)[] MexicoEntries =
+[
+    // ...
+];
+```
+
+The same `disable` comment precedes `UnitedStatesEntries` and `CanadaEntries` individually, so each array carries its own suppression anchor. In Stryker.NET, a `disable` comment suppresses the mutator from the comment onward until the end of the file, and the file ends immediately after `CanadaEntries`. Since `GetStates` and `GetCountry` sit above the first comment, the effective suppression scope is exactly the three array declarations. The repeated comments are redundant in effect (the first one alone already covers the file tail) but are kept as per-array anchors, each pointing back to this section.
+
+#### Rationale and Why These Mutants Are Suppressed
+
+Observed mutants on these three arrays (report `StrykerOutput/2026-10-20.14-31-26`, Domain run `2026-10-20.14-31-26`): 95 `String` mutations, one per entry, replacing each official display name with `""` (all 32 Mexican federal entities, all 50 United States entries, and all 13 Canadian provinces and territories).
+
+1. **The display names are not observable behavior of the current API.** No consumer reads the `DisplayName` component of any entry: `GetStates` projects only `entry.State`, `GetCountry` compares only `entry.State`, the `Address` value object consumes only `GetCountry`, and the test suite asserts only on states and countries. The bodies of these display name strings are static reference catalog data (the official Spanish names of the states), and mutating any of them to the empty string cannot affect any assertion, persisted state, or API response that exists today.
+
+2. **Why they were not killed in the observed run.** All 95 display-name literals live in `static readonly` field initializers, which the compiler emits into the class's static constructor. In the observed run, none of the 95 mutants were killed, and each reported an empty `coveredBy` list. This describes the current test suite only: no existing test observes `DisplayName`. It is not a claim that Stryker can never kill these mutants. Stryker.NET runs static-constructor mutants against all tests, so a reflection test, a public accessor, or a consumer of `DisplayName` (usage from `Address`, UI) would be able to observe a changed value and kill them. If `DisplayName` gains a consumer or a test, this suppression must be revisited and probably removed.
+
+3. **What remains under test.** The catalog shape is covered: entry counts per country (32, 50, 13), completeness against the `AddressState` enum, uniqueness of catalogued states, `GetCountry` returning the expected country for one representative state per country, and the `Guard.IsDefined` rejections. These checks do not assert the country of every individual state, so swapping two non-representative states between country arrays would not be detected today. That gap is independent of the display-name suppression, which only covers the literals.
+
+4. **Conclusion.** Suppressed via a `// Stryker disable String` comment preceding each array declaration, with the effective scope described above. Every covered mutant was verified to report as `Ignored` in a fresh local run before use. The suppression is justified by the absence of any observer of `DisplayName` in the current API and tests, and should be re-evaluated when one appears.
+
+### 7. `AddressStateCatalog` GetCountry Exhaustive Mapping
+
+**File:** [AddressStateCatalog.cs](../../ClinicFlow.Domain/Common/AddressStateCatalog.cs)
+
+```csharp
+public static Country GetCountry(AddressState state)
+{
+    Guard.IsDefined(state);
+
+    if (MexicoEntries.Any(entry => entry.State == state))
+        return Country.Mexico;
+
+    if (UnitedStatesEntries.Any(entry => entry.State == state))
+        return Country.UnitedStates;
+
+    // Stryker disable once Equality: see docs/tooling/stryker.md, section "7. AddressStateCatalog GetCountry Exhaustive Mapping"
+    if (CanadaEntries.Any(entry => entry.State == state))
+        return Country.Canada;
+
+    // Stryker disable once Statement: see docs/tooling/stryker.md, section "7. AddressStateCatalog GetCountry Exhaustive Mapping"
+    throw new DomainValidationException(DomainErrors.Address.StateNotInCatalog);
+}
+```
+
+Observed mutants on these lines (report `StrykerOutput/2026-10-20.14-49-11`, Domain run): one `Equality` mutation on the Canada check (`entry.State == state` to `entry.State != state`) reported as `Survived`, and one `Statement` mutation removing the final `throw` reported as `NoCoverage`.
+
+#### Proof of Equivalence and Unreachability
+
+The analysis rests on a structural invariant already enforced by tests: `GetStates_ShouldCoverEveryAddressState_WhenAllCountriesAreCombined` asserts that the union of the three catalogs equals every value of the `AddressState` enum, and `GetStates_ShouldNotRepeatStates_WhenAllCountriesAreCombined` asserts the entries are unique. Together they guarantee that every defined enum value belongs to exactly one country array.
+
+1. **Equality mutant (`==` to `!=`) on the Canada check:**
+   Per the invariant, execution reaches the Canada check only for a defined enum value found in neither the Mexico nor the United States arrays, which must therefore belong to the Canada array.
+   - **State catalogued for Canada (the only reachable case at this line):** both the original `Any(entry => entry.State == state)` and the mutated `Any(entry => entry.State != state)` evaluate to `true` (the array holds 13 entries, at least 12 of which differ from `state`), so both return `Country.Canada`.
+   - **State not catalogued for Canada (the only divergent case):** the original evaluates to `false` and falls through to the `throw`; the mutant evaluates to `true` and returns `Country.Canada`. Such an input would require a defined enum value absent from all three catalogs, which the invariant rules out. The divergent input cannot exist.
+
+   The mutant is therefore an **equivalent mutant**: no input reachable through the public API distinguishes it, and no test can kill it without first breaking the catalog-completeness invariant the test suite itself protects.
+
+2. **Statement mutant removing the final `throw`:**
+   The `throw` executes only for a defined enum value present in none of the three catalogs. No such value exists per the invariant, so the statement is unreachable by design, which is why the mutant reports as `NoCoverage`. A `NoCoverage` mutant counts against the score (see [Effect on Mutation Score](#effect-on-mutation-score)); the complementary existing test `GetCountry_ShouldThrowException_WhenStateIsUndefined` uses `(AddressState)999`, which is rejected by `Guard.IsDefined` before the statement is ever reached, so the final throw is genuinely untestable.
+
+3. **Why a suppression instead of a restructure:**
+   Three alternatives were considered and rejected on 2026-10-20:
+   - **Exhaustive tail (`return Country.Canada;` without a guard):** deletes the defensive throw. Adding a new country together with its states later would silently map that country's states to Canada at runtime until the completeness test fails in CI, leaving the shipped runtime behavior wrong in the interim. The `throw` fails fast instead.
+   - **Dictionary lookup (`Catalog[state]`):** structurally removes both mutants, but replaces the defensive branch with the BCL `KeyNotFoundException` on the (currently unreachable) failure path, weakening the failure mode without any behavioral benefit on reach inputs, and reformats working code.
+   - **Global mutator exclusions in `stryker-config.json`:** would disable genuinely testable `Equality` and `Statement` mutants across the whole project in exchange for addressing two structurally unkillable ones.
+   
+   The `if`-chain is also the structure that best supports the evolve case above: a future country contributes one more `if (Entries.Any(entry => entry.State == state)) return Country.X;` line before the same catch-all throw, with the catalog-completeness tests extended to the new array.
+
+4. **Conclusion:**
+   Suppressed via `// Stryker disable once Equality` on the Canada check and `// Stryker disable once Statement` on the catch-all throw, each pointing back to this section. Both comments were verified in a fresh local Domain run after being added: the `Equality` mutant that previously reported as `Survived` and the `Statement` mutant that previously reported as `NoCoverage` both now report as `Ignored`, confirming the comments are effective and correctly placed. The behavioral half of `GetCountry` remains fully under test via `GetCountry_ShouldReturnCountry_WhenStateIsDefined` (one representative state per country) and the `Guard.IsDefined` rejection tests.
+
 ---
 
 ## Local Verification Protocol
