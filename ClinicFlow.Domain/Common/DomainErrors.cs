@@ -32,6 +32,15 @@ public static class DomainErrors
         public const string DuplicateValues = "DUPLICATE_VALUES";
     }
 
+    public static class Address
+    {
+        public const string InvalidLineFormat = "INVALID_ADDRESS_LINE_FORMAT";
+        public const string InvalidPostalCode = "INVALID_POSTAL_CODE_FORMAT";
+        public const string StateCountryMismatch = "ADDRESS_STATE_COUNTRY_MISMATCH";
+        public const string StateNotInCatalog = "ADDRESS_STATE_NOT_IN_CATALOG";
+        public const string CountryNotInCatalog = "ADDRESS_COUNTRY_NOT_IN_CATALOG";
+    }
+
     public static class Appointment
     {
         public const string CannotCancel = "CANCELLATION_NOT_ALLOWED";
