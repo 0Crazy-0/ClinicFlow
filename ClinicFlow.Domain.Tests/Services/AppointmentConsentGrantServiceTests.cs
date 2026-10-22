@@ -183,8 +183,15 @@ public class AppointmentConsentGrantServiceTests
                 .FromDateTime(_fakeTime.GetUtcNow().UtcDateTime)
                 .AddYears(-DomainRules.AdultAge),
             BiologicalSex.Male,
+            Address.Create(
+                "123 Main Street",
+                AddressState.California,
+                "90210",
+                Country.UnitedStates
+            ),
             _fakeTime.GetUtcNow().UtcDateTime
         );
+
         var requesterUserId = Guid.CreateVersion7();
         var context = new AppointmentCategoryConsentGrantContext
         {
@@ -219,6 +226,12 @@ public class AppointmentConsentGrantServiceTests
             PersonName.Create("Jane Doe"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime).AddYears(-10),
             BiologicalSex.Male,
+            Address.Create(
+                "123 Main Street",
+                AddressState.California,
+                "90210",
+                Country.UnitedStates
+            ),
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -554,6 +567,12 @@ public class AppointmentConsentGrantServiceTests
                 .FromDateTime(_fakeTime.GetUtcNow().UtcDateTime)
                 .AddYears(-DomainRules.AdultAge),
             BiologicalSex.Male,
+            Address.Create(
+                "123 Main Street",
+                AddressState.California,
+                "90210",
+                Country.UnitedStates
+            ),
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -701,6 +720,12 @@ public class AppointmentConsentGrantServiceTests
             PersonName.Create("Jane Doe"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime).AddYears(-10),
             BiologicalSex.Male,
+            Address.Create(
+                "123 Main Street",
+                AddressState.California,
+                "90210",
+                Country.UnitedStates
+            ),
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -806,6 +831,12 @@ public class AppointmentConsentGrantServiceTests
             PersonName.Create("Crazy"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime).AddYears(-15),
             BiologicalSex.Male,
+            Address.Create(
+                "123 Main Street",
+                AddressState.California,
+                "90210",
+                Country.UnitedStates
+            ),
             _fakeTime.GetUtcNow().UtcDateTime
         );
 

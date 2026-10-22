@@ -903,6 +903,12 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
             PersonName.Create("Patient"),
             new DateOnly(1990, 1, 1),
             BiologicalSex.Male,
+            Address.Create(
+                "123 Main Street",
+                AddressState.California,
+                "90210",
+                Country.UnitedStates
+            ),
             _fakeTime.GetLocalNow().DateTime
         );
 

@@ -23,6 +23,13 @@ public sealed class CreatePatientProfileCommandHandler(
     )
     {
         var fullName = PersonName.Create($"{request.FirstName} {request.LastName}");
+        var homeAddress = Address.Create(
+            request.AddressLine,
+            request.AddressState,
+            request.AddressPostalCode,
+            request.AddressCountry
+        );
+
         var lockKey = DeterministicKeyGenerator.FromComposite(
             fullName.FullName.Trim().ToUpperInvariant(),
             request.DateOfBirth.ToString("yyyy-MM-dd")
@@ -51,6 +58,7 @@ public sealed class CreatePatientProfileCommandHandler(
                         FullName = fullName,
                         DateOfBirth = request.DateOfBirth,
                         SexAtBirth = request.SexAtBirth,
+                        HomeAddress = homeAddress,
                     },
                     new PrimaryProfileRegistrationContext
                     {

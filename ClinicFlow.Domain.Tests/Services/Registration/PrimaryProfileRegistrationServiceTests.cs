@@ -30,6 +30,7 @@ public class PrimaryProfileRegistrationServiceTests
         patient.FullName.Should().Be(args.FullName);
         patient.DateOfBirth.Should().Be(args.DateOfBirth);
         patient.SexAtBirth.Should().Be(args.SexAtBirth);
+        patient.HomeAddress.Should().Be(args.HomeAddress);
 
         membership.PatientId.Should().Be(patient.Id);
         membership.UserId.Should().Be(userId);
@@ -46,6 +47,12 @@ public class PrimaryProfileRegistrationServiceTests
             PersonName.Create("Test Patient"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             BiologicalSex.Male,
+            Address.Create(
+                "123 Main Street",
+                AddressState.California,
+                "90210",
+                Country.UnitedStates
+            ),
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -203,6 +210,12 @@ public class PrimaryProfileRegistrationServiceTests
             PersonName.Create("Test Patient"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-11)),
             BiologicalSex.Male,
+            Address.Create(
+                "123 Main Street",
+                AddressState.California,
+                "90210",
+                Country.UnitedStates
+            ),
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -227,11 +240,53 @@ public class PrimaryProfileRegistrationServiceTests
             PersonName.Create("Test Patient"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             BiologicalSex.Male,
+            Address.Create(
+                "123 Main Street",
+                AddressState.California,
+                "90210",
+                Country.UnitedStates
+            ),
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
         var userId = Guid.CreateVersion7();
         var args = CreateValidArgs() with { SexAtBirth = BiologicalSex.Female };
+        var context = CreateValidContext(userId) with { ExistingPatient = existingPatient };
+
+        // Act
+        var act = () => PrimaryProfileRegistrationService.Register(args, context);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Patient.DataMismatch);
+    }
+
+    [Fact]
+    public void Register_ShouldThrowDataMismatch_WhenExistingPatientAddressDiffers()
+    {
+        // Arrange
+        var existingPatient = Patient.CreateProfile(
+            PersonName.Create("Test Patient"),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            BiologicalSex.Male,
+            Address.Create(
+                "123 Main Street",
+                AddressState.California,
+                "90210",
+                Country.UnitedStates
+            ),
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        var userId = Guid.CreateVersion7();
+        var differentAddress = Address.Create(
+            "456 Oak Avenue",
+            AddressState.California,
+            "90210",
+            Country.UnitedStates
+        );
+        var args = CreateValidArgs() with { HomeAddress = differentAddress };
         var context = CreateValidContext(userId) with { ExistingPatient = existingPatient };
 
         // Act
@@ -249,6 +304,12 @@ public class PrimaryProfileRegistrationServiceTests
             FullName = PersonName.Create("Test Patient"),
             DateOfBirth = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             SexAtBirth = BiologicalSex.Male,
+            HomeAddress = Address.Create(
+                "123 Main Street",
+                AddressState.California,
+                "90210",
+                Country.UnitedStates
+            ),
         };
 
     private PrimaryProfileRegistrationContext CreateValidContext(Guid userId) =>

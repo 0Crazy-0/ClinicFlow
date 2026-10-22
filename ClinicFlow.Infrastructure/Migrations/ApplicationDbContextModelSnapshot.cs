@@ -1013,6 +1013,41 @@ namespace ClinicFlow.Infrastructure.Migrations
 
             modelBuilder.Entity("ClinicFlow.Domain.Entities.Patient", b =>
                 {
+                    b.OwnsOne("ClinicFlow.Domain.ValueObjects.Address", "HomeAddress", b1 =>
+                        {
+                            b1.Property<Guid>("PatientId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("Country")
+                                .IsRequired()
+                                .HasColumnType("text")
+                                .HasColumnName("HomeAddressCountry");
+
+                            b1.Property<string>("Line")
+                                .IsRequired()
+                                .HasMaxLength(200)
+                                .HasColumnType("character varying(200)")
+                                .HasColumnName("HomeAddressLine");
+
+                            b1.Property<string>("PostalCode")
+                                .IsRequired()
+                                .HasMaxLength(10)
+                                .HasColumnType("character varying(10)")
+                                .HasColumnName("HomeAddressPostalCode");
+
+                            b1.Property<string>("State")
+                                .IsRequired()
+                                .HasColumnType("text")
+                                .HasColumnName("HomeAddressState");
+
+                            b1.HasKey("PatientId");
+
+                            b1.ToTable("Patients");
+
+                            b1.WithOwner()
+                                .HasForeignKey("PatientId");
+                        });
+
                     b.OwnsOne("ClinicFlow.Domain.ValueObjects.EmergencyContact", "Contact", b1 =>
                         {
                             b1.Property<Guid>("PatientId")
@@ -1039,6 +1074,9 @@ namespace ClinicFlow.Infrastructure.Migrations
                         });
 
                     b.Navigation("Contact")
+                        .IsRequired();
+
+                    b.Navigation("HomeAddress")
                         .IsRequired();
                 });
 

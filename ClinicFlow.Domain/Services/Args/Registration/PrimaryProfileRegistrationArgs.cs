@@ -8,4 +8,5 @@ public sealed record PrimaryProfileRegistrationArgs
     public required PersonName FullName { get; init; }
     public DateOnly DateOfBirth { get; init; }
     public BiologicalSex SexAtBirth { get; init; }
+    public required Address HomeAddress { get; init; }
 }

@@ -24,6 +24,12 @@ public class PatientTests
         var allergies = "Penicillin";
         var chronicConditions = "None";
         var emergencyContact = EmergencyContact.Create("Mom", "555-5555");
+        var homeAddress = Address.Create(
+            "123 Main Street",
+            AddressState.California,
+            "90210",
+            Country.UnitedStates
+        );
         var sexAtBirth = BiologicalSex.Female;
 
         // Act
@@ -31,6 +37,7 @@ public class PatientTests
             fullName,
             dateOfBirth,
             sexAtBirth,
+            homeAddress,
             _fakeTime.GetUtcNow().UtcDateTime
         );
         patient.UpdateMedicalProfile(bloodType, allergies, chronicConditions);
@@ -45,6 +52,7 @@ public class PatientTests
         patient.Allergies.Should().Be(allergies);
         patient.ChronicConditions.Should().Be(chronicConditions);
         patient.Contact.Should().Be(emergencyContact);
+        patient.HomeAddress.Should().Be(homeAddress);
     }
 
     [Theory]
@@ -63,6 +71,12 @@ public class PatientTests
             fullName,
             dateOfBirth,
             biologicalSex,
+            Address.Create(
+                "123 Main Street",
+                AddressState.California,
+                "90210",
+                Country.UnitedStates
+            ),
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -82,6 +96,12 @@ public class PatientTests
                 PersonName.Create("John Doe"),
                 DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
                 BiologicalSex.Male,
+                Address.Create(
+                    "123 Main Street",
+                    AddressState.California,
+                    "90210",
+                    Country.UnitedStates
+                ),
                 _fakeTime.GetUtcNow().UtcDateTime
             );
 
@@ -100,6 +120,31 @@ public class PatientTests
                 null!,
                 DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
                 BiologicalSex.Male,
+                Address.Create(
+                    "123 Main Street",
+                    AddressState.California,
+                    "90210",
+                    Country.UnitedStates
+                ),
+                _fakeTime.GetUtcNow().UtcDateTime
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
+    public void CreateProfile_ShouldThrowException_WhenAddressIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            Patient.CreateProfile(
+                PersonName.Create("John Doe"),
+                DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+                BiologicalSex.Male,
+                null!,
                 _fakeTime.GetUtcNow().UtcDateTime
             );
 
@@ -118,6 +163,12 @@ public class PatientTests
                 PersonName.Create("Crazy"),
                 DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-67)),
                 (BiologicalSex)967,
+                Address.Create(
+                    "123 Main Street",
+                    AddressState.California,
+                    "90210",
+                    Country.UnitedStates
+                ),
                 _fakeTime.GetUtcNow().UtcDateTime
             );
 
@@ -136,6 +187,12 @@ public class PatientTests
                 PersonName.Create("John Doe"),
                 DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
                 BiologicalSex.Unspecified,
+                Address.Create(
+                    "123 Main Street",
+                    AddressState.California,
+                    "90210",
+                    Country.UnitedStates
+                ),
                 _fakeTime.GetUtcNow().UtcDateTime
             );
 
@@ -158,6 +215,12 @@ public class PatientTests
                 PersonName.Create("John Doe"),
                 dateOfBirth,
                 BiologicalSex.Male,
+                Address.Create(
+                    "123 Main Street",
+                    AddressState.California,
+                    "90210",
+                    Country.UnitedStates
+                ),
                 referenceTime
             );
 
@@ -169,12 +232,7 @@ public class PatientTests
     public void EnsureCompleteProfile_ShouldNotThrow_WhenProfileIsComplete()
     {
         // Arrange
-        var patient = Patient.CreateProfile(
-            PersonName.Create("John Doe"),
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
-            BiologicalSex.Male,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
+        var patient = CreateValidPatient();
         patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
         patient.UpdateEmergencyContact(EmergencyContact.Create("Mom", "555-5555"));
 
@@ -186,12 +244,7 @@ public class PatientTests
     public void EnsureCompleteProfile_ShouldThrowIncompleteProfileException_WhenProfileIsIncomplete()
     {
         // Arrange
-        var patient = Patient.CreateProfile(
-            PersonName.Create("John Doe"),
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
-            BiologicalSex.Male,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
+        var patient = CreateValidPatient();
 
         // Act && Assert
         patient
@@ -205,12 +258,7 @@ public class PatientTests
     public void EnsureCompleteProfile_ShouldThrowIncompleteProfileException_WhenBloodTypeIsNullAndEmergencyContactHasValue()
     {
         // Arrange
-        var patient = Patient.CreateProfile(
-            PersonName.Create("John Doe"),
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
-            BiologicalSex.Male,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
+        var patient = CreateValidPatient();
         patient.UpdateEmergencyContact(EmergencyContact.Create("Mom", "555-5555"));
 
         // Act & Assert
@@ -225,12 +273,7 @@ public class PatientTests
     public void EnsureCompleteProfile_ShouldThrowIncompleteProfileException_WhenBloodTypeHasValueAndEmergencyContactIsNull()
     {
         // Arrange
-        var patient = Patient.CreateProfile(
-            PersonName.Create("John Doe"),
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
-            BiologicalSex.Male,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
+        var patient = CreateValidPatient();
         patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
 
         // Act & Assert
@@ -245,12 +288,7 @@ public class PatientTests
     public void UpdateMedicalProfile_ShouldSetEmptyString_WhenNullStringsAreProvided()
     {
         // Arrange
-        var patient = Patient.CreateProfile(
-            PersonName.Create("John Doe"),
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
-            BiologicalSex.Male,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
+        var patient = CreateValidPatient();
         var bloodType = BloodType.Create("A-");
 
         // Act
@@ -266,12 +304,7 @@ public class PatientTests
     public void CorrectBiologicalSex_ShouldUpdateValueAndEmitEvent_WhenNewSexDiffers()
     {
         // Arrange
-        var patient = Patient.CreateProfile(
-            PersonName.Create("John Doe"),
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
-            BiologicalSex.Male,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
+        var patient = CreateValidPatient();
 
         var correctedByDoctorId = Guid.CreateVersion7();
         var reason = "reason";
@@ -306,6 +339,12 @@ public class PatientTests
             PersonName.Create("John Doe"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             BiologicalSex.Female,
+            Address.Create(
+                "123 Main Street",
+                AddressState.California,
+                "90210",
+                Country.UnitedStates
+            ),
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -330,12 +369,7 @@ public class PatientTests
     public void CorrectBiologicalSex_ShouldThrowDomainValidationException_WhenCorrectedSexIsUndefined()
     {
         // Arrange
-        var patient = Patient.CreateProfile(
-            PersonName.Create("John Doe"),
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
-            BiologicalSex.Male,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
+        var patient = CreateValidPatient();
 
         // Act
         var act = () =>
@@ -356,12 +390,7 @@ public class PatientTests
     public void CorrectBiologicalSex_ShouldThrowDomainValidationException_WhenCorrectedSexIsUnspecified()
     {
         // Arrange
-        var patient = Patient.CreateProfile(
-            PersonName.Create("John Doe"),
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
-            BiologicalSex.Male,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
+        var patient = CreateValidPatient();
 
         // Act
         var act = () =>
@@ -387,12 +416,7 @@ public class PatientTests
     )
     {
         // Arrange
-        var patient = Patient.CreateProfile(
-            PersonName.Create("John Doe"),
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
-            BiologicalSex.Male,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
+        var patient = CreateValidPatient();
 
         // Act
         var act = () =>
@@ -413,12 +437,7 @@ public class PatientTests
     public void CorrectBiologicalSex_ShouldThrowDomainValidationException_WhenCorrectedByDoctorIdIsEmpty()
     {
         // Arrange
-        var patient = Patient.CreateProfile(
-            PersonName.Create("John Doe"),
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
-            BiologicalSex.Male,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
+        var patient = CreateValidPatient();
 
         // Act
         var act = () =>
@@ -439,12 +458,7 @@ public class PatientTests
     public void CorrectBiologicalSex_ShouldThrowDomainValidationException_WhenReasonIsTooLong()
     {
         // Arrange
-        var patient = Patient.CreateProfile(
-            PersonName.Create("John Doe"),
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
-            BiologicalSex.Male,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
+        var patient = CreateValidPatient();
 
         // Act
         var act = () =>
@@ -465,12 +479,7 @@ public class PatientTests
     public void CorrectBiologicalSex_ShouldNotThrowException_WhenReasonIsAtMaxLength()
     {
         // Arrange
-        var patient = Patient.CreateProfile(
-            PersonName.Create("John Doe"),
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
-            BiologicalSex.Male,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
+        var patient = CreateValidPatient();
         var reason = new string('A', Patient.MaxCorrectionReasonLength);
 
         // Act
@@ -497,6 +506,12 @@ public class PatientTests
             PersonName.Create("John Doe"),
             DateOnly.FromDateTime(referenceTime.AddYears(-yearsAgo)),
             BiologicalSex.Male,
+            Address.Create(
+                "123 Main Street",
+                AddressState.California,
+                "90210",
+                Country.UnitedStates
+            ),
             referenceTime
         );
 
@@ -516,6 +531,12 @@ public class PatientTests
             PersonName.Create("John Doe"),
             new DateOnly(2000, 6, 20),
             BiologicalSex.Male,
+            Address.Create(
+                "123 Main Street",
+                AddressState.California,
+                "90210",
+                Country.UnitedStates
+            ),
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -525,4 +546,18 @@ public class PatientTests
         // Assert
         age.Should().Be(25);
     }
+
+    private Patient CreateValidPatient() =>
+        Patient.CreateProfile(
+            PersonName.Create("John Doe"),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            BiologicalSex.Male,
+            Address.Create(
+                "123 Main Street",
+                AddressState.California,
+                "90210",
+                Country.UnitedStates
+            ),
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
 }

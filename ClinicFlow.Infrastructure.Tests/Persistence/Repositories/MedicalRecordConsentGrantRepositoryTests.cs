@@ -543,6 +543,12 @@ public class MedicalRecordConsentGrantRepositoryTests(PostgresFixture fixture) :
             PersonName.Create("John Doe"),
             DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime.AddYears(-30)),
             BiologicalSex.Male,
+            Address.Create(
+                "123 Main Street",
+                AddressState.California,
+                "90210",
+                Country.UnitedStates
+            ),
             _fakeTime.GetLocalNow().DateTime
         );
 

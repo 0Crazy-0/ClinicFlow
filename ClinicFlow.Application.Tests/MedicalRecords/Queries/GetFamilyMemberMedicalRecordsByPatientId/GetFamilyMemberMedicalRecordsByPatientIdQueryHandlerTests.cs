@@ -613,6 +613,12 @@ public class GetFamilyMemberMedicalRecordsByPatientIdQueryHandlerTests
             PersonName.Create("John Doe"),
             DateOnly.FromDateTime(referenceTime.AddYears(-age)),
             BiologicalSex.Male,
+            Address.Create(
+                "123 Main Street",
+                AddressState.California,
+                "90210",
+                Country.UnitedStates
+            ),
             referenceTime
         );
     }

@@ -11,5 +11,9 @@ public sealed record AddFamilyMemberCommand(
     PatientRelationship Relationship,
     LegalAuthorityType LegalAuthority,
     FamilyMembershipAccessLevel AccessLevel,
-    BiologicalSex SexAtBirth
+    BiologicalSex SexAtBirth,
+    string AddressLine,
+    AddressState AddressState,
+    string AddressPostalCode,
+    Country AddressCountry
 ) : IRequest<Guid>;

@@ -814,6 +814,12 @@ public class AppointmentCancellationServiceTests
             PersonName.Create("Test"),
             dateOfBirth,
             BiologicalSex.Male,
+            Address.Create(
+                "123 Main Street",
+                AddressState.California,
+                "90210",
+                Country.UnitedStates
+            ),
             _fakeTime.GetUtcNow().UtcDateTime
         );
         patient.SetId(id);

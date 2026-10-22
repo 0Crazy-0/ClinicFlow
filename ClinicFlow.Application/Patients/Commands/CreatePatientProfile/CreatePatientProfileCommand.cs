@@ -8,5 +8,9 @@ public sealed record CreatePatientProfileCommand(
     string FirstName,
     string LastName,
     DateOnly DateOfBirth,
-    BiologicalSex SexAtBirth
+    BiologicalSex SexAtBirth,
+    string AddressLine,
+    AddressState AddressState,
+    string AddressPostalCode,
+    Country AddressCountry
 ) : IRequest<Guid>;
