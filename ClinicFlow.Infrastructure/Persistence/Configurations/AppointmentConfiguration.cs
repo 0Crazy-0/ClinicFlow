@@ -55,13 +55,16 @@ public sealed class AppointmentConfiguration : IEntityTypeConfiguration<Appointm
             a.SequenceNumber,
         });
 
-        builder.HasComplexCompositeIndex(a => new
-        {
-            a.PatientId,
-            a.ScheduledDate,
-            a.TimeSlot.Start,
-            a.SequenceNumber,
-        });
+        builder.HasComplexCompositeIndex(
+            a => new
+            {
+                a.PatientId,
+                a.ScheduledDate,
+                a.TimeSlot.Start,
+                a.SequenceNumber,
+            },
+            indexName: "IX_Appointments_PatientId_ScheduledDate_StartTime_SeqNum"
+        );
 
         builder.HasComplexCompositeIndex(a => new
         {
