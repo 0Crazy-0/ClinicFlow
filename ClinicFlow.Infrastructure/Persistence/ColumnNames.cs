@@ -26,6 +26,10 @@ internal static class ColumnNames
     {
         public const string EmergencyContactName = "EmergencyContactName";
         public const string EmergencyContactPhone = "EmergencyContactPhone";
+        public const string HomeAddressLine = "HomeAddressLine";
+        public const string HomeAddressState = "HomeAddressState";
+        public const string HomeAddressPostalCode = "HomeAddressPostalCode";
+        public const string HomeAddressCountry = "HomeAddressCountry";
     }
 
     internal static class Schedule

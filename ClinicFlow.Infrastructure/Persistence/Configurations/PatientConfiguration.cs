@@ -38,5 +38,28 @@ public sealed class PatientConfiguration : IEntityTypeConfiguration<Patient>
                     .HasMaxLength(PhoneNumber.MaximumLength);
             }
         );
+
+        builder.OwnsOne(
+            p => p.HomeAddress,
+            address =>
+            {
+                address
+                    .Property(a => a.Line)
+                    .HasColumnName(ColumnNames.Patient.HomeAddressLine)
+                    .HasMaxLength(Address.LineMaximumLength);
+                address
+                    .Property(a => a.State)
+                    .HasConversion<string>()
+                    .HasColumnName(ColumnNames.Patient.HomeAddressState);
+                address
+                    .Property(a => a.PostalCode)
+                    .HasColumnName(ColumnNames.Patient.HomeAddressPostalCode)
+                    .HasMaxLength(Address.PostalCodeMaximumLength);
+                address
+                    .Property(a => a.Country)
+                    .HasConversion<string>()
+                    .HasColumnName(ColumnNames.Patient.HomeAddressCountry);
+            }
+        );
     }
 }
