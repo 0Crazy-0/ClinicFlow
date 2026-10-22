@@ -26,6 +26,12 @@ public sealed class AddFamilyMemberCommandHandler(
     )
     {
         var fullName = PersonName.Create($"{request.FirstName} {request.LastName}");
+        var homeAddress = Address.Create(
+            request.AddressLine,
+            request.AddressState,
+            request.AddressPostalCode,
+            request.AddressCountry
+        );
 
         return await unitOfWork.ExecuteWithLockAsync(
             request.UserId,
@@ -84,6 +90,7 @@ public sealed class AddFamilyMemberCommandHandler(
                         FullName = fullName,
                         DateOfBirth = request.DateOfBirth,
                         SexAtBirth = request.SexAtBirth,
+                        HomeAddress = homeAddress,
                     },
                     new FamilyMemberRegistrationContext
                     {

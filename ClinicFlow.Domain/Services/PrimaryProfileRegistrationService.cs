@@ -31,7 +31,10 @@ public static class PrimaryProfileRegistrationService
 
         if (
             context.ExistingPatient is not null
-            && context.ExistingPatient.SexAtBirth != args.SexAtBirth
+            && (
+                context.ExistingPatient.SexAtBirth != args.SexAtBirth
+                || context.ExistingPatient.HomeAddress != args.HomeAddress
+            )
         )
             throw new DomainValidationException(DomainErrors.Patient.DataMismatch);
 
@@ -41,6 +44,7 @@ public static class PrimaryProfileRegistrationService
                 args.FullName,
                 args.DateOfBirth,
                 args.SexAtBirth,
+                args.HomeAddress,
                 context.ReferenceTime
             );
 

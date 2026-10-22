@@ -40,6 +40,12 @@ public class RemoveAllowedAppointmentCategoryCommandHandlerTests
             PersonName.Create("Jane Doe"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-25)),
             BiologicalSex.Male,
+            Address.Create(
+                "123 Main Street",
+                AddressState.California,
+                "90210",
+                Country.UnitedStates
+            ),
             _fakeTime.GetUtcNow().UtcDateTime
         );
         var membership = CreateRestrictedMembership(patient.Id, targetUserId);
@@ -93,6 +99,12 @@ public class RemoveAllowedAppointmentCategoryCommandHandlerTests
             PersonName.Create("John Doe"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10)),
             BiologicalSex.Male,
+            Address.Create(
+                "123 Main Street",
+                AddressState.California,
+                "90210",
+                Country.UnitedStates
+            ),
             _fakeTime.GetUtcNow().UtcDateTime
         );
 

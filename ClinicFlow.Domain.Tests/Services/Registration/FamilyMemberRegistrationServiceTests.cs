@@ -29,6 +29,8 @@ public class FamilyMemberRegistrationServiceTests
         // Assert
         patient.FullName.Should().Be(args.FullName);
         patient.DateOfBirth.Should().Be(args.DateOfBirth);
+        patient.SexAtBirth.Should().Be(BiologicalSex.Male);
+        patient.HomeAddress.Should().Be(args.HomeAddress);
 
         membership.PatientId.Should().Be(patient.Id);
         membership.UserId.Should().Be(ownerUserId);
@@ -46,6 +48,12 @@ public class FamilyMemberRegistrationServiceTests
             PersonName.Create("Test Patient"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             BiologicalSex.Male,
+            Address.Create(
+                "123 Main Street",
+                AddressState.California,
+                "90210",
+                Country.UnitedStates
+            ),
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -199,6 +207,12 @@ public class FamilyMemberRegistrationServiceTests
             PersonName.Create("Test Patient"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             BiologicalSex.Male,
+            Address.Create(
+                "123 Main Street",
+                AddressState.California,
+                "90210",
+                Country.UnitedStates
+            ),
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -218,6 +232,47 @@ public class FamilyMemberRegistrationServiceTests
             .WithMessage(DomainErrors.Patient.DataMismatch);
     }
 
+    [Fact]
+    public void Register_ShouldThrowDataMismatch_WhenExistingPatientAddressDiffers()
+    {
+        // Arrange
+        var existingPatient = Patient.CreateProfile(
+            PersonName.Create("Test Patient"),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            BiologicalSex.Male,
+            Address.Create(
+                "123 Main Street",
+                AddressState.California,
+                "90210",
+                Country.UnitedStates
+            ),
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        var ownerUserId = Guid.CreateVersion7();
+        var differentAddress = Address.Create(
+            "456 Oak Avenue",
+            AddressState.California,
+            "90210",
+            Country.UnitedStates
+        );
+
+        var args = CreateValidArgs(PatientRelationship.Spouse) with
+        {
+            HomeAddress = differentAddress,
+        };
+
+        var context = CreateValidContext(ownerUserId) with { ExistingPatient = existingPatient };
+
+        // Act
+        var act = () => FamilyMemberRegistrationService.Register(args, context);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Patient.DataMismatch);
+    }
+
     private FamilyMemberRegistrationArgs CreateValidArgs(PatientRelationship role) =>
         new()
         {
@@ -226,6 +281,12 @@ public class FamilyMemberRegistrationServiceTests
             FullName = PersonName.Create("Test Patient"),
             DateOfBirth = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             SexAtBirth = BiologicalSex.Male,
+            HomeAddress = Address.Create(
+                "123 Main Street",
+                AddressState.California,
+                "90210",
+                Country.UnitedStates
+            ),
         };
 
     private FamilyMemberRegistrationContext CreateValidContext(Guid ownerUserId) =>

@@ -634,6 +634,12 @@ public class RescheduleByPatientTests
             PersonName.Create("Test"),
             newDate.AddYears(-FamilyMembership.MinimumAdultAge),
             BiologicalSex.Male,
+            Address.Create(
+                "123 Main Street",
+                AddressState.California,
+                "90210",
+                Country.UnitedStates
+            ),
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -786,6 +792,12 @@ public class RescheduleByPatientTests
             PersonName.Create("Child"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10)),
             BiologicalSex.Male,
+            Address.Create(
+                "123 Main Street",
+                AddressState.California,
+                "90210",
+                Country.UnitedStates
+            ),
             _fakeTime.GetUtcNow().UtcDateTime
         );
         patient.UpdateMedicalProfile(BloodType.Create("A+"), "", "");
@@ -852,6 +864,12 @@ public class RescheduleByPatientTests
             PersonName.Create("Test"),
             dateOfBirth,
             BiologicalSex.Male,
+            Address.Create(
+                "123 Main Street",
+                AddressState.California,
+                "90210",
+                Country.UnitedStates
+            ),
             _fakeTime.GetUtcNow().UtcDateTime
         );
         patient.UpdateMedicalProfile(BloodType.Create("A+"), "", "");

@@ -49,5 +49,21 @@ public sealed class AddFamilyMemberCommandValidator : AbstractValidator<AddFamil
             .WithMessage(DomainErrors.Validation.InvalidEnumValue)
             .NotEqual(BiologicalSex.Unspecified)
             .WithMessage(DomainErrors.Validation.ValueRequired);
+        RuleFor(x => x.AddressLine)
+            .NotEmpty()
+            .WithMessage(DomainErrors.Validation.ValueRequired)
+            .MaximumLength(Address.LineMaximumLength)
+            .WithMessage(DomainErrors.Validation.ValueTooLong);
+        RuleFor(x => x.AddressState)
+            .IsInEnum()
+            .WithMessage(DomainErrors.Validation.InvalidEnumValue);
+        RuleFor(x => x.AddressPostalCode)
+            .NotEmpty()
+            .WithMessage(DomainErrors.Validation.ValueRequired)
+            .MaximumLength(Address.PostalCodeMaximumLength)
+            .WithMessage(DomainErrors.Validation.ValueTooLong);
+        RuleFor(x => x.AddressCountry)
+            .IsInEnum()
+            .WithMessage(DomainErrors.Validation.InvalidEnumValue);
     }
 }

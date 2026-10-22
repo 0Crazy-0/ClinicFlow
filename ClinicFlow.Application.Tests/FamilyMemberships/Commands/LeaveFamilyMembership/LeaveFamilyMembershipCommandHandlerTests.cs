@@ -45,6 +45,12 @@ public class LeaveFamilyMembershipCommandHandlerTests
             PersonName.Create("Adult Member"),
             dateOfBirth: DateOnly.FromDateTime(leaveTime.AddYears(-20)),
             BiologicalSex.Male,
+            Address.Create(
+                "123 Main Street",
+                AddressState.California,
+                "90210",
+                Country.UnitedStates
+            ),
             startedAt
         );
 

@@ -1778,6 +1778,12 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             PersonName.Create("Minor Child"),
             DateOnly.FromDateTime(refTime.AddYears(-5)),
             BiologicalSex.Male,
+            Address.Create(
+                "123 Main Street",
+                AddressState.California,
+                "90210",
+                Country.UnitedStates
+            ),
             refTime
         );
         minorPatient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
@@ -1836,6 +1842,12 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             PersonName.Create("Minor Child"),
             DateOnly.FromDateTime(refTime.AddYears(-5)),
             BiologicalSex.Male,
+            Address.Create(
+                "123 Main Street",
+                AddressState.California,
+                "90210",
+                Country.UnitedStates
+            ),
             refTime
         );
         minorPatient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
@@ -1888,6 +1900,12 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             PersonName.Create("Adult Patient"),
             DateOnly.FromDateTime(refTime.AddYears(-25)),
             BiologicalSex.Male,
+            Address.Create(
+                "123 Main Street",
+                AddressState.California,
+                "90210",
+                Country.UnitedStates
+            ),
             refTime
         );
 
@@ -1931,6 +1949,12 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             PersonName.Create("Minor Child"),
             DateOnly.FromDateTime(refTime.AddYears(-5)),
             BiologicalSex.Male,
+            Address.Create(
+                "123 Main Street",
+                AddressState.California,
+                "90210",
+                Country.UnitedStates
+            ),
             refTime
         );
         minorPatient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
@@ -1983,6 +2007,12 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             PersonName.Create("Minor Child"),
             DateOnly.FromDateTime(refTime.AddYears(-5)),
             BiologicalSex.Male,
+            Address.Create(
+                "123 Main Street",
+                AddressState.California,
+                "90210",
+                Country.UnitedStates
+            ),
             refTime
         );
         minorPatient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
@@ -2042,6 +2072,12 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             PersonName.Create("Minor Child"),
             DateOnly.FromDateTime(refTime.AddYears(-5)),
             BiologicalSex.Male,
+            Address.Create(
+                "123 Main Street",
+                AddressState.California,
+                "90210",
+                Country.UnitedStates
+            ),
             refTime
         );
         minorPatient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
@@ -2100,6 +2136,12 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             PersonName.Create("Minor Child"),
             DateOnly.FromDateTime(refTime.AddYears(-5)),
             BiologicalSex.Male,
+            Address.Create(
+                "123 Main Street",
+                AddressState.California,
+                "90210",
+                Country.UnitedStates
+            ),
             refTime
         );
         minorPatient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
@@ -2158,6 +2200,12 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             PersonName.Create("Minor Child"),
             DateOnly.FromDateTime(refTime.AddYears(-5)),
             BiologicalSex.Male,
+            Address.Create(
+                "123 Main Street",
+                AddressState.California,
+                "90210",
+                Country.UnitedStates
+            ),
             refTime
         );
         minorPatient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
@@ -3089,6 +3137,12 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             PersonName.Create("John Doe"),
             DateOnly.FromDateTime(refTime.AddYears(-30)),
             BiologicalSex.Male,
+            Address.Create(
+                "123 Main Street",
+                AddressState.California,
+                "90210",
+                Country.UnitedStates
+            ),
             refTime
         );
 

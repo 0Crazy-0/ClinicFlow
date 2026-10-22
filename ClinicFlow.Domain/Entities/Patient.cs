@@ -31,25 +31,35 @@ public class Patient : BaseEntity
 
     public EmergencyContact Contact { get; private set; } = null!;
 
+    public Address HomeAddress { get; private set; } = null!;
+
     // EF Core constructor
     private Patient() { }
 
-    private Patient(PersonName fullName, DateOnly dateOfBirth, BiologicalSex biologicalSex)
+    private Patient(
+        PersonName fullName,
+        DateOnly dateOfBirth,
+        BiologicalSex biologicalSex,
+        Address homeAddress
+    )
         : this()
     {
         FullName = fullName;
         DateOfBirth = dateOfBirth;
         SexAtBirth = biologicalSex;
+        HomeAddress = homeAddress;
     }
 
     internal static Patient CreateProfile(
         PersonName fullName,
         DateOnly dateOfBirth,
         BiologicalSex biologicalSex,
+        Address homeAddress,
         DateTime referenceTime
     )
     {
         Guard.NotNull(fullName);
+        Guard.NotNull(homeAddress);
         Guard.IsDefined(biologicalSex);
 
         if (biologicalSex is BiologicalSex.Unspecified)
@@ -58,7 +68,7 @@ public class Patient : BaseEntity
         if (dateOfBirth > DateOnly.FromDateTime(referenceTime))
             throw new DomainValidationException(DomainErrors.Validation.ValueCannotBeInFuture);
 
-        return new Patient(fullName, dateOfBirth, biologicalSex);
+        return new Patient(fullName, dateOfBirth, biologicalSex, homeAddress);
     }
 
     public void UpdateMedicalProfile(

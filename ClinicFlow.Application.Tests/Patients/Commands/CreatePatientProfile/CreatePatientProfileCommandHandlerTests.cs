@@ -59,7 +59,11 @@ public class CreatePatientProfileCommandHandlerTests
             "John",
             "Doe",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
-            BiologicalSex.Male
+            BiologicalSex.Male,
+            "123 Main Street",
+            AddressState.California,
+            "90210",
+            Country.UnitedStates
         );
 
         _patientRepositoryMock
@@ -109,7 +113,11 @@ public class CreatePatientProfileCommandHandlerTests
             "John",
             "Doe",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
-            BiologicalSex.Male
+            BiologicalSex.Male,
+            "123 Main Street",
+            AddressState.California,
+            "90210",
+            Country.UnitedStates
         );
 
         _patientRepositoryMock

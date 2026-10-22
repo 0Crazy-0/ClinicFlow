@@ -116,15 +116,15 @@ public class DbSeederTests(PostgresFixture fixture) : IAsyncLifetime
         schedules
             .Count(s => s.TimeSlot.Start == morningStart && s.TimeSlot.End == new TimeOnly(13, 0))
             .Should()
-            .Be(21);
+            .Be(20);
         schedules
             .Count(s => s.TimeSlot.Start == afternoonStart && s.TimeSlot.End == new TimeOnly(19, 0))
             .Should()
-            .Be(19);
+            .Be(23);
         schedules
             .Count(s => s.TimeSlot.Start == fullStart && s.TimeSlot.End == fullEnd)
             .Should()
-            .Be(27);
+            .Be(17);
 
         // 8. Appointments
         var appointments = await Context.Appointments.ToListAsync(
@@ -173,7 +173,7 @@ public class DbSeederTests(PostgresFixture fixture) : IAsyncLifetime
         );
 
         penalties.Count(p => p.Type is PenaltyType.Warning).Should().Be(85);
-        penalties.Count(p => p.Type is PenaltyType.TemporaryBlock).Should().Be(11);
+        penalties.Count(p => p.Type is PenaltyType.TemporaryBlock).Should().Be(8);
         penalties.Count(p => p.IsRemoved).Should().Be(10);
     }
 
@@ -266,7 +266,7 @@ public class DbSeederTests(PostgresFixture fixture) : IAsyncLifetime
 
         var inactiveCount = schedules.Count(s => !s.IsActive);
 
-        inactiveCount.Should().Be(20);
+        inactiveCount.Should().Be(22);
     }
 
     [Fact]
@@ -372,7 +372,7 @@ public class DbSeederTests(PostgresFixture fixture) : IAsyncLifetime
             TestContext.Current.CancellationToken
         );
 
-        penalties.Should().HaveCount(96);
+        penalties.Should().HaveCount(93);
 
         // All warnings must have an AppointmentId
         var warnings = penalties.Where(p => p.Type is PenaltyType.Warning).ToList();
@@ -396,7 +396,7 @@ public class DbSeederTests(PostgresFixture fixture) : IAsyncLifetime
 
         // Blocks should use AutomaticBlock reason and have BlockedUntil set
         var blocks = penalties.Where(p => p.Type is PenaltyType.TemporaryBlock).ToList();
-        blocks.Should().HaveCount(11);
+        blocks.Should().HaveCount(8);
         blocks
             .Should()
             .AllSatisfy(b =>

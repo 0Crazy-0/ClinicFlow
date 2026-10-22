@@ -375,72 +375,19 @@ public static class DbSeeder
         var refTime = timeProvider.GetLocalNow().DateTime;
         var faker = seederContext.Faker;
 
-        string[] bloodTypes = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
-        string[] allergyPool =
-        [
-            "None",
-            "Penicillin",
-            "Aspirin",
-            "Ibuprofen",
-            "Latex",
-            "Pollen",
-            "Dust",
-            "Shellfish",
-            "Peanuts",
-            "Tree Nuts",
-            "Milk",
-            "Eggs",
-            "Wheat",
-            "Soy",
-            "Fish",
-            "Mold",
-            "Animal Dander",
-            "Sulfa Drugs",
-        ];
-        string[] conditionPool =
-        [
-            "None",
-            "Hypertension",
-            "Diabetes",
-            "Asthma",
-            "Arthritis",
-            "Obesity",
-            "Anxiety",
-            "Depression",
-            "Hypothyroidism",
-            "Hyperthyroidism",
-            "Chronic Back Pain",
-            "Migraine",
-            "GERD",
-            "Sleep Apnea",
-            "High Cholesterol",
-            "Anemia",
-            "Osteoporosis",
-            "Chronic Kidney Disease",
-        ];
-
         var familyMemberships = new List<FamilyMembership>();
 
         // Self
         for (int i = 0; i < 105; i++)
         {
             var pUser = patientUsers[i];
-            var patient = Patient.CreateProfile(
-                PersonName.Create(faker.Name.FullName()),
-                DateOnly.FromDateTime(faker.Date.Past(21, refTime.AddYears(-18))),
-                i % 2 == 0 ? BiologicalSex.Male : BiologicalSex.Female,
-                refTime
-            );
-            patient.UpdateMedicalProfile(
-                BloodType.Create(faker.PickRandom(bloodTypes)),
-                faker.PickRandom(allergyPool),
-                faker.PickRandom(conditionPool)
-            );
-            patient.UpdateEmergencyContact(
-                EmergencyContact.Create(
-                    faker.Name.FullName(),
-                    seederContext.GenerateUniquePhoneNumber()
-                )
+            var patient = CreateRandomPatient(
+                faker,
+                seederContext,
+                refTime,
+                dateOfBirthYearsBack: 21,
+                dateOfBirthReferenceDate: refTime.AddYears(-18),
+                i % 2 == 0 ? BiologicalSex.Male : BiologicalSex.Female
             );
             patients.Add(patient);
             familyMemberships.Add(FamilyMembership.CreateSelf(patient.Id, pUser.Id, refTime));
@@ -450,108 +397,26 @@ public static class DbSeeder
         for (int i = 105; i < 120; i++)
         {
             var pUser = patientUsers[i];
-            var patient = Patient.CreateProfile(
-                PersonName.Create(faker.Name.FullName()),
-                DateOnly.FromDateTime(faker.Date.Past(40, refTime.AddYears(-40))),
-                i % 2 == 0 ? BiologicalSex.Male : BiologicalSex.Female,
-                refTime
-            );
-            patient.UpdateMedicalProfile(
-                BloodType.Create(faker.PickRandom(bloodTypes)),
-                faker.PickRandom(allergyPool),
-                faker.PickRandom(conditionPool)
-            );
-            patient.UpdateEmergencyContact(
-                EmergencyContact.Create(
-                    faker.Name.FullName(),
-                    seederContext.GenerateUniquePhoneNumber()
-                )
+            var patient = CreateRandomPatient(
+                faker,
+                seederContext,
+                refTime,
+                dateOfBirthYearsBack: 40,
+                dateOfBirthReferenceDate: refTime.AddYears(-40),
+                i % 2 == 0 ? BiologicalSex.Male : BiologicalSex.Female
             );
             patients.Add(patient);
             familyMemberships.Add(FamilyMembership.CreateSelf(patient.Id, pUser.Id, refTime));
         }
 
-        // Family Members (80 dependents)
-        // Exclude the Unspecified sentinel, which is rejected by the domain.
-        var accessLevels = Enum.GetValues<FamilyMembershipAccessLevel>()
-            .Where(level => level is not FamilyMembershipAccessLevel.Unspecified)
-            .ToArray();
-        var dependentsToCreate = new List<PatientRelationship>();
-        for (int i = 0; i < 25; i++)
-            dependentsToCreate.Add(PatientRelationship.Parent);
-        for (int i = 0; i < 20; i++)
-            dependentsToCreate.Add(PatientRelationship.Spouse);
-        for (int i = 0; i < 15; i++)
-            dependentsToCreate.Add(PatientRelationship.Child);
-        for (int i = 0; i < 10; i++)
-            dependentsToCreate.Add(PatientRelationship.Sibling);
-        for (int i = 0; i < 10; i++)
-            dependentsToCreate.Add(PatientRelationship.Other);
-
-        for (int i = 0; i < dependentsToCreate.Count; i++)
-        {
-            var pUser = patientUsers[i % 120];
-            var relationship = dependentsToCreate[i];
-            int age = relationship switch
-            {
-                PatientRelationship.Parent => faker.Random.Number(1, 17),
-                PatientRelationship.Child => faker.Random.Number(50, 80),
-                PatientRelationship.Spouse => faker.Random.Number(25, 45),
-                _ => faker.Random.Number(18, 65),
-            };
-            var patient = Patient.CreateProfile(
-                PersonName.Create(faker.Name.FullName()),
-                DateOnly.FromDateTime(faker.Date.Past(age, refTime.AddYears(-age))),
-                i % 2 == 0 ? BiologicalSex.Male : BiologicalSex.Female,
-                refTime
-            );
-            patient.UpdateMedicalProfile(
-                BloodType.Create(faker.PickRandom(bloodTypes)),
-                faker.PickRandom(allergyPool),
-                faker.PickRandom(conditionPool)
-            );
-            patient.UpdateEmergencyContact(
-                EmergencyContact.Create(
-                    faker.Name.FullName(),
-                    seederContext.GenerateUniquePhoneNumber()
-                )
-            );
-            patients.Add(patient);
-            var patientAge = patient.GetAge(DateOnly.FromDateTime(refTime));
-            var accessLevel =
-                patientAge < FamilyMembership.MinimumAdultAge
-                    ? FamilyMembershipAccessLevel.Full
-                    : accessLevels[i % accessLevels.Length];
-            LegalAuthorityType legalAuthority;
-
-            if (patientAge >= FamilyMembership.MinimumAdultAge)
-            {
-                legalAuthority = LegalAuthorityType.None;
-            }
-            else if (relationship is PatientRelationship.Parent)
-            {
-                legalAuthority = LegalAuthorityType.Parent;
-            }
-            else if (relationship is PatientRelationship.Other or PatientRelationship.Sibling)
-            {
-                legalAuthority = LegalAuthorityType.Guardian;
-            }
-            else
-            {
-                legalAuthority = LegalAuthorityType.None;
-            }
-            familyMemberships.Add(
-                FamilyMembership.CreateFamilyMember(
-                    patient.Id,
-                    pUser.Id,
-                    relationship,
-                    legalAuthority,
-                    accessLevel,
-                    patientAge,
-                    refTime
-                )
-            );
-        }
+        CreateDependentPatientsAndMemberships(
+            faker,
+            seederContext,
+            refTime,
+            patientUsers,
+            patients,
+            familyMemberships
+        );
 
         await context.Patients.AddRangeAsync(patients, cancellationToken);
         await context.FamilyMemberships.AddRangeAsync(familyMemberships, cancellationToken);
@@ -817,6 +682,222 @@ public static class DbSeeder
         new(4, 12, 24),
         new(0, 9, 0),
     ];
+
+    /// <summary>
+    /// Generates a residential address for a seeded patient using realistic
+    /// fictional United States data.
+    /// </summary>
+    private static Address CreateRandomHomeAddress(Faker faker)
+    {
+        var states = AddressStateCatalog.GetStates(Country.UnitedStates);
+
+        return Address.Create(
+            faker.Address.StreetAddress(),
+            faker.PickRandom<AddressState>(states),
+            faker.Address.ZipCode(),
+            Country.UnitedStates
+        );
+    }
+
+    private static readonly string[] _patientBloodTypes =
+    [
+        "A+",
+        "A-",
+        "B+",
+        "B-",
+        "AB+",
+        "AB-",
+        "O+",
+        "O-",
+    ];
+
+    private static readonly string[] _patientAllergyPool =
+    [
+        "None",
+        "Penicillin",
+        "Aspirin",
+        "Ibuprofen",
+        "Latex",
+        "Pollen",
+        "Dust",
+        "Shellfish",
+        "Peanuts",
+        "Tree Nuts",
+        "Milk",
+        "Eggs",
+        "Wheat",
+        "Soy",
+        "Fish",
+        "Mold",
+        "Animal Dander",
+        "Sulfa Drugs",
+    ];
+
+    private static readonly string[] _patientConditionPool =
+    [
+        "None",
+        "Hypertension",
+        "Diabetes",
+        "Asthma",
+        "Arthritis",
+        "Obesity",
+        "Anxiety",
+        "Depression",
+        "Hypothyroidism",
+        "Hyperthyroidism",
+        "Chronic Back Pain",
+        "Migraine",
+        "GERD",
+        "Sleep Apnea",
+        "High Cholesterol",
+        "Anemia",
+        "Osteoporosis",
+        "Chronic Kidney Disease",
+    ];
+
+    /// <summary>
+    /// Creates a seeded patient with generated name, address, medical profile and emergency
+    /// contact, deriving the birth date from a caller supplied window of years.
+    /// </summary>
+    /// <remarks>
+    /// The Bogus call sequence (name, birth date, address, medical profile, emergency contact)
+    /// must stay unchanged so the fixed random seed keeps producing the exact data the seeding
+    /// tests assert counts for.
+    /// </remarks>
+    private static Patient CreateRandomPatient(
+        Faker faker,
+        SeederContext seederContext,
+        DateTime refTime,
+        int dateOfBirthYearsBack,
+        DateTime dateOfBirthReferenceDate,
+        BiologicalSex biologicalSex
+    )
+    {
+        var patient = Patient.CreateProfile(
+            PersonName.Create(faker.Name.FullName()),
+            DateOnly.FromDateTime(faker.Date.Past(dateOfBirthYearsBack, dateOfBirthReferenceDate)),
+            biologicalSex,
+            CreateRandomHomeAddress(faker),
+            refTime
+        );
+        patient.UpdateMedicalProfile(
+            BloodType.Create(faker.PickRandom(_patientBloodTypes)),
+            faker.PickRandom(_patientAllergyPool),
+            faker.PickRandom(_patientConditionPool)
+        );
+        patient.UpdateEmergencyContact(
+            EmergencyContact.Create(
+                faker.Name.FullName(),
+                seederContext.GenerateUniquePhoneNumber()
+            )
+        );
+        return patient;
+    }
+
+    /// <summary>
+    /// Resolves the access level and legal authority a supporting user holds over a dependent
+    /// patient: minors get full access and authority derived from the relationship, adults get
+    /// a cycled access level and no legal authority.
+    /// </summary>
+    private static (
+        FamilyMembershipAccessLevel AccessLevel,
+        LegalAuthorityType LegalAuthority
+    ) ResolveDependentPermissions(
+        int patientAge,
+        PatientRelationship relationship,
+        int index,
+        FamilyMembershipAccessLevel[] accessLevels
+    )
+    {
+        var accessLevel =
+            patientAge < FamilyMembership.MinimumAdultAge
+                ? FamilyMembershipAccessLevel.Full
+                : accessLevels[index % accessLevels.Length];
+
+        var legalAuthority =
+            patientAge >= FamilyMembership.MinimumAdultAge
+                ? LegalAuthorityType.None
+                : relationship switch
+                {
+                    PatientRelationship.Parent => LegalAuthorityType.Parent,
+                    PatientRelationship.Other or PatientRelationship.Sibling =>
+                        LegalAuthorityType.Guardian,
+                    _ => LegalAuthorityType.None,
+                };
+
+        return (accessLevel, legalAuthority);
+    }
+
+    /// <summary>
+    /// Creates the dependent patients and their family memberships, appending both to the
+    /// supplied seed collections.
+    /// </summary>
+    private static void CreateDependentPatientsAndMemberships(
+        Faker faker,
+        SeederContext seederContext,
+        DateTime refTime,
+        IReadOnlyList<User> patientUsers,
+        List<Patient> patients,
+        List<FamilyMembership> familyMemberships
+    )
+    {
+        // Family Members (80 dependents)
+        // Exclude the Unspecified sentinel, which is rejected by the domain.
+        var accessLevels = Enum.GetValues<FamilyMembershipAccessLevel>()
+            .Where(level => level is not FamilyMembershipAccessLevel.Unspecified)
+            .ToArray();
+        var dependentsToCreate = new List<PatientRelationship>();
+        for (int i = 0; i < 25; i++)
+            dependentsToCreate.Add(PatientRelationship.Parent);
+        for (int i = 0; i < 20; i++)
+            dependentsToCreate.Add(PatientRelationship.Spouse);
+        for (int i = 0; i < 15; i++)
+            dependentsToCreate.Add(PatientRelationship.Child);
+        for (int i = 0; i < 10; i++)
+            dependentsToCreate.Add(PatientRelationship.Sibling);
+        for (int i = 0; i < 10; i++)
+            dependentsToCreate.Add(PatientRelationship.Other);
+
+        for (int i = 0; i < dependentsToCreate.Count; i++)
+        {
+            var pUser = patientUsers[i % 120];
+            var relationship = dependentsToCreate[i];
+            int birthDateWindow = relationship switch
+            {
+                PatientRelationship.Parent => faker.Random.Number(1, 17),
+                PatientRelationship.Child => faker.Random.Number(50, 80),
+                PatientRelationship.Spouse => faker.Random.Number(25, 45),
+                _ => faker.Random.Number(18, 65),
+            };
+            var patient = CreateRandomPatient(
+                faker,
+                seederContext,
+                refTime,
+                dateOfBirthYearsBack: birthDateWindow,
+                dateOfBirthReferenceDate: refTime.AddYears(-birthDateWindow),
+                i % 2 == 0 ? BiologicalSex.Male : BiologicalSex.Female
+            );
+            patients.Add(patient);
+            var patientAge = patient.GetAge(DateOnly.FromDateTime(refTime));
+            var (accessLevel, legalAuthority) = ResolveDependentPermissions(
+                patientAge,
+                relationship,
+                i,
+                accessLevels
+            );
+            familyMemberships.Add(
+                FamilyMembership.CreateFamilyMember(
+                    patient.Id,
+                    pUser.Id,
+                    relationship,
+                    legalAuthority,
+                    accessLevel,
+                    patientAge,
+                    refTime
+                )
+            );
+        }
+    }
 
     private sealed class SeederContext
     {

@@ -546,6 +546,12 @@ public class GetMinorFamilyMemberAppointmentsByPatientIdQueryHandlerTests
             PersonName.Create("Test"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-age)),
             BiologicalSex.Male,
+            Address.Create(
+                "123 Main Street",
+                AddressState.California,
+                "90210",
+                Country.UnitedStates
+            ),
             _fakeTime.GetUtcNow().UtcDateTime
         );
 

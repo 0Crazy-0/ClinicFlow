@@ -29,7 +29,11 @@ public class AddFamilyMemberCommandValidatorTests
             PatientRelationship.Spouse,
             LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
-            BiologicalSex.Female
+            BiologicalSex.Female,
+            "123 Main Street",
+            AddressState.California,
+            "90210",
+            Country.UnitedStates
         );
 
         // Act
@@ -51,7 +55,11 @@ public class AddFamilyMemberCommandValidatorTests
             PatientRelationship.Spouse,
             LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
-            BiologicalSex.Female
+            BiologicalSex.Female,
+            "123 Main Street",
+            AddressState.California,
+            "90210",
+            Country.UnitedStates
         );
 
         // Act
@@ -78,7 +86,11 @@ public class AddFamilyMemberCommandValidatorTests
             PatientRelationship.Spouse,
             LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
-            BiologicalSex.Female
+            BiologicalSex.Female,
+            "123 Main Street",
+            AddressState.California,
+            "90210",
+            Country.UnitedStates
         );
 
         // Act
@@ -102,7 +114,11 @@ public class AddFamilyMemberCommandValidatorTests
             PatientRelationship.Spouse,
             LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
-            BiologicalSex.Female
+            BiologicalSex.Female,
+            "123 Main Street",
+            AddressState.California,
+            "90210",
+            Country.UnitedStates
         );
 
         // Act
@@ -127,7 +143,11 @@ public class AddFamilyMemberCommandValidatorTests
             PatientRelationship.Spouse,
             LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
-            BiologicalSex.Female
+            BiologicalSex.Female,
+            "123 Main Street",
+            AddressState.California,
+            "90210",
+            Country.UnitedStates
         );
 
         // Act
@@ -154,7 +174,11 @@ public class AddFamilyMemberCommandValidatorTests
             PatientRelationship.Spouse,
             LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
-            BiologicalSex.Female
+            BiologicalSex.Female,
+            "123 Main Street",
+            AddressState.California,
+            "90210",
+            Country.UnitedStates
         );
 
         // Act
@@ -178,7 +202,11 @@ public class AddFamilyMemberCommandValidatorTests
             PatientRelationship.Spouse,
             LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
-            BiologicalSex.Female
+            BiologicalSex.Female,
+            "123 Main Street",
+            AddressState.California,
+            "90210",
+            Country.UnitedStates
         );
 
         // Act
@@ -203,7 +231,11 @@ public class AddFamilyMemberCommandValidatorTests
             PatientRelationship.Spouse,
             LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
-            BiologicalSex.Female
+            BiologicalSex.Female,
+            "123 Main Street",
+            AddressState.California,
+            "90210",
+            Country.UnitedStates
         );
 
         // Act
@@ -227,7 +259,11 @@ public class AddFamilyMemberCommandValidatorTests
             PatientRelationship.Spouse,
             LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
-            BiologicalSex.Female
+            BiologicalSex.Female,
+            "123 Main Street",
+            AddressState.California,
+            "90210",
+            Country.UnitedStates
         );
 
         // Act
@@ -251,7 +287,11 @@ public class AddFamilyMemberCommandValidatorTests
             (PatientRelationship)999,
             LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
-            BiologicalSex.Female
+            BiologicalSex.Female,
+            "123 Main Street",
+            AddressState.California,
+            "90210",
+            Country.UnitedStates
         );
 
         // Act
@@ -275,7 +315,11 @@ public class AddFamilyMemberCommandValidatorTests
             PatientRelationship.Self,
             LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
-            BiologicalSex.Female
+            BiologicalSex.Female,
+            "123 Main Street",
+            AddressState.California,
+            "90210",
+            Country.UnitedStates
         );
 
         // Act
@@ -299,7 +343,11 @@ public class AddFamilyMemberCommandValidatorTests
             PatientRelationship.Spouse,
             LegalAuthorityType.None,
             (FamilyMembershipAccessLevel)967,
-            BiologicalSex.Female
+            BiologicalSex.Female,
+            "123 Main Street",
+            AddressState.California,
+            "90210",
+            Country.UnitedStates
         );
 
         // Act
@@ -323,7 +371,11 @@ public class AddFamilyMemberCommandValidatorTests
             PatientRelationship.Spouse,
             LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Unspecified,
-            BiologicalSex.Female
+            BiologicalSex.Female,
+            "123 Main Street",
+            AddressState.California,
+            "90210",
+            Country.UnitedStates
         );
 
         // Act
@@ -347,7 +399,11 @@ public class AddFamilyMemberCommandValidatorTests
             PatientRelationship.Spouse,
             (LegalAuthorityType)999,
             FamilyMembershipAccessLevel.Full,
-            BiologicalSex.Female
+            BiologicalSex.Female,
+            "123 Main Street",
+            AddressState.California,
+            "90210",
+            Country.UnitedStates
         );
 
         // Act
@@ -371,7 +427,11 @@ public class AddFamilyMemberCommandValidatorTests
             PatientRelationship.Spouse,
             LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
-            (BiologicalSex)999
+            (BiologicalSex)999,
+            "123 Main Street",
+            AddressState.California,
+            "90210",
+            Country.UnitedStates
         );
 
         // Act
@@ -395,7 +455,11 @@ public class AddFamilyMemberCommandValidatorTests
             PatientRelationship.Spouse,
             LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
-            BiologicalSex.Unspecified
+            BiologicalSex.Unspecified,
+            "123 Main Street",
+            AddressState.California,
+            "90210",
+            Country.UnitedStates
         );
 
         // Act
@@ -405,5 +469,179 @@ public class AddFamilyMemberCommandValidatorTests
         result
             .ShouldHaveValidationErrorFor(x => x.SexAtBirth)
             .WithErrorMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Validate_ShouldHaveError_WhenAddressLineIsEmpty(string? addressLine)
+    {
+        // Arrange
+        var command = new AddFamilyMemberCommand(
+            Guid.CreateVersion7(),
+            "John",
+            "Doe",
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            PatientRelationship.Spouse,
+            LegalAuthorityType.None,
+            FamilyMembershipAccessLevel.Full,
+            BiologicalSex.Male,
+            addressLine!,
+            AddressState.California,
+            "90210",
+            Country.UnitedStates
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.AddressLine)
+            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenAddressLineIsTooLong()
+    {
+        // Arrange
+        var command = new AddFamilyMemberCommand(
+            Guid.CreateVersion7(),
+            "John",
+            "Doe",
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            PatientRelationship.Spouse,
+            LegalAuthorityType.None,
+            FamilyMembershipAccessLevel.Full,
+            BiologicalSex.Male,
+            new string('A', Address.LineMaximumLength + 1),
+            AddressState.California,
+            "90210",
+            Country.UnitedStates
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.AddressLine)
+            .WithErrorMessage(DomainErrors.Validation.ValueTooLong);
+    }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenAddressStateIsInvalid()
+    {
+        // Arrange
+        var command = new AddFamilyMemberCommand(
+            Guid.CreateVersion7(),
+            "John",
+            "Doe",
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            PatientRelationship.Spouse,
+            LegalAuthorityType.None,
+            FamilyMembershipAccessLevel.Full,
+            BiologicalSex.Male,
+            "123 Main Street",
+            (AddressState)999,
+            "90210",
+            Country.UnitedStates
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.AddressState)
+            .WithErrorMessage(DomainErrors.Validation.InvalidEnumValue);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Validate_ShouldHaveError_WhenAddressPostalCodeIsEmpty(string? postalCode)
+    {
+        // Arrange
+        var command = new AddFamilyMemberCommand(
+            Guid.CreateVersion7(),
+            "John",
+            "Doe",
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            PatientRelationship.Spouse,
+            LegalAuthorityType.None,
+            FamilyMembershipAccessLevel.Full,
+            BiologicalSex.Male,
+            "123 Main Street",
+            AddressState.California,
+            postalCode!,
+            Country.UnitedStates
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.AddressPostalCode)
+            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenAddressPostalCodeIsTooLong()
+    {
+        // Arrange
+        var command = new AddFamilyMemberCommand(
+            Guid.CreateVersion7(),
+            "John",
+            "Doe",
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            PatientRelationship.Spouse,
+            LegalAuthorityType.None,
+            FamilyMembershipAccessLevel.Full,
+            BiologicalSex.Male,
+            "123 Main Street",
+            AddressState.California,
+            new string('9', Address.PostalCodeMaximumLength + 1),
+            Country.UnitedStates
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.AddressPostalCode)
+            .WithErrorMessage(DomainErrors.Validation.ValueTooLong);
+    }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenAddressCountryIsInvalid()
+    {
+        // Arrange
+        var command = new AddFamilyMemberCommand(
+            Guid.CreateVersion7(),
+            "John",
+            "Doe",
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            PatientRelationship.Spouse,
+            LegalAuthorityType.None,
+            FamilyMembershipAccessLevel.Full,
+            BiologicalSex.Male,
+            "123 Main Street",
+            AddressState.California,
+            "90210",
+            (Country)967
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.AddressCountry)
+            .WithErrorMessage(DomainErrors.Validation.InvalidEnumValue);
     }
 }

@@ -354,6 +354,12 @@ public class GrantAppointmentCategoryConsentCommandHandlerTests
             PersonName.Create("Jane Doe"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime).AddYears(-15),
             BiologicalSex.Male,
+            Address.Create(
+                "123 Main Street",
+                AddressState.California,
+                "90210",
+                Country.UnitedStates
+            ),
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
