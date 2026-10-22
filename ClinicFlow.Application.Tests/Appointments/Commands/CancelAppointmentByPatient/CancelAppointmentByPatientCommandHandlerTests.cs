@@ -98,6 +98,8 @@ public class CancelAppointmentByPatientCommandHandlerTests
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
 
         appointment.Status.Should().Be(AppointmentStatus.Cancelled);
+        appointment.CancellationReason.Should().Be(command.Reason);
+        appointment.CancelledByUserId.Should().Be(command.InitiatorUserId);
     }
 
     [Fact]
