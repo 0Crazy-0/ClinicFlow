@@ -4,7 +4,7 @@
     <ProjectReference Include="..\ClinicFlow.Application\ClinicFlow.Application.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="EFCore.ComplexIndexes" Version="5.0.3" />
+    <PackageReference Include="EFCore.ComplexIndexes" Version="5.5.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.13" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.13" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.13">
