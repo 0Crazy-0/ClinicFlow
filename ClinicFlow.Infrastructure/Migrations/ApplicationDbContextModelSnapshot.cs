@@ -18,7 +18,8 @@ namespace ClinicFlow.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.11")
+                .HasAnnotation("CustomIndex:RenderingVersion", 3)
+                .HasAnnotation("ProductVersion", "10.0.13")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "btree_gist");
@@ -141,7 +142,7 @@ namespace ClinicFlow.Infrastructure.Migrations
 
                     b.ToTable("Appointments");
 
-                    b.HasAnnotation("CustomIndex:CompositeIndexes", "[{\"paths\":[\"DoctorId\",\"ScheduledDate\",\"TimeSlot.Start\",\"SequenceNumber\"],\"unique\":false},{\"paths\":[\"PatientId\",\"ScheduledDate\",\"TimeSlot.Start\",\"SequenceNumber\"],\"unique\":false},{\"paths\":[\"ScheduledDate\",\"TimeSlot.Start\",\"SequenceNumber\"],\"unique\":false}]");
+                    b.HasAnnotation("CustomIndex:CompositeIndexes", "[{\"paths\":[\"DoctorId\",\"ScheduledDate\",\"TimeSlot.Start\",\"SequenceNumber\"],\"unique\":false},{\"paths\":[\"PatientId\",\"ScheduledDate\",\"TimeSlot.Start\",\"SequenceNumber\"],\"unique\":false,\"name\":\"IX_Appointments_PatientId_ScheduledDate_StartTime_SeqNum\"},{\"paths\":[\"ScheduledDate\",\"TimeSlot.Start\",\"SequenceNumber\"],\"unique\":false}]");
                 });
 
             modelBuilder.Entity("ClinicFlow.Domain.Entities.AppointmentConsentGrant", b =>
