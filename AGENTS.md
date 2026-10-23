@@ -41,12 +41,14 @@ ClinicFlow.Architecture.Tests  → Architecture tests enforcing layer dependency
 | Layer | Libraries |
 |---|---|
 | **Domain** | Zero external packages. No NuGet dependencies allowed. |
-| **Application** | MediatR 14.2, FluentValidation.DependencyInjectionExtensions 12.1, Microsoft.Extensions.DependencyInjection.Abstractions 10.0 |
-| **Infrastructure** | EF Core (Relational, Design) 10.0, EFCore.ComplexIndexes 5.0, Npgsql.EntityFrameworkCore.PostgreSQL 10.0, Microsoft.Extensions.Configuration.Binder 10.0, Bogus 35.6 |
-| **Tests (Domain)** | xunit.v3 4.0, AwesomeAssertions 9.5, Moq 4.20, Microsoft.Extensions.TimeProvider.Testing 10.9 |
-| **Tests (Application)** | xunit.v3 4.0, AwesomeAssertions 9.5, Moq 4.20, Microsoft.Extensions.TimeProvider.Testing 10.9 |
-| **Tests (Infrastructure)** | xunit.v3 4.0, AwesomeAssertions 9.5, Moq 4.20, Microsoft.Extensions.TimeProvider.Testing 10.9, EF Core (Relational, InMemory) 10.0, Respawn 7.0, Testcontainers.PostgreSql 4.14 |
-| **Tests (Architecture)** | xunit.v3 4.0, AwesomeAssertions 9.5, TngTech.ArchUnitNET.xUnitV3 0.13 |
+| **Application** | MediatR, FluentValidation.DependencyInjectionExtensions, Microsoft.Extensions.DependencyInjection.Abstractions |
+| **Infrastructure** | EF Core (Relational, Design), EFCore.ComplexIndexes, Npgsql.EntityFrameworkCore.PostgreSQL, Microsoft.Extensions.Configuration.Binder, Bogus |
+| **Tests (Domain)** | xunit.v3, AwesomeAssertions, Moq, Microsoft.Extensions.TimeProvider.Testing |
+| **Tests (Application)** | xunit.v3, AwesomeAssertions, Moq, Microsoft.Extensions.TimeProvider.Testing |
+| **Tests (Infrastructure)** | xunit.v3, AwesomeAssertions, Moq, Microsoft.Extensions.TimeProvider.Testing, EF Core (Relational, InMemory), Respawn, Testcontainers.PostgreSql |
+| **Tests (Architecture)** | xunit.v3, AwesomeAssertions, TngTech.ArchUnitNET.xUnitV3 |
+
+Package versions are centrally managed in `Directory.Packages.props` (single source of truth). Do not hardcode versions here or in `.csproj` files.
 
 ### Key Dependency Flow
 
