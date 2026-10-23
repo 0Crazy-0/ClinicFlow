@@ -12,6 +12,12 @@ public interface IPatientRepository
 
     Task<Patient?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
+    Task<bool> ExistsWithSsnLast4HashAsync(
+        Guid patientId,
+        string ssnLast4Hash,
+        CancellationToken cancellationToken = default
+    );
+
     Task<Patient?> GetByNameAndDobAsync(
         PersonName fullName,
         DateOnly dateOfBirth,

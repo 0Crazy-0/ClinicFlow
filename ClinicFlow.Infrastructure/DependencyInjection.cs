@@ -1,8 +1,10 @@
+using ClinicFlow.Application.Interfaces;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Infrastructure.Persistence;
 using ClinicFlow.Infrastructure.Persistence.Options;
 using ClinicFlow.Infrastructure.Persistence.Repositories;
+using ClinicFlow.Infrastructure.Services;
 using ClinicFlow.Infrastructure.Time;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -19,6 +21,7 @@ public static class DependencyInjection
     {
         var dbOptions = DatabaseOptions.FromConfiguration(configuration);
         var clinicOptions = ClinicOptions.FromConfiguration(configuration);
+        var securityOptions = SecurityOptions.FromConfiguration(configuration);
 
         var clinicTimeProvider = new ClinicTimeProvider(
             TimeProvider.System,
@@ -26,6 +29,10 @@ public static class DependencyInjection
         );
 
         services.AddSingleton<TimeProvider>(clinicTimeProvider);
+
+        // Eager construction: an invalid or weak key aborts the application at startup,
+        // not on the first request that resolves ISsnHasher.
+        services.AddSingleton<ISsnHasher>(new SsnHasher(securityOptions.SsnHashKey));
 
         services.AddDbContext<ApplicationDbContext>(options =>
         {

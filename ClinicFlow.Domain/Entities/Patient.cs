@@ -33,6 +33,8 @@ public class Patient : BaseEntity
 
     public Address HomeAddress { get; private set; } = null!;
 
+    public string? SsnLast4Hash { get; private set; }
+
     // EF Core constructor
     private Patient() { }
 
@@ -125,6 +127,13 @@ public class Patient : BaseEntity
 
     public void UpdateEmergencyContact(EmergencyContact emergencyContact) =>
         Contact = emergencyContact;
+
+    public void AssignSsnLast4Hash(string ssnLast4Hash)
+    {
+        Guard.NotNullOrWhiteSpace(ssnLast4Hash);
+
+        SsnLast4Hash = ssnLast4Hash;
+    }
 
     internal void EnsureCompleteProfile()
     {
