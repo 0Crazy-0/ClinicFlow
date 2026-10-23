@@ -48,6 +48,7 @@ public class CheckPatientSsnLast4QueryValidatorTests
     [InlineData("123")]
     [InlineData("12345")]
     [InlineData("12a4")]
+    [InlineData("1234\n")]
     public void Validate_ShouldHaveError_WhenLast4IsInvalid(string? last4)
     {
         // Arrange

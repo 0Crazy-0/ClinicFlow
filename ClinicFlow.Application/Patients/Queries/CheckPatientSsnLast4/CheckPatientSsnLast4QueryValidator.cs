@@ -12,7 +12,7 @@ public sealed class CheckPatientSsnLast4QueryValidator
         RuleFor(x => x.Last4)
             .NotEmpty()
             .WithMessage(DomainErrors.Validation.InvalidValue)
-            .Matches("^[0-9]{4}$")
+            .Matches(@"^[0-9]{4}\z")
             .WithMessage(DomainErrors.Validation.InvalidValue);
     }
 }
