@@ -69,7 +69,7 @@ public class SsnHasherTests
         var act = () => sut.ComputeHash(Guid.CreateVersion7(), last4);
 
         // Assert
-        act.Should().Throw<ArgumentException>().WithParameterName("last4");
+        act.Should().Throw<ArgumentException>().WithParameterName(nameof(last4));
     }
 
     [Fact]
