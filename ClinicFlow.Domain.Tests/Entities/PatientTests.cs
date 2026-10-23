@@ -547,6 +547,39 @@ public class PatientTests
         age.Should().Be(25);
     }
 
+    [Fact]
+    public void AssignSsnLast4Hash_ShouldSetHash_WhenValidHash()
+    {
+        // Arrange
+        var patient = CreateValidPatient();
+        var hash = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+
+        // Act
+        patient.AssignSsnLast4Hash(hash);
+
+        // Assert
+        patient.SsnLast4Hash.Should().Be(hash);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void AssignSsnLast4Hash_ShouldThrowDomainValidationException_WhenHashIsMissing(
+        string? hash
+    )
+    {
+        // Arrange
+        var patient = CreateValidPatient();
+
+        // Act && Assert
+        var act = () => patient.AssignSsnLast4Hash(hash!);
+
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
     private Patient CreateValidPatient() =>
         Patient.CreateProfile(
             PersonName.Create("John Doe"),
