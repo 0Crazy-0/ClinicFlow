@@ -63,6 +63,57 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
     }
 
     [Fact]
+    public async Task ExistsWithSsnLast4HashAsync_ShouldReturnTrue_WhenHashMatches()
+    {
+        // Arrange
+        var patient = await CreateHashedPatientAsync();
+
+        // Act
+        var result = await _sut.ExistsWithSsnLast4HashAsync(
+            patient.Id,
+            "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task ExistsWithSsnLast4HashAsync_ShouldReturnFalse_WhenHashDoesNotMatch()
+    {
+        // Arrange
+        var patient = await CreateHashedPatientAsync();
+
+        // Act
+        var result = await _sut.ExistsWithSsnLast4HashAsync(
+            patient.Id,
+            "fedcba9876543321fedcba9876543321fedcba9876543321fedcba9876543321",
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task ExistsWithSsnLast4HashAsync_ShouldReturnFalse_WhenPatientDoesNotExist()
+    {
+        // Arrange
+        var nonExistentId = Guid.CreateVersion7();
+
+        // Act
+        var result = await _sut.ExistsWithSsnLast4HashAsync(
+            nonExistentId,
+            "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+            TestContext.Current.CancellationToken
+        );
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [Fact]
     public async Task CreateAsync_ShouldNotReAdd_WhenEntityIsAlreadyTracked()
     {
         // Arrange
@@ -169,6 +220,35 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
 
         patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
         patient.UpdateEmergencyContact(EmergencyContact.Create("Contact", "555-9999"));
+
+        Context.Patients.Add(patient);
+
+        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
+
+        return patient;
+    }
+
+    private async Task<Patient> CreateHashedPatientAsync()
+    {
+        var patient = Patient.CreateProfile(
+            PersonName.Create("Hashed Patient"),
+            new DateOnly(1990, 1, 1),
+            BiologicalSex.Male,
+            Address.Create(
+                "123 Main Street",
+                AddressState.California,
+                "90210",
+                Country.UnitedStates
+            ),
+            _fakeTime.GetLocalNow().DateTime
+        );
+
+        patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
+        patient.UpdateEmergencyContact(EmergencyContact.Create("Contact", "555-9999"));
+
+        patient.AssignSsnLast4Hash(
+            "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+        );
 
         Context.Patients.Add(patient);
 

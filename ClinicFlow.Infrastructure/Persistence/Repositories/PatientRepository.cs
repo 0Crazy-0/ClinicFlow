@@ -18,6 +18,16 @@ public sealed class PatientRepository(ApplicationDbContext dbContext) : IPatient
         return Task.CompletedTask;
     }
 
+    public Task<bool> ExistsWithSsnLast4HashAsync(
+        Guid patientId,
+        string ssnLast4Hash,
+        CancellationToken cancellationToken = default
+    ) =>
+        dbContext.Patients.AnyAsync(
+            p => p.Id == patientId && p.SsnLast4Hash == ssnLast4Hash,
+            cancellationToken
+        );
+
     public async Task<Patient?> GetByIdAsync(
         Guid id,
         CancellationToken cancellationToken = default
