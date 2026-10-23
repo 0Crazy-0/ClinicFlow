@@ -17,6 +17,8 @@ public sealed class PatientConfiguration : IEntityTypeConfiguration<Patient>
 
         builder.Property(p => p.SexAtBirth).HasConversion<string>();
 
+        builder.Property(p => p.SsnLast4Hash).HasMaxLength(64).IsUnicode(false);
+
         builder
             .Property(p => p.BloodGroup)
             .HasConversion(bt => bt.Value, val => BloodType.Create(val))
