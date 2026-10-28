@@ -70,7 +70,7 @@ public class UpdatePatientProfileCommandHandlerTests
         patient.BloodGroup.ToString().Should().Be(command.BloodType);
         patient.Allergies.Should().Be(command.Allergies);
         patient.ChronicConditions.Should().Be(command.ChronicConditions);
-        patient.Contact.Name.FirstName.Should().Be(command.EmergencyContactFirstName);
+        patient.Contact!.Name.FirstName.Should().Be(command.EmergencyContactFirstName);
         patient.Contact.Name.MiddleName.Should().BeNull();
         patient.Contact.Name.FirstSurname.Should().Be(command.EmergencyContactLastName);
         patient.Contact.Phone.ToString().Should().Be(command.EmergencyContactPhone);
