@@ -320,7 +320,7 @@ public class GetFamilyMemberMedicalRecordByIdQueryHandlerTests
         // Arrange
         var requesterUserId = Guid.CreateVersion7();
         var patient = Patient.CreateProfile(
-            PersonName.Create("John Doe"),
+            PersonName.Create("John", null, "Doe"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-13)),
             BiologicalSex.Male,
             Address.Create(
@@ -405,7 +405,7 @@ public class GetFamilyMemberMedicalRecordByIdQueryHandlerTests
 
     private Patient CreatePatient() =>
         Patient.CreateProfile(
-            PersonName.Create("John Doe"),
+            PersonName.Create("John", null, "Doe"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             BiologicalSex.Male,
             Address.Create(

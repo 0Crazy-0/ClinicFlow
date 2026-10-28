@@ -24,7 +24,9 @@ internal static class ColumnNames
 
     internal static class Patient
     {
-        public const string EmergencyContactName = "EmergencyContactName";
+        public const string EmergencyContactFirstName = "EmergencyContactFirstName";
+        public const string EmergencyContactMiddleName = "EmergencyContactMiddleName";
+        public const string EmergencyContactFirstSurname = "EmergencyContactFirstSurname";
         public const string EmergencyContactPhone = "EmergencyContactPhone";
         public const string HomeAddressLine = "HomeAddressLine";
         public const string HomeAddressState = "HomeAddressState";

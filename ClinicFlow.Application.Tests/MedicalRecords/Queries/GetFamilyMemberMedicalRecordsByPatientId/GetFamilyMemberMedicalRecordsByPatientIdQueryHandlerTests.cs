@@ -610,7 +610,7 @@ public class GetFamilyMemberMedicalRecordsByPatientIdQueryHandlerTests
         var referenceTime = _fakeTime.GetUtcNow().UtcDateTime;
 
         return Patient.CreateProfile(
-            PersonName.Create("John Doe"),
+            PersonName.Create("John", null, "Doe"),
             DateOnly.FromDateTime(referenceTime.AddYears(-age)),
             BiologicalSex.Male,
             Address.Create(

@@ -33,10 +33,16 @@ public sealed class DoctorConfiguration : IEntityTypeConfiguration<Doctor>
             }
         );
 
-        builder
-            .Property(d => d.FullName)
-            .HasConversion(name => name.FullName, val => PersonName.Create(val))
-            .HasMaxLength(PersonName.MaximumLength);
+        builder.ComplexProperty(
+            p => p.FullName,
+            name =>
+            {
+                name.Property(n => n.FirstName).HasMaxLength(PersonName.MaximumLength);
+                name.Property(n => n.MiddleName).HasMaxLength(PersonName.MaximumLength);
+                name.Property(n => n.FirstSurname).HasMaxLength(PersonName.MaximumLength);
+                name.Ignore(n => n.SearchName);
+            }
+        );
 
         builder
             .Property(d => d.LicenseNumber)

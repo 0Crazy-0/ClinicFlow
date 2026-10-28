@@ -30,6 +30,7 @@ public class CreateDoctorProfileCommandHandlerTests
         var command = new CreateDoctorProfileCommand(
             Guid.CreateVersion7(),
             "John",
+            "Michael",
             "Doe",
             "12345",
             Guid.CreateVersion7(),
@@ -60,7 +61,11 @@ public class CreateDoctorProfileCommandHandlerTests
         result.Should().NotBeEmpty();
         capturedDoctor.Should().NotBeNull();
         capturedDoctor.UserId.Should().Be(command.UserId);
-        capturedDoctor.FullName.FullName.Should().Be($"{command.FirstName} {command.LastName}");
+        capturedDoctor
+            .FullName.ToString()
+            .Should()
+            .Be($"{command.FirstName} {command.MiddleName} {command.LastName}");
+
         capturedDoctor.LicenseNumber.Value.Should().Be(command.LicenseNumber);
         capturedDoctor.MedicalSpecialtyId.Should().Be(command.MedicalSpecialtyId);
         capturedDoctor.Biography.Should().Be(command.Biography);
@@ -76,6 +81,7 @@ public class CreateDoctorProfileCommandHandlerTests
         var command = new CreateDoctorProfileCommand(
             Guid.CreateVersion7(),
             "John",
+            null,
             "Doe",
             "12345",
             Guid.CreateVersion7(),

@@ -681,7 +681,7 @@ public class MedicalEncounterServiceTests
     {
         var doctor = Doctor.Create(
             Guid.CreateVersion7(),
-            PersonName.Create("Test Doctor"),
+            PersonName.Create("Test", null, "Doctor"),
             MedicalLicenseNumber.Create("12345"),
             Guid.CreateVersion7(),
             "555-0000",

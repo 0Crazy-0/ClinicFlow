@@ -38,7 +38,7 @@ public class StartAppointmentByDoctorCommandHandlerTests
         var command = new StartAppointmentByDoctorCommand(Guid.CreateVersion7(), initiatorUserId);
         var doctor = Doctor.Create(
             initiatorUserId,
-            PersonName.Create("Test Doctor"),
+            PersonName.Create("Test", null, "Doctor"),
             MedicalLicenseNumber.Create("12345"),
             Guid.CreateVersion7(),
             "555-0000",

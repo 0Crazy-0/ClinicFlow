@@ -30,7 +30,7 @@ public class GetPatientByIdQueryHandlerTests
     {
         // Arrange
         var patient = Patient.CreateProfile(
-            PersonName.Create("John Doe"),
+            PersonName.Create("Pinkie", "Pie", "Test"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             BiologicalSex.Male,
             Address.Create(
@@ -43,7 +43,9 @@ public class GetPatientByIdQueryHandlerTests
         );
 
         patient.UpdateMedicalProfile(BloodType.Create("A+"), "None", "None");
-        patient.UpdateEmergencyContact(EmergencyContact.Create("Jane", "555-1234"));
+        patient.UpdateEmergencyContact(
+            EmergencyContact.Create("Apple", "Jack", "Test", "555-1234")
+        );
 
         var patientId = patient.Id;
 
@@ -59,7 +61,7 @@ public class GetPatientByIdQueryHandlerTests
         // Assert
         var expectedDto = new PatientDto(
             patient.Id,
-            patient.FullName.FullName,
+            patient.FullName.ToString(),
             patient.DateOfBirth,
             patient.BloodGroup?.Value,
             patient.Allergies,
@@ -82,7 +84,7 @@ public class GetPatientByIdQueryHandlerTests
     {
         // Arrange
         var patient = Patient.CreateProfile(
-            PersonName.Create("John Doe"),
+            PersonName.Create("John", null, "Doe"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             BiologicalSex.Male,
             Address.Create(
@@ -107,7 +109,7 @@ public class GetPatientByIdQueryHandlerTests
         // Assert
         var expectedDto = new PatientDto(
             patient.Id,
-            patient.FullName.FullName,
+            patient.FullName.ToString(),
             patient.DateOfBirth,
             patient.BloodGroup?.Value,
             patient.Allergies,

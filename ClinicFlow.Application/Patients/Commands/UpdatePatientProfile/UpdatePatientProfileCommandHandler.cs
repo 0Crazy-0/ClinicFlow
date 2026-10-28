@@ -29,7 +29,9 @@ public sealed class UpdatePatientProfileCommandHandler(
 
         var bloodType = BloodType.Create(request.BloodType);
         var emergencyContact = EmergencyContact.Create(
-            request.EmergencyContactName,
+            request.EmergencyContactFirstName,
+            request.EmergencyContactMiddleName,
+            request.EmergencyContactLastName,
             request.EmergencyContactPhone
         );
 

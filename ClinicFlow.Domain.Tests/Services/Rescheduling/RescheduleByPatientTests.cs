@@ -631,7 +631,7 @@ public class RescheduleByPatientTests
         // Arrange
         var newDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(3));
         var target = Patient.CreateProfile(
-            PersonName.Create("Test"),
+            PersonName.Create("Test", null, "Test"),
             newDate.AddYears(-FamilyMembership.MinimumAdultAge),
             BiologicalSex.Male,
             Address.Create(
@@ -644,7 +644,7 @@ public class RescheduleByPatientTests
         );
 
         target.UpdateMedicalProfile(BloodType.Create("A+"), "", "");
-        target.UpdateEmergencyContact(EmergencyContact.Create("Name", "1234567890"));
+        target.UpdateEmergencyContact(EmergencyContact.Create("Name", null, "Name", "1234567890"));
 
         var guardianId = Guid.CreateVersion7();
         var appointment = Appointment.Schedule(
@@ -789,7 +789,7 @@ public class RescheduleByPatientTests
     private Patient CreateMinorPatient()
     {
         var patient = Patient.CreateProfile(
-            PersonName.Create("Child"),
+            PersonName.Create("Child", null, "Child"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10)),
             BiologicalSex.Male,
             Address.Create(
@@ -801,7 +801,7 @@ public class RescheduleByPatientTests
             _fakeTime.GetUtcNow().UtcDateTime
         );
         patient.UpdateMedicalProfile(BloodType.Create("A+"), "", "");
-        patient.UpdateEmergencyContact(EmergencyContact.Create("Name", "1234567890"));
+        patient.UpdateEmergencyContact(EmergencyContact.Create("Name", null, "Name", "1234567890"));
 
         return patient;
     }
@@ -861,7 +861,7 @@ public class RescheduleByPatientTests
     {
         var dateOfBirth = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30));
         var patient = Patient.CreateProfile(
-            PersonName.Create("Test"),
+            PersonName.Create("Test", null, "Test"),
             dateOfBirth,
             BiologicalSex.Male,
             Address.Create(
@@ -873,7 +873,7 @@ public class RescheduleByPatientTests
             _fakeTime.GetUtcNow().UtcDateTime
         );
         patient.UpdateMedicalProfile(BloodType.Create("A+"), "", "");
-        patient.UpdateEmergencyContact(EmergencyContact.Create("Name", "1234567890"));
+        patient.UpdateEmergencyContact(EmergencyContact.Create("Name", null, "Name", "1234567890"));
 
         return patient;
     }

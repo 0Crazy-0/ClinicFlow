@@ -24,7 +24,7 @@ public sealed class CreateDoctorProfileCommandHandler(
             cancellationToken
         );
 
-        var fullName = PersonName.Create($"{request.FirstName} {request.LastName}");
+        var fullName = PersonName.Create(request.FirstName, request.MiddleName, request.LastName);
         var doctor = DoctorRegistrationService.Register(
             new DoctorRegistrationArgs
             {

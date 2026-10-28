@@ -133,7 +133,7 @@ public class FamilyMembershipAccessAuthorizationServiceTests
         var referenceTime = _fakeTime.GetUtcNow().UtcDateTime;
 
         var patient = Patient.CreateProfile(
-            PersonName.Create("John Doe"),
+            PersonName.Create("John", null, "Doe"),
             DateOnly.FromDateTime(referenceTime.AddYears(-yearsOld)),
             BiologicalSex.Male,
             Address.Create(

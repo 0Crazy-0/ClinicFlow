@@ -37,6 +37,9 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         // Stryker disable once String: see docs/tooling/stryker.md, section "2. ApplicationDbContext Infrastructure Setup"
         modelBuilder.HasPostgresExtension("btree_gist");
 
+        // Stryker disable once String: see docs/tooling/stryker.md, section "2. ApplicationDbContext Infrastructure Setup"
+        modelBuilder.HasPostgresExtension("pg_trgm");
+
         foreach (
             var clrType in modelBuilder
                 .Model.GetEntityTypes()

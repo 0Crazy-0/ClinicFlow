@@ -277,7 +277,7 @@ public class SetGuardianInvolvementDeterminationByDoctorCommandHandlerTests
     private static Doctor CreateDoctor(Guid userId) =>
         Doctor.Create(
             userId,
-            PersonName.Create("Test Doctor"),
+            PersonName.Create("Test", null, "Doctor"),
             MedicalLicenseNumber.Create("RM-12345"),
             Guid.CreateVersion7(),
             "Bio",

@@ -109,7 +109,7 @@ public class DoctorRegistrationServiceTests
         // Arrange
         var existingDoctor = Doctor.Create(
             Guid.CreateVersion7(),
-            PersonName.Create("Test Doctor"),
+            PersonName.Create("Test", null, "Doctor"),
             MedicalLicenseNumber.Create("12345"),
             Guid.CreateVersion7(),
             "Old Bio",
@@ -131,7 +131,7 @@ public class DoctorRegistrationServiceTests
     private static DoctorRegistrationArgs CreateValidArgs() =>
         new()
         {
-            FullName = PersonName.Create("Test Doctor"),
+            FullName = PersonName.Create("Test", null, "Doctor"),
             LicenseNumber = MedicalLicenseNumber.Create("12345"),
             MedicalSpecialtyId = Guid.CreateVersion7(),
             Biography = "Cardiologist",

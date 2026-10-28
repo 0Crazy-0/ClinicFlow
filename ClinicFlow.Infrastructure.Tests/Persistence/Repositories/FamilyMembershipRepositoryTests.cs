@@ -900,7 +900,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
     private async Task<Patient> CreatePatientAsync()
     {
         var patient = Patient.CreateProfile(
-            PersonName.Create("Patient"),
+            PersonName.Create("Patient", null, "Patient"),
             new DateOnly(1990, 1, 1),
             BiologicalSex.Male,
             Address.Create(
@@ -913,7 +913,9 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
         );
 
         patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
-        patient.UpdateEmergencyContact(EmergencyContact.Create("Contact", "555-9999"));
+        patient.UpdateEmergencyContact(
+            EmergencyContact.Create("Contact", null, "Contact", "555-9999")
+        );
 
         Context.Patients.Add(patient);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);

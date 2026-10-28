@@ -26,7 +26,7 @@ public sealed class GetPatientByIdQueryHandler(IPatientRepository patientReposit
 
         return new PatientDto(
             patient.Id,
-            patient.FullName.FullName,
+            patient.FullName.ToString(),
             patient.DateOfBirth,
             patient.BloodGroup?.Value,
             patient.Allergies,

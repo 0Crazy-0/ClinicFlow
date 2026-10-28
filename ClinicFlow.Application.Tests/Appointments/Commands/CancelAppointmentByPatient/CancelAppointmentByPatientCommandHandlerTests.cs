@@ -397,7 +397,7 @@ public class CancelAppointmentByPatientCommandHandlerTests
     private Patient CreatePatient(Guid id)
     {
         var patient = Patient.CreateProfile(
-            PersonName.Create("Test"),
+            PersonName.Create("Test", null, "Test"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             BiologicalSex.Male,
             Address.Create(
@@ -426,7 +426,7 @@ public class CancelAppointmentByPatientCommandHandlerTests
     private static Doctor CreateDoctor(Guid userId, Guid specialtyId) =>
         Doctor.Create(
             userId,
-            PersonName.Create("Test Doctor"),
+            PersonName.Create("Test", null, "Doctor"),
             MedicalLicenseNumber.Create("1234567"),
             specialtyId,
             "555-1234",

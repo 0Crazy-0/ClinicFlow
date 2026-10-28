@@ -22,7 +22,7 @@ public sealed class CreatePatientProfileCommandHandler(
         CancellationToken cancellationToken
     )
     {
-        var fullName = PersonName.Create($"{request.FirstName} {request.LastName}");
+        var fullName = PersonName.Create(request.FirstName, null, request.LastName);
         var homeAddress = Address.Create(
             request.AddressLine,
             request.AddressState,
@@ -31,7 +31,7 @@ public sealed class CreatePatientProfileCommandHandler(
         );
 
         var lockKey = DeterministicKeyGenerator.FromComposite(
-            fullName.FullName.Trim().ToUpperInvariant(),
+            fullName.SearchName,
             request.DateOfBirth.ToString("yyyy-MM-dd")
         );
 

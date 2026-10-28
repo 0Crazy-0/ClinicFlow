@@ -205,7 +205,7 @@ public class ScheduleByStaffTests
         // Arrange
         var appointmentType = CreateAppointmentType();
         var incompletePatient = Patient.CreateProfile(
-            PersonName.Create("Test"),
+            PersonName.Create("Test", null, "Test"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             BiologicalSex.Male,
             Address.Create(
@@ -262,7 +262,7 @@ public class ScheduleByStaffTests
         );
 
         var target = Patient.CreateProfile(
-            PersonName.Create("Test"),
+            PersonName.Create("Test", null, "Test"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-15)),
             BiologicalSex.Male,
             Address.Create(
@@ -275,7 +275,7 @@ public class ScheduleByStaffTests
         );
 
         target.UpdateMedicalProfile(BloodType.Create("A+"), "", "");
-        target.UpdateEmergencyContact(EmergencyContact.Create("Name", "1234567890"));
+        target.UpdateEmergencyContact(EmergencyContact.Create("Name", null, "Name", "1234567890"));
 
         var args = new StaffSchedulingArgs
         {
@@ -432,7 +432,7 @@ public class ScheduleByStaffTests
     private Patient CreateSelfPatient()
     {
         var patient = Patient.CreateProfile(
-            PersonName.Create("Test"),
+            PersonName.Create("Test", null, "Test"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             BiologicalSex.Male,
             Address.Create(
@@ -445,7 +445,7 @@ public class ScheduleByStaffTests
         );
 
         patient.UpdateMedicalProfile(BloodType.Create("A+"), "", "");
-        patient.UpdateEmergencyContact(EmergencyContact.Create("Name", "1234567890"));
+        patient.UpdateEmergencyContact(EmergencyContact.Create("Name", null, "Name", "1234567890"));
 
         return patient;
     }

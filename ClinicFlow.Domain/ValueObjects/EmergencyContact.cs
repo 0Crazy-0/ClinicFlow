@@ -4,9 +4,14 @@ namespace ClinicFlow.Domain.ValueObjects;
 
 public record EmergencyContact
 {
-    public PersonName Name { get; }
+    public PersonName Name { get; private set; } = null!;
 
-    public PhoneNumber Phone { get; }
+    public PhoneNumber Phone { get; private set; } = null!;
+
+    // EF Core cannot bind the nested PersonName through a constructor parameter,
+    // so it uses this parameterless constructor and sets the properties through
+    // their private setters.
+    private EmergencyContact() { }
 
     private EmergencyContact(PersonName name, PhoneNumber phone)
     {
@@ -14,12 +19,16 @@ public record EmergencyContact
         Phone = phone;
     }
 
-    internal static EmergencyContact Create(string name, string phoneNumber)
+    public static EmergencyContact Create(
+        string firstName,
+        string? middleName,
+        string firstSurname,
+        string phoneNumber
+    )
     {
-        var nameVo = PersonName.Create(name);
         var phoneVo = PhoneNumber.Create(phoneNumber);
 
-        return Create(nameVo, phoneVo);
+        return Create(PersonName.Create(firstName, middleName, firstSurname), phoneVo);
     }
 
     internal static EmergencyContact Create(PersonName name, PhoneNumber phoneNumber)

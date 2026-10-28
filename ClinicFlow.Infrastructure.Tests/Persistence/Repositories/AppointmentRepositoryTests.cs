@@ -1775,7 +1775,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         Context.AppointmentTypes.Add(guardianApptType);
 
         var minorPatient = Patient.CreateProfile(
-            PersonName.Create("Minor Child"),
+            PersonName.Create("Minor", null, "Child"),
             DateOnly.FromDateTime(refTime.AddYears(-5)),
             BiologicalSex.Male,
             Address.Create(
@@ -1787,7 +1787,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             refTime
         );
         minorPatient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
-        minorPatient.UpdateEmergencyContact(EmergencyContact.Create("Contact", "555-9999"));
+        minorPatient.UpdateEmergencyContact(
+            EmergencyContact.Create("Contact", null, "Contact", "555-9999")
+        );
         Context.Patients.Add(minorPatient);
 
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -1839,7 +1841,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         Context.AppointmentTypes.Add(guardianApptType);
 
         var minorPatient = Patient.CreateProfile(
-            PersonName.Create("Minor Child"),
+            PersonName.Create("Minor", null, "Child"),
             DateOnly.FromDateTime(refTime.AddYears(-5)),
             BiologicalSex.Male,
             Address.Create(
@@ -1851,7 +1853,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             refTime
         );
         minorPatient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
-        minorPatient.UpdateEmergencyContact(EmergencyContact.Create("Contact", "555-9999"));
+        minorPatient.UpdateEmergencyContact(
+            EmergencyContact.Create("Contact", null, "Contact", "555-9999")
+        );
         Context.Patients.Add(minorPatient);
 
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -1897,7 +1901,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         Context.AppointmentTypes.Add(guardianApptType);
 
         var adultPatient = Patient.CreateProfile(
-            PersonName.Create("Adult Patient"),
+            PersonName.Create("Adult", null, "Patient"),
             DateOnly.FromDateTime(refTime.AddYears(-25)),
             BiologicalSex.Male,
             Address.Create(
@@ -1910,7 +1914,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         );
 
         adultPatient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
-        adultPatient.UpdateEmergencyContact(EmergencyContact.Create("Contact", "555-9999"));
+        adultPatient.UpdateEmergencyContact(
+            EmergencyContact.Create("Contact", null, "Contact", "555-9999")
+        );
         Context.Patients.Add(adultPatient);
 
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -1946,7 +1952,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         var (doctor, _, standardApptType) = await SeedCommonEntitiesAsync();
 
         var minorPatient = Patient.CreateProfile(
-            PersonName.Create("Minor Child"),
+            PersonName.Create("Minor", null, "Child"),
             DateOnly.FromDateTime(refTime.AddYears(-5)),
             BiologicalSex.Male,
             Address.Create(
@@ -1958,7 +1964,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             refTime
         );
         minorPatient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
-        minorPatient.UpdateEmergencyContact(EmergencyContact.Create("Contact", "555-9999"));
+        minorPatient.UpdateEmergencyContact(
+            EmergencyContact.Create("Contact", null, "Contact", "555-9999")
+        );
         Context.Patients.Add(minorPatient);
 
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -2004,7 +2012,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         Context.AppointmentTypes.Add(guardianApptType);
 
         var minorPatient = Patient.CreateProfile(
-            PersonName.Create("Minor Child"),
+            PersonName.Create("Minor", null, "Child"),
             DateOnly.FromDateTime(refTime.AddYears(-5)),
             BiologicalSex.Male,
             Address.Create(
@@ -2016,7 +2024,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             refTime
         );
         minorPatient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
-        minorPatient.UpdateEmergencyContact(EmergencyContact.Create("Contact", "555-9999"));
+        minorPatient.UpdateEmergencyContact(
+            EmergencyContact.Create("Contact", null, "Contact", "555-9999")
+        );
         Context.Patients.Add(minorPatient);
 
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -2069,7 +2079,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         Context.AppointmentTypes.Add(guardianApptType);
 
         var minorPatient = Patient.CreateProfile(
-            PersonName.Create("Minor Child"),
+            PersonName.Create("Minor", null, "Child"),
             DateOnly.FromDateTime(refTime.AddYears(-5)),
             BiologicalSex.Male,
             Address.Create(
@@ -2081,7 +2091,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             refTime
         );
         minorPatient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
-        minorPatient.UpdateEmergencyContact(EmergencyContact.Create("Contact", "555-9999"));
+        minorPatient.UpdateEmergencyContact(
+            EmergencyContact.Create("Contact", null, "Contact", "555-9999")
+        );
         Context.Patients.Add(minorPatient);
 
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -2133,7 +2145,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         Context.AppointmentTypes.Add(guardianApptType);
 
         var minorPatient = Patient.CreateProfile(
-            PersonName.Create("Minor Child"),
+            PersonName.Create("Minor", null, "Child"),
             DateOnly.FromDateTime(refTime.AddYears(-5)),
             BiologicalSex.Male,
             Address.Create(
@@ -2145,7 +2157,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             refTime
         );
         minorPatient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
-        minorPatient.UpdateEmergencyContact(EmergencyContact.Create("Contact", "555-9999"));
+        minorPatient.UpdateEmergencyContact(
+            EmergencyContact.Create("Contact", null, "Contact", "555-9999")
+        );
         Context.Patients.Add(minorPatient);
 
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -2197,7 +2211,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         Context.AppointmentTypes.Add(guardianApptType);
 
         var minorPatient = Patient.CreateProfile(
-            PersonName.Create("Minor Child"),
+            PersonName.Create("Minor", null, "Child"),
             DateOnly.FromDateTime(refTime.AddYears(-5)),
             BiologicalSex.Male,
             Address.Create(
@@ -2209,7 +2223,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             refTime
         );
         minorPatient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
-        minorPatient.UpdateEmergencyContact(EmergencyContact.Create("Contact", "555-9999"));
+        minorPatient.UpdateEmergencyContact(
+            EmergencyContact.Create("Contact", null, "Contact", "555-9999")
+        );
         Context.Patients.Add(minorPatient);
 
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -3116,7 +3132,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
 
         var doctor = Doctor.Create(
             userId,
-            PersonName.Create("Dr. Watson"),
+            PersonName.Create("Dr.", null, "Watson"),
             MedicalLicenseNumber.Create("licenseNumber"),
             specialty.Id,
             "Desc",
@@ -3134,7 +3150,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
     {
         var refTime = _fakeTime.GetLocalNow().DateTime;
         var patient = Patient.CreateProfile(
-            PersonName.Create("John Doe"),
+            PersonName.Create("John", null, "Doe"),
             DateOnly.FromDateTime(refTime.AddYears(-30)),
             BiologicalSex.Male,
             Address.Create(
@@ -3147,7 +3163,9 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         );
 
         patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
-        patient.UpdateEmergencyContact(EmergencyContact.Create("Contact", "555-9999"));
+        patient.UpdateEmergencyContact(
+            EmergencyContact.Create("Contact", null, "Contact", "555-9999")
+        );
 
         Context.Patients.Add(patient);
 

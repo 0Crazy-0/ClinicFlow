@@ -27,7 +27,7 @@ public class GetDoctorByIdQueryHandlerTests
         // Arrange
         var doctor = Doctor.Create(
             Guid.CreateVersion7(),
-            PersonName.Create("Test Doctor"),
+            PersonName.Create("Test", null, "Doctor"),
             MedicalLicenseNumber.Create("12345"),
             Guid.CreateVersion7(),
             "Cardiologist with 10 years of experience",
@@ -48,7 +48,7 @@ public class GetDoctorByIdQueryHandlerTests
         var expectedDto = new DoctorDto(
             doctor.Id,
             doctor.UserId,
-            doctor.FullName.FullName,
+            doctor.FullName.ToString(),
             doctor.MedicalSpecialtyId,
             doctor.LicenseNumber.Value,
             doctor.Biography,

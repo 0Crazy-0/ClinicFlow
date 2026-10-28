@@ -17,6 +17,22 @@ public sealed class CreateDoctorProfileCommandValidator
             .WithMessage(DomainErrors.Validation.ValueTooShort)
             .MaximumLength(PersonName.MaximumLength)
             .WithMessage(DomainErrors.Validation.ValueTooLong);
+
+        When(
+            x => x.MiddleName is not null,
+            () =>
+            {
+                RuleFor(x => x.MiddleName)
+                    .Cascade(CascadeMode.Stop)
+                    .NotEmpty()
+                    .WithMessage(DomainErrors.Validation.ValueRequired)
+                    .MinimumLength(PersonName.MinimumLength)
+                    .WithMessage(DomainErrors.Validation.ValueTooShort)
+                    .MaximumLength(PersonName.MaximumLength)
+                    .WithMessage(DomainErrors.Validation.ValueTooLong);
+            }
+        );
+
         RuleFor(x => x.LastName)
             .NotEmpty()
             .WithMessage(DomainErrors.Validation.ValueRequired)

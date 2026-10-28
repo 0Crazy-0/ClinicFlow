@@ -7,6 +7,8 @@ public sealed record UpdatePatientProfileCommand(
     string BloodType,
     string Allergies,
     string ChronicConditions,
-    string EmergencyContactName,
+    string EmergencyContactFirstName,
+    string? EmergencyContactMiddleName,
+    string EmergencyContactLastName,
     string EmergencyContactPhone
 ) : IRequest;

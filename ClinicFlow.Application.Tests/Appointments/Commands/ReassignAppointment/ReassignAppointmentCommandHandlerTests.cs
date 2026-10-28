@@ -46,7 +46,7 @@ public class ReassignAppointmentCommandHandlerTests
         var appointment = CreateDisplacedAppointment();
         var newDoctor = Doctor.Create(
             Guid.CreateVersion7(),
-            PersonName.Create("Test Doctor"),
+            PersonName.Create("Test", null, "Doctor"),
             MedicalLicenseNumber.Create("DOC123"),
             Guid.CreateVersion7(),
             "Specialist",
@@ -178,7 +178,7 @@ public class ReassignAppointmentCommandHandlerTests
         var appointment = CreateDisplacedAppointment();
         var newDoctor = Doctor.Create(
             Guid.CreateVersion7(),
-            PersonName.Create("Test Doctor"),
+            PersonName.Create("Test", null, "Doctor"),
             MedicalLicenseNumber.Create("DOC123"),
             Guid.CreateVersion7(),
             "Specialist",
@@ -244,7 +244,7 @@ public class ReassignAppointmentCommandHandlerTests
         var appointment = CreateDisplacedAppointment();
         var newDoctor = Doctor.Create(
             Guid.CreateVersion7(),
-            PersonName.Create("Test Doctor"),
+            PersonName.Create("Test", null, "Doctor"),
             MedicalLicenseNumber.Create("DOC123"),
             Guid.CreateVersion7(),
             "Specialist",
@@ -311,7 +311,7 @@ public class ReassignAppointmentCommandHandlerTests
         var appointment = CreateDisplacedAppointment();
         var newDoctor = Doctor.Create(
             Guid.CreateVersion7(),
-            PersonName.Create("Test Doctor"),
+            PersonName.Create("Test", null, "Doctor"),
             MedicalLicenseNumber.Create("DOC123"),
             Guid.CreateVersion7(),
             "Specialist",

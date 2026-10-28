@@ -819,7 +819,7 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
 
         var doctor = Doctor.Create(
             user.Id,
-            PersonName.Create("Dr. Watson"),
+            PersonName.Create("Dr.", null, "Watson"),
             MedicalLicenseNumber.Create("LicenseNumber"),
             specialty.Id,
             "Desc",
@@ -836,7 +836,7 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
     private async Task<Patient> CreatePatientAsync()
     {
         var patient = Patient.CreateProfile(
-            PersonName.Create("John Doe"),
+            PersonName.Create("John", null, "Doe"),
             DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime.AddYears(-30)),
             BiologicalSex.Male,
             Address.Create(
@@ -849,7 +849,9 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
         );
 
         patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
-        patient.UpdateEmergencyContact(EmergencyContact.Create("Contact", "555-9999"));
+        patient.UpdateEmergencyContact(
+            EmergencyContact.Create("Contact", null, "Contact", "555-9999")
+        );
 
         Context.Patients.Add(patient);
 

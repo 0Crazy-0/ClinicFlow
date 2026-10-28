@@ -208,7 +208,7 @@ public class CorrectBiologicalSexByDoctorCommandHandlerTests
 
     private Patient CreatePatient(BiologicalSex biologicalSex) =>
         Patient.CreateProfile(
-            PersonName.Create("Test Patient"),
+            PersonName.Create("Test", null, "Patient"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             biologicalSex,
             Address.Create(
@@ -223,7 +223,7 @@ public class CorrectBiologicalSexByDoctorCommandHandlerTests
     private static Doctor CreateDoctor(Guid userId) =>
         Doctor.Create(
             userId,
-            PersonName.Create("Test Doctor"),
+            PersonName.Create("Test", null, "Doctor"),
             MedicalLicenseNumber.Create("RM-12345"),
             Guid.CreateVersion7(),
             "Bio",

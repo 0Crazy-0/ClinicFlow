@@ -5,14 +5,12 @@ using ClinicFlow.Domain.ValueObjects;
 using ClinicFlow.Infrastructure.Persistence;
 using ClinicFlow.Infrastructure.Tests.Shared;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Time.Testing;
 
 namespace ClinicFlow.Infrastructure.Tests.Persistence;
 
 public class ApplicationDbContextIntegrationTests(PostgresFixture fixture) : IAsyncLifetime
 {
     private readonly ApplicationDbContext _sut = fixture.Context;
-    private readonly FakeTimeProvider _fakeTime = new();
 
     public async ValueTask InitializeAsync()
     {
@@ -102,7 +100,7 @@ public class ApplicationDbContextIntegrationTests(PostgresFixture fixture) : IAs
 
         var doctor = Doctor.Create(
             user.Id,
-            PersonName.Create("Dr. Watson"),
+            PersonName.Create("Dr.", null, "Watson"),
             MedicalLicenseNumber.Create("LicenseNumber"),
             specialty.Id,
             "Bio",

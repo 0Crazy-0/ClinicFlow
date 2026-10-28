@@ -559,7 +559,7 @@ public class ScheduleRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
 
         var doctor = Doctor.Create(
             user.Id,
-            PersonName.Create("Dr. Watson"),
+            PersonName.Create("Dr.", null, "Watson"),
             MedicalLicenseNumber.Create("LicenseNumber"),
             specialty.Id,
             "Desc",

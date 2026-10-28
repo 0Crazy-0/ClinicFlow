@@ -261,7 +261,7 @@ public class ScheduleByGuardianTests
     {
         // Arrange
         var incompletePatient = Patient.CreateProfile(
-            PersonName.Create("Child"),
+            PersonName.Create("Child", null, "Child"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10)),
             BiologicalSex.Male,
             Address.Create(
@@ -429,7 +429,7 @@ public class ScheduleByGuardianTests
     {
         // Arrange
         var patientAdult = Patient.CreateProfile(
-            PersonName.Create("Adult"),
+            PersonName.Create("Adult", null, "Adult"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-25)),
             BiologicalSex.Male,
             Address.Create(
@@ -441,7 +441,9 @@ public class ScheduleByGuardianTests
             _fakeTime.GetUtcNow().UtcDateTime
         );
         patientAdult.UpdateMedicalProfile(BloodType.Create("A+"), "", "");
-        patientAdult.UpdateEmergencyContact(EmergencyContact.Create("Name", "1234567890"));
+        patientAdult.UpdateEmergencyContact(
+            EmergencyContact.Create("Name", null, "Name", "1234567890")
+        );
 
         var args = new GuardianSchedulingArgs
         {
@@ -484,7 +486,7 @@ public class ScheduleByGuardianTests
         // Arrange
         var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1));
         var target = Patient.CreateProfile(
-            PersonName.Create("Child"),
+            PersonName.Create("Child", null, "Child"),
             scheduledDate.AddYears(-FamilyMembership.MinimumAdultAge),
             BiologicalSex.Male,
             Address.Create(
@@ -496,7 +498,7 @@ public class ScheduleByGuardianTests
             _fakeTime.GetUtcNow().UtcDateTime
         );
         target.UpdateMedicalProfile(BloodType.Create("A+"), "", "");
-        target.UpdateEmergencyContact(EmergencyContact.Create("Name", "1234567890"));
+        target.UpdateEmergencyContact(EmergencyContact.Create("Name", null, "Name", "1234567890"));
 
         var args = new GuardianSchedulingArgs
         {
@@ -676,7 +678,7 @@ public class ScheduleByGuardianTests
     private Patient CreateMinorPatient()
     {
         var patient = Patient.CreateProfile(
-            PersonName.Create("Child"),
+            PersonName.Create("Child", null, "Child"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10)),
             BiologicalSex.Male,
             Address.Create(
@@ -688,7 +690,7 @@ public class ScheduleByGuardianTests
             _fakeTime.GetUtcNow().UtcDateTime
         );
         patient.UpdateMedicalProfile(BloodType.Create("A+"), "", "");
-        patient.UpdateEmergencyContact(EmergencyContact.Create("Name", "1234567890"));
+        patient.UpdateEmergencyContact(EmergencyContact.Create("Name", null, "Name", "1234567890"));
 
         return patient;
     }

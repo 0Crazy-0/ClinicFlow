@@ -25,7 +25,7 @@ public sealed class GetDoctorsBySpecialtyIdQueryHandler(IDoctorRepository doctor
             .Select(doctor => new DoctorDto(
                 doctor.Id,
                 doctor.UserId,
-                doctor.FullName.FullName,
+                doctor.FullName.ToString(),
                 doctor.MedicalSpecialtyId,
                 doctor.LicenseNumber.Value,
                 doctor.Biography,

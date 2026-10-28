@@ -258,7 +258,7 @@ public class ScheduleByPatientTests
         var appointmentType = CreateAppointmentType();
 
         var familyMember = Patient.CreateProfile(
-            PersonName.Create("Spouse"),
+            PersonName.Create("Spouse", null, "Spouse"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             BiologicalSex.Male,
             Address.Create(
@@ -270,7 +270,9 @@ public class ScheduleByPatientTests
             _fakeTime.GetUtcNow().UtcDateTime
         );
         familyMember.UpdateMedicalProfile(BloodType.Create("A+"), "", "");
-        familyMember.UpdateEmergencyContact(EmergencyContact.Create("Name", "1234567890"));
+        familyMember.UpdateEmergencyContact(
+            EmergencyContact.Create("Name", null, "Name", "1234567890")
+        );
 
         var args = new PatientSchedulingArgs
         {
@@ -319,7 +321,7 @@ public class ScheduleByPatientTests
         var userId = Guid.CreateVersion7();
         var appointmentType = CreateAppointmentType();
         var incompletePatient = Patient.CreateProfile(
-            PersonName.Create("Test"),
+            PersonName.Create("Test", null, "Test"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             BiologicalSex.Male,
             Address.Create(
@@ -419,7 +421,7 @@ public class ScheduleByPatientTests
         );
 
         var target = Patient.CreateProfile(
-            PersonName.Create("Test"),
+            PersonName.Create("Test", null, "Test"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-15)),
             BiologicalSex.Male,
             Address.Create(
@@ -431,7 +433,7 @@ public class ScheduleByPatientTests
             _fakeTime.GetUtcNow().UtcDateTime
         );
         target.UpdateMedicalProfile(BloodType.Create("A+"), "", "");
-        target.UpdateEmergencyContact(EmergencyContact.Create("Name", "1234567890"));
+        target.UpdateEmergencyContact(EmergencyContact.Create("Name", null, "Name", "1234567890"));
 
         var args = new PatientSchedulingArgs
         {
@@ -477,7 +479,7 @@ public class ScheduleByPatientTests
         );
 
         var target = Patient.CreateProfile(
-            PersonName.Create("Child"),
+            PersonName.Create("Child", null, "Child"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10)),
             BiologicalSex.Male,
             Address.Create(
@@ -490,7 +492,7 @@ public class ScheduleByPatientTests
         );
 
         target.UpdateMedicalProfile(BloodType.Create("A+"), "", "");
-        target.UpdateEmergencyContact(EmergencyContact.Create("Name", "1234567890"));
+        target.UpdateEmergencyContact(EmergencyContact.Create("Name", null, "Name", "1234567890"));
 
         var args = new PatientSchedulingArgs
         {
@@ -543,7 +545,7 @@ public class ScheduleByPatientTests
 
         var initiator = CreateSelfPatient();
         var target = Patient.CreateProfile(
-            PersonName.Create("Child"),
+            PersonName.Create("Child", null, "Child"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10)),
             BiologicalSex.Male,
             Address.Create(
@@ -555,7 +557,7 @@ public class ScheduleByPatientTests
             _fakeTime.GetUtcNow().UtcDateTime
         );
         target.UpdateMedicalProfile(BloodType.Create("A+"), "", "");
-        target.UpdateEmergencyContact(EmergencyContact.Create("Name", "1234567890"));
+        target.UpdateEmergencyContact(EmergencyContact.Create("Name", null, "Name", "1234567890"));
 
         var args = new PatientSchedulingArgs
         {
@@ -842,7 +844,7 @@ public class ScheduleByPatientTests
     private Patient CreateSelfPatient()
     {
         var patient = Patient.CreateProfile(
-            PersonName.Create("Test"),
+            PersonName.Create("Test", null, "Test"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             BiologicalSex.Male,
             Address.Create(
@@ -854,7 +856,7 @@ public class ScheduleByPatientTests
             _fakeTime.GetUtcNow().UtcDateTime
         );
         patient.UpdateMedicalProfile(BloodType.Create("A+"), "", "");
-        patient.UpdateEmergencyContact(EmergencyContact.Create("Name", "1234567890"));
+        patient.UpdateEmergencyContact(EmergencyContact.Create("Name", null, "Name", "1234567890"));
 
         return patient;
     }

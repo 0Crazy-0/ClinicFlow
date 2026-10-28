@@ -45,7 +45,7 @@ public class FamilyMemberRegistrationServiceTests
     {
         // Arrange
         var existingPatient = Patient.CreateProfile(
-            PersonName.Create("Test Patient"),
+            PersonName.Create("Test", null, "Patient"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             BiologicalSex.Male,
             Address.Create(
@@ -204,7 +204,7 @@ public class FamilyMemberRegistrationServiceTests
     {
         // Arrange
         var existingPatient = Patient.CreateProfile(
-            PersonName.Create("Test Patient"),
+            PersonName.Create("Test", null, "Patient"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             BiologicalSex.Male,
             Address.Create(
@@ -237,7 +237,7 @@ public class FamilyMemberRegistrationServiceTests
     {
         // Arrange
         var existingPatient = Patient.CreateProfile(
-            PersonName.Create("Test Patient"),
+            PersonName.Create("Test", null, "Patient"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             BiologicalSex.Male,
             Address.Create(
@@ -278,7 +278,7 @@ public class FamilyMemberRegistrationServiceTests
         {
             Role = role,
             AccessLevel = FamilyMembershipAccessLevel.Full,
-            FullName = PersonName.Create("Test Patient"),
+            FullName = PersonName.Create("Test", null, "Patient"),
             DateOfBirth = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             SexAtBirth = BiologicalSex.Male,
             HomeAddress = Address.Create(

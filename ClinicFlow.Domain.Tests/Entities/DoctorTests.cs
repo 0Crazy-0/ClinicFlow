@@ -14,7 +14,7 @@ public class DoctorTests
     {
         // Arrange
         var userId = Guid.CreateVersion7();
-        var fullName = PersonName.Create("Test Doctor");
+        var fullName = PersonName.Create("Doctor", "Test", "sixseven");
         var licenseNumber = MedicalLicenseNumber.Create("12345");
         var specialtyId = Guid.CreateVersion7();
         var biography = "Cardiologist with 10 years of experience";
@@ -40,7 +40,7 @@ public class DoctorTests
         var act = () =>
             Doctor.Create(
                 Guid.Empty,
-                PersonName.Create("Test Doctor"),
+                PersonName.Create("Test", null, "Doctor"),
                 MedicalLicenseNumber.Create("12345"),
                 Guid.CreateVersion7(),
                 "Biography",
@@ -60,7 +60,7 @@ public class DoctorTests
         var act = () =>
             Doctor.Create(
                 Guid.CreateVersion7(),
-                PersonName.Create("Test Doctor"),
+                PersonName.Create("Test", null, "Doctor"),
                 MedicalLicenseNumber.Create("12345"),
                 Guid.Empty,
                 "Biography",
@@ -99,7 +99,7 @@ public class DoctorTests
         // Arrange
         var doctor = Doctor.Create(
             Guid.CreateVersion7(),
-            PersonName.Create("Test Doctor"),
+            PersonName.Create("Test", null, "Doctor"),
             MedicalLicenseNumber.Create("12345"),
             Guid.CreateVersion7(),
             "Original biography",
@@ -183,7 +183,7 @@ public class DoctorTests
     private static Doctor CreateDoctor() =>
         Doctor.Create(
             Guid.CreateVersion7(),
-            PersonName.Create("Test Doctor"),
+            PersonName.Create("Test", null, "Doctor"),
             MedicalLicenseNumber.Create("12345"),
             Guid.CreateVersion7(),
             "Biography",
