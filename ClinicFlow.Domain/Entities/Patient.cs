@@ -32,7 +32,7 @@ public class Patient : BaseEntity
     // Stryker disable once String
     public string ChronicConditions { get; private set; } = string.Empty;
 
-    public EmergencyContact Contact { get; private set; } = null!;
+    public EmergencyContact? Contact { get; private set; }
 
     public Address HomeAddress { get; private set; } = null!;
 
