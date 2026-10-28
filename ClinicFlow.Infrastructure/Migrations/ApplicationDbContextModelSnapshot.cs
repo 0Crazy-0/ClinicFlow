@@ -675,8 +675,6 @@ namespace ClinicFlow.Infrastructure.Migrations
 
                     b.ComplexProperty(typeof(Dictionary<string, object>), "Contact", "ClinicFlow.Domain.Entities.Patient.Contact#EmergencyContact", b1 =>
                         {
-                            b1.IsRequired();
-
                             b1.Property<string>("Phone")
                                 .IsRequired()
                                 .HasMaxLength(20)
