@@ -40,10 +40,12 @@ public class UpdatePatientProfileCommandHandlerTests
             "Peanuts",
             "Asthma",
             "Dad",
+            null,
+            "Dad",
             "555-1234"
         );
         var patient = Patient.CreateProfile(
-            PersonName.Create("John Doe"),
+            PersonName.Create("John", null, "Doe"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             BiologicalSex.Male,
             Address.Create(
@@ -68,7 +70,9 @@ public class UpdatePatientProfileCommandHandlerTests
         patient.BloodGroup.ToString().Should().Be(command.BloodType);
         patient.Allergies.Should().Be(command.Allergies);
         patient.ChronicConditions.Should().Be(command.ChronicConditions);
-        patient.Contact.Name.ToString().Should().Be(command.EmergencyContactName);
+        patient.Contact!.Name.FirstName.Should().Be(command.EmergencyContactFirstName);
+        patient.Contact.Name.MiddleName.Should().BeNull();
+        patient.Contact.Name.FirstSurname.Should().Be(command.EmergencyContactLastName);
         patient.Contact.Phone.ToString().Should().Be(command.EmergencyContactPhone);
     }
 
@@ -81,6 +85,8 @@ public class UpdatePatientProfileCommandHandlerTests
             "O+",
             "Peanuts",
             "Asthma",
+            "Dad",
+            null,
             "Dad",
             "555-1234"
         );

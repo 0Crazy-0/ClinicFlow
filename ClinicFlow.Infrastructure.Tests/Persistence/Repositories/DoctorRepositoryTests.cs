@@ -35,7 +35,7 @@ public class DoctorRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         var (user, specialty) = await CreatePrerequisitesAsync();
         var doctor = Doctor.Create(
             user.Id,
-            PersonName.Create("Dr. Watson"),
+            PersonName.Create("Dr.", null, "Watson"),
             MedicalLicenseNumber.Create("CMP-12345"),
             specialty.Id,
             "Biography",
@@ -61,7 +61,7 @@ public class DoctorRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         var (user, specialty) = await CreatePrerequisitesAsync();
         var doctor = Doctor.Create(
             user.Id,
-            PersonName.Create("Dr. Watson"),
+            PersonName.Create("Dr.", null, "Watson"),
             MedicalLicenseNumber.Create("CMP-12345"),
             specialty.Id,
             "Biography",
@@ -85,7 +85,7 @@ public class DoctorRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         var (user, specialty) = await CreatePrerequisitesAsync();
         var doctor = Doctor.Create(
             user.Id,
-            PersonName.Create("Dr. Watson"),
+            PersonName.Create("Dr.", null, "Watson"),
             MedicalLicenseNumber.Create("CMP-12345"),
             specialty.Id,
             "Biography",
@@ -109,7 +109,7 @@ public class DoctorRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         var (user, specialty) = await CreatePrerequisitesAsync();
         var doctor = Doctor.Create(
             user.Id,
-            PersonName.Create("Dr. Watson"),
+            PersonName.Create("Dr.", null, "Watson"),
             MedicalLicenseNumber.Create("CMP-12345"),
             specialty.Id,
             "Biography",
@@ -148,7 +148,7 @@ public class DoctorRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         var (user, specialty) = await CreatePrerequisitesAsync();
         var doctor = Doctor.Create(
             user.Id,
-            PersonName.Create("Dr. Watson"),
+            PersonName.Create("Dr.", null, "Watson"),
             MedicalLicenseNumber.Create("CMP-12345"),
             specialty.Id,
             "Biography",
@@ -173,7 +173,7 @@ public class DoctorRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         var (user, specialty) = await CreatePrerequisitesAsync();
         var doctor = Doctor.Create(
             user.Id,
-            PersonName.Create("Dr. Watson"),
+            PersonName.Create("Dr.", null, "Watson"),
             MedicalLicenseNumber.Create("CMP-12345"),
             specialty.Id,
             "Biography",
@@ -221,7 +221,7 @@ public class DoctorRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
 
         var doctor1 = Doctor.Create(
             user1.Id,
-            PersonName.Create("Doctor A"),
+            PersonName.Create("Doctor", null, "Alfa"),
             MedicalLicenseNumber.Create("CMP-11111"),
             specialty.Id,
             "Bio",
@@ -233,7 +233,7 @@ public class DoctorRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
 
         var doctor2 = Doctor.Create(
             user2.Id,
-            PersonName.Create("Doctor C"),
+            PersonName.Create("Doctor", null, "Charlie"),
             MedicalLicenseNumber.Create("CMP-22222"),
             specialty.Id,
             "Bio",
@@ -245,7 +245,7 @@ public class DoctorRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
 
         var doctor3 = Doctor.Create(
             user3.Id,
-            PersonName.Create("Doctor B"),
+            PersonName.Create("Doctor", null, "Bravo"),
             MedicalLicenseNumber.Create("CMP-33333"),
             specialty.Id,
             "Bio",
@@ -281,7 +281,7 @@ public class DoctorRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
 
         var doctor1 = Doctor.Create(
             user1.Id,
-            PersonName.Create("Doctor A"),
+            PersonName.Create("Doctor", null, "Alfa"),
             MedicalLicenseNumber.Create("CMP-11111"),
             specialty.Id,
             "Bio",
@@ -293,7 +293,7 @@ public class DoctorRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
 
         var doctor2 = Doctor.Create(
             user2.Id,
-            PersonName.Create("Doctor C"),
+            PersonName.Create("Doctor", null, "Charlie"),
             MedicalLicenseNumber.Create("CMP-22222"),
             specialty.Id,
             "Bio",
@@ -305,7 +305,7 @@ public class DoctorRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
 
         var doctor3 = Doctor.Create(
             user3.Id,
-            PersonName.Create("Doctor B"),
+            PersonName.Create("Doctor", null, "Bravo"),
             MedicalLicenseNumber.Create("CMP-33333"),
             specialty.Id,
             "Bio",
@@ -341,7 +341,7 @@ public class DoctorRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
 
         var doctor1 = Doctor.Create(
             user1.Id,
-            PersonName.Create("Doctor A"),
+            PersonName.Create("Doctor", null, "Alfa"),
             MedicalLicenseNumber.Create("CMP-11111"),
             specialty1.Id,
             "Bio",
@@ -353,7 +353,7 @@ public class DoctorRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
 
         var doctor2 = Doctor.Create(
             user2.Id,
-            PersonName.Create("Doctor B"),
+            PersonName.Create("Doctor", null, "Bravo"),
             MedicalLicenseNumber.Create("CMP-22222"),
             specialty2.Id,
             "Bio",
@@ -388,7 +388,7 @@ public class DoctorRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
 
         var doctor1 = Doctor.Create(
             user1.Id,
-            PersonName.Create("Doctor A"),
+            PersonName.Create("Doctor", null, "Alfa"),
             MedicalLicenseNumber.Create("CMP-11111"),
             specialty.Id,
             "Bio",
@@ -400,7 +400,7 @@ public class DoctorRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
 
         var doctor2 = Doctor.Create(
             user2.Id,
-            PersonName.Create("Doctor B"),
+            PersonName.Create("Doctor", null, "Bravo"),
             MedicalLicenseNumber.Create("CMP-22222"),
             specialty.Id,
             "Bio",
@@ -437,7 +437,7 @@ public class DoctorRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
 
         var doctor1 = Doctor.Create(
             user1.Id,
-            PersonName.Create("Doctor Same"),
+            PersonName.Create("Doctor", null, "Same"),
             MedicalLicenseNumber.Create("CMP-11111"),
             specialty.Id,
             "Bio",
@@ -449,7 +449,7 @@ public class DoctorRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
 
         var doctor2 = Doctor.Create(
             user2.Id,
-            PersonName.Create("Doctor Same"),
+            PersonName.Create("Doctor", null, "Same"),
             MedicalLicenseNumber.Create("CMP-22222"),
             specialty.Id,
             "Bio",
@@ -480,7 +480,7 @@ public class DoctorRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         var (user, specialty) = await CreatePrerequisitesAsync();
         var doctor = Doctor.Create(
             user.Id,
-            PersonName.Create("Dr. Watson"),
+            PersonName.Create("Dr.", null, "Watson"),
             MedicalLicenseNumber.Create("CMP-12345"),
             specialty.Id,
             "Biography",
@@ -508,7 +508,7 @@ public class DoctorRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         var (user, specialty) = await CreatePrerequisitesAsync();
         var doctor = Doctor.Create(
             user.Id,
-            PersonName.Create("Dr. Watson"),
+            PersonName.Create("Dr.", null, "Watson"),
             MedicalLicenseNumber.Create("CMP-12345"),
             specialty.Id,
             "Biography",
@@ -538,7 +538,7 @@ public class DoctorRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         var (user, specialty) = await CreatePrerequisitesAsync();
         var doctor = Doctor.Create(
             user.Id,
-            PersonName.Create("Dr. Watson"),
+            PersonName.Create("Dr.", null, "Watson"),
             MedicalLicenseNumber.Create("CMP-12345"),
             specialty.Id,
             "Biography",
@@ -566,7 +566,7 @@ public class DoctorRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         var (user, specialty) = await CreatePrerequisitesAsync();
         var doctor = Doctor.Create(
             user.Id,
-            PersonName.Create("Dr. Watson"),
+            PersonName.Create("Dr.", null, "Watson"),
             MedicalLicenseNumber.Create("CMP-12345"),
             specialty.Id,
             "Biography",

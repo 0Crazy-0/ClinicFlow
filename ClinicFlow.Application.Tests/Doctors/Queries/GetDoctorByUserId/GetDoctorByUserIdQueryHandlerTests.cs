@@ -28,7 +28,7 @@ public class GetDoctorByUserIdQueryHandlerTests
         var userId = Guid.CreateVersion7();
         var doctor = Doctor.Create(
             userId,
-            PersonName.Create("Test Doctor"),
+            PersonName.Create("Test", null, "Doctor"),
             MedicalLicenseNumber.Create("67890"),
             Guid.CreateVersion7(),
             "Dermatologist specialized in skin cancer detection",
@@ -49,7 +49,7 @@ public class GetDoctorByUserIdQueryHandlerTests
         var expectedDto = new DoctorDto(
             doctor.Id,
             doctor.UserId,
-            doctor.FullName.FullName,
+            doctor.FullName.ToString(),
             doctor.MedicalSpecialtyId,
             doctor.LicenseNumber.Value,
             doctor.Biography,

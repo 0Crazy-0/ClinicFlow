@@ -23,6 +23,7 @@ namespace ClinicFlow.Infrastructure.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "btree_gist");
+            NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "pg_trgm");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("AppointmentTypeDefinitionClinicalFormTemplate", b =>
@@ -319,11 +320,6 @@ namespace ClinicFlow.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("FullName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
@@ -349,6 +345,25 @@ namespace ClinicFlow.Infrastructure.Migrations
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("xid")
                         .HasColumnName("xmin");
+
+                    b.ComplexProperty(typeof(Dictionary<string, object>), "FullName", "ClinicFlow.Domain.Entities.Doctor.FullName#PersonName", b1 =>
+                        {
+                            b1.IsRequired();
+
+                            b1.Property<string>("FirstName")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)");
+
+                            b1.Property<string>("FirstSurname")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)");
+
+                            b1.Property<string>("MiddleName")
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)");
+                        });
 
                     b.HasKey("Id");
 
@@ -632,10 +647,10 @@ namespace ClinicFlow.Infrastructure.Migrations
                     b.Property<DateOnly>("DateOfBirth")
                         .HasColumnType("date");
 
-                    b.Property<string>("FullName")
+                    b.Property<string>("SearchName")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
+                        .HasMaxLength(201)
+                        .HasColumnType("character varying(201)");
 
                     b.Property<long>("SequenceNumber")
                         .ValueGeneratedOnAdd()
@@ -658,7 +673,62 @@ namespace ClinicFlow.Infrastructure.Migrations
                         .HasColumnType("xid")
                         .HasColumnName("xmin");
 
+                    b.ComplexProperty(typeof(Dictionary<string, object>), "Contact", "ClinicFlow.Domain.Entities.Patient.Contact#EmergencyContact", b1 =>
+                        {
+                            b1.Property<string>("Phone")
+                                .IsRequired()
+                                .HasMaxLength(20)
+                                .HasColumnType("character varying(20)")
+                                .HasColumnName("EmergencyContactPhone");
+
+                            b1.ComplexProperty(typeof(Dictionary<string, object>), "Name", "ClinicFlow.Domain.Entities.Patient.Contact#EmergencyContact.Name#PersonName", b2 =>
+                                {
+                                    b2.IsRequired();
+
+                                    b2.Property<string>("FirstName")
+                                        .IsRequired()
+                                        .HasMaxLength(100)
+                                        .HasColumnType("character varying(100)")
+                                        .HasColumnName("EmergencyContactFirstName");
+
+                                    b2.Property<string>("FirstSurname")
+                                        .IsRequired()
+                                        .HasMaxLength(100)
+                                        .HasColumnType("character varying(100)")
+                                        .HasColumnName("EmergencyContactFirstSurname");
+
+                                    b2.Property<string>("MiddleName")
+                                        .HasMaxLength(100)
+                                        .HasColumnType("character varying(100)")
+                                        .HasColumnName("EmergencyContactMiddleName");
+                                });
+                        });
+
+                    b.ComplexProperty(typeof(Dictionary<string, object>), "FullName", "ClinicFlow.Domain.Entities.Patient.FullName#PersonName", b1 =>
+                        {
+                            b1.IsRequired();
+
+                            b1.Property<string>("FirstName")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)");
+
+                            b1.Property<string>("FirstSurname")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)");
+
+                            b1.Property<string>("MiddleName")
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)");
+                        });
+
                     b.HasKey("Id");
+
+                    b.HasIndex("SearchName");
+
+                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("SearchName"), "gin");
+                    NpgsqlIndexBuilderExtensions.HasOperators(b.HasIndex("SearchName"), new[] { "gin_trgm_ops" });
 
                     b.ToTable("Patients");
                 });
@@ -1053,34 +1123,6 @@ namespace ClinicFlow.Infrastructure.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("PatientId");
                         });
-
-                    b.OwnsOne("ClinicFlow.Domain.ValueObjects.EmergencyContact", "Contact", b1 =>
-                        {
-                            b1.Property<Guid>("PatientId")
-                                .HasColumnType("uuid");
-
-                            b1.Property<string>("Name")
-                                .IsRequired()
-                                .HasMaxLength(100)
-                                .HasColumnType("character varying(100)")
-                                .HasColumnName("EmergencyContactName");
-
-                            b1.Property<string>("Phone")
-                                .IsRequired()
-                                .HasMaxLength(20)
-                                .HasColumnType("character varying(20)")
-                                .HasColumnName("EmergencyContactPhone");
-
-                            b1.HasKey("PatientId");
-
-                            b1.ToTable("Patients");
-
-                            b1.WithOwner()
-                                .HasForeignKey("PatientId");
-                        });
-
-                    b.Navigation("Contact")
-                        .IsRequired();
 
                     b.Navigation("HomeAddress")
                         .IsRequired();

@@ -72,7 +72,7 @@ public class AddFamilyMemberCommandHandlerTests
         );
 
         var ownerPatient = Patient.CreateProfile(
-            PersonName.Create("Parent Doe"),
+            PersonName.Create("Parent", null, "Doe"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-35)),
             BiologicalSex.Male,
             Address.Create(
@@ -161,7 +161,7 @@ public class AddFamilyMemberCommandHandlerTests
         );
 
         var ownerPatient = Patient.CreateProfile(
-            PersonName.Create("Parent Doe"),
+            PersonName.Create("Parent", null, "Doe"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-35)),
             BiologicalSex.Male,
             Address.Create(

@@ -425,7 +425,7 @@ public class RescheduleByDoctorCommandHandlerTests
     {
         var doctor = Doctor.Create(
             userId,
-            PersonName.Create("Test Doctor"),
+            PersonName.Create("Test", null, "Doctor"),
             MedicalLicenseNumber.Create("1234567"),
             Guid.CreateVersion7(),
             "555-1234",
@@ -439,7 +439,7 @@ public class RescheduleByDoctorCommandHandlerTests
 
     private Patient CreatePatient() =>
         Patient.CreateProfile(
-            PersonName.Create("Test"),
+            PersonName.Create("Test", null, "Test"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             BiologicalSex.Male,
             Address.Create(

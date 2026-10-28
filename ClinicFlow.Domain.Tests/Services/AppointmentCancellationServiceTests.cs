@@ -245,7 +245,7 @@ public class AppointmentCancellationServiceTests
         var appointment = CreateAppointment();
         var doctor = Doctor.Create(
             appointment.DoctorId,
-            PersonName.Create("Test Doctor"),
+            PersonName.Create("Test", null, "Doctor"),
             MedicalLicenseNumber.Create("12345"),
             Guid.CreateVersion7(),
             "555-0000",
@@ -279,7 +279,7 @@ public class AppointmentCancellationServiceTests
         var otherDoctorId = Guid.CreateVersion7();
         var otherDoctor = Doctor.Create(
             otherDoctorId,
-            PersonName.Create("Test Doctor"),
+            PersonName.Create("Test", null, "Doctor"),
             MedicalLicenseNumber.Create("12345"),
             Guid.CreateVersion7(),
             "555-0000",
@@ -774,7 +774,7 @@ public class AppointmentCancellationServiceTests
     private static Doctor CreateDoctor() =>
         Doctor.Create(
             Guid.CreateVersion7(),
-            PersonName.Create("Test Doctor"),
+            PersonName.Create("Test", null, "Doctor"),
             MedicalLicenseNumber.Create("12345"),
             Guid.CreateVersion7(),
             "555-0000",
@@ -811,7 +811,7 @@ public class AppointmentCancellationServiceTests
     {
         var dateOfBirth = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-age));
         var patient = Patient.CreateProfile(
-            PersonName.Create("Test"),
+            PersonName.Create("Test", null, "Test"),
             dateOfBirth,
             BiologicalSex.Male,
             Address.Create(

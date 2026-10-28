@@ -23,7 +23,31 @@ public class UpdatePatientProfileCommandValidatorTests
             "O+",
             "None",
             "None",
-            "Mom",
+            "Jane",
+            "María",
+            "Doe",
+            "555-5555"
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result.ShouldNotHaveAnyValidationErrors();
+    }
+
+    [Fact]
+    public void Validate_ShouldBeValid_WhenEmergencyContactMiddleNameIsNull()
+    {
+        // Arrange
+        var command = new UpdatePatientProfileCommand(
+            Guid.CreateVersion7(),
+            "O+",
+            "None",
+            "None",
+            "Jane",
+            null,
+            "Doe",
             "555-5555"
         );
 
@@ -43,7 +67,9 @@ public class UpdatePatientProfileCommandValidatorTests
             "O+",
             "None",
             "None",
-            "Mom",
+            "Jane",
+            "María",
+            "Doe",
             "555-5555"
         );
 
@@ -68,7 +94,9 @@ public class UpdatePatientProfileCommandValidatorTests
             bloodType!,
             "None",
             "None",
-            "Mom",
+            "Jane",
+            "María",
+            "Doe",
             "555-5555"
         );
 
@@ -85,9 +113,7 @@ public class UpdatePatientProfileCommandValidatorTests
     [InlineData(null)]
     [InlineData("")]
     [InlineData("   ")]
-    public void Validate_ShouldHaveError_WhenEmergencyContactNameIsEmpty(
-        string? emergencyContactName
-    )
+    public void Validate_ShouldHaveError_WhenEmergencyContactFirstNameIsEmpty(string? firstName)
     {
         // Arrange
         var command = new UpdatePatientProfileCommand(
@@ -95,7 +121,9 @@ public class UpdatePatientProfileCommandValidatorTests
             "O+",
             "None",
             "None",
-            emergencyContactName!,
+            firstName!,
+            "María",
+            "Doe",
             "555-5555"
         );
 
@@ -104,21 +132,22 @@ public class UpdatePatientProfileCommandValidatorTests
 
         // Assert
         result
-            .ShouldHaveValidationErrorFor(x => x.EmergencyContactName)
+            .ShouldHaveValidationErrorFor(x => x.EmergencyContactFirstName)
             .WithErrorMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Fact]
-    public void Validate_ShouldHaveError_WhenEmergencyContactNameIsTooShort()
+    public void Validate_ShouldHaveError_WhenEmergencyContactFirstNameIsTooShort()
     {
         // Arrange
-        var emergencyContactName = new string('A', PersonName.MinimumLength - 1);
         var command = new UpdatePatientProfileCommand(
             Guid.CreateVersion7(),
             "O+",
             "None",
             "None",
-            emergencyContactName,
+            "A",
+            "María",
+            "Doe",
             "555-5555"
         );
 
@@ -127,21 +156,22 @@ public class UpdatePatientProfileCommandValidatorTests
 
         // Assert
         result
-            .ShouldHaveValidationErrorFor(x => x.EmergencyContactName)
+            .ShouldHaveValidationErrorFor(x => x.EmergencyContactFirstName)
             .WithErrorMessage(DomainErrors.Validation.ValueTooShort);
     }
 
     [Fact]
-    public void Validate_ShouldHaveError_WhenEmergencyContactNameIsTooLong()
+    public void Validate_ShouldHaveError_WhenEmergencyContactFirstNameIsTooLong()
     {
         // Arrange
-        var emergencyContactName = new string('A', PersonName.MaximumLength + 1);
         var command = new UpdatePatientProfileCommand(
             Guid.CreateVersion7(),
             "O+",
             "None",
             "None",
-            emergencyContactName,
+            new string('A', PersonName.MaximumLength + 1),
+            "María",
+            "Doe",
             "555-5555"
         );
 
@@ -150,7 +180,83 @@ public class UpdatePatientProfileCommandValidatorTests
 
         // Assert
         result
-            .ShouldHaveValidationErrorFor(x => x.EmergencyContactName)
+            .ShouldHaveValidationErrorFor(x => x.EmergencyContactFirstName)
+            .WithErrorMessage(DomainErrors.Validation.ValueTooLong);
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Validate_ShouldHaveError_WhenEmergencyContactMiddleNameIsEmpty(string? middleName)
+    {
+        // Arrange
+        // Empty and whitespace violate NotEmpty inside the When block; the null case
+        // bypasses the When condition and is covered by the ShouldBeValid test above.
+        var command = new UpdatePatientProfileCommand(
+            Guid.CreateVersion7(),
+            "O+",
+            "None",
+            "None",
+            "Jane",
+            middleName,
+            "Doe",
+            "555-5555"
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.EmergencyContactMiddleName)
+            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenEmergencyContactMiddleNameIsTooShort()
+    {
+        // Arrange
+        var command = new UpdatePatientProfileCommand(
+            Guid.CreateVersion7(),
+            "O+",
+            "None",
+            "None",
+            "Jane",
+            "A",
+            "Doe",
+            "555-5555"
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.EmergencyContactMiddleName)
+            .WithErrorMessage(DomainErrors.Validation.ValueTooShort);
+    }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenEmergencyContactMiddleNameIsTooLong()
+    {
+        // Arrange
+        var command = new UpdatePatientProfileCommand(
+            Guid.CreateVersion7(),
+            "O+",
+            "None",
+            "None",
+            "Jane",
+            new string('A', PersonName.MaximumLength + 1),
+            "Doe",
+            "555-5555"
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.EmergencyContactMiddleName)
             .WithErrorMessage(DomainErrors.Validation.ValueTooLong);
     }
 
@@ -158,9 +264,7 @@ public class UpdatePatientProfileCommandValidatorTests
     [InlineData(null)]
     [InlineData("")]
     [InlineData("   ")]
-    public void Validate_ShouldHaveError_WhenEmergencyContactPhoneIsEmpty(
-        string? emergencyContactPhone
-    )
+    public void Validate_ShouldHaveError_WhenEmergencyContactLastNameIsEmpty(string? lastName)
     {
         // Arrange
         var command = new UpdatePatientProfileCommand(
@@ -168,8 +272,85 @@ public class UpdatePatientProfileCommandValidatorTests
             "O+",
             "None",
             "None",
-            "Mom",
-            emergencyContactPhone!
+            "Jane",
+            "María",
+            lastName!,
+            "555-5555"
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.EmergencyContactLastName)
+            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenEmergencyContactLastNameIsTooShort()
+    {
+        // Arrange
+        var command = new UpdatePatientProfileCommand(
+            Guid.CreateVersion7(),
+            "O+",
+            "None",
+            "None",
+            "Jane",
+            "María",
+            "A",
+            "555-5555"
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.EmergencyContactLastName)
+            .WithErrorMessage(DomainErrors.Validation.ValueTooShort);
+    }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenEmergencyContactLastNameIsTooLong()
+    {
+        // Arrange
+        var command = new UpdatePatientProfileCommand(
+            Guid.CreateVersion7(),
+            "O+",
+            "None",
+            "None",
+            "Jane",
+            "María",
+            new string('A', PersonName.MaximumLength + 1),
+            "555-5555"
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.EmergencyContactLastName)
+            .WithErrorMessage(DomainErrors.Validation.ValueTooLong);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Validate_ShouldHaveError_WhenEmergencyContactPhoneIsEmpty(string? phone)
+    {
+        // Arrange
+        var command = new UpdatePatientProfileCommand(
+            Guid.CreateVersion7(),
+            "O+",
+            "None",
+            "None",
+            "Jane",
+            "María",
+            "Doe",
+            phone!
         );
 
         // Act
@@ -185,14 +366,15 @@ public class UpdatePatientProfileCommandValidatorTests
     public void Validate_ShouldHaveError_WhenEmergencyContactPhoneIsTooShort()
     {
         // Arrange
-        var emergencyContactPhone = new string('1', PhoneNumber.MinimumLength - 1);
         var command = new UpdatePatientProfileCommand(
             Guid.CreateVersion7(),
             "O+",
             "None",
             "None",
-            "Mom",
-            emergencyContactPhone
+            "Jane",
+            "María",
+            "Doe",
+            new string('1', PhoneNumber.MinimumLength - 1)
         );
 
         // Act
@@ -208,14 +390,15 @@ public class UpdatePatientProfileCommandValidatorTests
     public void Validate_ShouldHaveError_WhenEmergencyContactPhoneIsTooLong()
     {
         // Arrange
-        var emergencyContactPhone = "+" + new string('1', PhoneNumber.MaximumLength);
         var command = new UpdatePatientProfileCommand(
             Guid.CreateVersion7(),
             "O+",
             "None",
             "None",
-            "Mom",
-            emergencyContactPhone
+            "Jane",
+            "María",
+            "Doe",
+            "+" + new string('1', PhoneNumber.MaximumLength)
         );
 
         // Act

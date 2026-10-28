@@ -203,7 +203,7 @@ public class MedicalRecordConsentGrantServiceTests
         // Arrange
         var referenceTime = _fakeTime.GetUtcNow().UtcDateTime;
         var patient = Patient.CreateProfile(
-            PersonName.Create("Jane Doe"),
+            PersonName.Create("Jane", null, "Doe"),
             DateOnly
                 .FromDateTime(_fakeTime.GetUtcNow().UtcDateTime)
                 .AddYears(-DomainRules.AdultAge),
@@ -319,7 +319,7 @@ public class MedicalRecordConsentGrantServiceTests
         // Arrange
         var referenceTime = _fakeTime.GetUtcNow().UtcDateTime;
         var patient = Patient.CreateProfile(
-            PersonName.Create("Jane Doe"),
+            PersonName.Create("Jane", null, "Doe"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime).AddYears(-10),
             BiologicalSex.Male,
             Address.Create(
@@ -424,7 +424,7 @@ public class MedicalRecordConsentGrantServiceTests
 
     private Patient CreateMinorPatient() =>
         Patient.CreateProfile(
-            PersonName.Create("Crazy"),
+            PersonName.Create("Crazy", null, "prime"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime).AddYears(-15),
             BiologicalSex.Male,
             Address.Create(

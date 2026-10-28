@@ -224,7 +224,7 @@ public class RescheduleByPatientCommandHandlerTests
         );
 
         var minorPatient = Patient.CreateProfile(
-            PersonName.Create("Child"),
+            PersonName.Create("Child", null, "Child"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10)),
             BiologicalSex.Male,
             Address.Create(
@@ -884,7 +884,7 @@ public class RescheduleByPatientCommandHandlerTests
     private static Doctor CreateDoctor() =>
         Doctor.Create(
             Guid.CreateVersion7(),
-            PersonName.Create("Test Doctor"),
+            PersonName.Create("Test", null, "Doctor"),
             MedicalLicenseNumber.Create("1234567"),
             Guid.CreateVersion7(),
             "555-1234",
@@ -904,7 +904,7 @@ public class RescheduleByPatientCommandHandlerTests
     private Patient CreatePatient(Guid id)
     {
         var patient = Patient.CreateProfile(
-            PersonName.Create("Test"),
+            PersonName.Create("Test", null, "Test"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             BiologicalSex.Male,
             Address.Create(

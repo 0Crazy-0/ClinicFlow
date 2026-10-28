@@ -660,7 +660,7 @@ public class RescheduleByGuardianCommandHandlerTests
     private Patient CreateMinorPatient(Guid id)
     {
         var patient = Patient.CreateProfile(
-            PersonName.Create("Minor"),
+            PersonName.Create("Minor", null, "Minor"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10)),
             BiologicalSex.Male,
             Address.Create(
@@ -674,7 +674,7 @@ public class RescheduleByGuardianCommandHandlerTests
 
         patient.SetId(id);
         patient.UpdateMedicalProfile(BloodType.Create("A+"), "", "");
-        patient.UpdateEmergencyContact(EmergencyContact.Create("Name", "1234567890"));
+        patient.UpdateEmergencyContact(EmergencyContact.Create("Name", null, "Name", "1234567890"));
 
         return patient;
     }
@@ -682,7 +682,7 @@ public class RescheduleByGuardianCommandHandlerTests
     private static Doctor CreateDoctor() =>
         Doctor.Create(
             Guid.CreateVersion7(),
-            PersonName.Create("Test Doctor"),
+            PersonName.Create("Test", null, "Doctor"),
             MedicalLicenseNumber.Create("1234567"),
             Guid.CreateVersion7(),
             "555-1234",

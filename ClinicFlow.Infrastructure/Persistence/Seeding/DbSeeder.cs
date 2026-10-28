@@ -323,7 +323,11 @@ public static class DbSeeder
             var roomNumber = i + 1;
             var doctor = Doctor.Create(
                 doctorUser.Id,
-                PersonName.Create(seederContext.Faker.Name.FullName()),
+                PersonName.Create(
+                    seederContext.Faker.Name.FirstName(),
+                    null,
+                    seederContext.Faker.Name.LastName()
+                ),
                 MedicalLicenseNumber.Create($"CMP-{10000 + i}"),
                 specialty.Id,
                 $"Experienced specialist in {specialty.Name}.",
@@ -774,7 +778,7 @@ public static class DbSeeder
     )
     {
         var patient = Patient.CreateProfile(
-            PersonName.Create(faker.Name.FullName()),
+            PersonName.Create(faker.Name.FirstName(), null, faker.Name.LastName()),
             DateOnly.FromDateTime(faker.Date.Past(dateOfBirthYearsBack, dateOfBirthReferenceDate)),
             biologicalSex,
             CreateRandomHomeAddress(faker),
@@ -787,7 +791,9 @@ public static class DbSeeder
         );
         patient.UpdateEmergencyContact(
             EmergencyContact.Create(
-                faker.Name.FullName(),
+                faker.Name.FirstName(),
+                null,
+                faker.Name.LastName(),
                 seederContext.GenerateUniquePhoneNumber()
             )
         );

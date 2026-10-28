@@ -21,6 +21,7 @@ public class CreateDoctorProfileCommandValidatorTests
         var command = new CreateDoctorProfileCommand(
             Guid.CreateVersion7(),
             "John",
+            "Michael",
             "Doe",
             "12345",
             Guid.CreateVersion7(),
@@ -44,6 +45,7 @@ public class CreateDoctorProfileCommandValidatorTests
         var command = new CreateDoctorProfileCommand(
             Guid.Empty,
             "John",
+            null,
             "Doe",
             "12345",
             Guid.CreateVersion7(),
@@ -72,6 +74,7 @@ public class CreateDoctorProfileCommandValidatorTests
         var command = new CreateDoctorProfileCommand(
             Guid.CreateVersion7(),
             firstName!,
+            null,
             "Doe",
             "12345",
             Guid.CreateVersion7(),
@@ -97,6 +100,7 @@ public class CreateDoctorProfileCommandValidatorTests
         var command = new CreateDoctorProfileCommand(
             Guid.CreateVersion7(),
             "A",
+            null,
             "Doe",
             "12345",
             Guid.CreateVersion7(),
@@ -122,6 +126,7 @@ public class CreateDoctorProfileCommandValidatorTests
         var command = new CreateDoctorProfileCommand(
             Guid.CreateVersion7(),
             new string('A', PersonName.MaximumLength + 1),
+            null,
             "Doe",
             "12345",
             Guid.CreateVersion7(),
@@ -150,6 +155,7 @@ public class CreateDoctorProfileCommandValidatorTests
         var command = new CreateDoctorProfileCommand(
             Guid.CreateVersion7(),
             "John",
+            null,
             lastName!,
             "12345",
             Guid.CreateVersion7(),
@@ -175,6 +181,7 @@ public class CreateDoctorProfileCommandValidatorTests
         var command = new CreateDoctorProfileCommand(
             Guid.CreateVersion7(),
             "John",
+            null,
             "A",
             "12345",
             Guid.CreateVersion7(),
@@ -200,6 +207,7 @@ public class CreateDoctorProfileCommandValidatorTests
         var command = new CreateDoctorProfileCommand(
             Guid.CreateVersion7(),
             "John",
+            null,
             new string('A', PersonName.MaximumLength + 1),
             "12345",
             Guid.CreateVersion7(),
@@ -219,12 +227,117 @@ public class CreateDoctorProfileCommandValidatorTests
     }
 
     [Fact]
+    public void Validate_ShouldBeValid_WhenMiddleNameIsNull()
+    {
+        // Arrange
+        var command = new CreateDoctorProfileCommand(
+            Guid.CreateVersion7(),
+            "John",
+            null,
+            "Doe",
+            "12345",
+            Guid.CreateVersion7(),
+            "Biography",
+            10,
+            "Room A",
+            1
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result.ShouldNotHaveAnyValidationErrors();
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Validate_ShouldHaveError_WhenMiddleNameIsEmpty(string? middleName)
+    {
+        // Arrange
+        var command = new CreateDoctorProfileCommand(
+            Guid.CreateVersion7(),
+            "John",
+            middleName,
+            "Doe",
+            "12345",
+            Guid.CreateVersion7(),
+            "Biography",
+            10,
+            "Room A",
+            1
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.MiddleName)
+            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenMiddleNameIsTooShort()
+    {
+        // Arrange
+        var command = new CreateDoctorProfileCommand(
+            Guid.CreateVersion7(),
+            "John",
+            "A",
+            "Doe",
+            "12345",
+            Guid.CreateVersion7(),
+            "Biography",
+            10,
+            "Room A",
+            1
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.MiddleName)
+            .WithErrorMessage(DomainErrors.Validation.ValueTooShort);
+    }
+
+    [Fact]
+    public void Validate_ShouldHaveError_WhenMiddleNameIsTooLong()
+    {
+        // Arrange
+        var command = new CreateDoctorProfileCommand(
+            Guid.CreateVersion7(),
+            "John",
+            new string('A', PersonName.MaximumLength + 1),
+            "Doe",
+            "12345",
+            Guid.CreateVersion7(),
+            "Biography",
+            10,
+            "Room A",
+            1
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result
+            .ShouldHaveValidationErrorFor(x => x.MiddleName)
+            .WithErrorMessage(DomainErrors.Validation.ValueTooLong);
+    }
+
+    [Fact]
     public void Validate_ShouldHaveError_WhenLicenseNumberIsEmpty()
     {
         // Arrange
         var command = new CreateDoctorProfileCommand(
             Guid.CreateVersion7(),
             "John",
+            null,
             "Doe",
             "",
             Guid.CreateVersion7(),
@@ -250,6 +363,7 @@ public class CreateDoctorProfileCommandValidatorTests
         var command = new CreateDoctorProfileCommand(
             Guid.CreateVersion7(),
             "John",
+            null,
             "Doe",
             "123",
             Guid.CreateVersion7(),
@@ -275,6 +389,7 @@ public class CreateDoctorProfileCommandValidatorTests
         var command = new CreateDoctorProfileCommand(
             Guid.CreateVersion7(),
             "John",
+            null,
             "Doe",
             new string('A', MedicalLicenseNumber.MaximumLength + 1),
             Guid.CreateVersion7(),
@@ -300,6 +415,7 @@ public class CreateDoctorProfileCommandValidatorTests
         var command = new CreateDoctorProfileCommand(
             Guid.CreateVersion7(),
             "John",
+            null,
             "Doe",
             "12345",
             Guid.Empty,
@@ -328,6 +444,7 @@ public class CreateDoctorProfileCommandValidatorTests
         var command = new CreateDoctorProfileCommand(
             Guid.CreateVersion7(),
             "John",
+            null,
             "Doe",
             "12345",
             Guid.CreateVersion7(),
@@ -356,6 +473,7 @@ public class CreateDoctorProfileCommandValidatorTests
         var command = new CreateDoctorProfileCommand(
             Guid.CreateVersion7(),
             "John",
+            null,
             "Doe",
             "12345",
             Guid.CreateVersion7(),
@@ -384,6 +502,7 @@ public class CreateDoctorProfileCommandValidatorTests
         var command = new CreateDoctorProfileCommand(
             Guid.CreateVersion7(),
             "John",
+            null,
             "Doe",
             "12345",
             Guid.CreateVersion7(),
@@ -412,6 +531,7 @@ public class CreateDoctorProfileCommandValidatorTests
         var command = new CreateDoctorProfileCommand(
             Guid.CreateVersion7(),
             "John",
+            null,
             "Doe",
             "12345",
             Guid.CreateVersion7(),
@@ -440,6 +560,7 @@ public class CreateDoctorProfileCommandValidatorTests
         var command = new CreateDoctorProfileCommand(
             Guid.CreateVersion7(),
             "John",
+            null,
             "Doe",
             "12345",
             Guid.CreateVersion7(),

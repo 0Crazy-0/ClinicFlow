@@ -134,9 +134,9 @@ public class CreatePatientProfileCommandHandlerTests
         await _sut.Handle(command, TestContext.Current.CancellationToken);
 
         // Assert
-        var fullName = PersonName.Create($"{command.FirstName} {command.LastName}");
+        var fullName = PersonName.Create(command.FirstName, null, command.LastName);
         var expectedLockKey = DeterministicKeyGenerator.FromComposite(
-            fullName.FullName.Trim().ToUpperInvariant(),
+            fullName.SearchName,
             command.DateOfBirth.ToString("yyyy-MM-dd")
         );
 

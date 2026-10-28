@@ -351,7 +351,7 @@ public class GrantAppointmentCategoryConsentCommandHandlerTests
 
     private Patient CreateMinorPatient() =>
         Patient.CreateProfile(
-            PersonName.Create("Jane Doe"),
+            PersonName.Create("Jane", null, "Doe"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime).AddYears(-15),
             BiologicalSex.Male,
             Address.Create(

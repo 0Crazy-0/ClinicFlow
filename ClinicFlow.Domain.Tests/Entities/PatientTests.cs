@@ -18,12 +18,12 @@ public class PatientTests
     public void CreateProfile_ShouldCreatePatient_WhenValidParameters()
     {
         // Arrange
-        var fullName = PersonName.Create("John Doe");
+        var fullName = PersonName.Create("Twilight", "Sparkle", "Doe");
         var dateOfBirth = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30));
         var bloodType = BloodType.Create("O+");
         var allergies = "Penicillin";
         var chronicConditions = "None";
-        var emergencyContact = EmergencyContact.Create("Mom", "555-5555");
+        var emergencyContact = EmergencyContact.Create("Mom", "test", "Mom", "555-5555");
         var homeAddress = Address.Create(
             "123 Main Street",
             AddressState.California,
@@ -46,6 +46,7 @@ public class PatientTests
         // Assert
         patient.Should().NotBeNull();
         patient.FullName.Should().Be(fullName);
+        patient.SearchName.Should().Be(fullName.SearchName);
         patient.DateOfBirth.Should().Be(dateOfBirth);
         patient.SexAtBirth.Should().Be(sexAtBirth);
         patient.BloodGroup.Should().Be(bloodType);
@@ -63,7 +64,7 @@ public class PatientTests
     )
     {
         // Arrange
-        var fullName = PersonName.Create("John Doe");
+        var fullName = PersonName.Create("John", null, "Doe");
         var dateOfBirth = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30));
 
         // Act
@@ -93,7 +94,7 @@ public class PatientTests
         // Arrange & Act
         var act = () =>
             Patient.CreateProfile(
-                PersonName.Create("John Doe"),
+                PersonName.Create("John", null, "Doe"),
                 DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
                 BiologicalSex.Male,
                 Address.Create(
@@ -141,7 +142,7 @@ public class PatientTests
         // Arrange & Act
         var act = () =>
             Patient.CreateProfile(
-                PersonName.Create("John Doe"),
+                PersonName.Create("John", null, "Doe"),
                 DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
                 BiologicalSex.Male,
                 null!,
@@ -160,7 +161,7 @@ public class PatientTests
         // Arrange & Act
         var act = () =>
             Patient.CreateProfile(
-                PersonName.Create("Crazy"),
+                PersonName.Create("Crazy", null, "love"),
                 DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-67)),
                 (BiologicalSex)967,
                 Address.Create(
@@ -184,7 +185,7 @@ public class PatientTests
         // Arrange & Act
         var act = () =>
             Patient.CreateProfile(
-                PersonName.Create("John Doe"),
+                PersonName.Create("John", null, "Doe"),
                 DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
                 BiologicalSex.Unspecified,
                 Address.Create(
@@ -212,7 +213,7 @@ public class PatientTests
         // Act
         var act = () =>
             Patient.CreateProfile(
-                PersonName.Create("John Doe"),
+                PersonName.Create("John", null, "Doe"),
                 dateOfBirth,
                 BiologicalSex.Male,
                 Address.Create(
@@ -234,7 +235,7 @@ public class PatientTests
         // Arrange
         var patient = CreateValidPatient();
         patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
-        patient.UpdateEmergencyContact(EmergencyContact.Create("Mom", "555-5555"));
+        patient.UpdateEmergencyContact(EmergencyContact.Create("Mom", null, "Mom", "555-5555"));
 
         // Act & Assert
         patient.Invoking(p => p.EnsureCompleteProfile()).Should().NotThrow();
@@ -259,7 +260,7 @@ public class PatientTests
     {
         // Arrange
         var patient = CreateValidPatient();
-        patient.UpdateEmergencyContact(EmergencyContact.Create("Mom", "555-5555"));
+        patient.UpdateEmergencyContact(EmergencyContact.Create("Mom", null, "Mom", "555-5555"));
 
         // Act & Assert
         patient
@@ -336,7 +337,7 @@ public class PatientTests
     {
         // Arrange
         var patient = Patient.CreateProfile(
-            PersonName.Create("John Doe"),
+            PersonName.Create("John", null, "Doe"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             BiologicalSex.Female,
             Address.Create(
@@ -503,7 +504,7 @@ public class PatientTests
         var referenceTime = _fakeTime.GetUtcNow().UtcDateTime;
         var yearsAgo = 25;
         var patient = Patient.CreateProfile(
-            PersonName.Create("John Doe"),
+            PersonName.Create("John", null, "Doe"),
             DateOnly.FromDateTime(referenceTime.AddYears(-yearsAgo)),
             BiologicalSex.Male,
             Address.Create(
@@ -528,7 +529,7 @@ public class PatientTests
         _fakeTime.SetUtcNow(dayBeforeBirthday);
 
         var patient = Patient.CreateProfile(
-            PersonName.Create("John Doe"),
+            PersonName.Create("John", null, "Doe"),
             new DateOnly(2000, 6, 20),
             BiologicalSex.Male,
             Address.Create(
@@ -582,7 +583,7 @@ public class PatientTests
 
     private Patient CreateValidPatient() =>
         Patient.CreateProfile(
-            PersonName.Create("John Doe"),
+            PersonName.Create("John", null, "Doe"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             BiologicalSex.Male,
             Address.Create(

@@ -234,7 +234,7 @@ public class ScheduleByDoctorTests
 
         var doctor = CreateDoctor();
         var target = Patient.CreateProfile(
-            PersonName.Create("Test"),
+            PersonName.Create("Test", null, "Test"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-15)),
             BiologicalSex.Male,
             Address.Create(
@@ -396,7 +396,7 @@ public class ScheduleByDoctorTests
     private Patient CreateSelfPatient()
     {
         var patient = Patient.CreateProfile(
-            PersonName.Create("Test"),
+            PersonName.Create("Test", null, "Test"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             BiologicalSex.Male,
             Address.Create(
@@ -409,7 +409,7 @@ public class ScheduleByDoctorTests
         );
 
         patient.UpdateMedicalProfile(BloodType.Create("A+"), "", "");
-        patient.UpdateEmergencyContact(EmergencyContact.Create("Name", "1234567890"));
+        patient.UpdateEmergencyContact(EmergencyContact.Create("Name", null, "Name", "1234567890"));
 
         return patient;
     }
@@ -417,7 +417,7 @@ public class ScheduleByDoctorTests
     private static Doctor CreateDoctor() =>
         Doctor.Create(
             Guid.CreateVersion7(),
-            PersonName.Create("Test Doctor"),
+            PersonName.Create("Test", null, "Doctor"),
             MedicalLicenseNumber.Create("12345"),
             Guid.CreateVersion7(),
             "555-0000",

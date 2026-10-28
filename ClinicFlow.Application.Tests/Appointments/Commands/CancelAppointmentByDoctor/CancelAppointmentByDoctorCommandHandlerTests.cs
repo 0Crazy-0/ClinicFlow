@@ -53,7 +53,7 @@ public class CancelAppointmentByDoctorCommandHandlerTests
 
         var doctor = Doctor.Create(
             command.InitiatorUserId,
-            PersonName.Create("Test Doctor"),
+            PersonName.Create("Test", null, "Doctor"),
             MedicalLicenseNumber.Create("1234567"),
             Guid.CreateVersion7(),
             "555-1234",

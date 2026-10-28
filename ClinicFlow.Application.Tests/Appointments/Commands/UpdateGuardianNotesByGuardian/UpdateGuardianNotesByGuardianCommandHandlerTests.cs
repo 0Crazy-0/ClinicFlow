@@ -81,7 +81,7 @@ public class UpdateGuardianNotesByGuardianCommandHandlerTests
             );
 
         var patient = Patient.CreateProfile(
-            PersonName.Create("Minor"),
+            PersonName.Create("Minor", null, "Minor"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10)),
             BiologicalSex.Male,
             Address.Create(

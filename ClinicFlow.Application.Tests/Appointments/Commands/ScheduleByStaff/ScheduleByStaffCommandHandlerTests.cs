@@ -77,7 +77,7 @@ public class ScheduleByStaffCommandHandlerTests
 
         var doctor = Doctor.Create(
             Guid.CreateVersion7(),
-            PersonName.Create("Test Doctor"),
+            PersonName.Create("Test", null, "Doctor"),
             MedicalLicenseNumber.Create("LIC-123"),
             Guid.CreateVersion7(),
             "Bio",
@@ -179,7 +179,7 @@ public class ScheduleByStaffCommandHandlerTests
 
         var doctor = Doctor.Create(
             Guid.CreateVersion7(),
-            PersonName.Create("Test Doctor"),
+            PersonName.Create("Test", null, "Doctor"),
             MedicalLicenseNumber.Create("LIC-123"),
             Guid.CreateVersion7(),
             "Bio",
@@ -332,7 +332,7 @@ public class ScheduleByStaffCommandHandlerTests
         var targetPatient = CreateTargetPatient();
         var doctor = Doctor.Create(
             Guid.CreateVersion7(),
-            PersonName.Create("Test Doctor"),
+            PersonName.Create("Test", null, "Doctor"),
             MedicalLicenseNumber.Create("LIC-123"),
             Guid.CreateVersion7(),
             "Bio",
@@ -385,7 +385,7 @@ public class ScheduleByStaffCommandHandlerTests
         var targetPatient = CreateTargetPatient();
         var doctor = Doctor.Create(
             Guid.CreateVersion7(),
-            PersonName.Create("Test Doctor"),
+            PersonName.Create("Test", null, "Doctor"),
             MedicalLicenseNumber.Create("LIC-123"),
             Guid.CreateVersion7(),
             "Bio",
@@ -468,7 +468,7 @@ public class ScheduleByStaffCommandHandlerTests
         var targetPatient = CreateTargetPatient();
         var doctor = Doctor.Create(
             Guid.CreateVersion7(),
-            PersonName.Create("Test Doctor"),
+            PersonName.Create("Test", null, "Doctor"),
             MedicalLicenseNumber.Create("LIC-123"),
             Guid.CreateVersion7(),
             "Bio",
@@ -554,7 +554,7 @@ public class ScheduleByStaffCommandHandlerTests
         var targetPatient = CreateTargetPatient();
         var doctor = Doctor.Create(
             Guid.CreateVersion7(),
-            PersonName.Create("Test Doctor"),
+            PersonName.Create("Test", null, "Doctor"),
             MedicalLicenseNumber.Create("LIC-123"),
             Guid.CreateVersion7(),
             "Bio",
@@ -607,7 +607,7 @@ public class ScheduleByStaffCommandHandlerTests
     private Patient CreateTargetPatient()
     {
         var patient = Patient.CreateProfile(
-            PersonName.Create("Test Patient"),
+            PersonName.Create("Test", null, "Patient"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             BiologicalSex.Male,
             Address.Create(
@@ -620,7 +620,9 @@ public class ScheduleByStaffCommandHandlerTests
         );
 
         patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
-        patient.UpdateEmergencyContact(EmergencyContact.Create("Emergency Name", "555-1234567"));
+        patient.UpdateEmergencyContact(
+            EmergencyContact.Create("Emergency", null, "Name", "555-1234567")
+        );
 
         return patient;
     }

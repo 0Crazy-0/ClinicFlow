@@ -17,6 +17,9 @@ public class Patient : BaseEntity
 
     public PersonName FullName { get; private set; } = null!;
 
+    // Stryker disable once String: the default only covers EF materialization, every factory path writes the real value.
+    public string SearchName { get; private set; } = string.Empty;
+
     public DateOnly DateOfBirth { get; private set; }
 
     public BiologicalSex SexAtBirth { get; private set; }
@@ -29,7 +32,7 @@ public class Patient : BaseEntity
     // Stryker disable once String
     public string ChronicConditions { get; private set; } = string.Empty;
 
-    public EmergencyContact Contact { get; private set; } = null!;
+    public EmergencyContact? Contact { get; private set; }
 
     public Address HomeAddress { get; private set; } = null!;
 
@@ -47,6 +50,7 @@ public class Patient : BaseEntity
         : this()
     {
         FullName = fullName;
+        SearchName = fullName.SearchName;
         DateOfBirth = dateOfBirth;
         SexAtBirth = biologicalSex;
         HomeAddress = homeAddress;

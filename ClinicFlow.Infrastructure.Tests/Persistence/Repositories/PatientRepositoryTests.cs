@@ -35,7 +35,7 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
     {
         // Arrange
         var patient = Patient.CreateProfile(
-            PersonName.Create("New Patient"),
+            PersonName.Create("New", null, "Patient"),
             new DateOnly(1990, 1, 1),
             BiologicalSex.Male,
             Address.Create(
@@ -48,7 +48,9 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         );
 
         patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
-        patient.UpdateEmergencyContact(EmergencyContact.Create("Contact", "555-9999"));
+        patient.UpdateEmergencyContact(
+            EmergencyContact.Create("Contact", null, "Contact", "555-9999")
+        );
 
         // Act
         await _sut.CreateAsync(patient, TestContext.Current.CancellationToken);
@@ -118,7 +120,7 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
     {
         // Arrange
         var patient = Patient.CreateProfile(
-            PersonName.Create("New Patient"),
+            PersonName.Create("New", null, "Patient"),
             new DateOnly(1990, 1, 1),
             BiologicalSex.Male,
             Address.Create(
@@ -131,7 +133,9 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         );
 
         patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
-        patient.UpdateEmergencyContact(EmergencyContact.Create("Contact", "555-9999"));
+        patient.UpdateEmergencyContact(
+            EmergencyContact.Create("Contact", null, "Contact", "555-9999")
+        );
 
         Context.Patients.Add(patient);
         Context.Entry(patient).State = EntityState.Unchanged;
@@ -194,7 +198,7 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
 
         // Act
         var result = await _sut.GetByNameAndDobAsync(
-            PersonName.Create("Nonexistent Name"),
+            PersonName.Create("Nonexistent", null, "Name"),
             patient.DateOfBirth,
             TestContext.Current.CancellationToken
         );
@@ -206,7 +210,7 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
     private async Task<Patient> CreateSelfPatientAsync()
     {
         var patient = Patient.CreateProfile(
-            PersonName.Create("fullName"),
+            PersonName.Create("fullName", null, "fullName"),
             new DateOnly(1990, 1, 1),
             BiologicalSex.Male,
             Address.Create(
@@ -219,7 +223,9 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         );
 
         patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
-        patient.UpdateEmergencyContact(EmergencyContact.Create("Contact", "555-9999"));
+        patient.UpdateEmergencyContact(
+            EmergencyContact.Create("Contact", null, "Contact", "555-9999")
+        );
 
         Context.Patients.Add(patient);
 
@@ -231,7 +237,7 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
     private async Task<Patient> CreateHashedPatientAsync()
     {
         var patient = Patient.CreateProfile(
-            PersonName.Create("Hashed Patient"),
+            PersonName.Create("Hashed", null, "Patient"),
             new DateOnly(1990, 1, 1),
             BiologicalSex.Male,
             Address.Create(
@@ -244,7 +250,9 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         );
 
         patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
-        patient.UpdateEmergencyContact(EmergencyContact.Create("Contact", "555-9999"));
+        patient.UpdateEmergencyContact(
+            EmergencyContact.Create("Contact", null, "Contact", "555-9999")
+        );
 
         patient.AssignSsnLast4Hash(
             "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"

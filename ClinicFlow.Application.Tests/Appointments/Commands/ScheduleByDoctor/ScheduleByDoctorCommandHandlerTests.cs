@@ -549,7 +549,7 @@ public class ScheduleByDoctorCommandHandlerTests
     private static Doctor CreateDoctor(Guid userId) =>
         Doctor.Create(
             userId,
-            PersonName.Create("Test Doctor"),
+            PersonName.Create("Test", null, "Doctor"),
             MedicalLicenseNumber.Create("1234567"),
             Guid.CreateVersion7(),
             "555-1234",
@@ -558,7 +558,7 @@ public class ScheduleByDoctorCommandHandlerTests
 
     private Patient CreateTargetPatient() =>
         Patient.CreateProfile(
-            PersonName.Create("Test"),
+            PersonName.Create("Test", null, "Test"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
             BiologicalSex.Male,
             Address.Create(

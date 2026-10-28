@@ -46,7 +46,7 @@ public class MarkAppointmentAsNoShowByDoctorCommandHandlerTests
         var appointment = CreateAppointment(doctorId);
         var doctor = Doctor.Create(
             command.InitiatorUserId,
-            PersonName.Create("Test Doctor"),
+            PersonName.Create("Test", null, "Doctor"),
             MedicalLicenseNumber.Create("12345"),
             Guid.CreateVersion7(),
             "Room 1",

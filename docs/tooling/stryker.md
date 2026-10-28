@@ -228,6 +228,9 @@ protected override void OnModelCreating(ModelBuilder modelBuilder)
     // Stryker disable once String: see docs/tooling/stryker.md, section "2. ApplicationDbContext Infrastructure Setup"
     modelBuilder.HasPostgresExtension("btree_gist");
 
+    // Stryker disable once String: see docs/tooling/stryker.md, section "2. ApplicationDbContext Infrastructure Setup"
+    modelBuilder.HasPostgresExtension("pg_trgm");
+
     // Dynamic soft-delete filter expressions and sequence number conventions...
 }
 ```
@@ -238,9 +241,9 @@ Mutants generated inside `OnModelCreating` are suppressed due to the following c
    In EF Core's base `DbContext` class, the virtual `OnModelCreating` method is an empty method (a complete no-op). When Stryker mutates this line by removing the invocation, calling an empty base method versus omitting the call produces zero side effects and leaves the model in an identical state. This makes the statement removal an **equivalent mutant** that cannot be distinguished by tests.
 
 2. **Model Metadata and Engine Extensions:**
-   Invocations such as `modelBuilder.HasPostgresExtension("btree_gist")` and dynamic query filter / row version metadata bindings target database engine extensions and ORM conventions. These configurations are exercised when applying database migrations against PostgreSQL, but have no branchable domain logic to verify in isolated unit or repository tests.
+   Invocations such as `modelBuilder.HasPostgresExtension("btree_gist")` and `modelBuilder.HasPostgresExtension("pg_trgm")`, alongside dynamic query filter / row version metadata bindings, target database engine extensions and ORM conventions. These configurations are exercised when applying database migrations against PostgreSQL, but have no branchable domain logic to verify in isolated unit or repository tests.
 
-This exception is strictly limited to the two lines above. It does **not** extend to the `foreach` loops configuring `SequenceNumber`/`Version` (`BaseEntity`) or the dynamically-built soft-delete query filter (`SoftDeletableEntity`): both are exercised by `ApplicationDbContextModelTests` and `ApplicationDbContextIntegrationTests` respectively, and any survived mutants there represent real gaps and must not be suppressed.
+This exception is strictly limited to the setup lines above. It does **not** extend to the `foreach` loops configuring `SequenceNumber`/`Version` (`BaseEntity`) or the dynamically-built soft-delete query filter (`SoftDeletableEntity`): both are exercised by `ApplicationDbContextModelTests` and `ApplicationDbContextIntegrationTests` respectively, and any survived mutants there represent real gaps and must not be suppressed.
 
 ---
 

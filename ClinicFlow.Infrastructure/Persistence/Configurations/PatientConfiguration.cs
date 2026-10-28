@@ -10,13 +10,21 @@ public sealed class PatientConfiguration : IEntityTypeConfiguration<Patient>
     /// <inheritdoc />
     public void Configure(EntityTypeBuilder<Patient> builder)
     {
-        builder
-            .Property(p => p.FullName)
-            .HasConversion(name => name.FullName, val => PersonName.Create(val))
-            .HasMaxLength(PersonName.MaximumLength);
+        builder.ComplexProperty(
+            p => p.FullName,
+            name =>
+            {
+                name.Property(n => n.FirstName).HasMaxLength(PersonName.MaximumLength);
+                name.Property(n => n.MiddleName).HasMaxLength(PersonName.MaximumLength);
+                name.Property(n => n.FirstSurname).HasMaxLength(PersonName.MaximumLength);
+                name.Ignore(n => n.SearchName);
+            }
+        );
 
+        builder.HasIndex(p => p.SearchName).HasMethod("gin").HasOperators("gin_trgm_ops");
+
+        builder.Property(p => p.SearchName).HasMaxLength(PersonName.SearchNameMaximumLength);
         builder.Property(p => p.SexAtBirth).HasConversion<string>();
-
         builder.Property(p => p.SsnLast4Hash).HasMaxLength(64).IsUnicode(false);
 
         builder
@@ -24,15 +32,27 @@ public sealed class PatientConfiguration : IEntityTypeConfiguration<Patient>
             .HasConversion(bt => bt.Value, val => BloodType.Create(val))
             .HasMaxLength(5);
 
-        builder.OwnsOne(
+        builder.ComplexProperty(
             p => p.Contact,
             contact =>
             {
-                contact
-                    .Property(c => c.Name)
-                    .HasConversion(name => name.FullName, val => PersonName.Create(val))
-                    .HasColumnName(ColumnNames.Patient.EmergencyContactName)
-                    .HasMaxLength(PersonName.MaximumLength);
+                contact.ComplexProperty(
+                    c => c.Name,
+                    name =>
+                    {
+                        name.Property(n => n.FirstName)
+                            .HasColumnName(ColumnNames.Patient.EmergencyContactFirstName)
+                            .HasMaxLength(PersonName.MaximumLength);
+                        name.Property(n => n.MiddleName)
+                            .HasColumnName(ColumnNames.Patient.EmergencyContactMiddleName)
+                            .HasMaxLength(PersonName.MaximumLength);
+                        name.Property(n => n.FirstSurname)
+                            .HasColumnName(ColumnNames.Patient.EmergencyContactFirstSurname)
+                            .HasMaxLength(PersonName.MaximumLength);
+                        name.Ignore(n => n.SearchName);
+                    }
+                );
+
                 contact
                     .Property(c => c.Phone)
                     .HasConversion(phone => phone.Value, val => PhoneNumber.Create(val))

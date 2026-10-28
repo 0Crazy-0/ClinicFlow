@@ -37,7 +37,7 @@ public class AddAllowedAppointmentCategoryCommandHandlerTests
         var requesterUserId = Guid.CreateVersion7();
         var targetUserId = Guid.CreateVersion7();
         var patient = Patient.CreateProfile(
-            PersonName.Create("Jane Doe"),
+            PersonName.Create("Jane", null, "Doe"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-25)),
             BiologicalSex.Male,
             Address.Create(
@@ -92,7 +92,7 @@ public class AddAllowedAppointmentCategoryCommandHandlerTests
         var requesterUserId = Guid.CreateVersion7();
         var targetUserId = Guid.CreateVersion7();
         var patient = Patient.CreateProfile(
-            PersonName.Create("John Doe"),
+            PersonName.Create("John", null, "Doe"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10)),
             BiologicalSex.Male,
             Address.Create(

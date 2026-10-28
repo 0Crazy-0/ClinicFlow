@@ -39,7 +39,11 @@ public sealed class PatientRepository(ApplicationDbContext dbContext) : IPatient
         CancellationToken cancellationToken = default
     ) =>
         await dbContext.Patients.FirstOrDefaultAsync(
-            p => p.FullName == fullName && p.DateOfBirth == dateOfBirth,
+            p =>
+                p.FullName.FirstName == fullName.FirstName
+                && p.FullName.MiddleName == fullName.MiddleName
+                && p.FullName.FirstSurname == fullName.FirstSurname
+                && p.DateOfBirth == dateOfBirth,
             cancellationToken
         );
 }

@@ -292,7 +292,7 @@ public class AppointmentGuardianNotesServiceTests
     {
         // Arrange
         var patientAdult = Patient.CreateProfile(
-            PersonName.Create("Adult"),
+            PersonName.Create("Adult", null, "Adult"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-25)),
             BiologicalSex.Male,
             Address.Create(
@@ -333,7 +333,7 @@ public class AppointmentGuardianNotesServiceTests
         // Arrange
         var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2));
         var target = Patient.CreateProfile(
-            PersonName.Create("Child"),
+            PersonName.Create("Child", null, "Child"),
             scheduledDate.AddYears(-FamilyMembership.MinimumAdultAge),
             BiologicalSex.Male,
             Address.Create(
@@ -346,7 +346,7 @@ public class AppointmentGuardianNotesServiceTests
         );
 
         target.UpdateMedicalProfile(BloodType.Create("A+"), "", "");
-        target.UpdateEmergencyContact(EmergencyContact.Create("Name", "1234567890"));
+        target.UpdateEmergencyContact(EmergencyContact.Create("Name", null, "Name", "1234567890"));
 
         var authorId = Guid.CreateVersion7();
         var appointment = CreateAppointment(target.Id);
@@ -411,7 +411,7 @@ public class AppointmentGuardianNotesServiceTests
     private Patient CreateMinorPatient()
     {
         var patient = Patient.CreateProfile(
-            PersonName.Create("Child"),
+            PersonName.Create("Child", null, "Child"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10)),
             BiologicalSex.Male,
             Address.Create(
@@ -423,7 +423,7 @@ public class AppointmentGuardianNotesServiceTests
             _fakeTime.GetUtcNow().UtcDateTime
         );
         patient.UpdateMedicalProfile(BloodType.Create("A+"), "", "");
-        patient.UpdateEmergencyContact(EmergencyContact.Create("Name", "1234567890"));
+        patient.UpdateEmergencyContact(EmergencyContact.Create("Name", null, "Name", "1234567890"));
 
         return patient;
     }

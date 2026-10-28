@@ -543,7 +543,7 @@ public class GetMinorFamilyMemberAppointmentsByPatientIdQueryHandlerTests
     private Patient CreatePatient(int age)
     {
         var patient = Patient.CreateProfile(
-            PersonName.Create("Test"),
+            PersonName.Create("Test", null, "Test"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-age)),
             BiologicalSex.Male,
             Address.Create(

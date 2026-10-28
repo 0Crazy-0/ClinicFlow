@@ -42,7 +42,7 @@ public class LeaveFamilyMembershipCommandHandlerTests
         _fakeTime.Advance(TimeSpan.FromSeconds(1));
         var leaveTime = _fakeTime.GetUtcNow().UtcDateTime;
         var patient = Patient.CreateProfile(
-            PersonName.Create("Adult Member"),
+            PersonName.Create("Adult", null, "Member"),
             dateOfBirth: DateOnly.FromDateTime(leaveTime.AddYears(-20)),
             BiologicalSex.Male,
             Address.Create(

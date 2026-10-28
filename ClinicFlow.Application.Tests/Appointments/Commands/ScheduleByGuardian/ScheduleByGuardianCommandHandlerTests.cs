@@ -824,7 +824,7 @@ public class ScheduleByGuardianCommandHandlerTests
     private static Doctor CreateDoctor() =>
         Doctor.Create(
             Guid.CreateVersion7(),
-            PersonName.Create("Test Doctor"),
+            PersonName.Create("Test", null, "Doctor"),
             MedicalLicenseNumber.Create("LIC-123"),
             Guid.CreateVersion7(),
             "Bio",
@@ -834,7 +834,7 @@ public class ScheduleByGuardianCommandHandlerTests
     private Patient CreateMinorTargetPatient()
     {
         var patient = Patient.CreateProfile(
-            PersonName.Create("Minor Patient"),
+            PersonName.Create("Minor", null, "Patient"),
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-10)),
             BiologicalSex.Male,
             Address.Create(
@@ -847,7 +847,9 @@ public class ScheduleByGuardianCommandHandlerTests
         );
 
         patient.UpdateMedicalProfile(BloodType.Create("O+"), "None", "None");
-        patient.UpdateEmergencyContact(EmergencyContact.Create("Emergency Name", "555-1234567"));
+        patient.UpdateEmergencyContact(
+            EmergencyContact.Create("Emergency", null, "Name", "555-1234567")
+        );
 
         return patient;
     }

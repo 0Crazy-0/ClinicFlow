@@ -26,7 +26,7 @@ public class GetDoctorsBySpecialtyIdQueryHandlerTests
         var specialtyId = Guid.CreateVersion7();
         var doctor1 = Doctor.Create(
             Guid.CreateVersion7(),
-            PersonName.Create("Test Doctor"),
+            PersonName.Create("Test", null, "Doctor"),
             MedicalLicenseNumber.Create("12345"),
             specialtyId,
             "Cardiologist with 10 years of experience",
@@ -35,7 +35,7 @@ public class GetDoctorsBySpecialtyIdQueryHandlerTests
 
         var doctor2 = Doctor.Create(
             Guid.CreateVersion7(),
-            PersonName.Create("Test Doctor"),
+            PersonName.Create("Test", null, "Doctor"),
             MedicalLicenseNumber.Create("67890"),
             specialtyId,
             "Cardiologist specialized in arrhythmias",
@@ -58,7 +58,7 @@ public class GetDoctorsBySpecialtyIdQueryHandlerTests
         var expectedDtos = new List<Doctor> { doctor1, doctor2 }.Select(doctor => new DoctorDto(
             doctor.Id,
             doctor.UserId,
-            doctor.FullName.FullName,
+            doctor.FullName.ToString(),
             doctor.MedicalSpecialtyId,
             doctor.LicenseNumber.Value,
             doctor.Biography,
