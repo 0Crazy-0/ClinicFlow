@@ -358,6 +358,45 @@ public class UserTests
         user.LockoutEnd.Should().BeNull();
     }
 
+    [Fact]
+    public void ChangePassword_ShouldThrowException_WhenAccountIsPendingWithoutPasswordHash()
+    {
+        // Arrange
+        var user = User.CreatePending(
+            EmailAddress.Create("p@x.com"),
+            PhoneNumber.Create("555-1234")
+        );
+
+        // Act
+        var act = () => user.ChangePassword("newhashedpassword456");
+
+        // Assert
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.User.PasswordChangeNotAllowed);
+
+        user.PasswordHash.Should().BeNull();
+        user.ActivatedAt.Should().BeNull();
+    }
+
+    [Fact]
+    public void ChangePassword_ShouldUpdateHash_WhenPendingAccountWasActivated()
+    {
+        // Arrange
+        var user = User.CreatePending(
+            EmailAddress.Create("p@x.com"),
+            PhoneNumber.Create("555-1234")
+        );
+
+        user.Activate("hashedpassword123", _fakeTime.GetUtcNow().UtcDateTime);
+
+        // Act
+        user.ChangePassword("newhashedpassword567");
+
+        // Assert
+        user.PasswordHash.Should().Be("newhashedpassword567");
+    }
+
     [Theory]
     [InlineData("")]
     [InlineData(" ")]

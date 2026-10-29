@@ -74,7 +74,9 @@ public class User : BaseEntity
     /// <remarks>
     /// Usability is tied to a non-null <see cref="PasswordHash"/>, not to <see cref="ActivatedAt"/>: login and
     /// password change reject accounts whose hash is still null, while staff accounts provisioned with a password
-    /// through <see cref="Create"/> are usable from creation and never receive an activation date.
+    /// through <see cref="Create"/> are usable from creation and never receive an activation date. The first
+    /// password of a pending account can only be set via <see cref="Activate"/>, never via
+    /// <see cref="ChangePassword"/>.
     /// </remarks>
     public void Activate(string passwordHash, DateTime referenceTime)
     {
@@ -119,6 +121,9 @@ public class User : BaseEntity
     public void ChangePassword(string newPasswordHash)
     {
         Guard.NotNullOrWhiteSpace(newPasswordHash);
+
+        if (PasswordHash is null)
+            throw new BusinessRuleValidationException(DomainErrors.User.PasswordChangeNotAllowed);
 
         PasswordHash = newPasswordHash;
         FailedLoginAttempts = 0;
