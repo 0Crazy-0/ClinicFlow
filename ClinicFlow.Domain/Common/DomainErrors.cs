@@ -156,6 +156,7 @@ public static class DomainErrors
             "CANNOT_CLOSE_ACCOUNT_WITH_ACTIVE_FAMILY_MEMBERS";
         public const string AlreadyActive = "USER_ALREADY_ACTIVE";
         public const string AlreadyInactive = "USER_ALREADY_INACTIVE";
+        public const string AlreadyActivated = "USER_ALREADY_ACTIVATED";
         public const string InvalidCredentials = "INVALID_CREDENTIALS";
         public const string EmailAlreadyExists = "EMAIL_ALREADY_EXISTS";
     }
