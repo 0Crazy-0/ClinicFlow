@@ -1,6 +1,5 @@
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Interfaces.Repositories;
-using ClinicFlow.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClinicFlow.Infrastructure.Persistence.Repositories;
@@ -32,18 +31,4 @@ public sealed class PatientRepository(ApplicationDbContext dbContext) : IPatient
         Guid id,
         CancellationToken cancellationToken = default
     ) => await dbContext.Patients.FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
-
-    public async Task<Patient?> GetByNameAndDobAsync(
-        PersonName fullName,
-        DateOnly dateOfBirth,
-        CancellationToken cancellationToken = default
-    ) =>
-        await dbContext.Patients.FirstOrDefaultAsync(
-            p =>
-                p.FullName.FirstName == fullName.FirstName
-                && p.FullName.MiddleName == fullName.MiddleName
-                && p.FullName.FirstSurname == fullName.FirstSurname
-                && p.DateOfBirth == dateOfBirth,
-            cancellationToken
-        );
 }
