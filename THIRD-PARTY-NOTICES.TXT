@@ -616,10 +616,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.EntityFrameworkCore (v10.0.13)
+License notice for Microsoft.EntityFrameworkCore (v10.0.14)
 ------------------------------------
 
-https://github.com/dotnet/dotnet at 4099f83977f4d29604a9aeb971fb0a7bc1d5f699
+https://github.com/dotnet/dotnet at 0427b9abbead3fa64c6655eb4290c537397131fa
 
 https://docs.microsoft.com/ef/core/
 
@@ -630,10 +630,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.EntityFrameworkCore.Relational (v10.0.13)
+License notice for Microsoft.EntityFrameworkCore.Relational (v10.0.14)
 ------------------------------------
 
-https://github.com/dotnet/dotnet at 4099f83977f4d29604a9aeb971fb0a7bc1d5f699
+https://github.com/dotnet/dotnet at 0427b9abbead3fa64c6655eb4290c537397131fa
 
 https://docs.microsoft.com/ef/core/
 
@@ -756,10 +756,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.EntityFrameworkCore.Abstractions (v10.0.13)
+License notice for Microsoft.EntityFrameworkCore.Abstractions (v10.0.14)
 ------------------------------------
 
-https://github.com/dotnet/dotnet at 4099f83977f4d29604a9aeb971fb0a7bc1d5f699
+https://github.com/dotnet/dotnet at 0427b9abbead3fa64c6655eb4290c537397131fa
 
 https://docs.microsoft.com/ef/core/
 
@@ -770,10 +770,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.EntityFrameworkCore.Analyzers (v10.0.13)
+License notice for Microsoft.EntityFrameworkCore.Analyzers (v10.0.14)
 ------------------------------------
 
-https://github.com/dotnet/dotnet at 4099f83977f4d29604a9aeb971fb0a7bc1d5f699
+https://github.com/dotnet/dotnet at 0427b9abbead3fa64c6655eb4290c537397131fa
 
 https://docs.microsoft.com/ef/core/
 
@@ -784,10 +784,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.Extensions.Caching.Abstractions (v10.0.13)
+License notice for Microsoft.Extensions.Caching.Abstractions (v10.0.14)
 ------------------------------------
 
-https://github.com/dotnet/dotnet at 4099f83977f4d29604a9aeb971fb0a7bc1d5f699
+https://github.com/dotnet/dotnet at 0427b9abbead3fa64c6655eb4290c537397131fa
 
 https://dot.net/
 
@@ -798,10 +798,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.Extensions.Caching.Memory (v10.0.13)
+License notice for Microsoft.Extensions.Caching.Memory (v10.0.14)
 ------------------------------------
 
-https://github.com/dotnet/dotnet at 4099f83977f4d29604a9aeb971fb0a7bc1d5f699
+https://github.com/dotnet/dotnet at 0427b9abbead3fa64c6655eb4290c537397131fa
 
 https://dot.net/
 
@@ -826,10 +826,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.Extensions.Configuration.Abstractions (v10.0.13)
+License notice for Microsoft.Extensions.Configuration.Abstractions (v10.0.14)
 ------------------------------------
 
-https://github.com/dotnet/dotnet at 4099f83977f4d29604a9aeb971fb0a7bc1d5f699
+https://github.com/dotnet/dotnet at 0427b9abbead3fa64c6655eb4290c537397131fa
 
 https://dot.net/
 
@@ -840,10 +840,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.Extensions.DependencyInjection (v10.0.13)
+License notice for Microsoft.Extensions.DependencyInjection (v10.0.14)
 ------------------------------------
 
-https://github.com/dotnet/dotnet at 4099f83977f4d29604a9aeb971fb0a7bc1d5f699
+https://github.com/dotnet/dotnet at 0427b9abbead3fa64c6655eb4290c537397131fa
 
 https://dot.net/
 
@@ -854,10 +854,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.Extensions.DependencyModel (v10.0.13)
+License notice for Microsoft.Extensions.DependencyInjection.Abstractions (v10.0.14)
 ------------------------------------
 
-https://github.com/dotnet/dotnet at 4099f83977f4d29604a9aeb971fb0a7bc1d5f699
+https://github.com/dotnet/dotnet at 0427b9abbead3fa64c6655eb4290c537397131fa
 
 https://dot.net/
 
@@ -868,10 +868,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.Extensions.Logging (v10.0.13)
+License notice for Microsoft.Extensions.DependencyModel (v10.0.14)
 ------------------------------------
 
-https://github.com/dotnet/dotnet at 4099f83977f4d29604a9aeb971fb0a7bc1d5f699
+https://github.com/dotnet/dotnet at 0427b9abbead3fa64c6655eb4290c537397131fa
 
 https://dot.net/
 
@@ -882,10 +882,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.Extensions.Logging.Abstractions (v10.0.13)
+License notice for Microsoft.Extensions.Logging (v10.0.14)
 ------------------------------------
 
-https://github.com/dotnet/dotnet at 4099f83977f4d29604a9aeb971fb0a7bc1d5f699
+https://github.com/dotnet/dotnet at 0427b9abbead3fa64c6655eb4290c537397131fa
 
 https://dot.net/
 
@@ -896,10 +896,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.Extensions.Options (v10.0.13)
+License notice for Microsoft.Extensions.Logging.Abstractions (v10.0.14)
 ------------------------------------
 
-https://github.com/dotnet/dotnet at 4099f83977f4d29604a9aeb971fb0a7bc1d5f699
+https://github.com/dotnet/dotnet at 0427b9abbead3fa64c6655eb4290c537397131fa
 
 https://dot.net/
 
@@ -910,10 +910,24 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.Extensions.Primitives (v10.0.13)
+License notice for Microsoft.Extensions.Options (v10.0.14)
 ------------------------------------
 
-https://github.com/dotnet/dotnet at 4099f83977f4d29604a9aeb971fb0a7bc1d5f699
+https://github.com/dotnet/dotnet at 0427b9abbead3fa64c6655eb4290c537397131fa
+
+https://dot.net/
+
+Copyright © Microsoft Corporation. All rights reserved.
+
+Licensed under MIT
+
+Available at https://licenses.nuget.org/MIT
+
+
+License notice for Microsoft.Extensions.Primitives (v10.0.14)
+------------------------------------
+
+https://github.com/dotnet/dotnet at 0427b9abbead3fa64c6655eb4290c537397131fa
 
 https://dot.net/
 
