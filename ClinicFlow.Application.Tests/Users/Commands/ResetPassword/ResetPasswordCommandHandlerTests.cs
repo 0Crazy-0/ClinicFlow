@@ -66,6 +66,42 @@ public class ResetPasswordCommandHandlerTests
     }
 
     [Fact]
+    public async Task Handle_ShouldThrowException_WhenUserAccountIsPendingWithoutPassword()
+    {
+        // Arrange
+        var user = User.CreatePending(
+            EmailAddress.Create("p@x.com"),
+            PhoneNumber.Create("555-1234")
+        );
+
+        var command = new ResetPasswordCommand("valid-token", "newpassword123");
+
+        _passwordResetTokenServiceMock
+            .Setup(x => x.ValidateTokenAsync(command.Token, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(user.Id);
+
+        _userRepositoryMock
+            .Setup(x => x.GetByIdAsync(user.Id, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(user);
+
+        _passwordHasherServiceMock
+            .Setup(x => x.Hash(command.NewPassword))
+            .Returns("new_hashed_password");
+
+        // Act
+        var act = () => _sut.Handle(command, TestContext.Current.CancellationToken);
+
+        // Assert
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+
+        await act.Should()
+            .ThrowAsync<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.User.PasswordChangeNotAllowed);
+
+        user.PasswordHash.Should().BeNull();
+    }
+
+    [Fact]
     public async Task Handle_ShouldThrowException_WhenTokenIsInvalid()
     {
         // Arrange
