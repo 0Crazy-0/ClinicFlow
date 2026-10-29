@@ -5,6 +5,20 @@ updates:
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 5
+    groups:
+      dotnet-minor-patch:
+        patterns:
+          - "Microsoft.EntityFrameworkCore*"
+          - "Microsoft.Extensions.*"
+        update-types:
+          - "minor"
+          - "patch"
+      dotnet-major:
+        patterns:
+          - "Microsoft.EntityFrameworkCore*"
+          - "Microsoft.Extensions.*"
+        update-types:
+          - "major"
 
   - package-ecosystem: "github-actions"
     directory: "/"
