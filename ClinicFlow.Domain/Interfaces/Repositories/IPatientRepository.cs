@@ -1,5 +1,4 @@
 using ClinicFlow.Domain.Entities;
-using ClinicFlow.Domain.ValueObjects;
 
 namespace ClinicFlow.Domain.Interfaces.Repositories;
 
@@ -15,12 +14,6 @@ public interface IPatientRepository
     Task<bool> ExistsWithSsnLast4HashAsync(
         Guid patientId,
         string ssnLast4Hash,
-        CancellationToken cancellationToken = default
-    );
-
-    Task<Patient?> GetByNameAndDobAsync(
-        PersonName fullName,
-        DateOnly dateOfBirth,
         CancellationToken cancellationToken = default
     );
 }

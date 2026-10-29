@@ -173,40 +173,6 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         result.Should().BeNull();
     }
 
-    [Fact]
-    public async Task GetByNameAndDobAsync_ShouldReturnPatient_WhenExists()
-    {
-        // Arrange
-        var patient = await CreateSelfPatientAsync();
-
-        // Act
-        var result = await _sut.GetByNameAndDobAsync(
-            patient.FullName,
-            patient.DateOfBirth,
-            TestContext.Current.CancellationToken
-        );
-
-        // Assert
-        result.Should().BeEquivalentTo(patient);
-    }
-
-    [Fact]
-    public async Task GetByNameAndDobAsync_ShouldReturnNull_WhenDoesNotMatch()
-    {
-        // Arrange
-        var patient = await CreateSelfPatientAsync();
-
-        // Act
-        var result = await _sut.GetByNameAndDobAsync(
-            PersonName.Create("Nonexistent", null, "Name"),
-            patient.DateOfBirth,
-            TestContext.Current.CancellationToken
-        );
-
-        // Assert
-        result.Should().BeNull();
-    }
-
     private async Task<Patient> CreateSelfPatientAsync()
     {
         var patient = Patient.CreateProfile(
