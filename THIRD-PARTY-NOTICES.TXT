@@ -606,10 +606,10 @@ Available at https://aka.ms/deprecateLicenseUrl
 LICENSE
 
 
-License notice for EFCore.ComplexIndexes (v5.5.0)
+License notice for EFCore.ComplexIndexes (v5.6.0)
 ------------------------------------
 
-https://github.com/CaffeinatedCoder/EFCore.ComplexIndexes at 490b4de1b6e3abcd02ce51bdb58e7b910174025f
+https://github.com/CaffeinatedCoder/EFCore.ComplexIndexes at 8975493be8045bf3e3efe5aa286e6cd907a8679d
 
 Licensed under MIT
 
