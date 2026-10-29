@@ -1,5 +1,6 @@
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Enums;
+using ClinicFlow.Domain.Events.Users;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.ValueObjects;
 
@@ -19,10 +20,11 @@ public class User : BaseEntity
 
     public EmailAddress Email { get; private set; } = null!;
 
-    // Stryker disable once String
-    public string PasswordHash { get; private set; } = string.Empty;
+    public string? PasswordHash { get; private set; }
 
     public PhoneNumber Phone { get; private set; } = null!;
+
+    public DateTime? ActivatedAt { get; private set; }
 
     public bool IsActive { get; private set; }
 
@@ -37,12 +39,12 @@ public class User : BaseEntity
         FailedLoginAttempts = 0;
     }
 
-    private User(EmailAddress email, string passwordHash, PhoneNumber phoneNumber, UserRole role)
+    private User(EmailAddress email, string? passwordHash, PhoneNumber phone, UserRole role)
         : this()
     {
         Email = email;
         PasswordHash = passwordHash;
-        Phone = phoneNumber;
+        Phone = phone;
         Role = role;
     }
 
@@ -56,6 +58,38 @@ public class User : BaseEntity
         Guard.NotNullOrWhiteSpace(passwordHash);
 
         return new User(email, passwordHash, phoneNumber, role);
+    }
+
+    /// <summary>
+    /// Creates the pending user account for a patient registered by reception, without
+    /// password until its holder activates the account with the issued activation code.
+    /// </summary>
+    public static User CreatePending(EmailAddress email, PhoneNumber phone) =>
+        new(email, passwordHash: null, phone, UserRole.Patient);
+
+    /// <summary>
+    /// Sets the initial password of a pending account issued without one by reception. The first password can
+    /// only be set this way; once activated, updates go through <see cref="ChangePassword"/>.
+    /// </summary>
+    /// <remarks>
+    /// Usability is tied to a non-null <see cref="PasswordHash"/>, not to <see cref="ActivatedAt"/>: login and
+    /// password change reject accounts whose hash is still null, while staff accounts provisioned with a password
+    /// through <see cref="Create"/> are usable from creation and never receive an activation date. The first
+    /// password of a pending account can only be set via <see cref="Activate"/>, never via
+    /// <see cref="ChangePassword"/>.
+    /// </remarks>
+    public void Activate(string passwordHash, DateTime referenceTime)
+    {
+        Guard.NotNullOrWhiteSpace(passwordHash);
+        Guard.NotDefault(referenceTime);
+
+        if (ActivatedAt is not null)
+            throw new BusinessRuleValidationException(DomainErrors.User.AlreadyActivated);
+
+        PasswordHash = passwordHash;
+        ActivatedAt = referenceTime;
+
+        AddDomainEvent(new PatientAccountActivatedEvent(Id, ActivatedAt.Value));
     }
 
     internal void RecordLogin(DateTime loginTime)
@@ -87,6 +121,9 @@ public class User : BaseEntity
     public void ChangePassword(string newPasswordHash)
     {
         Guard.NotNullOrWhiteSpace(newPasswordHash);
+
+        if (PasswordHash is null)
+            throw new BusinessRuleValidationException(DomainErrors.User.PasswordChangeNotAllowed);
 
         PasswordHash = newPasswordHash;
         FailedLoginAttempts = 0;
