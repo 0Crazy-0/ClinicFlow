@@ -40,7 +40,7 @@ public class ChangePasswordCommandHandlerTests
             .ReturnsAsync(user);
 
         _passwordHasherServiceMock
-            .Setup(x => x.Verify(command.CurrentPassword, user.PasswordHash))
+            .Setup(x => x.Verify(command.CurrentPassword, user.PasswordHash!))
             .Returns(true);
 
         _passwordHasherServiceMock
@@ -54,6 +54,61 @@ public class ChangePasswordCommandHandlerTests
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
 
         user.PasswordHash.Should().Be("new_hashed_password");
+    }
+
+    [Fact]
+    public async Task Handle_ShouldThrowInvalidCredentials_WhenUserIsPending()
+    {
+        // Arrange
+        var user = User.CreatePending(
+            EmailAddress.Create("pending@clinic.com"),
+            PhoneNumber.Create("555-1234")
+        );
+        var command = new ChangePasswordCommand(user.Id, "currentpassword", "newpassword123");
+
+        _userRepositoryMock
+            .Setup(x => x.GetByIdAsync(command.UserId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(user);
+
+        // Act
+        var act = () => _sut.Handle(command, TestContext.Current.CancellationToken);
+
+        // Assert
+        await act.Should()
+            .ThrowAsync<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.User.InvalidCredentials);
+
+        _passwordHasherServiceMock.Verify(
+            x => x.Verify(It.IsAny<string>(), It.IsAny<string>()),
+            Times.Never
+        );
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldThrowInvalidCredentials_WhenCurrentPasswordIsWrong()
+    {
+        // Arrange
+        var user = CreateUser();
+        var command = new ChangePasswordCommand(user.Id, "currentpassword", "newpassword123");
+
+        _userRepositoryMock
+            .Setup(x => x.GetByIdAsync(command.UserId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(user);
+
+        _passwordHasherServiceMock
+            .Setup(x => x.Verify(command.CurrentPassword, user.PasswordHash!))
+            .Returns(false);
+
+        // Act
+        var act = () => _sut.Handle(command, TestContext.Current.CancellationToken);
+
+        // Assert
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+
+        await act.Should()
+            .ThrowAsync<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.User.InvalidCredentials);
     }
 
     [Fact]
@@ -80,32 +135,6 @@ public class ChangePasswordCommandHandlerTests
         exceptionAssertion.Which.EntityName.Should().Be(nameof(User));
 
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
-    }
-
-    [Fact]
-    public async Task Handle_ShouldThrowInvalidCredentials_WhenCurrentPasswordIsWrong()
-    {
-        // Arrange
-        var user = CreateUser();
-        var command = new ChangePasswordCommand(user.Id, "currentpassword", "newpassword123");
-
-        _userRepositoryMock
-            .Setup(x => x.GetByIdAsync(command.UserId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(user);
-
-        _passwordHasherServiceMock
-            .Setup(x => x.Verify(command.CurrentPassword, user.PasswordHash))
-            .Returns(false);
-
-        // Act
-        var act = () => _sut.Handle(command, TestContext.Current.CancellationToken);
-
-        // Assert
-        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
-
-        await act.Should()
-            .ThrowAsync<BusinessRuleValidationException>()
-            .WithMessage(DomainErrors.User.InvalidCredentials);
     }
 
     private static User CreateUser() =>

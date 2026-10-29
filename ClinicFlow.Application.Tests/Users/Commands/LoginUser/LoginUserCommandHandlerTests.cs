@@ -43,7 +43,7 @@ public class LoginUserCommandHandlerTests
             .ReturnsAsync(user);
 
         _passwordHasherServiceMock
-            .Setup(x => x.Verify(comamand.Password, user.PasswordHash))
+            .Setup(x => x.Verify(comamand.Password, user.PasswordHash!))
             .Returns(true);
 
         // Act
@@ -65,13 +65,68 @@ public class LoginUserCommandHandlerTests
             .ReturnsAsync(user);
 
         _passwordHasherServiceMock
-            .Setup(x => x.Verify(comamand.Password, user.PasswordHash))
+            .Setup(x => x.Verify(comamand.Password, user.PasswordHash!))
             .Returns(true);
 
         // Act
         await _sut.Handle(comamand, TestContext.Current.CancellationToken);
 
         // Assert
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldThrowInvalidCredentials_WhenUserIsPending()
+    {
+        // Arrange
+        var user = User.CreatePending(
+            EmailAddress.Create("pending@clinic.com"),
+            PhoneNumber.Create("555-1234")
+        );
+        var command = new LoginUserCommand(user.Email.Value, "password123");
+
+        _userRepositoryMock
+            .Setup(x => x.GetByEmailAsync(command.Email, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(user);
+
+        // Act
+        var act = () => _sut.Handle(command, TestContext.Current.CancellationToken);
+
+        // Assert
+        await act.Should()
+            .ThrowAsync<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.User.InvalidCredentials);
+
+        _passwordHasherServiceMock.Verify(
+            x => x.Verify(It.IsAny<string>(), It.IsAny<string>()),
+            Times.Never
+        );
+        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldThrowInvalidCredentialsAndPersist_WhenPasswordIsInvalid()
+    {
+        // Arrange
+        var user = CreateUser();
+        var command = new LoginUserCommand(user.Email.Value, "wrongpassword");
+
+        _userRepositoryMock
+            .Setup(x => x.GetByEmailAsync(command.Email, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(user);
+
+        _passwordHasherServiceMock
+            .Setup(x => x.Verify(command.Password, user.PasswordHash!))
+            .Returns(false);
+
+        // Act
+        var act = () => _sut.Handle(command, TestContext.Current.CancellationToken);
+
+        // Assert
+        await act.Should()
+            .ThrowAsync<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.User.InvalidCredentials);
+
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -94,32 +149,6 @@ public class LoginUserCommandHandlerTests
         await act.Should()
             .ThrowAsync<BusinessRuleValidationException>()
             .WithMessage(DomainErrors.User.InvalidCredentials);
-    }
-
-    [Fact]
-    public async Task Handle_ShouldThrowInvalidCredentialsAndPersist_WhenPasswordIsInvalid()
-    {
-        // Arrange
-        var user = CreateUser();
-        var command = new LoginUserCommand(user.Email.Value, "wrongpassword");
-
-        _userRepositoryMock
-            .Setup(x => x.GetByEmailAsync(command.Email, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(user);
-
-        _passwordHasherServiceMock
-            .Setup(x => x.Verify(command.Password, user.PasswordHash))
-            .Returns(false);
-
-        // Act
-        var act = () => _sut.Handle(command, TestContext.Current.CancellationToken);
-
-        // Assert
-        await act.Should()
-            .ThrowAsync<BusinessRuleValidationException>()
-            .WithMessage(DomainErrors.User.InvalidCredentials);
-
-        _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
     private static User CreateUser() =>

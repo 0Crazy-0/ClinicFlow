@@ -22,6 +22,9 @@ public sealed class LoginUserCommandHandler(
             await userRepository.GetByEmailAsync(request.Email, cancellationToken)
             ?? throw new BusinessRuleValidationException(DomainErrors.User.InvalidCredentials);
 
+        if (user.PasswordHash is null)
+            throw new BusinessRuleValidationException(DomainErrors.User.InvalidCredentials);
+
         var isValid = passwordHasherService.Verify(request.Password, user.PasswordHash);
 
         var authenticated = UserAuthenticationService.TryAuthenticate(

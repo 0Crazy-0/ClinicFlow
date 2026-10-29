@@ -25,6 +25,9 @@ public sealed class ChangePasswordCommandHandler(
                 request.UserId
             );
 
+        if (user.PasswordHash is null)
+            throw new BusinessRuleValidationException(DomainErrors.User.InvalidCredentials);
+
         var isCurrentValid = passwordHasherService.Verify(
             request.CurrentPassword,
             user.PasswordHash
