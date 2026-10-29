@@ -2,6 +2,7 @@ using AwesomeAssertions;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
+using ClinicFlow.Domain.Events.Users;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.ValueObjects;
 using Microsoft.Extensions.Time.Testing;
@@ -50,6 +51,114 @@ public class UserTests
                 PhoneNumber.Create("555-1234"),
                 UserRole.Doctor
             );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void CreatePending_ShouldCreatePatientUser_WithoutPassword()
+    {
+        // Arrange
+        var email = EmailAddress.Create("p@x.com");
+        var phone = PhoneNumber.Create("555-1234");
+
+        // Act
+        var user = User.CreatePending(email, phone);
+
+        // Assert
+        user.Email.Should().Be(email);
+        user.Role.Should().Be(UserRole.Patient);
+        user.PasswordHash.Should().BeNull();
+        user.ActivatedAt.Should().BeNull();
+        user.IsActive.Should().BeTrue();
+        user.Phone.Should().Be(phone);
+    }
+
+    [Fact]
+    public void Activate_ShouldSetPasswordHashAndActivatedAt_AndRaiseEvent()
+    {
+        // Arrange
+        var user = User.CreatePending(
+            EmailAddress.Create("p@x.com"),
+            PhoneNumber.Create("555-1234")
+        );
+
+        var referenceTime = _fakeTime.GetUtcNow().UtcDateTime;
+
+        // Act
+        user.Activate("hash", referenceTime);
+
+        // Assert
+        user.PasswordHash.Should().Be("hash");
+        user.ActivatedAt.Should().Be(referenceTime);
+
+        var domainEvent = user
+            .DomainEvents.OfType<PatientAccountActivatedEvent>()
+            .Should()
+            .ContainSingle()
+            .Which;
+
+        domainEvent.UserId.Should().Be(user.Id);
+        domainEvent.ActivatedAt.Should().Be(referenceTime);
+    }
+
+    [Fact]
+    public void Activate_ShouldThrowBusinessRuleValidationException_WhenAlreadyActivated()
+    {
+        // Arrange
+        var user = User.CreatePending(
+            EmailAddress.Create("p@x.com"),
+            PhoneNumber.Create("555-1234")
+        );
+
+        user.Activate("hash", _fakeTime.GetUtcNow().UtcDateTime);
+
+        // Act
+        var act = () => user.Activate("anotherhash67", _fakeTime.GetUtcNow().UtcDateTime);
+
+        // Assert
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.User.AlreadyActivated);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("  ")]
+    public void Activate_ShouldThrowDomainValidationException_WhenPasswordHashIsNullOrWhiteSpace(
+        string? invalidHash
+    )
+    {
+        // Arrange
+        var user = User.CreatePending(
+            EmailAddress.Create("p@x.com"),
+            PhoneNumber.Create("555-1234")
+        );
+
+        // Act
+        var act = () => user.Activate(invalidHash!, _fakeTime.GetUtcNow().UtcDateTime);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void Activate_ShouldThrowDomainValidationException_WhenReferenceTimeIsDefault()
+    {
+        // Arrange
+        var user = User.CreatePending(
+            EmailAddress.Create("p@x.com"),
+            PhoneNumber.Create("555-1234")
+        );
+
+        // Act
+        var act = () => user.Activate("hash", default);
 
         // Assert
         act.Should()
