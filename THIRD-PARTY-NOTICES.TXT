@@ -1246,10 +1246,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for TngTech.ArchUnitNET.xUnitV3 (v0.13.4)
+License notice for TngTech.ArchUnitNET.xUnitV3 (v0.13.5)
 ------------------------------------
 
-https://github.com/TNG/ArchUnitNET at 1ab5943d761d48f86b42f45ef047130dc9aff1c6
+https://github.com/TNG/ArchUnitNET at f439e0d2e9a45fe9f6a70fea1b05b7c1cbbf465b
 
 Licensed under Apache-2.0
 
@@ -1302,10 +1302,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for TngTech.ArchUnitNET (v0.13.4)
+License notice for TngTech.ArchUnitNET (v0.13.5)
 ------------------------------------
 
-https://github.com/TNG/ArchUnitNET at 1ab5943d761d48f86b42f45ef047130dc9aff1c6
+https://github.com/TNG/ArchUnitNET at f439e0d2e9a45fe9f6a70fea1b05b7c1cbbf465b
 
 Licensed under Apache-2.0
 
