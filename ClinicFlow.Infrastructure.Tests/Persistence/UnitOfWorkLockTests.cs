@@ -8,12 +8,14 @@ using ClinicFlow.Infrastructure.Persistence;
 using ClinicFlow.Infrastructure.Tests.Shared;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Time.Testing;
 using Moq;
 
 namespace ClinicFlow.Infrastructure.Tests.Persistence;
 
 public class UnitOfWorkLockTests : IAsyncLifetime
 {
+    private readonly FakeTimeProvider _fakeTime = new();
     private readonly PostgresFixture _fixture;
     private readonly Mock<IPublisher> _publisherMock;
     private readonly UnitOfWork _sut;
@@ -761,7 +763,7 @@ public class UnitOfWorkLockTests : IAsyncLifetime
         return new ApplicationDbContext(options);
     }
 
-    private static User CreateUser(
+    private User CreateUser(
         string email = "test@clinic.com",
         string phoneNumber = "+15550000000"
     ) =>
@@ -769,7 +771,8 @@ public class UnitOfWorkLockTests : IAsyncLifetime
             EmailAddress.Create(email),
             "hashed_password",
             PhoneNumber.Create(phoneNumber),
-            UserRole.Patient
+            UserRole.Doctor,
+            _fakeTime.GetLocalNow().DateTime
         );
 
     private class TestDomainEvent : IDomainEvent { }

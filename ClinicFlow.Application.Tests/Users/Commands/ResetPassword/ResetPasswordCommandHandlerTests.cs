@@ -3,12 +3,12 @@ using ClinicFlow.Application.Interfaces;
 using ClinicFlow.Application.Users.Commands.ResetPassword;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
-using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.Interfaces.Services;
 using ClinicFlow.Domain.ValueObjects;
+using Microsoft.Extensions.Time.Testing;
 using Moq;
 
 namespace ClinicFlow.Application.Tests.Users.Commands.ResetPassword;
@@ -19,6 +19,7 @@ public class ResetPasswordCommandHandlerTests
     private readonly Mock<IUserRepository> _userRepositoryMock = new();
     private readonly Mock<IPasswordHasherService> _passwordHasherServiceMock = new();
     private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
+    private readonly FakeTimeProvider _fakeTime = new();
     private readonly ResetPasswordCommandHandler _sut;
 
     public ResetPasswordCommandHandlerTests()
@@ -35,12 +36,12 @@ public class ResetPasswordCommandHandlerTests
     public async Task Handle_ShouldChangePassword_WhenTokenIsValid()
     {
         // Arrange
-        var user = User.Create(
+        var user = User.CreatePending(
             EmailAddress.Create("test@clinic.com"),
-            "hashedpassword123",
-            PhoneNumber.Create("555-1234"),
-            UserRole.Patient
+            PhoneNumber.Create("555-1234")
         );
+
+        user.Activate("hashedpassword123", _fakeTime.GetLocalNow().DateTime);
 
         var command = new ResetPasswordCommand("valid-token", "newpassword123");
 

@@ -6,11 +6,13 @@ using ClinicFlow.Infrastructure.Persistence;
 using ClinicFlow.Infrastructure.Persistence.Repositories;
 using ClinicFlow.Infrastructure.Tests.Shared;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Time.Testing;
 
 namespace ClinicFlow.Infrastructure.Tests.Persistence.Repositories;
 
 public class ScheduleRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
 {
+    private readonly FakeTimeProvider _fakeTime = new();
     private readonly ScheduleRepository _sut = new(fixture.Context);
     private ApplicationDbContext Context => fixture.Context;
 
@@ -536,7 +538,8 @@ public class ScheduleRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
             EmailAddress.Create($"{Guid.CreateVersion7()}@clinic.com"),
             "password",
             PhoneNumber.Create($"+1555{Random.Shared.Next(1000000, 9999999)}"),
-            UserRole.Doctor
+            UserRole.Doctor,
+            _fakeTime.GetLocalNow().DateTime
         );
 
         Context.Users.Add(user);

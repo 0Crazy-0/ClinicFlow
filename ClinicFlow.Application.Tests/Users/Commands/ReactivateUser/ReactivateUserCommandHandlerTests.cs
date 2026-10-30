@@ -2,11 +2,11 @@ using AwesomeAssertions;
 using ClinicFlow.Application.Users.Commands.ReactivateUser;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
-using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.ValueObjects;
+using Microsoft.Extensions.Time.Testing;
 using Moq;
 
 namespace ClinicFlow.Application.Tests.Users.Commands.ReactivateUser;
@@ -15,6 +15,7 @@ public class ReactivateUserCommandHandlerTests
 {
     private readonly Mock<IUserRepository> _userRepositoryMock = new();
     private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
+    private readonly FakeTimeProvider _fakeTime = new();
     private readonly ReactivateUserCommandHandler _sut;
 
     public ReactivateUserCommandHandlerTests()
@@ -88,11 +89,15 @@ public class ReactivateUserCommandHandlerTests
             .WithMessage(DomainErrors.User.AlreadyActive);
     }
 
-    private static User CreateUser() =>
-        User.Create(
+    private User CreateUser()
+    {
+        var user = User.CreatePending(
             EmailAddress.Create("test@clinic.com"),
-            "hashedpassword123",
-            PhoneNumber.Create("555-1234"),
-            UserRole.Patient
+            PhoneNumber.Create("555-1234")
         );
+
+        user.Activate("hashedpassword123", _fakeTime.GetLocalNow().DateTime);
+
+        return user;
+    }
 }

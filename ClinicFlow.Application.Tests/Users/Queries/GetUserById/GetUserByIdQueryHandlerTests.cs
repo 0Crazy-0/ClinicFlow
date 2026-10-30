@@ -3,10 +3,10 @@ using ClinicFlow.Application.Users.Queries.DTOs;
 using ClinicFlow.Application.Users.Queries.GetUserById;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
-using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.ValueObjects;
+using Microsoft.Extensions.Time.Testing;
 using Moq;
 
 namespace ClinicFlow.Application.Tests.Users.Queries.GetUserById;
@@ -14,6 +14,7 @@ namespace ClinicFlow.Application.Tests.Users.Queries.GetUserById;
 public class GetUserByIdQueryHandlerTests
 {
     private readonly Mock<IUserRepository> _userRepositoryMock = new();
+    private readonly FakeTimeProvider _fakeTime = new();
     private readonly GetUserByIdQueryHandler _sut;
 
     public GetUserByIdQueryHandlerTests()
@@ -25,12 +26,12 @@ public class GetUserByIdQueryHandlerTests
     public async Task Handle_ShouldReturnUserDto_WhenUserExists()
     {
         // Arrange
-        var user = User.Create(
+        var user = User.CreatePending(
             EmailAddress.Create("test@clinic.com"),
-            "hashedpassword123",
-            PhoneNumber.Create("555-1234"),
-            UserRole.Patient
+            PhoneNumber.Create("555-1234")
         );
+
+        user.Activate("hashedpassword123", _fakeTime.GetLocalNow().DateTime);
 
         _userRepositoryMock
             .Setup(x => x.GetByIdAsync(user.Id, It.IsAny<CancellationToken>()))

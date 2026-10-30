@@ -122,11 +122,12 @@ public class UserAuthenticationServiceTests
         user.LastLoginAt.Should().Be(referenceTime);
     }
 
-    private static User CreateUser() =>
+    private User CreateUser() =>
         User.Create(
             EmailAddress.Create("test@clinic.com"),
             "hashedpassword123",
             PhoneNumber.Create("555-1234"),
-            UserRole.Patient
+            UserRole.Doctor,
+            _fakeTime.GetLocalNow().DateTime
         );
 }

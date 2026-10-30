@@ -5,6 +5,7 @@ using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.ValueObjects;
+using Microsoft.Extensions.Time.Testing;
 using Moq;
 
 namespace ClinicFlow.Application.Tests.Users.Queries.GetUsers;
@@ -12,6 +13,7 @@ namespace ClinicFlow.Application.Tests.Users.Queries.GetUsers;
 public class GetUsersQueryHandlerTests
 {
     private readonly Mock<IUserRepository> _userRepositoryMock = new();
+    private readonly FakeTimeProvider _fakeTime = new();
     private readonly GetUsersQueryHandler _sut;
 
     public GetUsersQueryHandlerTests()
@@ -25,8 +27,8 @@ public class GetUsersQueryHandlerTests
         // Arrange
         var users = new List<User>
         {
-            CreateUser("user1@clinic.com", "111-1111", UserRole.Patient),
-            CreateUser("user2@clinic.com", "222-2222", UserRole.Doctor),
+            CreateUser("user1@clinic.com", "111-1111"),
+            CreateUser("user2@clinic.com", "222-2222"),
         };
 
         var query = new GetUsersQuery(1, 10, null, null, null);
@@ -103,11 +105,12 @@ public class GetUsersQueryHandlerTests
         );
     }
 
-    private static User CreateUser(string email, string phone, UserRole role) =>
-        User.Create(
-            EmailAddress.Create(email),
-            "hashedpassword123",
-            PhoneNumber.Create(phone),
-            role
-        );
+    private User CreateUser(string email, string phone)
+    {
+        var user = User.CreatePending(EmailAddress.Create(email), PhoneNumber.Create(phone));
+
+        user.Activate("hashedpassword123", _fakeTime.GetLocalNow().DateTime);
+
+        return user;
+    }
 }

@@ -3,7 +3,6 @@ using AwesomeAssertions;
 using ClinicFlow.Application.Users.Queries.DTOs;
 using ClinicFlow.Application.Users.Queries.GetLockedOutUsers;
 using ClinicFlow.Domain.Entities;
-using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.ValueObjects;
 using Microsoft.Extensions.Time.Testing;
@@ -26,12 +25,12 @@ public class GetLockedOutUsersQueryHandlerTests
     public async Task Handle_ShouldReturnPaginatedList_WhenUsersAreLocked()
     {
         // Arrange
-        var lockedUser = User.Create(
+        var lockedUser = User.CreatePending(
             EmailAddress.Create("locked@clinic.com"),
-            "hashedpassword123",
-            PhoneNumber.Create("111-1111"),
-            UserRole.Patient
+            PhoneNumber.Create("111-1111")
         );
+
+        lockedUser.Activate("hashedpassword123", _fakeTime.GetLocalNow().DateTime);
 
         _userRepositoryMock
             .Setup(x =>

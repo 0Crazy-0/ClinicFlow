@@ -2,12 +2,12 @@ using AwesomeAssertions;
 using ClinicFlow.Application.Users.Commands.ChangePassword;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
-using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.Interfaces.Services;
 using ClinicFlow.Domain.ValueObjects;
+using Microsoft.Extensions.Time.Testing;
 using Moq;
 
 namespace ClinicFlow.Application.Tests.Users.Commands.ChangePassword;
@@ -17,6 +17,7 @@ public class ChangePasswordCommandHandlerTests
     private readonly Mock<IUserRepository> _userRepositoryMock = new();
     private readonly Mock<IPasswordHasherService> _passwordHasherServiceMock = new();
     private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
+    private readonly FakeTimeProvider _fakeTime = new();
     private readonly ChangePasswordCommandHandler _sut;
 
     public ChangePasswordCommandHandlerTests()
@@ -137,11 +138,15 @@ public class ChangePasswordCommandHandlerTests
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
-    private static User CreateUser() =>
-        User.Create(
+    private User CreateUser()
+    {
+        var user = User.CreatePending(
             EmailAddress.Create("test@clinic.com"),
-            "hashedpassword123",
-            PhoneNumber.Create("555-1234"),
-            UserRole.Patient
+            PhoneNumber.Create("555-1234")
         );
+
+        user.Activate("hashedpassword123", _fakeTime.GetLocalNow().DateTime);
+
+        return user;
+    }
 }

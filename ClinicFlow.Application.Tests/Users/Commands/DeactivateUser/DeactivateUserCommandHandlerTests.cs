@@ -213,13 +213,17 @@ public class DeactivateUserCommandHandlerTests
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
-    private static User CreateUser() =>
-        User.Create(
+    private User CreateUser()
+    {
+        var user = User.CreatePending(
             EmailAddress.Create("test@clinic.com"),
-            "hashedpassword123",
-            PhoneNumber.Create("555-1234"),
-            UserRole.Patient
+            PhoneNumber.Create("555-1234")
         );
+
+        user.Activate("hashedpassword123", _fakeTime.GetLocalNow().DateTime);
+
+        return user;
+    }
 
     private static FamilyMembership CreateSelfMembership(Guid userId, DateTime referenceTime) =>
         FamilyMembership.CreateSelf(Guid.CreateVersion7(), userId, referenceTime);

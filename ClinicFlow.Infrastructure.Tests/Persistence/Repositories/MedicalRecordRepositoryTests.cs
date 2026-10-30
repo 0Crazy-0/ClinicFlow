@@ -787,7 +787,7 @@ public class MedicalRecordRepositoryTests(PostgresFixture fixture) : IAsyncLifet
     {
         var email = EmailAddress.Create($"{Guid.CreateVersion7()}@clinic.com");
         var phone = PhoneNumber.Create($"+1555{Random.Shared.Next(1000000, 9999999)}");
-        var user = User.Create(email, "password", phone, role);
+        var user = User.Create(email, "password", phone, role, _fakeTime.GetLocalNow().DateTime);
 
         Context.Users.Add(user);
 

@@ -34,11 +34,9 @@ public class UserRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
     public async Task CreateAsync_ShouldAddUserToContext()
     {
         // Arrange
-        var user = User.Create(
+        var user = User.CreatePending(
             EmailAddress.Create("new.user@clinic.com"),
-            "hashedpassword123",
-            PhoneNumber.Create("+15550000001"),
-            UserRole.Patient
+            PhoneNumber.Create("+15550000001")
         );
 
         // Act
@@ -60,11 +58,9 @@ public class UserRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
     public async Task CreateAsync_ShouldNotReAdd_WhenEntityIsAlreadyTracked()
     {
         // Arrange
-        var user = User.Create(
+        var user = User.CreatePending(
             EmailAddress.Create("new.user@clinic.com"),
-            "hashedpassword123",
-            PhoneNumber.Create("+15550000001"),
-            UserRole.Patient
+            PhoneNumber.Create("+15550000001")
         );
 
         Context.Users.Add(user);
@@ -203,8 +199,8 @@ public class UserRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
     public async Task GetPaginatedAsync_ShouldFilterByRole()
     {
         // Arrange
-        var admin = await CreateUserAsync(UserRole.Admin);
-        await CreateUserAsync(UserRole.Patient);
+        var admin = await CreateUserAsync(role: UserRole.Admin);
+        await CreateUserAsync(email: "user@clinicTestRole.com"); // role is doctor
 
         // Act
         var (items, totalCount) = await _sut.GetPaginatedAsync(
@@ -322,7 +318,7 @@ public class UserRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
     public async Task GetPaginatedAsync_ShouldReturnEmpty_WhenNoUsersMatch()
     {
         // Arrange
-        await CreateUserAsync(); // UserRole.Patient
+        await CreateUserAsync(role: UserRole.Admin);
 
         // Act
         var (items, totalCount) = await _sut.GetPaginatedAsync(
@@ -484,29 +480,15 @@ public class UserRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
     private async Task<User> CreateUserAsync(
         string email = "user@clinic.com",
         string phoneNumber = "+15550000000",
-        UserRole role = UserRole.Patient
+        UserRole role = UserRole.Doctor
     )
     {
         var user = User.Create(
             EmailAddress.Create(email),
             "hashedpassword123",
             PhoneNumber.Create(phoneNumber),
-            role
-        );
-
-        Context.Users.Add(user);
-        await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
-
-        return user;
-    }
-
-    private async Task<User> CreateUserAsync(UserRole role)
-    {
-        var user = User.Create(
-            EmailAddress.Create($"{Guid.CreateVersion7()}@clinic.com"),
-            "hashedpassword123",
-            PhoneNumber.Create($"+1555{Random.Shared.Next(1000000, 9999999)}"),
-            role
+            role,
+            _fakeTime.GetLocalNow().DateTime
         );
 
         Context.Users.Add(user);
@@ -517,11 +499,9 @@ public class UserRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
 
     private async Task<User> CreateLockedOutUserAsync(DateTime lockoutReferenceTime)
     {
-        var user = User.Create(
+        var user = User.CreatePending(
             EmailAddress.Create($"{Guid.CreateVersion7()}@clinic.com"),
-            "hashedpassword123",
-            PhoneNumber.Create($"+1555{Random.Shared.Next(1000000, 9999999)}"),
-            UserRole.Patient
+            PhoneNumber.Create($"+1555{Random.Shared.Next(1000000, 9999999)}")
         );
 
         user.RecordFailedLogin(lockoutReferenceTime);

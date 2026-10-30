@@ -5,11 +5,13 @@ using ClinicFlow.Domain.ValueObjects;
 using ClinicFlow.Infrastructure.Persistence;
 using ClinicFlow.Infrastructure.Tests.Shared;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Time.Testing;
 
 namespace ClinicFlow.Infrastructure.Tests.Persistence;
 
 public class ApplicationDbContextIntegrationTests(PostgresFixture fixture) : IAsyncLifetime
 {
+    private readonly FakeTimeProvider _fakeTime = new();
     private readonly ApplicationDbContext _sut = fixture.Context;
 
     public async ValueTask InitializeAsync()
@@ -87,7 +89,8 @@ public class ApplicationDbContextIntegrationTests(PostgresFixture fixture) : IAs
             EmailAddress.Create($"{Guid.CreateVersion7()}@clinic.com"),
             "password",
             PhoneNumber.Create($"+1555{Random.Shared.Next(1000000, 9999999)}"),
-            UserRole.Doctor
+            UserRole.Doctor,
+            _fakeTime.GetLocalNow().DateTime
         );
 
         _sut.Users.Add(user);
