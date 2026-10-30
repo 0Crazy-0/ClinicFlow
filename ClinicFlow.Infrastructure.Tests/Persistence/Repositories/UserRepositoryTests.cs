@@ -499,9 +499,12 @@ public class UserRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
 
     private async Task<User> CreateLockedOutUserAsync(DateTime lockoutReferenceTime)
     {
-        var user = User.CreatePending(
+        var user = User.Create(
             EmailAddress.Create($"{Guid.CreateVersion7()}@clinic.com"),
-            PhoneNumber.Create($"+1555{Random.Shared.Next(1000000, 9999999)}")
+            "hashedpassword123",
+            PhoneNumber.Create($"+1555{Random.Shared.Next(1000000, 9999999)}"),
+            UserRole.Doctor,
+            lockoutReferenceTime
         );
 
         user.RecordFailedLogin(lockoutReferenceTime);
