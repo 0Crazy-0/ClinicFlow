@@ -160,6 +160,7 @@ public static class DomainErrors
         public const string PasswordChangeNotAllowed = "PASSWORD_CHANGE_NOT_ALLOWED";
         public const string InvalidCredentials = "INVALID_CREDENTIALS";
         public const string EmailAlreadyExists = "EMAIL_ALREADY_EXISTS";
+        public const string InvalidRole = "USER_INVALID_ROLE";
     }
 
     public static class Penalty

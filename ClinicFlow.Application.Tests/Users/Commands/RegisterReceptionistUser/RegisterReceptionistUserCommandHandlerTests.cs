@@ -7,6 +7,7 @@ using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.Interfaces.Services;
+using Microsoft.Extensions.Time.Testing;
 using Moq;
 
 namespace ClinicFlow.Application.Tests.Users.Commands.RegisterReceptionistUser;
@@ -16,11 +17,13 @@ public class RegisterReceptionistUserCommandHandlerTests
     private readonly Mock<IUserRepository> _userRepositoryMock = new();
     private readonly Mock<IPasswordHasherService> _passwordHasherServiceMock = new();
     private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
+    private readonly FakeTimeProvider _fakeTime = new();
     private readonly RegisterReceptionistUserCommandHandler _sut;
 
     public RegisterReceptionistUserCommandHandlerTests()
     {
         _sut = new RegisterReceptionistUserCommandHandler(
+            _fakeTime,
             _userRepositoryMock.Object,
             _passwordHasherServiceMock.Object,
             _unitOfWorkMock.Object
@@ -59,6 +62,7 @@ public class RegisterReceptionistUserCommandHandlerTests
         capturedUser.Phone.Value.Should().Be(command.PhoneNumber);
         capturedUser.Role.Should().Be(UserRole.Receptionist);
         capturedUser.IsActive.Should().BeTrue();
+        capturedUser.ActivatedAt.Should().Be(_fakeTime.GetUtcNow().DateTime);
     }
 
     [Fact]

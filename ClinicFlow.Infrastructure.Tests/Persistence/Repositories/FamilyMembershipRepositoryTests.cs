@@ -888,7 +888,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
     {
         var email = EmailAddress.Create($"{Guid.CreateVersion7()}@clinic.com");
         var phone = PhoneNumber.Create($"+1555{Random.Shared.Next(1000000, 9999999)}");
-        var user = User.Create(email, "password", phone, UserRole.Patient);
+        var user = User.CreatePending(email, phone);
 
         Context.Users.Add(user);
 

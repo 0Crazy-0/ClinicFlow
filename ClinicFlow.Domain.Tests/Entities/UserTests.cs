@@ -21,9 +21,10 @@ public class UserTests
         var passwordHash = "hashedpassword123";
         var phone = PhoneNumber.Create("555-1234");
         var role = UserRole.Doctor;
+        var referenceTime = _fakeTime.GetLocalNow().DateTime;
 
         // Act
-        var user = User.Create(email, passwordHash, phone, role);
+        var user = User.Create(email, passwordHash, phone, role, referenceTime);
 
         // Assert
         user.Should().NotBeNull();
@@ -31,6 +32,7 @@ public class UserTests
         user.PasswordHash.Should().Be(passwordHash);
         user.Phone.Should().Be(phone);
         user.Role.Should().Be(role);
+        user.ActivatedAt.Should().Be(referenceTime);
         user.IsActive.Should().BeTrue();
         user.LastLoginAt.Should().BeNull();
         user.FailedLoginAttempts.Should().Be(0);
@@ -49,7 +51,63 @@ public class UserTests
                 EmailAddress.Create("test@clinic.com"),
                 invalidHash!,
                 PhoneNumber.Create("555-1234"),
-                UserRole.Doctor
+                UserRole.Doctor,
+                _fakeTime.GetLocalNow().DateTime
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void Create_ShouldThrowException_WhenRoleIsPatient()
+    {
+        // Arrange & Act
+        var act = () =>
+            User.Create(
+                EmailAddress.Create("test@clinic.com"),
+                "hashedpassword123",
+                PhoneNumber.Create("555-1234"),
+                UserRole.Patient,
+                _fakeTime.GetLocalNow().DateTime
+            );
+
+        // Assert
+        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.User.InvalidRole);
+    }
+
+    [Fact]
+    public void Create_ShouldThrowException_WhenRoleIsNotDefined()
+    {
+        // Arrange & Act
+        var act = () =>
+            User.Create(
+                EmailAddress.Create("test@clinic.com"),
+                "hashedpassword123",
+                PhoneNumber.Create("555-1234"),
+                (UserRole)999,
+                _fakeTime.GetLocalNow().DateTime
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.InvalidEnumValue);
+    }
+
+    [Fact]
+    public void Create_ShouldThrowException_WhenReferenceTimeIsDefault()
+    {
+        // Arrange & Act
+        var act = () =>
+            User.Create(
+                EmailAddress.Create("test@clinic.com"),
+                "hashedpassword123",
+                PhoneNumber.Create("555-1234"),
+                UserRole.Doctor,
+                default
             );
 
         // Assert
@@ -123,6 +181,82 @@ public class UserTests
         act.Should()
             .Throw<BusinessRuleValidationException>()
             .WithMessage(DomainErrors.User.AlreadyActivated);
+    }
+
+    [Fact]
+    public void Activate_ShouldThrowBusinessRuleValidationException_WhenAccountIsInactive()
+    {
+        // Arrange
+        var user = User.CreatePending(
+            EmailAddress.Create("p@x.com"),
+            PhoneNumber.Create("555-1234")
+        );
+
+        user.Deactivate();
+
+        // Act
+        var act = () => user.Activate("hash", _fakeTime.GetUtcNow().UtcDateTime);
+
+        // Assert
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.User.AccountInactive);
+
+        user.ActivatedAt.Should().BeNull();
+        user.PasswordHash.Should().BeNull();
+        user.DomainEvents.OfType<PatientAccountActivatedEvent>().Should().BeEmpty();
+    }
+
+    [Fact]
+    public void Activate_ShouldThrowBusinessRuleValidationException_WhenAccountWasActivatedAndThenDeactivated()
+    {
+        // Arrange
+        var user = User.CreatePending(
+            EmailAddress.Create("p@x.com"),
+            PhoneNumber.Create("555-1234")
+        );
+
+        user.Activate("hash", _fakeTime.GetUtcNow().UtcDateTime);
+        user.Deactivate();
+
+        // Act
+        var act = () => user.Activate("anotherhash67", _fakeTime.GetUtcNow().UtcDateTime);
+
+        // Assert
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.User.AlreadyActivated);
+    }
+
+    [Fact]
+    public void Activate_ShouldSetPasswordHashAndActivatedAt_WhenAccountIsReactivated()
+    {
+        // Arrange
+        var user = User.CreatePending(
+            EmailAddress.Create("p@x.com"),
+            PhoneNumber.Create("555-1234")
+        );
+
+        user.Deactivate();
+        user.Reactivate();
+
+        var referenceTime = _fakeTime.GetUtcNow().UtcDateTime;
+
+        // Act
+        user.Activate("hash", referenceTime);
+
+        // Assert
+        user.PasswordHash.Should().Be("hash");
+        user.ActivatedAt.Should().Be(referenceTime);
+
+        var domainEvent = user
+            .DomainEvents.OfType<PatientAccountActivatedEvent>()
+            .Should()
+            .ContainSingle()
+            .Which;
+
+        domainEvent.UserId.Should().Be(user.Id);
+        domainEvent.ActivatedAt.Should().Be(referenceTime);
     }
 
     [Theory]
@@ -491,12 +625,13 @@ public class UserTests
             .WithMessage(DomainErrors.User.AlreadyActive);
     }
 
-    private static User CreateUser() =>
+    private User CreateUser() =>
         User.Create(
             EmailAddress.Create("test@clinic.com"),
             "hashedpassword123",
             PhoneNumber.Create("555-1234"),
-            UserRole.Doctor
+            UserRole.Doctor,
+            _fakeTime.GetLocalNow().DateTime
         );
 
     private static void LockOutUser(User user, DateTime referenceTime)

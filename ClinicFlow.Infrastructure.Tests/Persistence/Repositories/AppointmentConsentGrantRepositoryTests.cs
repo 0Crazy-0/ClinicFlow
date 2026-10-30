@@ -777,11 +777,9 @@ public class AppointmentConsentGrantRepositoryTests(PostgresFixture fixture) : I
 
     private async Task<User> CreateUserAsync()
     {
-        var user = User.Create(
+        var user = User.CreatePending(
             EmailAddress.Create($"{Guid.CreateVersion7()}@clinic.com"),
-            "password",
-            PhoneNumber.Create($"+1555{Random.Shared.Next(1000000, 9999999)}"),
-            UserRole.Patient
+            PhoneNumber.Create($"+1555{Random.Shared.Next(1000000, 9999999)}")
         );
 
         Context.Users.Add(user);

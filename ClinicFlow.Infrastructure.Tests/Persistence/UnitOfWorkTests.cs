@@ -7,12 +7,14 @@ using ClinicFlow.Domain.ValueObjects;
 using ClinicFlow.Infrastructure.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Time.Testing;
 using Moq;
 
 namespace ClinicFlow.Infrastructure.Tests.Persistence;
 
 public class UnitOfWorkTests : IDisposable
 {
+    private readonly FakeTimeProvider _fakeTime = new();
     private readonly ApplicationDbContext _dbContext;
     private readonly Mock<IPublisher> _publisherMock;
     private readonly UnitOfWork _sut;
@@ -46,7 +48,13 @@ public class UnitOfWorkTests : IDisposable
         // Arrange
         var email = EmailAddress.Create("test@clinic.com");
         var phone = PhoneNumber.Create("555-1234");
-        var user = User.Create(email, "hashed_password", phone, UserRole.Patient);
+        var user = User.Create(
+            email,
+            "hashed_password",
+            phone,
+            UserRole.Doctor,
+            _fakeTime.GetLocalNow().DateTime
+        );
 
         _dbContext.Users.Add(user);
 
@@ -63,7 +71,7 @@ public class UnitOfWorkTests : IDisposable
         dbUser.Should().NotBeNull();
         dbUser.Email.Should().Be(email);
         dbUser.Phone.Should().Be(phone);
-        dbUser.Role.Should().Be(UserRole.Patient);
+        dbUser.Role.Should().Be(UserRole.Doctor);
     }
 
     [Fact]
@@ -74,7 +82,8 @@ public class UnitOfWorkTests : IDisposable
             EmailAddress.Create("test@clinic.com"),
             "hashed_password",
             PhoneNumber.Create("555-1234"),
-            UserRole.Patient
+            UserRole.Doctor,
+            _fakeTime.GetLocalNow().DateTime
         );
 
         var domainEvent = new TestDomainEvent();
@@ -108,7 +117,8 @@ public class UnitOfWorkTests : IDisposable
             EmailAddress.Create("test@clinic.com"),
             "hashed_password",
             PhoneNumber.Create("555-1234"),
-            UserRole.Patient
+            UserRole.Doctor,
+            _fakeTime.GetLocalNow().DateTime
         );
 
         var domainEvent = new TestDomainEvent();
@@ -132,7 +142,8 @@ public class UnitOfWorkTests : IDisposable
             EmailAddress.Create("test@clinic.com"),
             "hashed_password",
             PhoneNumber.Create("555-1234"),
-            UserRole.Patient
+            UserRole.Doctor,
+            _fakeTime.GetLocalNow().DateTime
         );
 
         _dbContext.Users.Add(user);
@@ -155,7 +166,8 @@ public class UnitOfWorkTests : IDisposable
             EmailAddress.Create("test@clinic.com"),
             "hashed_password",
             PhoneNumber.Create("555-1234"),
-            UserRole.Patient
+            UserRole.Doctor,
+            _fakeTime.GetLocalNow().DateTime
         );
 
         var domainEvent = new TestDomainEvent();

@@ -2,7 +2,6 @@ using AwesomeAssertions;
 using ClinicFlow.Application.Users.Commands.LoginUser;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
-using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Interfaces;
 using ClinicFlow.Domain.Interfaces.Repositories;
@@ -151,11 +150,15 @@ public class LoginUserCommandHandlerTests
             .WithMessage(DomainErrors.User.InvalidCredentials);
     }
 
-    private static User CreateUser() =>
-        User.Create(
+    private User CreateUser()
+    {
+        var user = User.CreatePending(
             EmailAddress.Create("test@clinic.com"),
-            "hashedpassword123",
-            PhoneNumber.Create("555-1234"),
-            UserRole.Patient
+            PhoneNumber.Create("555-1234")
         );
+
+        user.Activate("hashedpassword123", _fakeTime.GetLocalNow().DateTime);
+
+        return user;
+    }
 }

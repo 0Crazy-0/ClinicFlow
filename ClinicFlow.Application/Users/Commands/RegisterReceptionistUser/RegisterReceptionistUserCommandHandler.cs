@@ -11,6 +11,7 @@ using MediatR;
 namespace ClinicFlow.Application.Users.Commands.RegisterReceptionistUser;
 
 public sealed class RegisterReceptionistUserCommandHandler(
+    TimeProvider timeProvider,
     IUserRepository userRepository,
     IPasswordHasherService passwordHasherService,
     IUnitOfWork unitOfWork
@@ -28,7 +29,13 @@ public sealed class RegisterReceptionistUserCommandHandler(
         var email = EmailAddress.Create(request.Email);
         var phone = PhoneNumber.Create(request.PhoneNumber);
         var passwordHash = passwordHasherService.Hash(request.Password);
-        var user = User.Create(email, passwordHash, phone, UserRole.Receptionist);
+        var user = User.Create(
+            email,
+            passwordHash,
+            phone,
+            UserRole.Receptionist,
+            timeProvider.GetLocalNow().DateTime
+        );
 
         await userRepository.CreateAsync(user, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);

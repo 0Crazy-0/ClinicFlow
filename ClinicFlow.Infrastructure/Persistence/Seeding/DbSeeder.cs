@@ -218,7 +218,8 @@ public static class DbSeeder
                 EmailAddress.Create($"admin{i + 1}@clinicflow.com"),
                 SeederContext.HashedPassword,
                 PhoneNumber.Create(seederContext.GenerateUniquePhoneNumber()),
-                UserRole.Admin
+                UserRole.Admin,
+                refTime
             );
             user.RecordLogin(
                 refTime.AddDays(-adminLoginOffsets[i].Days).AddHours(-adminLoginOffsets[i].Hours)
@@ -245,7 +246,8 @@ public static class DbSeeder
                 EmailAddress.Create($"receptionist{i + 1}@clinicflow.com"),
                 SeederContext.HashedPassword,
                 PhoneNumber.Create(seederContext.GenerateUniquePhoneNumber()),
-                UserRole.Receptionist
+                UserRole.Receptionist,
+                refTime
             );
             user.RecordLogin(
                 refTime
@@ -262,7 +264,8 @@ public static class DbSeeder
                 EmailAddress.Create($"doctor{i + 1}@clinicflow.com"),
                 SeederContext.HashedPassword,
                 PhoneNumber.Create(seederContext.GenerateUniquePhoneNumber()),
-                UserRole.Doctor
+                UserRole.Doctor,
+                refTime
             );
 
             var profile = _doctorVariantCycle[i % _doctorVariantCycle.Length];
@@ -279,12 +282,11 @@ public static class DbSeeder
         // Patients (120: 115 active, 5 inactive)
         for (int i = 0; i < 120; i++)
         {
-            var user = User.Create(
+            var user = User.CreatePending(
                 EmailAddress.Create($"patient{i + 1}@clinicflow.com"),
-                SeederContext.HashedPassword,
-                PhoneNumber.Create(seederContext.GenerateUniquePhoneNumber()),
-                UserRole.Patient
+                PhoneNumber.Create(seederContext.GenerateUniquePhoneNumber())
             );
+            user.Activate(SeederContext.HashedPassword, refTime);
 
             ApplyPatientVariety(user, i, refTime);
 

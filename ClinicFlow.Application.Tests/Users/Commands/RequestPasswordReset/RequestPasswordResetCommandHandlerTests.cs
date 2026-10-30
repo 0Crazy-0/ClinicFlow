@@ -1,9 +1,9 @@
 using ClinicFlow.Application.Interfaces;
 using ClinicFlow.Application.Users.Commands.RequestPasswordReset;
 using ClinicFlow.Domain.Entities;
-using ClinicFlow.Domain.Enums;
 using ClinicFlow.Domain.Interfaces.Repositories;
 using ClinicFlow.Domain.ValueObjects;
+using Microsoft.Extensions.Time.Testing;
 using Moq;
 
 namespace ClinicFlow.Application.Tests.Users.Commands.RequestPasswordReset;
@@ -13,6 +13,7 @@ public class RequestPasswordResetCommandHandlerTests
     private readonly Mock<IUserRepository> _userRepositoryMock = new();
     private readonly Mock<IPasswordResetTokenService> _tokenServiceMock = new();
     private readonly Mock<IEmailService> _emailServiceMock = new();
+    private readonly FakeTimeProvider _fakeTime = new();
     private readonly RequestPasswordResetCommandHandler _sut;
 
     private static readonly RequestPasswordResetCommand ValidCommand = new("test@clinic.com");
@@ -30,12 +31,12 @@ public class RequestPasswordResetCommandHandlerTests
     public async Task Handle_ShouldGenerateTokenAndSendEmail_WhenUserExists()
     {
         // Arrange
-        var user = User.Create(
+        var user = User.CreatePending(
             EmailAddress.Create("test@clinic.com"),
-            "hashedpassword123",
-            PhoneNumber.Create("555-1234"),
-            UserRole.Patient
+            PhoneNumber.Create("555-1234")
         );
+
+        user.Activate("hashedpassword123", _fakeTime.GetLocalNow().DateTime);
 
         _userRepositoryMock
             .Setup(x => x.GetByEmailAsync(user.Email.Value, It.IsAny<CancellationToken>()))

@@ -39,25 +39,42 @@ public class User : BaseEntity
         FailedLoginAttempts = 0;
     }
 
-    private User(EmailAddress email, string? passwordHash, PhoneNumber phone, UserRole role)
+    private User(
+        EmailAddress email,
+        string? passwordHash,
+        PhoneNumber phone,
+        UserRole role,
+        DateTime? activatedAt
+    )
         : this()
     {
         Email = email;
         PasswordHash = passwordHash;
         Phone = phone;
         Role = role;
+        ActivatedAt = activatedAt;
     }
 
+    /// <summary>
+    /// Creates a usable account for the staff roles provisioned by the clinic. Patient accounts are created
+    /// without password through <see cref="CreatePending"/> and become usable through <see cref="Activate"/>.
+    /// </summary>
     public static User Create(
         EmailAddress email,
         string passwordHash,
         PhoneNumber phoneNumber,
-        UserRole role
+        UserRole role,
+        DateTime referenceTime
     )
     {
         Guard.NotNullOrWhiteSpace(passwordHash);
+        Guard.IsDefined(role);
+        Guard.NotDefault(referenceTime);
 
-        return new User(email, passwordHash, phoneNumber, role);
+        if (role is not (UserRole.Doctor or UserRole.Receptionist or UserRole.Admin))
+            throw new DomainValidationException(DomainErrors.User.InvalidRole);
+
+        return new User(email, passwordHash, phoneNumber, role, referenceTime);
     }
 
     /// <summary>
@@ -65,7 +82,7 @@ public class User : BaseEntity
     /// password until its holder activates the account with the issued activation code.
     /// </summary>
     public static User CreatePending(EmailAddress email, PhoneNumber phone) =>
-        new(email, passwordHash: null, phone, UserRole.Patient);
+        new(email, passwordHash: null, phone, UserRole.Patient, activatedAt: null);
 
     /// <summary>
     /// Sets the initial password of a pending account issued without one by reception. The first password can
@@ -73,10 +90,11 @@ public class User : BaseEntity
     /// </summary>
     /// <remarks>
     /// Usability is tied to a non-null <see cref="PasswordHash"/>, not to <see cref="ActivatedAt"/>: login and
-    /// password change reject accounts whose hash is still null, while staff accounts provisioned with a password
-    /// through <see cref="Create"/> are usable from creation and never receive an activation date. The first
+    /// password change reject accounts whose hash is still null. Staff accounts provisioned with a password through
+    /// <see cref="Create"/> are usable from creation and receive the creation time as their activation date. The first
     /// password of a pending account can only be set via <see cref="Activate"/>, never via
     /// <see cref="ChangePassword"/>.
+    /// A pending account deactivated by the clinic cannot be activated until it is reactivated.
     /// </remarks>
     public void Activate(string passwordHash, DateTime referenceTime)
     {
@@ -85,6 +103,9 @@ public class User : BaseEntity
 
         if (ActivatedAt is not null)
             throw new BusinessRuleValidationException(DomainErrors.User.AlreadyActivated);
+
+        if (!IsActive)
+            throw new BusinessRuleValidationException(DomainErrors.User.AccountInactive);
 
         PasswordHash = passwordHash;
         ActivatedAt = referenceTime;
