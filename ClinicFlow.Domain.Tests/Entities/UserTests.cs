@@ -183,6 +183,82 @@ public class UserTests
             .WithMessage(DomainErrors.User.AlreadyActivated);
     }
 
+    [Fact]
+    public void Activate_ShouldThrowBusinessRuleValidationException_WhenAccountIsInactive()
+    {
+        // Arrange
+        var user = User.CreatePending(
+            EmailAddress.Create("p@x.com"),
+            PhoneNumber.Create("555-1234")
+        );
+
+        user.Deactivate();
+
+        // Act
+        var act = () => user.Activate("hash", _fakeTime.GetUtcNow().UtcDateTime);
+
+        // Assert
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.User.AccountInactive);
+
+        user.ActivatedAt.Should().BeNull();
+        user.PasswordHash.Should().BeNull();
+        user.DomainEvents.OfType<PatientAccountActivatedEvent>().Should().BeEmpty();
+    }
+
+    [Fact]
+    public void Activate_ShouldThrowBusinessRuleValidationException_WhenAccountWasActivatedAndThenDeactivated()
+    {
+        // Arrange
+        var user = User.CreatePending(
+            EmailAddress.Create("p@x.com"),
+            PhoneNumber.Create("555-1234")
+        );
+
+        user.Activate("hash", _fakeTime.GetUtcNow().UtcDateTime);
+        user.Deactivate();
+
+        // Act
+        var act = () => user.Activate("anotherhash67", _fakeTime.GetUtcNow().UtcDateTime);
+
+        // Assert
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.User.AlreadyActivated);
+    }
+
+    [Fact]
+    public void Activate_ShouldSetPasswordHashAndActivatedAt_WhenAccountIsReactivated()
+    {
+        // Arrange
+        var user = User.CreatePending(
+            EmailAddress.Create("p@x.com"),
+            PhoneNumber.Create("555-1234")
+        );
+
+        user.Deactivate();
+        user.Reactivate();
+
+        var referenceTime = _fakeTime.GetUtcNow().UtcDateTime;
+
+        // Act
+        user.Activate("hash", referenceTime);
+
+        // Assert
+        user.PasswordHash.Should().Be("hash");
+        user.ActivatedAt.Should().Be(referenceTime);
+
+        var domainEvent = user
+            .DomainEvents.OfType<PatientAccountActivatedEvent>()
+            .Should()
+            .ContainSingle()
+            .Which;
+
+        domainEvent.UserId.Should().Be(user.Id);
+        domainEvent.ActivatedAt.Should().Be(referenceTime);
+    }
+
     [Theory]
     [InlineData(null)]
     [InlineData("")]

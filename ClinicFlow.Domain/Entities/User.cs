@@ -94,6 +94,7 @@ public class User : BaseEntity
     /// <see cref="Create"/> are usable from creation and receive the creation time as their activation date. The first
     /// password of a pending account can only be set via <see cref="Activate"/>, never via
     /// <see cref="ChangePassword"/>.
+    /// A pending account deactivated by the clinic cannot be activated until it is reactivated.
     /// </remarks>
     public void Activate(string passwordHash, DateTime referenceTime)
     {
@@ -102,6 +103,9 @@ public class User : BaseEntity
 
         if (ActivatedAt is not null)
             throw new BusinessRuleValidationException(DomainErrors.User.AlreadyActivated);
+
+        if (!IsActive)
+            throw new BusinessRuleValidationException(DomainErrors.User.AccountInactive);
 
         PasswordHash = passwordHash;
         ActivatedAt = referenceTime;
