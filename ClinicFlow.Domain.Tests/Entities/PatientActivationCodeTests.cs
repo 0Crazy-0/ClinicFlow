@@ -168,6 +168,21 @@ public class PatientActivationCodeTests
     }
 
     [Fact]
+    public void IsValid_ShouldReturnFalse_WhenReferenceTimeIsBeforeIssuedAt()
+    {
+        // Arrange
+        var issuedAt = _fakeTime.GetLocalNow().DateTime;
+        var code = CreateIssuedCode(issuedAt);
+        var referenceTime = issuedAt.AddSeconds(-1);
+
+        // Act
+        var isValid = code.IsValid(referenceTime);
+
+        // Assert
+        isValid.Should().BeFalse();
+    }
+
+    [Fact]
     public void IsValid_ShouldReturnFalse_WhenExpired()
     {
         // Arrange
