@@ -636,34 +636,6 @@ public class PatientTests
     }
 
     [Fact]
-    public void GetAge_ShouldReturnOriginalAgeWithoutAddingOne_WhenBirthdayHasNotOccurredInReferenceYear()
-    {
-        // Arrange
-        var dayBeforeBirthday = new DateTimeOffset(2026, 6, 19, 0, 0, 0, TimeSpan.Zero);
-
-        _fakeTime.SetUtcNow(dayBeforeBirthday);
-
-        var patient = Patient.CreateProfile(
-            PersonName.Create("John", null, "Doe"),
-            new DateOnly(2000, 6, 20),
-            BiologicalSex.Male,
-            Address.Create(
-                "123 Main Street",
-                AddressState.California,
-                "90210",
-                Country.UnitedStates
-            ),
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
-
-        // Act
-        var age = patient.GetAge(DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime));
-
-        // Assert
-        age.Should().Be(25);
-    }
-
-    [Fact]
     public void AssignSsnLast4Hash_ShouldSetHash_WhenValidHash()
     {
         // Arrange

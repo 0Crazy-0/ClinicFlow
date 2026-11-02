@@ -173,13 +173,5 @@ public class Patient : BaseEntity
             throw new IncompleteProfileException(DomainErrors.Patient.ProfileIncomplete);
     }
 
-    public int GetAge(DateOnly referenceDate)
-    {
-        var age = referenceDate.Year - DateOfBirth.Year;
-
-        if (DateOfBirth.AddYears(age) > referenceDate)
-            age--;
-
-        return age;
-    }
+    public int GetAge(DateOnly referenceDate) => DomainRules.ComputeAge(DateOfBirth, referenceDate);
 }

@@ -14,4 +14,18 @@ public static class DomainRules
     /// categories, derive from law and stay independent of this rule.
     /// </remarks>
     public const int AdultAge = 18;
+
+    /// <summary>
+    /// Computes the age in whole years of a person born on a given date, as of
+    /// a reference date, counting the birthday itself as the day the age increases.
+    /// </summary>
+    public static int ComputeAge(DateOnly dateOfBirth, DateOnly referenceDate)
+    {
+        var age = referenceDate.Year - dateOfBirth.Year;
+
+        if (dateOfBirth.AddYears(age) > referenceDate)
+            age--;
+
+        return age;
+    }
 }
