@@ -14,11 +14,22 @@ namespace ClinicFlow.Domain.Entities;
 public class Patient : BaseEntity
 {
     public const int MaxCorrectionReasonLength = 500;
+    public const int MaxDuplicateOverrideReasonLength = 500;
 
     public PersonName FullName { get; private set; } = null!;
 
     // Stryker disable once String: the default only covers EF materialization, every factory path writes the real value.
     public string SearchName { get; private set; } = string.Empty;
+
+    /// <summary>
+    /// Registra el motivo por el cual el recepcionista registró a un paciente que obtuvo
+    /// una puntuación de probable duplicado, sirviendo como rastro de auditoría de dicha decisión.
+    /// </summary>
+    /// <remarks>
+    /// Obligatorio cuando el registro procede a pesar de una puntuación de duplicado en la banda
+    /// alta, nulo en cualquier otra ruta.
+    /// </remarks>
+    public string? DuplicateOverrideReason { get; private set; }
 
     public DateOnly DateOfBirth { get; private set; }
 
@@ -45,7 +56,8 @@ public class Patient : BaseEntity
         PersonName fullName,
         DateOnly dateOfBirth,
         BiologicalSex biologicalSex,
-        Address homeAddress
+        Address homeAddress,
+        string? duplicateOverrideReason
     )
         : this()
     {
@@ -54,6 +66,7 @@ public class Patient : BaseEntity
         DateOfBirth = dateOfBirth;
         SexAtBirth = biologicalSex;
         HomeAddress = homeAddress;
+        DuplicateOverrideReason = duplicateOverrideReason;
     }
 
     internal static Patient CreateProfile(
@@ -61,7 +74,8 @@ public class Patient : BaseEntity
         DateOnly dateOfBirth,
         BiologicalSex biologicalSex,
         Address homeAddress,
-        DateTime referenceTime
+        DateTime referenceTime,
+        string? duplicateOverrideReason = null
     )
     {
         Guard.NotNull(fullName);
@@ -74,7 +88,21 @@ public class Patient : BaseEntity
         if (dateOfBirth > DateOnly.FromDateTime(referenceTime))
             throw new DomainValidationException(DomainErrors.Validation.ValueCannotBeInFuture);
 
-        return new Patient(fullName, dateOfBirth, biologicalSex, homeAddress);
+        if (duplicateOverrideReason is not null)
+        {
+            Guard.NotNullOrWhiteSpace(duplicateOverrideReason);
+
+            if (duplicateOverrideReason.Length > MaxDuplicateOverrideReasonLength)
+                throw new DomainValidationException(DomainErrors.Validation.ValueTooLong);
+        }
+
+        return new Patient(
+            fullName,
+            dateOfBirth,
+            biologicalSex,
+            homeAddress,
+            duplicateOverrideReason
+        );
     }
 
     public void UpdateMedicalProfile(
