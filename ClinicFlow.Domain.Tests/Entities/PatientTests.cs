@@ -224,7 +224,8 @@ public class PatientTests
             );
 
         // Assert
-        act.Should().NotThrow();
+        var patient = act.Should().NotThrow().Which;
+        patient.DuplicateOverrideReason.Should().Be(reason);
     }
 
     [Fact]
