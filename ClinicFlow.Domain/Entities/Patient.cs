@@ -22,12 +22,12 @@ public class Patient : BaseEntity
     public string SearchName { get; private set; } = string.Empty;
 
     /// <summary>
-    /// Registra el motivo por el cual el recepcionista registró a un paciente que obtuvo
-    /// una puntuación de probable duplicado, sirviendo como rastro de auditoría de dicha decisión.
+    /// Records the reason why the receptionist registered a patient who scored as
+    /// a probable duplicate, serving as an audit trail for that decision.
     /// </summary>
     /// <remarks>
-    /// Obligatorio cuando el registro procede a pesar de una puntuación de duplicado en la banda
-    /// alta, nulo en cualquier otra ruta.
+    /// Required when registration proceeds despite a duplicate score in the high band,
+    /// null in any other path.
     /// </remarks>
     public string? DuplicateOverrideReason { get; private set; }
 
