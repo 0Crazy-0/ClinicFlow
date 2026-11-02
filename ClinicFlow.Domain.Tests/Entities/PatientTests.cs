@@ -89,6 +89,41 @@ public class PatientTests
     }
 
     [Fact]
+    public void CreateProfile_ShouldSetDuplicateOverrideReason_WhenProvided()
+    {
+        // Arrange
+        var overrideReason = "reason";
+
+        // Act
+        var patient = Patient.CreateProfile(
+            PersonName.Create("Rarity", null, "Test"),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+            BiologicalSex.Male,
+            Address.Create(
+                "123 Main Street",
+                AddressState.California,
+                "90210",
+                Country.UnitedStates
+            ),
+            _fakeTime.GetUtcNow().UtcDateTime,
+            overrideReason
+        );
+
+        // Assert
+        patient.DuplicateOverrideReason.Should().Be(overrideReason);
+    }
+
+    [Fact]
+    public void CreateProfile_ShouldLeaveDuplicateOverrideReasonNull_WhenNotProvided()
+    {
+        // Arrange & Act
+        var patient = CreateValidPatient();
+
+        // Assert
+        patient.DuplicateOverrideReason.Should().BeNull();
+    }
+
+    [Fact]
     public void CreateProfile_ShouldThrowException_WhenDateOfBirthIsInTheFuture()
     {
         // Arrange & Act
@@ -110,6 +145,87 @@ public class PatientTests
         act.Should()
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.Validation.ValueCannotBeInFuture);
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void CreateProfile_ShouldThrowDomainValidationException_WhenOverrideReasonIsWhiteSpace(
+        string reason
+    )
+    {
+        // Arrange & Act
+        var act = () =>
+            Patient.CreateProfile(
+                PersonName.Create("Derpy", null, "Test"),
+                DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+                BiologicalSex.Male,
+                Address.Create(
+                    "123 Main Street",
+                    AddressState.California,
+                    "90210",
+                    Country.UnitedStates
+                ),
+                _fakeTime.GetUtcNow().UtcDateTime,
+                reason
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void CreateProfile_ShouldThrowDomainValidationException_WhenOverrideReasonExceedsMaxLength()
+    {
+        // Arrange & Act
+        var act = () =>
+            Patient.CreateProfile(
+                PersonName.Create("John", null, "Doe"),
+                DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+                BiologicalSex.Male,
+                Address.Create(
+                    "123 Main Street",
+                    AddressState.California,
+                    "90210",
+                    Country.UnitedStates
+                ),
+                _fakeTime.GetUtcNow().UtcDateTime,
+                new string('A', Patient.MaxDuplicateOverrideReasonLength + 1)
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueTooLong);
+    }
+
+    [Fact]
+    public void CreateProfile_ShouldNotThrowException_WhenOverrideReasonIsAtMaxLength()
+    {
+        // Arrange
+        var reason = new string('A', Patient.MaxDuplicateOverrideReasonLength);
+
+        // Act
+        var act = () =>
+            Patient.CreateProfile(
+                PersonName.Create("John", null, "Doe"),
+                DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+                BiologicalSex.Male,
+                Address.Create(
+                    "123 Main Street",
+                    AddressState.California,
+                    "90210",
+                    Country.UnitedStates
+                ),
+                _fakeTime.GetUtcNow().UtcDateTime,
+                reason
+            );
+
+        // Assert
+        var patient = act.Should().NotThrow().Which;
+        patient.DuplicateOverrideReason.Should().Be(reason);
     }
 
     [Fact]
@@ -518,34 +634,6 @@ public class PatientTests
 
         // Act & Assert
         patient.GetAge(DateOnly.FromDateTime(referenceTime)).Should().Be(yearsAgo);
-    }
-
-    [Fact]
-    public void GetAge_ShouldReturnOriginalAgeWithoutAddingOne_WhenBirthdayHasNotOccurredInReferenceYear()
-    {
-        // Arrange
-        var dayBeforeBirthday = new DateTimeOffset(2026, 6, 19, 0, 0, 0, TimeSpan.Zero);
-
-        _fakeTime.SetUtcNow(dayBeforeBirthday);
-
-        var patient = Patient.CreateProfile(
-            PersonName.Create("John", null, "Doe"),
-            new DateOnly(2000, 6, 20),
-            BiologicalSex.Male,
-            Address.Create(
-                "123 Main Street",
-                AddressState.California,
-                "90210",
-                Country.UnitedStates
-            ),
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
-
-        // Act
-        var age = patient.GetAge(DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime));
-
-        // Assert
-        age.Should().Be(25);
     }
 
     [Fact]

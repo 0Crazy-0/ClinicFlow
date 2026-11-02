@@ -647,6 +647,10 @@ namespace ClinicFlow.Infrastructure.Migrations
                     b.Property<DateOnly>("DateOfBirth")
                         .HasColumnType("date");
 
+                    b.Property<string>("DuplicateOverrideReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
                     b.Property<string>("SearchName")
                         .IsRequired()
                         .HasMaxLength(201)
