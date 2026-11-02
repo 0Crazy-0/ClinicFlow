@@ -26,6 +26,9 @@ public sealed class PatientConfiguration : IEntityTypeConfiguration<Patient>
         builder.Property(p => p.SearchName).HasMaxLength(PersonName.SearchNameMaximumLength);
         builder.Property(p => p.SexAtBirth).HasConversion<string>();
         builder.Property(p => p.SsnLast4Hash).HasMaxLength(64).IsUnicode(false);
+        builder
+            .Property(p => p.DuplicateOverrideReason)
+            .HasMaxLength(Patient.MaxDuplicateOverrideReasonLength);
 
         builder
             .Property(p => p.BloodGroup)
