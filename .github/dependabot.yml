@@ -10,6 +10,7 @@ updates:
         patterns:
           - "Microsoft.EntityFrameworkCore*"
           - "Microsoft.Extensions.*"
+          - "dotnet-ef"
         update-types:
           - "minor"
           - "patch"
@@ -17,6 +18,7 @@ updates:
         patterns:
           - "Microsoft.EntityFrameworkCore*"
           - "Microsoft.Extensions.*"
+          - "dotnet-ef"
         update-types:
           - "major"
 
