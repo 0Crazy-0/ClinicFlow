@@ -486,6 +486,3 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
-
-# context-mode MCP
-context-mode/
