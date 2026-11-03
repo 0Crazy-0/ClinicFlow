@@ -2,6 +2,7 @@ using AwesomeAssertions;
 using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Entities;
 using ClinicFlow.Domain.Enums;
+using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Exceptions.Patients;
 using ClinicFlow.Domain.ValueObjects;
 using Microsoft.Extensions.Time.Testing;
@@ -163,6 +164,21 @@ public class PenaltyHistoryTests
     }
 
     [Fact]
+    public void IsCurrentlyBlocked_ShouldThrowException_WhenReferenceDateIsDefault()
+    {
+        // Arrange
+        var history = new PenaltyHistory([]);
+
+        // Act
+        var act = () => history.IsCurrentlyBlocked(default);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
     public void DetermineNextBlockDuration_ShouldReturnMinor_WhenNoHistoricalBlocks()
     {
         // Arrange
@@ -307,35 +323,6 @@ public class PenaltyHistoryTests
     }
 
     [Fact]
-    public void EnsureNotBlocked_ShouldThrowPatientBlockedException_WhenActiveBlockExists()
-    {
-        // Arrange
-        var patientId = Guid.CreateVersion7();
-        var blockedUntil = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime).AddDays(5);
-        var penalties = new List<PatientPenalty>
-        {
-            PatientPenalty.CreateAutomaticBlock(
-                patientId,
-                PenaltyReasons.AutomaticBlock,
-                BlockDuration.Minor,
-                _fakeTime.GetUtcNow().UtcDateTime
-            ),
-        };
-
-        var history = new PenaltyHistory(penalties);
-
-        // Act
-        var act = () =>
-            history.EnsureNotBlocked(DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime));
-
-        // Assert
-        act.Should()
-            .Throw<PatientBlockedException>()
-            .WithMessage(DomainErrors.Patient.Blocked)
-            .Where(e => e.BlockedUntil == blockedUntil);
-    }
-
-    [Fact]
     public void EnsureNotBlocked_ShouldNotThrow_WhenActiveBlockIsRemoved()
     {
         // Arrange
@@ -381,6 +368,50 @@ public class PenaltyHistoryTests
 
         // Assert
         act.Should().NotThrow();
+    }
+
+    [Fact]
+    public void EnsureNotBlocked_ShouldThrowException_WhenReferenceDateIsDefault()
+    {
+        // Arrange
+        var history = new PenaltyHistory([]);
+
+        // Act
+        var act = () => history.EnsureNotBlocked(default);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void EnsureNotBlocked_ShouldThrowPatientBlockedException_WhenActiveBlockExists()
+    {
+        // Arrange
+        var patientId = Guid.CreateVersion7();
+        var blockedUntil = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime).AddDays(5);
+        var penalties = new List<PatientPenalty>
+        {
+            PatientPenalty.CreateAutomaticBlock(
+                patientId,
+                PenaltyReasons.AutomaticBlock,
+                BlockDuration.Minor,
+                _fakeTime.GetUtcNow().UtcDateTime
+            ),
+        };
+
+        var history = new PenaltyHistory(penalties);
+
+        // Act
+        var act = () =>
+            history.EnsureNotBlocked(DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime));
+
+        // Assert
+        act.Should()
+            .Throw<PatientBlockedException>()
+            .WithMessage(DomainErrors.Patient.Blocked)
+            .Where(e => e.BlockedUntil == blockedUntil);
     }
 
     [Fact]

@@ -29,13 +29,17 @@ public record PenaltyHistory
     /// </summary>
     public int TotalHistoricalBlocks => _penalties.Count(p => p.Type is PenaltyType.TemporaryBlock);
 
-    public bool IsCurrentlyBlocked(DateOnly referenceDate) =>
-        _penalties.Any(p =>
+    public bool IsCurrentlyBlocked(DateOnly referenceDate)
+    {
+        Guard.NotDefault(referenceDate);
+
+        return _penalties.Any(p =>
             !p.IsRemoved
             && p.Type is PenaltyType.TemporaryBlock
             && p.BlockedUntil.HasValue
             && p.BlockedUntil.Value > referenceDate
         );
+    }
 
     /// <summary>
     /// Evaluates historical offenses to escalate the penalty, capping the maximum duration at <see cref="BlockDuration.Severe"/>.
@@ -49,6 +53,8 @@ public record PenaltyHistory
 
     public void EnsureNotBlocked(DateOnly referenceDate)
     {
+        Guard.NotDefault(referenceDate);
+
         var activePenalties = _penalties
             .Where(p =>
                 !p.IsRemoved
