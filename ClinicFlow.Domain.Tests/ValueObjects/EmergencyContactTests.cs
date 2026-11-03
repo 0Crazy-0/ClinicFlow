@@ -31,7 +31,7 @@ public class EmergencyContactTests
     {
         // Arrange & Act
         var act = () =>
-            EmergencyContact.Create(firstName!, middleName, firstSurname!, "+1234567890");
+            EmergencyContact.Create(firstName!, middleName, firstSurname!, "invalid_phone");
 
         // Assert
         act.Should()
@@ -49,7 +49,8 @@ public class EmergencyContactTests
     )
     {
         // Arrange & Act
-        var act = () => EmergencyContact.Create(firstName, middleName, firstSurname, "+1234567890");
+        var act = () =>
+            EmergencyContact.Create(firstName, middleName, firstSurname, "invalid_phone");
 
         // Assert
         act.Should()
@@ -61,7 +62,7 @@ public class EmergencyContactTests
     public void Create_ShouldThrowValueRequired_WhenMiddleNameProvidedBlank()
     {
         // Arrange & Act
-        var act = () => EmergencyContact.Create("Jane", "   ", "Doe", "+1234567890");
+        var act = () => EmergencyContact.Create("Jane", "   ", "Doe", "invalid_phone");
 
         // Assert
         act.Should()
@@ -79,7 +80,7 @@ public class EmergencyContactTests
 
         // Assert
         act.Should()
-            .Throw<BusinessRuleValidationException>()
+            .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
