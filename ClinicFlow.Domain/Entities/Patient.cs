@@ -80,8 +80,12 @@ public class Patient : BaseEntity
     {
         Guard.NotNull(fullName);
         Guard.NotDefault(dateOfBirth);
-        Guard.NotNull(homeAddress);
         Guard.IsDefined(biologicalSex);
+        Guard.NotNull(homeAddress);
+        Guard.NotDefault(referenceTime);
+
+        if (duplicateOverrideReason is not null)
+            Guard.NotNullOrWhiteSpace(duplicateOverrideReason);
 
         if (biologicalSex is BiologicalSex.Unspecified)
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
@@ -89,13 +93,8 @@ public class Patient : BaseEntity
         if (dateOfBirth > DateOnly.FromDateTime(referenceTime))
             throw new DomainValidationException(DomainErrors.Validation.ValueCannotBeInFuture);
 
-        if (duplicateOverrideReason is not null)
-        {
-            Guard.NotNullOrWhiteSpace(duplicateOverrideReason);
-
-            if (duplicateOverrideReason.Length > MaxDuplicateOverrideReasonLength)
-                throw new DomainValidationException(DomainErrors.Validation.ValueTooLong);
-        }
+        if (duplicateOverrideReason?.Length > MaxDuplicateOverrideReasonLength)
+            throw new DomainValidationException(DomainErrors.Validation.ValueTooLong);
 
         return new Patient(
             fullName,
@@ -112,6 +111,8 @@ public class Patient : BaseEntity
         string chronicConditions
     )
     {
+        Guard.NotNull(bloodType);
+
         BloodGroup = bloodType;
         Allergies = allergies ?? string.Empty;
         ChronicConditions = chronicConditions ?? string.Empty;
@@ -129,12 +130,12 @@ public class Patient : BaseEntity
     )
     {
         Guard.IsDefined(correctedSex);
+        Guard.NotNullOrWhiteSpace(reason);
+        Guard.NotEmpty(correctedByDoctorId);
+        Guard.NotDefault(correctedAt);
 
         if (correctedSex is BiologicalSex.Unspecified)
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-
-        Guard.NotNullOrWhiteSpace(reason);
-        Guard.NotEmpty(correctedByDoctorId);
 
         if (reason.Length > MaxCorrectionReasonLength)
             throw new DomainValidationException(DomainErrors.Validation.ValueTooLong);
@@ -158,8 +159,12 @@ public class Patient : BaseEntity
         );
     }
 
-    public void UpdateEmergencyContact(EmergencyContact emergencyContact) =>
+    public void UpdateEmergencyContact(EmergencyContact emergencyContact)
+    {
+        Guard.NotNull(emergencyContact);
+
         Contact = emergencyContact;
+    }
 
     public void AssignSsnLast4Hash(string ssnLast4Hash)
     {
