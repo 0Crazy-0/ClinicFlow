@@ -54,6 +54,46 @@ public class DoctorTests
     }
 
     [Fact]
+    public void Create_ShouldThrowException_WhenFullNameIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            Doctor.Create(
+                Guid.CreateVersion7(),
+                null!,
+                MedicalLicenseNumber.Create("12345"),
+                Guid.CreateVersion7(),
+                "Biography",
+                ConsultationRoom.Create(1, "Room A", 1)
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
+    public void Create_ShouldThrowException_WhenLicenseNumberIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            Doctor.Create(
+                Guid.CreateVersion7(),
+                PersonName.Create("Test", null, "Doctor"),
+                null!,
+                Guid.CreateVersion7(),
+                "Biography",
+                ConsultationRoom.Create(1, "Room A", 1)
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
     public void Create_ShouldThrowException_WhenMedicalSpecialtyIdIsEmpty()
     {
         // Arrange & Act
@@ -73,18 +113,41 @@ public class DoctorTests
             .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
-    [Fact]
-    public void Create_ShouldThrowException_WhenFullNameIsNull()
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Create_ShouldThrowException_WhenBiographyIsEmpty(string? biography)
     {
         // Arrange & Act
         var act = () =>
             Doctor.Create(
                 Guid.CreateVersion7(),
-                null!,
+                PersonName.Create("Test", null, "Doctor"),
+                MedicalLicenseNumber.Create("12345"),
+                Guid.CreateVersion7(),
+                biography!,
+                ConsultationRoom.Create(1, "Room A", 1)
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void Create_ShouldThrowException_WhenConsultationRoomIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            Doctor.Create(
+                Guid.CreateVersion7(),
+                PersonName.Create("Test", null, "Doctor"),
                 MedicalLicenseNumber.Create("12345"),
                 Guid.CreateVersion7(),
                 "Biography",
-                ConsultationRoom.Create(1, "Room A", 1)
+                null!
             );
 
         // Assert
@@ -115,6 +178,39 @@ public class DoctorTests
         // Assert
         doctor.Biography.Should().Be(newBiography);
         doctor.Room.Should().Be(newRoom);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void UpdateProfile_ShouldThrowException_WhenBiographyIsEmpty(string? biography)
+    {
+        // Arrange
+        var doctor = CreateDoctor();
+
+        // Act
+        var act = () => doctor.UpdateProfile(biography!, ConsultationRoom.Create(1, "Room A", 1));
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void UpdateProfile_ShouldThrowException_WhenConsultationRoomIsNull()
+    {
+        // Arrange
+        var doctor = CreateDoctor();
+
+        // Act
+        var act = () => doctor.UpdateProfile("Biography", null!);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 
     [Fact]
@@ -163,6 +259,41 @@ public class DoctorTests
         doctor.IsDeleted.Should().BeFalse();
         doctor.Biography.Should().Be(newBiography);
         doctor.Room.Should().Be(newRoom);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Reactivate_ShouldThrowException_WhenBiographyIsEmpty(string? biography)
+    {
+        // Arrange
+        var doctor = CreateDoctor();
+        doctor.Suspend();
+
+        // Act
+        var act = () => doctor.Reactivate(biography!, ConsultationRoom.Create(2, "Room B", 2));
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void Reactivate_ShouldThrowException_WhenConsultationRoomIsNull()
+    {
+        // Arrange
+        var doctor = CreateDoctor();
+        doctor.Suspend();
+
+        // Act
+        var act = () => doctor.Reactivate("Biography", null!);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 
     [Fact]

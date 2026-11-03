@@ -54,7 +54,10 @@ public class Doctor : SoftDeletableEntity
     {
         Guard.NotEmpty(userId);
         Guard.NotNull(fullName);
+        Guard.NotNull(licenseNumber);
         Guard.NotEmpty(medicalSpecialtyId);
+        Guard.NotNullOrWhiteSpace(biography);
+        Guard.NotNull(consultationRoom);
 
         return new Doctor(
             userId,
@@ -68,6 +71,9 @@ public class Doctor : SoftDeletableEntity
 
     public void UpdateProfile(string biography, ConsultationRoom consultationRoom)
     {
+        Guard.NotNullOrWhiteSpace(biography);
+        Guard.NotNull(consultationRoom);
+
         Biography = biography;
         Room = consultationRoom;
     }
@@ -87,10 +93,14 @@ public class Doctor : SoftDeletableEntity
 
     public void Reactivate(string biography, ConsultationRoom consultationRoom)
     {
+        Guard.NotNullOrWhiteSpace(biography);
+        Guard.NotNull(consultationRoom);
+
         if (!IsDeleted)
             throw new BusinessRuleValidationException(DomainErrors.Doctor.AlreadyActive);
 
         UndoDeletion();
+
         Biography = biography;
         Room = consultationRoom;
     }
