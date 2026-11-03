@@ -43,47 +43,6 @@ public class AppointmentTypeDefinitionTests
         result.ProtectedCareCategory.Should().Be(protectedCareCategory);
     }
 
-    [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    [InlineData("   ")]
-    public void Create_ShouldThrowException_WhenNameIsEmpty(string? name)
-    {
-        // Arrange & Act
-        var act = () =>
-            AppointmentTypeDefinition.Create(
-                AppointmentCategory.Other,
-                AppointmentPurpose.Checkup,
-                name!,
-                "Description",
-                EncounterDuration.FromMinutes(30)
-            );
-
-        // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.Validation.ValueRequired);
-    }
-
-    [Fact]
-    public void Create_ShouldThrowException_WhenDurationIsNull()
-    {
-        // Arrange & Act
-        var act = () =>
-            AppointmentTypeDefinition.Create(
-                AppointmentCategory.Other,
-                AppointmentPurpose.Checkup,
-                "Checkup",
-                "Description",
-                null!
-            );
-
-        // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.General.RequiredFieldNull);
-    }
-
     [Fact]
     public void Create_ShouldThrowException_WhenCategoryIsNotDefined()
     {
@@ -120,6 +79,69 @@ public class AppointmentTypeDefinitionTests
         act.Should()
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.Validation.InvalidEnumValue);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Create_ShouldThrowException_WhenNameIsEmpty(string? name)
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentTypeDefinition.Create(
+                AppointmentCategory.Other,
+                AppointmentPurpose.Checkup,
+                name!,
+                "Description",
+                EncounterDuration.FromMinutes(30)
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Create_ShouldThrowException_WhenDescriptionIsEmpty(string? description)
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentTypeDefinition.Create(
+                AppointmentCategory.Other,
+                AppointmentPurpose.Checkup,
+                "Name",
+                description!,
+                EncounterDuration.FromMinutes(30)
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void Create_ShouldThrowException_WhenDurationIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentTypeDefinition.Create(
+                AppointmentCategory.Other,
+                AppointmentPurpose.Checkup,
+                "Checkup",
+                "Description",
+                null!
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 
     [Fact]
@@ -332,53 +354,6 @@ public class AppointmentTypeDefinitionTests
         appointmentType.Duration.Should().Be(newDuration);
     }
 
-    [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    [InlineData("   ")]
-    public void UpdateDetails_ShouldThrowException_WhenNameIsEmpty(string? name)
-    {
-        // Arrange
-        var appointmentType = CreateAppointmentTypeDefinition();
-
-        // Act
-        var act = () =>
-            appointmentType.UpdateDetails(
-                AppointmentCategory.Other,
-                AppointmentPurpose.Checkup,
-                name!,
-                "Description",
-                EncounterDuration.FromMinutes(30)
-            );
-
-        // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.Validation.ValueRequired);
-    }
-
-    [Fact]
-    public void UpdateDetails_ShouldThrowException_WhenDurationIsNull()
-    {
-        // Arrange
-        var appointmentType = CreateAppointmentTypeDefinition();
-
-        // Act
-        var act = () =>
-            appointmentType.UpdateDetails(
-                AppointmentCategory.Other,
-                AppointmentPurpose.Checkup,
-                "Valid Name",
-                "Description",
-                null!
-            );
-
-        // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.General.RequiredFieldNull);
-    }
-
     [Fact]
     public void UpdateDetails_ShouldThrowException_WhenCategoryIsNotDefined()
     {
@@ -421,6 +396,78 @@ public class AppointmentTypeDefinitionTests
         act.Should()
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.Validation.InvalidEnumValue);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void UpdateDetails_ShouldThrowException_WhenNameIsEmpty(string? name)
+    {
+        // Arrange
+        var appointmentType = CreateAppointmentTypeDefinition();
+
+        // Act
+        var act = () =>
+            appointmentType.UpdateDetails(
+                AppointmentCategory.Other,
+                AppointmentPurpose.Checkup,
+                name!,
+                "Description",
+                EncounterDuration.FromMinutes(30)
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void UpdateDetails_ShouldThrowException_WhenDescriptionIsEmpty(string? description)
+    {
+        // Arrange
+        var appointmentType = CreateAppointmentTypeDefinition();
+
+        // Act
+        var act = () =>
+            appointmentType.UpdateDetails(
+                AppointmentCategory.Other,
+                AppointmentPurpose.Checkup,
+                "Name",
+                description!,
+                EncounterDuration.FromMinutes(30)
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void UpdateDetails_ShouldThrowException_WhenDurationIsNull()
+    {
+        // Arrange
+        var appointmentType = CreateAppointmentTypeDefinition();
+
+        // Act
+        var act = () =>
+            appointmentType.UpdateDetails(
+                AppointmentCategory.Other,
+                AppointmentPurpose.Checkup,
+                "Valid Name",
+                "Description",
+                null!
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 
     [Fact]
@@ -649,21 +696,6 @@ public class AppointmentTypeDefinitionTests
     }
 
     [Fact]
-    public void AddAllowedSpecialty_ShouldThrowException_WhenTypeIsUnrestricted()
-    {
-        // Arrange
-        var appointmentType = CreateAppointmentTypeDefinition();
-
-        // Act
-        var act = () => appointmentType.AddAllowedSpecialty(Guid.CreateVersion7());
-
-        // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.AppointmentType.CannotAddSpecialtyToGlobalType);
-    }
-
-    [Fact]
     public void AddAllowedSpecialty_ShouldThrowException_WhenSpecialtyIdIsEmpty()
     {
         // Arrange
@@ -677,6 +709,21 @@ public class AppointmentTypeDefinitionTests
         act.Should()
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void AddAllowedSpecialty_ShouldThrowException_WhenTypeIsUnrestricted()
+    {
+        // Arrange
+        var appointmentType = CreateAppointmentTypeDefinition();
+
+        // Act
+        var act = () => appointmentType.AddAllowedSpecialty(Guid.CreateVersion7());
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.AppointmentType.CannotAddSpecialtyToGlobalType);
     }
 
     [Fact]
@@ -714,6 +761,22 @@ public class AppointmentTypeDefinitionTests
             .ContainSingle()
             .Which.Should()
             .Be(specialtyId2);
+    }
+
+    [Fact]
+    public void RemoveAllowedSpecialty_ShouldThrowException_WhenSpecialtyIdIsEmpty()
+    {
+        // Arrange
+        var appointmentType = CreateAppointmentTypeDefinition();
+        appointmentType.RestrictToSpecialties([Guid.CreateVersion7(), Guid.CreateVersion7()]);
+
+        // Act
+        var act = () => appointmentType.RemoveAllowedSpecialty(Guid.Empty);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Fact]
