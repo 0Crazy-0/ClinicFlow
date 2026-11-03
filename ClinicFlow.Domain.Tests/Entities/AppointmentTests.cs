@@ -110,6 +110,26 @@ public class AppointmentTests
     }
 
     [Fact]
+    public void Schedule_ShouldThrowException_WhenScheduledDateIsDefault()
+    {
+        // Arrange & Act
+        var act = () =>
+            Appointment.Schedule(
+                Guid.CreateVersion7(),
+                Guid.CreateVersion7(),
+                Guid.CreateVersion7(),
+                default,
+                TimeRange.Create(new TimeOnly(9), new TimeOnly(10)),
+                Guid.CreateVersion7()
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
     public void Schedule_ShouldThrowException_WhenTimeRangeIsNull()
     {
         // Arrange & Act
@@ -171,6 +191,22 @@ public class AppointmentTests
             .CancelledAt.Should()
             .Be(DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime));
         appointment.DomainEvents.OfType<AppointmentCancelledEvent>().Should().ContainSingle();
+    }
+
+    [Fact]
+    public void Cancel_ShouldThrowException_WhenCancelledAtIsDefault()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        var userId = Guid.CreateVersion7();
+
+        // Act
+        var act = () => appointment.Cancel(userId, "Reason", default);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Fact]
@@ -287,6 +323,22 @@ public class AppointmentTests
         appointment.CancellationReason.Should().BeNull();
         appointment.CancelledAt.Should().Be(cancelledAt);
         appointment.DomainEvents.OfType<AppointmentCancelledEvent>().Should().ContainSingle();
+    }
+
+    [Fact]
+    public void CancelLate_ShouldThrowException_WhenCancelledAtIsDefault()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        var userId = Guid.CreateVersion7();
+
+        // Act
+        var act = () => appointment.CancelLate(userId, "Reason", default);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Fact]
@@ -446,6 +498,25 @@ public class AppointmentTests
     }
 
     [Fact]
+    public void Reschedule_ShouldThrowException_WhenNewTimeRangeIsNull()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+
+        // Act
+        var act = () =>
+            appointment.Reschedule(
+                DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2)),
+                null!
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
     public void Reschedule_ShouldThrowException_WhenAlreadyRescheduled()
     {
         // Arrange
@@ -489,6 +560,22 @@ public class AppointmentTests
         act.Should()
             .Throw<AppointmentReschedulingNotAllowedException>()
             .WithMessage(DomainErrors.Appointment.CannotReschedule);
+    }
+
+    [Fact]
+    public void Reschedule_ShouldThrowException_WhenNewDateIsDefault()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        var newTimeRange = TimeRange.Create(new TimeOnly(11), new TimeOnly(12));
+
+        // Act
+        var act = () => appointment.Reschedule(default, newTimeRange);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Fact]
@@ -984,6 +1071,24 @@ public class AppointmentTests
     }
 
     [Fact]
+    public void Reassign_ShouldThrowException_WhenNewDateIsDefault()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        appointment.MarkAsRequiresReassignment();
+        var newDoctorId = Guid.CreateVersion7();
+        var newTimeRange = TimeRange.Create(new TimeOnly(14), new TimeOnly(15));
+
+        // Act
+        var act = () => appointment.Reassign(newDoctorId, default, newTimeRange);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
     public void Reassign_ShouldThrowException_WhenNotInRequiresReassignment()
     {
         // Arrange
@@ -1021,6 +1126,22 @@ public class AppointmentTests
         appointment.CancelledByUserId.Should().BeNull();
         appointment.CancellationReason.Should().Be(Appointment.SystemTimeoutCancellationReason);
         appointment.DomainEvents.OfType<AppointmentSystemCancelledEvent>().Should().ContainSingle();
+    }
+
+    [Fact]
+    public void CancelDueToSystemTimeout_ShouldThrowException_WhenCancelledAtIsDefault()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        appointment.MarkAsRequiresReassignment();
+
+        // Act
+        var act = () => appointment.CancelDueToSystemTimeout(default);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Fact]
