@@ -32,10 +32,10 @@ public class GuardTests
     }
 
     [Fact]
-    public void NotDefault_ShouldThrowException_WhenValueIsDefault()
+    public void NotDefault_ShouldThrowException_WhenDateTimeIsDefault()
     {
         // Arrange & Act
-        var act = () => Guard.NotDefault(default);
+        var act = () => Guard.NotDefault(default(DateTime));
 
         // Assert
         act.Should()
@@ -44,10 +44,32 @@ public class GuardTests
     }
 
     [Fact]
-    public void NotDefault_ShouldNotThrow_WhenValueIsProvided()
+    public void NotDefault_ShouldNotThrow_WhenDateTimeIsProvided()
     {
         // Arrange & Act
         var act = () => Guard.NotDefault(_fakeTime.GetUtcNow().UtcDateTime);
+
+        // Assert
+        act.Should().NotThrow();
+    }
+
+    [Fact]
+    public void NotDefault_ShouldThrowException_WhenDateOnlyIsDefault()
+    {
+        // Arrange & Act
+        var act = () => Guard.NotDefault(default(DateOnly));
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void NotDefault_ShouldNotThrow_WhenDateOnlyIsProvided()
+    {
+        // Arrange & Act
+        var act = () => Guard.NotDefault(DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime));
 
         // Assert
         act.Should().NotThrow();
