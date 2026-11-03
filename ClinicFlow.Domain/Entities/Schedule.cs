@@ -58,11 +58,19 @@ public class Schedule : BaseEntity
         AddDomainEvent(new ScheduleDeactivatedEvent(Id, DoctorId, Weekday));
     }
 
-    internal bool CoversTimeRange(TimeRange requestedRange) =>
-        IsActive && TimeSlot.Covers(requestedRange);
+    internal bool CoversTimeRange(TimeRange requestedRange)
+    {
+        Guard.NotNull(requestedRange);
+
+        return IsActive && TimeSlot.Covers(requestedRange);
+    }
 
     internal void EnsureDoctorIsAvailable(Guid doctorId, DayOfWeek dayOfWeek, TimeRange timeRange)
     {
+        Guard.NotEmpty(doctorId);
+        Guard.IsDefined(dayOfWeek);
+        Guard.NotNull(timeRange);
+
         if (DoctorId != doctorId || !CoversTimeRange(timeRange))
             throw new DoctorNotAvailableException(
                 DomainErrors.Schedule.DoctorNotAvailable,
@@ -77,6 +85,9 @@ public class Schedule : BaseEntity
         DayOfWeek dayOfWeek
     )
     {
+        Guard.NotEmpty(doctorId);
+        Guard.IsDefined(dayOfWeek);
+
         if (
             existingSchedules.Any(s =>
                 s.DoctorId == doctorId && s.Weekday == dayOfWeek && s.IsActive
