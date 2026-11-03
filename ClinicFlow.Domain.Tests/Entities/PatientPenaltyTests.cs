@@ -120,24 +120,6 @@ public class PatientPenaltyTests
             .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
-    [Fact]
-    public void CreateAutomaticBlock_ShouldThrowException_WhenReferenceTimeIsDefault()
-    {
-        // Arrange & Act
-        var act = () =>
-            PatientPenalty.CreateAutomaticBlock(
-                Guid.CreateVersion7(),
-                "Block reason",
-                BlockDuration.Minor,
-                default
-            );
-
-        // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.Validation.ValueRequired);
-    }
-
     [Theory]
     [InlineData(null)]
     [InlineData("")]
@@ -160,7 +142,7 @@ public class PatientPenaltyTests
     }
 
     [Fact]
-    public void CreateAutomaticBlock_ShouldThrowException_WhenDurationIsInvalid()
+    public void CreateAutomaticBlock_ShouldThrowException_WhenDurationIsNotDefined()
     {
         // Arrange & Act
         var act = () =>
@@ -175,6 +157,24 @@ public class PatientPenaltyTests
         act.Should()
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.Validation.InvalidEnumValue);
+    }
+
+    [Fact]
+    public void CreateAutomaticBlock_ShouldThrowException_WhenReferenceTimeIsDefault()
+    {
+        // Arrange & Act
+        var act = () =>
+            PatientPenalty.CreateAutomaticBlock(
+                Guid.CreateVersion7(),
+                "Block reason",
+                BlockDuration.Minor,
+                default
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Fact]
@@ -262,24 +262,6 @@ public class PatientPenaltyTests
             .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
-    [Fact]
-    public void CreateManualBlock_ShouldThrowException_WhenReferenceTimeIsDefault()
-    {
-        // Arrange & Act
-        var act = () =>
-            PatientPenalty.CreateManualBlock(
-                Guid.CreateVersion7(),
-                "Block reason",
-                BlockDuration.Minor,
-                default
-            );
-
-        // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.Validation.ValueRequired);
-    }
-
     [Theory]
     [InlineData(null)]
     [InlineData("")]
@@ -317,5 +299,23 @@ public class PatientPenaltyTests
         act.Should()
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.Validation.InvalidEnumValue);
+    }
+
+    [Fact]
+    public void CreateManualBlock_ShouldThrowException_WhenReferenceTimeIsDefault()
+    {
+        // Arrange & Act
+        var act = () =>
+            PatientPenalty.CreateManualBlock(
+                Guid.CreateVersion7(),
+                "Block reason",
+                BlockDuration.Minor,
+                default
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 }
