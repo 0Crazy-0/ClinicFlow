@@ -102,4 +102,36 @@ public class CancellationLimitTests
         // Assert
         result.Should().BeTrue();
     }
+
+    [Fact]
+    public void IsNoticePeriodMet_ShouldThrowException_WhenAppointmentDateTimeIsDefault()
+    {
+        // Arrange
+        var limit = CancellationLimit.FromHours(24);
+        var referenceTime = _fakeTime.GetUtcNow().UtcDateTime;
+
+        // Act
+        var act = () => limit.IsNoticePeriodMet(default, referenceTime);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void IsNoticePeriodMet_ShouldThrowException_WhenReferenceTimeIsDefault()
+    {
+        // Arrange
+        var limit = CancellationLimit.FromHours(24);
+        var appointmentDateTime = _fakeTime.GetUtcNow().UtcDateTime.AddHours(24);
+
+        // Act
+        var act = () => limit.IsNoticePeriodMet(appointmentDateTime, default);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
 }
