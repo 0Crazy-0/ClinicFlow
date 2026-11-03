@@ -253,6 +253,33 @@ public class PatientTests
     }
 
     [Fact]
+    public void CreateProfile_ShouldThrowException_WhenDateOfBirthIsDefault()
+    {
+        // Arrange
+        var referenceTime = _fakeTime.GetUtcNow().UtcDateTime;
+
+        // Act
+        var act = () =>
+            Patient.CreateProfile(
+                PersonName.Create("John", null, "Doe"),
+                default,
+                BiologicalSex.Male,
+                Address.Create(
+                    "123 Main Street",
+                    AddressState.California,
+                    "90210",
+                    Country.UnitedStates
+                ),
+                referenceTime
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
     public void CreateProfile_ShouldThrowException_WhenAddressIsNull()
     {
         // Arrange & Act
@@ -611,6 +638,21 @@ public class PatientTests
         // Assert
         act.Should().NotThrow();
         patient.SexAtBirth.Should().Be(BiologicalSex.Female);
+    }
+
+    [Fact]
+    public void GetAge_ShouldThrowException_WhenReferenceDateIsDefault()
+    {
+        // Arrange
+        var patient = CreateValidPatient();
+
+        // Act
+        var act = () => patient.GetAge(default);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Fact]
