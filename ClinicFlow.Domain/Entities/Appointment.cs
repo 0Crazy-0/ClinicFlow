@@ -105,6 +105,7 @@ public class Appointment : BaseEntity
         Guard.NotEmpty(patientId);
         Guard.NotEmpty(doctorId);
         Guard.NotEmpty(appointmentTypeId);
+        Guard.NotDefault(scheduledDate);
         Guard.NotNull(timeRange);
         Guard.NotEmpty(scheduledByUserId);
 
@@ -124,6 +125,9 @@ public class Appointment : BaseEntity
 
     internal void Reschedule(DateOnly newDate, TimeRange newTimeRange)
     {
+        Guard.NotDefault(newDate);
+        Guard.NotNull(newTimeRange);
+
         if (RescheduleCount >= 1 || Status is not AppointmentStatus.Scheduled)
             throw new AppointmentReschedulingNotAllowedException(
                 DomainErrors.Appointment.CannotReschedule
@@ -141,6 +145,8 @@ public class Appointment : BaseEntity
 
     internal void Cancel(Guid cancelledByUserId, string? reason, DateOnly cancelledAt)
     {
+        Guard.NotDefault(cancelledAt);
+
         EnsureCancellable();
 
         if (reason?.Length > MaxCancellationReasonLength)
@@ -154,6 +160,8 @@ public class Appointment : BaseEntity
 
     internal void CancelLate(Guid cancelledByUserId, string? reason, DateOnly cancelledAt)
     {
+        Guard.NotDefault(cancelledAt);
+
         EnsureCancellable();
 
         if (reason?.Length > MaxCancellationReasonLength)
@@ -250,8 +258,9 @@ public class Appointment : BaseEntity
 
     internal void Reassign(Guid newDoctorId, DateOnly newDate, TimeRange newTimeRange)
     {
-        Guard.NotNull(newTimeRange);
         Guard.NotEmpty(newDoctorId);
+        Guard.NotDefault(newDate);
+        Guard.NotNull(newTimeRange);
 
         if (Status is not AppointmentStatus.RequiresReassignment)
             throw new DomainValidationException(DomainErrors.Appointment.CannotReassign);
@@ -272,6 +281,8 @@ public class Appointment : BaseEntity
     /// </remarks>
     public void CancelDueToSystemTimeout(DateOnly cancelledAt)
     {
+        Guard.NotDefault(cancelledAt);
+
         if (Status is not AppointmentStatus.RequiresReassignment)
             throw new DomainValidationException(DomainErrors.Appointment.CannotCancel);
 

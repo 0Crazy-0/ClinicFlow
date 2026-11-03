@@ -19,6 +19,12 @@ public static class Guard
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
     }
 
+    public static void NotDefault(DateOnly value)
+    {
+        if (value == default)
+            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+    }
+
     public static void NotNullOrWhiteSpace(string? value)
     {
         if (string.IsNullOrWhiteSpace(value))

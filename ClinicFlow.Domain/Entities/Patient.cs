@@ -79,6 +79,7 @@ public class Patient : BaseEntity
     )
     {
         Guard.NotNull(fullName);
+        Guard.NotDefault(dateOfBirth);
         Guard.NotNull(homeAddress);
         Guard.IsDefined(biologicalSex);
 
@@ -173,5 +174,10 @@ public class Patient : BaseEntity
             throw new IncompleteProfileException(DomainErrors.Patient.ProfileIncomplete);
     }
 
-    public int GetAge(DateOnly referenceDate) => DomainRules.ComputeAge(DateOfBirth, referenceDate);
+    public int GetAge(DateOnly referenceDate)
+    {
+        Guard.NotDefault(referenceDate);
+
+        return DomainRules.ComputeAge(DateOfBirth, referenceDate);
+    }
 }
