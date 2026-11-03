@@ -43,6 +43,21 @@ public class AppointmentNoShowTests
     }
 
     [Fact]
+    public void MarkAsNoShowByDoctor_ShouldThrowException_WhenInitiatorDoctorIdIsEmpty()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+
+        // Act
+        var act = () => appointment.MarkAsNoShowByDoctor(Guid.Empty);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
     public void MarkAsNoShowByDoctor_ShouldThrowUnauthorized_WhenDoctorIdDoesNotMatch()
     {
         // Arrange
