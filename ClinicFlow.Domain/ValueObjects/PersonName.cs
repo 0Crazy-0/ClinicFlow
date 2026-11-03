@@ -41,10 +41,11 @@ public partial record PersonName
     public static PersonName Create(string firstName, string? middleName, string firstSurname)
     {
         Guard.NotNullOrWhiteSpace(firstName);
-        Guard.NotNullOrWhiteSpace(firstSurname);
 
         if (middleName is not null)
             Guard.NotNullOrWhiteSpace(middleName);
+
+        Guard.NotNullOrWhiteSpace(firstSurname);
 
         var cleanedFirstName = CleanForDisplay(firstName);
         var cleanedMiddleName = middleName is null ? null : CleanForDisplay(middleName);
@@ -73,6 +74,8 @@ public partial record PersonName
     /// </summary>
     public static string NormalizeForSearch(string value)
     {
+        Guard.NotNullOrWhiteSpace(value);
+
         var lowered = CleanForDisplay(value).ToLowerInvariant();
 
         var withoutMarks = lowered
