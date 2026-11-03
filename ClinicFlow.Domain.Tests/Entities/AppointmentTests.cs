@@ -194,6 +194,22 @@ public class AppointmentTests
     }
 
     [Fact]
+    public void Cancel_ShouldThrowException_WhenCancelledByUserIdIsEmpty()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        var cancelledAt = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+
+        // Act
+        var act = () => appointment.Cancel(Guid.Empty, "Reason", cancelledAt);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
     public void Cancel_ShouldThrowException_WhenCancelledAtIsDefault()
     {
         // Arrange
@@ -334,6 +350,41 @@ public class AppointmentTests
 
         // Act
         var act = () => appointment.CancelLate(userId, "Reason", default);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void CancelLate_ShouldThrowException_WhenCancelledByUserIdIsEmpty()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        var cancelledAt = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+
+        // Act
+        var act = () => appointment.CancelLate(Guid.Empty, "Reason", cancelledAt);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void CancelLate_ShouldThrowException_WhenReasonIsWhiteSpace(string reason)
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        var userId = Guid.CreateVersion7();
+        var cancelledAt = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+
+        // Act
+        var act = () => appointment.CancelLate(userId, reason, cancelledAt);
 
         // Assert
         act.Should()
@@ -595,6 +646,39 @@ public class AppointmentTests
     }
 
     [Fact]
+    public void CheckIn_ShouldThrowException_WhenCheckedInAtIsDefault()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+
+        // Act
+        var act = () => appointment.CheckIn(default);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void CheckIn_ShouldThrowException_WhenReceptionistNotesIsWhiteSpace(string notes)
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        var checkedInAt = appointment.ScheduledDate.ToDateTime(new TimeOnly(9, 30));
+
+        // Act
+        var act = () => appointment.CheckIn(checkedInAt, notes);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
     public void CheckIn_ShouldThrowException_WhenCheckedInAtIsNotOnScheduledDate()
     {
         // Arrange
@@ -754,6 +838,37 @@ public class AppointmentTests
     }
 
     [Fact]
+    public void Start_ShouldThrowException_WhenInitiatorDoctorIdIsEmpty()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        var startedAt = appointment.ScheduledDate.ToDateTime(new TimeOnly(9, 15));
+
+        // Act
+        var act = () => appointment.Start(Guid.Empty, startedAt);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void Start_ShouldThrowException_WhenStartedAtIsDefault()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+
+        // Act
+        var act = () => appointment.Start(appointment.DoctorId, default);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
     public void Start_ShouldThrowException_WhenStartedAtIsBeforeAppointmentStart()
     {
         // Arrange
@@ -863,6 +978,21 @@ public class AppointmentTests
         appointment.Status.Should().Be(AppointmentStatus.Completed);
         appointment.CompletedAt.Should().Be(completedAt);
         appointment.DomainEvents.OfType<AppointmentCompletedEvent>().Should().ContainSingle();
+    }
+
+    [Fact]
+    public void Complete_ShouldThrowException_WhenCompletedAtIsDefault()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+
+        // Act
+        var act = () => appointment.Complete(default);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Fact]
@@ -1254,6 +1384,23 @@ public class AppointmentTests
         appointment.PatientNotes.Should().Be(notes);
     }
 
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void UpdatePatientNotes_ShouldThrowException_WhenNotesIsWhiteSpace(string notes)
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+
+        // Act
+        var act = () => appointment.UpdatePatientNotes(notes);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
     [Fact]
     public void UpdateGuardianNotes_ShouldSetTextAndAuthor_WhenScheduled()
     {
@@ -1355,6 +1502,24 @@ public class AppointmentTests
         appointment.GuardianNotesAuthorUserId.Should().Be(authorId);
     }
 
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void UpdateGuardianNotes_ShouldThrowException_WhenNotesIsWhiteSpace(string notes)
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        var authorId = Guid.CreateVersion7();
+
+        // Act
+        var act = () => appointment.UpdateGuardianNotes(notes, authorId);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
     [Fact]
     public void UpdateReceptionistNotes_ShouldSucceed_WhenCheckedIn()
     {
@@ -1430,6 +1595,24 @@ public class AppointmentTests
 
         // Assert
         appointment.ReceptionistNotes.Should().Be(notes);
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void UpdateReceptionistNotes_ShouldThrowException_WhenNotesIsWhiteSpace(string notes)
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
+
+        // Act
+        var act = () => appointment.UpdateReceptionistNotes(notes);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Fact]
@@ -1508,6 +1691,24 @@ public class AppointmentTests
 
         // Assert
         appointment.StaffInternalNotes.Should().Be(notes);
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void UpdateStaffInternalNotes_ShouldThrowException_WhenNotesIsWhiteSpace(string notes)
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
+
+        // Act
+        var act = () => appointment.UpdateStaffInternalNotes(notes);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
     private Appointment CreateAppointment() =>
