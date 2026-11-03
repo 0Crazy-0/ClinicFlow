@@ -39,6 +39,25 @@ public class UserTests
         user.LockoutEnd.Should().BeNull();
     }
 
+    [Fact]
+    public void Create_ShouldThrowException_WhenEmailIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            User.Create(
+                null!,
+                "hash",
+                PhoneNumber.Create("555-1234"),
+                UserRole.Doctor,
+                _fakeTime.GetLocalNow().DateTime
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
     [Theory]
     [InlineData("")]
     [InlineData(" ")]
@@ -62,20 +81,22 @@ public class UserTests
     }
 
     [Fact]
-    public void Create_ShouldThrowException_WhenRoleIsPatient()
+    public void Create_ShouldThrowException_WhenPhoneNumberIsNull()
     {
         // Arrange & Act
         var act = () =>
             User.Create(
                 EmailAddress.Create("test@clinic.com"),
-                "hashedpassword123",
-                PhoneNumber.Create("555-1234"),
-                UserRole.Patient,
+                "hash",
+                null!,
+                UserRole.Doctor,
                 _fakeTime.GetLocalNow().DateTime
             );
 
         // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.User.InvalidRole);
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 
     [Fact]
@@ -117,6 +138,23 @@ public class UserTests
     }
 
     [Fact]
+    public void Create_ShouldThrowException_WhenRoleIsPatient()
+    {
+        // Arrange & Act
+        var act = () =>
+            User.Create(
+                EmailAddress.Create("test@clinic.com"),
+                "hashedpassword123",
+                PhoneNumber.Create("555-1234"),
+                UserRole.Patient,
+                _fakeTime.GetLocalNow().DateTime
+            );
+
+        // Assert
+        act.Should().Throw<DomainValidationException>().WithMessage(DomainErrors.User.InvalidRole);
+    }
+
+    [Fact]
     public void CreatePending_ShouldCreatePatientUser_WithoutPassword()
     {
         // Arrange
@@ -133,6 +171,30 @@ public class UserTests
         user.ActivatedAt.Should().BeNull();
         user.IsActive.Should().BeTrue();
         user.Phone.Should().Be(phone);
+    }
+
+    [Fact]
+    public void CreatePending_ShouldThrowException_WhenEmailIsNull()
+    {
+        // Arrange & Act
+        var act = () => User.CreatePending(null!, PhoneNumber.Create("555-1234"));
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
+    public void CreatePending_ShouldThrowException_WhenPhoneIsNull()
+    {
+        // Arrange & Act
+        var act = () => User.CreatePending(EmailAddress.Create("p@x.com"), null!);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 
     [Fact]
@@ -333,6 +395,21 @@ public class UserTests
         user.FailedLoginAttempts.Should().Be(0);
         user.LockoutEnd.Should().BeNull();
         user.LastLoginAt.Should().Be(referenceTime);
+    }
+
+    [Fact]
+    public void RecordLogin_ShouldThrowException_WhenLoginTimeIsDefault()
+    {
+        // Arrange
+        var user = CreateUser();
+
+        // Act
+        var act = () => user.RecordLogin(default);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Fact]
