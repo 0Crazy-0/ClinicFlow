@@ -121,13 +121,13 @@ public class FamilyMembership : BaseEntity
     {
         Guard.NotEmpty(patientId);
         Guard.NotEmpty(ownerUserId);
-        Guard.NotDefault(referenceTime);
         Guard.IsDefined(role);
+        Guard.IsDefined(legalAuthority);
+        Guard.IsDefined(accessLevel);
+        Guard.NotDefault(referenceTime);
 
         if (role is PatientRelationship.Self)
             throw new DomainValidationException(DomainErrors.FamilyMembership.CannotBeSelf);
-
-        Guard.IsDefined(legalAuthority);
 
         if (
             legalAuthority is LegalAuthorityType.Parent && role is not PatientRelationship.Parent
@@ -147,8 +147,6 @@ public class FamilyMembership : BaseEntity
             throw new DomainValidationException(
                 DomainErrors.FamilyMembership.MinorRequiresLegalAuthority
             );
-
-        Guard.IsDefined(accessLevel);
 
         if (accessLevel is FamilyMembershipAccessLevel.Unspecified)
             throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
@@ -219,6 +217,8 @@ public class FamilyMembership : BaseEntity
         bool requesterIsAuthorized
     )
     {
+        Guard.IsDefined(category);
+
         if (!requesterIsAuthorized)
             throw new DomainValidationException(
                 DomainErrors.FamilyMembership.UnauthorizedCategoryListChange
@@ -228,8 +228,6 @@ public class FamilyMembership : BaseEntity
             throw new DomainValidationException(
                 DomainErrors.FamilyMembership.OnlyRestrictedCanHaveCategoryList
             );
-
-        Guard.IsDefined(category);
 
         if (_allowedAppointmentCategories.Contains(category))
             throw new DomainValidationException(
@@ -244,6 +242,8 @@ public class FamilyMembership : BaseEntity
         bool requesterIsAuthorized
     )
     {
+        Guard.IsDefined(category);
+
         if (!requesterIsAuthorized)
             throw new DomainValidationException(
                 DomainErrors.FamilyMembership.UnauthorizedCategoryListChange
@@ -281,6 +281,8 @@ public class FamilyMembership : BaseEntity
     /// </summary>
     public void EnsureAppointmentAccess(AppointmentCategory category)
     {
+        Guard.IsDefined(category);
+
         if (
             Role is PatientRelationship.Self
             || AccessLevel
@@ -405,6 +407,8 @@ public class FamilyMembership : BaseEntity
         DateTime referenceTime
     )
     {
+        Guard.NotDefault(referenceTime);
+
         if (Role is PatientRelationship.Self)
             throw new DomainValidationException(DomainErrors.FamilyMembership.CannotRemoveSelf);
 
@@ -432,6 +436,8 @@ public class FamilyMembership : BaseEntity
 
     public void Leave(int memberAge, DateTime referenceTime)
     {
+        Guard.NotDefault(referenceTime);
+
         if (Role is PatientRelationship.Self)
             throw new DomainValidationException(DomainErrors.FamilyMembership.CannotLeaveSelf);
 
@@ -454,6 +460,8 @@ public class FamilyMembership : BaseEntity
 
     public void CloseSelfMembership(DateTime referenceTime)
     {
+        Guard.NotDefault(referenceTime);
+
         if (Role is not PatientRelationship.Self)
             throw new DomainValidationException(
                 DomainErrors.FamilyMembership.CanOnlyCloseSelfMembership

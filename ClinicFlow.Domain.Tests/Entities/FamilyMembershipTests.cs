@@ -244,27 +244,6 @@ public class FamilyMembershipTests
     }
 
     [Fact]
-    public void CreateFamilyMember_ShouldThrowException_WhenReferenceTimeIsDefault()
-    {
-        // Arrange & Act
-        var act = () =>
-            FamilyMembership.CreateFamilyMember(
-                Guid.CreateVersion7(),
-                Guid.CreateVersion7(),
-                PatientRelationship.Child,
-                LegalAuthorityType.None,
-                FamilyMembershipAccessLevel.Full,
-                30,
-                default
-            );
-
-        // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.Validation.ValueRequired);
-    }
-
-    [Fact]
     public void CreateFamilyMember_ShouldThrowException_WhenRoleIsInvalid()
     {
         // Arrange & Act
@@ -286,27 +265,6 @@ public class FamilyMembershipTests
     }
 
     [Fact]
-    public void CreateFamilyMember_ShouldThrowException_WhenRoleIsSelf()
-    {
-        // Arrange & Act
-        var act = () =>
-            FamilyMembership.CreateFamilyMember(
-                Guid.CreateVersion7(),
-                Guid.CreateVersion7(),
-                PatientRelationship.Self,
-                LegalAuthorityType.None,
-                FamilyMembershipAccessLevel.Full,
-                30,
-                _fakeTime.GetUtcNow().UtcDateTime
-            );
-
-        // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.FamilyMembership.CannotBeSelf);
-    }
-
-    [Fact]
     public void CreateFamilyMember_ShouldThrowException_WhenLegalAuthorityIsInvalid()
     {
         // Arrange & Act
@@ -325,6 +283,69 @@ public class FamilyMembershipTests
         act.Should()
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.Validation.InvalidEnumValue);
+    }
+
+    [Fact]
+    public void CreateFamilyMember_ShouldThrowException_WhenAccessLevelIsInvalid()
+    {
+        // Arrange & Act
+        var act = () =>
+            FamilyMembership.CreateFamilyMember(
+                Guid.CreateVersion7(),
+                Guid.CreateVersion7(),
+                PatientRelationship.Child,
+                LegalAuthorityType.None,
+                (FamilyMembershipAccessLevel)999,
+                30,
+                _fakeTime.GetUtcNow().UtcDateTime
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.InvalidEnumValue);
+    }
+
+    [Fact]
+    public void CreateFamilyMember_ShouldThrowException_WhenReferenceTimeIsDefault()
+    {
+        // Arrange & Act
+        var act = () =>
+            FamilyMembership.CreateFamilyMember(
+                Guid.CreateVersion7(),
+                Guid.CreateVersion7(),
+                PatientRelationship.Child,
+                LegalAuthorityType.None,
+                FamilyMembershipAccessLevel.Full,
+                30,
+                default
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void CreateFamilyMember_ShouldThrowException_WhenRoleIsSelf()
+    {
+        // Arrange & Act
+        var act = () =>
+            FamilyMembership.CreateFamilyMember(
+                Guid.CreateVersion7(),
+                Guid.CreateVersion7(),
+                PatientRelationship.Self,
+                LegalAuthorityType.None,
+                FamilyMembershipAccessLevel.Full,
+                30,
+                _fakeTime.GetUtcNow().UtcDateTime
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.FamilyMembership.CannotBeSelf);
     }
 
     [Theory]
@@ -433,27 +454,6 @@ public class FamilyMembershipTests
         act.Should()
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.FamilyMembership.MinorRequiresLegalAuthority);
-    }
-
-    [Fact]
-    public void CreateFamilyMember_ShouldThrowException_WhenAccessLevelIsInvalid()
-    {
-        // Arrange & Act
-        var act = () =>
-            FamilyMembership.CreateFamilyMember(
-                Guid.CreateVersion7(),
-                Guid.CreateVersion7(),
-                PatientRelationship.Child,
-                LegalAuthorityType.None,
-                (FamilyMembershipAccessLevel)999,
-                30,
-                _fakeTime.GetUtcNow().UtcDateTime
-            );
-
-        // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.Validation.InvalidEnumValue);
     }
 
     [Fact]
@@ -903,6 +903,25 @@ public class FamilyMembershipTests
     }
 
     [Fact]
+    public void AddAllowedAppointmentCategory_ShouldThrowException_WhenCategoryIsNotDefined()
+    {
+        // Arrange
+        var membership = CreateRestrictedMembership();
+
+        // Act
+        var act = () =>
+            membership.AddAllowedAppointmentCategory(
+                (AppointmentCategory)999,
+                requesterIsAuthorized: true
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.InvalidEnumValue);
+    }
+
+    [Fact]
     public void AddAllowedAppointmentCategory_ShouldThrowException_WhenRequesterIsNotAuthorized()
     {
         // Arrange
@@ -955,25 +974,6 @@ public class FamilyMembershipTests
     }
 
     [Fact]
-    public void AddAllowedAppointmentCategory_ShouldThrowException_WhenCategoryIsNotDefined()
-    {
-        // Arrange
-        var membership = CreateRestrictedMembership();
-
-        // Act
-        var act = () =>
-            membership.AddAllowedAppointmentCategory(
-                (AppointmentCategory)999,
-                requesterIsAuthorized: true
-            );
-
-        // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.Validation.InvalidEnumValue);
-    }
-
-    [Fact]
     public void AddAllowedAppointmentCategory_ShouldThrowException_WhenCategoryIsAlreadyAllowed()
     {
         // Arrange
@@ -1014,6 +1014,25 @@ public class FamilyMembershipTests
 
         // Assert
         membership.AllowedAppointmentCategories.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void RemoveAllowedAppointmentCategory_ShouldThrowException_WhenCategoryIsNotDefined()
+    {
+        // Arrange
+        var membership = CreateRestrictedMembership();
+
+        // Act
+        var act = () =>
+            membership.RemoveAllowedAppointmentCategory(
+                (AppointmentCategory)999,
+                requesterIsAuthorized: true
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.InvalidEnumValue);
     }
 
     [Fact]
@@ -1151,6 +1170,21 @@ public class FamilyMembershipTests
             .Invoking(m => m.EnsureAppointmentAccess(AppointmentCategory.GeneralMedicine))
             .Should()
             .NotThrow();
+    }
+
+    [Fact]
+    public void EnsureAppointmentAccess_ShouldThrowException_WhenCategoryIsNotDefined()
+    {
+        // Arrange
+        var membership = CreateRestrictedMembership();
+
+        // Act
+        var act = () => membership.EnsureAppointmentAccess((AppointmentCategory)999);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.InvalidEnumValue);
     }
 
     [Fact]
@@ -1361,6 +1395,26 @@ public class FamilyMembershipTests
         // Assert
         membership.Status.Should().Be(FamilyMembershipStatus.Revoked);
         membership.EndedAt.Should().Be(revokeTime);
+    }
+
+    [Fact]
+    public void Revoke_ShouldThrowException_WhenReferenceTimeIsDefault()
+    {
+        // Arrange
+        var membership = CreateRestrictedMembership();
+
+        // Act
+        var act = () =>
+            membership.Revoke(
+                patientHasOwnSelfMembership: true,
+                hasUpcomingAppointmentRequiringGuardianForMinor: false,
+                referenceTime: default
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Fact]
@@ -1605,6 +1659,21 @@ public class FamilyMembershipTests
     }
 
     [Fact]
+    public void Leave_ShouldThrowException_WhenReferenceTimeIsDefault()
+    {
+        // Arrange
+        var membership = CreateRestrictedMembership();
+
+        // Act
+        var act = () => membership.Leave(FamilyMembership.MinimumAgeToLeave, default);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
     public void Leave_ShouldThrowException_WhenRoleIsSelf()
     {
         // Arrange
@@ -1779,6 +1848,25 @@ public class FamilyMembershipTests
         // Assert
         membership.Status.Should().Be(FamilyMembershipStatus.Closed);
         membership.EndedAt.Should().Be(closeTime);
+    }
+
+    [Fact]
+    public void CloseSelfMembership_ShouldThrowException_WhenReferenceTimeIsDefault()
+    {
+        // Arrange
+        var membership = FamilyMembership.CreateSelf(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        // Act
+        var act = () => membership.CloseSelfMembership(default);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Fact]
