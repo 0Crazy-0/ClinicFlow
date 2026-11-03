@@ -53,6 +53,7 @@ public class ClinicalFormTemplate : SoftDeletableEntity
     {
         Guard.NotNullOrWhiteSpace(code);
         Guard.NotNullOrWhiteSpace(name);
+        Guard.NotNullOrWhiteSpace(description);
 
         string schemaToSave = string.IsNullOrWhiteSpace(jsonSchemaDefinition)
             ? "{}"
@@ -66,6 +67,7 @@ public class ClinicalFormTemplate : SoftDeletableEntity
     public void UpdateDetails(string name, string description)
     {
         Guard.NotNullOrWhiteSpace(name);
+        Guard.NotNullOrWhiteSpace(description);
 
         Name = name;
         Description = description;
