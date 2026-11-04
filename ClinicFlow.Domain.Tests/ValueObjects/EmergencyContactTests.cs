@@ -71,12 +71,13 @@ public class EmergencyContactTests
     }
 
     [Theory]
+    [InlineData(null)]
     [InlineData("")]
     [InlineData("   ")]
-    public void Create_ShouldThrowValueRequired_WhenPhoneIsEmpty(string phone)
+    public void Create_ShouldThrowValueRequired_WhenPhoneIsEmpty(string? phone)
     {
         // Arrange & Act
-        var act = () => EmergencyContact.Create("Jane", null, "Doe", phone);
+        var act = () => EmergencyContact.Create("Jane", null, "Doe", phone!);
 
         // Assert
         act.Should()
