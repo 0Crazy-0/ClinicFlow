@@ -11,4 +11,3 @@ public sealed class ClearReceptionistNotesByStaffCommandValidator
         RuleFor(x => x.AppointmentId).NotEmpty().WithMessage(DomainErrors.Validation.InvalidValue);
     }
 }
-

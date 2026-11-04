@@ -36,4 +36,3 @@ public class ClearReceptionistNotesByStaffCommandValidatorTests
             .WithErrorMessage(DomainErrors.Validation.InvalidValue);
     }
 }
-

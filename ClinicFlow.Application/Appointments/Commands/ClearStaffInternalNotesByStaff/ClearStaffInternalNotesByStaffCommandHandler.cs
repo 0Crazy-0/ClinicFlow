@@ -31,4 +31,3 @@ public sealed class ClearStaffInternalNotesByStaffCommandHandler(
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 }
-

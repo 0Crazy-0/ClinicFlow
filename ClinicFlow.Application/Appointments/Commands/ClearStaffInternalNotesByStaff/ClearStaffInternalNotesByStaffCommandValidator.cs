@@ -11,4 +11,3 @@ public sealed class ClearStaffInternalNotesByStaffCommandValidator
         RuleFor(x => x.AppointmentId).NotEmpty().WithMessage(DomainErrors.Validation.InvalidValue);
     }
 }
-

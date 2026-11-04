@@ -36,4 +36,3 @@ public class ClearStaffInternalNotesByStaffCommandValidatorTests
             .WithErrorMessage(DomainErrors.Validation.InvalidValue);
     }
 }
-
