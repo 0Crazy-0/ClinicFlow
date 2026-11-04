@@ -5,5 +5,5 @@ namespace ClinicFlow.Application.Appointments.Commands.UpdatePatientNotesByPatie
 public sealed record UpdatePatientNotesByPatientCommand(
     Guid AppointmentId,
     Guid InitiatorUserId,
-    string? Notes
+    string Notes
 ) : IRequest;

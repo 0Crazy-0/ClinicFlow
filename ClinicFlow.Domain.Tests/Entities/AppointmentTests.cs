@@ -1342,21 +1342,6 @@ public class AppointmentTests
     }
 
     [Fact]
-    public void UpdatePatientNotes_ShouldSetNotesToEmpty_WhenNullProvided()
-    {
-        // Arrange
-        var appointment = CreateAppointment();
-
-        appointment.UpdatePatientNotes("Initial notes");
-
-        // Act
-        appointment.UpdatePatientNotes(null);
-
-        // Assert
-        appointment.PatientNotes.Should().BeEmpty();
-    }
-
-    [Fact]
     public void UpdatePatientNotes_ShouldThrowException_WhenInvalidStatus()
     {
         // Arrange
@@ -1473,23 +1458,6 @@ public class AppointmentTests
     }
 
     [Fact]
-    public void UpdateGuardianNotes_ShouldClearTextButRetainAuthor_WhenEmptyProvidedAfterPriorNote()
-    {
-        // Arrange
-        var appointment = CreateAppointment();
-        var authorId = Guid.CreateVersion7();
-        appointment.UpdateGuardianNotes("notes", authorId);
-
-        // Act
-        appointment.UpdateGuardianNotes(null, authorId);
-
-        // Assert
-        appointment.GuardianNotes.Should().BeEmpty();
-        appointment.GuardianNotesAuthorUserId.Should().Be(authorId);
-        appointment.PatientNotes.Should().BeEmpty();
-    }
-
-    [Fact]
     public void UpdateGuardianNotes_ShouldThrowException_WhenNotesExceedMaximumLength()
     {
         // Arrange
@@ -1552,21 +1520,6 @@ public class AppointmentTests
 
         // Assert
         appointment.ReceptionistNotes.Should().Be(newNotes);
-    }
-
-    [Fact]
-    public void UpdateReceptionistNotes_ShouldSetNotesToEmpty_WhenNullProvided()
-    {
-        // Arrange
-        var appointment = CreateAppointment();
-        appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
-        appointment.UpdateReceptionistNotes("Initial notes");
-
-        // Act
-        appointment.UpdateReceptionistNotes(null);
-
-        // Assert
-        appointment.ReceptionistNotes.Should().BeEmpty();
     }
 
     [Fact]
@@ -1648,21 +1601,6 @@ public class AppointmentTests
 
         // Assert
         appointment.StaffInternalNotes.Should().Be(newNotes);
-    }
-
-    [Fact]
-    public void UpdateStaffInternalNotes_ShouldSetNotesToEmpty_WhenNullProvided()
-    {
-        // Arrange
-        var appointment = CreateAppointment();
-        appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
-        appointment.UpdateStaffInternalNotes("Initial notes");
-
-        // Act
-        appointment.UpdateStaffInternalNotes(null);
-
-        // Assert
-        appointment.StaffInternalNotes.Should().BeEmpty();
     }
 
     [Fact]

@@ -325,73 +325,62 @@ public class Appointment : BaseEntity
         MarkAsNoShow();
     }
 
-    public void UpdatePatientNotes(string? notes)
+    public void UpdatePatientNotes(string notes)
     {
-        if (notes is not null)
-            Guard.NotNullOrWhiteSpace(notes);
+        Guard.NotNullOrWhiteSpace(notes);
 
         if (Status is not (AppointmentStatus.Scheduled or AppointmentStatus.CheckedIn))
             throw new DomainValidationException(DomainErrors.Appointment.CannotUpdateNotes);
 
-        if (notes?.Length > MaxNotesLength)
+        if (notes.Length > MaxNotesLength)
             throw new DomainValidationException(DomainErrors.Validation.ValueTooLong);
 
-        PatientNotes = notes ?? string.Empty;
+        PatientNotes = notes;
     }
 
     /// <remarks>
     /// Callers ensure the patient is a minor at the scheduled date through the guardian
     /// channel gates before invoking this method.
     /// </remarks>
-    internal void UpdateGuardianNotes(string? notes, Guid authorUserId)
+    internal void UpdateGuardianNotes(string notes, Guid authorUserId)
     {
-        if (notes is not null)
-            Guard.NotNullOrWhiteSpace(notes);
-
+        Guard.NotNullOrWhiteSpace(notes);
         Guard.NotEmpty(authorUserId);
 
         if (Status is not (AppointmentStatus.Scheduled or AppointmentStatus.CheckedIn))
             throw new DomainValidationException(DomainErrors.Appointment.CannotUpdateNotes);
 
-        if (notes?.Length > MaxNotesLength)
+        if (notes.Length > MaxNotesLength)
             throw new DomainValidationException(DomainErrors.Validation.ValueTooLong);
-
-        if (string.IsNullOrEmpty(notes))
-        {
-            GuardianNotes = string.Empty;
-            return;
-        }
 
         GuardianNotes = notes;
         GuardianNotesAuthorUserId = authorUserId;
     }
 
-    public void UpdateReceptionistNotes(string? notes)
+    public void UpdateReceptionistNotes(string notes)
     {
-        if (notes is not null)
-            Guard.NotNullOrWhiteSpace(notes);
+        Guard.NotNullOrWhiteSpace(notes);
 
         if (Status is not AppointmentStatus.CheckedIn)
             throw new DomainValidationException(DomainErrors.Appointment.CannotUpdateNotes);
 
-        if (notes?.Length > MaxNotesLength)
+        if (notes.Length > MaxNotesLength)
             throw new DomainValidationException(DomainErrors.Validation.ValueTooLong);
 
-        ReceptionistNotes = notes ?? string.Empty;
+        ReceptionistNotes = notes;
     }
 
-    public void UpdateStaffInternalNotes(string? notes)
+    public void UpdateStaffInternalNotes(string notes)
     {
-        if (notes is not null)
-            Guard.NotNullOrWhiteSpace(notes);
+        Guard.NotNullOrWhiteSpace(notes);
 
         if (Status is not AppointmentStatus.CheckedIn)
             throw new DomainValidationException(DomainErrors.Appointment.CannotUpdateNotes);
 
-        if (notes?.Length > MaxNotesLength)
+        if (notes.Length > MaxNotesLength)
             throw new DomainValidationException(DomainErrors.Validation.ValueTooLong);
 
-        StaffInternalNotes = notes ?? string.Empty;
+        StaffInternalNotes = notes;
     }
 
     private void MarkAsNoShow()
