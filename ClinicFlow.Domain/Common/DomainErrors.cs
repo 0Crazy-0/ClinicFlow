@@ -60,6 +60,7 @@ public static class DomainErrors
         public const string CannotReassign = "REASSIGNMENT_NOT_ALLOWED";
         public const string Duplicate = "DUPLICATE_APPOINTMENT";
         public const string CannotUpdateNotes = "UPDATE_NOTES_NOT_ALLOWED";
+        public const string CannotClearNotes = "CLEAR_NOTES_NOT_ALLOWED";
         public const string GuardianRequiresMinor = "GUARDIAN_REQUIRES_MINOR";
         public const string AdultHistoryRequiresAdult = "ADULT_HISTORY_REQUIRES_ADULT";
         public const string MinorHistoryRequiresMinor = "MINOR_HISTORY_REQUIRES_MINOR";

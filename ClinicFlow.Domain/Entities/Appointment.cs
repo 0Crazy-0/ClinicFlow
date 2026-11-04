@@ -383,6 +383,43 @@ public class Appointment : BaseEntity
         StaffInternalNotes = notes;
     }
 
+    public void ClearPatientNotes()
+    {
+        if (Status is not (AppointmentStatus.Scheduled or AppointmentStatus.CheckedIn))
+            throw new DomainValidationException(DomainErrors.Appointment.CannotClearNotes);
+
+        PatientNotes = string.Empty;
+    }
+
+    /// <summary>
+    /// Clears the guardian note of an appointment and removes its author, so the
+    /// next first note can be written by any guardian.
+    /// </summary>
+    internal void ClearGuardianNotes()
+    {
+        if (Status is not (AppointmentStatus.Scheduled or AppointmentStatus.CheckedIn))
+            throw new DomainValidationException(DomainErrors.Appointment.CannotClearNotes);
+
+        GuardianNotes = string.Empty;
+        GuardianNotesAuthorUserId = null;
+    }
+
+    public void ClearReceptionistNotes()
+    {
+        if (Status is not AppointmentStatus.CheckedIn)
+            throw new DomainValidationException(DomainErrors.Appointment.CannotClearNotes);
+
+        ReceptionistNotes = string.Empty;
+    }
+
+    public void ClearStaffInternalNotes()
+    {
+        if (Status is not AppointmentStatus.CheckedIn)
+            throw new DomainValidationException(DomainErrors.Appointment.CannotClearNotes);
+
+        StaffInternalNotes = string.Empty;
+    }
+
     private void MarkAsNoShow()
     {
         if (Status is not AppointmentStatus.Scheduled)

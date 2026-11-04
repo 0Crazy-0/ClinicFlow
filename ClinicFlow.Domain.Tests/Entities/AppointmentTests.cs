@@ -1668,6 +1668,252 @@ public class AppointmentTests
             .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
+    [Fact]
+    public void ClearPatientNotes_ShouldClearNotes_WhenStatusIsScheduled()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        appointment.UpdatePatientNotes("notes");
+
+        // Act
+        appointment.ClearPatientNotes();
+
+        // Assert
+        appointment.PatientNotes.Should().BeEmpty();
+        appointment.Status.Should().Be(AppointmentStatus.Scheduled);
+    }
+
+    [Fact]
+    public void ClearPatientNotes_ShouldClearNotes_WhenStatusIsCheckedIn()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
+        appointment.UpdatePatientNotes("notes");
+
+        // Act
+        appointment.ClearPatientNotes();
+
+        // Assert
+        appointment.PatientNotes.Should().BeEmpty();
+        appointment.Status.Should().Be(AppointmentStatus.CheckedIn);
+    }
+
+    [Fact]
+    public void ClearPatientNotes_ShouldThrowException_WhenStatusIsNotAllowed()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+
+        appointment.UpdatePatientNotes("notes");
+        appointment.MarkAsRequiresReassignment();
+
+        // Act & Assert
+        appointment
+            .Invoking(a => a.ClearPatientNotes())
+            .Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Appointment.CannotClearNotes);
+
+        appointment.PatientNotes.Should().Be("notes");
+    }
+
+    [Fact]
+    public void ClearPatientNotes_ShouldThrowException_WhenNoteIsEmptyAndStatusIsNotAllowed()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        appointment.MarkAsRequiresReassignment();
+
+        // Act & Assert
+        appointment
+            .Invoking(a => a.ClearPatientNotes())
+            .Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Appointment.CannotClearNotes);
+    }
+
+    [Fact]
+    public void ClearPatientNotes_ShouldBeNoOperation_WhenNoteIsEmpty()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+
+        // Act
+        appointment.ClearPatientNotes();
+
+        // Assert
+        appointment.PatientNotes.Should().BeEmpty();
+        appointment.Status.Should().Be(AppointmentStatus.Scheduled);
+    }
+
+    [Fact]
+    public void ClearGuardianNotes_ShouldClearNotesAndAuthor_WhenStatusIsScheduled()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        var authorId = Guid.CreateVersion7();
+
+        appointment.UpdateGuardianNotes("notes", authorId);
+
+        // Act
+        appointment.ClearGuardianNotes();
+
+        // Assert
+        appointment.GuardianNotes.Should().BeEmpty();
+        appointment.GuardianNotesAuthorUserId.Should().BeNull();
+        appointment.Status.Should().Be(AppointmentStatus.Scheduled);
+    }
+
+    [Fact]
+    public void ClearGuardianNotes_ShouldClearNotesAndAuthor_WhenStatusIsCheckedIn()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+
+        appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
+
+        var authorId = Guid.CreateVersion7();
+
+        appointment.UpdateGuardianNotes("notes", authorId);
+
+        // Act
+        appointment.ClearGuardianNotes();
+
+        // Assert
+        appointment.GuardianNotes.Should().BeEmpty();
+        appointment.GuardianNotesAuthorUserId.Should().BeNull();
+    }
+
+    [Fact]
+    public void ClearGuardianNotes_ShouldThrowException_WhenStatusIsNotAllowed()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        var authorId = Guid.CreateVersion7();
+
+        appointment.UpdateGuardianNotes("notes", authorId);
+
+        appointment.MarkAsRequiresReassignment();
+
+        // Act & Assert
+        appointment
+            .Invoking(a => a.ClearGuardianNotes())
+            .Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Appointment.CannotClearNotes);
+
+        appointment.GuardianNotes.Should().Be("notes");
+        appointment.GuardianNotesAuthorUserId.Should().Be(authorId);
+    }
+
+    [Fact]
+    public void ClearGuardianNotes_ShouldBeNoOperation_WhenNoteIsEmpty()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+
+        // Act
+        appointment.ClearGuardianNotes();
+
+        // Assert
+        appointment.GuardianNotes.Should().BeEmpty();
+        appointment.GuardianNotesAuthorUserId.Should().BeNull();
+    }
+
+    [Fact]
+    public void ClearReceptionistNotes_ShouldClearNotes_WhenStatusIsCheckedIn()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+
+        appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
+        appointment.UpdateReceptionistNotes("notes");
+
+        // Act
+        appointment.ClearReceptionistNotes();
+
+        // Assert
+        appointment.ReceptionistNotes.Should().BeEmpty();
+        appointment.Status.Should().Be(AppointmentStatus.CheckedIn);
+    }
+
+    [Fact]
+    public void ClearReceptionistNotes_ShouldBeNoOperation_WhenNoteIsEmpty()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+
+        appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
+
+        // Act
+        appointment.ClearReceptionistNotes();
+
+        // Assert
+        appointment.ReceptionistNotes.Should().BeEmpty();
+        appointment.Status.Should().Be(AppointmentStatus.CheckedIn);
+    }
+
+    [Fact]
+    public void ClearReceptionistNotes_ShouldThrowException_WhenStatusIsScheduled()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+
+        // Act & Assert
+        appointment
+            .Invoking(a => a.ClearReceptionistNotes())
+            .Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Appointment.CannotClearNotes);
+    }
+
+    [Fact]
+    public void ClearStaffInternalNotes_ShouldClearNotes_WhenStatusIsCheckedIn()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+
+        appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
+        appointment.UpdateStaffInternalNotes("notes");
+
+        // Act
+        appointment.ClearStaffInternalNotes();
+
+        // Assert
+        appointment.StaffInternalNotes.Should().BeEmpty();
+        appointment.Status.Should().Be(AppointmentStatus.CheckedIn);
+    }
+
+    [Fact]
+    public void ClearStaffInternalNotes_ShouldBeNoOperation_WhenNoteIsEmpty()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
+
+        // Act
+        appointment.ClearStaffInternalNotes();
+
+        // Assert
+        appointment.StaffInternalNotes.Should().BeEmpty();
+        appointment.Status.Should().Be(AppointmentStatus.CheckedIn);
+    }
+
+    [Fact]
+    public void ClearStaffInternalNotes_ShouldThrowException_WhenStatusIsScheduled()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+
+        // Act & Assert
+        appointment
+            .Invoking(a => a.ClearStaffInternalNotes())
+            .Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Appointment.CannotClearNotes);
+    }
+
     private Appointment CreateAppointment() =>
         Appointment.Schedule(
             Guid.CreateVersion7(),
