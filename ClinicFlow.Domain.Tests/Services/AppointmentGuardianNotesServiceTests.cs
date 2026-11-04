@@ -397,6 +397,289 @@ public class AppointmentGuardianNotesServiceTests
             .WithMessage(DomainErrors.Appointment.CannotUpdateNotes);
     }
 
+    [Fact]
+    public void ClearByGuardian_ShouldThrowArgumentNullException_WhenAppointmentIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentGuardianNotesService.ClearByGuardian(null!, CreateValidContext());
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void ClearByGuardian_ShouldThrowArgumentNullException_WhenContextIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentGuardianNotesService.ClearByGuardian(
+                CreateAppointment(Guid.CreateVersion7()),
+                null!
+            );
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void ClearByGuardian_ShouldThrowArgumentNullException_WhenTargetPatientIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentGuardianNotesService.ClearByGuardian(
+                CreateAppointment(Guid.CreateVersion7()),
+                CreateValidContext() with
+                {
+                    TargetPatient = null!,
+                }
+            );
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void ClearByGuardian_ShouldThrowArgumentNullException_WhenInitiatorMembershipIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentGuardianNotesService.ClearByGuardian(
+                CreateAppointment(Guid.CreateVersion7()),
+                CreateValidContext() with
+                {
+                    InitiatorMembership = null!,
+                }
+            );
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void ClearByGuardian_ShouldThrowValidation_WhenTargetMismatch()
+    {
+        // Arrange
+        var target = CreateMinorPatient();
+        var appointment = CreateAppointment(Guid.CreateVersion7()); // different patient id
+        var context = new UpdateGuardianNotesContext
+        {
+            TargetPatient = target,
+            InitiatorMembership = CreateParentMembership(target.Id, Guid.CreateVersion7()),
+        };
+
+        // Act
+        var act = () => AppointmentGuardianNotesService.ClearByGuardian(appointment, context);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Appointment.DataMismatch);
+    }
+
+    [Fact]
+    public void ClearByGuardian_ShouldThrowValidation_WhenMembershipMismatch()
+    {
+        // Arrange
+        var target = CreateMinorPatient();
+        var appointment = CreateAppointment(target.Id);
+        var context = new UpdateGuardianNotesContext
+        {
+            TargetPatient = target,
+            InitiatorMembership = CreateParentMembership(
+                Guid.CreateVersion7(),
+                Guid.CreateVersion7()
+            ),
+        };
+
+        // Act
+        var act = () => AppointmentGuardianNotesService.ClearByGuardian(appointment, context);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Appointment.DataMismatch);
+    }
+
+    [Fact]
+    public void ClearByGuardian_ShouldThrowValidation_WhenNoteIsEmptyAndStatusIsNotAllowed()
+    {
+        // Arrange
+        var target = CreateMinorPatient();
+        var appointment = CreateAppointment(target.Id);
+
+        appointment.MarkAsRequiresReassignment();
+
+        var context = new UpdateGuardianNotesContext
+        {
+            TargetPatient = target,
+            InitiatorMembership = CreateParentMembership(target.Id, Guid.CreateVersion7()),
+        };
+
+        // Act
+        var act = () => AppointmentGuardianNotesService.ClearByGuardian(appointment, context);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Appointment.CannotClearNotes);
+    }
+
+    [Fact]
+    public void ClearByGuardian_ShouldClearNotesAndAuthor_WhenOriginalAuthorClears()
+    {
+        // Arrange
+        var target = CreateMinorPatient();
+        var authorId = Guid.CreateVersion7();
+        var appointment = CreateAppointment(target.Id);
+
+        appointment.UpdateGuardianNotes("note", authorId);
+
+        var context = new UpdateGuardianNotesContext
+        {
+            TargetPatient = target,
+            InitiatorMembership = CreateParentMembership(target.Id, authorId),
+        };
+
+        // Act
+        AppointmentGuardianNotesService.ClearByGuardian(appointment, context);
+
+        // Assert
+        appointment.GuardianNotes.Should().BeEmpty();
+        appointment.GuardianNotesAuthorUserId.Should().BeNull();
+    }
+
+    [Fact]
+    public void ClearByGuardian_ShouldThrowUnauthorized_WhenNonAuthorGuardianClears()
+    {
+        // Arrange
+        var target = CreateMinorPatient();
+        var appointment = CreateAppointment(target.Id);
+
+        appointment.UpdateGuardianNotes("notes", Guid.CreateVersion7());
+
+        var context = new UpdateGuardianNotesContext
+        {
+            TargetPatient = target,
+            InitiatorMembership = CreateParentMembership(target.Id, Guid.CreateVersion7()),
+        };
+
+        // Act
+        var act = () => AppointmentGuardianNotesService.ClearByGuardian(appointment, context);
+
+        // Assert
+        act.Should()
+            .Throw<PatientAccessUnauthorizedException>()
+            .WithMessage(DomainErrors.Patient.UnauthorizedAccess);
+
+        appointment.GuardianNotes.Should().Be("notes");
+    }
+
+    [Fact]
+    public void ClearByGuardian_ShouldThrowUnauthorized_WhenInitiatorIsSelf()
+    {
+        // Arrange
+        var target = CreateMinorPatient();
+        var appointment = CreateAppointment(target.Id);
+
+        appointment.UpdateGuardianNotes("Original", Guid.CreateVersion7());
+
+        var context = new UpdateGuardianNotesContext
+        {
+            TargetPatient = target,
+            InitiatorMembership = FamilyMembership.CreateSelf(
+                target.Id,
+                Guid.CreateVersion7(),
+                _fakeTime.GetUtcNow().UtcDateTime
+            ),
+        };
+
+        // Act
+        var act = () => AppointmentGuardianNotesService.ClearByGuardian(appointment, context);
+
+        // Assert
+        act.Should()
+            .Throw<PatientAccessUnauthorizedException>()
+            .WithMessage(DomainErrors.Patient.UnauthorizedAccess);
+    }
+
+    [Fact]
+    public void ClearByGuardian_ShouldThrowValidation_WhenPatientIsAdult()
+    {
+        // Arrange
+        var adultPatient = Patient.CreateProfile(
+            PersonName.Create("rainbow", null, "dash"),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-21)),
+            BiologicalSex.Female,
+            Address.Create(
+                "123 Main Street",
+                AddressState.California,
+                "90210",
+                Country.UnitedStates
+            ),
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        var appointment = CreateAppointment(adultPatient.Id);
+        var authorId = Guid.CreateVersion7();
+
+        appointment.UpdateGuardianNotes("notes", authorId);
+
+        var context = new UpdateGuardianNotesContext
+        {
+            TargetPatient = adultPatient,
+            InitiatorMembership = CreateParentMembership(adultPatient.Id, authorId),
+        };
+
+        // Act
+        var act = () => AppointmentGuardianNotesService.ClearByGuardian(appointment, context);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Appointment.GuardianRequiresMinor);
+    }
+
+    [Fact]
+    public void ClearByGuardian_ShouldThrowValidation_WhenPatientIsExactlyAdultAge()
+    {
+        // Arrange
+        var scheduledDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2));
+        var target = Patient.CreateProfile(
+            PersonName.Create("discord", null, "test"),
+            scheduledDate.AddYears(-FamilyMembership.MinimumAdultAge),
+            BiologicalSex.Male,
+            Address.Create(
+                "123 Main Street",
+                AddressState.California,
+                "90210",
+                Country.UnitedStates
+            ),
+            _fakeTime.GetUtcNow().UtcDateTime
+        );
+
+        var authorId = Guid.CreateVersion7();
+        var appointment = CreateAppointment(target.Id);
+        appointment.UpdateGuardianNotes("notes", authorId);
+
+        var context = new UpdateGuardianNotesContext
+        {
+            TargetPatient = target,
+            InitiatorMembership = CreateParentMembership(target.Id, authorId),
+        };
+
+        // Act
+        var act = () => AppointmentGuardianNotesService.ClearByGuardian(appointment, context);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Appointment.GuardianRequiresMinor);
+
+        appointment.GuardianNotes.Should().Be("notes");
+        appointment.GuardianNotesAuthorUserId.Should().Be(authorId);
+    }
+
     private FamilyMembership CreateParentMembership(Guid patientId, Guid userId) =>
         FamilyMembership.CreateFamilyMember(
             patientId,
