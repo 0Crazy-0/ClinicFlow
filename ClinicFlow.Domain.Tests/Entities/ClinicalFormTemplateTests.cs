@@ -66,6 +66,21 @@ public class ClinicalFormTemplateTests
     }
 
     [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Create_ShouldThrowException_WhenDescriptionIsEmpty(string? description)
+    {
+        // Act
+        var act = () => ClinicalFormTemplate.Create("CODE_01", "Name", description!, "{}");
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Theory]
     [InlineData("{invalid}")]
     [InlineData("{")]
     [InlineData("not json67")]
@@ -123,6 +138,24 @@ public class ClinicalFormTemplateTests
 
         // Act
         var act = () => template.UpdateDetails(name!, "Some description");
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void UpdateDetails_ShouldThrowException_WhenDescriptionIsEmpty(string? description)
+    {
+        // Arrange
+        var template = CreateDefaultTemplate();
+
+        // Act
+        var act = () => template.UpdateDetails("Name", description!);
 
         // Assert
         act.Should()

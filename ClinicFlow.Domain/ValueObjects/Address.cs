@@ -60,8 +60,8 @@ public partial record Address
     )
     {
         Guard.NotNullOrWhiteSpace(line);
-        Guard.NotNullOrWhiteSpace(postalCode);
         Guard.IsDefined(state);
+        Guard.NotNullOrWhiteSpace(postalCode);
         Guard.IsDefined(country);
 
         var trimmedLine = line.Trim();

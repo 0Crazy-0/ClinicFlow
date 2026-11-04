@@ -26,6 +26,14 @@ public record EmergencyContact
         string phoneNumber
     )
     {
+        Guard.NotNullOrWhiteSpace(firstName);
+
+        if (middleName is not null)
+            Guard.NotNullOrWhiteSpace(middleName);
+
+        Guard.NotNullOrWhiteSpace(firstSurname);
+        Guard.NotNullOrWhiteSpace(phoneNumber);
+
         var phoneVo = PhoneNumber.Create(phoneNumber);
 
         return Create(PersonName.Create(firstName, middleName, firstSurname), phoneVo);

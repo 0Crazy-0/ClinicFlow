@@ -95,6 +95,7 @@ public class MedicalRecord : BaseEntity
         Guard.NotEmpty(patientId);
         Guard.NotEmpty(doctorId);
         Guard.NotEmpty(appointmentId);
+        Guard.NotNullOrWhiteSpace(chiefComplaint);
         Guard.IsDefined(protectedCareCategory);
 
         if (
@@ -112,8 +113,6 @@ public class MedicalRecord : BaseEntity
             throw new DomainValidationException(
                 DomainErrors.MedicalRecord.GuardianInitiatedTreatmentNotApplicable
             );
-
-        Guard.NotNullOrWhiteSpace(chiefComplaint);
 
         var record = new MedicalRecord(
             patientId,

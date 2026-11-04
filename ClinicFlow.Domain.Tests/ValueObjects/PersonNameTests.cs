@@ -280,6 +280,21 @@ public class PersonNameTests
             .Be("jose garcia-marquez");
     }
 
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void NormalizeForSearch_ShouldThrowException_WhenValueIsNullOrWhiteSpace(string? value)
+    {
+        // Arrange & Act
+        var act = () => PersonName.NormalizeForSearch(value!);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
     [Fact]
     public void ToString_ShouldJoinParts()
     {

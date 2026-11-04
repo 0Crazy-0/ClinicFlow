@@ -145,6 +145,11 @@ public class Appointment : BaseEntity
 
     internal void Cancel(Guid cancelledByUserId, string? reason, DateOnly cancelledAt)
     {
+        Guard.NotEmpty(cancelledByUserId);
+
+        if (reason is not null)
+            Guard.NotNullOrWhiteSpace(reason);
+
         Guard.NotDefault(cancelledAt);
 
         EnsureCancellable();
@@ -160,6 +165,11 @@ public class Appointment : BaseEntity
 
     internal void CancelLate(Guid cancelledByUserId, string? reason, DateOnly cancelledAt)
     {
+        Guard.NotEmpty(cancelledByUserId);
+
+        if (reason is not null)
+            Guard.NotNullOrWhiteSpace(reason);
+
         Guard.NotDefault(cancelledAt);
 
         EnsureCancellable();
@@ -179,6 +189,11 @@ public class Appointment : BaseEntity
     /// </remarks>
     public void CheckIn(DateTime checkedInAt, string? receptionistNotes = null)
     {
+        Guard.NotDefault(checkedInAt);
+
+        if (receptionistNotes is not null)
+            Guard.NotNullOrWhiteSpace(receptionistNotes);
+
         var checkedInDate = DateOnly.FromDateTime(checkedInAt);
 
         if (checkedInDate != ScheduledDate)
@@ -206,6 +221,9 @@ public class Appointment : BaseEntity
     /// </remarks>
     public void Start(Guid initiatorDoctorId, DateTime startedAt)
     {
+        Guard.NotEmpty(initiatorDoctorId);
+        Guard.NotDefault(startedAt);
+
         if (DateOnly.FromDateTime(startedAt) != ScheduledDate)
             throw new DomainValidationException(DomainErrors.Appointment.InvalidStartDate);
 
@@ -226,6 +244,8 @@ public class Appointment : BaseEntity
 
     internal void Complete(DateTime completedAt)
     {
+        Guard.NotDefault(completedAt);
+
         if (completedAt < ScheduledDate.ToDateTime(TimeSlot.Start))
             throw new DomainValidationException(DomainErrors.Appointment.InvalidCompletionDate);
 
@@ -295,6 +315,8 @@ public class Appointment : BaseEntity
 
     public void MarkAsNoShowByDoctor(Guid initiatorDoctorId)
     {
+        Guard.NotEmpty(initiatorDoctorId);
+
         if (initiatorDoctorId != DoctorId)
             throw new AppointmentNoShowUnauthorizedException(
                 DomainErrors.Appointment.UnauthorizedNoShow
@@ -305,6 +327,9 @@ public class Appointment : BaseEntity
 
     public void UpdatePatientNotes(string? notes)
     {
+        if (notes is not null)
+            Guard.NotNullOrWhiteSpace(notes);
+
         if (Status is not (AppointmentStatus.Scheduled or AppointmentStatus.CheckedIn))
             throw new DomainValidationException(DomainErrors.Appointment.CannotUpdateNotes);
 
@@ -320,10 +345,13 @@ public class Appointment : BaseEntity
     /// </remarks>
     internal void UpdateGuardianNotes(string? notes, Guid authorUserId)
     {
-        if (Status is not (AppointmentStatus.Scheduled or AppointmentStatus.CheckedIn))
-            throw new DomainValidationException(DomainErrors.Appointment.CannotUpdateNotes);
+        if (notes is not null)
+            Guard.NotNullOrWhiteSpace(notes);
 
         Guard.NotEmpty(authorUserId);
+
+        if (Status is not (AppointmentStatus.Scheduled or AppointmentStatus.CheckedIn))
+            throw new DomainValidationException(DomainErrors.Appointment.CannotUpdateNotes);
 
         if (notes?.Length > MaxNotesLength)
             throw new DomainValidationException(DomainErrors.Validation.ValueTooLong);
@@ -340,6 +368,9 @@ public class Appointment : BaseEntity
 
     public void UpdateReceptionistNotes(string? notes)
     {
+        if (notes is not null)
+            Guard.NotNullOrWhiteSpace(notes);
+
         if (Status is not AppointmentStatus.CheckedIn)
             throw new DomainValidationException(DomainErrors.Appointment.CannotUpdateNotes);
 
@@ -351,6 +382,9 @@ public class Appointment : BaseEntity
 
     public void UpdateStaffInternalNotes(string? notes)
     {
+        if (notes is not null)
+            Guard.NotNullOrWhiteSpace(notes);
+
         if (Status is not AppointmentStatus.CheckedIn)
             throw new DomainValidationException(DomainErrors.Appointment.CannotUpdateNotes);
 

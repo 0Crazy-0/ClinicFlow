@@ -10,6 +10,11 @@ public sealed class UpdateDoctorProfileCommandValidator
     public UpdateDoctorProfileCommandValidator()
     {
         RuleFor(x => x.DoctorId).NotEmpty().WithMessage(DomainErrors.Validation.InvalidValue);
+        RuleFor(x => x.Biography)
+            .NotEmpty()
+            .WithMessage(DomainErrors.Validation.ValueRequired)
+            .Must(biography => !string.IsNullOrWhiteSpace(biography))
+            .WithMessage(DomainErrors.Validation.ValueRequired);
         RuleFor(x => x.ConsultationRoomNumber)
             .GreaterThanOrEqualTo(ConsultationRoom.MinimumNumber)
             .WithMessage(DomainErrors.Validation.ValueMustBePositive)

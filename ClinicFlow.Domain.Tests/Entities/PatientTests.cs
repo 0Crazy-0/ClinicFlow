@@ -124,13 +124,13 @@ public class PatientTests
     }
 
     [Fact]
-    public void CreateProfile_ShouldThrowException_WhenDateOfBirthIsInTheFuture()
+    public void CreateProfile_ShouldThrowException_WhenFullNameIsNull()
     {
         // Arrange & Act
         var act = () =>
             Patient.CreateProfile(
-                PersonName.Create("John", null, "Doe"),
-                DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
+                null!,
+                DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
                 BiologicalSex.Male,
                 Address.Create(
                     "123 Main Street",
@@ -144,7 +144,101 @@ public class PatientTests
         // Assert
         act.Should()
             .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.Validation.ValueCannotBeInFuture);
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
+    public void CreateProfile_ShouldThrowException_WhenDateOfBirthIsDefault()
+    {
+        // Arrange
+        var referenceTime = _fakeTime.GetUtcNow().UtcDateTime;
+
+        // Act
+        var act = () =>
+            Patient.CreateProfile(
+                PersonName.Create("John", null, "Doe"),
+                default,
+                BiologicalSex.Male,
+                Address.Create(
+                    "123 Main Street",
+                    AddressState.California,
+                    "90210",
+                    Country.UnitedStates
+                ),
+                referenceTime
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void CreateProfile_ShouldThrowDomainValidationException_WhenBiologicalSexIsUndefined()
+    {
+        // Arrange & Act
+        var act = () =>
+            Patient.CreateProfile(
+                PersonName.Create("Crazy", null, "love"),
+                DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-67)),
+                (BiologicalSex)967,
+                Address.Create(
+                    "123 Main Street",
+                    AddressState.California,
+                    "90210",
+                    Country.UnitedStates
+                ),
+                _fakeTime.GetUtcNow().UtcDateTime
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.InvalidEnumValue);
+    }
+
+    [Fact]
+    public void CreateProfile_ShouldThrowException_WhenHomeAddressIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            Patient.CreateProfile(
+                PersonName.Create("John", null, "Doe"),
+                DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
+                BiologicalSex.Male,
+                null!,
+                _fakeTime.GetUtcNow().UtcDateTime
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
+    public void CreateProfile_ShouldThrowException_WhenReferenceTimeIsDefault()
+    {
+        // Arrange & Act
+        var act = () =>
+            Patient.CreateProfile(
+                PersonName.Create("John", null, "Doe"),
+                DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-20)),
+                BiologicalSex.Male,
+                Address.Create(
+                    "123 Main Street",
+                    AddressState.California,
+                    "90210",
+                    Country.UnitedStates
+                ),
+                default
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Theory]
@@ -174,6 +268,30 @@ public class PatientTests
         act.Should()
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void CreateProfile_ShouldThrowException_WhenDateOfBirthIsInTheFuture()
+    {
+        // Arrange & Act
+        var act = () =>
+            Patient.CreateProfile(
+                PersonName.Create("John", null, "Doe"),
+                DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
+                BiologicalSex.Male,
+                Address.Create(
+                    "123 Main Street",
+                    AddressState.California,
+                    "90210",
+                    Country.UnitedStates
+                ),
+                _fakeTime.GetUtcNow().UtcDateTime
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueCannotBeInFuture);
     }
 
     [Fact]
@@ -226,100 +344,6 @@ public class PatientTests
         // Assert
         var patient = act.Should().NotThrow().Which;
         patient.DuplicateOverrideReason.Should().Be(reason);
-    }
-
-    [Fact]
-    public void CreateProfile_ShouldThrowException_WhenFullNameIsNull()
-    {
-        // Arrange & Act
-        var act = () =>
-            Patient.CreateProfile(
-                null!,
-                DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
-                BiologicalSex.Male,
-                Address.Create(
-                    "123 Main Street",
-                    AddressState.California,
-                    "90210",
-                    Country.UnitedStates
-                ),
-                _fakeTime.GetUtcNow().UtcDateTime
-            );
-
-        // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.General.RequiredFieldNull);
-    }
-
-    [Fact]
-    public void CreateProfile_ShouldThrowException_WhenDateOfBirthIsDefault()
-    {
-        // Arrange
-        var referenceTime = _fakeTime.GetUtcNow().UtcDateTime;
-
-        // Act
-        var act = () =>
-            Patient.CreateProfile(
-                PersonName.Create("John", null, "Doe"),
-                default,
-                BiologicalSex.Male,
-                Address.Create(
-                    "123 Main Street",
-                    AddressState.California,
-                    "90210",
-                    Country.UnitedStates
-                ),
-                referenceTime
-            );
-
-        // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.Validation.ValueRequired);
-    }
-
-    [Fact]
-    public void CreateProfile_ShouldThrowException_WhenAddressIsNull()
-    {
-        // Arrange & Act
-        var act = () =>
-            Patient.CreateProfile(
-                PersonName.Create("John", null, "Doe"),
-                DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-30)),
-                BiologicalSex.Male,
-                null!,
-                _fakeTime.GetUtcNow().UtcDateTime
-            );
-
-        // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.General.RequiredFieldNull);
-    }
-
-    [Fact]
-    public void CreateProfile_ShouldThrowDomainValidationException_WhenBiologicalSexIsUndefined()
-    {
-        // Arrange & Act
-        var act = () =>
-            Patient.CreateProfile(
-                PersonName.Create("Crazy", null, "love"),
-                DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-67)),
-                (BiologicalSex)967,
-                Address.Create(
-                    "123 Main Street",
-                    AddressState.California,
-                    "90210",
-                    Country.UnitedStates
-                ),
-                _fakeTime.GetUtcNow().UtcDateTime
-            );
-
-        // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.Validation.InvalidEnumValue);
     }
 
     [Fact]
@@ -445,6 +469,21 @@ public class PatientTests
     }
 
     [Fact]
+    public void UpdateMedicalProfile_ShouldThrowException_WhenBloodTypeIsNull()
+    {
+        // Arrange
+        var patient = CreateValidPatient();
+
+        // Act
+        var act = () => patient.UpdateMedicalProfile(null!, "None", "None");
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
     public void CorrectBiologicalSex_ShouldUpdateValueAndEmitEvent_WhenNewSexDiffers()
     {
         // Arrange
@@ -530,27 +569,6 @@ public class PatientTests
             .WithMessage(DomainErrors.Validation.InvalidEnumValue);
     }
 
-    [Fact]
-    public void CorrectBiologicalSex_ShouldThrowDomainValidationException_WhenCorrectedSexIsUnspecified()
-    {
-        // Arrange
-        var patient = CreateValidPatient();
-
-        // Act
-        var act = () =>
-            patient.CorrectBiologicalSex(
-                BiologicalSex.Unspecified,
-                "reason",
-                Guid.CreateVersion7(),
-                _fakeTime.GetUtcNow().UtcDateTime
-            );
-
-        // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.Validation.ValueRequired);
-    }
-
     [Theory]
     [InlineData(null)]
     [InlineData("")]
@@ -589,6 +607,48 @@ public class PatientTests
                 BiologicalSex.Female,
                 "reason",
                 Guid.Empty,
+                _fakeTime.GetUtcNow().UtcDateTime
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void CorrectBiologicalSex_ShouldThrowDomainValidationException_WhenCorrectedAtIsDefault()
+    {
+        // Arrange
+        var patient = CreateValidPatient();
+
+        // Act
+        var act = () =>
+            patient.CorrectBiologicalSex(
+                BiologicalSex.Female,
+                "reason",
+                Guid.CreateVersion7(),
+                default
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void CorrectBiologicalSex_ShouldThrowDomainValidationException_WhenCorrectedSexIsUnspecified()
+    {
+        // Arrange
+        var patient = CreateValidPatient();
+
+        // Act
+        var act = () =>
+            patient.CorrectBiologicalSex(
+                BiologicalSex.Unspecified,
+                "reason",
+                Guid.CreateVersion7(),
                 _fakeTime.GetUtcNow().UtcDateTime
             );
 
@@ -638,6 +698,21 @@ public class PatientTests
         // Assert
         act.Should().NotThrow();
         patient.SexAtBirth.Should().Be(BiologicalSex.Female);
+    }
+
+    [Fact]
+    public void UpdateEmergencyContact_ShouldThrowException_WhenEmergencyContactIsNull()
+    {
+        // Arrange
+        var patient = CreateValidPatient();
+
+        // Act
+        var act = () => patient.UpdateEmergencyContact(null!);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 
     [Fact]

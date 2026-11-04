@@ -67,7 +67,9 @@ public class User : BaseEntity
         DateTime referenceTime
     )
     {
+        Guard.NotNull(email);
         Guard.NotNullOrWhiteSpace(passwordHash);
+        Guard.NotNull(phoneNumber);
         Guard.IsDefined(role);
         Guard.NotDefault(referenceTime);
 
@@ -81,8 +83,13 @@ public class User : BaseEntity
     /// Creates the pending user account for a patient registered by reception, without
     /// password until its holder activates the account with the issued activation code.
     /// </summary>
-    public static User CreatePending(EmailAddress email, PhoneNumber phone) =>
-        new(email, passwordHash: null, phone, UserRole.Patient, activatedAt: null);
+    public static User CreatePending(EmailAddress email, PhoneNumber phone)
+    {
+        Guard.NotNull(email);
+        Guard.NotNull(phone);
+
+        return new(email, passwordHash: null, phone, UserRole.Patient, activatedAt: null);
+    }
 
     /// <summary>
     /// Sets the initial password of a pending account issued without one by reception. The first password can
@@ -115,6 +122,8 @@ public class User : BaseEntity
 
     internal void RecordLogin(DateTime loginTime)
     {
+        Guard.NotDefault(loginTime);
+
         if (!IsActive)
             throw new BusinessRuleValidationException(DomainErrors.User.AccountInactive);
 

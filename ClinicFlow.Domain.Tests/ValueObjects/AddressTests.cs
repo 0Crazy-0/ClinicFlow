@@ -95,6 +95,19 @@ public class AddressTests
             .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
+    [Fact]
+    public void Create_ShouldThrowException_WhenStateIsUndefined()
+    {
+        // Arrange & Act
+        var act = () =>
+            Address.Create("Av. Juárez s/n", (AddressState)999, "06050", Country.Mexico);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.InvalidEnumValue);
+    }
+
     [Theory]
     [InlineData(null)]
     [InlineData("")]
@@ -114,19 +127,6 @@ public class AddressTests
         act.Should()
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.Validation.ValueRequired);
-    }
-
-    [Fact]
-    public void Create_ShouldThrowException_WhenStateIsUndefined()
-    {
-        // Arrange & Act
-        var act = () =>
-            Address.Create("Av. Juárez s/n", (AddressState)999, "06050", Country.Mexico);
-
-        // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.Validation.InvalidEnumValue);
     }
 
     [Fact]

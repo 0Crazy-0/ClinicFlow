@@ -72,9 +72,9 @@ public class PatientPenalty : BaseEntity
     )
     {
         Guard.NotEmpty(patientId);
-        Guard.NotDefault(referenceTime);
         Guard.NotNullOrWhiteSpace(reason);
         Guard.IsDefined(duration);
+        Guard.NotDefault(referenceTime);
 
         return new PatientPenalty(
             patientId,
@@ -93,9 +93,9 @@ public class PatientPenalty : BaseEntity
     )
     {
         Guard.NotEmpty(patientId);
-        Guard.NotDefault(referenceTime);
         Guard.NotNullOrWhiteSpace(reason);
         Guard.IsDefined(duration);
+        Guard.NotDefault(referenceTime);
 
         return new PatientPenalty(
             patientId,

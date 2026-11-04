@@ -83,10 +83,11 @@ public class AppointmentTypeDefinition : SoftDeletableEntity
         ProtectedCategory? protectedCareCategory = null
     )
     {
-        Guard.NotNullOrWhiteSpace(name);
-        Guard.NotNull(duration);
         Guard.IsDefined(category);
         Guard.IsDefined(purpose);
+        Guard.NotNullOrWhiteSpace(name);
+        Guard.NotNullOrWhiteSpace(description);
+        Guard.NotNull(duration);
         Guard.IsDefined(protectedCareCategory);
 
         return new AppointmentTypeDefinition(
@@ -109,10 +110,11 @@ public class AppointmentTypeDefinition : SoftDeletableEntity
         EncounterDuration duration
     )
     {
-        Guard.NotNullOrWhiteSpace(name);
-        Guard.NotNull(duration);
         Guard.IsDefined(category);
         Guard.IsDefined(purpose);
+        Guard.NotNullOrWhiteSpace(name);
+        Guard.NotNullOrWhiteSpace(description);
+        Guard.NotNull(duration);
 
         Category = category;
         Purpose = purpose;
@@ -153,12 +155,12 @@ public class AppointmentTypeDefinition : SoftDeletableEntity
 
     public void AddAllowedSpecialty(Guid specialtyId)
     {
+        Guard.NotEmpty(specialtyId);
+
         if (IsUnrestrictedBySpecialty)
             throw new DomainValidationException(
                 DomainErrors.AppointmentType.CannotAddSpecialtyToGlobalType
             );
-
-        Guard.NotEmpty(specialtyId);
 
         if (_allowedSpecialtyIds.Contains(specialtyId))
             throw new DomainValidationException(
@@ -170,6 +172,8 @@ public class AppointmentTypeDefinition : SoftDeletableEntity
 
     public void RemoveAllowedSpecialty(Guid specialtyId)
     {
+        Guard.NotEmpty(specialtyId);
+
         if (IsUnrestrictedBySpecialty)
             throw new DomainValidationException(
                 DomainErrors.AppointmentType.CannotRemoveSpecialtyFromGlobalType
@@ -199,6 +203,7 @@ public class AppointmentTypeDefinition : SoftDeletableEntity
     public void AddRequiredTemplate(ClinicalFormTemplate template)
     {
         Guard.NotNull(template);
+
         if (_requiredTemplates.Any(t => t.Id == template.Id || t.Code == template.Code))
             throw new DomainValidationException(
                 DomainErrors.AppointmentType.TemplateAlreadyRequired

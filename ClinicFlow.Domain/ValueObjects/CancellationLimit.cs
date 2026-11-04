@@ -36,6 +36,9 @@ public record CancellationLimit
 
     internal bool IsNoticePeriodMet(DateTime appointmentDateTime, DateTime referenceTime)
     {
+        Guard.NotDefault(appointmentDateTime);
+        Guard.NotDefault(referenceTime);
+
         var timeUntilAppointment = (appointmentDateTime - referenceTime).TotalHours;
         return timeUntilAppointment >= Hours;
     }

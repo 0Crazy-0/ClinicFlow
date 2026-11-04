@@ -33,17 +33,28 @@ public class UpdateDoctorProfileCommandValidatorTests
         result.ShouldNotHaveAnyValidationErrors();
     }
 
-    [Fact]
-    public void Validate_ShouldBeValid_WhenBiographyIsEmpty()
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Validate_ShouldHaveError_WhenBiographyIsEmpty(string? biography)
     {
         // Arrange
-        var command = new UpdateDoctorProfileCommand(Guid.CreateVersion7(), "", 10, "Room A", 1);
+        var command = new UpdateDoctorProfileCommand(
+            Guid.CreateVersion7(),
+            biography!,
+            10,
+            "Room A",
+            1
+        );
 
         // Act
         var result = _sut.TestValidate(command);
 
         // Assert
-        result.ShouldNotHaveAnyValidationErrors();
+        result
+            .ShouldHaveValidationErrorFor(x => x.Biography)
+            .WithErrorMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Fact]
