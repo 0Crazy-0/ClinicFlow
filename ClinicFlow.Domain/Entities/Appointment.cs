@@ -146,6 +146,10 @@ public class Appointment : BaseEntity
     internal void Cancel(Guid cancelledByUserId, string? reason, DateOnly cancelledAt)
     {
         Guard.NotEmpty(cancelledByUserId);
+
+        if (reason is not null)
+            Guard.NotNullOrWhiteSpace(reason);
+
         Guard.NotDefault(cancelledAt);
 
         EnsureCancellable();

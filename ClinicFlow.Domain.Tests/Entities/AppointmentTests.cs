@@ -209,6 +209,25 @@ public class AppointmentTests
             .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Cancel_ShouldThrowException_WhenReasonIsWhiteSpace(string reason)
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        var userId = Guid.CreateVersion7();
+        var cancelledAt = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+
+        // Act
+        var act = () => appointment.Cancel(userId, reason, cancelledAt);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
     [Fact]
     public void Cancel_ShouldThrowException_WhenCancelledAtIsDefault()
     {
