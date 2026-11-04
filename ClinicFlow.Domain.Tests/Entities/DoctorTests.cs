@@ -278,6 +278,8 @@ public class DoctorTests
         act.Should()
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.Validation.ValueRequired);
+
+        doctor.IsDeleted.Should().BeTrue();
     }
 
     [Fact]
@@ -294,6 +296,8 @@ public class DoctorTests
         act.Should()
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.General.RequiredFieldNull);
+
+        doctor.IsDeleted.Should().BeTrue();
     }
 
     [Fact]
