@@ -67,12 +67,9 @@ public static class AppointmentGuardianNotesService
         )
             throw new DomainValidationException(DomainErrors.Appointment.DataMismatch);
 
-        if (appointment.GuardianNotes.Length > 0)
+        if (appointment.GuardianNotesAuthorUserId is { } authorUserId)
         {
-            // A non-empty note always carries its author; the bang documents the invariant.
-            context.InitiatorMembership.EnsureGuardianNotesEditAccess(
-                appointment.GuardianNotesAuthorUserId!.Value
-            );
+            context.InitiatorMembership.EnsureGuardianNotesEditAccess(authorUserId);
 
             if (
                 context.TargetPatient.GetAge(appointment.ScheduledDate)
