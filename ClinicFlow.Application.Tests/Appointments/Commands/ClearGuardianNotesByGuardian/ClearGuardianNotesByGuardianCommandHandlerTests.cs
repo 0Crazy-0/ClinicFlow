@@ -153,7 +153,7 @@ public class ClearGuardianNotesByGuardianCommandHandlerTests
         _familyMembershipRepositoryMock
             .Setup(r =>
                 r.GetActiveMembershipAsync(
-                    Guid.CreateVersion7(),
+                    command.InitiatorUserId,
                     appointment.PatientId,
                     It.IsAny<CancellationToken>()
                 )
@@ -168,6 +168,15 @@ public class ClearGuardianNotesByGuardianCommandHandlerTests
             .ThrowAsync<PatientAccessUnauthorizedException>()
             .WithMessage(DomainErrors.Patient.UnauthorizedAccess);
 
+        _familyMembershipRepositoryMock.Verify(
+            r =>
+                r.GetActiveMembershipAsync(
+                    command.InitiatorUserId,
+                    appointment.PatientId,
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Once
+        );
         _patientRepositoryMock.Verify(
             r => r.GetByIdAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()),
             Times.Never
