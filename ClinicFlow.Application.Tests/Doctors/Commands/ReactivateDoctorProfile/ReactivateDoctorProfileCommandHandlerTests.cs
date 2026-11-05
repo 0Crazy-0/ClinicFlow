@@ -30,24 +30,23 @@ public class ReactivateDoctorProfileCommandHandlerTests
     public async Task Handle_ShouldReactivateDoctor_WhenValidCommand()
     {
         // Arrange
+        var personName = PersonName.Create("derpy", null, "test");
+        var medicalLicenseNumber = MedicalLicenseNumber.Create("12345");
+        var biography = "biografy";
+        var consultationRoom = ConsultationRoom.Create(1, "Old Room", 1);
+
         var doctor = Doctor.Create(
             Guid.CreateVersion7(),
-            PersonName.Create("Test", null, "Doctor"),
-            MedicalLicenseNumber.Create("12345"),
+            personName,
+            medicalLicenseNumber,
             Guid.CreateVersion7(),
-            "Old biography",
-            ConsultationRoom.Create(1, "Old Room", 1)
+            biography,
+            consultationRoom
         );
 
         doctor.Suspend();
 
-        var command = new ReactivateDoctorProfileCommand(
-            doctor.Id,
-            "Biography",
-            5,
-            "Pediatrics",
-            2
-        );
+        var command = new ReactivateDoctorProfileCommand(doctor.Id);
 
         _doctorRepositoryMock
             .Setup(x => x.GetByIdAsync(command.DoctorId, It.IsAny<CancellationToken>()))
@@ -60,24 +59,17 @@ public class ReactivateDoctorProfileCommandHandlerTests
         _unitOfWorkMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
 
         doctor.IsDeleted.Should().BeFalse();
-        doctor.FullName.Should().Be(doctor.FullName);
-        doctor.Biography.Should().Be(command.Biography);
-        doctor.Room.Number.Should().Be(command.ConsultationRoomNumber);
-        doctor.Room.Name.Should().Be(command.ConsultationRoomName);
-        doctor.Room.Floor.Should().Be(command.ConsultationRoomFloor);
+        doctor.FullName.Should().BeEquivalentTo(personName);
+        doctor.LicenseNumber.Should().BeEquivalentTo(medicalLicenseNumber);
+        doctor.Biography.Should().Be(biography);
+        doctor.Room.Should().BeEquivalentTo(consultationRoom);
     }
 
     [Fact]
     public async Task Handle_ShouldThrowEntityNotFoundException_WhenDoctorNotFound()
     {
         // Arrange
-        var command = new ReactivateDoctorProfileCommand(
-            Guid.CreateVersion7(),
-            "Biography",
-            1,
-            "Room",
-            1
-        );
+        var command = new ReactivateDoctorProfileCommand(Guid.CreateVersion7());
 
         _doctorRepositoryMock
             .Setup(x => x.GetByIdAsync(command.DoctorId, It.IsAny<CancellationToken>()))

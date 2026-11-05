@@ -243,61 +243,22 @@ public class DoctorTests
     }
 
     [Fact]
-    public void Reactivate_ShouldUndoDeletionAndUpdateProfile()
+    public void Reactivate_ShouldUndoDeletion()
     {
         // Arrange
         var doctor = CreateDoctor();
+
         doctor.Suspend();
 
-        var newBiography = "biography2";
-        var newRoom = ConsultationRoom.Create(5, "Pediatrics", 2);
-
         // Act
-        doctor.Reactivate(newBiography, newRoom);
+        doctor.Reactivate();
 
         // Assert
         doctor.IsDeleted.Should().BeFalse();
-        doctor.Biography.Should().Be(newBiography);
-        doctor.Room.Should().Be(newRoom);
-    }
-
-    [Theory]
-    [InlineData(null)]
-    [InlineData("")]
-    [InlineData("   ")]
-    public void Reactivate_ShouldThrowException_WhenBiographyIsEmpty(string? biography)
-    {
-        // Arrange
-        var doctor = CreateDoctor();
-        doctor.Suspend();
-
-        // Act
-        var act = () => doctor.Reactivate(biography!, ConsultationRoom.Create(2, "Room B", 2));
-
-        // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.Validation.ValueRequired);
-
-        doctor.IsDeleted.Should().BeTrue();
-    }
-
-    [Fact]
-    public void Reactivate_ShouldThrowException_WhenConsultationRoomIsNull()
-    {
-        // Arrange
-        var doctor = CreateDoctor();
-        doctor.Suspend();
-
-        // Act
-        var act = () => doctor.Reactivate("Biography", null!);
-
-        // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.General.RequiredFieldNull);
-
-        doctor.IsDeleted.Should().BeTrue();
+        doctor.Biography.Should().Be("Biography");
+        doctor.Room.Number.Should().Be(1);
+        doctor.Room.Name.Should().Be("Room A");
+        doctor.Room.Floor.Should().Be(1);
     }
 
     [Fact]
@@ -306,11 +267,10 @@ public class DoctorTests
         // Arrange
         var doctor = CreateDoctor();
 
-        // Act
-        var act = () => doctor.Reactivate("Bio", ConsultationRoom.Create(2, "Room B", 2));
-
-        // Assert
-        act.Should()
+        // Act & Assert
+        doctor
+            .Invoking(d => d.Reactivate())
+            .Should()
             .Throw<BusinessRuleValidationException>()
             .WithMessage(DomainErrors.Doctor.AlreadyActive);
     }

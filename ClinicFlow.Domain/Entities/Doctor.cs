@@ -91,17 +91,15 @@ public class Doctor : SoftDeletableEntity
         AddDomainEvent(new DoctorSuspendedEvent(Id));
     }
 
-    public void Reactivate(string biography, ConsultationRoom consultationRoom)
+    /// <remarks>
+    /// To update the profile information (biography or consultation room) of a suspended doctor,
+    /// use <see cref="UpdateProfile"/> instead.
+    /// </remarks>
+    public void Reactivate()
     {
-        Guard.NotNullOrWhiteSpace(biography);
-        Guard.NotNull(consultationRoom);
-
         if (!IsDeleted)
             throw new BusinessRuleValidationException(DomainErrors.Doctor.AlreadyActive);
 
         UndoDeletion();
-
-        Biography = biography;
-        Room = consultationRoom;
     }
 }
