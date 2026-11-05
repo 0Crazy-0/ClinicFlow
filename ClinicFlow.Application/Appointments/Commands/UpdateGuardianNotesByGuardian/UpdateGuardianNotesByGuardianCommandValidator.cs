@@ -1,4 +1,5 @@
 using ClinicFlow.Domain.Common;
+using ClinicFlow.Domain.Entities;
 using FluentValidation;
 
 namespace ClinicFlow.Application.Appointments.Commands.UpdateGuardianNotesByGuardian;
@@ -12,6 +13,9 @@ public sealed class UpdateGuardianNotesByGuardianCommandValidator
         RuleFor(x => x.InitiatorUserId)
             .NotEmpty()
             .WithMessage(DomainErrors.Validation.InvalidValue);
-        RuleFor(x => x.Notes).MaximumLength(500).WithMessage(DomainErrors.Validation.ValueTooLong);
+        RuleFor(x => x.Notes).NotEmpty().WithMessage(DomainErrors.Validation.ValueRequired);
+        RuleFor(x => x.Notes)
+            .MaximumLength(Appointment.MaxNotesLength)
+            .WithMessage(DomainErrors.Validation.ValueTooLong);
     }
 }

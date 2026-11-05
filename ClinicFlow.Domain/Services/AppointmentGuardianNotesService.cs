@@ -49,4 +49,35 @@ public static class AppointmentGuardianNotesService
 
         appointment.UpdateGuardianNotes(args.Notes, context.InitiatorMembership.UserId);
     }
+
+    /// <remarks>
+    /// an already empty note is an authorized no-op because there is
+    /// nothing owned to clear. The appointment status gate stays inside the entity.
+    /// </remarks>
+    public static void ClearByGuardian(Appointment appointment, UpdateGuardianNotesContext context)
+    {
+        ArgumentNullException.ThrowIfNull(appointment);
+        ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(context.TargetPatient);
+        ArgumentNullException.ThrowIfNull(context.InitiatorMembership);
+
+        if (
+            context.TargetPatient.Id != appointment.PatientId
+            || context.InitiatorMembership.PatientId != appointment.PatientId
+        )
+            throw new DomainValidationException(DomainErrors.Appointment.DataMismatch);
+
+        if (appointment.GuardianNotesAuthorUserId is { } authorUserId)
+        {
+            context.InitiatorMembership.EnsureGuardianNotesEditAccess(authorUserId);
+
+            if (
+                context.TargetPatient.GetAge(appointment.ScheduledDate)
+                >= FamilyMembership.MinimumAdultAge
+            )
+                throw new DomainValidationException(DomainErrors.Appointment.GuardianRequiresMinor);
+        }
+
+        appointment.ClearGuardianNotes();
+    }
 }

@@ -5,5 +5,5 @@ namespace ClinicFlow.Application.Appointments.Commands.UpdateGuardianNotesByGuar
 public sealed record UpdateGuardianNotesByGuardianCommand(
     Guid AppointmentId,
     Guid InitiatorUserId,
-    string? Notes
+    string Notes
 ) : IRequest;

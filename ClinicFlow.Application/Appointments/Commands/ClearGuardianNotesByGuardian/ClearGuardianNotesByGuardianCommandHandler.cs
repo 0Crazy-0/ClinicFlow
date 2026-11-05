@@ -1,0 +1,63 @@
+using ClinicFlow.Domain.Common;
+using ClinicFlow.Domain.Entities;
+using ClinicFlow.Domain.Exceptions.Base;
+using ClinicFlow.Domain.Exceptions.Patients;
+using ClinicFlow.Domain.Interfaces;
+using ClinicFlow.Domain.Interfaces.Repositories;
+using ClinicFlow.Domain.Services;
+using ClinicFlow.Domain.Services.Contexts.GuardianNotes;
+using MediatR;
+
+namespace ClinicFlow.Application.Appointments.Commands.ClearGuardianNotesByGuardian;
+
+public sealed class ClearGuardianNotesByGuardianCommandHandler(
+    IAppointmentRepository appointmentRepository,
+    IPatientRepository patientRepository,
+    IFamilyMembershipRepository familyMembershipRepository,
+    IUnitOfWork unitOfWork
+) : IRequestHandler<ClearGuardianNotesByGuardianCommand>
+{
+    /// <inheritdoc />
+    public async Task Handle(
+        ClearGuardianNotesByGuardianCommand request,
+        CancellationToken cancellationToken
+    )
+    {
+        var appointment =
+            await appointmentRepository.GetByIdAsync(request.AppointmentId, cancellationToken)
+            ?? throw new EntityNotFoundException(
+                DomainErrors.General.NotFound,
+                nameof(Appointment),
+                request.AppointmentId
+            );
+
+        var membership =
+            await familyMembershipRepository.GetActiveMembershipAsync(
+                request.InitiatorUserId,
+                appointment.PatientId,
+                cancellationToken
+            )
+            ?? throw new PatientAccessUnauthorizedException(
+                DomainErrors.Patient.UnauthorizedAccess
+            );
+
+        var targetPatient =
+            await patientRepository.GetByIdAsync(appointment.PatientId, cancellationToken)
+            ?? throw new EntityNotFoundException(
+                DomainErrors.General.NotFound,
+                nameof(Patient),
+                appointment.PatientId
+            );
+
+        AppointmentGuardianNotesService.ClearByGuardian(
+            appointment,
+            new UpdateGuardianNotesContext
+            {
+                TargetPatient = targetPatient,
+                InitiatorMembership = membership,
+            }
+        );
+
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+    }
+}

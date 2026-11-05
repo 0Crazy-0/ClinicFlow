@@ -86,4 +86,24 @@ public class UpdatePatientNotesByPatientCommandValidatorTests
             .ShouldHaveValidationErrorFor(x => x.Notes)
             .WithErrorMessage(DomainErrors.Validation.ValueTooLong);
     }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Validate_ShouldHaveError_WhenNotesIsEmptyOrWhiteSpace(string? notes)
+    {
+        // Arrange
+        var command = new UpdatePatientNotesByPatientCommand(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            notes!
+        );
+
+        // Act
+        var result = _sut.TestValidate(command);
+
+        // Assert
+        result.ShouldHaveValidationErrorFor(x => x.Notes);
+    }
 }
