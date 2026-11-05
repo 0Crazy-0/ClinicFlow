@@ -243,6 +243,16 @@ public class ClearGuardianNotesByGuardianCommandHandlerTests
         appointment.GuardianNotes.Should().Be("notes");
         appointment.GuardianNotesAuthorUserId.Should().Be(authorId);
 
+        _familyMembershipRepositoryMock.Verify(
+            r =>
+                r.GetActiveMembershipAsync(
+                    requesterId,
+                    appointment.PatientId,
+                    It.IsAny<CancellationToken>()
+                ),
+            Times.Once
+        );
+
         _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
