@@ -604,6 +604,41 @@ public class AppointmentGuardianNotesServiceTests
     }
 
     [Fact]
+    public void ClearByGuardian_ShouldThrowUnauthorized_WhenAuthorMembershipLostFullAccess()
+    {
+        // Arrange
+        var target = CreateMinorPatient();
+        var authorId = Guid.CreateVersion7();
+        var appointment = CreateAppointment(target.Id);
+        var membership = CreateParentMembership(target.Id, authorId);
+
+        appointment.UpdateGuardianNotes("notes", authorId);
+
+        membership.ChangeAccessLevel(
+            FamilyMembershipAccessLevel.ViewOnly,
+            FamilyMembership.MinimumAdultAge,
+            requesterIsAuthorized: true
+        );
+
+        var context = new UpdateGuardianNotesContext
+        {
+            TargetPatient = target,
+            InitiatorMembership = membership,
+        };
+
+        // Act
+        var act = () => AppointmentGuardianNotesService.ClearByGuardian(appointment, context);
+
+        // Assert
+        act.Should()
+            .Throw<PatientAccessUnauthorizedException>()
+            .WithMessage(DomainErrors.Patient.UnauthorizedAccess);
+
+        appointment.GuardianNotes.Should().Be("notes");
+        appointment.GuardianNotesAuthorUserId.Should().Be(authorId);
+    }
+
+    [Fact]
     public void ClearByGuardian_ShouldThrowValidation_WhenPatientIsAdult()
     {
         // Arrange
