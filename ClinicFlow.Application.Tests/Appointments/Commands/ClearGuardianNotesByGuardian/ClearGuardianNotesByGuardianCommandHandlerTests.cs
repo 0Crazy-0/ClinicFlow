@@ -176,6 +176,68 @@ public class ClearGuardianNotesByGuardianCommandHandlerTests
     }
 
     [Fact]
+    public async Task Handle_ShouldThrowPatientAccessUnauthorizedException_WhenRequesterIsNotNotesAuthor()
+    {
+        // Arrange
+        var authorId = Guid.CreateVersion7();
+        var requesterId = Guid.CreateVersion7();
+
+        var command = new ClearGuardianNotesByGuardianCommand(Guid.CreateVersion7(), requesterId);
+
+        var appointment = Appointment.Schedule(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(1)),
+            TimeRange.Create(new TimeOnly(10), new TimeOnly(11)),
+            Guid.CreateVersion7()
+        );
+
+        appointment.UpdateGuardianNotes("notes", authorId);
+
+        _appointmentRepositoryMock
+            .Setup(r => r.GetByIdAsync(command.AppointmentId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(appointment);
+
+        _familyMembershipRepositoryMock
+            .Setup(r =>
+                r.GetActiveMembershipAsync(
+                    requesterId,
+                    appointment.PatientId,
+                    It.IsAny<CancellationToken>()
+                )
+            )
+            .ReturnsAsync(
+                FamilyMembership.CreateFamilyMember(
+                    appointment.PatientId,
+                    requesterId,
+                    PatientRelationship.Parent,
+                    LegalAuthorityType.Parent,
+                    FamilyMembershipAccessLevel.Full,
+                    10,
+                    _fakeTime.GetUtcNow().UtcDateTime
+                )
+            );
+
+        _patientRepositoryMock
+            .Setup(r => r.GetByIdAsync(appointment.PatientId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(CreateMinorPatient(appointment.PatientId));
+
+        // Act
+        var act = async () => await _sut.Handle(command, TestContext.Current.CancellationToken);
+
+        // Assert
+        await act.Should()
+            .ThrowAsync<PatientAccessUnauthorizedException>()
+            .WithMessage(DomainErrors.Patient.UnauthorizedAccess);
+
+        appointment.GuardianNotes.Should().Be("notes");
+        appointment.GuardianNotesAuthorUserId.Should().Be(authorId);
+
+        _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
     public async Task Handle_ShouldThrowEntityNotFoundException_WhenPatientNotFound()
     {
         // Arrange
