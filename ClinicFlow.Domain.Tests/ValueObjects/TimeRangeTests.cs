@@ -9,10 +9,28 @@ namespace ClinicFlow.Domain.Tests.ValueObjects;
 public class TimeRangeTests
 {
     [Fact]
-    public void Constructor_ShouldThrowException_WhenStartIsAfterEnd()
+    public void Create_ShouldCreateTimeRange_WhenStartIsBeforeEnd()
     {
-        // Arrange & Act
-        var act = () => TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(9, 0));
+        // Arrange
+        var start = new TimeOnly(9, 0);
+        var end = new TimeOnly(17, 0);
+
+        // Act
+        var timeRange = TimeRange.Create(start, end);
+
+        // Assert
+        timeRange.Start.Should().Be(start);
+        timeRange.End.Should().Be(end);
+    }
+
+    [Fact]
+    public void Create_ShouldThrowInvalidTimeRangeException_WhenStartEqualsEnd()
+    {
+        // Arrange
+        var time = new TimeOnly(9);
+
+        // Act
+        var act = () => TimeRange.Create(time, time);
 
         // Assert
         act.Should()
@@ -21,10 +39,14 @@ public class TimeRangeTests
     }
 
     [Fact]
-    public void Constructor_ShouldThrowException_WhenStartEqualsEnd()
+    public void Create_ShouldThrowInvalidTimeRangeException_WhenStartIsAfterEnd()
     {
-        // Arrange & Act
-        var act = () => TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(9, 0));
+        // Arrange
+        var start = new TimeOnly(17);
+        var end = new TimeOnly(9);
+
+        // Act
+        var act = () => TimeRange.Create(start, end);
 
         // Assert
         act.Should()
@@ -33,38 +55,13 @@ public class TimeRangeTests
     }
 
     [Fact]
-    public void Duration_ShouldReturnCorrectDifference()
+    public void Covers_ShouldThrowDomainValidationException_WhenOtherIsNull()
     {
         // Arrange
-        var timeRange = TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 30)); // 1.5 hours
-
-        // Assert
-        timeRange.Duration.Should().Be(TimeSpan.FromMinutes(90));
-    }
-
-    [Fact]
-    public void Equality_ShouldWorkCorrectly()
-    {
-        // Arrange
-        var tr1 = TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0));
-        var tr2 = TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0));
-        var tr3 = TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0));
-
-        // Assert
-        (tr1 == tr2)
-            .Should()
-            .BeTrue();
-        (tr1 != tr3).Should().BeTrue();
-    }
-
-    [Fact]
-    public void OverlapsWith_ShouldThrowException_WhenOtherIsNull()
-    {
-        // Arrange
-        var range = TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0));
+        var timeRange = TimeRange.Create(new TimeOnly(9), new TimeOnly(17));
 
         // Act
-        var act = () => range.OverlapsWith(null!);
+        var act = () => timeRange.Covers(null!);
 
         // Assert
         act.Should()
@@ -72,85 +69,129 @@ public class TimeRangeTests
             .WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 
-    [Theory]
-    [InlineData(9, 10, 8, 9, false)] // Before, no overlap
-    [InlineData(9, 10, 8, 9.5, true)] // Partial overlap start
-    [InlineData(9, 10, 9.5, 10.5, true)] // Partial overlap end
-    [InlineData(9, 10, 10, 11, false)] // After, no overlap (touching)
-    [InlineData(9, 10, 9.2, 9.8, true)] // Inside
-    [InlineData(9, 10, 8, 11, true)] // Enveloping (other covers range)
-    public void OverlapsWith_ShouldReturnCorrectResult(
-        double start,
-        double end,
-        double otherStart,
-        double otherEnd,
-        bool expected
-    )
+    [Fact]
+    public void Covers_ShouldReturnTrue_WhenOtherMatchesRangeExactly()
     {
         // Arrange
-        var range = TimeRange.Create(
-            TimeOnly.MinValue.AddHours(start),
-            TimeOnly.MinValue.AddHours(end)
-        );
+        var timeRange = TimeRange.Create(new TimeOnly(9), new TimeOnly(17));
+        var other = TimeRange.Create(new TimeOnly(9), new TimeOnly(17));
 
-        // Act & Assert
-        range
-            .OverlapsWith(
-                TimeRange.Create(
-                    TimeOnly.MinValue.AddHours(otherStart),
-                    TimeOnly.MinValue.AddHours(otherEnd)
-                )
-            )
-            .Should()
-            .Be(expected);
+        // Act
+        var result = timeRange.Covers(other);
+
+        // Assert
+        result.Should().BeTrue();
     }
 
     [Fact]
-    public void Covers_ShouldThrowException_WhenOtherIsNull()
+    public void Covers_ShouldReturnTrue_WhenOtherIsStrictlyWithinRange()
     {
         // Arrange
-        var range = TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0));
+        var timeRange = TimeRange.Create(new TimeOnly(9), new TimeOnly(17));
+        var other = TimeRange.Create(new TimeOnly(10), new TimeOnly(16));
 
         // Act
-        var act = () => range.Covers(null!);
+        var result = timeRange.Covers(other);
 
         // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.General.RequiredFieldNull);
+        result.Should().BeTrue();
     }
 
-    [Theory]
-    [InlineData(9, 10, 9, 10, true)] // Exact match
-    [InlineData(9, 10, 9.5, 9.8, true)] // Inside
-    [InlineData(9, 10, 8, 11, false)] // Enveloped by other (so range does NOT cover other)
-    [InlineData(9, 10, 8, 9, false)] // Outside before
-    [InlineData(9, 10, 10, 11, false)] // Outside after
-    [InlineData(9, 10, 9, 10.1, false)] // Slightly extending end
-    [InlineData(9, 10, 8.9, 10, false)] // Slightly extending start
-    public void Covers_ShouldReturnCorrectResult(
-        double start,
-        double end,
-        double otherStart,
-        double otherEnd,
-        bool expected
-    )
+    [Fact]
+    public void Covers_ShouldReturnTrue_WhenOtherHasSameStartAndEarlierEnd()
     {
         // Arrange
-        var range = TimeRange.Create(
-            TimeOnly.MinValue.AddHours(start),
-            TimeOnly.MinValue.AddHours(end)
-        );
+        var timeRange = TimeRange.Create(new TimeOnly(9), new TimeOnly(17));
+        var other = TimeRange.Create(new TimeOnly(9), new TimeOnly(12));
 
-        // Act & Assert
-        range
-            .Covers(
-                TimeRange.Create(
-                    TimeOnly.MinValue.AddHours(otherStart),
-                    TimeOnly.MinValue.AddHours(otherEnd)
-                )
-            )
-            .Should()
-            .Be(expected);
+        // Act
+        var result = timeRange.Covers(other);
+
+        // Assert
+        result.Should().BeTrue();
+    }
+
+    [Fact]
+    public void Covers_ShouldReturnTrue_WhenOtherHasLaterStartAndSameEnd()
+    {
+        // Arrange
+        var timeRange = TimeRange.Create(new TimeOnly(9), new TimeOnly(17));
+        var other = TimeRange.Create(new TimeOnly(12), new TimeOnly(17));
+
+        // Act
+        var result = timeRange.Covers(other);
+
+        // Assert
+        result.Should().BeTrue();
+    }
+
+    [Fact]
+    public void Covers_ShouldReturnFalse_WhenOtherStartsBeforeRangeAndEndsWithinRange()
+    {
+        // Arrange
+        var timeRange = TimeRange.Create(new TimeOnly(9), new TimeOnly(17));
+        var other = TimeRange.Create(new TimeOnly(8), new TimeOnly(12));
+
+        // Act
+        var result = timeRange.Covers(other);
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [Fact]
+    public void Covers_ShouldReturnFalse_WhenOtherStartsWithinRangeAndEndsAfterRange()
+    {
+        // Arrange
+        var timeRange = TimeRange.Create(new TimeOnly(9), new TimeOnly(17));
+        var other = TimeRange.Create(new TimeOnly(12), new TimeOnly(18));
+
+        // Act
+        var result = timeRange.Covers(other);
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [Fact]
+    public void Covers_ShouldReturnFalse_WhenOtherStartsBeforeRangeAndEndsAfterRange()
+    {
+        // Arrange
+        var timeRange = TimeRange.Create(new TimeOnly(9), new TimeOnly(17));
+        var other = TimeRange.Create(new TimeOnly(8), new TimeOnly(18));
+
+        // Act
+        var result = timeRange.Covers(other);
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [Fact]
+    public void Covers_ShouldReturnFalse_WhenOtherIsCompletelyBeforeRange()
+    {
+        // Arrange
+        var timeRange = TimeRange.Create(new TimeOnly(9), new TimeOnly(17));
+        var other = TimeRange.Create(new TimeOnly(7), new TimeOnly(8));
+
+        // Act
+        var result = timeRange.Covers(other);
+
+        // Assert
+        result.Should().BeFalse();
+    }
+
+    [Fact]
+    public void Covers_ShouldReturnFalse_WhenOtherIsCompletelyAfterRange()
+    {
+        // Arrange
+        var timeRange = TimeRange.Create(new TimeOnly(9), new TimeOnly(17));
+        var other = TimeRange.Create(new TimeOnly(18), new TimeOnly(19));
+
+        // Act
+        var result = timeRange.Covers(other);
+
+        // Assert
+        result.Should().BeFalse();
     }
 }

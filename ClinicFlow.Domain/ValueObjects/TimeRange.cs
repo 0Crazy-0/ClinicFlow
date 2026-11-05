@@ -9,8 +9,6 @@ public record TimeRange
 
     public TimeOnly End { get; }
 
-    public TimeSpan Duration => End - Start;
-
     private TimeRange(TimeOnly start, TimeOnly end)
     {
         Start = start;
@@ -23,13 +21,6 @@ public record TimeRange
             throw new InvalidTimeRangeException(DomainErrors.Schedule.InvalidTimeRange);
 
         return new TimeRange(start, end);
-    }
-
-    public bool OverlapsWith(TimeRange other)
-    {
-        Guard.NotNull(other);
-
-        return Start < other.End && other.Start < End;
     }
 
     public bool Covers(TimeRange other)
