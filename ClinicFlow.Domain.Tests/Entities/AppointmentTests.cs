@@ -1389,15 +1389,16 @@ public class AppointmentTests
     }
 
     [Theory]
+    [InlineData(null)]
     [InlineData("")]
     [InlineData("   ")]
-    public void UpdatePatientNotes_ShouldThrowException_WhenNotesIsWhiteSpace(string notes)
+    public void UpdatePatientNotes_ShouldThrowException_WhenNotesIsWhiteSpace(string? notes)
     {
         // Arrange
         var appointment = CreateAppointment();
 
         // Act
-        var act = () => appointment.UpdatePatientNotes(notes);
+        var act = () => appointment.UpdatePatientNotes(notes!);
 
         // Assert
         act.Should()
@@ -1490,16 +1491,17 @@ public class AppointmentTests
     }
 
     [Theory]
+    [InlineData(null)]
     [InlineData("")]
     [InlineData("   ")]
-    public void UpdateGuardianNotes_ShouldThrowException_WhenNotesIsWhiteSpace(string notes)
+    public void UpdateGuardianNotes_ShouldThrowException_WhenNotesIsWhiteSpace(string? notes)
     {
         // Arrange
         var appointment = CreateAppointment();
         var authorId = Guid.CreateVersion7();
 
         // Act
-        var act = () => appointment.UpdateGuardianNotes(notes, authorId);
+        var act = () => appointment.UpdateGuardianNotes(notes!, authorId);
 
         // Assert
         act.Should()
@@ -1570,16 +1572,17 @@ public class AppointmentTests
     }
 
     [Theory]
+    [InlineData(null)]
     [InlineData("")]
     [InlineData("   ")]
-    public void UpdateReceptionistNotes_ShouldThrowException_WhenNotesIsWhiteSpace(string notes)
+    public void UpdateReceptionistNotes_ShouldThrowException_WhenNotesIsWhiteSpace(string? notes)
     {
         // Arrange
         var appointment = CreateAppointment();
         appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
 
         // Act
-        var act = () => appointment.UpdateReceptionistNotes(notes);
+        var act = () => appointment.UpdateReceptionistNotes(notes!);
 
         // Assert
         act.Should()
@@ -1651,16 +1654,17 @@ public class AppointmentTests
     }
 
     [Theory]
+    [InlineData(null)]
     [InlineData("")]
     [InlineData("   ")]
-    public void UpdateStaffInternalNotes_ShouldThrowException_WhenNotesIsWhiteSpace(string notes)
+    public void UpdateStaffInternalNotes_ShouldThrowException_WhenNotesIsWhiteSpace(string? notes)
     {
         // Arrange
         var appointment = CreateAppointment();
         appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
 
         // Act
-        var act = () => appointment.UpdateStaffInternalNotes(notes);
+        var act = () => appointment.UpdateStaffInternalNotes(notes!);
 
         // Assert
         act.Should()
