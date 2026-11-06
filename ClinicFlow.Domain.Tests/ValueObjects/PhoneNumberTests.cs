@@ -139,4 +139,21 @@ public class PhoneNumberTests
         // Assert
         result.Should().Be("+1234567890");
     }
+
+    [Theory]
+    [InlineData("+1 (234) 567-8901")]
+    [InlineData("+1-234-567-8901")]
+    [InlineData("+1 234 567 8901")]
+    [InlineData("1 234.567.8901")]
+    public void Digits_ShouldExtractOnlyDigits_WhenValueContainsFormatting(string formattedValue)
+    {
+        // Arrange
+        var expectedDigits = "12345678901";
+
+        // Act
+        var phone = PhoneNumber.Create(formattedValue);
+
+        // Assert
+        phone.Digits.Should().Be(expectedDigits);
+    }
 }
