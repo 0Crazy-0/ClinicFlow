@@ -16,6 +16,15 @@ public partial record PhoneNumber
 
     public string Value { get; }
 
+    /// <summary>
+    /// Extracts ASCII digits from the stored value.
+    /// </summary>
+    /// <remarks>
+    /// Do not use this property to compare phone identity when either number contains non-ASCII digits,
+    /// as non-ASCII digits are excluded from the extracted result.
+    /// </remarks>
+    public string Digits => new([.. Value.Where(char.IsAsciiDigit)]);
+
     private PhoneNumber(string value) => Value = value;
 
     public static PhoneNumber Create(string number)
