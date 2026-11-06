@@ -213,8 +213,12 @@ public class MedicalRecordTests
             .WithMessage(DomainErrors.MedicalRecord.GuardianInitiatedTreatmentRequired);
     }
 
-    [Fact]
-    public void Create_ShouldThrowException_WhenGuardianInitiatedTreatmentProvidedForNonSubstanceAbuseCategory()
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void Create_ShouldThrowException_WhenGuardianInitiatedTreatmentProvidedForNonSubstanceAbuseCategory(
+        bool guardianInitiatedTreatment
+    )
     {
         // Arrange & Act
         var act = () =>
@@ -222,9 +226,9 @@ public class MedicalRecordTests
                 Guid.CreateVersion7(),
                 Guid.CreateVersion7(),
                 Guid.CreateVersion7(),
-                "Headache and fever",
+                "chiefComplaint",
                 ProtectedCategory.MentalHealthCounseling,
-                guardianInitiatedTreatment: true
+                guardianInitiatedTreatment
             );
 
         // Assert
