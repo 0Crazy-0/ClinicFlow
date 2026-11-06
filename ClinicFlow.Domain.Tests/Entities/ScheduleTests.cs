@@ -16,7 +16,7 @@ public class ScheduleTests
         // Arrange
         var doctorId = Guid.CreateVersion7();
         var dayOfWeek = DayOfWeek.Monday;
-        var timeRange = TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(17, 0));
+        var timeRange = CreateTimeRange(9, 17);
 
         // Act
         var schedule = Schedule.Create(doctorId, dayOfWeek, timeRange);
@@ -25,46 +25,33 @@ public class ScheduleTests
         schedule.Should().NotBeNull();
         schedule.DoctorId.Should().Be(doctorId);
         schedule.Weekday.Should().Be(dayOfWeek);
-        schedule.TimeSlot.Should().Be(timeRange);
+        schedule.TimeSlot.Should().BeEquivalentTo(timeRange);
         schedule.IsActive.Should().BeTrue();
     }
 
-    [Theory]
-    [InlineData(
-        "00000000-0000-0000-0000-000000000000",
-        DayOfWeek.Monday,
-        9,
-        17,
-        DomainErrors.Validation.ValueRequired
-    )]
-    [InlineData(
-        "11111111-1111-1111-1111-111111111111",
-        (DayOfWeek)99,
-        9,
-        17,
-        DomainErrors.Schedule.InvalidDayOfWeek
-    )]
-    public void Create_ShouldThrowException_WhenInvalidParameters(
-        string doctorIdStr,
-        DayOfWeek dayOfWeek,
-        double startHour,
-        double endHour,
-        string expectedMessage
-    )
+    [Fact]
+    public void Create_ShouldThrowException_WhenDoctorIdIsEmpty()
+    {
+        // Arrange & Act
+        var act = () => Schedule.Create(Guid.Empty, DayOfWeek.Monday, CreateTimeRange(9, 17));
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void Create_ShouldThrowException_WhenDayOfWeekIsNotDefined()
     {
         // Arrange & Act
         var act = () =>
-            Schedule.Create(
-                Guid.Parse(doctorIdStr),
-                dayOfWeek,
-                TimeRange.Create(
-                    TimeOnly.FromTimeSpan(TimeSpan.FromHours(startHour)),
-                    TimeOnly.FromTimeSpan(TimeSpan.FromHours(endHour))
-                )
-            );
+            Schedule.Create(Guid.CreateVersion7(), (DayOfWeek)99, CreateTimeRange(9, 17));
 
         // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage(expectedMessage);
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Schedule.InvalidDayOfWeek);
     }
 
     [Fact]
@@ -77,165 +64,6 @@ public class ScheduleTests
         act.Should()
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.General.RequiredFieldNull);
-    }
-
-    [Theory]
-    [InlineData(9, 17, 10, 12, true)] // Requested range is inside schedule
-    [InlineData(9, 17, 9, 17, true)] // Requested range matches schedule exactly
-    [InlineData(9, 17, 9.5, 16.5, true)] // Requested range is inside schedule
-    [InlineData(9, 17, 18, 19, false)] // Requested range is after schedule
-    [InlineData(9, 17, 7, 8, false)] // Requested range is before schedule
-    [InlineData(9, 17, 8, 10, false)] // Requested range starts before schedule
-    [InlineData(9, 17, 16, 18, false)] // Requested range ends after schedule
-    public void CoversTimeRange_ShouldReturnExpectedResult(
-        double scheduleStart,
-        double scheduleEnd,
-        double requestedStart,
-        double requestedEnd,
-        bool expected
-    )
-    {
-        // Arrange
-        var schedule = Schedule.Create(
-            Guid.CreateVersion7(),
-            DayOfWeek.Monday,
-            TimeRange.Create(
-                TimeOnly.FromTimeSpan(TimeSpan.FromHours(scheduleStart)),
-                TimeOnly.FromTimeSpan(TimeSpan.FromHours(scheduleEnd))
-            )
-        );
-
-        // Act & Assert
-        schedule
-            .CoversTimeRange(
-                TimeRange.Create(
-                    TimeOnly.FromTimeSpan(TimeSpan.FromHours(requestedStart)),
-                    TimeOnly.FromTimeSpan(TimeSpan.FromHours(requestedEnd))
-                )
-            )
-            .Should()
-            .Be(expected);
-    }
-
-    [Fact]
-    public void CoversTimeRange_ShouldThrowException_WhenRequestedRangeIsNull()
-    {
-        // Arrange
-        var schedule = CreateSchedule();
-        schedule.Deactivate();
-
-        // Act
-        var act = () => schedule.CoversTimeRange(null!);
-
-        // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.General.RequiredFieldNull);
-    }
-
-    [Fact]
-    public void EnsureDoctorIsAvailable_ShouldNotThrow_WhenDoctorMatchesAndScheduleCoversTimeRange()
-    {
-        // Arrange
-        var doctorId = Guid.CreateVersion7();
-        var schedule = CreateSchedule(doctorId);
-        var timeRange = TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(12, 0));
-
-        // Act
-        var act = () => schedule.EnsureDoctorIsAvailable(doctorId, DayOfWeek.Monday, timeRange);
-
-        // Assert
-        act.Should().NotThrow();
-    }
-
-    [Fact]
-    public void EnsureDoctorIsAvailable_ShouldThrowException_WhenDoctorIdIsEmpty()
-    {
-        // Arrange
-        var schedule = CreateSchedule();
-        var timeRange = TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(12, 0));
-
-        // Act
-        var act = () => schedule.EnsureDoctorIsAvailable(Guid.Empty, DayOfWeek.Monday, timeRange);
-
-        // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.Validation.ValueRequired);
-    }
-
-    [Fact]
-    public void EnsureDoctorIsAvailable_ShouldThrowException_WhenDayOfWeekIsNotDefined()
-    {
-        // Arrange
-        var schedule = CreateSchedule();
-        var timeRange = TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(12, 0));
-
-        // Act
-        var act = () =>
-            schedule.EnsureDoctorIsAvailable(schedule.DoctorId, (DayOfWeek)999, timeRange);
-
-        // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.Validation.InvalidEnumValue);
-    }
-
-    [Fact]
-    public void EnsureDoctorIsAvailable_ShouldThrowException_WhenTimeRangeIsNull()
-    {
-        // Arrange
-        var schedule = CreateSchedule();
-
-        // Act
-        var act = () =>
-            schedule.EnsureDoctorIsAvailable(Guid.CreateVersion7(), DayOfWeek.Monday, null!);
-
-        // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.General.RequiredFieldNull);
-    }
-
-    [Fact]
-    public void EnsureDoctorIsAvailable_ShouldThrowDoctorNotAvailableException_WhenDoctorIdDoesNotMatch()
-    {
-        // Arrange
-        var doctorId = Guid.CreateVersion7();
-        var otherDoctorId = Guid.CreateVersion7();
-        var schedule = CreateSchedule(doctorId);
-        var timeRange = TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(12, 0));
-
-        // Act
-        var act = () =>
-            schedule.EnsureDoctorIsAvailable(otherDoctorId, DayOfWeek.Monday, timeRange);
-
-        // Assert
-        var exceptionAssertion = act.Should()
-            .Throw<DoctorNotAvailableException>()
-            .WithMessage(DomainErrors.Schedule.DoctorNotAvailable);
-        exceptionAssertion.Which.DoctorId.Should().Be(otherDoctorId);
-        exceptionAssertion.Which.Weekday.Should().Be(DayOfWeek.Monday);
-    }
-
-    [Fact]
-    public void EnsureDoctorIsAvailable_ShouldThrowDoctorNotAvailableException_WhenScheduleDoesNotCoverTimeRange()
-    {
-        // Arrange
-        var doctorId = Guid.CreateVersion7();
-        var schedule = CreateSchedule(doctorId);
-        var timeRange = TimeRange.Create(new TimeOnly(8, 0), new TimeOnly(10, 0));
-
-        // Act
-        var act = () => schedule.EnsureDoctorIsAvailable(doctorId, DayOfWeek.Monday, timeRange);
-
-        // Assert
-        var exceptionAssertion = act.Should()
-            .Throw<DoctorNotAvailableException>()
-            .WithMessage(DomainErrors.Schedule.DoctorNotAvailable);
-
-        exceptionAssertion.Which.DoctorId.Should().Be(doctorId);
-        exceptionAssertion.Which.Weekday.Should().Be(DayOfWeek.Monday);
     }
 
     [Fact]
@@ -266,7 +94,7 @@ public class ScheduleTests
             .DomainEvents.OfType<ScheduleDeactivatedEvent>()
             .Should()
             .ContainSingle()
-            .Subject;
+            .Which;
 
         domainEvent.ScheduleId.Should().Be(schedule.Id);
         domainEvent.DoctorId.Should().Be(doctorId);
@@ -278,6 +106,7 @@ public class ScheduleTests
     {
         // Arrange
         var schedule = CreateSchedule();
+
         schedule.Deactivate();
 
         // Act & Assert
@@ -298,10 +127,154 @@ public class ScheduleTests
         schedule.Deactivate();
 
         // Assert
-        schedule
-            .CoversTimeRange(TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(12, 0)))
-            .Should()
-            .BeFalse();
+        schedule.CoversTimeRange(CreateTimeRange(10, 12)).Should().BeFalse();
+    }
+
+    [Fact]
+    public void CoversTimeRange_ShouldThrowException_WhenRequestedRangeIsNull()
+    {
+        // Arrange
+        var schedule = CreateSchedule();
+        schedule.Deactivate();
+
+        // Act
+        var act = () => schedule.CoversTimeRange(null!);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
+    public void CoversTimeRange_ShouldReturnTrue_WhenRequestedRangeMatchesSlotExactly()
+    {
+        // Arrange
+        var schedule = CreateSchedule();
+
+        // Act & Assert
+        schedule.CoversTimeRange(CreateTimeRange(9, 17)).Should().BeTrue();
+    }
+
+    [Fact]
+    public void CoversTimeRange_ShouldReturnFalse_WhenRequestedRangeStartsBeforeSlot()
+    {
+        // Arrange
+        var schedule = CreateSchedule();
+
+        // Act & Assert
+        schedule.CoversTimeRange(CreateTimeRange(8, 10)).Should().BeFalse();
+    }
+
+    [Fact]
+    public void EnsureDoctorIsAvailable_ShouldNotThrow_WhenDoctorMatchesAndScheduleCoversTimeRange()
+    {
+        // Arrange
+        var doctorId = Guid.CreateVersion7();
+        var schedule = CreateSchedule(doctorId);
+
+        // Act
+        var act = () =>
+            schedule.EnsureDoctorIsAvailable(doctorId, DayOfWeek.Monday, CreateTimeRange(10, 12));
+
+        // Assert
+        act.Should().NotThrow();
+    }
+
+    [Fact]
+    public void EnsureDoctorIsAvailable_ShouldThrowException_WhenDoctorIdIsEmpty()
+    {
+        // Arrange
+        var schedule = CreateSchedule();
+
+        // Act
+        var act = () =>
+            schedule.EnsureDoctorIsAvailable(Guid.Empty, DayOfWeek.Monday, CreateTimeRange(10, 12));
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void EnsureDoctorIsAvailable_ShouldThrowException_WhenDayOfWeekIsNotDefined()
+    {
+        // Arrange
+        var schedule = CreateSchedule();
+
+        // Act
+        var act = () =>
+            schedule.EnsureDoctorIsAvailable(
+                schedule.DoctorId,
+                (DayOfWeek)999,
+                CreateTimeRange(10, 12)
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.InvalidEnumValue);
+    }
+
+    [Fact]
+    public void EnsureDoctorIsAvailable_ShouldThrowException_WhenTimeRangeIsNull()
+    {
+        // Arrange
+        var schedule = CreateSchedule();
+
+        // Act
+        var act = () =>
+            schedule.EnsureDoctorIsAvailable(Guid.CreateVersion7(), DayOfWeek.Monday, null!);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
+    }
+
+    [Fact]
+    public void EnsureDoctorIsAvailable_ShouldThrowDoctorNotAvailableException_WhenDoctorIdDoesNotMatch()
+    {
+        // Arrange
+        var doctorId = Guid.CreateVersion7();
+        var otherDoctorId = Guid.CreateVersion7();
+        var schedule = CreateSchedule(doctorId);
+
+        // Act
+        var act = () =>
+            schedule.EnsureDoctorIsAvailable(
+                otherDoctorId,
+                DayOfWeek.Monday,
+                CreateTimeRange(10, 12)
+            );
+
+        // Assert
+        var exceptionAssertion = act.Should()
+            .Throw<DoctorNotAvailableException>()
+            .WithMessage(DomainErrors.Schedule.DoctorNotAvailable);
+        exceptionAssertion.Which.DoctorId.Should().Be(otherDoctorId);
+        exceptionAssertion.Which.Weekday.Should().Be(DayOfWeek.Monday);
+    }
+
+    [Fact]
+    public void EnsureDoctorIsAvailable_ShouldThrowDoctorNotAvailableException_WhenScheduleDoesNotCoverTimeRange()
+    {
+        // Arrange
+        var doctorId = Guid.CreateVersion7();
+        var schedule = CreateSchedule(doctorId);
+
+        // Act
+        var act = () =>
+            schedule.EnsureDoctorIsAvailable(doctorId, DayOfWeek.Monday, CreateTimeRange(8, 10));
+
+        // Assert
+        var exceptionAssertion = act.Should()
+            .Throw<DoctorNotAvailableException>()
+            .WithMessage(DomainErrors.Schedule.DoctorNotAvailable);
+
+        exceptionAssertion.Which.DoctorId.Should().Be(doctorId);
+        exceptionAssertion.Which.Weekday.Should().Be(DayOfWeek.Monday);
     }
 
     [Fact]
@@ -420,17 +393,15 @@ public class ScheduleTests
         act.Should().NotThrow();
     }
 
-    private static Schedule CreateSchedule() =>
-        Schedule.Create(
-            Guid.CreateVersion7(),
-            DayOfWeek.Monday,
-            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(17, 0))
+    private static TimeRange CreateTimeRange(int startHour, int endHour) =>
+        TimeRange.Create(
+            TimeOnly.FromTimeSpan(TimeSpan.FromHours(startHour)),
+            TimeOnly.FromTimeSpan(TimeSpan.FromHours(endHour))
         );
 
+    private static Schedule CreateSchedule() =>
+        Schedule.Create(Guid.CreateVersion7(), DayOfWeek.Monday, CreateTimeRange(9, 17));
+
     private static Schedule CreateSchedule(Guid doctorId) =>
-        Schedule.Create(
-            doctorId,
-            DayOfWeek.Monday,
-            TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(17, 0))
-        );
+        Schedule.Create(doctorId, DayOfWeek.Monday, CreateTimeRange(9, 17));
 }

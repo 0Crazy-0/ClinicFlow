@@ -67,6 +67,112 @@ public class MedicalRecordTests
         record.GuardianInitiatedTreatment.Should().BeNull();
     }
 
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void Create_ShouldAssignGuardianInitiatedTreatment_WhenSubstanceAbuseTreatmentProvided(
+        bool guardianInitiatedTreatment
+    )
+    {
+        // Arrange & Act
+        var record = MedicalRecord.Create(
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            Guid.CreateVersion7(),
+            "Headache and fever",
+            ProtectedCategory.SubstanceAbuseTreatment,
+            guardianInitiatedTreatment
+        );
+
+        // Assert
+        record.ProtectedCareCategory.Should().Be(ProtectedCategory.SubstanceAbuseTreatment);
+        record.GuardianInitiatedTreatment.Should().Be(guardianInitiatedTreatment);
+        record.GuardianInvolvementDeemedAppropriate.Should().BeNull();
+    }
+
+    [Fact]
+    public void Create_ShouldThrowException_WhenPatientIdIsEmpty()
+    {
+        // Arrange & Act
+        var act = () =>
+            MedicalRecord.Create(
+                Guid.Empty,
+                Guid.CreateVersion7(),
+                Guid.CreateVersion7(),
+                "Headache and fever",
+                null,
+                null
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void Create_ShouldThrowException_WhenDoctorIdIsEmpty()
+    {
+        // Arrange & Act
+        var act = () =>
+            MedicalRecord.Create(
+                Guid.CreateVersion7(),
+                Guid.Empty,
+                Guid.CreateVersion7(),
+                "Headache and fever",
+                null,
+                null
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void Create_ShouldThrowException_WhenAppointmentIdIsEmpty()
+    {
+        // Arrange & Act
+        var act = () =>
+            MedicalRecord.Create(
+                Guid.CreateVersion7(),
+                Guid.CreateVersion7(),
+                Guid.Empty,
+                "chiefComplaint",
+                null,
+                null
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Create_ShouldThrowException_WhenChiefComplaintIsEmpty(string? chiefComplaint)
+    {
+        // Arrange & Act
+        var act = () =>
+            MedicalRecord.Create(
+                Guid.CreateVersion7(),
+                Guid.CreateVersion7(),
+                Guid.CreateVersion7(),
+                chiefComplaint!,
+                null,
+                null
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
     [Fact]
     public void Create_ShouldThrowException_WhenProtectedCategoryIsNotDefined()
     {
@@ -107,8 +213,12 @@ public class MedicalRecordTests
             .WithMessage(DomainErrors.MedicalRecord.GuardianInitiatedTreatmentRequired);
     }
 
-    [Fact]
-    public void Create_ShouldThrowException_WhenGuardianInitiatedTreatmentProvidedForNonSubstanceAbuseCategory()
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void Create_ShouldThrowException_WhenGuardianInitiatedTreatmentProvidedForNonSubstanceAbuseCategory(
+        bool guardianInitiatedTreatment
+    )
     {
         // Arrange & Act
         var act = () =>
@@ -116,104 +226,15 @@ public class MedicalRecordTests
                 Guid.CreateVersion7(),
                 Guid.CreateVersion7(),
                 Guid.CreateVersion7(),
-                "Headache and fever",
+                "chiefComplaint",
                 ProtectedCategory.MentalHealthCounseling,
-                guardianInitiatedTreatment: true
+                guardianInitiatedTreatment
             );
 
         // Assert
         act.Should()
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.MedicalRecord.GuardianInitiatedTreatmentNotApplicable);
-    }
-
-    [Theory]
-    [InlineData(true)]
-    [InlineData(false)]
-    public void Create_ShouldAssignGuardianInitiatedTreatment_WhenSubstanceAbuseTreatmentProvided(
-        bool guardianInitiatedTreatment
-    )
-    {
-        // Arrange & Act
-        var record = MedicalRecord.Create(
-            Guid.CreateVersion7(),
-            Guid.CreateVersion7(),
-            Guid.CreateVersion7(),
-            "Headache and fever",
-            ProtectedCategory.SubstanceAbuseTreatment,
-            guardianInitiatedTreatment
-        );
-
-        // Assert
-        record.ProtectedCareCategory.Should().Be(ProtectedCategory.SubstanceAbuseTreatment);
-        record.GuardianInitiatedTreatment.Should().Be(guardianInitiatedTreatment);
-        record.GuardianInvolvementDeemedAppropriate.Should().BeNull();
-    }
-
-    [Theory]
-    [InlineData(
-        "00000000-0000-0000-0000-000000000000",
-        "11111111-1111-1111-1111-111111111111",
-        "22222222-2222-2222-2222-222222222222",
-        "Complaint",
-        DomainErrors.Validation.ValueRequired
-    )]
-    [InlineData(
-        "11111111-1111-1111-1111-111111111111",
-        "00000000-0000-0000-0000-000000000000",
-        "22222222-2222-2222-2222-222222222222",
-        "Complaint",
-        DomainErrors.Validation.ValueRequired
-    )]
-    [InlineData(
-        "11111111-1111-1111-1111-111111111111",
-        "22222222-2222-2222-2222-222222222222",
-        "00000000-0000-0000-0000-000000000000",
-        "Complaint",
-        DomainErrors.Validation.ValueRequired
-    )]
-    [InlineData(
-        "11111111-1111-1111-1111-111111111111",
-        "22222222-2222-2222-2222-222222222222",
-        "33333333-3333-3333-3333-333333333333",
-        "",
-        DomainErrors.Validation.ValueRequired
-    )]
-    [InlineData(
-        "11111111-1111-1111-1111-111111111111",
-        "22222222-2222-2222-2222-222222222222",
-        "33333333-3333-3333-3333-333333333333",
-        "   ",
-        DomainErrors.Validation.ValueRequired
-    )]
-    [InlineData(
-        "11111111-1111-1111-1111-111111111111",
-        "22222222-2222-2222-2222-222222222222",
-        "33333333-3333-3333-3333-333333333333",
-        null,
-        DomainErrors.Validation.ValueRequired
-    )]
-    public void Create_ShouldThrowException_WhenIdOrComplaintIsInvalid(
-        string patientIdStr,
-        string doctorIdStr,
-        string appointmentIdStr,
-        string? chiefComplaint,
-        string expectedMessage
-    )
-    {
-        // Arrange & Act
-        var act = () =>
-            MedicalRecord.Create(
-                Guid.Parse(patientIdStr),
-                Guid.Parse(doctorIdStr),
-                Guid.Parse(appointmentIdStr),
-                chiefComplaint!,
-                null,
-                null
-            );
-
-        // Assert
-        act.Should().Throw<DomainValidationException>().WithMessage(expectedMessage);
     }
 
     [Fact]

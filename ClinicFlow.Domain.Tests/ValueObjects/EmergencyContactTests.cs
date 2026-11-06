@@ -21,17 +21,13 @@ public class EmergencyContactTests
     }
 
     [Theory]
-    [InlineData(null, null, "Doe")]
-    [InlineData("Jane", null, null)]
-    public void Create_ShouldThrowValueRequired_WhenRequiredPartIsNull(
-        string? firstName,
-        string? middleName,
-        string? firstSurname
-    )
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Create_ShouldThrowValueRequired_WhenFirstNameIsMissing(string? firstName)
     {
         // Arrange & Act
-        var act = () =>
-            EmergencyContact.Create(firstName!, middleName, firstSurname!, "invalid_phone");
+        var act = () => EmergencyContact.Create(firstName!, null, "Doe", "invalid_phone");
 
         // Assert
         act.Should()
@@ -40,17 +36,13 @@ public class EmergencyContactTests
     }
 
     [Theory]
-    [InlineData("", "María", "Doe")]
-    [InlineData("Jane", null, "")]
-    public void Create_ShouldThrowValueRequired_WhenRequiredPartIsBlank(
-        string firstName,
-        string? middleName,
-        string firstSurname
-    )
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Create_ShouldThrowValueRequired_WhenFirstSurnameIsMissing(string? firstSurname)
     {
         // Arrange & Act
-        var act = () =>
-            EmergencyContact.Create(firstName, middleName, firstSurname, "invalid_phone");
+        var act = () => EmergencyContact.Create("Jane", null, firstSurname!, "invalid_phone");
 
         // Assert
         act.Should()
@@ -58,11 +50,13 @@ public class EmergencyContactTests
             .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
-    [Fact]
-    public void Create_ShouldThrowValueRequired_WhenMiddleNameProvidedBlank()
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Create_ShouldThrowValueRequired_WhenMiddleNameIsBlank(string middleName)
     {
         // Arrange & Act
-        var act = () => EmergencyContact.Create("Jane", "   ", "Doe", "invalid_phone");
+        var act = () => EmergencyContact.Create("Jane", middleName, "Doe", "invalid_phone");
 
         // Assert
         act.Should()

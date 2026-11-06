@@ -7,140 +7,6 @@ namespace ClinicFlow.Domain.Tests.ValueObjects;
 
 public class PersonNameTests
 {
-    [Theory]
-    [InlineData(null, "six", "Garcia")]
-    [InlineData("Jose", "seven", null)]
-    public void Create_ShouldThrowValueRequired_WhenRequiredPartIsNull(
-        string? firstName,
-        string? middleName,
-        string? firstSurname
-    )
-    {
-        // Arrange
-        var act = () => PersonName.Create(firstName!, middleName, firstSurname!);
-
-        // Act & Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.Validation.ValueRequired);
-    }
-
-    [Theory]
-    [InlineData("")]
-    [InlineData("   ")]
-    public void Create_ShouldThrowValueRequired_WhenFirstNameIsBlank(string firstName)
-    {
-        // Arrange
-        var act = () => PersonName.Create(firstName, null, "Garcia");
-
-        // Act & Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.Validation.ValueRequired);
-    }
-
-    [Theory]
-    [InlineData("")]
-    [InlineData("   ")]
-    public void Create_ShouldThrowValueRequired_WhenFirstSurnameIsBlank(string firstSurname)
-    {
-        // Arrange & Assert
-        var act = () => PersonName.Create("Jose", null, firstSurname);
-
-        // Act
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.Validation.ValueRequired);
-    }
-
-    [Fact]
-    public void Create_ShouldThrowValueRequired_WhenMiddleNameProvidedBlank()
-    {
-        // Arrange & Act
-        var act = () => PersonName.Create("Jose", "   ", "Garcia");
-
-        // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.Validation.ValueRequired);
-    }
-
-    [Fact]
-    public void Create_ShouldThrowValueTooShort_WhenFirstNameTooShort()
-    {
-        // Arrange
-        var tooShort = new string('A', PersonName.MinimumLength - 1);
-
-        // Act
-        var act = () => PersonName.Create(tooShort, null, "Garcia");
-
-        // Assert
-        act.Should()
-            .Throw<BusinessRuleValidationException>()
-            .WithMessage(DomainErrors.Validation.ValueTooShort);
-    }
-
-    [Fact]
-    public void Create_ShouldThrowValueTooShort_WhenFirstSurnameTooShort()
-    {
-        // Arrange
-        var tooShort = new string('A', PersonName.MinimumLength - 1);
-
-        // Act
-        var act = () => PersonName.Create("Jose", null, tooShort);
-
-        // Assert
-        act.Should()
-            .Throw<BusinessRuleValidationException>()
-            .WithMessage(DomainErrors.Validation.ValueTooShort);
-    }
-
-    [Fact]
-    public void Create_ShouldThrowValueTooShort_WhenMiddleNameProvidedTooShort()
-    {
-        // Arrange
-        var tooShort = new string('A', PersonName.MinimumLength - 1);
-
-        // Act
-        var act = () => PersonName.Create("Jose", tooShort, "Garcia");
-
-        // Assert
-        act.Should()
-            .Throw<BusinessRuleValidationException>()
-            .WithMessage(DomainErrors.Validation.ValueTooShort);
-    }
-
-    [Fact]
-    public void Create_ShouldThrowValueTooLong_WhenFirstNameTooLong()
-    {
-        // Arrange
-        var tooLong = new string('A', PersonName.MaximumLength + 1);
-
-        // Act
-        var act = () => PersonName.Create(tooLong, null, "Garcia");
-
-        // Assert
-        act.Should()
-            .Throw<BusinessRuleValidationException>()
-            .WithMessage(DomainErrors.Validation.ValueTooLong);
-    }
-
-    [Fact]
-    public void Create_ShouldThrowValueTooLong_WhenMiddleNameTooLong()
-    {
-        // Arrange
-        var tooLong = new string('A', PersonName.MaximumLength + 1);
-
-        // Act
-        var actMiddle = () => PersonName.Create("Jose", tooLong, "Garcia");
-
-        // Assert
-        actMiddle
-            .Should()
-            .Throw<BusinessRuleValidationException>()
-            .WithMessage(DomainErrors.Validation.ValueTooLong);
-    }
-
     [Fact]
     public void Create_ShouldSucceed_WhenFirstNameLengthEqualsMinimumLength()
     {
@@ -259,6 +125,126 @@ public class PersonNameTests
 
         // Assert
         name.MiddleName.Should().Be("María");
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Create_ShouldThrowValueRequired_WhenFirstNameIsMissing(string? firstName)
+    {
+        // Arrange & Act
+        var act = () => PersonName.Create(firstName!, null, "Garcia");
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Create_ShouldThrowValueRequired_WhenFirstSurnameIsMissing(string? firstSurname)
+    {
+        // Arrange & Act
+        var act = () => PersonName.Create("Jose", null, firstSurname!);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Create_ShouldThrowValueRequired_WhenMiddleNameIsBlank(string middleName)
+    {
+        // Arrange & Act
+        var act = () => PersonName.Create("Jose", middleName, "Garcia");
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void Create_ShouldThrowValueTooShort_WhenFirstNameTooShort()
+    {
+        // Arrange
+        var tooShort = new string('A', PersonName.MinimumLength - 1);
+
+        // Act
+        var act = () => PersonName.Create(tooShort, null, "Garcia");
+
+        // Assert
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueTooShort);
+    }
+
+    [Fact]
+    public void Create_ShouldThrowValueTooShort_WhenFirstSurnameTooShort()
+    {
+        // Arrange
+        var tooShort = new string('A', PersonName.MinimumLength - 1);
+
+        // Act
+        var act = () => PersonName.Create("Jose", null, tooShort);
+
+        // Assert
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueTooShort);
+    }
+
+    [Fact]
+    public void Create_ShouldThrowValueTooShort_WhenMiddleNameProvidedTooShort()
+    {
+        // Arrange
+        var tooShort = new string('A', PersonName.MinimumLength - 1);
+
+        // Act
+        var act = () => PersonName.Create("Jose", tooShort, "Garcia");
+
+        // Assert
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueTooShort);
+    }
+
+    [Fact]
+    public void Create_ShouldThrowValueTooLong_WhenFirstNameTooLong()
+    {
+        // Arrange
+        var tooLong = new string('A', PersonName.MaximumLength + 1);
+
+        // Act
+        var act = () => PersonName.Create(tooLong, null, "Garcia");
+
+        // Assert
+        act.Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueTooLong);
+    }
+
+    [Fact]
+    public void Create_ShouldThrowValueTooLong_WhenMiddleNameTooLong()
+    {
+        // Arrange
+        var tooLong = new string('A', PersonName.MaximumLength + 1);
+
+        // Act
+        var actMiddle = () => PersonName.Create("Jose", tooLong, "Garcia");
+
+        // Assert
+        actMiddle
+            .Should()
+            .Throw<BusinessRuleValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueTooLong);
     }
 
     [Fact]
