@@ -1,4 +1,3 @@
-using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 using ClinicFlow.Domain.Common;
@@ -29,7 +28,8 @@ public partial record PersonName
         FirstName = firstName;
         MiddleName = middleName;
         FirstSurname = firstSurname;
-        SearchName = $"{NormalizeForSearch(firstName)} {NormalizeForSearch(firstSurname)}";
+        SearchName =
+            $"{StringNormalizer.Canonicalize(firstName)} {StringNormalizer.Canonicalize(firstSurname)}";
     }
 
     /// <summary>
@@ -66,25 +66,6 @@ public partial record PersonName
             throw new BusinessRuleValidationException(DomainErrors.Validation.ValueTooLong);
 
         return new PersonName(cleanedFirstName, cleanedMiddleName, cleanedFirstSurname);
-    }
-
-    /// <summary>
-    /// Normalizes free text (for example a search term typed by a user) so it can be
-    /// compared against <see cref="SearchName"/>.
-    /// </summary>
-    public static string NormalizeForSearch(string value)
-    {
-        Guard.NotNullOrWhiteSpace(value);
-
-        var lowered = CleanForDisplay(value).ToLowerInvariant();
-
-        var withoutMarks = lowered
-            .Normalize(NormalizationForm.FormD)
-            .Where(c =>
-                CharUnicodeInfo.GetUnicodeCategory(c) is not UnicodeCategory.NonSpacingMark
-            );
-
-        return string.Concat(withoutMarks).Normalize(NormalizationForm.FormC);
     }
 
     private static string CleanForDisplay(string part) =>
