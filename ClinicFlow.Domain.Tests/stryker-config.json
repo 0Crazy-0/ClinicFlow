@@ -19,7 +19,8 @@
             "!**/Properties/**",
             "!**/Services/Args/**",
             "!**/Services/Contexts/**",
-            "!**/Common/IDomainEvent.cs"
+            "!**/Common/IDomainEvent.cs",
+            "!**/Common/ThirdParty/**"
         ]
     }
 }

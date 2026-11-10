@@ -287,4 +287,9 @@ public static class DomainErrors
         public const string AlreadyExpired = "MEDICAL_RECORD_CONSENT_GRANT_ALREADY_EXPIRED";
         public const string UnauthorizedAccess = "MEDICAL_RECORD_CONSENT_GRANT_UNAUTHORIZED_ACCESS";
     }
+
+    public static class PatientRegistration
+    {
+        public const string DuplicateSuspected = "PATIENT_REGISTRATION_DUPLICATE_SUSPECTED";
+    }
 }

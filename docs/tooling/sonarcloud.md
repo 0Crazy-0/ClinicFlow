@@ -92,6 +92,7 @@ These patterns are excluded from Copy-Paste Detection because their structural s
 These patterns are completely excluded from analysis: no issues, no coverage, no duplication check:
 
 - **Migrations (`**/Migrations/**`):** Entity Framework Core migration history. Auto-generated code with no testable business logic, triggers false-positive-prone rules like `CA1861` (prefer static readonly array) that are inherent to how the EF Core scaffolder writes `Up()`/`Down()` methods.
+- **Third-Party Code (`**/ThirdParty/**`):** Vendored external source code kept intact from upstream (such as `Levenshtein.cs` under Domain). Configured under "Source File Exclusions" in the SonarCloud portal to completely exclude external implementations from analysis, avoiding static analysis warnings, code smell enforcement, duplication flags, or coverage metrics on code not authored or maintained within the repository.
 
 ---
 
