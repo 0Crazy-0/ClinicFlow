@@ -189,6 +189,60 @@ public class PatientDuplicateScoringServiceTests
     }
 
     [Fact]
+    public void Score_ShouldScoreSurnameSimilarity_WhenBothSurnamesNormalizeToEmpty()
+    {
+        // Arrange
+        // surnames composed only of non-spacing marks canonicalize to empty
+        // strings, and two empty canonicalized values are maximally similar,
+        // so the full surname weight applies. The given name cross comparison
+        // of "remy" against "juan" contributes zero.
+        var form = CreateStrangerForm() with
+        {
+            FirstSurname = "\u0301\u0301",
+        };
+
+        var candidate = CreateStrangerCandidate() with
+        {
+            FullName = PersonName.Create("Juan", null, "\u0301\u0301"),
+        };
+
+        var context = new PatientDuplicateScoringContext { Candidates = [candidate] };
+
+        // Act
+        var result = PatientDuplicateScoringService.Score(form, context);
+
+        // Assert
+        result.Scores.Should().ContainSingle().Which.Score.Should().Be(20);
+    }
+
+    [Fact]
+    public void Score_ShouldScoreGivenNameSimilarity_WhenBothGivenNamesNormalizeToEmpty()
+    {
+        // Arrange
+        // given names composed only of non-spacing marks canonicalize to empty
+        // strings, and two empty canonicalized values are maximally similar,
+        // so the full given name weight applies. The surname cross comparison
+        // of "levy" against "john" contributes zero.
+        var form = CreateStrangerForm() with
+        {
+            FirstName = "\u0301\u0301",
+        };
+
+        var candidate = CreateStrangerCandidate() with
+        {
+            FullName = PersonName.Create("\u0301\u0301", null, "John"),
+        };
+
+        var context = new PatientDuplicateScoringContext { Candidates = [candidate] };
+
+        // Act
+        var result = PatientDuplicateScoringService.Score(form, context);
+
+        // Assert
+        result.Scores.Should().ContainSingle().Which.Score.Should().Be(10);
+    }
+
+    [Fact]
     public void Score_ShouldReturnExactScore_WhenFormSuppliesSsnLast4AndCandidateMatches()
     {
         // Arrange
