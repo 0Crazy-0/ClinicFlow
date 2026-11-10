@@ -626,6 +626,26 @@ public class PatientDuplicateScoringServiceTests
             .WithMessage(DomainErrors.PatientRegistration.DuplicateSuspected);
     }
 
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void EnsureRegistrationAllowed_ShouldThrowDomainValidationException_WhenOverrideReasonIsWhitespaceOnly(
+        string overrideReason
+    )
+    {
+        // Arrange
+        var result = CreateScoringResult(PatientDuplicateScoringService.HighScoreThreshold);
+
+        // Act
+        var act = () =>
+            PatientDuplicateScoringService.EnsureRegistrationAllowed(result, overrideReason);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.PatientRegistration.DuplicateSuspected);
+    }
+
     private static PatientDuplicateScoringContext CreateValidContext() =>
         new() { Candidates = [CreateStrangerCandidate()] };
 
