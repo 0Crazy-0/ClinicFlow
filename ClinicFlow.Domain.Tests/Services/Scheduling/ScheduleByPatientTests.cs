@@ -215,7 +215,14 @@ public class ScheduleByPatientTests
             TargetPatient = target,
             AppointmentType = CreateAppointmentType(),
             DoctorSchedule = CreateSchedule(),
-            InitiatorMembership = CreateViewOnlyMembership(),
+            InitiatorMembership = FamilyMembership.CreateAdultFamilyMember(
+                Guid.CreateVersion7(),
+                Guid.CreateVersion7(),
+                PatientRelationship.Child,
+                FamilyMembershipAccessLevel.ViewOnly,
+                FamilyMembership.MinimumAdultAge,
+                _fakeTime.GetUtcNow().UtcDateTime
+            ),
             ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
 
@@ -511,7 +518,14 @@ public class ScheduleByPatientTests
         {
             TargetPatient = target,
             DoctorSchedule = doctorSchedule,
-            InitiatorMembership = CreateParentMembership(),
+            InitiatorMembership = FamilyMembership.CreateMinorFamilyMember(
+                Guid.CreateVersion7(),
+                Guid.CreateVersion7(),
+                PatientRelationship.Parent,
+                LegalAuthorityType.Parent,
+                FamilyMembership.MinimumAdultAge - 1,
+                _fakeTime.GetUtcNow().UtcDateTime
+            ),
             AppointmentType = appointmentType,
             ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),
         };
@@ -777,28 +791,6 @@ public class ScheduleByPatientTests
         FamilyMembership.CreateSelf(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
-
-    private FamilyMembership CreateParentMembership() =>
-        FamilyMembership.CreateFamilyMember(
-            Guid.CreateVersion7(),
-            Guid.CreateVersion7(),
-            PatientRelationship.Parent,
-            LegalAuthorityType.Parent,
-            FamilyMembershipAccessLevel.Full,
-            10,
-            _fakeTime.GetUtcNow().UtcDateTime
-        );
-
-    private FamilyMembership CreateViewOnlyMembership() =>
-        FamilyMembership.CreateFamilyMember(
-            Guid.CreateVersion7(),
-            Guid.CreateVersion7(),
-            PatientRelationship.Child,
-            LegalAuthorityType.None,
-            FamilyMembershipAccessLevel.ViewOnly,
-            30,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 

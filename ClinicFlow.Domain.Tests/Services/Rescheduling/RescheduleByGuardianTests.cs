@@ -829,13 +829,12 @@ public class RescheduleByGuardianTests
     }
 
     private FamilyMembership CreateParentMembership(Guid userId) =>
-        FamilyMembership.CreateFamilyMember(
+        FamilyMembership.CreateMinorFamilyMember(
             Guid.CreateVersion7(),
             userId,
             PatientRelationship.Parent,
             LegalAuthorityType.Parent,
-            FamilyMembershipAccessLevel.Full,
-            10,
+            FamilyMembership.MinimumAdultAge - 1,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 

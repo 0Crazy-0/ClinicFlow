@@ -820,13 +820,12 @@ public class AppointmentConsentGrantRepositoryTests(PostgresFixture fixture) : I
     {
         var user = await CreateUserAsync();
 
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             patientId,
             user.Id,
-            PatientRelationship.Child,
-            LegalAuthorityType.None,
+            PatientRelationship.Parent,
             FamilyMembershipAccessLevel.Full,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetLocalNow().DateTime
         );
 

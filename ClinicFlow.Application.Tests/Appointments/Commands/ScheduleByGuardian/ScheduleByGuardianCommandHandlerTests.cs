@@ -152,13 +152,12 @@ public class ScheduleByGuardianCommandHandlerTests
                 )
             )
             .ReturnsAsync(
-                FamilyMembership.CreateFamilyMember(
+                FamilyMembership.CreateMinorFamilyMember(
                     command.TargetPatientId,
                     command.InitiatorUserId,
                     PatientRelationship.Parent,
                     LegalAuthorityType.Parent,
-                    FamilyMembershipAccessLevel.Full,
-                    10,
+                    FamilyMembership.MinimumAdultAge - 1,
                     _fakeTime.GetUtcNow().UtcDateTime
                 )
             );
@@ -271,13 +270,12 @@ public class ScheduleByGuardianCommandHandlerTests
                 )
             )
             .ReturnsAsync(
-                FamilyMembership.CreateFamilyMember(
+                FamilyMembership.CreateMinorFamilyMember(
                     command.TargetPatientId,
                     command.InitiatorUserId,
                     PatientRelationship.Parent,
                     LegalAuthorityType.Parent,
-                    FamilyMembershipAccessLevel.Full,
-                    10,
+                    FamilyMembership.MinimumAdultAge - 1,
                     _fakeTime.GetUtcNow().UtcDateTime
                 )
             );

@@ -46,13 +46,12 @@ public class GetMinorFamilyMemberAppointmentsByPatientIdQueryHandlerTests
             10
         );
 
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateMinorFamilyMember(
             patientId,
             requesterUserId,
             PatientRelationship.Parent,
             LegalAuthorityType.Parent,
-            FamilyMembershipAccessLevel.Full,
-            15,
+            FamilyMembership.MinimumAdultAge - 1,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -152,13 +151,12 @@ public class GetMinorFamilyMemberAppointmentsByPatientIdQueryHandlerTests
             1,
             10
         );
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateMinorFamilyMember(
             patientId,
             requesterUserId,
             PatientRelationship.Parent,
             LegalAuthorityType.Parent,
-            FamilyMembershipAccessLevel.Full,
-            15,
+            FamilyMembership.MinimumAdultAge - 1,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -258,13 +256,12 @@ public class GetMinorFamilyMemberAppointmentsByPatientIdQueryHandlerTests
             1,
             10
         );
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             patientId,
             requesterUserId,
             PatientRelationship.Parent,
-            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -320,13 +317,12 @@ public class GetMinorFamilyMemberAppointmentsByPatientIdQueryHandlerTests
             1,
             10
         );
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             patientId,
             requesterUserId,
             PatientRelationship.Child,
-            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -378,13 +374,12 @@ public class GetMinorFamilyMemberAppointmentsByPatientIdQueryHandlerTests
             1,
             10
         );
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             patientId,
             requesterUserId,
             PatientRelationship.Child,
-            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -475,13 +470,12 @@ public class GetMinorFamilyMemberAppointmentsByPatientIdQueryHandlerTests
             10
         );
 
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateMinorFamilyMember(
             patientId,
             requesterUserId,
             PatientRelationship.Parent,
             LegalAuthorityType.Parent,
-            FamilyMembershipAccessLevel.Full,
-            15,
+            FamilyMembership.MinimumAdultAge - 1,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 

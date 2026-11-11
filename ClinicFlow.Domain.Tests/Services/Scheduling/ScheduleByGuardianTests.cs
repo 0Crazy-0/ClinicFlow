@@ -568,13 +568,12 @@ public class ScheduleByGuardianTests
         {
             TargetPatient = target,
             DoctorSchedule = doctorSchedule,
-            InitiatorMembership = FamilyMembership.CreateFamilyMember(
+            InitiatorMembership = FamilyMembership.CreateMinorFamilyMember(
                 target.Id,
                 authorId,
                 PatientRelationship.Parent,
                 LegalAuthorityType.Parent,
-                FamilyMembershipAccessLevel.Full,
-                10,
+                FamilyMembership.MinimumAdultAge - 1,
                 _fakeTime.GetUtcNow().UtcDateTime
             ),
             AppointmentType = appointmentType,
@@ -624,13 +623,12 @@ public class ScheduleByGuardianTests
                 args.ScheduledDate.DayOfWeek,
                 TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(17, 0))
             ),
-            InitiatorMembership = FamilyMembership.CreateFamilyMember(
+            InitiatorMembership = FamilyMembership.CreateMinorFamilyMember(
                 target.Id,
                 authorId,
                 PatientRelationship.Parent,
                 LegalAuthorityType.Parent,
-                FamilyMembershipAccessLevel.Full,
-                10,
+                FamilyMembership.MinimumAdultAge - 1,
                 _fakeTime.GetUtcNow().UtcDateTime
             ),
             AppointmentType = appointmentType,
@@ -658,13 +656,12 @@ public class ScheduleByGuardianTests
     }
 
     private FamilyMembership CreateParentMembership() =>
-        FamilyMembership.CreateFamilyMember(
+        FamilyMembership.CreateMinorFamilyMember(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             PatientRelationship.Parent,
             LegalAuthorityType.Parent,
-            FamilyMembershipAccessLevel.Full,
-            10,
+            FamilyMembership.MinimumAdultAge - 1,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 

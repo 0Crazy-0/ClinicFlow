@@ -658,13 +658,12 @@ public class MedicalRecordConsentGrantRepositoryTests(PostgresFixture fixture) :
     private async Task<FamilyMembership> CreateRecipientMembershipAsync(Guid patientId)
     {
         var user = await CreateUserAsync();
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             patientId,
             user.Id,
-            PatientRelationship.Child,
-            LegalAuthorityType.None,
+            PatientRelationship.Parent,
             FamilyMembershipAccessLevel.Full,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetLocalNow().DateTime
         );
 

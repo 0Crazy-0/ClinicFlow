@@ -153,13 +153,12 @@ public class LeaveFamilyMembershipCommandHandlerTests
         Guid ownerUserId,
         DateTime startedAt
     ) =>
-        FamilyMembership.CreateFamilyMember(
+        FamilyMembership.CreateAdultFamilyMember(
             patientId,
             ownerUserId,
-            PatientRelationship.Child,
-            LegalAuthorityType.None,
+            PatientRelationship.Parent,
             FamilyMembershipAccessLevel.Full,
-            30,
+            FamilyMembership.MinimumAdultAge,
             startedAt
         );
 }

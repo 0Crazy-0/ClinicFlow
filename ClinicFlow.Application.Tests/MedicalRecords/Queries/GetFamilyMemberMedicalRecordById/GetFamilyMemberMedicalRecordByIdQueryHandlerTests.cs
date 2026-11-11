@@ -422,13 +422,12 @@ public class GetFamilyMemberMedicalRecordByIdQueryHandlerTests
         Guid userId,
         FamilyMembershipAccessLevel accessLevel
     ) =>
-        FamilyMembership.CreateFamilyMember(
+        FamilyMembership.CreateAdultFamilyMember(
             patientId,
             userId,
-            PatientRelationship.Child,
-            LegalAuthorityType.None,
+            PatientRelationship.Parent,
             accessLevel,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 }

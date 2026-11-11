@@ -161,13 +161,12 @@ public class ClearPatientNotesByPatientCommandHandlerTests
                 )
             )
             .ReturnsAsync(
-                FamilyMembership.CreateFamilyMember(
+                FamilyMembership.CreateMinorFamilyMember(
                     patientId,
                     guardianId,
                     PatientRelationship.Parent,
                     LegalAuthorityType.Parent,
-                    FamilyMembershipAccessLevel.Full,
-                    10,
+                    FamilyMembership.MinimumAdultAge - 1,
                     _fakeTime.GetUtcNow().UtcDateTime
                 )
             );

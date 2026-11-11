@@ -214,13 +214,12 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
         // to already have an active Self membership (enforced by PrimaryPatientRequired
         // upstream). It's created here in isolation, without the corresponding Self,
         // solely to verify that the query correctly filters by Role == Self.
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             patient.Id,
             user.Id,
-            PatientRelationship.Child,
-            LegalAuthorityType.None,
+            PatientRelationship.Parent,
             FamilyMembershipAccessLevel.Full,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetLocalNow().DateTime
         );
 
@@ -243,13 +242,12 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
         // Arrange
         var user = await CreateUserAsync();
         var patient = await CreatePatientAsync();
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             patient.Id,
             user.Id,
             PatientRelationship.Spouse,
-            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetLocalNow().DateTime
         );
 
@@ -274,13 +272,12 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
         var ownerUser = await CreateUserAsync();
         var otherUser = await CreateUserAsync();
         var patient = await CreatePatientAsync();
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             patient.Id,
             ownerUser.Id,
             PatientRelationship.Spouse,
-            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetLocalNow().DateTime
         );
 
@@ -305,13 +302,12 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
         var user = await CreateUserAsync();
         var patient1 = await CreatePatientAsync();
         var patient2 = await CreatePatientAsync();
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             patient1.Id,
             user.Id,
-            PatientRelationship.Child,
-            LegalAuthorityType.None,
+            PatientRelationship.Parent,
             FamilyMembershipAccessLevel.Full,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetLocalNow().DateTime
         );
 
@@ -335,13 +331,12 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
         // Arrange
         var user = await CreateUserAsync();
         var patient = await CreatePatientAsync();
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             patient.Id,
             user.Id,
-            PatientRelationship.Child,
-            LegalAuthorityType.None,
+            PatientRelationship.Parent,
             FamilyMembershipAccessLevel.Full,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetLocalNow().DateTime
         );
 
@@ -461,13 +456,12 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
         // to already have an active Self membership (enforced by PrimaryPatientRequired
         // upstream). It's created here in isolation, without the corresponding Self,
         // solely to verify that the query correctly filters by Role == Self.
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             patient.Id,
             user.Id,
-            PatientRelationship.Child,
-            LegalAuthorityType.None,
+            PatientRelationship.Parent,
             FamilyMembershipAccessLevel.Full,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetLocalNow().DateTime
         );
 
@@ -542,13 +536,12 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
         // Arrange
         var user = await CreateUserAsync();
         var patient = await CreatePatientAsync();
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             patient.Id,
             user.Id,
             PatientRelationship.Spouse,
-            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetLocalNow().DateTime
         );
 
@@ -573,13 +566,12 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
         var ownerUser = await CreateUserAsync();
         var otherUser = await CreateUserAsync();
         var patient = await CreatePatientAsync();
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             patient.Id,
             ownerUser.Id,
             PatientRelationship.Spouse,
-            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetLocalNow().DateTime
         );
 
@@ -603,13 +595,12 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
         // Arrange
         var user = await CreateUserAsync();
         var patient = await CreatePatientAsync();
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             patient.Id,
             user.Id,
-            PatientRelationship.Child,
-            LegalAuthorityType.None,
+            PatientRelationship.Parent,
             FamilyMembershipAccessLevel.Full,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetLocalNow().DateTime
         );
 
@@ -664,13 +655,12 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
         // Arrange
         var user = await CreateUserAsync();
         var patient = await CreatePatientAsync();
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             patient.Id,
             user.Id,
-            PatientRelationship.Child,
-            LegalAuthorityType.None,
+            PatientRelationship.Parent,
             FamilyMembershipAccessLevel.Full,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetLocalNow().DateTime
         );
 
@@ -803,35 +793,32 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
         var selfMembership = FamilyMembership.CreateSelf(patientSelf.Id, ownerUser.Id, now);
         Context.FamilyMemberships.Add(selfMembership);
 
-        var childMembership = FamilyMembership.CreateFamilyMember(
+        var childMembership = FamilyMembership.CreateAdultFamilyMember(
             patientChild.Id,
             ownerUser.Id,
-            PatientRelationship.Child,
-            LegalAuthorityType.None,
+            PatientRelationship.Parent,
             FamilyMembershipAccessLevel.Full,
-            30,
+            FamilyMembership.MinimumAdultAge,
             now
         );
         Context.FamilyMemberships.Add(childMembership);
 
-        var spouseMembership = FamilyMembership.CreateFamilyMember(
+        var spouseMembership = FamilyMembership.CreateAdultFamilyMember(
             patientSpouse.Id,
             ownerUser.Id,
             PatientRelationship.Spouse,
-            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
-            30,
+            FamilyMembership.MinimumAdultAge,
             now
         );
         Context.FamilyMemberships.Add(spouseMembership);
 
-        var otherChildMembership = FamilyMembership.CreateFamilyMember(
+        var otherChildMembership = FamilyMembership.CreateAdultFamilyMember(
             patientOtherChild.Id,
             otherUser.Id,
-            PatientRelationship.Child,
-            LegalAuthorityType.None,
+            PatientRelationship.Sibling,
             FamilyMembershipAccessLevel.Full,
-            30,
+            FamilyMembership.MinimumAdultAge,
             now
         );
         Context.FamilyMemberships.Add(otherChildMembership);
