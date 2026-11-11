@@ -537,13 +537,12 @@ public class GrantSpecificAppointmentConsentCommandHandlerTests
         );
 
     private FamilyMembership CreateRecipientMembership(Guid patientId) =>
-        FamilyMembership.CreateFamilyMember(
+        FamilyMembership.CreateAdultFamilyMember(
             patientId,
             Guid.CreateVersion7(),
             PatientRelationship.Child,
-            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 

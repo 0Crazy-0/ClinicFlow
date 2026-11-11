@@ -479,13 +479,12 @@ public class AppointmentCancellationServiceTests
             AppointmentType = CreateAppointmentType(AppointmentPurpose.Emergency),
             CancelledAt = cancelledAt,
             Specialty = CreateSpecialty(),
-            InitiatorMembership = FamilyMembership.CreateFamilyMember(
+            InitiatorMembership = FamilyMembership.CreateMinorFamilyMember(
                 patientId,
                 initiatorUserId,
                 PatientRelationship.Parent,
                 LegalAuthorityType.Parent,
-                FamilyMembershipAccessLevel.Full,
-                10,
+                FamilyMembership.MinimumAdultAge - 1,
                 _fakeTime.GetUtcNow().UtcDateTime
             ),
         };
@@ -538,13 +537,12 @@ public class AppointmentCancellationServiceTests
         // Arrange
         var patient = CreatePatient(Guid.CreateVersion7(), 30);
         var appointment = CreateAppointment(patient.Id);
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             PatientRelationship.Child,
-            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.ViewOnly,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -582,13 +580,12 @@ public class AppointmentCancellationServiceTests
             AppointmentType = CreateAppointmentType(AppointmentPurpose.Emergency),
             CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
             Specialty = CreateSpecialty(),
-            InitiatorMembership = FamilyMembership.CreateFamilyMember(
+            InitiatorMembership = FamilyMembership.CreateAdultFamilyMember(
                 patientId,
                 initiatorUserId,
                 PatientRelationship.Other,
-                LegalAuthorityType.None,
                 FamilyMembershipAccessLevel.Full,
-                30,
+                FamilyMembership.MinimumAdultAge,
                 _fakeTime.GetUtcNow().UtcDateTime
             ),
         };
@@ -622,13 +619,12 @@ public class AppointmentCancellationServiceTests
 
             // Membership created when the patient was a minor and still Active.
             // There is no automatic revocation at adulthood, so the service must revalidate current age.
-            InitiatorMembership = FamilyMembership.CreateFamilyMember(
+            InitiatorMembership = FamilyMembership.CreateMinorFamilyMember(
                 patientId,
                 initiatorUserId,
                 PatientRelationship.Parent,
                 LegalAuthorityType.Parent,
-                FamilyMembershipAccessLevel.Full,
-                DomainRules.AdultAge - 1,
+                FamilyMembership.MinimumAdultAge - 1,
                 _fakeTime.GetUtcNow().UtcDateTime
             ),
         };
@@ -662,13 +658,12 @@ public class AppointmentCancellationServiceTests
 
             // Membership created when the patient was a minor and still Active.
             // There is no automatic revocation at adulthood, so the service must revalidate current age.
-            InitiatorMembership = FamilyMembership.CreateFamilyMember(
+            InitiatorMembership = FamilyMembership.CreateMinorFamilyMember(
                 patientId,
                 initiatorUserId,
                 PatientRelationship.Parent,
                 LegalAuthorityType.Parent,
-                FamilyMembershipAccessLevel.Full,
-                DomainRules.AdultAge - 1,
+                FamilyMembership.MinimumAdultAge - 1,
                 _fakeTime.GetUtcNow().UtcDateTime
             ),
         };

@@ -444,13 +444,12 @@ public class GrantMedicalRecordConsentCommandHandlerTests
         );
 
     private FamilyMembership CreateRecipientMembership(Guid patientId) =>
-        FamilyMembership.CreateFamilyMember(
+        FamilyMembership.CreateAdultFamilyMember(
             patientId,
             Guid.CreateVersion7(),
-            PatientRelationship.Child,
-            LegalAuthorityType.None,
+            PatientRelationship.Parent,
             FamilyMembershipAccessLevel.Full,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 

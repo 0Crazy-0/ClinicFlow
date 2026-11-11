@@ -82,38 +82,7 @@ public class FamilyMembershipTests
     }
 
     [Fact]
-    public void CreateFamilyMember_ShouldCreateActiveMembership_WhenValidParameters()
-    {
-        // Arrange
-        var patientId = Guid.CreateVersion7();
-        var ownerUserId = Guid.CreateVersion7();
-        var role = PatientRelationship.Child;
-        var referenceTime = _fakeTime.GetUtcNow().UtcDateTime;
-
-        // Act
-        var membership = FamilyMembership.CreateFamilyMember(
-            patientId,
-            ownerUserId,
-            role,
-            LegalAuthorityType.None,
-            FamilyMembershipAccessLevel.Full,
-            30,
-            referenceTime
-        );
-
-        // Assert
-        membership.PatientId.Should().Be(patientId);
-        membership.UserId.Should().Be(ownerUserId);
-        membership.Role.Should().Be(role);
-        membership.AccessLevel.Should().Be(FamilyMembershipAccessLevel.Full);
-        membership.LegalAuthority.Should().Be(LegalAuthorityType.None);
-        membership.Status.Should().Be(FamilyMembershipStatus.Active);
-        membership.StartedAt.Should().Be(referenceTime);
-        membership.EndedAt.Should().BeNull();
-    }
-
-    [Fact]
-    public void CreateFamilyMember_ShouldCreateMembership_WhenParentRoleWithParentAuthorityAndMinor()
+    public void CreateMinorFamilyMember_ShouldCreateFullAccessMembership_WhenParentRoleWithParentAuthority()
     {
         // Arrange
         var patientId = Guid.CreateVersion7();
@@ -121,12 +90,11 @@ public class FamilyMembershipTests
         var referenceTime = _fakeTime.GetUtcNow().UtcDateTime;
 
         // Act
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateMinorFamilyMember(
             patientId,
             ownerUserId,
             PatientRelationship.Parent,
             LegalAuthorityType.Parent,
-            FamilyMembershipAccessLevel.Full,
             FamilyMembership.MinimumAdultAge - 1,
             referenceTime
         );
@@ -143,7 +111,7 @@ public class FamilyMembershipTests
     }
 
     [Fact]
-    public void CreateFamilyMember_ShouldCreateMembership_WhenOtherRoleWithGuardianAuthorityAndMinor()
+    public void CreateMinorFamilyMember_ShouldCreateFullAccessMembership_WhenOtherRoleWithGuardianAuthority()
     {
         // Arrange
         var patientId = Guid.CreateVersion7();
@@ -151,12 +119,11 @@ public class FamilyMembershipTests
         var referenceTime = _fakeTime.GetUtcNow().UtcDateTime;
 
         // Act
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateMinorFamilyMember(
             patientId,
             ownerUserId,
             PatientRelationship.Other,
             LegalAuthorityType.Guardian,
-            FamilyMembershipAccessLevel.Full,
             FamilyMembership.MinimumAdultAge - 1,
             referenceTime
         );
@@ -173,7 +140,7 @@ public class FamilyMembershipTests
     }
 
     [Fact]
-    public void CreateFamilyMember_ShouldCreateMembership_WhenSiblingRoleWithGuardianAuthorityAndMinor()
+    public void CreateMinorFamilyMember_ShouldCreateFullAccessMembership_WhenSiblingRoleWithGuardianAuthority()
     {
         // Arrange
         var patientId = Guid.CreateVersion7();
@@ -181,12 +148,11 @@ public class FamilyMembershipTests
         var referenceTime = _fakeTime.GetUtcNow().UtcDateTime;
 
         // Act
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateMinorFamilyMember(
             patientId,
             ownerUserId,
             PatientRelationship.Sibling,
             LegalAuthorityType.Guardian,
-            FamilyMembershipAccessLevel.Full,
             FamilyMembership.MinimumAdultAge - 1,
             referenceTime
         );
@@ -197,22 +163,22 @@ public class FamilyMembershipTests
         membership.Role.Should().Be(PatientRelationship.Sibling);
         membership.AccessLevel.Should().Be(FamilyMembershipAccessLevel.Full);
         membership.LegalAuthority.Should().Be(LegalAuthorityType.Guardian);
+        membership.Status.Should().Be(FamilyMembershipStatus.Active);
         membership.StartedAt.Should().Be(referenceTime);
         membership.EndedAt.Should().BeNull();
     }
 
     [Fact]
-    public void CreateFamilyMember_ShouldThrowException_WhenPatientIdIsEmpty()
+    public void CreateMinorFamilyMember_ShouldThrowException_WhenPatientIdIsEmpty()
     {
         // Arrange & Act
         var act = () =>
-            FamilyMembership.CreateFamilyMember(
+            FamilyMembership.CreateMinorFamilyMember(
                 Guid.Empty,
                 Guid.CreateVersion7(),
-                PatientRelationship.Spouse,
-                LegalAuthorityType.None,
-                FamilyMembershipAccessLevel.Full,
-                30,
+                PatientRelationship.Parent,
+                LegalAuthorityType.Parent,
+                FamilyMembership.MinimumAdultAge - 1,
                 _fakeTime.GetUtcNow().UtcDateTime
             );
 
@@ -223,17 +189,16 @@ public class FamilyMembershipTests
     }
 
     [Fact]
-    public void CreateFamilyMember_ShouldThrowException_WhenOwnerUserIdIsEmpty()
+    public void CreateMinorFamilyMember_ShouldThrowException_WhenOwnerUserIdIsEmpty()
     {
         // Arrange & Act
         var act = () =>
-            FamilyMembership.CreateFamilyMember(
+            FamilyMembership.CreateMinorFamilyMember(
                 Guid.CreateVersion7(),
                 Guid.Empty,
-                PatientRelationship.Sibling,
-                LegalAuthorityType.None,
-                FamilyMembershipAccessLevel.Full,
-                30,
+                PatientRelationship.Parent,
+                LegalAuthorityType.Parent,
+                FamilyMembership.MinimumAdultAge - 1,
                 _fakeTime.GetUtcNow().UtcDateTime
             );
 
@@ -244,37 +209,15 @@ public class FamilyMembershipTests
     }
 
     [Fact]
-    public void CreateFamilyMember_ShouldThrowException_WhenRoleIsInvalid()
+    public void CreateMinorFamilyMember_ShouldThrowException_WhenRoleIsInvalid()
     {
         // Arrange & Act
         var act = () =>
-            FamilyMembership.CreateFamilyMember(
+            FamilyMembership.CreateMinorFamilyMember(
                 Guid.CreateVersion7(),
                 Guid.CreateVersion7(),
                 (PatientRelationship)999,
-                LegalAuthorityType.None,
-                FamilyMembershipAccessLevel.Full,
-                30,
-                _fakeTime.GetUtcNow().UtcDateTime
-            );
-
-        // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.Validation.InvalidEnumValue);
-    }
-
-    [Fact]
-    public void CreateFamilyMember_ShouldThrowException_WhenLegalAuthorityIsInvalid()
-    {
-        // Arrange & Act
-        var act = () =>
-            FamilyMembership.CreateFamilyMember(
-                Guid.CreateVersion7(),
-                Guid.CreateVersion7(),
-                PatientRelationship.Parent,
-                (LegalAuthorityType)999,
-                FamilyMembershipAccessLevel.Full,
+                LegalAuthorityType.Parent,
                 FamilyMembership.MinimumAdultAge - 1,
                 _fakeTime.GetUtcNow().UtcDateTime
             );
@@ -286,17 +229,16 @@ public class FamilyMembershipTests
     }
 
     [Fact]
-    public void CreateFamilyMember_ShouldThrowException_WhenAccessLevelIsInvalid()
+    public void CreateMinorFamilyMember_ShouldThrowException_WhenLegalAuthorityIsInvalid()
     {
         // Arrange & Act
         var act = () =>
-            FamilyMembership.CreateFamilyMember(
+            FamilyMembership.CreateMinorFamilyMember(
                 Guid.CreateVersion7(),
                 Guid.CreateVersion7(),
-                PatientRelationship.Child,
-                LegalAuthorityType.None,
-                (FamilyMembershipAccessLevel)999,
-                30,
+                PatientRelationship.Parent,
+                (LegalAuthorityType)999,
+                FamilyMembership.MinimumAdultAge - 1,
                 _fakeTime.GetUtcNow().UtcDateTime
             );
 
@@ -307,17 +249,16 @@ public class FamilyMembershipTests
     }
 
     [Fact]
-    public void CreateFamilyMember_ShouldThrowException_WhenReferenceTimeIsDefault()
+    public void CreateMinorFamilyMember_ShouldThrowException_WhenReferenceTimeIsDefault()
     {
         // Arrange & Act
         var act = () =>
-            FamilyMembership.CreateFamilyMember(
+            FamilyMembership.CreateMinorFamilyMember(
                 Guid.CreateVersion7(),
                 Guid.CreateVersion7(),
-                PatientRelationship.Child,
-                LegalAuthorityType.None,
-                FamilyMembershipAccessLevel.Full,
-                30,
+                PatientRelationship.Parent,
+                LegalAuthorityType.Parent,
+                FamilyMembership.MinimumAdultAge - 1,
                 default
             );
 
@@ -328,17 +269,16 @@ public class FamilyMembershipTests
     }
 
     [Fact]
-    public void CreateFamilyMember_ShouldThrowException_WhenRoleIsSelf()
+    public void CreateMinorFamilyMember_ShouldThrowException_WhenRoleIsSelf()
     {
         // Arrange & Act
         var act = () =>
-            FamilyMembership.CreateFamilyMember(
+            FamilyMembership.CreateMinorFamilyMember(
                 Guid.CreateVersion7(),
                 Guid.CreateVersion7(),
                 PatientRelationship.Self,
-                LegalAuthorityType.None,
-                FamilyMembershipAccessLevel.Full,
-                30,
+                LegalAuthorityType.Parent,
+                FamilyMembership.MinimumAdultAge - 1,
                 _fakeTime.GetUtcNow().UtcDateTime
             );
 
@@ -348,76 +288,16 @@ public class FamilyMembershipTests
             .WithMessage(DomainErrors.FamilyMembership.CannotBeSelf);
     }
 
-    [Theory]
-    [InlineData(PatientRelationship.Child)]
-    [InlineData(PatientRelationship.Spouse)]
-    [InlineData(PatientRelationship.Sibling)]
-    [InlineData(PatientRelationship.Other)]
-    public void CreateFamilyMember_ShouldThrowException_WhenParentAuthorityWithNonParentRole(
-        PatientRelationship role
-    )
+    [Fact]
+    public void CreateMinorFamilyMember_ShouldThrowException_WhenPatientIsAdult()
     {
         // Arrange & Act
         var act = () =>
-            FamilyMembership.CreateFamilyMember(
+            FamilyMembership.CreateMinorFamilyMember(
                 Guid.CreateVersion7(),
                 Guid.CreateVersion7(),
-                role,
+                PatientRelationship.Parent,
                 LegalAuthorityType.Parent,
-                FamilyMembershipAccessLevel.Full,
-                FamilyMembership.MinimumAdultAge - 1,
-                _fakeTime.GetUtcNow().UtcDateTime
-            );
-
-        // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.FamilyMembership.InvalidLegalAuthorityForRole);
-    }
-
-    [Theory]
-    [InlineData(PatientRelationship.Parent)]
-    [InlineData(PatientRelationship.Child)]
-    [InlineData(PatientRelationship.Spouse)]
-    public void CreateFamilyMember_ShouldThrowException_WhenGuardianAuthorityWithInvalidRole(
-        PatientRelationship role
-    )
-    {
-        // Arrange & Act
-        var act = () =>
-            FamilyMembership.CreateFamilyMember(
-                Guid.CreateVersion7(),
-                Guid.CreateVersion7(),
-                role,
-                LegalAuthorityType.Guardian,
-                FamilyMembershipAccessLevel.Full,
-                FamilyMembership.MinimumAdultAge - 1,
-                _fakeTime.GetUtcNow().UtcDateTime
-            );
-
-        // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.FamilyMembership.InvalidLegalAuthorityForRole);
-    }
-
-    [Theory]
-    [InlineData(PatientRelationship.Parent, LegalAuthorityType.Parent)]
-    [InlineData(PatientRelationship.Other, LegalAuthorityType.Guardian)]
-    [InlineData(PatientRelationship.Sibling, LegalAuthorityType.Guardian)]
-    public void CreateFamilyMember_ShouldThrowException_WhenLegalAuthorityForAdult(
-        PatientRelationship role,
-        LegalAuthorityType legalAuthority
-    )
-    {
-        // Arrange & Act
-        var act = () =>
-            FamilyMembership.CreateFamilyMember(
-                Guid.CreateVersion7(),
-                Guid.CreateVersion7(),
-                role,
-                legalAuthority,
-                FamilyMembershipAccessLevel.Full,
                 FamilyMembership.MinimumAdultAge,
                 _fakeTime.GetUtcNow().UtcDateTime
             );
@@ -425,7 +305,58 @@ public class FamilyMembershipTests
         // Assert
         act.Should()
             .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.FamilyMembership.LegalAuthorityRequiresMinor);
+            .WithMessage(DomainErrors.FamilyMembership.PatientMustBeMinor);
+    }
+
+    [Theory]
+    [InlineData(PatientRelationship.Child)]
+    [InlineData(PatientRelationship.Spouse)]
+    [InlineData(PatientRelationship.Sibling)]
+    [InlineData(PatientRelationship.Other)]
+    public void CreateMinorFamilyMember_ShouldThrowException_WhenParentAuthorityWithNonParentRole(
+        PatientRelationship role
+    )
+    {
+        // Arrange & Act
+        var act = () =>
+            FamilyMembership.CreateMinorFamilyMember(
+                Guid.CreateVersion7(),
+                Guid.CreateVersion7(),
+                role,
+                LegalAuthorityType.Parent,
+                FamilyMembership.MinimumAdultAge - 1,
+                _fakeTime.GetUtcNow().UtcDateTime
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.FamilyMembership.InvalidLegalAuthorityForRole);
+    }
+
+    [Theory]
+    [InlineData(PatientRelationship.Parent)]
+    [InlineData(PatientRelationship.Child)]
+    [InlineData(PatientRelationship.Spouse)]
+    public void CreateMinorFamilyMember_ShouldThrowException_WhenGuardianAuthorityWithInvalidRole(
+        PatientRelationship role
+    )
+    {
+        // Arrange & Act
+        var act = () =>
+            FamilyMembership.CreateMinorFamilyMember(
+                Guid.CreateVersion7(),
+                Guid.CreateVersion7(),
+                role,
+                LegalAuthorityType.Guardian,
+                FamilyMembership.MinimumAdultAge - 1,
+                _fakeTime.GetUtcNow().UtcDateTime
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.FamilyMembership.InvalidLegalAuthorityForRole);
     }
 
     [Theory]
@@ -434,18 +365,17 @@ public class FamilyMembershipTests
     [InlineData(PatientRelationship.Sibling)]
     [InlineData(PatientRelationship.Child)]
     [InlineData(PatientRelationship.Spouse)]
-    public void CreateFamilyMember_ShouldThrowException_WhenMinorWithoutLegalAuthority(
+    public void CreateMinorFamilyMember_ShouldThrowException_WhenLegalAuthorityIsNone(
         PatientRelationship role
     )
     {
         // Arrange & Act
         var act = () =>
-            FamilyMembership.CreateFamilyMember(
+            FamilyMembership.CreateMinorFamilyMember(
                 Guid.CreateVersion7(),
                 Guid.CreateVersion7(),
                 role,
                 LegalAuthorityType.None,
-                FamilyMembershipAccessLevel.Full,
                 FamilyMembership.MinimumAdultAge - 1,
                 _fakeTime.GetUtcNow().UtcDateTime
             );
@@ -457,55 +387,7 @@ public class FamilyMembershipTests
     }
 
     [Fact]
-    public void CreateFamilyMember_ShouldThrowException_WhenAccessLevelIsUnspecified()
-    {
-        // Arrange & Act
-        var act = () =>
-            FamilyMembership.CreateFamilyMember(
-                Guid.CreateVersion7(),
-                Guid.CreateVersion7(),
-                PatientRelationship.Child,
-                LegalAuthorityType.None,
-                FamilyMembershipAccessLevel.Unspecified,
-                30,
-                _fakeTime.GetUtcNow().UtcDateTime
-            );
-
-        // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.Validation.ValueRequired);
-    }
-
-    [Theory]
-    [InlineData(FamilyMembershipAccessLevel.ViewOnly)]
-    [InlineData(FamilyMembershipAccessLevel.Restricted)]
-    [InlineData(FamilyMembershipAccessLevel.EmergencyOnly)]
-    [InlineData(FamilyMembershipAccessLevel.AppointmentOnly)]
-    public void CreateFamilyMember_ShouldThrowException_WhenPatientIsMinorAndAccessLevelIsNotFull(
-        FamilyMembershipAccessLevel accessLevel
-    )
-    {
-        // Arrange & Act
-        var act = () =>
-            FamilyMembership.CreateFamilyMember(
-                Guid.CreateVersion7(),
-                Guid.CreateVersion7(),
-                PatientRelationship.Parent,
-                LegalAuthorityType.Parent,
-                accessLevel,
-                patientAge: FamilyMembership.MinimumAdultAge - 1,
-                _fakeTime.GetUtcNow().UtcDateTime
-            );
-
-        // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.FamilyMembership.MinorMustHaveFullAccess);
-    }
-
-    [Fact]
-    public void CreateFamilyMember_ShouldCreateMembership_WhenPatientIsMinorAndAccessLevelIsFull()
+    public void CreateAdultFamilyMember_ShouldCreateActiveMembership_WhenValidParameters()
     {
         // Arrange
         var patientId = Guid.CreateVersion7();
@@ -513,28 +395,28 @@ public class FamilyMembershipTests
         var referenceTime = _fakeTime.GetUtcNow().UtcDateTime;
 
         // Act
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             patientId,
             ownerUserId,
-            PatientRelationship.Parent,
-            LegalAuthorityType.Parent,
+            PatientRelationship.Child,
             FamilyMembershipAccessLevel.Full,
-            FamilyMembership.MinimumAdultAge - 1,
+            patientAge: 67,
             referenceTime
         );
 
         // Assert
         membership.PatientId.Should().Be(patientId);
         membership.UserId.Should().Be(ownerUserId);
-        membership.Role.Should().Be(PatientRelationship.Parent);
-        membership.Status.Should().Be(FamilyMembershipStatus.Active);
+        membership.Role.Should().Be(PatientRelationship.Child);
         membership.AccessLevel.Should().Be(FamilyMembershipAccessLevel.Full);
+        membership.LegalAuthority.Should().Be(LegalAuthorityType.None);
+        membership.Status.Should().Be(FamilyMembershipStatus.Active);
         membership.StartedAt.Should().Be(referenceTime);
         membership.EndedAt.Should().BeNull();
     }
 
     [Fact]
-    public void CreateFamilyMember_ShouldCreateMembership_WhenPatientIsExactlyAdultAge()
+    public void CreateAdultFamilyMember_ShouldCreateMembership_WhenPatientIsExactlyAdultAge()
     {
         // Arrange
         var patientId = Guid.CreateVersion7();
@@ -542,11 +424,10 @@ public class FamilyMembershipTests
         var referenceTime = _fakeTime.GetUtcNow().UtcDateTime;
 
         // Act
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             patientId,
             ownerUserId,
             PatientRelationship.Sibling,
-            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Restricted,
             FamilyMembership.MinimumAdultAge,
             referenceTime
@@ -556,23 +437,183 @@ public class FamilyMembershipTests
         membership.PatientId.Should().Be(patientId);
         membership.UserId.Should().Be(ownerUserId);
         membership.Role.Should().Be(PatientRelationship.Sibling);
-        membership.Status.Should().Be(FamilyMembershipStatus.Active);
         membership.AccessLevel.Should().Be(FamilyMembershipAccessLevel.Restricted);
+        membership.LegalAuthority.Should().Be(LegalAuthorityType.None);
+        membership.Status.Should().Be(FamilyMembershipStatus.Active);
         membership.StartedAt.Should().Be(referenceTime);
         membership.EndedAt.Should().BeNull();
+    }
+
+    [Fact]
+    public void CreateAdultFamilyMember_ShouldThrowException_WhenPatientIdIsEmpty()
+    {
+        // Arrange & Act
+        var act = () =>
+            FamilyMembership.CreateAdultFamilyMember(
+                Guid.Empty,
+                Guid.CreateVersion7(),
+                PatientRelationship.Child,
+                FamilyMembershipAccessLevel.Full,
+                FamilyMembership.MinimumAdultAge,
+                _fakeTime.GetUtcNow().UtcDateTime
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void CreateAdultFamilyMember_ShouldThrowException_WhenOwnerUserIdIsEmpty()
+    {
+        // Arrange & Act
+        var act = () =>
+            FamilyMembership.CreateAdultFamilyMember(
+                Guid.CreateVersion7(),
+                Guid.Empty,
+                PatientRelationship.Child,
+                FamilyMembershipAccessLevel.Full,
+                FamilyMembership.MinimumAdultAge,
+                _fakeTime.GetUtcNow().UtcDateTime
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void CreateAdultFamilyMember_ShouldThrowException_WhenRoleIsInvalid()
+    {
+        // Arrange & Act
+        var act = () =>
+            FamilyMembership.CreateAdultFamilyMember(
+                Guid.CreateVersion7(),
+                Guid.CreateVersion7(),
+                (PatientRelationship)999,
+                FamilyMembershipAccessLevel.Full,
+                FamilyMembership.MinimumAdultAge,
+                _fakeTime.GetUtcNow().UtcDateTime
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.InvalidEnumValue);
+    }
+
+    [Fact]
+    public void CreateAdultFamilyMember_ShouldThrowException_WhenAccessLevelIsInvalid()
+    {
+        // Arrange & Act
+        var act = () =>
+            FamilyMembership.CreateAdultFamilyMember(
+                Guid.CreateVersion7(),
+                Guid.CreateVersion7(),
+                PatientRelationship.Child,
+                (FamilyMembershipAccessLevel)999,
+                FamilyMembership.MinimumAdultAge,
+                _fakeTime.GetUtcNow().UtcDateTime
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.InvalidEnumValue);
+    }
+
+    [Fact]
+    public void CreateAdultFamilyMember_ShouldThrowException_WhenReferenceTimeIsDefault()
+    {
+        // Arrange & Act
+        var act = () =>
+            FamilyMembership.CreateAdultFamilyMember(
+                Guid.CreateVersion7(),
+                Guid.CreateVersion7(),
+                PatientRelationship.Child,
+                FamilyMembershipAccessLevel.Full,
+                FamilyMembership.MinimumAdultAge,
+                default
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void CreateAdultFamilyMember_ShouldThrowException_WhenRoleIsSelf()
+    {
+        // Arrange & Act
+        var act = () =>
+            FamilyMembership.CreateAdultFamilyMember(
+                Guid.CreateVersion7(),
+                Guid.CreateVersion7(),
+                PatientRelationship.Self,
+                FamilyMembershipAccessLevel.Full,
+                FamilyMembership.MinimumAdultAge,
+                _fakeTime.GetUtcNow().UtcDateTime
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.FamilyMembership.CannotBeSelf);
+    }
+
+    [Fact]
+    public void CreateAdultFamilyMember_ShouldThrowException_WhenPatientIsMinor()
+    {
+        // Arrange & Act
+        var act = () =>
+            FamilyMembership.CreateAdultFamilyMember(
+                Guid.CreateVersion7(),
+                Guid.CreateVersion7(),
+                PatientRelationship.Sibling,
+                FamilyMembershipAccessLevel.Full,
+                FamilyMembership.MinimumAdultAge - 1,
+                _fakeTime.GetUtcNow().UtcDateTime
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.FamilyMembership.PatientMustBeAdult);
+    }
+
+    [Fact]
+    public void CreateAdultFamilyMember_ShouldThrowException_WhenAccessLevelIsUnspecified()
+    {
+        // Arrange & Act
+        var act = () =>
+            FamilyMembership.CreateAdultFamilyMember(
+                Guid.CreateVersion7(),
+                Guid.CreateVersion7(),
+                PatientRelationship.Child,
+                FamilyMembershipAccessLevel.Unspecified,
+                FamilyMembership.MinimumAdultAge,
+                _fakeTime.GetUtcNow().UtcDateTime
+            );
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.ValueRequired);
     }
 
     [Fact]
     public void ChangeAccessLevel_ShouldThrowException_WhenAccessLevelIsInvalid()
     {
         // Arrange
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             PatientRelationship.Child,
-            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -594,13 +635,12 @@ public class FamilyMembershipTests
     public void ChangeAccessLevel_ShouldThrowException_WhenNewAccessLevelIsUnspecified()
     {
         // Arrange
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             PatientRelationship.Child,
-            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -622,13 +662,12 @@ public class FamilyMembershipTests
     public void ChangeAccessLevel_ShouldThrowException_WhenNewAccessLevelIsDefault()
     {
         // Arrange
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             PatientRelationship.Child,
-            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -645,13 +684,12 @@ public class FamilyMembershipTests
     public void ChangeAccessLevel_ShouldUpdateAccessLevel_WhenRequesterIsAuthorizedAndAccessLevelIsDifferent()
     {
         // Arrange
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             PatientRelationship.Child,
-            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -676,13 +714,12 @@ public class FamilyMembershipTests
     )
     {
         // Arrange
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             PatientRelationship.Child,
-            LegalAuthorityType.None,
             currentAccessLevel,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -732,12 +769,11 @@ public class FamilyMembershipTests
     )
     {
         // Arrange
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateMinorFamilyMember(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             PatientRelationship.Parent,
             LegalAuthorityType.Parent,
-            FamilyMembershipAccessLevel.Full,
             patientAge: FamilyMembership.MinimumAdultAge - 1,
             _fakeTime.GetUtcNow().UtcDateTime
         );
@@ -760,11 +796,10 @@ public class FamilyMembershipTests
     public void ChangeAccessLevel_ShouldUpdateAccessLevel_WhenPatientIsExactlyAdultAge()
     {
         // Arrange
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             PatientRelationship.Sibling,
-            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
             FamilyMembership.MinimumAdultAge,
             _fakeTime.GetUtcNow().UtcDateTime
@@ -785,13 +820,12 @@ public class FamilyMembershipTests
     public void ChangeAccessLevel_ShouldThrowException_WhenRequesterIsNotAuthorized()
     {
         // Arrange
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             PatientRelationship.Child,
-            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -813,13 +847,12 @@ public class FamilyMembershipTests
     public void ChangeAccessLevel_ShouldThrowException_WhenAccessLevelIsUnchanged()
     {
         // Arrange
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             PatientRelationship.Child,
-            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.ViewOnly,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -950,13 +983,12 @@ public class FamilyMembershipTests
     )
     {
         // Arrange
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             PatientRelationship.Child,
-            LegalAuthorityType.None,
             accessLevel,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -1064,13 +1096,12 @@ public class FamilyMembershipTests
     )
     {
         // Arrange
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             PatientRelationship.Child,
-            LegalAuthorityType.None,
             accessLevel,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -1114,13 +1145,12 @@ public class FamilyMembershipTests
     )
     {
         // Arrange
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             PatientRelationship.Child,
-            LegalAuthorityType.None,
             accessLevel,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -1137,13 +1167,12 @@ public class FamilyMembershipTests
     )
     {
         // Arrange
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             PatientRelationship.Child,
-            LegalAuthorityType.None,
             accessLevel,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -1191,13 +1220,12 @@ public class FamilyMembershipTests
     public void EnsureAppointmentAccess_ShouldNotThrow_WhenFullAccess()
     {
         // Arrange
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             PatientRelationship.Child,
-            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -1212,13 +1240,12 @@ public class FamilyMembershipTests
     public void EnsureAppointmentAccess_ShouldNotThrow_WhenAppointmentOnlyAccess()
     {
         // Arrange
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             PatientRelationship.Child,
-            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.AppointmentOnly,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -1251,13 +1278,12 @@ public class FamilyMembershipTests
     public void EnsureAppointmentAccess_ShouldThrowPatientAccessUnauthorizedException_WhenViewOnly()
     {
         // Arrange
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             PatientRelationship.Child,
-            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.ViewOnly,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -1289,13 +1315,12 @@ public class FamilyMembershipTests
     public void GetVisibleAppointmentCategories_ShouldReturnAll_WhenFullAccess()
     {
         // Arrange
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             PatientRelationship.Child,
-            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -1310,13 +1335,12 @@ public class FamilyMembershipTests
     public void GetVisibleAppointmentCategories_ShouldReturnAll_WhenViewOnlyAccess()
     {
         // Arrange
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             PatientRelationship.Child,
-            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.ViewOnly,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -1349,13 +1373,12 @@ public class FamilyMembershipTests
     public void GetVisibleAppointmentCategories_ShouldThrowDomainValidationException_WhenAppointmentOnly()
     {
         // Arrange
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             PatientRelationship.Child,
-            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.AppointmentOnly,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -1372,13 +1395,12 @@ public class FamilyMembershipTests
     public void Revoke_ShouldTransitionToRevoked_WhenValidParameters()
     {
         // Arrange
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             PatientRelationship.Child,
-            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -1448,13 +1470,12 @@ public class FamilyMembershipTests
     public void Revoke_ShouldThrowException_WhenStatusIsAlreadyRevoked()
     {
         // Arrange
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             PatientRelationship.Child,
-            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetUtcNow().UtcDateTime
         );
         _fakeTime.Advance(TimeSpan.FromDays(1));
@@ -1484,13 +1505,12 @@ public class FamilyMembershipTests
     public void Revoke_ShouldThrowException_WhenStatusIsAlreadyLeft()
     {
         // Arrange
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             PatientRelationship.Child,
-            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetUtcNow().UtcDateTime
         );
         _fakeTime.Advance(TimeSpan.FromDays(1));
@@ -1516,13 +1536,12 @@ public class FamilyMembershipTests
     public void Revoke_ShouldThrowException_WhenPatientHasUpcomingAppointmentRequiringGuardianForMinor()
     {
         // Arrange
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             PatientRelationship.Child,
-            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetUtcNow().UtcDateTime
         );
         _fakeTime.Advance(TimeSpan.FromDays(1));
@@ -1547,13 +1566,12 @@ public class FamilyMembershipTests
     public void Revoke_ShouldThrowException_WhenPatientHasNoOwnSelfMembership()
     {
         // Arrange
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             PatientRelationship.Child,
-            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetUtcNow().UtcDateTime
         );
         _fakeTime.Advance(TimeSpan.FromDays(1));
@@ -1579,13 +1597,12 @@ public class FamilyMembershipTests
     {
         // Arrange
         var startedAt = _fakeTime.GetUtcNow().UtcDateTime;
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             PatientRelationship.Child,
-            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
-            30,
+            FamilyMembership.MinimumAdultAge,
             startedAt
         );
 
@@ -1608,13 +1625,12 @@ public class FamilyMembershipTests
     {
         // Arrange
         var startedAt = _fakeTime.GetUtcNow().UtcDateTime;
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             PatientRelationship.Child,
-            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
-            30,
+            FamilyMembership.MinimumAdultAge,
             startedAt
         );
 
@@ -1636,13 +1652,12 @@ public class FamilyMembershipTests
     public void Leave_ShouldTransitionToLeft_WhenStatusIsActive()
     {
         // Arrange
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             PatientRelationship.Child,
-            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -1699,13 +1714,12 @@ public class FamilyMembershipTests
     public void Leave_ShouldThrowException_WhenMemberIsUnderage()
     {
         // Arrange
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             PatientRelationship.Child,
-            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetUtcNow().UtcDateTime
         );
         _fakeTime.Advance(TimeSpan.FromDays(1));
@@ -1725,13 +1739,12 @@ public class FamilyMembershipTests
     public void Leave_ShouldThrowException_WhenStatusIsAlreadyLeft()
     {
         // Arrange
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             PatientRelationship.Child,
-            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetUtcNow().UtcDateTime
         );
         _fakeTime.Advance(TimeSpan.FromDays(1));
@@ -1752,13 +1765,12 @@ public class FamilyMembershipTests
     public void Leave_ShouldThrowException_WhenStatusIsAlreadyRevoked()
     {
         // Arrange
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             PatientRelationship.Child,
-            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetUtcNow().UtcDateTime
         );
         _fakeTime.Advance(TimeSpan.FromDays(1));
@@ -1784,13 +1796,12 @@ public class FamilyMembershipTests
     {
         // Arrange
         var startedAt = _fakeTime.GetUtcNow().UtcDateTime;
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             PatientRelationship.Child,
-            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
-            30,
+            FamilyMembership.MinimumAdultAge,
             startedAt
         );
 
@@ -1809,13 +1820,12 @@ public class FamilyMembershipTests
     {
         // Arrange
         var startedAt = _fakeTime.GetUtcNow().UtcDateTime;
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             PatientRelationship.Child,
-            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
-            30,
+            FamilyMembership.MinimumAdultAge,
             startedAt
         );
 
@@ -1873,13 +1883,12 @@ public class FamilyMembershipTests
     public void CloseSelfMembership_ShouldThrowException_WhenRoleIsNotSelf()
     {
         // Arrange
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             PatientRelationship.Child,
-            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetUtcNow().UtcDateTime
         );
         _fakeTime.Advance(TimeSpan.FromDays(1));
@@ -1991,13 +2000,12 @@ public class FamilyMembershipTests
     public void EnsureGuardianAccess_ShouldThrowUnauthorized_WhenAuthorityIsNone()
     {
         // Arrange
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             PatientRelationship.Spouse,
-            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -2262,13 +2270,12 @@ public class FamilyMembershipTests
         // Arrange
         var patientId = Guid.CreateVersion7();
         var userId = Guid.CreateVersion7();
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             patientId,
             userId,
             PatientRelationship.Child,
-            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -2317,13 +2324,12 @@ public class FamilyMembershipTests
     {
         // Arrange
         var patientId = Guid.CreateVersion7();
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             patientId,
             Guid.CreateVersion7(),
             PatientRelationship.Child,
-            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -2367,13 +2373,12 @@ public class FamilyMembershipTests
     {
         // Arrange
         var patientId = Guid.CreateVersion7();
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             patientId,
             Guid.CreateVersion7(),
             PatientRelationship.Child,
-            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -2404,13 +2409,12 @@ public class FamilyMembershipTests
     public void EnsureConsentGrantRecipient_ShouldThrowException_WhenPatientIdMismatches()
     {
         // Arrange
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             PatientRelationship.Child,
-            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -2439,13 +2443,12 @@ public class FamilyMembershipTests
     {
         // Arrange
         var patientId = Guid.CreateVersion7();
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             patientId,
             Guid.CreateVersion7(),
             PatientRelationship.Child,
-            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -2474,13 +2477,12 @@ public class FamilyMembershipTests
     {
         // Arrange
         var patientId = Guid.CreateVersion7();
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             patientId,
             Guid.CreateVersion7(),
             PatientRelationship.Child,
-            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -2509,13 +2511,12 @@ public class FamilyMembershipTests
     {
         // Arrange
         var patientId = Guid.CreateVersion7();
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             patientId,
             Guid.CreateVersion7(),
             PatientRelationship.Child,
-            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Full,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -2561,24 +2562,22 @@ public class FamilyMembershipTests
     }
 
     private FamilyMembership CreateParentMembershipForMinor(Guid userId) =>
-        FamilyMembership.CreateFamilyMember(
+        FamilyMembership.CreateMinorFamilyMember(
             Guid.CreateVersion7(),
             userId,
             PatientRelationship.Parent,
             LegalAuthorityType.Parent,
-            FamilyMembershipAccessLevel.Full,
-            10,
+            FamilyMembership.MinimumAdultAge - 1,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
     private FamilyMembership CreateRestrictedMembership() =>
-        FamilyMembership.CreateFamilyMember(
+        FamilyMembership.CreateAdultFamilyMember(
             Guid.CreateVersion7(),
             Guid.CreateVersion7(),
             PatientRelationship.Child,
-            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Restricted,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 }

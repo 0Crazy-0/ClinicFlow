@@ -894,15 +894,23 @@ public static class DbSeeder
                 accessLevels
             );
             familyMemberships.Add(
-                FamilyMembership.CreateFamilyMember(
-                    patient.Id,
-                    pUser.Id,
-                    relationship,
-                    legalAuthority,
-                    accessLevel,
-                    patientAge,
-                    refTime
-                )
+                patientAge < FamilyMembership.MinimumAdultAge
+                    ? FamilyMembership.CreateMinorFamilyMember(
+                        patient.Id,
+                        pUser.Id,
+                        relationship,
+                        legalAuthority,
+                        patientAge,
+                        refTime
+                    )
+                    : FamilyMembership.CreateAdultFamilyMember(
+                        patient.Id,
+                        pUser.Id,
+                        relationship,
+                        accessLevel,
+                        patientAge,
+                        refTime
+                    )
             );
         }
     }

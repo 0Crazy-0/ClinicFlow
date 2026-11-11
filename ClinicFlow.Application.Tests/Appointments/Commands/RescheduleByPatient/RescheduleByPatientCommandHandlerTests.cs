@@ -315,13 +315,12 @@ public class RescheduleByPatientCommandHandlerTests
                 r.GetActiveMembershipAsync(creatorUserId, patientId, It.IsAny<CancellationToken>())
             )
             .ReturnsAsync(
-                FamilyMembership.CreateFamilyMember(
+                FamilyMembership.CreateMinorFamilyMember(
                     patientId,
                     creatorUserId,
                     PatientRelationship.Parent,
                     LegalAuthorityType.Parent,
-                    FamilyMembershipAccessLevel.Full,
-                    10,
+                    FamilyMembership.MinimumAdultAge - 1,
                     _fakeTime.GetUtcNow().UtcDateTime
                 )
             );

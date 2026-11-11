@@ -228,13 +228,12 @@ public class ChangeAccessLevelCommandHandlerTests
     }
 
     private FamilyMembership CreateFamilyMembership(Guid patientId, Guid ownerUserId) =>
-        FamilyMembership.CreateFamilyMember(
+        FamilyMembership.CreateAdultFamilyMember(
             patientId,
             ownerUserId,
-            PatientRelationship.Child,
-            LegalAuthorityType.None,
+            PatientRelationship.Parent,
             FamilyMembershipAccessLevel.Full,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 }

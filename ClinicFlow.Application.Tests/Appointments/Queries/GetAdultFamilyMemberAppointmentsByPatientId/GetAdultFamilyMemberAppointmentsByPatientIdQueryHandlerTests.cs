@@ -43,13 +43,12 @@ public class GetAdultFamilyMemberAppointmentsByPatientIdQueryHandlerTests
             10
         );
 
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             patientId,
             requesterUserId,
             PatientRelationship.Child,
-            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Restricted,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -146,13 +145,12 @@ public class GetAdultFamilyMemberAppointmentsByPatientIdQueryHandlerTests
             10
         );
 
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             patientId,
             requesterUserId,
             PatientRelationship.Child,
-            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Restricted,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -249,13 +247,12 @@ public class GetAdultFamilyMemberAppointmentsByPatientIdQueryHandlerTests
             10
         );
 
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateMinorFamilyMember(
             patientId,
             requesterUserId,
             PatientRelationship.Parent,
             LegalAuthorityType.Parent,
-            FamilyMembershipAccessLevel.Full,
-            15,
+            FamilyMembership.MinimumAdultAge - 1,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 
@@ -347,13 +344,12 @@ public class GetAdultFamilyMemberAppointmentsByPatientIdQueryHandlerTests
             10
         );
 
-        var membership = FamilyMembership.CreateFamilyMember(
+        var membership = FamilyMembership.CreateAdultFamilyMember(
             patientId,
             requesterUserId,
             PatientRelationship.Child,
-            LegalAuthorityType.None,
             FamilyMembershipAccessLevel.Restricted,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 

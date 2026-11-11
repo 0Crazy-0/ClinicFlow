@@ -266,13 +266,12 @@ public class AppointmentGuardianNotesServiceTests
         var context = new UpdateGuardianNotesContext
         {
             TargetPatient = target,
-            InitiatorMembership = FamilyMembership.CreateFamilyMember(
+            InitiatorMembership = FamilyMembership.CreateAdultFamilyMember(
                 target.Id,
                 userId,
                 PatientRelationship.Spouse,
-                LegalAuthorityType.None,
                 FamilyMembershipAccessLevel.Full,
-                30,
+                FamilyMembership.MinimumAdultAge,
                 _fakeTime.GetUtcNow().UtcDateTime
             ),
         };
@@ -716,13 +715,12 @@ public class AppointmentGuardianNotesServiceTests
     }
 
     private FamilyMembership CreateParentMembership(Guid patientId, Guid userId) =>
-        FamilyMembership.CreateFamilyMember(
+        FamilyMembership.CreateMinorFamilyMember(
             patientId,
             userId,
             PatientRelationship.Parent,
             LegalAuthorityType.Parent,
-            FamilyMembershipAccessLevel.Full,
-            10,
+            FamilyMembership.MinimumAdultAge - 1,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 

@@ -313,13 +313,12 @@ public class RescheduleByPatientTests
             TargetPatient = target,
             AppointmentType = CreateAppointmentType(),
             DoctorSchedule = CreateSchedule(),
-            InitiatorMembership = FamilyMembership.CreateFamilyMember(
+            InitiatorMembership = FamilyMembership.CreateAdultFamilyMember(
                 Guid.CreateVersion7(),
                 Guid.CreateVersion7(),
                 PatientRelationship.Child,
-                LegalAuthorityType.None,
                 FamilyMembershipAccessLevel.ViewOnly,
-                30,
+                FamilyMembership.MinimumAdultAge,
                 _fakeTime.GetUtcNow().UtcDateTime
             ),
             ClinicTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles"),

@@ -228,13 +228,12 @@ public class AddAllowedAppointmentCategoryCommandHandlerTests
     }
 
     private FamilyMembership CreateRestrictedMembership(Guid patientId, Guid ownerUserId) =>
-        FamilyMembership.CreateFamilyMember(
+        FamilyMembership.CreateAdultFamilyMember(
             patientId,
             ownerUserId,
-            PatientRelationship.Child,
-            LegalAuthorityType.None,
+            PatientRelationship.Parent,
             FamilyMembershipAccessLevel.Restricted,
-            30,
+            FamilyMembership.MinimumAdultAge,
             _fakeTime.GetUtcNow().UtcDateTime
         );
 }

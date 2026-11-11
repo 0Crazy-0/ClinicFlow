@@ -100,21 +100,18 @@ public class FamilyMembership : BaseEntity
     }
 
     /// <summary>
-    /// Creates a family member membership link for a dependent patient under an account owner.
+    /// Creates a family member membership for a patient under the adult age, always with full access.
     /// </summary>
     /// <remarks>
-    /// A patient under <see cref="MinimumAdultAge"/> can only be linked with
-    /// <see cref="FamilyMembershipAccessLevel.Full"/> access, since a minor's
-    /// profile must remain fully manageable by their legal guardian.
-    /// Role, authority and age coherence is validated as described in
-    /// <see cref="LegalAuthorityType"/>.
+    /// A minor's profile must remain fully manageable by their legal guardian, so the
+    /// access level is not a parameter. Role, authority and age coherence is validated
+    /// as described in <see cref="LegalAuthorityType"/>.
     /// </remarks>
-    internal static FamilyMembership CreateFamilyMember(
+    internal static FamilyMembership CreateMinorFamilyMember(
         Guid patientId,
         Guid ownerUserId,
         PatientRelationship role,
         LegalAuthorityType legalAuthority,
-        FamilyMembershipAccessLevel accessLevel,
         int patientAge,
         DateTime referenceTime
     )
@@ -123,11 +120,13 @@ public class FamilyMembership : BaseEntity
         Guard.NotEmpty(ownerUserId);
         Guard.IsDefined(role);
         Guard.IsDefined(legalAuthority);
-        Guard.IsDefined(accessLevel);
         Guard.NotDefault(referenceTime);
 
         if (role is PatientRelationship.Self)
             throw new DomainValidationException(DomainErrors.FamilyMembership.CannotBeSelf);
+
+        if (patientAge >= MinimumAdultAge)
+            throw new DomainValidationException(DomainErrors.FamilyMembership.PatientMustBeMinor);
 
         if (
             legalAuthority is LegalAuthorityType.Parent && role is not PatientRelationship.Parent
@@ -138,22 +137,9 @@ public class FamilyMembership : BaseEntity
                 DomainErrors.FamilyMembership.InvalidLegalAuthorityForRole
             );
 
-        if (legalAuthority is not LegalAuthorityType.None && patientAge >= MinimumAdultAge)
-            throw new DomainValidationException(
-                DomainErrors.FamilyMembership.LegalAuthorityRequiresMinor
-            );
-
-        if (legalAuthority is LegalAuthorityType.None && patientAge < MinimumAdultAge)
+        if (legalAuthority is LegalAuthorityType.None)
             throw new DomainValidationException(
                 DomainErrors.FamilyMembership.MinorRequiresLegalAuthority
-            );
-
-        if (accessLevel is FamilyMembershipAccessLevel.Unspecified)
-            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
-
-        if (patientAge < MinimumAdultAge && accessLevel is not FamilyMembershipAccessLevel.Full)
-            throw new DomainValidationException(
-                DomainErrors.FamilyMembership.MinorMustHaveFullAccess
             );
 
         return new FamilyMembership(
@@ -161,6 +147,47 @@ public class FamilyMembership : BaseEntity
             ownerUserId,
             role,
             legalAuthority,
+            FamilyMembershipAccessLevel.Full,
+            referenceTime
+        );
+    }
+
+    /// <summary>
+    /// Creates a family member membership for an adult patient without legal authority.
+    /// </summary>
+    /// <remarks>
+    /// Legal authority requires a minor patient, so an adult membership never carries one
+    /// and the authority is not a parameter.
+    /// </remarks>
+    internal static FamilyMembership CreateAdultFamilyMember(
+        Guid patientId,
+        Guid ownerUserId,
+        PatientRelationship role,
+        FamilyMembershipAccessLevel accessLevel,
+        int patientAge,
+        DateTime referenceTime
+    )
+    {
+        Guard.NotEmpty(patientId);
+        Guard.NotEmpty(ownerUserId);
+        Guard.IsDefined(role);
+        Guard.IsDefined(accessLevel);
+        Guard.NotDefault(referenceTime);
+
+        if (role is PatientRelationship.Self)
+            throw new DomainValidationException(DomainErrors.FamilyMembership.CannotBeSelf);
+
+        if (patientAge < MinimumAdultAge)
+            throw new DomainValidationException(DomainErrors.FamilyMembership.PatientMustBeAdult);
+
+        if (accessLevel is FamilyMembershipAccessLevel.Unspecified)
+            throw new DomainValidationException(DomainErrors.Validation.ValueRequired);
+
+        return new FamilyMembership(
+            patientId,
+            ownerUserId,
+            role,
+            LegalAuthorityType.None,
             accessLevel,
             referenceTime
         );

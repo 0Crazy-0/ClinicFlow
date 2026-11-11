@@ -65,13 +65,12 @@ public class ClearGuardianNotesByGuardianCommandHandlerTests
                 )
             )
             .ReturnsAsync(
-                FamilyMembership.CreateFamilyMember(
+                FamilyMembership.CreateMinorFamilyMember(
                     appointment.PatientId,
                     authorId,
                     PatientRelationship.Parent,
                     LegalAuthorityType.Parent,
-                    FamilyMembershipAccessLevel.Full,
-                    10,
+                    FamilyMembership.MinimumAdultAge - 1,
                     _fakeTime.GetUtcNow().UtcDateTime
                 )
             );
@@ -217,13 +216,12 @@ public class ClearGuardianNotesByGuardianCommandHandlerTests
                 )
             )
             .ReturnsAsync(
-                FamilyMembership.CreateFamilyMember(
+                FamilyMembership.CreateMinorFamilyMember(
                     appointment.PatientId,
                     requesterId,
                     PatientRelationship.Parent,
                     LegalAuthorityType.Parent,
-                    FamilyMembershipAccessLevel.Full,
-                    10,
+                    FamilyMembership.MinimumAdultAge - 1,
                     _fakeTime.GetUtcNow().UtcDateTime
                 )
             );
@@ -285,13 +283,12 @@ public class ClearGuardianNotesByGuardianCommandHandlerTests
                 )
             )
             .ReturnsAsync(
-                FamilyMembership.CreateFamilyMember(
+                FamilyMembership.CreateMinorFamilyMember(
                     appointment.PatientId,
                     authorId,
                     PatientRelationship.Parent,
                     LegalAuthorityType.Parent,
-                    FamilyMembershipAccessLevel.Full,
-                    10,
+                    FamilyMembership.MinimumAdultAge - 1,
                     _fakeTime.GetUtcNow().UtcDateTime
                 )
             );
