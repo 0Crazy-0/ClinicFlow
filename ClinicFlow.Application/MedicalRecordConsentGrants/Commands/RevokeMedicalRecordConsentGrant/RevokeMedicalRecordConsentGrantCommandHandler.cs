@@ -20,8 +20,10 @@ public sealed class RevokeMedicalRecordConsentGrantCommandHandler(
         CancellationToken cancellationToken
     )
     {
-        var grant =
-            await consentGrantRepository.GetByIdAsync(request.ConsentGrantId, cancellationToken)
+        var grant = await consentGrantRepository.GetByIdAsync(
+            request.ConsentGrantId,
+            cancellationToken
+        )
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(MedicalRecordConsentGrant),

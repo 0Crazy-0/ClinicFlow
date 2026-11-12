@@ -36,27 +36,27 @@ public sealed class ScheduleByPatientCommandHandler(
         CancellationToken cancellationToken
     )
     {
-        var targetPatient =
-            await patientRepository.GetByIdAsync(request.TargetPatientId, cancellationToken)
+        var targetPatient = await patientRepository.GetByIdAsync(
+            request.TargetPatientId,
+            cancellationToken
+        )
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Patient),
                 request.TargetPatientId
             );
 
-        var targetDoctor =
-            await doctorRepository.GetByIdAsync(request.DoctorId, cancellationToken)
+        var targetDoctor = await doctorRepository.GetByIdAsync(request.DoctorId, cancellationToken)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Doctor),
                 request.DoctorId
             );
 
-        var appointmentType =
-            await appointmentTypeRepository.GetByIdAsync(
-                request.AppointmentTypeId,
-                cancellationToken
-            )
+        var appointmentType = await appointmentTypeRepository.GetByIdAsync(
+            request.AppointmentTypeId,
+            cancellationToken
+        )
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(AppointmentTypeDefinition),
@@ -70,12 +70,11 @@ public sealed class ScheduleByPatientCommandHandler(
 
         var timeRange = TimeRange.Create(request.StartTime, request.EndTime);
 
-        var doctorSchedule =
-            await scheduleRepository.GetActiveByDoctorAndDayAsync(
-                request.DoctorId,
-                request.ScheduledDate.DayOfWeek,
-                cancellationToken
-            )
+        var doctorSchedule = await scheduleRepository.GetActiveByDoctorAndDayAsync(
+            request.DoctorId,
+            request.ScheduledDate.DayOfWeek,
+            cancellationToken
+        )
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Schedule),
@@ -123,12 +122,11 @@ public sealed class ScheduleByPatientCommandHandler(
                     appointmentType
                 );
 
-                var initiatorMembership =
-                    await familyMembershipRepository.GetActiveMembershipAsync(
-                        request.InitiatorUserId,
-                        request.TargetPatientId,
-                        cancellationToken
-                    )
+                var initiatorMembership = await familyMembershipRepository.GetActiveMembershipAsync(
+                    request.InitiatorUserId,
+                    request.TargetPatientId,
+                    cancellationToken
+                )
                     ?? throw new PatientAccessUnauthorizedException(
                         DomainErrors.Patient.UnauthorizedAccess
                     );

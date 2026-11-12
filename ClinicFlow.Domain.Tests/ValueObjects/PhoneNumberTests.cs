@@ -121,9 +121,7 @@ public class PhoneNumberTests
         var p3 = PhoneNumber.Create("+0987654321");
 
         // Assert
-        (p1 == p2)
-            .Should()
-            .BeTrue();
+        (p1 == p2).Should().BeTrue();
         (p1 != p3).Should().BeTrue();
     }
 

@@ -18,8 +18,10 @@ public sealed class UpdateMedicalSpecialtyCommandHandler(
         CancellationToken cancellationToken
     )
     {
-        var specialty =
-            await medicalSpecialtyRepository.GetByIdAsync(request.SpecialtyId, cancellationToken)
+        var specialty = await medicalSpecialtyRepository.GetByIdAsync(
+            request.SpecialtyId,
+            cancellationToken
+        )
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(MedicalSpecialty),

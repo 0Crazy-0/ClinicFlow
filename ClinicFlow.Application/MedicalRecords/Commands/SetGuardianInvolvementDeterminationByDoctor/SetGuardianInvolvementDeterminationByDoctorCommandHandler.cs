@@ -23,24 +23,30 @@ public sealed class SetGuardianInvolvementDeterminationByDoctorCommandHandler(
         CancellationToken cancellationToken
     )
     {
-        var record =
-            await medicalRecordRepository.GetByIdAsync(request.MedicalRecordId, cancellationToken)
+        var record = await medicalRecordRepository.GetByIdAsync(
+            request.MedicalRecordId,
+            cancellationToken
+        )
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(MedicalRecord),
                 request.MedicalRecordId
             );
 
-        var appointment =
-            await appointmentRepository.GetByIdAsync(record.AppointmentId, cancellationToken)
+        var appointment = await appointmentRepository.GetByIdAsync(
+            record.AppointmentId,
+            cancellationToken
+        )
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Appointment),
                 record.AppointmentId
             );
 
-        var initiatorDoctor =
-            await doctorRepository.GetByUserIdAsync(request.InitiatorUserId, cancellationToken)
+        var initiatorDoctor = await doctorRepository.GetByUserIdAsync(
+            request.InitiatorUserId,
+            cancellationToken
+        )
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Doctor),

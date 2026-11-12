@@ -22,20 +22,18 @@ public sealed class RemoveAllowedAppointmentCategoryCommandHandler(
         CancellationToken cancellationToken
     )
     {
-        var membership =
-            await familyMembershipRepository.GetActiveMembershipAsync(
-                request.TargetUserId,
-                request.PatientId,
-                cancellationToken
-            )
+        var membership = await familyMembershipRepository.GetActiveMembershipAsync(
+            request.TargetUserId,
+            request.PatientId,
+            cancellationToken
+        )
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(FamilyMembership),
                 request.PatientId
             );
 
-        var patient =
-            await patientRepository.GetByIdAsync(request.PatientId, cancellationToken)
+        var patient = await patientRepository.GetByIdAsync(request.PatientId, cancellationToken)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Patient),

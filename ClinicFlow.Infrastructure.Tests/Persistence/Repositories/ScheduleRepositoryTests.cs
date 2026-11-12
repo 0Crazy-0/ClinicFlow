@@ -338,9 +338,8 @@ public class ScheduleRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         // Assert
         results
             .Should()
-            .BeEquivalentTo(
-                [schedule1, schedule2],
-                options => options.Excluding(s => s.DomainEvents)
+            .BeEquivalentTo([schedule1, schedule2], options =>
+                options.Excluding(s => s.DomainEvents)
             );
     }
 
@@ -401,9 +400,8 @@ public class ScheduleRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         // Assert
         results
             .Should()
-            .BeEquivalentTo(
-                [scheduleFriday, scheduleMonday, scheduleWednesday],
-                options => options.WithStrictOrdering()
+            .BeEquivalentTo([scheduleFriday, scheduleMonday, scheduleWednesday], options =>
+                options.WithStrictOrdering()
             );
     }
 
@@ -526,9 +524,8 @@ public class ScheduleRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         // Assert
         results
             .Should()
-            .BeEquivalentTo(
-                [scheduleFriday, scheduleMonday, scheduleWednesday],
-                options => options.WithStrictOrdering()
+            .BeEquivalentTo([scheduleFriday, scheduleMonday, scheduleWednesday], options =>
+                options.WithStrictOrdering()
             );
     }
 

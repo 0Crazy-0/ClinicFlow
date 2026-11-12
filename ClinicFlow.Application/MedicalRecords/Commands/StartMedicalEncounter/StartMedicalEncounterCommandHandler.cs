@@ -23,27 +23,27 @@ public sealed class StartMedicalEncounterCommandHandler(
         CancellationToken cancellationToken
     )
     {
-        var doctor =
-            await doctorRepository.GetByIdAsync(request.DoctorId, cancellationToken)
+        var doctor = await doctorRepository.GetByIdAsync(request.DoctorId, cancellationToken)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Doctor),
                 request.DoctorId
             );
 
-        var appointment =
-            await appointmentRepository.GetByIdAsync(request.AppointmentId, cancellationToken)
+        var appointment = await appointmentRepository.GetByIdAsync(
+            request.AppointmentId,
+            cancellationToken
+        )
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Appointment),
                 request.AppointmentId
             );
 
-        var appointmentType =
-            await appointmentTypeRepository.GetByIdAsync(
-                appointment.AppointmentTypeId,
-                cancellationToken
-            )
+        var appointmentType = await appointmentTypeRepository.GetByIdAsync(
+            appointment.AppointmentTypeId,
+            cancellationToken
+        )
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(AppointmentTypeDefinition),

@@ -103,10 +103,7 @@ public class PatientDuplicateScoringServiceTests
         // Arrange
         // canonicalized "garcia" and "garza" have edit distance 2 of a maximum 6,
         // so the surname contribution is 20 * (1 - 2/6) = 13.333... rounded away from zero to 13.
-        var form = CreateStrangerForm() with
-        {
-            FirstSurname = "Garcia",
-        };
+        var form = CreateStrangerForm() with { FirstSurname = "Garcia" };
 
         var candidate = CreateStrangerCandidate() with
         {
@@ -128,10 +125,7 @@ public class PatientDuplicateScoringServiceTests
         // Arrange
         // canonicalized "remy" and "remi" have edit distance 1 of a maximum 4,
         // so the given name contribution is 10 * 0.75 = 7.5 rounded away from zero to 8.
-        var form = CreateStrangerForm() with
-        {
-            FirstName = "Remy",
-        };
+        var form = CreateStrangerForm() with { FirstName = "Remy" };
 
         var candidate = CreateStrangerCandidate() with
         {
@@ -153,10 +147,7 @@ public class PatientDuplicateScoringServiceTests
         // Arrange
         // a first surname composed only of non-spacing marks canonicalizes
         // to an empty string, so it is not similar to any non-empty surname.
-        var form = CreateStrangerForm() with
-        {
-            FirstSurname = "\u0301",
-        };
+        var form = CreateStrangerForm() with { FirstSurname = "\u0301" };
         var candidate = CreateStrangerCandidate();
         var context = new PatientDuplicateScoringContext { Candidates = [candidate] };
 
@@ -196,10 +187,7 @@ public class PatientDuplicateScoringServiceTests
         // strings, and two empty canonicalized values are maximally similar,
         // so the full surname weight applies. The given name cross comparison
         // of "remy" against "juan" contributes zero.
-        var form = CreateStrangerForm() with
-        {
-            FirstSurname = "\u0301\u0301",
-        };
+        var form = CreateStrangerForm() with { FirstSurname = "\u0301\u0301" };
 
         var candidate = CreateStrangerCandidate() with
         {
@@ -223,10 +211,7 @@ public class PatientDuplicateScoringServiceTests
         // strings, and two empty canonicalized values are maximally similar,
         // so the full given name weight applies. The surname cross comparison
         // of "levy" against "john" contributes zero.
-        var form = CreateStrangerForm() with
-        {
-            FirstName = "\u0301\u0301",
-        };
+        var form = CreateStrangerForm() with { FirstName = "\u0301\u0301" };
 
         var candidate = CreateStrangerCandidate() with
         {
@@ -246,10 +231,7 @@ public class PatientDuplicateScoringServiceTests
     public void Score_ShouldReturnExactScore_WhenFormSuppliesSsnLast4AndCandidateMatches()
     {
         // Arrange
-        var form = CreateStrangerForm() with
-        {
-            HasSsnLast4 = true,
-        };
+        var form = CreateStrangerForm() with { HasSsnLast4 = true };
 
         var candidate = CreateStrangerCandidate() with { SsnLast4Matches = true };
         var context = new PatientDuplicateScoringContext { Candidates = [candidate] };
@@ -285,10 +267,7 @@ public class PatientDuplicateScoringServiceTests
     public void Score_ShouldNotScoreSsnLast4_WhenCandidateDoesNotMatch()
     {
         // Arrange
-        var form = CreateStrangerForm() with
-        {
-            HasSsnLast4 = true,
-        };
+        var form = CreateStrangerForm() with { HasSsnLast4 = true };
         var candidate = CreateStrangerCandidate();
         var context = new PatientDuplicateScoringContext { Candidates = [candidate] };
 
@@ -303,10 +282,7 @@ public class PatientDuplicateScoringServiceTests
     public void Score_ShouldReturnExactScore_WhenOnlySexAtBirthMatches()
     {
         // Arrange
-        var form = CreateStrangerForm() with
-        {
-            SexAtBirth = BiologicalSex.Female,
-        };
+        var form = CreateStrangerForm() with { SexAtBirth = BiologicalSex.Female };
 
         var candidate = CreateStrangerCandidate(); // biologic sex is famale
         var context = new PatientDuplicateScoringContext { Candidates = [candidate] };
@@ -341,10 +317,7 @@ public class PatientDuplicateScoringServiceTests
         // production state: a minor linked to an existing adult patient may not have
         // created an account of their own yet, and the candidate can be another such
         // minor.
-        var form = CreateStrangerForm() with
-        {
-            Email = null,
-        };
+        var form = CreateStrangerForm() with { Email = null };
         var candidate = CreateStrangerCandidate() with { Email = null };
         var context = new PatientDuplicateScoringContext { Candidates = [candidate] };
 
@@ -379,10 +352,7 @@ public class PatientDuplicateScoringServiceTests
         // production state: the phone belongs to the user account, not to the patient,
         // so a patient who has not created an account of their own yet (for example,
         // a minor linked to an existing adult patient) has no phone.
-        var form = CreateStrangerForm() with
-        {
-            Phone = null,
-        };
+        var form = CreateStrangerForm() with { Phone = null };
         var candidate = CreateStrangerCandidate() with { Phone = null };
         var context = new PatientDuplicateScoringContext { Candidates = [candidate] };
 
@@ -575,10 +545,7 @@ public class PatientDuplicateScoringServiceTests
     {
         // Arrange:
         // 30 + 20 + 10 + 20 + 5 + 5 + 5 + 5 = 100.
-        var form = CreateStrangerForm() with
-        {
-            HasSsnLast4 = true,
-        };
+        var form = CreateStrangerForm() with { HasSsnLast4 = true };
 
         var candidate = CreateMatchingCandidate();
         var context = new PatientDuplicateScoringContext { Candidates = [candidate] };
@@ -606,10 +573,7 @@ public class PatientDuplicateScoringServiceTests
     public void Score_ShouldThrowArgumentNullException_WhenHomeAddressIsNull()
     {
         // Arrange
-        var form = CreateStrangerForm() with
-        {
-            HomeAddress = null!,
-        };
+        var form = CreateStrangerForm() with { HomeAddress = null! };
 
         // Act
         var act = () => PatientDuplicateScoringService.Score(form, CreateValidContext());

@@ -11,20 +11,17 @@ public sealed class AppointmentTypeDefinitionConfiguration
     /// <inheritdoc />
     public void Configure(EntityTypeBuilder<AppointmentTypeDefinition> builder)
     {
-        builder.ToTable(
-            "AppointmentTypes",
-            table =>
-            {
-                table.HasCheckConstraint(
-                    "CK_AppointmentTypes_AgePolicyMinimumAge_Range",
-                    AgeRangeConstraint(ColumnNames.AppointmentTypeDefinition.AgePolicyMinimumAge)
-                );
-                table.HasCheckConstraint(
-                    "CK_AppointmentTypes_AgePolicyMaximumAge_Range",
-                    AgeRangeConstraint(ColumnNames.AppointmentTypeDefinition.AgePolicyMaximumAge)
-                );
-            }
-        );
+        builder.ToTable("AppointmentTypes", table =>
+        {
+            table.HasCheckConstraint(
+                "CK_AppointmentTypes_AgePolicyMinimumAge_Range",
+                AgeRangeConstraint(ColumnNames.AppointmentTypeDefinition.AgePolicyMinimumAge)
+            );
+            table.HasCheckConstraint(
+                "CK_AppointmentTypes_AgePolicyMaximumAge_Range",
+                AgeRangeConstraint(ColumnNames.AppointmentTypeDefinition.AgePolicyMaximumAge)
+            );
+        });
 
         builder.Property(a => a.Category).HasConversion<string>();
         builder.Property(a => a.Purpose).HasConversion<string>();

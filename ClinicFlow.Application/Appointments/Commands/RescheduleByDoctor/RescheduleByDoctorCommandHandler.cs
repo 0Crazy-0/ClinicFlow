@@ -27,35 +27,40 @@ public sealed class RescheduleByDoctorCommandHandler(
     /// <inheritdoc />
     public async Task Handle(RescheduleByDoctorCommand request, CancellationToken cancellationToken)
     {
-        var appointment =
-            await appointmentRepository.GetByIdAsync(request.AppointmentId, cancellationToken)
+        var appointment = await appointmentRepository.GetByIdAsync(
+            request.AppointmentId,
+            cancellationToken
+        )
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Appointment),
                 request.AppointmentId
             );
 
-        var initiatorDoctor =
-            await doctorRepository.GetByUserIdAsync(request.InitiatorUserId, cancellationToken)
+        var initiatorDoctor = await doctorRepository.GetByUserIdAsync(
+            request.InitiatorUserId,
+            cancellationToken
+        )
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Doctor),
                 request.InitiatorUserId
             );
 
-        var targetPatient =
-            await patientRepository.GetByIdAsync(appointment.PatientId, cancellationToken)
+        var targetPatient = await patientRepository.GetByIdAsync(
+            appointment.PatientId,
+            cancellationToken
+        )
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Patient),
                 appointment.PatientId
             );
 
-        var appointmentType =
-            await appointmentTypeRepository.GetByIdAsync(
-                appointment.AppointmentTypeId,
-                cancellationToken
-            )
+        var appointmentType = await appointmentTypeRepository.GetByIdAsync(
+            appointment.AppointmentTypeId,
+            cancellationToken
+        )
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(AppointmentTypeDefinition),
@@ -64,12 +69,11 @@ public sealed class RescheduleByDoctorCommandHandler(
 
         var newTimeRange = TimeRange.Create(request.NewStartTime, request.NewEndTime);
 
-        var doctorSchedule =
-            await scheduleRepository.GetActiveByDoctorAndDayAsync(
-                appointment.DoctorId,
-                request.NewDate.DayOfWeek,
-                cancellationToken
-            )
+        var doctorSchedule = await scheduleRepository.GetActiveByDoctorAndDayAsync(
+            appointment.DoctorId,
+            request.NewDate.DayOfWeek,
+            cancellationToken
+        )
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Schedule),

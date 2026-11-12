@@ -19,19 +19,20 @@ public sealed class AddRequiredTemplateToAppointmentTypeCommandHandler(
         CancellationToken cancellationToken
     )
     {
-        var appointmentType =
-            await appointmentTypeRepository.GetByIdAsync(
-                request.AppointmentTypeId,
-                cancellationToken
-            )
+        var appointmentType = await appointmentTypeRepository.GetByIdAsync(
+            request.AppointmentTypeId,
+            cancellationToken
+        )
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(AppointmentTypeDefinition),
                 request.AppointmentTypeId
             );
 
-        var template =
-            await clinicalFormTemplateRepository.GetByIdAsync(request.TemplateId, cancellationToken)
+        var template = await clinicalFormTemplateRepository.GetByIdAsync(
+            request.TemplateId,
+            cancellationToken
+        )
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(ClinicalFormTemplate),

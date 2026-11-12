@@ -46,10 +46,7 @@ public class DoctorRegistrationServiceTests
     public void Register_ShouldThrowArgumentNullException_WhenFullNameIsNull()
     {
         // Arrange
-        var args = CreateValidArgs() with
-        {
-            FullName = null!,
-        };
+        var args = CreateValidArgs() with { FullName = null! };
 
         // Act
         var act = () => DoctorRegistrationService.Register(args, CreateValidContext());
@@ -62,10 +59,7 @@ public class DoctorRegistrationServiceTests
     public void Register_ShouldThrowArgumentNullException_WhenLicenseNumberIsNull()
     {
         // Arrange
-        var args = CreateValidArgs() with
-        {
-            LicenseNumber = null!,
-        };
+        var args = CreateValidArgs() with { LicenseNumber = null! };
 
         // Act
         var act = () => DoctorRegistrationService.Register(args, CreateValidContext());
@@ -78,10 +72,7 @@ public class DoctorRegistrationServiceTests
     public void Register_ShouldThrowArgumentNullException_WhenRoomIsNull()
     {
         // Arrange
-        var args = CreateValidArgs() with
-        {
-            Room = null!,
-        };
+        var args = CreateValidArgs() with { Room = null! };
 
         // Act
         var act = () => DoctorRegistrationService.Register(args, CreateValidContext());

@@ -865,9 +865,8 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
         // Assert
         history
             .Should()
-            .BeEquivalentTo(
-                [newMembership, oldMembership],
-                options => options.WithStrictOrdering()
+            .BeEquivalentTo([newMembership, oldMembership], options =>
+                options.WithStrictOrdering()
             );
     }
 

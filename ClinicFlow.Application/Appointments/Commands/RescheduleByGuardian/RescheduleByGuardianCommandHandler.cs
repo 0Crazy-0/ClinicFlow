@@ -33,35 +33,40 @@ public sealed class RescheduleByGuardianCommandHandler(
         CancellationToken cancellationToken
     )
     {
-        var appointment =
-            await appointmentRepository.GetByIdAsync(request.AppointmentId, cancellationToken)
+        var appointment = await appointmentRepository.GetByIdAsync(
+            request.AppointmentId,
+            cancellationToken
+        )
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Appointment),
                 request.AppointmentId
             );
 
-        var targetPatient =
-            await patientRepository.GetByIdAsync(appointment.PatientId, cancellationToken)
+        var targetPatient = await patientRepository.GetByIdAsync(
+            appointment.PatientId,
+            cancellationToken
+        )
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Patient),
                 appointment.PatientId
             );
 
-        var targetDoctor =
-            await doctorRepository.GetByIdAsync(appointment.DoctorId, cancellationToken)
+        var targetDoctor = await doctorRepository.GetByIdAsync(
+            appointment.DoctorId,
+            cancellationToken
+        )
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Doctor),
                 appointment.DoctorId
             );
 
-        var appointmentType =
-            await appointmentTypeRepository.GetByIdAsync(
-                appointment.AppointmentTypeId,
-                cancellationToken
-            )
+        var appointmentType = await appointmentTypeRepository.GetByIdAsync(
+            appointment.AppointmentTypeId,
+            cancellationToken
+        )
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(AppointmentTypeDefinition),
@@ -75,12 +80,11 @@ public sealed class RescheduleByGuardianCommandHandler(
 
         var newTimeRange = TimeRange.Create(request.NewStartTime, request.NewEndTime);
 
-        var doctorSchedule =
-            await scheduleRepository.GetActiveByDoctorAndDayAsync(
-                appointment.DoctorId,
-                request.NewDate.DayOfWeek,
-                cancellationToken
-            )
+        var doctorSchedule = await scheduleRepository.GetActiveByDoctorAndDayAsync(
+            appointment.DoctorId,
+            request.NewDate.DayOfWeek,
+            cancellationToken
+        )
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Schedule),
@@ -114,12 +118,11 @@ public sealed class RescheduleByGuardianCommandHandler(
                     appointmentType
                 );
 
-                var initiatorMembership =
-                    await familyMembershipRepository.GetActiveMembershipAsync(
-                        request.InitiatorUserId,
-                        appointment.PatientId,
-                        cancellationToken
-                    )
+                var initiatorMembership = await familyMembershipRepository.GetActiveMembershipAsync(
+                    request.InitiatorUserId,
+                    appointment.PatientId,
+                    cancellationToken
+                )
                     ?? throw new PatientAccessUnauthorizedException(
                         DomainErrors.Patient.UnauthorizedAccess
                     );

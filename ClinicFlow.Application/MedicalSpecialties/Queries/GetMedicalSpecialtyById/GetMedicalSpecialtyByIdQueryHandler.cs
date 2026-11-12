@@ -17,11 +17,10 @@ public sealed class GetMedicalSpecialtyByIdQueryHandler(
         CancellationToken cancellationToken
     )
     {
-        var specialty =
-            await medicalSpecialtyRepository.GetByIdAsync(
-                request.MedicalSpecialtyId,
-                cancellationToken
-            )
+        var specialty = await medicalSpecialtyRepository.GetByIdAsync(
+            request.MedicalSpecialtyId,
+            cancellationToken
+        )
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(MedicalSpecialty),

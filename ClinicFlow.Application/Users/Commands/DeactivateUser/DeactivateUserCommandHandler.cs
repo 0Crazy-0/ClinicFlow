@@ -21,8 +21,7 @@ public sealed class DeactivateUserCommandHandler(
             request.UserId,
             async cancellationToken =>
             {
-                var user =
-                    await userRepository.GetByIdAsync(request.UserId, cancellationToken)
+                var user = await userRepository.GetByIdAsync(request.UserId, cancellationToken)
                     ?? throw new EntityNotFoundException(
                         DomainErrors.General.NotFound,
                         nameof(User),

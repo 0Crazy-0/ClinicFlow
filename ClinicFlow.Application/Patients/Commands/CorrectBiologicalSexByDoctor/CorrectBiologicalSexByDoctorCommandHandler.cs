@@ -20,16 +20,17 @@ public sealed class CorrectBiologicalSexByDoctorCommandHandler(
         CancellationToken cancellationToken
     )
     {
-        var patient =
-            await patientRepository.GetByIdAsync(request.PatientId, cancellationToken)
+        var patient = await patientRepository.GetByIdAsync(request.PatientId, cancellationToken)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Patient),
                 request.PatientId
             );
 
-        var initiatorDoctor =
-            await doctorRepository.GetByUserIdAsync(request.InitiatorUserId, cancellationToken)
+        var initiatorDoctor = await doctorRepository.GetByUserIdAsync(
+            request.InitiatorUserId,
+            cancellationToken
+        )
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Doctor),

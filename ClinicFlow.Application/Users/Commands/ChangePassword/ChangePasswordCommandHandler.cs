@@ -17,8 +17,7 @@ public sealed class ChangePasswordCommandHandler(
     /// <inheritdoc />
     public async Task Handle(ChangePasswordCommand request, CancellationToken cancellationToken)
     {
-        var user =
-            await userRepository.GetByIdAsync(request.UserId, cancellationToken)
+        var user = await userRepository.GetByIdAsync(request.UserId, cancellationToken)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(User),

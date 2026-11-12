@@ -32,31 +32,31 @@ public sealed class GrantAppointmentCategoryConsentCommandHandler(
             lockKey,
             async cancellationToken =>
             {
-                var patient =
-                    await patientRepository.GetByIdAsync(request.PatientId, cancellationToken)
+                var patient = await patientRepository.GetByIdAsync(
+                    request.PatientId,
+                    cancellationToken
+                )
                     ?? throw new EntityNotFoundException(
                         DomainErrors.General.NotFound,
                         nameof(Patient),
                         request.PatientId
                     );
 
-                var requesterMembership =
-                    await familyMembershipRepository.GetActiveMembershipAsync(
-                        request.RequesterUserId,
-                        request.PatientId,
-                        cancellationToken
-                    )
+                var requesterMembership = await familyMembershipRepository.GetActiveMembershipAsync(
+                    request.RequesterUserId,
+                    request.PatientId,
+                    cancellationToken
+                )
                     ?? throw new EntityNotFoundException(
                         DomainErrors.General.NotFound,
                         nameof(FamilyMembership),
                         request.PatientId
                     );
 
-                var recipientMembership =
-                    await familyMembershipRepository.GetByIdAsync(
-                        request.RecipientMembershipId,
-                        cancellationToken
-                    )
+                var recipientMembership = await familyMembershipRepository.GetByIdAsync(
+                    request.RecipientMembershipId,
+                    cancellationToken
+                )
                     ?? throw new EntityNotFoundException(
                         DomainErrors.General.NotFound,
                         nameof(FamilyMembership),

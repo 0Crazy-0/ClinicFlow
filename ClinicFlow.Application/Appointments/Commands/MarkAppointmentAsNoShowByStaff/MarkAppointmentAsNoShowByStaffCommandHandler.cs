@@ -18,8 +18,10 @@ public sealed class MarkAppointmentAsNoShowByStaffCommandHandler(
         CancellationToken cancellationToken
     )
     {
-        var appointment =
-            await appointmentRepository.GetByIdAsync(request.AppointmentId, cancellationToken)
+        var appointment = await appointmentRepository.GetByIdAsync(
+            request.AppointmentId,
+            cancellationToken
+        )
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Appointment),

@@ -136,9 +136,7 @@ public class EmergencyContactTests
         var c3 = EmergencyContact.Create("John", null, "Doe", "+0987654321");
 
         // Assert
-        (c1 == c2)
-            .Should()
-            .BeTrue();
+        (c1 == c2).Should().BeTrue();
 
         (c1 != upperCased).Should().BeTrue();
 

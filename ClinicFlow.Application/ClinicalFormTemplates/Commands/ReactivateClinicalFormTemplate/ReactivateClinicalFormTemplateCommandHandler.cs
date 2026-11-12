@@ -18,11 +18,10 @@ public sealed class ReactivateClinicalFormTemplateCommandHandler(
         CancellationToken cancellationToken
     )
     {
-        var template =
-            await clinicalFormTemplateRepository.GetByIdIncludingDeletedAsync(
-                request.TemplateId,
-                cancellationToken
-            )
+        var template = await clinicalFormTemplateRepository.GetByIdIncludingDeletedAsync(
+            request.TemplateId,
+            cancellationToken
+        )
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(ClinicalFormTemplate),

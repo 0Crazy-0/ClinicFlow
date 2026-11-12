@@ -17,8 +17,10 @@ public sealed class GetClinicalDetailByTemplateCodeQueryHandler(
         CancellationToken cancellationToken
     )
     {
-        var record =
-            await medicalRecordRepository.GetByIdAsync(request.MedicalRecordId, cancellationToken)
+        var record = await medicalRecordRepository.GetByIdAsync(
+            request.MedicalRecordId,
+            cancellationToken
+        )
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(MedicalRecord),

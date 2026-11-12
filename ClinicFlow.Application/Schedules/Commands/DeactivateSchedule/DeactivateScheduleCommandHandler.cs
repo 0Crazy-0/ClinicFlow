@@ -15,8 +15,7 @@ public sealed class DeactivateScheduleCommandHandler(
     /// <inheritdoc />
     public async Task Handle(DeactivateScheduleCommand request, CancellationToken cancellationToken)
     {
-        var schedule =
-            await scheduleRepository.GetByIdAsync(request.ScheduleId, cancellationToken)
+        var schedule = await scheduleRepository.GetByIdAsync(request.ScheduleId, cancellationToken)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Schedule),

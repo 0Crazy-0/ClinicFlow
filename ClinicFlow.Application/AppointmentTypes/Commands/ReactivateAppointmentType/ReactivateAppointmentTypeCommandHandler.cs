@@ -18,11 +18,10 @@ public sealed class ReactivateAppointmentTypeCommandHandler(
         CancellationToken cancellationToken
     )
     {
-        var appointmentType =
-            await appointmentTypeRepository.GetByIdIncludingDeletedAsync(
-                request.AppointmentTypeId,
-                cancellationToken
-            )
+        var appointmentType = await appointmentTypeRepository.GetByIdIncludingDeletedAsync(
+            request.AppointmentTypeId,
+            cancellationToken
+        )
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(AppointmentTypeDefinition),

@@ -30,27 +30,30 @@ public sealed class ScheduleByDoctorCommandHandler(
         CancellationToken cancellationToken
     )
     {
-        var initiatorDoctor =
-            await doctorRepository.GetByUserIdAsync(request.InitiatorUserId, cancellationToken)
+        var initiatorDoctor = await doctorRepository.GetByUserIdAsync(
+            request.InitiatorUserId,
+            cancellationToken
+        )
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Doctor),
                 request.InitiatorUserId
             );
 
-        var targetPatient =
-            await patientRepository.GetByIdAsync(request.TargetPatientId, cancellationToken)
+        var targetPatient = await patientRepository.GetByIdAsync(
+            request.TargetPatientId,
+            cancellationToken
+        )
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Patient),
                 request.TargetPatientId
             );
 
-        var appointmentType =
-            await appointmentTypeRepository.GetByIdAsync(
-                request.AppointmentTypeId,
-                cancellationToken
-            )
+        var appointmentType = await appointmentTypeRepository.GetByIdAsync(
+            request.AppointmentTypeId,
+            cancellationToken
+        )
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(AppointmentTypeDefinition),
@@ -59,12 +62,11 @@ public sealed class ScheduleByDoctorCommandHandler(
 
         var timeRange = TimeRange.Create(request.StartTime, request.EndTime);
 
-        var doctorSchedule =
-            await scheduleRepository.GetActiveByDoctorAndDayAsync(
-                initiatorDoctor.Id,
-                request.ScheduledDate.DayOfWeek,
-                cancellationToken
-            )
+        var doctorSchedule = await scheduleRepository.GetActiveByDoctorAndDayAsync(
+            initiatorDoctor.Id,
+            request.ScheduledDate.DayOfWeek,
+            cancellationToken
+        )
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Schedule),

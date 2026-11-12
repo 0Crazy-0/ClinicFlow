@@ -26,16 +26,17 @@ public sealed class ReassignAppointmentCommandHandler(
         CancellationToken cancellationToken
     )
     {
-        var appointment =
-            await appointmentRepository.GetByIdAsync(request.AppointmentId, cancellationToken)
+        var appointment = await appointmentRepository.GetByIdAsync(
+            request.AppointmentId,
+            cancellationToken
+        )
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Appointment),
                 request.AppointmentId
             );
 
-        var newDoctor =
-            await doctorRepository.GetByIdAsync(request.NewDoctorId, cancellationToken)
+        var newDoctor = await doctorRepository.GetByIdAsync(request.NewDoctorId, cancellationToken)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Doctor),
@@ -44,12 +45,11 @@ public sealed class ReassignAppointmentCommandHandler(
 
         var newTimeRange = TimeRange.Create(request.NewStartTime, request.NewEndTime);
 
-        var newDoctorSchedule =
-            await scheduleRepository.GetActiveByDoctorAndDayAsync(
-                newDoctor.Id,
-                request.NewDate.DayOfWeek,
-                cancellationToken
-            )
+        var newDoctorSchedule = await scheduleRepository.GetActiveByDoctorAndDayAsync(
+            newDoctor.Id,
+            request.NewDate.DayOfWeek,
+            cancellationToken
+        )
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Schedule),

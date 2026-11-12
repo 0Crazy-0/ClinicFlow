@@ -24,12 +24,11 @@ public sealed class GetAdultFamilyMemberAppointmentsByPatientIdQueryHandler(
         CancellationToken cancellationToken
     )
     {
-        var membership =
-            await familyMembershipRepository.GetActiveMembershipAsync(
-                request.RequesterUserId,
-                request.PatientId,
-                cancellationToken
-            )
+        var membership = await familyMembershipRepository.GetActiveMembershipAsync(
+            request.RequesterUserId,
+            request.PatientId,
+            cancellationToken
+        )
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(FamilyMembership),
@@ -38,8 +37,7 @@ public sealed class GetAdultFamilyMemberAppointmentsByPatientIdQueryHandler(
 
         var allowedCategories = membership.GetVisibleAppointmentCategories();
 
-        var patient =
-            await patientRepository.GetByIdAsync(request.PatientId, cancellationToken)
+        var patient = await patientRepository.GetByIdAsync(request.PatientId, cancellationToken)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Patient),

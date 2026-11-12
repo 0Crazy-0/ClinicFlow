@@ -20,12 +20,11 @@ public sealed class LeaveFamilyMembershipCommandHandler(
         CancellationToken cancellationToken
     )
     {
-        var membership =
-            await familyMembershipRepository.GetActiveMembershipAsync(
-                request.UserId,
-                request.PatientId,
-                cancellationToken
-            )
+        var membership = await familyMembershipRepository.GetActiveMembershipAsync(
+            request.UserId,
+            request.PatientId,
+            cancellationToken
+        )
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(FamilyMembership),
@@ -34,8 +33,7 @@ public sealed class LeaveFamilyMembershipCommandHandler(
 
         var referenceTime = timeProvider.GetLocalNow().DateTime;
 
-        var patient =
-            await patientRepository.GetByIdAsync(request.PatientId, cancellationToken)
+        var patient = await patientRepository.GetByIdAsync(request.PatientId, cancellationToken)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Patient),

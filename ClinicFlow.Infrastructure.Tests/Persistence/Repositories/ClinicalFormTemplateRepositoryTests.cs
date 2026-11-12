@@ -337,9 +337,8 @@ public class ClinicalFormTemplateRepositoryTests(PostgresFixture fixture) : IAsy
         // Assert
         results
             .Should()
-            .BeEquivalentTo(
-                [active1, active2],
-                option => option.Excluding(x => x.JsonSchemaDefinition)
+            .BeEquivalentTo([active1, active2], option =>
+                option.Excluding(x => x.JsonSchemaDefinition)
             );
     }
 
@@ -361,9 +360,8 @@ public class ClinicalFormTemplateRepositoryTests(PostgresFixture fixture) : IAsy
         // Assert
         results
             .Should()
-            .BeEquivalentTo(
-                [active1, active2, inactive],
-                option => option.Excluding(x => x.JsonSchemaDefinition)
+            .BeEquivalentTo([active1, active2, inactive], option =>
+                option.Excluding(x => x.JsonSchemaDefinition)
             );
     }
 

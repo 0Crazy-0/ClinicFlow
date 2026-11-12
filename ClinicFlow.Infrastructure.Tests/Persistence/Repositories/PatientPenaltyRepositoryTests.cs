@@ -184,9 +184,8 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
         // Assert
         result
             .Should()
-            .BeEquivalentTo(
-                [expiredBlock, removedWarning, activeWarning],
-                options => options.WithStrictOrdering()
+            .BeEquivalentTo([expiredBlock, removedWarning, activeWarning], options =>
+                options.WithStrictOrdering()
             );
     }
 
@@ -327,9 +326,8 @@ public class PatientPenaltyRepositoryTests(PostgresFixture fixture) : IAsyncLife
 
         items
             .Should()
-            .BeEquivalentTo(
-                [expiredBlock, removedWarning],
-                options => options.WithStrictOrdering()
+            .BeEquivalentTo([expiredBlock, removedWarning], options =>
+                options.WithStrictOrdering()
             );
     }
 

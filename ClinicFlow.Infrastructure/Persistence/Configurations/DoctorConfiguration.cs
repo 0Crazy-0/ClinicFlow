@@ -10,28 +10,25 @@ public sealed class DoctorConfiguration : IEntityTypeConfiguration<Doctor>
     /// <inheritdoc />
     public void Configure(EntityTypeBuilder<Doctor> builder)
     {
-        builder.ToTable(
-            "Doctors",
-            table =>
-            {
-                table.HasCheckConstraint(
-                    "CK_Doctors_ConsultationRoomNumber_Range",
-                    BetweenConstraint(
-                        ColumnNames.Doctor.ConsultationRoomNumber,
-                        ConsultationRoom.MinimumNumber,
-                        ConsultationRoom.MaximumNumber
-                    )
-                );
-                table.HasCheckConstraint(
-                    "CK_Doctors_ConsultationRoomFloor_Range",
-                    BetweenConstraint(
-                        ColumnNames.Doctor.ConsultationRoomFloor,
-                        ConsultationRoom.MinimumFloor,
-                        ConsultationRoom.MaximumFloor
-                    )
-                );
-            }
-        );
+        builder.ToTable("Doctors", table =>
+        {
+            table.HasCheckConstraint(
+                "CK_Doctors_ConsultationRoomNumber_Range",
+                BetweenConstraint(
+                    ColumnNames.Doctor.ConsultationRoomNumber,
+                    ConsultationRoom.MinimumNumber,
+                    ConsultationRoom.MaximumNumber
+                )
+            );
+            table.HasCheckConstraint(
+                "CK_Doctors_ConsultationRoomFloor_Range",
+                BetweenConstraint(
+                    ColumnNames.Doctor.ConsultationRoomFloor,
+                    ConsultationRoom.MinimumFloor,
+                    ConsultationRoom.MaximumFloor
+                )
+            );
+        });
 
         builder.ComplexProperty(
             p => p.FullName,

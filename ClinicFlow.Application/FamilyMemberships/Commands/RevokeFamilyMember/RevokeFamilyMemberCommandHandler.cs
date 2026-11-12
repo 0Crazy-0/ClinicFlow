@@ -21,12 +21,11 @@ public sealed class RevokeFamilyMemberCommandHandler(
             request.PatientId,
             async cancellationToken =>
             {
-                var membership =
-                    await familyMembershipRepository.GetActiveMembershipAsync(
-                        request.OwnerUserId,
-                        request.PatientId,
-                        cancellationToken
-                    )
+                var membership = await familyMembershipRepository.GetActiveMembershipAsync(
+                    request.OwnerUserId,
+                    request.PatientId,
+                    cancellationToken
+                )
                     ?? throw new EntityNotFoundException(
                         DomainErrors.General.NotFound,
                         nameof(FamilyMembership),
