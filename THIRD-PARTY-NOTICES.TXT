@@ -480,10 +480,10 @@ Licensed under Apache-2.0
 Available at https://licenses.nuget.org/Apache-2.0
 
 
-License notice for MediatR (v14.2.0)
+License notice for MediatR (v15.0.0)
 ------------------------------------
 
-https://github.com/LuckyPennySoftware/MediatR at 916ef1b3d68ccdc96db8f914eaf1b32fc7db52c5
+https://github.com/LuckyPennySoftware/MediatR at 1fad4c7a35c8dd4e733a0f8d43e28eddc1aa5f5b
 
 https://mediatr.io/
 
@@ -494,10 +494,10 @@ Available at https://aka.ms/deprecateLicenseUrl
 LICENSE.md
 
 
-License notice for Microsoft.Extensions.DependencyInjection.Abstractions (v10.0.14)
+License notice for Microsoft.Extensions.DependencyInjection.Abstractions (v10.0.15)
 ------------------------------------
 
-https://github.com/dotnet/dotnet at 0427b9abbead3fa64c6655eb4290c537397131fa
+https://github.com/dotnet/dotnet at 8e0f8ed2312954727f8919d7d1c2f78b483b4ee7
 
 https://dot.net/
 
@@ -616,10 +616,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.EntityFrameworkCore (v10.0.14)
+License notice for Microsoft.EntityFrameworkCore (v10.0.15)
 ------------------------------------
 
-https://github.com/dotnet/dotnet at 0427b9abbead3fa64c6655eb4290c537397131fa
+https://github.com/dotnet/dotnet at 8e0f8ed2312954727f8919d7d1c2f78b483b4ee7
 
 https://docs.microsoft.com/ef/core/
 
@@ -630,10 +630,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.EntityFrameworkCore.Relational (v10.0.14)
+License notice for Microsoft.EntityFrameworkCore.Relational (v10.0.15)
 ------------------------------------
 
-https://github.com/dotnet/dotnet at 0427b9abbead3fa64c6655eb4290c537397131fa
+https://github.com/dotnet/dotnet at 8e0f8ed2312954727f8919d7d1c2f78b483b4ee7
 
 https://docs.microsoft.com/ef/core/
 
@@ -644,10 +644,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.Extensions.Configuration.Binder (v10.0.14)
+License notice for Microsoft.Extensions.Configuration.Binder (v10.0.15)
 ------------------------------------
 
-https://github.com/dotnet/dotnet at 0427b9abbead3fa64c6655eb4290c537397131fa
+https://github.com/dotnet/dotnet at 8e0f8ed2312954727f8919d7d1c2f78b483b4ee7
 
 https://dot.net/
 
@@ -756,10 +756,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.EntityFrameworkCore.Abstractions (v10.0.14)
+License notice for Microsoft.EntityFrameworkCore.Abstractions (v10.0.15)
 ------------------------------------
 
-https://github.com/dotnet/dotnet at 0427b9abbead3fa64c6655eb4290c537397131fa
+https://github.com/dotnet/dotnet at 8e0f8ed2312954727f8919d7d1c2f78b483b4ee7
 
 https://docs.microsoft.com/ef/core/
 
@@ -770,10 +770,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.EntityFrameworkCore.Analyzers (v10.0.14)
+License notice for Microsoft.EntityFrameworkCore.Analyzers (v10.0.15)
 ------------------------------------
 
-https://github.com/dotnet/dotnet at 0427b9abbead3fa64c6655eb4290c537397131fa
+https://github.com/dotnet/dotnet at 8e0f8ed2312954727f8919d7d1c2f78b483b4ee7
 
 https://docs.microsoft.com/ef/core/
 
@@ -784,10 +784,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.Extensions.Caching.Abstractions (v10.0.14)
+License notice for Microsoft.Extensions.Caching.Abstractions (v10.0.15)
 ------------------------------------
 
-https://github.com/dotnet/dotnet at 0427b9abbead3fa64c6655eb4290c537397131fa
+https://github.com/dotnet/dotnet at 8e0f8ed2312954727f8919d7d1c2f78b483b4ee7
 
 https://dot.net/
 
@@ -798,10 +798,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.Extensions.Caching.Memory (v10.0.14)
+License notice for Microsoft.Extensions.Caching.Memory (v10.0.15)
 ------------------------------------
 
-https://github.com/dotnet/dotnet at 0427b9abbead3fa64c6655eb4290c537397131fa
+https://github.com/dotnet/dotnet at 8e0f8ed2312954727f8919d7d1c2f78b483b4ee7
 
 https://dot.net/
 
@@ -812,10 +812,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.Extensions.Configuration (v10.0.14)
+License notice for Microsoft.Extensions.Configuration (v10.0.15)
 ------------------------------------
 
-https://github.com/dotnet/dotnet at 0427b9abbead3fa64c6655eb4290c537397131fa
+https://github.com/dotnet/dotnet at 8e0f8ed2312954727f8919d7d1c2f78b483b4ee7
 
 https://dot.net/
 
@@ -826,10 +826,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.Extensions.Configuration.Abstractions (v10.0.14)
+License notice for Microsoft.Extensions.Configuration.Abstractions (v10.0.15)
 ------------------------------------
 
-https://github.com/dotnet/dotnet at 0427b9abbead3fa64c6655eb4290c537397131fa
+https://github.com/dotnet/dotnet at 8e0f8ed2312954727f8919d7d1c2f78b483b4ee7
 
 https://dot.net/
 
@@ -840,10 +840,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.Extensions.DependencyInjection (v10.0.14)
+License notice for Microsoft.Extensions.DependencyInjection (v10.0.15)
 ------------------------------------
 
-https://github.com/dotnet/dotnet at 0427b9abbead3fa64c6655eb4290c537397131fa
+https://github.com/dotnet/dotnet at 8e0f8ed2312954727f8919d7d1c2f78b483b4ee7
 
 https://dot.net/
 
@@ -854,10 +854,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.Extensions.DependencyModel (v10.0.14)
+License notice for Microsoft.Extensions.DependencyModel (v10.0.15)
 ------------------------------------
 
-https://github.com/dotnet/dotnet at 0427b9abbead3fa64c6655eb4290c537397131fa
+https://github.com/dotnet/dotnet at 8e0f8ed2312954727f8919d7d1c2f78b483b4ee7
 
 https://dot.net/
 
@@ -868,10 +868,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.Extensions.Logging (v10.0.14)
+License notice for Microsoft.Extensions.Logging (v10.0.15)
 ------------------------------------
 
-https://github.com/dotnet/dotnet at 0427b9abbead3fa64c6655eb4290c537397131fa
+https://github.com/dotnet/dotnet at 8e0f8ed2312954727f8919d7d1c2f78b483b4ee7
 
 https://dot.net/
 
@@ -882,10 +882,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.Extensions.Logging.Abstractions (v10.0.14)
+License notice for Microsoft.Extensions.Logging.Abstractions (v10.0.15)
 ------------------------------------
 
-https://github.com/dotnet/dotnet at 0427b9abbead3fa64c6655eb4290c537397131fa
+https://github.com/dotnet/dotnet at 8e0f8ed2312954727f8919d7d1c2f78b483b4ee7
 
 https://dot.net/
 
@@ -896,10 +896,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.Extensions.Options (v10.0.14)
+License notice for Microsoft.Extensions.Options (v10.0.15)
 ------------------------------------
 
-https://github.com/dotnet/dotnet at 0427b9abbead3fa64c6655eb4290c537397131fa
+https://github.com/dotnet/dotnet at 8e0f8ed2312954727f8919d7d1c2f78b483b4ee7
 
 https://dot.net/
 
@@ -910,10 +910,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.Extensions.Primitives (v10.0.14)
+License notice for Microsoft.Extensions.Primitives (v10.0.15)
 ------------------------------------
 
-https://github.com/dotnet/dotnet at 0427b9abbead3fa64c6655eb4290c537397131fa
+https://github.com/dotnet/dotnet at 8e0f8ed2312954727f8919d7d1c2f78b483b4ee7
 
 https://dot.net/
 
@@ -1070,10 +1070,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.EntityFrameworkCore.InMemory (v10.0.14)
+License notice for Microsoft.EntityFrameworkCore.InMemory (v10.0.15)
 ------------------------------------
 
-https://github.com/dotnet/dotnet at 0427b9abbead3fa64c6655eb4290c537397131fa
+https://github.com/dotnet/dotnet at 8e0f8ed2312954727f8919d7d1c2f78b483b4ee7
 
 https://docs.microsoft.com/ef/core/
 
