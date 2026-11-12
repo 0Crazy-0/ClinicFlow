@@ -162,9 +162,8 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
 
         items
             .Should()
-            .BeEquivalentTo(
-                [appointment1, appointment3],
-                options => options.WithStrictOrdering().Excluding(a => a.DomainEvents)
+            .BeEquivalentTo([appointment1, appointment3], options =>
+                options.WithStrictOrdering().Excluding(a => a.DomainEvents)
             );
     }
 
@@ -325,9 +324,8 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
 
         items
             .Should()
-            .BeEquivalentTo(
-                [appointment1, appointment2, appointment3],
-                options => options.WithStrictOrdering().Excluding(a => a.DomainEvents)
+            .BeEquivalentTo([appointment1, appointment2, appointment3], options =>
+                options.WithStrictOrdering().Excluding(a => a.DomainEvents)
             );
     }
 
@@ -403,9 +401,8 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
 
         items
             .Should()
-            .BeEquivalentTo(
-                [appointment1, appointment2, appointment3],
-                options => options.WithStrictOrdering().Excluding(a => a.DomainEvents)
+            .BeEquivalentTo([appointment1, appointment2, appointment3], options =>
+                options.WithStrictOrdering().Excluding(a => a.DomainEvents)
             );
     }
 
@@ -532,9 +529,8 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
 
         items
             .Should()
-            .BeEquivalentTo(
-                [appointment1, appointment2, appointment3],
-                options => options.WithStrictOrdering().Excluding(a => a.DomainEvents)
+            .BeEquivalentTo([appointment1, appointment2, appointment3], options =>
+                options.WithStrictOrdering().Excluding(a => a.DomainEvents)
             );
     }
 
@@ -609,9 +605,8 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
 
         items
             .Should()
-            .BeEquivalentTo(
-                [appointment1, appointment2, appointment3],
-                options => options.WithStrictOrdering().Excluding(a => a.DomainEvents)
+            .BeEquivalentTo([appointment1, appointment2, appointment3], options =>
+                options.WithStrictOrdering().Excluding(a => a.DomainEvents)
             );
     }
 
@@ -746,9 +741,8 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
 
         items
             .Should()
-            .BeEquivalentTo(
-                [appointment1, appointment2, appointment3],
-                options => options.WithStrictOrdering().Excluding(a => a.DomainEvents)
+            .BeEquivalentTo([appointment1, appointment2, appointment3], options =>
+                options.WithStrictOrdering().Excluding(a => a.DomainEvents)
             );
     }
 
@@ -803,9 +797,8 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
 
         items
             .Should()
-            .BeEquivalentTo(
-                [allowedAppointment],
-                options => options.WithStrictOrdering().Excluding(a => a.DomainEvents)
+            .BeEquivalentTo([allowedAppointment], options =>
+                options.WithStrictOrdering().Excluding(a => a.DomainEvents)
             );
     }
 
@@ -873,9 +866,8 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
 
         items
             .Should()
-            .BeEquivalentTo(
-                [appointment1, appointment2, appointment3],
-                options => options.WithStrictOrdering().Excluding(a => a.DomainEvents)
+            .BeEquivalentTo([appointment1, appointment2, appointment3], options =>
+                options.WithStrictOrdering().Excluding(a => a.DomainEvents)
             );
     }
 
@@ -943,9 +935,8 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
 
         items
             .Should()
-            .BeEquivalentTo(
-                [appointment1, appointment2, appointment3],
-                options => options.WithStrictOrdering().Excluding(a => a.DomainEvents)
+            .BeEquivalentTo([appointment1, appointment2, appointment3], options =>
+                options.WithStrictOrdering().Excluding(a => a.DomainEvents)
             );
     }
 
@@ -1538,9 +1529,8 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         totalCount.Should().Be(3);
         items
             .Should()
-            .BeEquivalentTo(
-                [appointment1, appointment2, appointment3],
-                options => options.WithStrictOrdering().Excluding(a => a.DomainEvents)
+            .BeEquivalentTo([appointment1, appointment2, appointment3], options =>
+                options.WithStrictOrdering().Excluding(a => a.DomainEvents)
             );
     }
 
@@ -1609,9 +1599,8 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         totalCount.Should().Be(3);
         items
             .Should()
-            .BeEquivalentTo(
-                [appointment1, appointment2, appointment3],
-                options => options.WithStrictOrdering().Excluding(a => a.DomainEvents)
+            .BeEquivalentTo([appointment1, appointment2, appointment3], options =>
+                options.WithStrictOrdering().Excluding(a => a.DomainEvents)
             );
     }
 
@@ -1680,9 +1669,8 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
         totalCount.Should().Be(3);
         items
             .Should()
-            .BeEquivalentTo(
-                [appointment1, appointment2],
-                options => options.WithStrictOrdering().Excluding(a => a.DomainEvents)
+            .BeEquivalentTo([appointment1, appointment2], options =>
+                options.WithStrictOrdering().Excluding(a => a.DomainEvents)
             );
     }
 

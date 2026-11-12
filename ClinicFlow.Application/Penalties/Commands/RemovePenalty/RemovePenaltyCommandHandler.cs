@@ -15,8 +15,7 @@ public sealed class RemovePenaltyCommandHandler(
     /// <inheritdoc />
     public async Task Handle(RemovePenaltyCommand request, CancellationToken cancellationToken)
     {
-        var penalty =
-            await penaltyRepository.GetByIdAsync(request.PenaltyId, cancellationToken)
+        var penalty = await penaltyRepository.GetByIdAsync(request.PenaltyId, cancellationToken)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(PatientPenalty),

@@ -17,11 +17,10 @@ public sealed class GetClinicalFormTemplateByIdQueryHandler(
         CancellationToken cancellationToken
     )
     {
-        var template =
-            await clinicalFormTemplateRepository.GetByIdAsync(
-                request.ClinicalFormTemplateId,
-                cancellationToken
-            )
+        var template = await clinicalFormTemplateRepository.GetByIdAsync(
+            request.ClinicalFormTemplateId,
+            cancellationToken
+        )
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(ClinicalFormTemplate),

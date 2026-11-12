@@ -21,16 +21,20 @@ public sealed class AddClinicalDetailToMedicalRecordCommandHandler(
         CancellationToken cancellationToken
     )
     {
-        var record =
-            await medicalRecordRepository.GetByIdAsync(request.MedicalRecordId, cancellationToken)
+        var record = await medicalRecordRepository.GetByIdAsync(
+            request.MedicalRecordId,
+            cancellationToken
+        )
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(MedicalRecord),
                 request.MedicalRecordId
             );
 
-        var template =
-            await templateRepository.GetByCodeAsync(request.TemplateCode, cancellationToken)
+        var template = await templateRepository.GetByCodeAsync(
+            request.TemplateCode,
+            cancellationToken
+        )
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(ClinicalFormTemplate),

@@ -122,9 +122,7 @@ public class EmailAddressTests
         var e3 = EmailAddress.Create("other@example.com");
 
         // Assert
-        (e1 == e2)
-            .Should()
-            .BeTrue();
+        (e1 == e2).Should().BeTrue();
         (e1 != e3).Should().BeTrue();
     }
 

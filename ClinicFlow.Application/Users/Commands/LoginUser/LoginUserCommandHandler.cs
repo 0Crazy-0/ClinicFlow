@@ -18,8 +18,7 @@ public sealed class LoginUserCommandHandler(
     /// <inheritdoc />
     public async Task<Guid> Handle(LoginUserCommand request, CancellationToken cancellationToken)
     {
-        var user =
-            await userRepository.GetByEmailAsync(request.Email, cancellationToken)
+        var user = await userRepository.GetByEmailAsync(request.Email, cancellationToken)
             ?? throw new BusinessRuleValidationException(DomainErrors.User.InvalidCredentials);
 
         if (user.PasswordHash is null)

@@ -16,8 +16,7 @@ public sealed class GetPatientByIdQueryHandler(IPatientRepository patientReposit
         CancellationToken cancellationToken
     )
     {
-        var patient =
-            await patientRepository.GetByIdAsync(request.PatientId, cancellationToken)
+        var patient = await patientRepository.GetByIdAsync(request.PatientId, cancellationToken)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Patient),

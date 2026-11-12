@@ -34,53 +34,51 @@ public sealed class GrantSpecificAppointmentConsentCommandHandler(
             lockKey,
             async cancellationToken =>
             {
-                var patient =
-                    await patientRepository.GetByIdAsync(request.PatientId, cancellationToken)
+                var patient = await patientRepository.GetByIdAsync(
+                    request.PatientId,
+                    cancellationToken
+                )
                     ?? throw new EntityNotFoundException(
                         DomainErrors.General.NotFound,
                         nameof(Patient),
                         request.PatientId
                     );
 
-                var requesterMembership =
-                    await familyMembershipRepository.GetActiveMembershipAsync(
-                        request.RequesterUserId,
-                        request.PatientId,
-                        cancellationToken
-                    )
+                var requesterMembership = await familyMembershipRepository.GetActiveMembershipAsync(
+                    request.RequesterUserId,
+                    request.PatientId,
+                    cancellationToken
+                )
                     ?? throw new EntityNotFoundException(
                         DomainErrors.General.NotFound,
                         nameof(FamilyMembership),
                         request.PatientId
                     );
 
-                var recipientMembership =
-                    await familyMembershipRepository.GetByIdAsync(
-                        request.RecipientMembershipId,
-                        cancellationToken
-                    )
+                var recipientMembership = await familyMembershipRepository.GetByIdAsync(
+                    request.RecipientMembershipId,
+                    cancellationToken
+                )
                     ?? throw new EntityNotFoundException(
                         DomainErrors.General.NotFound,
                         nameof(FamilyMembership),
                         request.RecipientMembershipId
                     );
 
-                var appointment =
-                    await appointmentRepository.GetByIdAsync(
-                        request.AppointmentId,
-                        cancellationToken
-                    )
+                var appointment = await appointmentRepository.GetByIdAsync(
+                    request.AppointmentId,
+                    cancellationToken
+                )
                     ?? throw new EntityNotFoundException(
                         DomainErrors.General.NotFound,
                         nameof(Appointment),
                         request.AppointmentId
                     );
 
-                var appointmentType =
-                    await appointmentTypeRepository.GetByIdAsync(
-                        appointment.AppointmentTypeId,
-                        cancellationToken
-                    )
+                var appointmentType = await appointmentTypeRepository.GetByIdAsync(
+                    appointment.AppointmentTypeId,
+                    cancellationToken
+                )
                     ?? throw new EntityNotFoundException(
                         DomainErrors.General.NotFound,
                         nameof(AppointmentTypeDefinition),

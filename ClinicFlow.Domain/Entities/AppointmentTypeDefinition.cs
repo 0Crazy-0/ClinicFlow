@@ -216,8 +216,7 @@ public class AppointmentTypeDefinition : SoftDeletableEntity
     {
         Guard.NotNull(template);
 
-        var existing =
-            _requiredTemplates.Find(t => t.Id == template.Id)
+        var existing = _requiredTemplates.Find(t => t.Id == template.Id)
             ?? throw new DomainValidationException(DomainErrors.AppointmentType.TemplateNotFound);
 
         _requiredTemplates.Remove(existing);

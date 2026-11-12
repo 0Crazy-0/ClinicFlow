@@ -23,26 +23,26 @@ public sealed class ClearGuardianNotesByGuardianCommandHandler(
         CancellationToken cancellationToken
     )
     {
-        var appointment =
-            await appointmentRepository.GetByIdAsync(request.AppointmentId, cancellationToken)
+        var appointment = await appointmentRepository.GetByIdAsync(
+            request.AppointmentId,
+            cancellationToken
+        )
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Appointment),
                 request.AppointmentId
             );
 
-        var membership =
-            await familyMembershipRepository.GetActiveMembershipAsync(
-                request.InitiatorUserId,
-                appointment.PatientId,
-                cancellationToken
-            )
-            ?? throw new PatientAccessUnauthorizedException(
-                DomainErrors.Patient.UnauthorizedAccess
-            );
+        var membership = await familyMembershipRepository.GetActiveMembershipAsync(
+            request.InitiatorUserId,
+            appointment.PatientId,
+            cancellationToken
+        ) ?? throw new PatientAccessUnauthorizedException(DomainErrors.Patient.UnauthorizedAccess);
 
-        var targetPatient =
-            await patientRepository.GetByIdAsync(appointment.PatientId, cancellationToken)
+        var targetPatient = await patientRepository.GetByIdAsync(
+            appointment.PatientId,
+            cancellationToken
+        )
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Patient),

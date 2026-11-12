@@ -107,9 +107,7 @@ public class MedicalLicenseNumberTests
         var l3 = MedicalLicenseNumber.Create("MED-99999");
 
         // Assert
-        (l1 == l2)
-            .Should()
-            .BeTrue();
+        (l1 == l2).Should().BeTrue();
         (l1 != l3).Should().BeTrue();
     }
 }

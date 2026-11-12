@@ -20,8 +20,9 @@ public class MetadataFormValidationPolicy(IJsonSchemaValidator jsonSchemaValidat
 
         foreach (var requiredTemplate in appointmentType.RequiredTemplates)
         {
-            var providedDetail =
-                providedDetails.FirstOrDefault(d => d.TemplateCode == requiredTemplate.Code)
+            var providedDetail = providedDetails.FirstOrDefault(d =>
+                d.TemplateCode == requiredTemplate.Code
+            )
                 ?? throw new BusinessRuleValidationException(
                     DomainErrors.MedicalEncounter.MissingRequiredTemplate
                 );

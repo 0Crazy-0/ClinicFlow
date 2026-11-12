@@ -117,10 +117,11 @@ namespace ClinicFlow.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey(
-                        "PK_AppointmentTypeDefinitionRequiredTemplates",
-                        x => new { x.AppointmentTypeDefinitionId, x.RequiredTemplatesId }
-                    );
+                    table.PrimaryKey("PK_AppointmentTypeDefinitionRequiredTemplates", x => new
+                    {
+                        x.AppointmentTypeDefinitionId,
+                        x.RequiredTemplatesId,
+                    });
                     table.ForeignKey(
                         name: "FK_AppointmentTypeDefinitionRequiredTemplates_AppointmentTypes~",
                         column: x => x.AppointmentTypeDefinitionId,

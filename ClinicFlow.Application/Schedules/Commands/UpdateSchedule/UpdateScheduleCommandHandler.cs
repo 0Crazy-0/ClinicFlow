@@ -19,12 +19,11 @@ public sealed class UpdateScheduleCommandHandler(
         CancellationToken cancellationToken
     )
     {
-        var currentSchedule =
-            await scheduleRepository.GetActiveByDoctorAndDayAsync(
-                request.DoctorId,
-                request.Weekday,
-                cancellationToken
-            )
+        var currentSchedule = await scheduleRepository.GetActiveByDoctorAndDayAsync(
+            request.DoctorId,
+            request.Weekday,
+            cancellationToken
+        )
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Schedule),

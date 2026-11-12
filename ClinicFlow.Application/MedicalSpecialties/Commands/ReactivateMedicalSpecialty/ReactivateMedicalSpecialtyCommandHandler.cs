@@ -18,11 +18,10 @@ public sealed class ReactivateMedicalSpecialtyCommandHandler(
         CancellationToken cancellationToken
     )
     {
-        var specialty =
-            await medicalSpecialtyRepository.GetByIdIncludingDeletedAsync(
-                request.SpecialtyId,
-                cancellationToken
-            )
+        var specialty = await medicalSpecialtyRepository.GetByIdIncludingDeletedAsync(
+            request.SpecialtyId,
+            cancellationToken
+        )
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(MedicalSpecialty),

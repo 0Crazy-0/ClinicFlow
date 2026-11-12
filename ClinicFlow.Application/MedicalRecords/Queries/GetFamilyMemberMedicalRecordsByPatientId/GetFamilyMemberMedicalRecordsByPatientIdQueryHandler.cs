@@ -23,12 +23,11 @@ public sealed class GetFamilyMemberMedicalRecordsByPatientIdQueryHandler(
         CancellationToken cancellationToken
     )
     {
-        var membership =
-            await familyMembershipRepository.GetActiveMembershipAsync(
-                request.RequesterUserId,
-                request.PatientId,
-                cancellationToken
-            )
+        var membership = await familyMembershipRepository.GetActiveMembershipAsync(
+            request.RequesterUserId,
+            request.PatientId,
+            cancellationToken
+        )
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(FamilyMembership),
@@ -37,8 +36,7 @@ public sealed class GetFamilyMemberMedicalRecordsByPatientIdQueryHandler(
 
         membership.EnsureMedicalRecordsAccess();
 
-        var patient =
-            await patientRepository.GetByIdAsync(request.PatientId, cancellationToken)
+        var patient = await patientRepository.GetByIdAsync(request.PatientId, cancellationToken)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Patient),

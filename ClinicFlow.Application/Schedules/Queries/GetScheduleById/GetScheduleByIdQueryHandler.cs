@@ -16,8 +16,7 @@ public sealed class GetScheduleByIdQueryHandler(IScheduleRepository scheduleRepo
         CancellationToken cancellationToken
     )
     {
-        var schedule =
-            await scheduleRepository.GetByIdAsync(request.ScheduleId, cancellationToken)
+        var schedule = await scheduleRepository.GetByIdAsync(request.ScheduleId, cancellationToken)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Schedule),

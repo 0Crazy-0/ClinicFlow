@@ -274,9 +274,7 @@ public class PersonNameTests
         var n3 = PersonName.Create("John", null, "Doe");
 
         // Assert
-        (n1 == n2)
-            .Should()
-            .BeTrue();
+        (n1 == n2).Should().BeTrue();
 
         (n1 != accented).Should().BeTrue();
 

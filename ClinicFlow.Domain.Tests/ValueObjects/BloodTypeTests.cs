@@ -95,9 +95,7 @@ public class BloodTypeTests
         var bt3 = BloodType.Create("B-");
 
         // Assert
-        (bt1 == bt2)
-            .Should()
-            .BeTrue();
+        (bt1 == bt2).Should().BeTrue();
         (bt1 != bt3).Should().BeTrue();
     }
 }

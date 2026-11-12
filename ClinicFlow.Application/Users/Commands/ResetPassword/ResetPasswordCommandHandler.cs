@@ -19,12 +19,12 @@ public sealed class ResetPasswordCommandHandler(
     /// <inheritdoc />
     public async Task Handle(ResetPasswordCommand request, CancellationToken cancellationToken)
     {
-        var userId =
-            await passwordResetTokenService.ValidateTokenAsync(request.Token, cancellationToken)
-            ?? throw new DomainValidationException(DomainErrors.Validation.InvalidValue);
+        var userId = await passwordResetTokenService.ValidateTokenAsync(
+            request.Token,
+            cancellationToken
+        ) ?? throw new DomainValidationException(DomainErrors.Validation.InvalidValue);
 
-        var user =
-            await userRepository.GetByIdAsync(userId, cancellationToken)
+        var user = await userRepository.GetByIdAsync(userId, cancellationToken)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(User),

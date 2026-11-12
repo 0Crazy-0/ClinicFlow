@@ -19,8 +19,7 @@ public sealed class UpdateDoctorProfileCommandHandler(
         CancellationToken cancellationToken
     )
     {
-        var doctor =
-            await doctorRepository.GetByIdAsync(request.DoctorId, cancellationToken)
+        var doctor = await doctorRepository.GetByIdAsync(request.DoctorId, cancellationToken)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Doctor),

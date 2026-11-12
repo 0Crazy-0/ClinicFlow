@@ -15,8 +15,7 @@ public sealed class ReactivateUserCommandHandler(
     /// <inheritdoc />
     public async Task Handle(ReactivateUserCommand request, CancellationToken cancellationToken)
     {
-        var user =
-            await userRepository.GetByIdAsync(request.UserId, cancellationToken)
+        var user = await userRepository.GetByIdAsync(request.UserId, cancellationToken)
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(User),

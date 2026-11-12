@@ -18,11 +18,10 @@ public sealed class RemoveAllowedSpecialtyFromAppointmentTypeCommandHandler(
         CancellationToken cancellationToken
     )
     {
-        var appointmentType =
-            await appointmentTypeRepository.GetByIdAsync(
-                request.AppointmentTypeId,
-                cancellationToken
-            )
+        var appointmentType = await appointmentTypeRepository.GetByIdAsync(
+            request.AppointmentTypeId,
+            cancellationToken
+        )
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(AppointmentTypeDefinition),

@@ -34,42 +34,41 @@ public sealed class GrantMedicalRecordConsentCommandHandler(
             lockKey,
             async cancellationToken =>
             {
-                var patient =
-                    await patientRepository.GetByIdAsync(request.PatientId, cancellationToken)
+                var patient = await patientRepository.GetByIdAsync(
+                    request.PatientId,
+                    cancellationToken
+                )
                     ?? throw new EntityNotFoundException(
                         DomainErrors.General.NotFound,
                         nameof(Patient),
                         request.PatientId
                     );
 
-                var requesterMembership =
-                    await familyMembershipRepository.GetActiveMembershipAsync(
-                        request.RequesterUserId,
-                        request.PatientId,
-                        cancellationToken
-                    )
+                var requesterMembership = await familyMembershipRepository.GetActiveMembershipAsync(
+                    request.RequesterUserId,
+                    request.PatientId,
+                    cancellationToken
+                )
                     ?? throw new EntityNotFoundException(
                         DomainErrors.General.NotFound,
                         nameof(FamilyMembership),
                         request.PatientId
                     );
 
-                var record =
-                    await medicalRecordRepository.GetByIdAsync(
-                        request.MedicalRecordId,
-                        cancellationToken
-                    )
+                var record = await medicalRecordRepository.GetByIdAsync(
+                    request.MedicalRecordId,
+                    cancellationToken
+                )
                     ?? throw new EntityNotFoundException(
                         DomainErrors.General.NotFound,
                         nameof(MedicalRecord),
                         request.MedicalRecordId
                     );
 
-                var recipientMembership =
-                    await familyMembershipRepository.GetByIdAsync(
-                        request.RecipientMembershipId,
-                        cancellationToken
-                    )
+                var recipientMembership = await familyMembershipRepository.GetByIdAsync(
+                    request.RecipientMembershipId,
+                    cancellationToken
+                )
                     ?? throw new EntityNotFoundException(
                         DomainErrors.General.NotFound,
                         nameof(FamilyMembership),

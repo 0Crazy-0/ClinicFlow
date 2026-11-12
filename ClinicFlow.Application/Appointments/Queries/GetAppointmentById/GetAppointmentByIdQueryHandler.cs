@@ -19,8 +19,10 @@ public sealed class GetAppointmentByIdQueryHandler(IAppointmentRepository appoin
         CancellationToken cancellationToken
     )
     {
-        var appointment =
-            await appointmentRepository.GetByIdAsync(request.AppointmentId, cancellationToken)
+        var appointment = await appointmentRepository.GetByIdAsync(
+            request.AppointmentId,
+            cancellationToken
+        )
             ?? throw new EntityNotFoundException(
                 DomainErrors.General.NotFound,
                 nameof(Appointment),
