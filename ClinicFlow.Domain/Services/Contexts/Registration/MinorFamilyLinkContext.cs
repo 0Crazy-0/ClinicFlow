@@ -17,6 +17,5 @@ public sealed record class MinorFamilyLinkContext
     /// </remarks>
     public required FamilyMembership GuardianSelfMembership { get; init; }
     public int ActiveFamilyMemberCount { get; init; }
-    public bool HasActiveMembershipWithGuardian { get; init; }
     public DateTime ReferenceTime { get; init; }
 }

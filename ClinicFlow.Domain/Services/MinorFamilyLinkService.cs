@@ -23,6 +23,11 @@ public static class MinorFamilyLinkService
     /// </summary>
     public const int MaxActiveFamilyMembers = 15;
 
+    /// <remarks>
+    /// The caller must ensure the minor patient has no active membership with the guardian
+    /// at the time of the link, whether the minor is linked during registration or as an
+    /// already registered patient. The service does not validate that precondition.
+    /// </remarks>
     public static FamilyMembership Link(
         Patient minorPatient,
         MinorFamilyLinkArgs args,
@@ -37,11 +42,6 @@ public static class MinorFamilyLinkService
 
         var referenceDate = DateOnly.FromDateTime(context.ReferenceTime);
         var minorAge = minorPatient.GetAge(referenceDate);
-
-        if (context.HasActiveMembershipWithGuardian)
-            throw new DomainValidationException(
-                DomainErrors.FamilyMembership.PatientAlreadyHasActiveMembership
-            );
 
         if (minorAge >= DomainRules.AdultAge)
             throw new DomainValidationException(DomainErrors.PatientRegistration.MinorRequired);

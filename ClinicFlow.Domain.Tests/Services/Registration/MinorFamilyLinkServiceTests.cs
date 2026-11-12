@@ -91,24 +91,6 @@ public class MinorFamilyLinkServiceTests
     }
 
     [Fact]
-    public void Link_ShouldThrowDomainValidationException_WhenPatientAlreadyHasActiveMembershipWithGuardian()
-    {
-        // Arrange
-        var minorPatient = CreateMinorPatient();
-        var args = CreateArgs();
-
-        var context = CreateValidContext() with { HasActiveMembershipWithGuardian = true };
-
-        // Act
-        var act = () => MinorFamilyLinkService.Link(minorPatient, args, context);
-
-        // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.FamilyMembership.PatientAlreadyHasActiveMembership);
-    }
-
-    [Fact]
     public void Link_ShouldThrowDomainValidationException_WhenMinorIsExactlyAdultAge()
     {
         // Arrange
@@ -222,7 +204,6 @@ public class MinorFamilyLinkServiceTests
                 referenceTime
             ),
             ActiveFamilyMemberCount = 2,
-            HasActiveMembershipWithGuardian = false,
             ReferenceTime = referenceTime,
         };
 
@@ -320,7 +301,6 @@ public class MinorFamilyLinkServiceTests
                 _fakeTime.GetUtcNow().UtcDateTime
             ),
             ActiveFamilyMemberCount = 2,
-            HasActiveMembershipWithGuardian = false,
             ReferenceTime = _fakeTime.GetUtcNow().UtcDateTime,
         };
     }
