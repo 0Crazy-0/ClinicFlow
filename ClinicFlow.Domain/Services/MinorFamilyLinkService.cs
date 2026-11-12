@@ -60,7 +60,7 @@ public static class MinorFamilyLinkService
 
         var membership = FamilyMembership.CreateMinorFamilyMember(
             minorPatient.Id,
-            args.GuardianUserId,
+            context.GuardianSelfMembership.UserId,
             args.Relationship,
             args.LegalAuthority,
             minorAge,
@@ -70,7 +70,7 @@ public static class MinorFamilyLinkService
         membership.AddDomainEvent(
             new MinorLinkedToGuardianEvent(
                 minorPatient.Id,
-                args.GuardianUserId,
+                context.GuardianSelfMembership.UserId,
                 args.Relationship,
                 context.ReferenceTime
             )

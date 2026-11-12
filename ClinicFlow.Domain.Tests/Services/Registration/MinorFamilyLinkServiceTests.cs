@@ -194,7 +194,6 @@ public class MinorFamilyLinkServiceTests
 
         var args = new MinorFamilyLinkArgs
         {
-            GuardianUserId = guardianUserId,
             Relationship = PatientRelationship.Parent,
             LegalAuthority = LegalAuthorityType.Parent,
         };
@@ -289,7 +288,6 @@ public class MinorFamilyLinkServiceTests
     private static MinorFamilyLinkArgs CreateArgs() =>
         new()
         {
-            GuardianUserId = Guid.CreateVersion7(),
             Relationship = PatientRelationship.Parent,
             LegalAuthority = LegalAuthorityType.Parent,
         };

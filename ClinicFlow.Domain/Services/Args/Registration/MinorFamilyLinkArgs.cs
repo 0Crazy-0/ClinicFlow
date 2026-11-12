@@ -7,7 +7,6 @@ namespace ClinicFlow.Domain.Services.Args.Registration;
 /// </summary>
 public sealed record MinorFamilyLinkArgs
 {
-    public Guid GuardianUserId { get; init; }
     public PatientRelationship Relationship { get; init; }
     public LegalAuthorityType LegalAuthority { get; init; }
 }
