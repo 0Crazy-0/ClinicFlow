@@ -32,6 +32,7 @@ public static class MinorFamilyLinkService
         ArgumentNullException.ThrowIfNull(minorPatient);
         ArgumentNullException.ThrowIfNull(args);
         ArgumentNullException.ThrowIfNull(context);
+        ArgumentNullException.ThrowIfNull(context.GuardianPatient);
         ArgumentNullException.ThrowIfNull(context.GuardianSelfMembership);
 
         var referenceDate = DateOnly.FromDateTime(context.ReferenceTime);

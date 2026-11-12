@@ -59,6 +59,22 @@ public class MinorFamilyLinkServiceTests
     }
 
     [Fact]
+    public void Link_ShouldThrowArgumentNullException_WhenGuardianPatientIsNull()
+    {
+        // Arrange
+        var minorPatient = CreateMinorPatient();
+        var args = CreateArgs();
+
+        var context = CreateValidContext() with { GuardianPatient = null! };
+
+        // Act
+        var act = () => MinorFamilyLinkService.Link(minorPatient, args, context);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
     public void Link_ShouldThrowArgumentNullException_WhenGuardianSelfMembershipIsNull()
     {
         // Arrange
