@@ -38,10 +38,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.NET.Test.Sdk (v18.11.0)
+License notice for Microsoft.NET.Test.Sdk (v18.12.0)
 ------------------------------------
 
-https://github.com/microsoft/vstest at 36206450d47fec22e281ba9846445edc796f5080
+https://github.com/microsoft/vstest at 8c03f23cd7df6ab28c3f1e3d112dea978eae8b0c
 
 Copyright © Microsoft Corporation. All rights reserved.
 
@@ -62,10 +62,10 @@ Licensed under BSD-3-Clause
 Available at https://licenses.nuget.org/BSD-3-Clause
 
 
-License notice for xunit.v3 (v4.0.2)
+License notice for xunit.v3 (v4.0.3)
 ------------------------------------
 
-https://github.com/xunit/xunit at 0c7aa4991fa340689155d52043ce88f52f2f7421
+https://github.com/xunit/xunit at 384aa7f0b49f7c41e41df57516afd79de83359db
 
 Copyright (C) .NET Foundation
 
@@ -116,10 +116,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.CodeCoverage (v18.11.0)
+License notice for Microsoft.CodeCoverage (v18.12.0)
 ------------------------------------
 
-https://github.com/microsoft/vstest at 36206450d47fec22e281ba9846445edc796f5080
+https://github.com/microsoft/vstest at 8c03f23cd7df6ab28c3f1e3d112dea978eae8b0c
 
 Copyright © Microsoft Corporation. All rights reserved.
 
@@ -268,10 +268,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.Testing.Extensions.Telemetry (v2.5.1)
+License notice for Microsoft.Testing.Extensions.Telemetry (v2.5.2)
 ------------------------------------
 
-https://github.com/microsoft/testfx at 0bf77e3aedbf86f1fa16220bc951d3b52ba56763
+https://github.com/microsoft/testfx at 933377f07ac4bded77e820b0beef7d27e805cd89
 
 Copyright © Microsoft Corporation. All rights reserved.
 
@@ -280,10 +280,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.Testing.Extensions.TrxReport.Abstractions (v2.5.1)
+License notice for Microsoft.Testing.Extensions.TrxReport.Abstractions (v2.5.2)
 ------------------------------------
 
-https://github.com/microsoft/testfx at 0bf77e3aedbf86f1fa16220bc951d3b52ba56763
+https://github.com/microsoft/testfx at 933377f07ac4bded77e820b0beef7d27e805cd89
 
 Copyright © Microsoft Corporation. All rights reserved.
 
@@ -292,10 +292,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.Testing.Platform (v2.5.1)
+License notice for Microsoft.Testing.Platform (v2.5.2)
 ------------------------------------
 
-https://github.com/microsoft/testfx at 0bf77e3aedbf86f1fa16220bc951d3b52ba56763
+https://github.com/microsoft/testfx at 933377f07ac4bded77e820b0beef7d27e805cd89
 
 Copyright © Microsoft Corporation. All rights reserved.
 
@@ -304,10 +304,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.Testing.Platform.MSBuild (v2.5.1)
+License notice for Microsoft.Testing.Platform.MSBuild (v2.5.2)
 ------------------------------------
 
-https://github.com/microsoft/testfx at 0bf77e3aedbf86f1fa16220bc951d3b52ba56763
+https://github.com/microsoft/testfx at 933377f07ac4bded77e820b0beef7d27e805cd89
 
 Copyright © Microsoft Corporation. All rights reserved.
 
@@ -316,10 +316,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.TestPlatform.ObjectModel (v18.11.0)
+License notice for Microsoft.TestPlatform.ObjectModel (v18.12.0)
 ------------------------------------
 
-https://github.com/microsoft/vstest at 36206450d47fec22e281ba9846445edc796f5080
+https://github.com/microsoft/vstest at 8c03f23cd7df6ab28c3f1e3d112dea978eae8b0c
 
 Copyright © Microsoft Corporation. All rights reserved.
 
@@ -328,10 +328,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.TestPlatform.TestHost (v18.11.0)
+License notice for Microsoft.TestPlatform.TestHost (v18.12.0)
 ------------------------------------
 
-https://github.com/microsoft/vstest at 36206450d47fec22e281ba9846445edc796f5080
+https://github.com/microsoft/vstest at 8c03f23cd7df6ab28c3f1e3d112dea978eae8b0c
 
 Copyright © Microsoft Corporation. All rights reserved.
 
@@ -382,10 +382,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for xunit.v3.assert (v4.0.2)
+License notice for xunit.v3.assert (v4.0.3)
 ------------------------------------
 
-https://github.com/xunit/xunit at 0c7aa4991fa340689155d52043ce88f52f2f7421
+https://github.com/xunit/xunit at 384aa7f0b49f7c41e41df57516afd79de83359db
 
 Copyright (C) .NET Foundation
 
@@ -394,10 +394,10 @@ Licensed under Apache-2.0
 Available at https://licenses.nuget.org/Apache-2.0
 
 
-License notice for xunit.v3.common (v4.0.2)
+License notice for xunit.v3.common (v4.0.3)
 ------------------------------------
 
-https://github.com/xunit/xunit at 0c7aa4991fa340689155d52043ce88f52f2f7421
+https://github.com/xunit/xunit at 384aa7f0b49f7c41e41df57516afd79de83359db
 
 Copyright (C) .NET Foundation
 
@@ -406,10 +406,10 @@ Licensed under Apache-2.0
 Available at https://licenses.nuget.org/Apache-2.0
 
 
-License notice for xunit.v3.core.mtp-v2 (v4.0.2)
+License notice for xunit.v3.core.mtp-v2 (v4.0.3)
 ------------------------------------
 
-https://github.com/xunit/xunit at 0c7aa4991fa340689155d52043ce88f52f2f7421
+https://github.com/xunit/xunit at 384aa7f0b49f7c41e41df57516afd79de83359db
 
 Copyright (C) .NET Foundation
 
@@ -418,10 +418,10 @@ Licensed under Apache-2.0
 Available at https://licenses.nuget.org/Apache-2.0
 
 
-License notice for xunit.v3.extensibility.core (v4.0.2)
+License notice for xunit.v3.extensibility.core (v4.0.3)
 ------------------------------------
 
-https://github.com/xunit/xunit at 0c7aa4991fa340689155d52043ce88f52f2f7421
+https://github.com/xunit/xunit at 384aa7f0b49f7c41e41df57516afd79de83359db
 
 Copyright (C) .NET Foundation
 
@@ -430,10 +430,10 @@ Licensed under Apache-2.0
 Available at https://licenses.nuget.org/Apache-2.0
 
 
-License notice for xunit.v3.mtp-v2 (v4.0.2)
+License notice for xunit.v3.mtp-v2 (v4.0.3)
 ------------------------------------
 
-https://github.com/xunit/xunit at 0c7aa4991fa340689155d52043ce88f52f2f7421
+https://github.com/xunit/xunit at 384aa7f0b49f7c41e41df57516afd79de83359db
 
 Copyright (C) .NET Foundation
 
@@ -442,10 +442,10 @@ Licensed under Apache-2.0
 Available at https://licenses.nuget.org/Apache-2.0
 
 
-License notice for xunit.v3.runner.common (v4.0.2)
+License notice for xunit.v3.runner.common (v4.0.3)
 ------------------------------------
 
-https://github.com/xunit/xunit at 0c7aa4991fa340689155d52043ce88f52f2f7421
+https://github.com/xunit/xunit at 384aa7f0b49f7c41e41df57516afd79de83359db
 
 Copyright (C) .NET Foundation
 
@@ -454,10 +454,10 @@ Licensed under Apache-2.0
 Available at https://licenses.nuget.org/Apache-2.0
 
 
-License notice for xunit.v3.runner.inproc.console (v4.0.2)
+License notice for xunit.v3.runner.inproc.console (v4.0.3)
 ------------------------------------
 
-https://github.com/xunit/xunit at 0c7aa4991fa340689155d52043ce88f52f2f7421
+https://github.com/xunit/xunit at 384aa7f0b49f7c41e41df57516afd79de83359db
 
 Copyright (C) .NET Foundation
 
