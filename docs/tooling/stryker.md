@@ -453,39 +453,6 @@ The default is kept anyway as defensive code against a future enum extension (do
 Suppressed via `// Stryker disable once Boolean`. The behavioral arms are covered: every `Create` postal-code path is validated for one representative per country format.
 ---
 
-### 9. `PatientDuplicateScoringService` Email Null Guard Equivalence
-
-**File:** [PatientDuplicateScoringService.cs](../../ClinicFlow.Domain/Services/PatientDuplicateScoringService.cs)
-
-```csharp
-private static bool MatchesEmail(EmailAddress? formEmail, EmailAddress? candidateEmail)
-{
-    // Stryker disable once Logical: see docs/tooling/stryker.md, section "9. PatientDuplicateScoringService Email Null Guard Equivalence"
-    if (formEmail is null || candidateEmail is null)
-        return false;
-
-    return formEmail == candidateEmail;
-}
-```
-
-Observed mutant (report `StrykerOutput/2026-11-09.14-52-34`, Domain scoped run): one `Logical` mutation (`||` to `&&` on the null guard) reporting as `Survived`.
-
-#### Proof of Equivalence
-
-The companion `PhoneNumber` guard is NOT equivalent: with the mutated `&&`, a null form side skips the early return and dereferences `formPhone.Digits`, throwing a `NullReferenceException` that tests observe. Email is different because the statement that follows (`formEmail == candidateEmail`) is a record equality comparison that already handles the null cases the guard protects, so every mutated path lands on the same result:
-
-1. **Both null:** original `||` evaluates `true`, returns `false`. Mutant `&&` also evaluates `true` (null and null), returns `false`. Same outcome.
-2. **Exactly one null:** original `||` returns `false`. Mutant `&&` evaluates `false`, falls through to `formEmail == candidateEmail`, where a record `==` against a null operand (null == value, or value == null) is `false`. Same outcome.
-3. **Both non-null:** the guard evaluates `false` under both `||` and `&&`, so both proceed to the equality comparison and behave identically.
-
-No reachable input distinguishes the mutant, so it cannot be killed by any test. Suppressed via `// Stryker disable once Logical`, scoped to this single guard.
-
-#### The Guard Is Load-Bearing
-
-The guard cannot be dropped as a cleanup. A record `==` returns `true` when both operands are null, so collapsing the method into `return formEmail == candidateEmail;` would make two patients with no email on either side count as an email match (`EmailMatchWeight`) and inflate their duplicate score. The guard is what turns the both-null case into `false`.
-
----
-
 ## Local Verification Protocol
 
 Before submitting a Pull Request, contributors are expected to run Stryker locally on the affected test projects to ensure no regressions in test coverage.

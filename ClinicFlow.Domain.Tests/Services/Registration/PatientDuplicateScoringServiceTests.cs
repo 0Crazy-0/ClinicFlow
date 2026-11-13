@@ -1,11 +1,8 @@
 using AwesomeAssertions;
-using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Enums;
-using ClinicFlow.Domain.Exceptions.Base;
-using ClinicFlow.Domain.Services;
 using ClinicFlow.Domain.Services.Args.Registration;
 using ClinicFlow.Domain.Services.Contexts.Registration;
-using ClinicFlow.Domain.Services.Results.Registration;
+using ClinicFlow.Domain.Services.Registration;
 using ClinicFlow.Domain.ValueObjects;
 
 namespace ClinicFlow.Domain.Tests.Services.Registration;
@@ -299,7 +296,7 @@ public class PatientDuplicateScoringServiceTests
     {
         // Arrange
         var form = CreateStrangerForm();
-        var candidate = CreateStrangerCandidate() with { Email = EmailAddress.Create(form.Email!) };
+        var candidate = CreateStrangerCandidate() with { Email = EmailAddress.Create(form.Email) };
         var context = new PatientDuplicateScoringContext { Candidates = [candidate] };
 
         // Act
@@ -310,14 +307,13 @@ public class PatientDuplicateScoringServiceTests
     }
 
     [Fact]
-    public void Score_ShouldNotScoreEmail_WhenBothEmailsAreMissing()
+    public void Score_ShouldNotScoreEmail_WhenCandidateHasNoEmail()
     {
         // Arrange
-        // neither the form nor the candidate has an email. This is a valid
-        // production state: a minor linked to an existing adult patient may not have
-        // created an account of their own yet, and the candidate can be another such
-        // minor.
-        var form = CreateStrangerForm() with { Email = null };
+        // the candidate may lack contact data: a patient who has not created an
+        // account of their own yet, for example a minor linked to an existing adult
+        // patient, has no email of their own. The form side always supplies one.
+        var form = CreateStrangerForm();
         var candidate = CreateStrangerCandidate() with { Email = null };
         var context = new PatientDuplicateScoringContext { Candidates = [candidate] };
 
@@ -342,25 +338,6 @@ public class PatientDuplicateScoringServiceTests
 
         // Assert
         result.Scores.Should().ContainSingle().Which.Score.Should().Be(5);
-    }
-
-    [Fact]
-    public void Score_ShouldNotScorePhone_WhenBothPhonesAreMissing()
-    {
-        // Arrange
-        // neither the form nor the candidate has a phone. This is a valid
-        // production state: the phone belongs to the user account, not to the patient,
-        // so a patient who has not created an account of their own yet (for example,
-        // a minor linked to an existing adult patient) has no phone.
-        var form = CreateStrangerForm() with { Phone = null };
-        var candidate = CreateStrangerCandidate() with { Phone = null };
-        var context = new PatientDuplicateScoringContext { Candidates = [candidate] };
-
-        // Act
-        var result = PatientDuplicateScoringService.Score(form, context);
-
-        // Assert
-        result.Scores.Should().ContainSingle().Which.Score.Should().Be(0);
     }
 
     [Fact]
@@ -592,87 +569,8 @@ public class PatientDuplicateScoringServiceTests
         act.Should().Throw<ArgumentNullException>();
     }
 
-    [Fact]
-    public void EnsureRegistrationAllowed_ShouldNotThrow_WhenStrongestScoreReachesHighBandButOverrideIsProvided()
-    {
-        // Arrange
-        var result = CreateScoringResult(PatientDuplicateScoringService.HighScoreThreshold);
-
-        // Act
-        var act = () =>
-            PatientDuplicateScoringService.EnsureRegistrationAllowed(result, "crazy reason");
-
-        // Assert
-        act.Should().NotThrow();
-    }
-
-    [Fact]
-    public void EnsureRegistrationAllowed_ShouldNotThrow_WhenStrongestScoreIsBelowHighBand()
-    {
-        // Arrange
-        var result = CreateScoringResult(PatientDuplicateScoringService.HighScoreThreshold - 1);
-
-        // Act
-        var act = () => PatientDuplicateScoringService.EnsureRegistrationAllowed(result, null);
-
-        // Assert
-        act.Should().NotThrow();
-    }
-
-    [Fact]
-    public void EnsureRegistrationAllowed_ShouldThrowArgumentNullException_WhenResultIsNull()
-    {
-        // Arrange & Act
-        var act = () => PatientDuplicateScoringService.EnsureRegistrationAllowed(null!, null);
-
-        // Assert
-        act.Should().Throw<ArgumentNullException>();
-    }
-
-    [Fact]
-    public void EnsureRegistrationAllowed_ShouldThrowDomainValidationException_WhenStrongestScoreReachesHighBand()
-    {
-        // Arrange
-        var result = CreateScoringResult(PatientDuplicateScoringService.HighScoreThreshold);
-
-        // Act
-        var act = () => PatientDuplicateScoringService.EnsureRegistrationAllowed(result, null);
-
-        // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.PatientRegistration.DuplicateSuspected);
-    }
-
-    [Theory]
-    [InlineData("")]
-    [InlineData("   ")]
-    public void EnsureRegistrationAllowed_ShouldThrowDomainValidationException_WhenOverrideReasonIsWhitespaceOnly(
-        string overrideReason
-    )
-    {
-        // Arrange
-        var result = CreateScoringResult(PatientDuplicateScoringService.HighScoreThreshold);
-
-        // Act
-        var act = () =>
-            PatientDuplicateScoringService.EnsureRegistrationAllowed(result, overrideReason);
-
-        // Assert
-        act.Should()
-            .Throw<DomainValidationException>()
-            .WithMessage(DomainErrors.PatientRegistration.DuplicateSuspected);
-    }
-
     private static PatientDuplicateScoringContext CreateValidContext() =>
         new() { Candidates = [CreateStrangerCandidate()] };
-
-    private static PatientDuplicateScoringResult CreateScoringResult(int score)
-    {
-        var candidate = CreateStrangerCandidate();
-
-        return new PatientDuplicateScoringResult([new PatientDuplicateScore(candidate, score)]);
-    }
 
     private static PatientDuplicateScoringArgs CreateStrangerForm() =>
         new()
