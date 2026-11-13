@@ -1,6 +1,7 @@
 using AwesomeAssertions;
+using ClinicFlow.Domain.Common;
 using ClinicFlow.Domain.Enums;
-using ClinicFlow.Domain.Services;
+using ClinicFlow.Domain.Exceptions.Base;
 using ClinicFlow.Domain.Services.Contexts.Registration;
 using ClinicFlow.Domain.Services.Results.Registration;
 using ClinicFlow.Domain.ValueObjects;
@@ -33,7 +34,7 @@ public class PatientDuplicateScoringResultTests
     public void IsHighBand_ShouldBeTrue_WhenMaxScoreEqualsThreshold()
     {
         // Arrange
-        var result = CreateScoringResult(PatientDuplicateScoringService.HighScoreThreshold);
+        var result = CreateScoringResult(PatientDuplicateScoringResult.HighScoreThreshold);
 
         // Act & Assert
         result.IsHighBand.Should().BeTrue();
@@ -43,7 +44,7 @@ public class PatientDuplicateScoringResultTests
     public void IsHighBand_ShouldBeTrue_WhenMaxScoreExceedsThreshold()
     {
         // Arrange
-        var result = CreateScoringResult(PatientDuplicateScoringService.HighScoreThreshold + 1);
+        var result = CreateScoringResult(PatientDuplicateScoringResult.HighScoreThreshold + 1);
 
         // Act & Assert
         result.IsHighBand.Should().BeTrue();
@@ -53,10 +54,70 @@ public class PatientDuplicateScoringResultTests
     public void IsHighBand_ShouldBeFalse_WhenMaxScoreIsBelowThreshold()
     {
         // Arrange
-        var result = CreateScoringResult(PatientDuplicateScoringService.HighScoreThreshold - 1);
+        var result = CreateScoringResult(PatientDuplicateScoringResult.HighScoreThreshold - 1);
 
         // Act & Assert
         result.IsHighBand.Should().BeFalse();
+    }
+
+    [Fact]
+    public void EnsureRegistrationAllowed_ShouldNotThrow_WhenStrongestScoreReachesHighBandButOverrideIsProvided()
+    {
+        // Arrange
+        var result = CreateScoringResult(PatientDuplicateScoringResult.HighScoreThreshold);
+
+        // Act
+        var act = () => result.EnsureRegistrationAllowed("crazy reason");
+
+        // Assert
+        act.Should().NotThrow();
+    }
+
+    [Fact]
+    public void EnsureRegistrationAllowed_ShouldNotThrow_WhenStrongestScoreIsBelowHighBand()
+    {
+        // Arrange
+        var result = CreateScoringResult(PatientDuplicateScoringResult.HighScoreThreshold - 1);
+
+        // Act
+        var act = () => result.EnsureRegistrationAllowed(null);
+
+        // Assert
+        act.Should().NotThrow();
+    }
+
+    [Fact]
+    public void EnsureRegistrationAllowed_ShouldThrowDomainValidationException_WhenStrongestScoreReachesHighBand()
+    {
+        // Arrange
+        var result = CreateScoringResult(PatientDuplicateScoringResult.HighScoreThreshold);
+
+        // Act
+        var act = () => result.EnsureRegistrationAllowed(null);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.PatientRegistration.DuplicateSuspected);
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void EnsureRegistrationAllowed_ShouldThrowDomainValidationException_WhenOverrideReasonIsWhitespaceOnly(
+        string overrideReason
+    )
+    {
+        // Arrange
+        var result = CreateScoringResult(PatientDuplicateScoringResult.HighScoreThreshold);
+
+        // Act
+        var act = () => result.EnsureRegistrationAllowed(overrideReason);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.PatientRegistration.DuplicateSuspected);
     }
 
     private static PatientDuplicateScoringResult CreateScoringResult(params int[] scores) =>
