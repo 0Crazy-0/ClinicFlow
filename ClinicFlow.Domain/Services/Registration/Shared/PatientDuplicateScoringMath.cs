@@ -4,6 +4,13 @@ using ClinicFlow.Domain.ValueObjects;
 
 namespace ClinicFlow.Domain.Services.Registration.Shared;
 
+/// <remarks>
+/// String similarity is computed as the relative Levenshtein edit distance between canonicalized
+/// values, and the address dimension only contributes when state and postal code match exactly.
+/// The weight sums documented in <see cref="PatientDuplicateScoringService"/> and
+/// <see cref="MinorPatientDuplicateScoringService"/> assume these semantics; changing them
+/// requires rebalancing the weights.
+/// </remarks>
 internal static class PatientDuplicateScoringMath
 {
     public const int AddressWeight = 5;

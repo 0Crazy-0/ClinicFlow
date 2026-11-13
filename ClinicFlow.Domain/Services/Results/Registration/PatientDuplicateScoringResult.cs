@@ -8,6 +8,12 @@ public sealed record PatientDuplicateScore(PatientDuplicateCandidate Candidate, 
 
 public sealed record PatientDuplicateScoringResult(IReadOnlyList<PatientDuplicateScore> Scores)
 {
+    /// <remarks>
+    /// Applies to both the adult and minor duplicate scoring flows, whose maximal scores are 100
+    /// and 90 respectively, so the same value represents a stricter relative similarity in the
+    /// minor flow. Its meaning depends on the weight sum invariant documented in each scoring
+    /// service.
+    /// </remarks>
     public const int HighScoreThreshold = 70;
 
     public int MaxScore => Scores.Count == 0 ? 0 : Scores.Max(score => score.Score);

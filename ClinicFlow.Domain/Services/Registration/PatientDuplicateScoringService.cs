@@ -10,10 +10,8 @@ namespace ClinicFlow.Domain.Services.Registration;
 /// Score weights sum to exactly 100 for this contact-bearing shape, so a candidate score is
 /// interpretable as a percentage of maximal similarity. The minor counterpart,
 /// <see cref="MinorPatientDuplicateScoringService"/>, sums to 90 because contact dimensions do
-/// not apply to it. Name and address line similarity are computed with the Levenshtein edit
-/// distance against canonicalized values, and the threshold on
-/// <see cref="PatientDuplicateScoringResult"/> assumes the weight sum
-/// invariant; changing any weight requires rebalancing the others.
+/// not apply to it. The threshold on <see cref="PatientDuplicateScoringResult.HighScoreThreshold"/>
+/// assumes the weight sum invariant; changing any weight requires rebalancing the others.
 /// </remarks>
 public static class PatientDuplicateScoringService
 {
