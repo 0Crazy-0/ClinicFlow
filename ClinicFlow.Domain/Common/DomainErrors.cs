@@ -288,7 +288,6 @@ public static class DomainErrors
 
     public static class PatientRegistration
     {
-        public const string AdultRequired = "PATIENT_REGISTRATION_ADULT_REQUIRED";
         public const string MinorRequired = "PATIENT_REGISTRATION_MINOR_REQUIRED";
         public const string DuplicateSuspected = "PATIENT_REGISTRATION_DUPLICATE_SUSPECTED";
     }
