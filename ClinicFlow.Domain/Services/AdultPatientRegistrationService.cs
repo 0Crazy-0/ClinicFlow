@@ -31,6 +31,9 @@ public static class AdultPatientRegistrationService
         ArgumentNullException.ThrowIfNull(context.DuplicateCandidates);
         ArgumentNullException.ThrowIfNull(context.PendingUser);
 
+        if (context.ReceptionistUserId == Guid.Empty)
+            throw new DomainValidationException(DomainErrors.Validation.InvalidValue);
+
         var fullName = PersonName.Create(args.FirstName, args.MiddleName, args.FirstSurname);
         var patientAge = DomainRules.ComputeAge(
             args.DateOfBirth,

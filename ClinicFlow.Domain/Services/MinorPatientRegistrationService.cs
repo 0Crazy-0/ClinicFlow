@@ -30,6 +30,9 @@ public static class MinorPatientRegistrationService
         ArgumentNullException.ThrowIfNull(context.GuardianPatient);
         ArgumentNullException.ThrowIfNull(context.GuardianSelfMembership);
 
+        if (context.ReceptionistUserId == Guid.Empty)
+            throw new DomainValidationException(DomainErrors.Validation.InvalidValue);
+
         var fullName = PersonName.Create(args.FirstName, args.MiddleName, args.FirstSurname);
         var patientAge = DomainRules.ComputeAge(
             args.DateOfBirth,

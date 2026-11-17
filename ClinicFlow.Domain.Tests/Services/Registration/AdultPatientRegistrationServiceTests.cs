@@ -282,6 +282,22 @@ public class AdultPatientRegistrationServiceTests
     }
 
     [Fact]
+    public void Register_ShouldThrowDomainValidationException_WhenReceptionistUserIdIsEmpty()
+    {
+        // Arrange
+        var args = CreateAdultArgs();
+        var context = CreateValidContext() with { ReceptionistUserId = Guid.Empty };
+
+        // Act
+        var act = () => AdultPatientRegistrationService.Register(args, context);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.Validation.InvalidValue);
+    }
+
+    [Fact]
     public void Register_ShouldThrowDomainValidationException_WhenAdultIsUnder18()
     {
         // Arrange
