@@ -10,15 +10,18 @@ using ClinicFlow.Domain.ValueObjects;
 namespace ClinicFlow.Domain.Services;
 
 /// <summary>
-/// Registers an adult patient by reception: validates the adult boundary, refuses
-/// suspected duplicates without an override reason, creates the profile, and wires
-/// the self membership to the pending account the handler provides.
+/// Registers an adult or independent minor patient by reception with a self membership:
+/// validates the minimum self membership age of 12 years, refuses suspected duplicates
+/// without an override reason, creates the profile, and wires the self membership to
+/// the pending account the handler provides.
 /// </summary>
-public static class AdultPatientRegistrationService
+public static class PatientRegistrationService
 {
+    public const int MinimumSelfMembershipAge = 12;
+
     public static (Patient Patient, User PendingUser, FamilyMembership SelfMembership) Register(
-        AdultPatientRegistrationArgs args,
-        AdultPatientRegistrationContext context
+        PatientRegistrationArgs args,
+        PatientRegistrationContext context
     )
     {
         ArgumentNullException.ThrowIfNull(args);
@@ -40,8 +43,10 @@ public static class AdultPatientRegistrationService
             DateOnly.FromDateTime(context.ReferenceTime)
         );
 
-        if (patientAge < DomainRules.AdultAge)
-            throw new DomainValidationException(DomainErrors.PatientRegistration.AdultRequired);
+        if (patientAge < MinimumSelfMembershipAge)
+            throw new DomainValidationException(
+                DomainErrors.FamilyMembership.PatientTooYoungForSelfMembership
+            );
 
         var scoring = PatientDuplicateScoringService.Score(
             new PatientDuplicateScoringArgs

@@ -3,9 +3,11 @@ using ClinicFlow.Domain.Entities;
 namespace ClinicFlow.Domain.Services.Contexts.Registration;
 
 /// <summary>
-/// Holds the world state at the moment of the adult registration: the pending account the handler created, the duplicate candidates recovered from persistence, and the identity of the receptionist performing the registration.
+/// Holds the world state at the moment of the registration: the pending account the handler
+/// created, the duplicate candidates recovered from persistence, and the identity of the
+/// receptionist performing the registration.
 /// </summary>
-public sealed record class AdultPatientRegistrationContext
+public sealed record class PatientRegistrationContext
 {
     public required IReadOnlyList<PatientDuplicateCandidate> DuplicateCandidates { get; init; }
 
