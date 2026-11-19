@@ -83,17 +83,34 @@ public class ActivationCodeHasherTests
     }
 
     [Fact]
-    public void ComputeHash_ShouldReturnLowercaseHexDigest_WhenActivationCodeIsValid()
+    public void ComputeHash_ShouldReturnExpectedDigest_WhenInputsAreFixed()
     {
         // Arrange
         var sut = CreateSut();
-        var userId = Guid.CreateVersion7();
+        var userId = Guid.Parse(FixedUserId);
 
         // Act
-        var result = sut.ComputeHash(userId, "12345678");
+        var result = sut.ComputeHash(userId, FixedActivationCode);
 
         // Assert
         result.Should().MatchRegex("^[0-9a-f]{64}$");
+        result.Should().Be("3b305f42d319f0af048a71a00c9de6e00b6fb9e57b4ce0769cc4b133af1a5cb6");
+    }
+
+    [Fact]
+    public void ComputeHash_ShouldReturnDifferentDigest_WhenKeyDiffers()
+    {
+        // Arrange
+        var userId = Guid.Parse(FixedUserId);
+        var sut = CreateSut();
+        var otherKeySut = CreateSut(0xCD);
+
+        // Act
+        var result = sut.ComputeHash(userId, FixedActivationCode);
+        var otherKeyResult = otherKeySut.ComputeHash(userId, FixedActivationCode);
+
+        // Assert
+        otherKeyResult.Should().NotBe(result);
     }
 
     [Fact]
@@ -129,6 +146,12 @@ public class ActivationCodeHasherTests
         otherUserHash.Should().NotBe(baseHash);
     }
 
-    private static ActivationCodeHasher CreateSut() =>
-        new(Convert.ToBase64String(Enumerable.Repeat((byte)0xAB, 32).ToArray()));
+    private const string FixedUserId = "0193a5b2-7c4e-7d3f-9a1b-2c3d4e5f6071";
+
+    private const string FixedActivationCode = "12345678";
+
+    private static ActivationCodeHasher CreateSut() => CreateSut(0xAB);
+
+    private static ActivationCodeHasher CreateSut(byte keyFill) =>
+        new(Convert.ToBase64String(Enumerable.Repeat(keyFill, 32).ToArray()));
 }
