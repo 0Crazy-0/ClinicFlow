@@ -1096,10 +1096,10 @@ Licensed under Apache-2.0
 Available at https://licenses.nuget.org/Apache-2.0
 
 
-License notice for Testcontainers.PostgreSql (v4.16.0)
+License notice for Testcontainers.PostgreSql (v4.17.0)
 ------------------------------------
 
-https://github.com/testcontainers/testcontainers-dotnet at df0f931ea92111ddd96f96fce22ff85b69a58f64
+https://github.com/testcontainers/testcontainers-dotnet at 5edbe99a009d1d3bafaeec4ff4f45b85745b291f
 
 https://dotnet.testcontainers.org/
 
@@ -1232,10 +1232,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Testcontainers (v4.16.0)
+License notice for Testcontainers (v4.17.0)
 ------------------------------------
 
-https://github.com/testcontainers/testcontainers-dotnet at df0f931ea92111ddd96f96fce22ff85b69a58f64
+https://github.com/testcontainers/testcontainers-dotnet at 5edbe99a009d1d3bafaeec4ff4f45b85745b291f
 
 https://dotnet.testcontainers.org/
 
