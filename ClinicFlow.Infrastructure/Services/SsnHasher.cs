@@ -19,29 +19,13 @@ public sealed class SsnHasher(string ssnHashKey) : ISsnHasher
 
     private const string InvalidLast4Message = "SSN last-4 must be exactly 4 digits.";
 
-    private readonly byte[] _key = DecodeKey(ssnHashKey);
-
-    private static byte[] DecodeKey(string ssnHashKey)
-    {
-        if (string.IsNullOrWhiteSpace(ssnHashKey))
-            throw new InvalidOperationException(MissingKeyMessage);
-
-        byte[] decoded;
-
-        try
-        {
-            decoded = Convert.FromBase64String(ssnHashKey);
-        }
-        catch (FormatException)
-        {
-            throw new InvalidOperationException(InvalidKeyMessage);
-        }
-
-        if (decoded.Length < MinKeyLengthBytes)
-            throw new InvalidOperationException(TooShortKeyMessage);
-
-        return decoded;
-    }
+    private readonly byte[] _key = HasherKeyDecoder.Decode(
+        ssnHashKey,
+        MinKeyLengthBytes,
+        MissingKeyMessage,
+        InvalidKeyMessage,
+        TooShortKeyMessage
+    );
 
     public string ComputeHash(Guid patientId, string last4)
     {
