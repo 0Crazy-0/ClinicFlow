@@ -22,6 +22,7 @@ public sealed class PatientConfiguration : IEntityTypeConfiguration<Patient>
         );
 
         builder.HasIndex(p => p.SearchName).HasMethod("gin").HasOperators("gin_trgm_ops");
+        builder.HasIndex(p => p.DateOfBirth);
 
         builder.Property(p => p.SearchName).HasMaxLength(PersonName.SearchNameMaximumLength);
         builder.Property(p => p.SexAtBirth).HasConversion<string>();
