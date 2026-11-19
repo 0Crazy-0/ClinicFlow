@@ -34,6 +34,12 @@ public static class DependencyInjection
         // not on the first request that resolves ISsnHasher.
         services.AddSingleton<ISsnHasher>(new SsnHasher(securityOptions.SsnHashKey));
 
+        // Eager construction: an invalid or weak key aborts the application at startup,
+        // not on the first request that resolves IActivationCodeHasher.
+        services.AddSingleton<IActivationCodeHasher>(
+            new ActivationCodeHasher(securityOptions.ActivationCodeHashKey)
+        );
+
         services.AddDbContext<ApplicationDbContext>(options =>
         {
             options.UseNpgsql(dbOptions.ConnectionString);

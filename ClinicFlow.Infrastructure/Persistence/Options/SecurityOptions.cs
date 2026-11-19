@@ -8,6 +8,8 @@ public sealed class SecurityOptions
 
     public string SsnHashKey { get; init; } = string.Empty;
 
+    public string ActivationCodeHashKey { get; init; } = string.Empty;
+
     public static SecurityOptions FromConfiguration(IConfiguration configuration) =>
         configuration.GetSection(SectionName).Get<SecurityOptions>() ?? new();
 }
