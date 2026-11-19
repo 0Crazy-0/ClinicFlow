@@ -10,10 +10,10 @@ Licensed under Apache-2.0
 Available at https://licenses.nuget.org/Apache-2.0
 
 
-License notice for coverlet.MTP (v10.1.0)
+License notice for coverlet.MTP (v10.1.1)
 ------------------------------------
 
-https://github.com/coverlet-coverage/coverlet.git at 10a8051216eeaebb661624eef348ee768693fed9
+https://github.com/coverlet-coverage/coverlet.git at a84a5a9ab1dda0fc0aa223542d1b4398c34559f4
 
 https://github.com/coverlet-coverage/coverlet
 
@@ -128,10 +128,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.Extensions.Configuration (v10.0.12)
+License notice for Microsoft.Extensions.Configuration (v10.0.14)
 ------------------------------------
 
-https://github.com/dotnet/dotnet at 95017c711e6afc1085133d440e42b4bd78155701
+https://github.com/dotnet/dotnet at 0427b9abbead3fa64c6655eb4290c537397131fa
 
 https://dot.net/
 
@@ -142,10 +142,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.Extensions.Configuration.Abstractions (v10.0.12)
+License notice for Microsoft.Extensions.Configuration.Abstractions (v10.0.14)
 ------------------------------------
 
-https://github.com/dotnet/dotnet at 95017c711e6afc1085133d440e42b4bd78155701
+https://github.com/dotnet/dotnet at 0427b9abbead3fa64c6655eb4290c537397131fa
 
 https://dot.net/
 
@@ -156,10 +156,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.Extensions.Configuration.FileExtensions (v10.0.12)
+License notice for Microsoft.Extensions.Configuration.FileExtensions (v10.0.14)
 ------------------------------------
 
-https://github.com/dotnet/dotnet at 95017c711e6afc1085133d440e42b4bd78155701
+https://github.com/dotnet/dotnet at 0427b9abbead3fa64c6655eb4290c537397131fa
 
 https://dot.net/
 
@@ -170,10 +170,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.Extensions.Configuration.Json (v10.0.12)
+License notice for Microsoft.Extensions.Configuration.Json (v10.0.14)
 ------------------------------------
 
-https://github.com/dotnet/dotnet at 95017c711e6afc1085133d440e42b4bd78155701
+https://github.com/dotnet/dotnet at 0427b9abbead3fa64c6655eb4290c537397131fa
 
 https://dot.net/
 
@@ -184,10 +184,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.Extensions.DependencyInjection (v10.0.12)
+License notice for Microsoft.Extensions.DependencyInjection (v10.0.14)
 ------------------------------------
 
-https://github.com/dotnet/dotnet at 95017c711e6afc1085133d440e42b4bd78155701
+https://github.com/dotnet/dotnet at 0427b9abbead3fa64c6655eb4290c537397131fa
 
 https://dot.net/
 
@@ -198,10 +198,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.Extensions.DependencyInjection.Abstractions (v10.0.12)
+License notice for Microsoft.Extensions.DependencyInjection.Abstractions (v10.0.14)
 ------------------------------------
 
-https://github.com/dotnet/dotnet at 95017c711e6afc1085133d440e42b4bd78155701
+https://github.com/dotnet/dotnet at 0427b9abbead3fa64c6655eb4290c537397131fa
 
 https://dot.net/
 
@@ -212,10 +212,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.Extensions.FileProviders.Abstractions (v10.0.12)
+License notice for Microsoft.Extensions.FileProviders.Abstractions (v10.0.14)
 ------------------------------------
 
-https://github.com/dotnet/dotnet at 95017c711e6afc1085133d440e42b4bd78155701
+https://github.com/dotnet/dotnet at 0427b9abbead3fa64c6655eb4290c537397131fa
 
 https://dot.net/
 
@@ -226,10 +226,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.Extensions.FileProviders.Physical (v10.0.12)
+License notice for Microsoft.Extensions.FileProviders.Physical (v10.0.14)
 ------------------------------------
 
-https://github.com/dotnet/dotnet at 95017c711e6afc1085133d440e42b4bd78155701
+https://github.com/dotnet/dotnet at 0427b9abbead3fa64c6655eb4290c537397131fa
 
 https://dot.net/
 
@@ -240,10 +240,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.Extensions.FileSystemGlobbing (v10.0.12)
+License notice for Microsoft.Extensions.FileSystemGlobbing (v10.0.14)
 ------------------------------------
 
-https://github.com/dotnet/dotnet at 95017c711e6afc1085133d440e42b4bd78155701
+https://github.com/dotnet/dotnet at 0427b9abbead3fa64c6655eb4290c537397131fa
 
 https://dot.net/
 
@@ -254,10 +254,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.Extensions.Primitives (v10.0.12)
+License notice for Microsoft.Extensions.Primitives (v10.0.14)
 ------------------------------------
 
-https://github.com/dotnet/dotnet at 95017c711e6afc1085133d440e42b4bd78155701
+https://github.com/dotnet/dotnet at 0427b9abbead3fa64c6655eb4290c537397131fa
 
 https://dot.net/
 
