@@ -18,9 +18,6 @@ public class Patient : BaseEntity
 
     public PersonName FullName { get; private set; } = null!;
 
-    // Stryker disable once String: the default only covers EF materialization, every factory path writes the real value.
-    public string SearchName { get; private set; } = string.Empty;
-
     /// <summary>
     /// Records the reason why the receptionist registered a patient who scored as
     /// a probable duplicate, serving as an audit trail for that decision.
@@ -62,7 +59,6 @@ public class Patient : BaseEntity
         : this()
     {
         FullName = fullName;
-        SearchName = fullName.SearchName;
         DateOfBirth = dateOfBirth;
         SexAtBirth = biologicalSex;
         HomeAddress = homeAddress;

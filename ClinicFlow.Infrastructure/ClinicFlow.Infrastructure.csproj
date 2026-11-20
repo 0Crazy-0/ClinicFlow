@@ -4,7 +4,6 @@
     <ProjectReference Include="..\ClinicFlow.Application\ClinicFlow.Application.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="EFCore.ComplexIndexes" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
@@ -17,7 +16,7 @@
   </ItemGroup>
 
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFramework>net11.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>

@@ -46,7 +46,6 @@ public class PatientTests
         // Assert
         patient.Should().NotBeNull();
         patient.FullName.Should().Be(fullName);
-        patient.SearchName.Should().Be(fullName.SearchName);
         patient.DateOfBirth.Should().Be(dateOfBirth);
         patient.SexAtBirth.Should().Be(sexAtBirth);
         patient.BloodGroup.Should().Be(bloodType);
