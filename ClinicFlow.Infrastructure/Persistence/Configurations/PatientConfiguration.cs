@@ -14,10 +14,18 @@ public sealed class PatientConfiguration : IEntityTypeConfiguration<Patient>
             p => p.FullName,
             name =>
             {
-                name.Property(n => n.FirstName).HasMaxLength(PersonName.MaximumLength);
-                name.Property(n => n.MiddleName).HasMaxLength(PersonName.MaximumLength);
-                name.Property(n => n.FirstSurname).HasMaxLength(PersonName.MaximumLength);
-                name.Property(n => n.SearchName).HasMaxLength(PersonName.SearchNameMaximumLength);
+                name.Property(n => n.FirstName)
+                    .HasColumnName(ColumnNames.Patient.FirstName)
+                    .HasMaxLength(PersonName.MaximumLength);
+                name.Property(n => n.MiddleName)
+                    .HasColumnName(ColumnNames.Patient.MiddleName)
+                    .HasMaxLength(PersonName.MaximumLength);
+                name.Property(n => n.FirstSurname)
+                    .HasColumnName(ColumnNames.Patient.FirstSurname)
+                    .HasMaxLength(PersonName.MaximumLength);
+                name.Property(n => n.SearchName)
+                    .HasColumnName(ColumnNames.Patient.SearchName)
+                    .HasMaxLength(PersonName.SearchNameMaximumLength);
             }
         );
         builder.HasIndex(p => p.FullName.SearchName).HasMethod("gin").HasOperators("gin_trgm_ops");
