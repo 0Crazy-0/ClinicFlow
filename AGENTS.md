@@ -42,7 +42,7 @@ ClinicFlow.Architecture.Tests  → Architecture tests enforcing layer dependency
 |---|---|
 | **Domain** | Zero external packages. No NuGet dependencies allowed. |
 | **Application** | MediatR, FluentValidation.DependencyInjectionExtensions, Microsoft.Extensions.DependencyInjection.Abstractions |
-| **Infrastructure** | EF Core (Relational, Design), EFCore.ComplexIndexes, Npgsql.EntityFrameworkCore.PostgreSQL, Microsoft.Extensions.Configuration.Binder, Bogus |
+| **Infrastructure** | EF Core (Relational, Design), Npgsql.EntityFrameworkCore.PostgreSQL, Microsoft.Extensions.Configuration.Binder, Bogus |
 | **Tests (Domain)** | xunit.v3, AwesomeAssertions, Moq, Microsoft.Extensions.TimeProvider.Testing |
 | **Tests (Application)** | xunit.v3, AwesomeAssertions, Moq, Microsoft.Extensions.TimeProvider.Testing |
 | **Tests (Infrastructure)** | xunit.v3, AwesomeAssertions, Moq, Microsoft.Extensions.TimeProvider.Testing, EF Core (Relational, InMemory), Respawn, Testcontainers.PostgreSql |

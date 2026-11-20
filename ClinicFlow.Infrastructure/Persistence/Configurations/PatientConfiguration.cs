@@ -14,17 +14,24 @@ public sealed class PatientConfiguration : IEntityTypeConfiguration<Patient>
             p => p.FullName,
             name =>
             {
-                name.Property(n => n.FirstName).HasMaxLength(PersonName.MaximumLength);
-                name.Property(n => n.MiddleName).HasMaxLength(PersonName.MaximumLength);
-                name.Property(n => n.FirstSurname).HasMaxLength(PersonName.MaximumLength);
-                name.Ignore(n => n.SearchName);
+                name.Property(n => n.FirstName)
+                    .HasColumnName(ColumnNames.Patient.FirstName)
+                    .HasMaxLength(PersonName.MaximumLength);
+                name.Property(n => n.MiddleName)
+                    .HasColumnName(ColumnNames.Patient.MiddleName)
+                    .HasMaxLength(PersonName.MaximumLength);
+                name.Property(n => n.FirstSurname)
+                    .HasColumnName(ColumnNames.Patient.FirstSurname)
+                    .HasMaxLength(PersonName.MaximumLength);
+                name.Property(n => n.SearchName)
+                    .HasColumnName(ColumnNames.Patient.SearchName)
+                    .HasMaxLength(PersonName.SearchNameMaximumLength);
             }
         );
+        builder.HasIndex(p => p.FullName.SearchName).HasMethod("gin").HasOperators("gin_trgm_ops");
 
-        builder.HasIndex(p => p.SearchName).HasMethod("gin").HasOperators("gin_trgm_ops");
         builder.HasIndex(p => p.DateOfBirth);
 
-        builder.Property(p => p.SearchName).HasMaxLength(PersonName.SearchNameMaximumLength);
         builder.Property(p => p.SexAtBirth).HasConversion<string>();
         builder.Property(p => p.SsnLast4Hash).HasMaxLength(64).IsUnicode(false);
         builder

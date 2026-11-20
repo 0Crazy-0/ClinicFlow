@@ -1,5 +1,4 @@
 using ClinicFlow.Domain.Entities;
-using EFCore.ComplexIndexes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -47,7 +46,7 @@ public sealed class AppointmentConfiguration : IEntityTypeConfiguration<Appointm
             .IsUnique()
             .HasFilter("\"Status\" IN ('Scheduled', 'RequiresReassignment')");
 
-        builder.HasComplexCompositeIndex(a => new
+        builder.HasIndex(a => new
         {
             a.DoctorId,
             a.ScheduledDate,
@@ -55,18 +54,17 @@ public sealed class AppointmentConfiguration : IEntityTypeConfiguration<Appointm
             a.SequenceNumber,
         });
 
-        builder.HasComplexCompositeIndex(
-            a => new
+        builder
+            .HasIndex(a => new
             {
                 a.PatientId,
                 a.ScheduledDate,
                 a.TimeSlot.Start,
                 a.SequenceNumber,
-            },
-            indexName: "IX_Appointments_PatientId_ScheduledDate_StartTime_SeqNum"
-        );
+            })
+            .HasDatabaseName("IX_Appointments_PatientId_ScheduledDate_StartTime_SeqNum");
 
-        builder.HasComplexCompositeIndex(a => new
+        builder.HasIndex(a => new
         {
             a.ScheduledDate,
             a.TimeSlot.Start,

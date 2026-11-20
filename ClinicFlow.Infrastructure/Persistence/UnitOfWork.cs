@@ -122,7 +122,7 @@ public sealed class UnitOfWork(ApplicationDbContext dbContext, IPublisher publis
     }
 
     private Task<int> AcquireLockAsync(long key, CancellationToken cancellationToken) =>
-        dbContext.Database.ExecuteSqlInterpolatedAsync(
+        dbContext.Database.ExecuteSqlAsync(
             $"SELECT pg_advisory_xact_lock({key})",
             cancellationToken
         );
