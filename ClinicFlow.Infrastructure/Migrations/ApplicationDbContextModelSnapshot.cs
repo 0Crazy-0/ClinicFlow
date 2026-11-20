@@ -17,7 +17,7 @@ partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     // If you encounter a merge conflict in the line below, it means you need to
     // discard one of the migration branches and recreate its migrations on top of
     // the other branch. See https://aka.ms/efcore-docs-migrations-conflicts for more info.
-    public override string LastMigrationId => "20261120193622_MovePatientSearchNameIntoFullName";
+    public override string LastMigrationId => "20261120195812_RenamePatientFullNameColumns";
 
     protected override void BuildModel(ModelBuilder modelBuilder)
     {
@@ -717,21 +717,25 @@ partial class ApplicationDbContextModelSnapshot : ModelSnapshot
                         b1.Property<string>("FirstName")
                             .IsRequired()
                             .HasMaxLength(100)
-                            .HasColumnType("character varying(100)");
+                            .HasColumnType("character varying(100)")
+                            .HasColumnName("FirstName");
 
                         b1.Property<string>("FirstSurname")
                             .IsRequired()
                             .HasMaxLength(100)
-                            .HasColumnType("character varying(100)");
+                            .HasColumnType("character varying(100)")
+                            .HasColumnName("FirstSurname");
 
                         b1.Property<string>("MiddleName")
                             .HasMaxLength(100)
-                            .HasColumnType("character varying(100)");
+                            .HasColumnType("character varying(100)")
+                            .HasColumnName("MiddleName");
 
                         b1.Property<string>("SearchName")
                             .IsRequired()
                             .HasMaxLength(201)
-                            .HasColumnType("character varying(201)");
+                            .HasColumnType("character varying(201)")
+                            .HasColumnName("SearchName");
                     });
 
                 b.HasKey("Id");
