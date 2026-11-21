@@ -26,10 +26,8 @@ public sealed class PatientActivationCodeRepository(ApplicationDbContext dbConte
         Guid userId,
         CancellationToken cancellationToken = default
     ) =>
-        await dbContext
-            .PatientActivationCodes.Where(code =>
-                code.UserId == userId && code.ConsumedAt == null && code.SupersededAt == null
-            )
-            .OrderByDescending(code => code.IssuedAt)
-            .FirstOrDefaultAsync(cancellationToken);
+        await dbContext.PatientActivationCodes.FirstOrDefaultAsync(
+            code => code.UserId == userId && code.ConsumedAt == null && code.SupersededAt == null,
+            cancellationToken
+        );
 }
