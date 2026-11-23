@@ -1,4 +1,5 @@
 using ClinicFlow.Domain.Entities;
+using ClinicFlow.Domain.Services.Contexts.Registration;
 
 namespace ClinicFlow.Domain.Interfaces.Repositories;
 
@@ -14,6 +15,13 @@ public interface IPatientRepository
     Task<bool> ExistsWithSsnLast4HashAsync(
         Guid patientId,
         string ssnLast4Hash,
+        CancellationToken cancellationToken = default
+    );
+
+    Task<IReadOnlyList<PatientDuplicateCandidate>> GetFuzzyMatchesBySearchNameAsync(
+        string searchName,
+        DateOnly dateOfBirth,
+        string? ssnLast4Hash,
         CancellationToken cancellationToken = default
     );
 }
