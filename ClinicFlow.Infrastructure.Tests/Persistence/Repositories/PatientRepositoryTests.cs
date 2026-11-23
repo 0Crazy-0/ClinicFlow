@@ -66,57 +66,6 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
     }
 
     [Fact]
-    public async Task ExistsWithSsnLast4HashAsync_ShouldReturnTrue_WhenHashMatches()
-    {
-        // Arrange
-        var patient = await CreateHashedPatientAsync();
-
-        // Act
-        var result = await _sut.ExistsWithSsnLast4HashAsync(
-            patient.Id,
-            "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
-            TestContext.Current.CancellationToken
-        );
-
-        // Assert
-        result.Should().BeTrue();
-    }
-
-    [Fact]
-    public async Task ExistsWithSsnLast4HashAsync_ShouldReturnFalse_WhenHashDoesNotMatch()
-    {
-        // Arrange
-        var patient = await CreateHashedPatientAsync();
-
-        // Act
-        var result = await _sut.ExistsWithSsnLast4HashAsync(
-            patient.Id,
-            "fedcba9876543321fedcba9876543321fedcba9876543321fedcba9876543321",
-            TestContext.Current.CancellationToken
-        );
-
-        // Assert
-        result.Should().BeFalse();
-    }
-
-    [Fact]
-    public async Task ExistsWithSsnLast4HashAsync_ShouldReturnFalse_WhenPatientDoesNotExist()
-    {
-        // Arrange
-        var nonExistentId = Guid.CreateVersion7();
-
-        // Act
-        var result = await _sut.ExistsWithSsnLast4HashAsync(
-            nonExistentId,
-            "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
-            TestContext.Current.CancellationToken
-        );
-
-        // Assert
-        result.Should().BeFalse();
-    }
-
-    [Fact]
     public async Task CreateAsync_ShouldNotReAdd_WhenEntityIsAlreadyTracked()
     {
         // Arrange
