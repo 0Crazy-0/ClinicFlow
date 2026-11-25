@@ -50,7 +50,7 @@ public sealed class DeactivateUserCommandHandler(
                     );
 
                 user.Deactivate();
-                selfMembership.CloseSelfMembership(timeProvider.GetLocalNow().DateTime);
+                selfMembership.CloseSelfMembership(timeProvider.GetUtcNow());
 
                 await unitOfWork.SaveChangesAsync(cancellationToken);
             },

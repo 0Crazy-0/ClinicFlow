@@ -62,7 +62,7 @@ public class RegisterReceptionistUserCommandHandlerTests
         capturedUser.Phone.Value.Should().Be(command.PhoneNumber);
         capturedUser.Role.Should().Be(UserRole.Receptionist);
         capturedUser.IsActive.Should().BeTrue();
-        capturedUser.ActivatedAt.Should().Be(_fakeTime.GetUtcNow().DateTime);
+        capturedUser.ActivatedAt.Should().Be(_fakeTime.GetUtcNow());
     }
 
     [Fact]

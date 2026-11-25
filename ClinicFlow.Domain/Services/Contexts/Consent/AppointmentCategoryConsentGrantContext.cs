@@ -11,5 +11,5 @@ public sealed record AppointmentCategoryConsentGrantContext
     public required ProtectedCategory ProtectedCareCategory { get; init; }
     public bool HasEffectiveGrant { get; init; }
     public Guid RequesterUserId { get; init; }
-    public DateTime ReferenceTime { get; init; }
+    public DateTimeOffset ReferenceTime { get; init; }
 }

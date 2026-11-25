@@ -386,7 +386,7 @@ public class UserRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
     public async Task GetLockedOutUsersPaginatedAsync_ShouldReturnUsersWithActiveLockout()
     {
         // Arrange
-        var referenceTime = _fakeTime.GetUtcNow().DateTime;
+        var referenceTime = _fakeTime.GetUtcNow();
         var lockedUser = await CreateLockedOutUserAsync(referenceTime);
 
         // Act
@@ -407,7 +407,7 @@ public class UserRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
     public async Task GetLockedOutUsersPaginatedAsync_ShouldExcludeExpiredLockouts()
     {
         // Arrange
-        var referenceTime = _fakeTime.GetUtcNow().DateTime;
+        var referenceTime = _fakeTime.GetUtcNow();
 
         await CreateLockedOutUserAsync(referenceTime.AddMinutes(-15));
         await CreateLockedOutUserAsync(referenceTime.AddHours(-1));
@@ -430,7 +430,7 @@ public class UserRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
     public async Task GetLockedOutUsersPaginatedAsync_ShouldReturnOrderedPageAndTotalCount()
     {
         // Arrange
-        var referenceTime = _fakeTime.GetUtcNow().DateTime;
+        var referenceTime = _fakeTime.GetUtcNow();
 
         await CreateLockedOutUserAsync(referenceTime);
 
@@ -456,7 +456,7 @@ public class UserRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
     public async Task GetLockedOutUsersPaginatedAsync_ShouldReturnSecondPage()
     {
         // Arrange
-        var referenceTime = _fakeTime.GetUtcNow().DateTime;
+        var referenceTime = _fakeTime.GetUtcNow();
 
         await CreateLockedOutUserAsync(referenceTime);
         await CreateLockedOutUserAsync(referenceTime);
@@ -488,7 +488,7 @@ public class UserRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
             "hashedpassword123",
             PhoneNumber.Create(phoneNumber),
             role,
-            _fakeTime.GetLocalNow().DateTime
+            _fakeTime.GetUtcNow()
         );
 
         Context.Users.Add(user);
@@ -497,7 +497,7 @@ public class UserRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         return user;
     }
 
-    private async Task<User> CreateLockedOutUserAsync(DateTime lockoutReferenceTime)
+    private async Task<User> CreateLockedOutUserAsync(DateTimeOffset lockoutReferenceTime)
     {
         var user = User.Create(
             EmailAddress.Create($"{Guid.CreateVersion7()}@clinic.com"),

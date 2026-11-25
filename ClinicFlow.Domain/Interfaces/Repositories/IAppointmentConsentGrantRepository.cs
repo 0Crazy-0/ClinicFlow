@@ -16,7 +16,7 @@ public interface IAppointmentConsentGrantRepository
         Guid patientId,
         Guid recipientMembershipId,
         ProtectedCategory protectedCareCategory,
-        DateTime referenceTime,
+        DateTimeOffset referenceTime,
         CancellationToken cancellationToken = default
     );
 
@@ -24,21 +24,21 @@ public interface IAppointmentConsentGrantRepository
         Guid patientId,
         Guid recipientMembershipId,
         Guid appointmentId,
-        DateTime referenceTime,
+        DateTimeOffset referenceTime,
         CancellationToken cancellationToken = default
     );
 
     Task<IReadOnlyCollection<ProtectedCategory>> GetEffectiveCategoriesAsync(
         Guid patientId,
         Guid recipientMembershipId,
-        DateTime referenceTime,
+        DateTimeOffset referenceTime,
         CancellationToken cancellationToken = default
     );
 
     Task<IReadOnlyCollection<Guid>> GetEffectiveAppointmentIdsAsync(
         Guid patientId,
         Guid recipientMembershipId,
-        DateTime referenceTime,
+        DateTimeOffset referenceTime,
         CancellationToken cancellationToken = default
     );
 }

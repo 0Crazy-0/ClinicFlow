@@ -51,12 +51,12 @@ public class FamilyMembership : BaseEntity
     public IReadOnlyCollection<AppointmentCategory> AllowedAppointmentCategories =>
         _allowedAppointmentCategories.AsReadOnly();
 
-    public DateTime StartedAt { get; private set; }
+    public DateTimeOffset StartedAt { get; private set; }
 
     /// <remarks>
     /// Null while the membership is Active. Populated when the membership transitions to Revoked, Left, or Closed.
     /// </remarks>
-    public DateTime? EndedAt { get; private set; }
+    public DateTimeOffset? EndedAt { get; private set; }
 
     // EF Core parameterless constructor
     private FamilyMembership() { }
@@ -67,7 +67,7 @@ public class FamilyMembership : BaseEntity
         PatientRelationship role,
         LegalAuthorityType legalAuthority,
         FamilyMembershipAccessLevel accessLevel,
-        DateTime startedAt
+        DateTimeOffset startedAt
     )
         : this()
     {
@@ -83,7 +83,11 @@ public class FamilyMembership : BaseEntity
     /// <summary>
     /// Creates a self membership link for the primary account owner on their own patient profile.
     /// </summary>
-    internal static FamilyMembership CreateSelf(Guid patientId, Guid userId, DateTime referenceTime)
+    internal static FamilyMembership CreateSelf(
+        Guid patientId,
+        Guid userId,
+        DateTimeOffset referenceTime
+    )
     {
         Guard.NotEmpty(patientId);
         Guard.NotEmpty(userId);
@@ -113,7 +117,7 @@ public class FamilyMembership : BaseEntity
         PatientRelationship role,
         LegalAuthorityType legalAuthority,
         int patientAge,
-        DateTime referenceTime
+        DateTimeOffset referenceTime
     )
     {
         Guard.NotEmpty(patientId);
@@ -165,7 +169,7 @@ public class FamilyMembership : BaseEntity
         PatientRelationship role,
         FamilyMembershipAccessLevel accessLevel,
         int patientAge,
-        DateTime referenceTime
+        DateTimeOffset referenceTime
     )
     {
         Guard.NotEmpty(patientId);
@@ -431,7 +435,7 @@ public class FamilyMembership : BaseEntity
     public void Revoke(
         bool patientHasOwnSelfMembership,
         bool hasUpcomingAppointmentRequiringGuardianForMinor,
-        DateTime referenceTime
+        DateTimeOffset referenceTime
     )
     {
         Guard.NotDefault(referenceTime);
@@ -461,7 +465,7 @@ public class FamilyMembership : BaseEntity
         EndedAt = referenceTime;
     }
 
-    public void Leave(int memberAge, DateTime referenceTime)
+    public void Leave(int memberAge, DateTimeOffset referenceTime)
     {
         Guard.NotDefault(referenceTime);
 
@@ -485,7 +489,7 @@ public class FamilyMembership : BaseEntity
         EndedAt = referenceTime;
     }
 
-    public void CloseSelfMembership(DateTime referenceTime)
+    public void CloseSelfMembership(DateTimeOffset referenceTime)
     {
         Guard.NotDefault(referenceTime);
 

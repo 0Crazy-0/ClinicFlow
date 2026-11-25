@@ -34,7 +34,7 @@ public sealed class RegisterDoctorUserCommandHandler(
             passwordHash,
             phone,
             UserRole.Doctor,
-            timeProvider.GetLocalNow().DateTime
+            timeProvider.GetUtcNow()
         );
 
         await userRepository.CreateAsync(user, cancellationToken);

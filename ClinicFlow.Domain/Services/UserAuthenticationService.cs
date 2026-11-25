@@ -8,7 +8,7 @@ namespace ClinicFlow.Domain.Services;
 /// </summary>
 public static class UserAuthenticationService
 {
-    public static bool TryAuthenticate(User user, bool isPasswordValid, DateTime loginTime)
+    public static bool TryAuthenticate(User user, bool isPasswordValid, DateTimeOffset loginTime)
     {
         ArgumentNullException.ThrowIfNull(user);
 

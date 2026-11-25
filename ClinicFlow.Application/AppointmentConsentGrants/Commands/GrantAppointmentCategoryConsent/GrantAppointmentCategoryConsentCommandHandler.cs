@@ -63,7 +63,7 @@ public sealed class GrantAppointmentCategoryConsentCommandHandler(
                         request.RecipientMembershipId
                     );
 
-                var referenceTime = timeProvider.GetLocalNow().DateTime;
+                var referenceTime = timeProvider.GetUtcNow();
 
                 var hasEffectiveGrant = await consentGrantRepository.HasEffectiveCategoryGrantAsync(
                     request.PatientId,

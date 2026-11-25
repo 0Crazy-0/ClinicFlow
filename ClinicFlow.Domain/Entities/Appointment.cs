@@ -57,9 +57,9 @@ public class Appointment : BaseEntity
 
     public DateOnly? CheckedInAt { get; private set; }
 
-    public DateTime? StartedAt { get; private set; }
+    public DateTimeOffset? StartedAt { get; private set; }
 
-    public DateTime? CompletedAt { get; private set; }
+    public DateTimeOffset? CompletedAt { get; private set; }
 
     public DateOnly? CancelledAt { get; private set; }
 
@@ -216,18 +216,23 @@ public class Appointment : BaseEntity
     }
 
     /// <remarks>
-    /// The start must occur on the appointment's scheduled date. Starting after the appointment's end
+    /// The start must occur on the appointment's scheduled date in clinic local time. Starting after the appointment's end
     /// time is allowed, since doctor delays must be recorded as actual events rather than rejected.
     /// </remarks>
-    public void Start(Guid initiatorDoctorId, DateTime startedAt)
+    public void Start(Guid initiatorDoctorId, DateTimeOffset startedAt, TimeZoneInfo clinicTimeZone)
     {
         Guard.NotEmpty(initiatorDoctorId);
         Guard.NotDefault(startedAt);
+        Guard.NotNull(clinicTimeZone);
 
-        if (DateOnly.FromDateTime(startedAt) != ScheduledDate)
+        var localDateTime = TimeZoneInfo.ConvertTime(startedAt, clinicTimeZone).DateTime;
+
+        var localStartDate = DateOnly.FromDateTime(localDateTime);
+
+        if (localStartDate != ScheduledDate)
             throw new DomainValidationException(DomainErrors.Appointment.InvalidStartDate);
 
-        if (startedAt < ScheduledDate.ToDateTime(TimeSlot.Start))
+        if (localDateTime < ScheduledDate.ToDateTime(TimeSlot.Start))
             throw new DomainValidationException(DomainErrors.Appointment.InvalidStartDate);
 
         if (initiatorDoctorId != DoctorId)
@@ -242,11 +247,14 @@ public class Appointment : BaseEntity
         AddDomainEvent(new AppointmentStartedEvent(this, startedAt));
     }
 
-    internal void Complete(DateTime completedAt)
+    internal void Complete(DateTimeOffset completedAt, TimeZoneInfo clinicTimeZone)
     {
         Guard.NotDefault(completedAt);
+        Guard.NotNull(clinicTimeZone);
 
-        if (completedAt < ScheduledDate.ToDateTime(TimeSlot.Start))
+        var localDateTime = TimeZoneInfo.ConvertTime(completedAt, clinicTimeZone).DateTime;
+
+        if (localDateTime < ScheduledDate.ToDateTime(TimeSlot.Start))
             throw new DomainValidationException(DomainErrors.Appointment.InvalidCompletionDate);
 
         if (StartedAt.HasValue && completedAt < StartedAt.Value)

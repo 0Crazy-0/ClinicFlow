@@ -848,7 +848,7 @@ public class AppointmentTests
         var startedAt = appointment.ScheduledDate.ToDateTime(new TimeOnly(9, 15));
 
         // Act
-        appointment.Start(appointment.DoctorId, startedAt);
+        appointment.Start(appointment.DoctorId, startedAt, TimeZoneInfo.Local);
 
         // Assert
         appointment.Status.Should().Be(AppointmentStatus.InProgress);
@@ -864,7 +864,7 @@ public class AppointmentTests
         var startedAt = appointment.ScheduledDate.ToDateTime(new TimeOnly(9, 15));
 
         // Act
-        var act = () => appointment.Start(Guid.Empty, startedAt);
+        var act = () => appointment.Start(Guid.Empty, startedAt, TimeZoneInfo.Local);
 
         // Assert
         act.Should()
@@ -879,12 +879,28 @@ public class AppointmentTests
         var appointment = CreateAppointment();
 
         // Act
-        var act = () => appointment.Start(appointment.DoctorId, default);
+        var act = () => appointment.Start(appointment.DoctorId, default, TimeZoneInfo.Local);
 
         // Assert
         act.Should()
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void Start_ShouldThrowException_WhenClinicTimeZoneIsNull()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        var startedAt = appointment.ScheduledDate.ToDateTime(new TimeOnly(9, 15));
+
+        // Act
+        var act = () => appointment.Start(appointment.DoctorId, startedAt, null!);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 
     [Fact]
@@ -899,7 +915,8 @@ public class AppointmentTests
         var act = () =>
             appointment.Start(
                 appointment.DoctorId,
-                appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start).AddSeconds(-1)
+                appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start).AddSeconds(-1),
+                TimeZoneInfo.Local
             );
 
         // Assert
@@ -925,7 +942,8 @@ public class AppointmentTests
         var act = () =>
             appointment.Start(
                 appointment.DoctorId,
-                appointment.ScheduledDate.AddDays(dayOffset).ToDateTime(new TimeOnly(9, 15))
+                appointment.ScheduledDate.AddDays(dayOffset).ToDateTime(new TimeOnly(9, 15)),
+                TimeZoneInfo.Local
             );
 
         // Assert
@@ -949,7 +967,8 @@ public class AppointmentTests
         var act = () =>
             appointment.Start(
                 Guid.CreateVersion7(),
-                appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start)
+                appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start),
+                TimeZoneInfo.Local
             );
 
         // Assert
@@ -968,7 +987,8 @@ public class AppointmentTests
         var act = () =>
             appointment.Start(
                 appointment.DoctorId,
-                appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start)
+                appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start),
+                TimeZoneInfo.Local
             );
 
         // Assert
@@ -986,12 +1006,13 @@ public class AppointmentTests
         appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
         appointment.Start(
             appointment.DoctorId,
-            appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start)
+            appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start),
+            TimeZoneInfo.Local
         );
 
         // Act
         var completedAt = appointment.ScheduledDate.ToDateTime(new TimeOnly(9, 30));
-        appointment.Complete(completedAt);
+        appointment.Complete(completedAt, TimeZoneInfo.Local);
 
         // Assert
         appointment.Status.Should().Be(AppointmentStatus.Completed);
@@ -1006,12 +1027,34 @@ public class AppointmentTests
         var appointment = CreateAppointment();
 
         // Act
-        var act = () => appointment.Complete(default);
+        var act = () => appointment.Complete(default, TimeZoneInfo.Local);
 
         // Assert
         act.Should()
             .Throw<DomainValidationException>()
             .WithMessage(DomainErrors.Validation.ValueRequired);
+    }
+
+    [Fact]
+    public void Complete_ShouldThrowException_WhenClinicTimeZoneIsNull()
+    {
+        // Arrange
+        var appointment = CreateAppointment();
+        appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
+        appointment.Start(
+            appointment.DoctorId,
+            appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start),
+            TimeZoneInfo.Local
+        );
+
+        // Act
+        var act = () =>
+            appointment.Complete(appointment.ScheduledDate.ToDateTime(new TimeOnly(9, 30)), null!);
+
+        // Assert
+        act.Should()
+            .Throw<DomainValidationException>()
+            .WithMessage(DomainErrors.General.RequiredFieldNull);
     }
 
     [Fact]
@@ -1023,12 +1066,16 @@ public class AppointmentTests
         appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
         appointment.Start(
             appointment.DoctorId,
-            appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start)
+            appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start),
+            TimeZoneInfo.Local
         );
 
         // Act
         var act = () =>
-            appointment.Complete(appointment.ScheduledDate.ToDateTime(new TimeOnly(8, 0)));
+            appointment.Complete(
+                appointment.ScheduledDate.ToDateTime(new TimeOnly(8, 0)),
+                TimeZoneInfo.Local
+            );
 
         // Assert
         act.Should()
@@ -1047,12 +1094,13 @@ public class AppointmentTests
         appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
         appointment.Start(
             appointment.DoctorId,
-            appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start)
+            appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start),
+            TimeZoneInfo.Local
         );
 
         // Act
         var completedAt = appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start);
-        appointment.Complete(completedAt);
+        appointment.Complete(completedAt, TimeZoneInfo.Local);
 
         // Assert
         appointment.Status.Should().Be(AppointmentStatus.Completed);
@@ -1069,12 +1117,16 @@ public class AppointmentTests
         appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
         appointment.Start(
             appointment.DoctorId,
-            appointment.ScheduledDate.ToDateTime(new TimeOnly(9, 15))
+            appointment.ScheduledDate.ToDateTime(new TimeOnly(9, 15)),
+            TimeZoneInfo.Local
         );
 
         // Act
         var act = () =>
-            appointment.Complete(appointment.ScheduledDate.ToDateTime(new TimeOnly(9, 0)));
+            appointment.Complete(
+                appointment.ScheduledDate.ToDateTime(new TimeOnly(9, 0)),
+                TimeZoneInfo.Local
+            );
 
         // Assert
         act.Should()
@@ -1093,10 +1145,10 @@ public class AppointmentTests
 
         appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
         var startedAt = appointment.ScheduledDate.ToDateTime(new TimeOnly(9, 15));
-        appointment.Start(appointment.DoctorId, startedAt);
+        appointment.Start(appointment.DoctorId, startedAt, TimeZoneInfo.Local);
 
         // Act
-        appointment.Complete(startedAt);
+        appointment.Complete(startedAt, TimeZoneInfo.Local);
 
         // Assert
         appointment.Status.Should().Be(AppointmentStatus.Completed);
@@ -1111,7 +1163,10 @@ public class AppointmentTests
 
         // Act
         var act = () =>
-            appointment.Complete(appointment.ScheduledDate.ToDateTime(new TimeOnly(9, 30)));
+            appointment.Complete(
+                appointment.ScheduledDate.ToDateTime(new TimeOnly(9, 30)),
+                TimeZoneInfo.Local
+            );
 
         // Assert
         act.Should()
@@ -1431,7 +1486,8 @@ public class AppointmentTests
 
         appointment.Start(
             appointment.DoctorId,
-            appointment.ScheduledDate.ToDateTime(new TimeOnly(9, 30))
+            appointment.ScheduledDate.ToDateTime(new TimeOnly(9, 30)),
+            TimeZoneInfo.Local
         );
 
         // Act
@@ -1732,7 +1788,8 @@ public class AppointmentTests
         appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
         appointment.Start(
             appointment.DoctorId,
-            appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start)
+            appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start),
+            TimeZoneInfo.Local
         );
 
         // Act & Assert
@@ -1755,10 +1812,14 @@ public class AppointmentTests
         appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
         appointment.Start(
             appointment.DoctorId,
-            appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start)
+            appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start),
+            TimeZoneInfo.Local
         );
 
-        appointment.Complete(appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start));
+        appointment.Complete(
+            appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start),
+            TimeZoneInfo.Local
+        );
 
         // Act & Assert
         appointment
@@ -1935,7 +1996,8 @@ public class AppointmentTests
         appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
         appointment.Start(
             appointment.DoctorId,
-            appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start)
+            appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start),
+            TimeZoneInfo.Local
         );
 
         // Act & Assert
@@ -1960,9 +2022,13 @@ public class AppointmentTests
         appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
         appointment.Start(
             appointment.DoctorId,
-            appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start)
+            appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start),
+            TimeZoneInfo.Local
         );
-        appointment.Complete(appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start));
+        appointment.Complete(
+            appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start),
+            TimeZoneInfo.Local
+        );
 
         // Act & Assert
         appointment
@@ -2116,7 +2182,8 @@ public class AppointmentTests
         appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
         appointment.Start(
             appointment.DoctorId,
-            appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start)
+            appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start),
+            TimeZoneInfo.Local
         );
 
         // Act & Assert
@@ -2136,10 +2203,14 @@ public class AppointmentTests
         appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
         appointment.Start(
             appointment.DoctorId,
-            appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start)
+            appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start),
+            TimeZoneInfo.Local
         );
 
-        appointment.Complete(appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start));
+        appointment.Complete(
+            appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start),
+            TimeZoneInfo.Local
+        );
 
         // Act & Assert
         appointment
@@ -2260,7 +2331,8 @@ public class AppointmentTests
         appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
         appointment.Start(
             appointment.DoctorId,
-            appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start)
+            appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start),
+            TimeZoneInfo.Local
         );
 
         // Act & Assert
@@ -2280,9 +2352,13 @@ public class AppointmentTests
         appointment.CheckIn(appointment.ScheduledDate.ToDateTime(TimeOnly.MinValue));
         appointment.Start(
             appointment.DoctorId,
-            appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start)
+            appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start),
+            TimeZoneInfo.Local
         );
-        appointment.Complete(appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start));
+        appointment.Complete(
+            appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start),
+            TimeZoneInfo.Local
+        );
 
         // Act & Assert
         appointment

@@ -33,7 +33,7 @@ public sealed class MedicalRecordConsentGrantRepository(ApplicationDbContext dbC
     public async Task<bool> HasEffectiveGrantAsync(
         Guid medicalRecordId,
         Guid recipientMembershipId,
-        DateTime referenceTime,
+        DateTimeOffset referenceTime,
         CancellationToken cancellationToken = default
     ) =>
         await dbContext.MedicalRecordConsentGrants.AnyAsync(
@@ -48,7 +48,7 @@ public sealed class MedicalRecordConsentGrantRepository(ApplicationDbContext dbC
     public async Task<IReadOnlyList<Guid>> GetEffectiveRecordIdsAsync(
         Guid patientId,
         Guid recipientMembershipId,
-        DateTime referenceTime,
+        DateTimeOffset referenceTime,
         CancellationToken cancellationToken = default
     ) =>
         await dbContext

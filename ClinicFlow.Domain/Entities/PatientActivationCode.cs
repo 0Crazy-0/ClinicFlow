@@ -21,13 +21,13 @@ public class PatientActivationCode : BaseEntity
 
     public Guid IssuedByUserId { get; private set; }
 
-    public DateTime IssuedAt { get; private set; }
+    public DateTimeOffset IssuedAt { get; private set; }
 
-    public DateTime ExpiresAt { get; private set; }
+    public DateTimeOffset ExpiresAt { get; private set; }
 
-    public DateTime? ConsumedAt { get; private set; }
+    public DateTimeOffset? ConsumedAt { get; private set; }
 
-    public DateTime? SupersededAt { get; private set; }
+    public DateTimeOffset? SupersededAt { get; private set; }
 
     public int FailedAttempts { get; private set; }
 
@@ -38,8 +38,8 @@ public class PatientActivationCode : BaseEntity
         Guid userId,
         string codeHash,
         Guid issuedByUserId,
-        DateTime issuedAt,
-        DateTime expiresAt
+        DateTimeOffset issuedAt,
+        DateTimeOffset expiresAt
     )
     {
         UserId = userId;
@@ -56,7 +56,7 @@ public class PatientActivationCode : BaseEntity
         Guid userId,
         string codeHash,
         Guid issuedByUserId,
-        DateTime issuedAt
+        DateTimeOffset issuedAt
     )
     {
         Guard.NotEmpty(userId);
@@ -79,7 +79,7 @@ public class PatientActivationCode : BaseEntity
         return code;
     }
 
-    public bool IsValid(DateTime referenceTime)
+    public bool IsValid(DateTimeOffset referenceTime)
     {
         Guard.NotDefault(referenceTime);
 
@@ -99,7 +99,7 @@ public class PatientActivationCode : BaseEntity
     /// Callers must verify <see cref="IsValid"/> before calling this method,
     /// otherwise an expired, superseded, or exhausted code can be activated.
     /// </remarks>
-    public void Consume(DateTime referenceTime)
+    public void Consume(DateTimeOffset referenceTime)
     {
         Guard.NotDefault(referenceTime);
 
@@ -109,7 +109,7 @@ public class PatientActivationCode : BaseEntity
     /// <summary>
     /// Marks the code as replaced by a newer code.
     /// </summary>
-    public void Supersede(DateTime referenceTime)
+    public void Supersede(DateTimeOffset referenceTime)
     {
         Guard.NotDefault(referenceTime);
 

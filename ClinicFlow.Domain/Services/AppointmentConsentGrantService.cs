@@ -28,7 +28,9 @@ public static class AppointmentConsentGrantService
             DomainErrors.AppointmentConsentGrant.UnauthorizedCreation
         );
 
-        var patientAge = context.TargetPatient.GetAge(DateOnly.FromDateTime(context.ReferenceTime));
+        var patientAge = context.TargetPatient.GetAge(
+            DateOnly.FromDateTime(context.ReferenceTime.DateTime)
+        );
 
         if (patientAge >= DomainRules.AdultAge)
             throw new DomainValidationException(
@@ -80,7 +82,9 @@ public static class AppointmentConsentGrantService
             DomainErrors.AppointmentConsentGrant.UnauthorizedCreation
         );
 
-        var patientAge = context.TargetPatient.GetAge(DateOnly.FromDateTime(context.ReferenceTime));
+        var patientAge = context.TargetPatient.GetAge(
+            DateOnly.FromDateTime(context.ReferenceTime.DateTime)
+        );
 
         if (patientAge >= DomainRules.AdultAge)
             throw new DomainValidationException(

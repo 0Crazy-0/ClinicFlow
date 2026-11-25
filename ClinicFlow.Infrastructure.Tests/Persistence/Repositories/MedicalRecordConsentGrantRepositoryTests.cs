@@ -39,7 +39,7 @@ public class MedicalRecordConsentGrantRepositoryTests(PostgresFixture fixture) :
         var recipient = await CreateRecipientMembershipAsync(patient.Id);
 
         var record = await CreateMedicalRecordAsync(patient.Id);
-        var signedAt = _fakeTime.GetLocalNow().DateTime;
+        var signedAt = _fakeTime.GetUtcNow();
 
         var grant = MedicalRecordConsentGrant.Create(
             patient.Id,
@@ -76,7 +76,7 @@ public class MedicalRecordConsentGrantRepositoryTests(PostgresFixture fixture) :
             recipient.Id,
             record.Id,
             signer.Id,
-            _fakeTime.GetLocalNow().DateTime
+            _fakeTime.GetUtcNow()
         );
 
         Context.MedicalRecordConsentGrants.Add(grant);
@@ -364,7 +364,7 @@ public class MedicalRecordConsentGrantRepositoryTests(PostgresFixture fixture) :
         // Arrange
         var nonExistentPatientId = Guid.CreateVersion7();
         var nonExistentRecipientId = Guid.CreateVersion7();
-        var referenceTime = _fakeTime.GetLocalNow().DateTime;
+        var referenceTime = _fakeTime.GetUtcNow();
 
         // Act
         var results = await _sut.GetEffectiveRecordIdsAsync(
@@ -385,7 +385,7 @@ public class MedicalRecordConsentGrantRepositoryTests(PostgresFixture fixture) :
         var patient = await CreatePatientAsync();
         var signer = await CreateUserAsync();
         var recipient = await CreateRecipientMembershipAsync(patient.Id);
-        var signedAt = _fakeTime.GetLocalNow().DateTime;
+        var signedAt = _fakeTime.GetUtcNow();
 
         await CreateGrantAsync(patient.Id, recipient.Id, signedAt, signer.Id);
 
@@ -413,7 +413,7 @@ public class MedicalRecordConsentGrantRepositoryTests(PostgresFixture fixture) :
         var patient = await CreatePatientAsync();
         var signer = await CreateUserAsync();
         var recipient = await CreateRecipientMembershipAsync(patient.Id);
-        var signedAt = _fakeTime.GetLocalNow().DateTime;
+        var signedAt = _fakeTime.GetUtcNow();
 
         var grant1 = await CreateGrantAsync(patient.Id, recipient.Id, signedAt, signer.Id);
 
@@ -445,7 +445,7 @@ public class MedicalRecordConsentGrantRepositoryTests(PostgresFixture fixture) :
         var grant1 = await CreateGrantAsync(
             patient1.Id,
             recipient1.Id,
-            _fakeTime.GetLocalNow().DateTime,
+            _fakeTime.GetUtcNow(),
             signer1.Id
         );
 
@@ -456,7 +456,7 @@ public class MedicalRecordConsentGrantRepositoryTests(PostgresFixture fixture) :
         await CreateGrantAsync(
             patient2.Id,
             recipient2.Id,
-            _fakeTime.GetLocalNow().DateTime,
+            _fakeTime.GetUtcNow(),
             signer2.Id
         );
 
@@ -501,7 +501,7 @@ public class MedicalRecordConsentGrantRepositoryTests(PostgresFixture fixture) :
         var patient = await CreatePatientAsync();
         var signer = await CreateUserAsync();
         var recipient = await CreateRecipientMembershipAsync(patient.Id);
-        var signedAt = _fakeTime.GetLocalNow().DateTime;
+        var signedAt = _fakeTime.GetUtcNow();
 
         var grant1 = await CreateGrantAsync(patient.Id, recipient.Id, signedAt, signer.Id);
         var grant2 = await CreateGrantAsync(patient.Id, recipient.Id, signedAt, signer.Id);
@@ -603,7 +603,7 @@ public class MedicalRecordConsentGrantRepositoryTests(PostgresFixture fixture) :
             "password",
             PhoneNumber.Create($"+1555{Random.Shared.Next(1000000, 9999999)}"),
             UserRole.Doctor,
-            _fakeTime.GetLocalNow().DateTime
+            _fakeTime.GetUtcNow()
         );
 
         Context.Users.Add(user);
@@ -664,7 +664,7 @@ public class MedicalRecordConsentGrantRepositoryTests(PostgresFixture fixture) :
             PatientRelationship.Parent,
             FamilyMembershipAccessLevel.Full,
             FamilyMembership.MinimumAdultAge,
-            _fakeTime.GetLocalNow().DateTime
+            _fakeTime.GetUtcNow()
         );
 
         Context.FamilyMemberships.Add(membership);
@@ -680,7 +680,7 @@ public class MedicalRecordConsentGrantRepositoryTests(PostgresFixture fixture) :
         var signer = await CreateUserAsync();
         var recipient = await CreateRecipientMembershipAsync(patient.Id);
         var record = await CreateMedicalRecordAsync(patient.Id);
-        var signedAt = _fakeTime.GetLocalNow().DateTime;
+        var signedAt = _fakeTime.GetUtcNow();
 
         return await CreateGrantAsync(patient.Id, recipient.Id, signedAt, signer.Id, record.Id);
     }
@@ -688,7 +688,7 @@ public class MedicalRecordConsentGrantRepositoryTests(PostgresFixture fixture) :
     private async Task<MedicalRecordConsentGrant> CreateGrantAsync(
         Guid patientId,
         Guid recipientMembershipId,
-        DateTime signedAt,
+        DateTimeOffset signedAt,
         Guid signedByUserId
     )
     {
@@ -706,7 +706,7 @@ public class MedicalRecordConsentGrantRepositoryTests(PostgresFixture fixture) :
     private async Task<MedicalRecordConsentGrant> CreateGrantAsync(
         Guid patientId,
         Guid recipientMembershipId,
-        DateTime signedAt,
+        DateTimeOffset signedAt,
         Guid signedByUserId,
         Guid medicalRecordId
     )

@@ -37,7 +37,7 @@ public class AppointmentConsentGrantRepositoryTests(PostgresFixture fixture) : I
         var patient = await CreatePatientAsync();
         var signer = await CreateUserAsync();
         var recipient = await CreateRecipientMembershipAsync(patient.Id);
-        var signedAt = _fakeTime.GetLocalNow().DateTime;
+        var signedAt = _fakeTime.GetUtcNow();
 
         var grant = AppointmentConsentGrant.CreateForCategory(
             patient.Id,
@@ -72,7 +72,7 @@ public class AppointmentConsentGrantRepositoryTests(PostgresFixture fixture) : I
             recipient.Id,
             ProtectedCategory.MentalHealthCounseling,
             signer.Id,
-            _fakeTime.GetLocalNow().DateTime
+            _fakeTime.GetUtcNow()
         );
 
         Context.AppointmentConsentGrants.Add(grant);
@@ -601,7 +601,7 @@ public class AppointmentConsentGrantRepositoryTests(PostgresFixture fixture) : I
         // Arrange
         var nonExistentPatientId = Guid.CreateVersion7();
         var nonExistentRecipientId = Guid.CreateVersion7();
-        var referenceTime = _fakeTime.GetLocalNow().DateTime;
+        var referenceTime = _fakeTime.GetUtcNow();
 
         // Act
         var results = await _sut.GetEffectiveCategoriesAsync(
@@ -761,7 +761,7 @@ public class AppointmentConsentGrantRepositoryTests(PostgresFixture fixture) : I
         // Arrange
         var nonExistentPatientId = Guid.CreateVersion7();
         var nonExistentRecipientId = Guid.CreateVersion7();
-        var referenceTime = _fakeTime.GetLocalNow().DateTime;
+        var referenceTime = _fakeTime.GetUtcNow();
 
         // Act
         var results = await _sut.GetEffectiveAppointmentIdsAsync(
@@ -826,7 +826,7 @@ public class AppointmentConsentGrantRepositoryTests(PostgresFixture fixture) : I
             PatientRelationship.Parent,
             FamilyMembershipAccessLevel.Full,
             FamilyMembership.MinimumAdultAge,
-            _fakeTime.GetLocalNow().DateTime
+            _fakeTime.GetUtcNow()
         );
 
         Context.FamilyMemberships.Add(membership);
@@ -843,7 +843,7 @@ public class AppointmentConsentGrantRepositoryTests(PostgresFixture fixture) : I
         var patient = await CreatePatientAsync();
         var signer = await CreateUserAsync();
         var recipient = await CreateRecipientMembershipAsync(patient.Id);
-        var signedAt = _fakeTime.GetLocalNow().DateTime;
+        var signedAt = _fakeTime.GetUtcNow();
 
         var grant = AppointmentConsentGrant.CreateForCategory(
             patient.Id,
@@ -925,7 +925,7 @@ public class AppointmentConsentGrantRepositoryTests(PostgresFixture fixture) : I
 
         await Context.SaveChangesAsync();
 
-        var signedAt = _fakeTime.GetLocalNow().DateTime;
+        var signedAt = _fakeTime.GetUtcNow();
 
         var grant = AppointmentConsentGrant.CreateForAppointment(
             patient.Id,

@@ -16,7 +16,7 @@ public class User : BaseEntity
 
     public UserRole Role { get; private set; }
 
-    public DateTime? LastLoginAt { get; private set; }
+    public DateTimeOffset? LastLoginAt { get; private set; }
 
     public EmailAddress Email { get; private set; } = null!;
 
@@ -24,13 +24,13 @@ public class User : BaseEntity
 
     public PhoneNumber Phone { get; private set; } = null!;
 
-    public DateTime? ActivatedAt { get; private set; }
+    public DateTimeOffset? ActivatedAt { get; private set; }
 
     public bool IsActive { get; private set; }
 
     public int FailedLoginAttempts { get; private set; }
 
-    public DateTime? LockoutEnd { get; private set; }
+    public DateTimeOffset? LockoutEnd { get; private set; }
 
     // EF Core constructor
     private User()
@@ -44,7 +44,7 @@ public class User : BaseEntity
         string? passwordHash,
         PhoneNumber phone,
         UserRole role,
-        DateTime? activatedAt
+        DateTimeOffset? activatedAt
     )
         : this()
     {
@@ -64,7 +64,7 @@ public class User : BaseEntity
         string passwordHash,
         PhoneNumber phoneNumber,
         UserRole role,
-        DateTime referenceTime
+        DateTimeOffset referenceTime
     )
     {
         Guard.NotNull(email);
@@ -103,7 +103,7 @@ public class User : BaseEntity
     /// <see cref="ChangePassword"/>.
     /// A pending account deactivated by the clinic cannot be activated until it is reactivated.
     /// </remarks>
-    public void Activate(string passwordHash, DateTime referenceTime)
+    public void Activate(string passwordHash, DateTimeOffset referenceTime)
     {
         Guard.NotNullOrWhiteSpace(passwordHash);
         Guard.NotDefault(referenceTime);
@@ -120,7 +120,7 @@ public class User : BaseEntity
         AddDomainEvent(new PatientAccountActivatedEvent(Id, ActivatedAt.Value));
     }
 
-    internal void RecordLogin(DateTime loginTime)
+    internal void RecordLogin(DateTimeOffset loginTime)
     {
         Guard.NotDefault(loginTime);
 
@@ -135,7 +135,7 @@ public class User : BaseEntity
         LastLoginAt = loginTime;
     }
 
-    internal void RecordFailedLogin(DateTime referenceTime)
+    internal void RecordFailedLogin(DateTimeOffset referenceTime)
     {
         Guard.NotDefault(referenceTime);
 

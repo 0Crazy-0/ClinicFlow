@@ -38,14 +38,14 @@ public class MedicalRecordConsentGrant : BaseEntity
 
     public Guid SignedByUserId { get; private set; }
 
-    public DateTime SignedAt { get; private set; }
+    public DateTimeOffset SignedAt { get; private set; }
 
-    public DateTime ExpiresAt { get; private set; }
+    public DateTimeOffset ExpiresAt { get; private set; }
 
     /// <remarks>
     /// Null while the grant is in force. Populated when the patient revokes it.
     /// </remarks>
-    public DateTime? RevokedAt { get; private set; }
+    public DateTimeOffset? RevokedAt { get; private set; }
 
     // EF Core constructor
     private MedicalRecordConsentGrant() { }
@@ -55,7 +55,7 @@ public class MedicalRecordConsentGrant : BaseEntity
         Guid recipientMembershipId,
         Guid medicalRecordId,
         Guid signedByUserId,
-        DateTime signedAt
+        DateTimeOffset signedAt
     )
         : this()
     {
@@ -72,7 +72,7 @@ public class MedicalRecordConsentGrant : BaseEntity
         Guid recipientMembershipId,
         Guid medicalRecordId,
         Guid signedByUserId,
-        DateTime signedAt
+        DateTimeOffset signedAt
     )
     {
         Guard.NotEmpty(patientId);
@@ -94,7 +94,7 @@ public class MedicalRecordConsentGrant : BaseEntity
     /// Reports whether the grant itself is in force at the given instant.
     /// A grant is in force when it has not been revoked and the instant precedes its expiry.
     /// </summary>
-    public bool IsEffectiveAt(DateTime referenceTime)
+    public bool IsEffectiveAt(DateTimeOffset referenceTime)
     {
         Guard.NotDefault(referenceTime);
 
@@ -108,7 +108,7 @@ public class MedicalRecordConsentGrant : BaseEntity
     /// <param name="requesterIsAuthorized">
     /// Whether the requester is the patient acting through their active Self membership.
     /// </param>
-    public void Revoke(bool requesterIsAuthorized, DateTime referenceTime)
+    public void Revoke(bool requesterIsAuthorized, DateTimeOffset referenceTime)
     {
         Guard.NotDefault(referenceTime);
 

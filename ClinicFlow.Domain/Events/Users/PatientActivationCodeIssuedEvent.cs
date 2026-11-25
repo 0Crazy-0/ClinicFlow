@@ -8,6 +8,6 @@ namespace ClinicFlow.Domain.Events.Users;
 public sealed record PatientActivationCodeIssuedEvent(
     Guid UserId,
     Guid IssuedByUserId,
-    DateTime IssuedAt,
-    DateTime ExpiresAt
+    DateTimeOffset IssuedAt,
+    DateTimeOffset ExpiresAt
 ) : IDomainEvent;

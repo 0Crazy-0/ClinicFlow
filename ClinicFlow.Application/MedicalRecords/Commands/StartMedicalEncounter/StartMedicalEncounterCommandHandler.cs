@@ -50,7 +50,7 @@ public sealed class StartMedicalEncounterCommandHandler(
                 appointment.AppointmentTypeId
             );
 
-        appointment.Start(doctor.Id, timeProvider.GetLocalNow().DateTime);
+        appointment.Start(doctor.Id, timeProvider.GetUtcNow(), timeProvider.LocalTimeZone);
 
         var medicalRecord = MedicalEncounterService.InitiateMedicalRecord(
             appointment,

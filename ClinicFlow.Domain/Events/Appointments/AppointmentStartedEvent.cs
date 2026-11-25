@@ -3,5 +3,7 @@ using ClinicFlow.Domain.Entities;
 
 namespace ClinicFlow.Domain.Events.Appointments;
 
-public sealed record AppointmentStartedEvent(Appointment SubjectAppointment, DateTime StartedAt)
-    : IDomainEvent;
+public sealed record AppointmentStartedEvent(
+    Appointment SubjectAppointment,
+    DateTimeOffset StartedAt
+) : IDomainEvent;

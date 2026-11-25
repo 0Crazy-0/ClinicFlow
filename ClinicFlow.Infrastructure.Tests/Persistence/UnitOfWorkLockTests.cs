@@ -772,7 +772,7 @@ public class UnitOfWorkLockTests : IAsyncLifetime
             "hashed_password",
             PhoneNumber.Create(phoneNumber),
             UserRole.Doctor,
-            _fakeTime.GetLocalNow().DateTime
+            _fakeTime.GetUtcNow()
         );
 
     private class TestDomainEvent : IDomainEvent { }

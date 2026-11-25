@@ -48,8 +48,7 @@ public sealed class GetMinorFamilyMemberAppointmentsByPatientIdQueryHandler(
                 request.PatientId
             );
 
-        var referenceTime = timeProvider.GetLocalNow().DateTime;
-        var patientAge = patient.GetAge(DateOnly.FromDateTime(referenceTime));
+        var patientAge = patient.GetAge(DateOnly.FromDateTime(timeProvider.GetLocalNow().DateTime));
 
         if (patientAge >= DomainRules.AdultAge)
             throw new DomainValidationException(DomainErrors.Appointment.MinorHistoryRequiresMinor);
@@ -57,6 +56,8 @@ public sealed class GetMinorFamilyMemberAppointmentsByPatientIdQueryHandler(
         membership.EnsureGuardianAccess();
 
         var excludedCategories = ProtectedCategoryPolicy.GetProtectedCategoriesFor(patientAge);
+
+        var referenceTime = timeProvider.GetUtcNow();
 
         var authorizedCategories = await consentGrantRepository.GetEffectiveCategoriesAsync(
             request.PatientId,

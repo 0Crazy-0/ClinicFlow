@@ -38,7 +38,7 @@ public class PatientActivationCodeRepositoryTests(PostgresFixture fixture) : IAs
             user.Id,
             CreateCodeHash(),
             Guid.CreateVersion7(),
-            _fakeTime.GetLocalNow().DateTime
+            _fakeTime.GetUtcNow()
         );
         // Act
         await _sut.CreateAsync(activationCode, TestContext.Current.CancellationToken);
@@ -66,7 +66,7 @@ public class PatientActivationCodeRepositoryTests(PostgresFixture fixture) : IAs
             user.Id,
             CreateCodeHash(),
             Guid.CreateVersion7(),
-            _fakeTime.GetLocalNow().DateTime
+            _fakeTime.GetUtcNow()
         );
 
         Context.PatientActivationCodes.Add(activationCode);
@@ -121,7 +121,7 @@ public class PatientActivationCodeRepositoryTests(PostgresFixture fixture) : IAs
         var user = await CreateUserAsync();
         var activationCode = await CreateActivationCodeAsync(user.Id);
 
-        activationCode.Consume(_fakeTime.GetLocalNow().DateTime.AddMinutes(1));
+        activationCode.Consume(_fakeTime.GetUtcNow().AddMinutes(1));
 
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
@@ -142,7 +142,7 @@ public class PatientActivationCodeRepositoryTests(PostgresFixture fixture) : IAs
         var user = await CreateUserAsync();
         var activationCode = await CreateActivationCodeAsync(user.Id);
 
-        activationCode.Supersede(_fakeTime.GetLocalNow().DateTime.AddMinutes(1));
+        activationCode.Supersede(_fakeTime.GetUtcNow().AddMinutes(1));
 
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
@@ -208,13 +208,13 @@ public class PatientActivationCodeRepositoryTests(PostgresFixture fixture) : IAs
 
         var consumedCode = await CreateActivationCodeAsync(user.Id);
 
-        consumedCode.Consume(_fakeTime.GetLocalNow().DateTime.AddMinutes(1));
+        consumedCode.Consume(_fakeTime.GetUtcNow().AddMinutes(1));
 
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
         var supersededCode = await CreateActivationCodeAsync(user.Id);
 
-        supersededCode.Supersede(_fakeTime.GetLocalNow().DateTime.AddMinutes(2));
+        supersededCode.Supersede(_fakeTime.GetUtcNow().AddMinutes(2));
 
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
@@ -253,7 +253,7 @@ public class PatientActivationCodeRepositoryTests(PostgresFixture fixture) : IAs
             userId,
             CreateCodeHash(),
             Guid.CreateVersion7(),
-            _fakeTime.GetLocalNow().DateTime
+            _fakeTime.GetUtcNow()
         );
 
         Context.PatientActivationCodes.Add(activationCode);

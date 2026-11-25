@@ -7,8 +7,13 @@ namespace ClinicFlow.Infrastructure.Persistence.Seeding;
 /// <summary>
 /// Generates deterministic, valid appointments for database seeding using pre-calculated lists of doctors, patients, schedules, and users.
 /// </summary>
-public class AppointmentGenerator(AppointmentSeedingArgs args, DateTime baseDate)
+public class AppointmentGenerator(
+    AppointmentSeedingArgs args,
+    DateTime baseDate,
+    TimeZoneInfo? clinicTimeZone = null
+)
 {
+    private readonly TimeZoneInfo _clinicTimeZone = clinicTimeZone ?? TimeZoneInfo.Utc;
     private readonly Dictionary<Guid, int> _doctorFutureOccurrenceCount = [];
     private readonly IReadOnlyList<Doctor> _activeDoctors =
     [
@@ -215,7 +220,7 @@ public class AppointmentGenerator(AppointmentSeedingArgs args, DateTime baseDate
         return occurrence;
     }
 
-    private static void TransitionAppointmentToStatus(
+    private void TransitionAppointmentToStatus(
         Appointment appointment,
         AppointmentStatus status,
         Guid doctorId,
@@ -230,8 +235,16 @@ public class AppointmentGenerator(AppointmentSeedingArgs args, DateTime baseDate
             case AppointmentStatus.Completed:
                 appointment.CheckIn(actionTime, receptionistNotes);
                 appointment.UpdateStaffInternalNotes(GetStaffInternalNotes(index));
-                appointment.Start(doctorId, actionTime.AddMinutes(15));
-                appointment.Complete(actionTime.AddMinutes(35));
+                var startTime = new DateTimeOffset(
+                    actionTime.AddMinutes(15),
+                    _clinicTimeZone.GetUtcOffset(actionTime.AddMinutes(15))
+                ).ToUniversalTime();
+                var completeTime = new DateTimeOffset(
+                    actionTime.AddMinutes(35),
+                    _clinicTimeZone.GetUtcOffset(actionTime.AddMinutes(35))
+                ).ToUniversalTime();
+                appointment.Start(doctorId, startTime, _clinicTimeZone);
+                appointment.Complete(completeTime, _clinicTimeZone);
                 break;
 
             case AppointmentStatus.Cancelled:
@@ -274,7 +287,11 @@ public class AppointmentGenerator(AppointmentSeedingArgs args, DateTime baseDate
             case AppointmentStatus.InProgress:
                 appointment.CheckIn(actionTime, receptionistNotes);
                 appointment.UpdateStaffInternalNotes(GetStaffInternalNotes(index));
-                appointment.Start(doctorId, actionTime.AddMinutes(15));
+                var inProgressStartTime = new DateTimeOffset(
+                    actionTime.AddMinutes(15),
+                    _clinicTimeZone.GetUtcOffset(actionTime.AddMinutes(15))
+                ).ToUniversalTime();
+                appointment.Start(doctorId, inProgressStartTime, _clinicTimeZone);
                 break;
         }
     }

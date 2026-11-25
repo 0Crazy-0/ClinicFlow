@@ -99,7 +99,7 @@ public class GrantMedicalRecordConsentCommandHandlerTests
                 x.HasEffectiveGrantAsync(
                     record.Id,
                     recipientMembership.Id,
-                    It.IsAny<DateTime>(),
+                    It.IsAny<DateTimeOffset>(),
                     It.IsAny<CancellationToken>()
                 )
             )
@@ -122,7 +122,7 @@ public class GrantMedicalRecordConsentCommandHandlerTests
         capturedGrant.RecipientMembershipId.Should().Be(recipientMembership.Id);
         capturedGrant.MedicalRecordId.Should().Be(record.Id);
         capturedGrant.SignedByUserId.Should().Be(requesterUserId);
-        capturedGrant.SignedAt.Should().Be(_fakeTime.GetLocalNow().DateTime);
+        capturedGrant.SignedAt.Should().Be(_fakeTime.GetUtcNow());
         capturedGrant
             .ExpiresAt.Should()
             .Be(capturedGrant.SignedAt.AddYears(MedicalRecordConsentGrant.ValidityYears));
@@ -175,7 +175,7 @@ public class GrantMedicalRecordConsentCommandHandlerTests
                 x.HasEffectiveGrantAsync(
                     record.Id,
                     recipientMembership.Id,
-                    It.IsAny<DateTime>(),
+                    It.IsAny<DateTimeOffset>(),
                     It.IsAny<CancellationToken>()
                 )
             )

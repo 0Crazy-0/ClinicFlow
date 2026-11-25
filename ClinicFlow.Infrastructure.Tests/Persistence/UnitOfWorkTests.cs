@@ -53,7 +53,7 @@ public class UnitOfWorkTests : IDisposable
             "hashed_password",
             phone,
             UserRole.Doctor,
-            _fakeTime.GetLocalNow().DateTime
+            _fakeTime.GetUtcNow()
         );
 
         _dbContext.Users.Add(user);
@@ -83,7 +83,7 @@ public class UnitOfWorkTests : IDisposable
             "hashed_password",
             PhoneNumber.Create("555-1234"),
             UserRole.Doctor,
-            _fakeTime.GetLocalNow().DateTime
+            _fakeTime.GetUtcNow()
         );
 
         var domainEvent = new TestDomainEvent();
@@ -118,7 +118,7 @@ public class UnitOfWorkTests : IDisposable
             "hashed_password",
             PhoneNumber.Create("555-1234"),
             UserRole.Doctor,
-            _fakeTime.GetLocalNow().DateTime
+            _fakeTime.GetUtcNow()
         );
 
         var domainEvent = new TestDomainEvent();
@@ -143,7 +143,7 @@ public class UnitOfWorkTests : IDisposable
             "hashed_password",
             PhoneNumber.Create("555-1234"),
             UserRole.Doctor,
-            _fakeTime.GetLocalNow().DateTime
+            _fakeTime.GetUtcNow()
         );
 
         _dbContext.Users.Add(user);
@@ -167,7 +167,7 @@ public class UnitOfWorkTests : IDisposable
             "hashed_password",
             PhoneNumber.Create("555-1234"),
             UserRole.Doctor,
-            _fakeTime.GetLocalNow().DateTime
+            _fakeTime.GetUtcNow()
         );
 
         var domainEvent = new TestDomainEvent();

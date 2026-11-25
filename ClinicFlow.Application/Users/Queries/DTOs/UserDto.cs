@@ -8,7 +8,7 @@ public sealed record UserDto(
     string PhoneNumber,
     UserRole Role,
     bool IsActive,
-    DateTime? LastLoginAt,
+    DateTimeOffset? LastLoginAt,
     int FailedLoginAttempts,
-    DateTime? LockoutEnd
+    DateTimeOffset? LockoutEnd
 );

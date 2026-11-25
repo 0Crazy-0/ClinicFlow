@@ -85,7 +85,7 @@ public sealed class GrantSpecificAppointmentConsentCommandHandler(
                         appointment.AppointmentTypeId
                     );
 
-                var referenceTime = timeProvider.GetLocalNow().DateTime;
+                var referenceTime = timeProvider.GetUtcNow();
 
                 var hasEffectiveGrant =
                     await consentGrantRepository.HasEffectiveAppointmentGrantAsync(

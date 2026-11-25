@@ -28,7 +28,7 @@ public interface IUserRepository
     );
 
     Task<(IReadOnlyCollection<User> Items, int TotalCount)> GetLockedOutUsersPaginatedAsync(
-        DateTime referenceTime,
+        DateTimeOffset referenceTime,
         int pageNumber,
         int pageSize,
         CancellationToken cancellationToken = default

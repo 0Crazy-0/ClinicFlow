@@ -34,7 +34,7 @@ public class RevokeMedicalRecordConsentGrantCommandHandlerTests
         // Arrange
         var grant = CreateGrant();
         _fakeTime.Advance(TimeSpan.FromDays(10));
-        var revokeTime = _fakeTime.GetLocalNow().DateTime;
+        var revokeTime = _fakeTime.GetUtcNow();
         var command = new RevokeMedicalRecordConsentGrantCommand(Guid.CreateVersion7(), grant.Id);
 
         _consentGrantRepositoryMock

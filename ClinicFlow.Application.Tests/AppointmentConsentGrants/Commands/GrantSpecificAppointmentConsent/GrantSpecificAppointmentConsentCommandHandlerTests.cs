@@ -109,7 +109,7 @@ public class GrantSpecificAppointmentConsentCommandHandlerTests
                     patient.Id,
                     recipientMembership.Id,
                     appointment.Id,
-                    It.IsAny<DateTime>(),
+                    It.IsAny<DateTimeOffset>(),
                     It.IsAny<CancellationToken>()
                 )
             )
@@ -134,7 +134,7 @@ public class GrantSpecificAppointmentConsentCommandHandlerTests
         capturedGrant.AppointmentId.Should().Be(appointment.Id);
         capturedGrant.ProtectedCareCategory.Should().BeNull();
         capturedGrant.SignedByUserId.Should().Be(requesterUserId);
-        capturedGrant.SignedAt.Should().Be(_fakeTime.GetLocalNow().DateTime);
+        capturedGrant.SignedAt.Should().Be(_fakeTime.GetUtcNow());
         capturedGrant
             .ExpiresAt.Should()
             .Be(capturedGrant.SignedAt.AddYears(AppointmentConsentGrant.ValidityYears));
@@ -196,7 +196,7 @@ public class GrantSpecificAppointmentConsentCommandHandlerTests
                     patient.Id,
                     recipientMembership.Id,
                     appointment.Id,
-                    It.IsAny<DateTime>(),
+                    It.IsAny<DateTimeOffset>(),
                     It.IsAny<CancellationToken>()
                 )
             )

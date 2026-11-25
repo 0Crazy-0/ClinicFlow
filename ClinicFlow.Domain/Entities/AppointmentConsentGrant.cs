@@ -51,14 +51,14 @@ public class AppointmentConsentGrant : BaseEntity
 
     public Guid SignedByUserId { get; private set; }
 
-    public DateTime SignedAt { get; private set; }
+    public DateTimeOffset SignedAt { get; private set; }
 
-    public DateTime ExpiresAt { get; private set; }
+    public DateTimeOffset ExpiresAt { get; private set; }
 
     /// <remarks>
     /// Null while the grant is in force. Populated when the patient revokes it.
     /// </remarks>
-    public DateTime? RevokedAt { get; private set; }
+    public DateTimeOffset? RevokedAt { get; private set; }
 
     private AppointmentConsentGrant() { }
 
@@ -70,7 +70,7 @@ public class AppointmentConsentGrant : BaseEntity
         Guid recipientMembershipId,
         ProtectedCategory protectedCareCategory,
         Guid signedByUserId,
-        DateTime signedAt
+        DateTimeOffset signedAt
     )
         : this()
     {
@@ -91,7 +91,7 @@ public class AppointmentConsentGrant : BaseEntity
         Guid recipientMembershipId,
         Guid appointmentId,
         Guid signedByUserId,
-        DateTime signedAt
+        DateTimeOffset signedAt
     )
         : this()
     {
@@ -109,7 +109,7 @@ public class AppointmentConsentGrant : BaseEntity
         Guid recipientMembershipId,
         ProtectedCategory protectedCareCategory,
         Guid signedByUserId,
-        DateTime signedAt
+        DateTimeOffset signedAt
     )
     {
         Guard.NotEmpty(patientId);
@@ -132,7 +132,7 @@ public class AppointmentConsentGrant : BaseEntity
         Guid recipientMembershipId,
         Guid appointmentId,
         Guid signedByUserId,
-        DateTime signedAt
+        DateTimeOffset signedAt
     )
     {
         Guard.NotEmpty(patientId);
@@ -150,14 +150,14 @@ public class AppointmentConsentGrant : BaseEntity
         );
     }
 
-    public bool IsEffectiveAt(DateTime referenceTime)
+    public bool IsEffectiveAt(DateTimeOffset referenceTime)
     {
         Guard.NotDefault(referenceTime);
 
         return RevokedAt is null && referenceTime < ExpiresAt;
     }
 
-    public void Revoke(bool requesterIsAuthorized, DateTime referenceTime)
+    public void Revoke(bool requesterIsAuthorized, DateTimeOffset referenceTime)
     {
         Guard.NotDefault(referenceTime);
 
