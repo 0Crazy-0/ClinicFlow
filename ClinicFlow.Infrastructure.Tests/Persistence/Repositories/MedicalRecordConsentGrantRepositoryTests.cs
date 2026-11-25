@@ -453,12 +453,7 @@ public class MedicalRecordConsentGrantRepositoryTests(PostgresFixture fixture) :
         var signer2 = await CreateUserAsync();
         var recipient2 = await CreateRecipientMembershipAsync(patient2.Id);
 
-        await CreateGrantAsync(
-            patient2.Id,
-            recipient2.Id,
-            _fakeTime.GetUtcNow(),
-            signer2.Id
-        );
+        await CreateGrantAsync(patient2.Id, recipient2.Id, _fakeTime.GetUtcNow(), signer2.Id);
 
         // Act
         var (items, totalCount) = await _sut.GetByPatientIdPaginatedAsync(

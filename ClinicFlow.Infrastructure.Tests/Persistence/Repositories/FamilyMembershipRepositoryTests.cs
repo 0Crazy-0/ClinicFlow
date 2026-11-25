@@ -36,11 +36,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
         // Arrange
         var user = await CreateUserAsync();
         var patient = await CreatePatientAsync();
-        var membership = FamilyMembership.CreateSelf(
-            patient.Id,
-            user.Id,
-            _fakeTime.GetUtcNow()
-        );
+        var membership = FamilyMembership.CreateSelf(patient.Id, user.Id, _fakeTime.GetUtcNow());
 
         // Act
         await _sut.CreateAsync(membership, TestContext.Current.CancellationToken);
@@ -60,11 +56,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
         // Arrange
         var user = await CreateUserAsync();
         var patient = await CreatePatientAsync();
-        var membership = FamilyMembership.CreateSelf(
-            patient.Id,
-            user.Id,
-            _fakeTime.GetUtcNow()
-        );
+        var membership = FamilyMembership.CreateSelf(patient.Id, user.Id, _fakeTime.GetUtcNow());
 
         Context.FamilyMemberships.Add(membership);
         Context.Entry(membership).State = EntityState.Unchanged;
@@ -82,11 +74,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
         // Arrange
         var user = await CreateUserAsync();
         var patient = await CreatePatientAsync();
-        var membership = FamilyMembership.CreateSelf(
-            patient.Id,
-            user.Id,
-            _fakeTime.GetUtcNow()
-        );
+        var membership = FamilyMembership.CreateSelf(patient.Id, user.Id, _fakeTime.GetUtcNow());
 
         Context.FamilyMemberships.Add(membership);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -117,11 +105,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
         // Arrange
         var user = await CreateUserAsync();
         var patient = await CreatePatientAsync();
-        var membership = FamilyMembership.CreateSelf(
-            patient.Id,
-            user.Id,
-            _fakeTime.GetUtcNow()
-        );
+        var membership = FamilyMembership.CreateSelf(patient.Id, user.Id, _fakeTime.GetUtcNow());
 
         membership.CloseSelfMembership(_fakeTime.GetUtcNow().AddHours(1));
 
@@ -141,11 +125,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
         // Arrange
         var user = await CreateUserAsync();
         var patient = await CreatePatientAsync();
-        var membership = FamilyMembership.CreateSelf(
-            patient.Id,
-            user.Id,
-            _fakeTime.GetUtcNow()
-        );
+        var membership = FamilyMembership.CreateSelf(patient.Id, user.Id, _fakeTime.GetUtcNow());
 
         Context.FamilyMemberships.Add(membership);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -166,11 +146,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
         // Arrange
         var user = await CreateUserAsync();
         var patient = await CreatePatientAsync();
-        var membership = FamilyMembership.CreateSelf(
-            patient.Id,
-            user.Id,
-            _fakeTime.GetUtcNow()
-        );
+        var membership = FamilyMembership.CreateSelf(patient.Id, user.Id, _fakeTime.GetUtcNow());
 
         membership.CloseSelfMembership(_fakeTime.GetUtcNow().AddHours(1));
 
@@ -340,10 +316,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
             _fakeTime.GetUtcNow()
         );
 
-        membership.Leave(
-            FamilyMembership.MinimumAgeToLeave,
-            _fakeTime.GetUtcNow().AddHours(1)
-        );
+        membership.Leave(FamilyMembership.MinimumAgeToLeave, _fakeTime.GetUtcNow().AddHours(1));
 
         Context.FamilyMemberships.Add(membership);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -383,11 +356,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
         // Arrange
         var user = await CreateUserAsync();
         var patient = await CreatePatientAsync();
-        var membership = FamilyMembership.CreateSelf(
-            patient.Id,
-            user.Id,
-            _fakeTime.GetUtcNow()
-        );
+        var membership = FamilyMembership.CreateSelf(patient.Id, user.Id, _fakeTime.GetUtcNow());
 
         Context.FamilyMemberships.Add(membership);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -408,11 +377,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
         // Arrange
         var user = await CreateUserAsync();
         var patient = await CreatePatientAsync();
-        var membership = FamilyMembership.CreateSelf(
-            patient.Id,
-            user.Id,
-            _fakeTime.GetUtcNow()
-        );
+        var membership = FamilyMembership.CreateSelf(patient.Id, user.Id, _fakeTime.GetUtcNow());
 
         membership.CloseSelfMembership(_fakeTime.GetUtcNow().AddHours(1));
 
@@ -484,11 +449,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
         // Arrange
         var user = await CreateUserAsync();
         var patient = await CreatePatientAsync();
-        var membership = FamilyMembership.CreateSelf(
-            patient.Id,
-            user.Id,
-            _fakeTime.GetUtcNow()
-        );
+        var membership = FamilyMembership.CreateSelf(patient.Id, user.Id, _fakeTime.GetUtcNow());
 
         Context.FamilyMemberships.Add(membership);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -509,11 +470,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
         // Arrange
         var user = await CreateUserAsync();
         var patient = await CreatePatientAsync();
-        var membership = FamilyMembership.CreateSelf(
-            patient.Id,
-            user.Id,
-            _fakeTime.GetUtcNow()
-        );
+        var membership = FamilyMembership.CreateSelf(patient.Id, user.Id, _fakeTime.GetUtcNow());
 
         membership.CloseSelfMembership(_fakeTime.GetUtcNow().AddHours(1));
 
@@ -604,10 +561,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
             _fakeTime.GetUtcNow()
         );
 
-        membership.Leave(
-            FamilyMembership.MinimumAgeToLeave,
-            _fakeTime.GetUtcNow().AddHours(1)
-        );
+        membership.Leave(FamilyMembership.MinimumAgeToLeave, _fakeTime.GetUtcNow().AddHours(1));
 
         Context.FamilyMemberships.Add(membership);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -629,11 +583,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
         // Arrange
         var user = await CreateUserAsync();
         var patient = await CreatePatientAsync();
-        var membership = FamilyMembership.CreateSelf(
-            patient.Id,
-            user.Id,
-            _fakeTime.GetUtcNow()
-        );
+        var membership = FamilyMembership.CreateSelf(patient.Id, user.Id, _fakeTime.GetUtcNow());
 
         Context.FamilyMemberships.Add(membership);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -684,11 +634,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
         // Arrange
         var user = await CreateUserAsync();
         var patient = await CreatePatientAsync();
-        var membership = FamilyMembership.CreateSelf(
-            patient.Id,
-            user.Id,
-            _fakeTime.GetUtcNow()
-        );
+        var membership = FamilyMembership.CreateSelf(patient.Id, user.Id, _fakeTime.GetUtcNow());
 
         membership.CloseSelfMembership(_fakeTime.GetUtcNow().AddHours(1));
 
@@ -740,11 +686,7 @@ public class FamilyMembershipRepositoryTests(PostgresFixture fixture) : IAsyncLi
         var user = await CreateUserAsync();
         var patient = await CreatePatientAsync();
         var otherPatient = await CreatePatientAsync();
-        var membership = FamilyMembership.CreateSelf(
-            patient.Id,
-            user.Id,
-            _fakeTime.GetUtcNow()
-        );
+        var membership = FamilyMembership.CreateSelf(patient.Id, user.Id, _fakeTime.GetUtcNow());
 
         Context.FamilyMemberships.Add(membership);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);

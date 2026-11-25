@@ -317,11 +317,7 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         // Arrange
         var patient = await CreatePatientAsync("John", "Doe");
         var user = await CreatePendingUserAsync();
-        var membership = FamilyMembership.CreateSelf(
-            patient.Id,
-            user.Id,
-            _fakeTime.GetUtcNow()
-        );
+        var membership = FamilyMembership.CreateSelf(patient.Id, user.Id, _fakeTime.GetUtcNow());
 
         var expectedCandidateWithoutContact = CreateExpectedCandidateWithoutContact(patient);
 
@@ -532,11 +528,7 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
     private async Task<User> CreateAccountAsync(Guid patientId)
     {
         var user = await CreatePendingUserAsync();
-        var membership = FamilyMembership.CreateSelf(
-            patientId,
-            user.Id,
-            _fakeTime.GetUtcNow()
-        );
+        var membership = FamilyMembership.CreateSelf(patientId, user.Id, _fakeTime.GetUtcNow());
 
         Context.FamilyMemberships.Add(membership);
 
