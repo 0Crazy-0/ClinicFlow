@@ -11,9 +11,6 @@ public sealed class AppointmentConfiguration : IEntityTypeConfiguration<Appointm
     {
         builder.Property(a => a.Status).HasConversion<string>();
 
-        builder.Property(a => a.StartedAt).HasColumnType("timestamp without time zone");
-        builder.Property(a => a.CompletedAt).HasColumnType("timestamp without time zone");
-
         builder.ComplexProperty(
             a => a.TimeSlot,
             range =>

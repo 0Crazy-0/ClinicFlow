@@ -10,10 +10,6 @@ public sealed class MedicalRecordConsentGrantConfiguration
     /// <inheritdoc />
     public void Configure(EntityTypeBuilder<MedicalRecordConsentGrant> builder)
     {
-        builder.Property(g => g.SignedAt).HasColumnType("timestamp without time zone");
-        builder.Property(g => g.ExpiresAt).HasColumnType("timestamp without time zone");
-        builder.Property(g => g.RevokedAt).HasColumnType("timestamp without time zone");
-
         builder
             .HasOne<Patient>()
             .WithMany()
