@@ -57,11 +57,11 @@ public class Appointment : BaseEntity
 
     public DateOnly? CheckedInAt { get; private set; }
 
-    public DateTime? StartedAt { get; private set; }
+    public DateTimeOffset? StartedAt { get; private set; }
 
-    public DateTime? CompletedAt { get; private set; }
+    public DateTimeOffset? CompletedAt { get; private set; }
 
-    public DateOnly? CancelledAt { get; private set; }
+    public DateTimeOffset? CancelledAt { get; private set; }
 
     public string? CancellationReason { get; private set; }
 
@@ -143,7 +143,7 @@ public class Appointment : BaseEntity
         AddDomainEvent(new AppointmentRescheduledEvent(this, previousDate, previousTimeRange));
     }
 
-    internal void Cancel(Guid cancelledByUserId, string? reason, DateOnly cancelledAt)
+    internal void Cancel(Guid cancelledByUserId, string? reason, DateTimeOffset cancelledAt)
     {
         Guard.NotEmpty(cancelledByUserId);
 
@@ -163,7 +163,7 @@ public class Appointment : BaseEntity
         AddDomainEvent(new AppointmentCancelledEvent(this, cancelledByUserId, reason));
     }
 
-    internal void CancelLate(Guid cancelledByUserId, string? reason, DateOnly cancelledAt)
+    internal void CancelLate(Guid cancelledByUserId, string? reason, DateTimeOffset cancelledAt)
     {
         Guard.NotEmpty(cancelledByUserId);
 
@@ -216,18 +216,23 @@ public class Appointment : BaseEntity
     }
 
     /// <remarks>
-    /// The start must occur on the appointment's scheduled date. Starting after the appointment's end
+    /// The start must occur on the appointment's scheduled date in clinic local time. Starting after the appointment's end
     /// time is allowed, since doctor delays must be recorded as actual events rather than rejected.
     /// </remarks>
-    public void Start(Guid initiatorDoctorId, DateTime startedAt)
+    public void Start(Guid initiatorDoctorId, DateTimeOffset startedAt, TimeZoneInfo clinicTimeZone)
     {
         Guard.NotEmpty(initiatorDoctorId);
         Guard.NotDefault(startedAt);
+        Guard.NotNull(clinicTimeZone);
 
-        if (DateOnly.FromDateTime(startedAt) != ScheduledDate)
+        var localDateTime = TimeZoneInfo.ConvertTime(startedAt, clinicTimeZone).DateTime;
+
+        var localStartDate = DateOnly.FromDateTime(localDateTime);
+
+        if (localStartDate != ScheduledDate)
             throw new DomainValidationException(DomainErrors.Appointment.InvalidStartDate);
 
-        if (startedAt < ScheduledDate.ToDateTime(TimeSlot.Start))
+        if (localDateTime < ScheduledDate.ToDateTime(TimeSlot.Start))
             throw new DomainValidationException(DomainErrors.Appointment.InvalidStartDate);
 
         if (initiatorDoctorId != DoctorId)
@@ -242,11 +247,14 @@ public class Appointment : BaseEntity
         AddDomainEvent(new AppointmentStartedEvent(this, startedAt));
     }
 
-    internal void Complete(DateTime completedAt)
+    internal void Complete(DateTimeOffset completedAt, TimeZoneInfo clinicTimeZone)
     {
         Guard.NotDefault(completedAt);
+        Guard.NotNull(clinicTimeZone);
 
-        if (completedAt < ScheduledDate.ToDateTime(TimeSlot.Start))
+        var localDateTime = TimeZoneInfo.ConvertTime(completedAt, clinicTimeZone).DateTime;
+
+        if (localDateTime < ScheduledDate.ToDateTime(TimeSlot.Start))
             throw new DomainValidationException(DomainErrors.Appointment.InvalidCompletionDate);
 
         if (StartedAt.HasValue && completedAt < StartedAt.Value)
@@ -299,7 +307,7 @@ public class Appointment : BaseEntity
     /// Cancels a displaced appointment that was never reassigned before its scheduled time.
     /// No patient penalty is applied since the cancellation is due to clinic inaction.
     /// </remarks>
-    public void CancelDueToSystemTimeout(DateOnly cancelledAt)
+    public void CancelDueToSystemTimeout(DateTimeOffset cancelledAt)
     {
         Guard.NotDefault(cancelledAt);
 
@@ -439,7 +447,11 @@ public class Appointment : BaseEntity
             );
     }
 
-    private void ApplyCancellation(Guid? cancelledByUserId, string? reason, DateOnly cancelledAt)
+    private void ApplyCancellation(
+        Guid? cancelledByUserId,
+        string? reason,
+        DateTimeOffset cancelledAt
+    )
     {
         CancelledAt = cancelledAt;
         CancelledByUserId = cancelledByUserId;

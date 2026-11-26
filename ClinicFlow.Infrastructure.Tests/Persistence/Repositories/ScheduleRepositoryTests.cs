@@ -536,7 +536,7 @@ public class ScheduleRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
             "password",
             PhoneNumber.Create($"+1555{Random.Shared.Next(1000000, 9999999)}"),
             UserRole.Doctor,
-            _fakeTime.GetLocalNow().DateTime
+            _fakeTime.GetUtcNow()
         );
 
         Context.Users.Add(user);

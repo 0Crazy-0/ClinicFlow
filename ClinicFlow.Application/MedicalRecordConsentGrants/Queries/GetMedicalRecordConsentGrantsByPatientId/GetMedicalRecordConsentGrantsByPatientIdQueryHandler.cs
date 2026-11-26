@@ -41,7 +41,7 @@ public sealed class GetMedicalRecordConsentGrantsByPatientIdQueryHandler(
             cancellationToken
         );
 
-        var referenceTime = timeProvider.GetLocalNow().DateTime;
+        var referenceTime = timeProvider.GetUtcNow();
 
         var dtos = items
             .Select(grant => new MedicalRecordConsentGrantDto(

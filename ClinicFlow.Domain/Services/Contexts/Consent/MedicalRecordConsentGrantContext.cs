@@ -10,5 +10,6 @@ public sealed record MedicalRecordConsentGrantContext
     public required FamilyMembership RecipientMembership { get; init; }
     public bool HasEffectiveGrant { get; init; }
     public Guid RequesterUserId { get; init; }
-    public DateTime ReferenceTime { get; init; }
+    public DateTimeOffset ReferenceTime { get; init; }
+    public required TimeZoneInfo ClinicTimeZone { get; init; }
 }

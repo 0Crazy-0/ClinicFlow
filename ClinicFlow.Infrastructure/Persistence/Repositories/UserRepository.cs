@@ -103,7 +103,7 @@ public sealed class UserRepository(ApplicationDbContext dbContext) : IUserReposi
         IReadOnlyCollection<User> Items,
         int TotalCount
     )> GetLockedOutUsersPaginatedAsync(
-        DateTime referenceTime,
+        DateTimeOffset referenceTime,
         int pageNumber,
         int pageSize,
         CancellationToken cancellationToken = default

@@ -51,6 +51,7 @@ public class MedicalEncounterService(
         ArgumentNullException.ThrowIfNull(context.ExpectedDoctor);
         ArgumentNullException.ThrowIfNull(context.TargetAppointment);
         ArgumentNullException.ThrowIfNull(context.AppointmentType);
+        ArgumentNullException.ThrowIfNull(context.ClinicTimeZone);
 
         if (record.DoctorId != context.ExpectedDoctor.Id)
             throw new BusinessRuleValidationException(DomainErrors.MedicalEncounter.DoctorMismatch);
@@ -62,7 +63,7 @@ public class MedicalEncounterService(
 
         validationPolicy.Validate(context.AppointmentType, record.ClinicalDetails);
 
-        context.TargetAppointment.Complete(context.CompletedAt);
+        context.TargetAppointment.Complete(context.CompletedAt, context.ClinicTimeZone);
     }
 
     public void AppendClinicalDetail(

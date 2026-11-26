@@ -340,7 +340,11 @@ public class CompleteMedicalEncounterCommandHandlerTests
 
         appointment.SetId(id);
         appointment.CheckIn(scheduledDate.ToDateTime(new TimeOnly(9)));
-        appointment.Start(doctorId, scheduledDate.ToDateTime(new TimeOnly(9, 15)));
+        appointment.Start(
+            doctorId,
+            new DateTimeOffset(scheduledDate.ToDateTime(new TimeOnly(9, 15)), TimeSpan.Zero),
+            _fakeTime.LocalTimeZone
+        );
 
         return appointment;
     }

@@ -92,7 +92,7 @@ public class GetFamilyMemberMedicalRecordsByPatientIdQueryHandlerTests
                 x.GetEffectiveRecordIdsAsync(
                     It.IsAny<Guid>(),
                     It.IsAny<Guid>(),
-                    It.IsAny<DateTime>(),
+                    It.IsAny<DateTimeOffset>(),
                     It.IsAny<CancellationToken>()
                 ),
             Times.Never
@@ -182,7 +182,7 @@ public class GetFamilyMemberMedicalRecordsByPatientIdQueryHandlerTests
                 x.GetEffectiveRecordIdsAsync(
                     It.IsAny<Guid>(),
                     It.IsAny<Guid>(),
-                    It.IsAny<DateTime>(),
+                    It.IsAny<DateTimeOffset>(),
                     It.IsAny<CancellationToken>()
                 ),
             Times.Never
@@ -241,7 +241,7 @@ public class GetFamilyMemberMedicalRecordsByPatientIdQueryHandlerTests
                 x.GetEffectiveRecordIdsAsync(
                     patient.Id,
                     membership.Id,
-                    It.IsAny<DateTime>(),
+                    It.IsAny<DateTimeOffset>(),
                     It.IsAny<CancellationToken>()
                 )
             )
@@ -273,7 +273,7 @@ public class GetFamilyMemberMedicalRecordsByPatientIdQueryHandlerTests
                 x.GetEffectiveRecordIdsAsync(
                     patient.Id,
                     membership.Id,
-                    It.IsAny<DateTime>(),
+                    It.IsAny<DateTimeOffset>(),
                     It.IsAny<CancellationToken>()
                 ),
             Times.Once
@@ -395,7 +395,7 @@ public class GetFamilyMemberMedicalRecordsByPatientIdQueryHandlerTests
                 x.GetEffectiveRecordIdsAsync(
                     patient.Id,
                     membership.Id,
-                    It.IsAny<DateTime>(),
+                    It.IsAny<DateTimeOffset>(),
                     It.IsAny<CancellationToken>()
                 )
             )
@@ -444,7 +444,7 @@ public class GetFamilyMemberMedicalRecordsByPatientIdQueryHandlerTests
                 x.GetEffectiveRecordIdsAsync(
                     patient.Id,
                     membership.Id,
-                    It.IsAny<DateTime>(),
+                    It.IsAny<DateTimeOffset>(),
                     It.IsAny<CancellationToken>()
                 ),
             Times.Once

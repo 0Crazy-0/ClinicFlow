@@ -93,7 +93,8 @@ public sealed class CancelAppointmentByPatientCommandHandler(
                 AppointmentType = appointmentType,
                 Specialty = specialty,
                 InitiatorMembership = initiatorMembership,
-                CancelledAt = timeProvider.GetLocalNow().DateTime,
+                CancelledAt = timeProvider.GetUtcNow(),
+                ClinicTimeZone = timeProvider.LocalTimeZone,
             }
         );
 

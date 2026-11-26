@@ -165,6 +165,26 @@ public class MedicalEncounterServiceTests
     }
 
     [Fact]
+    public void ValidateAndCompleteRecord_ShouldThrowArgumentNullException_WhenClinicTimeZoneIsNull()
+    {
+        // Arrange
+        var record = CreateMedicalRecord();
+
+        // Act
+        var act = () =>
+            _sut.ValidateAndCompleteRecord(
+                record,
+                CreateValidContext() with
+                {
+                    ClinicTimeZone = null!,
+                }
+            );
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
     public void ValidateAndCompleteRecord_ShouldThrowBusinessRuleValidationException_WhenDoctorIdMismatch()
     {
         // Arrange
@@ -177,7 +197,8 @@ public class MedicalEncounterServiceTests
             ExpectedDoctor = CreateDoctor(expectedDoctorId),
             TargetAppointment = CreateAppointment(appointmentId),
             AppointmentType = CreateAppointmentType(),
-            CompletedAt = _fakeTime.GetUtcNow().UtcDateTime,
+            CompletedAt = _fakeTime.GetUtcNow(),
+            ClinicTimeZone = _fakeTime.LocalTimeZone,
         };
 
         // Act
@@ -202,7 +223,8 @@ public class MedicalEncounterServiceTests
             ExpectedDoctor = CreateDoctor(doctorId),
             TargetAppointment = CreateAppointment(expectedAppointmentId),
             AppointmentType = CreateAppointmentType(),
-            CompletedAt = _fakeTime.GetUtcNow().UtcDateTime,
+            CompletedAt = _fakeTime.GetUtcNow(),
+            ClinicTimeZone = _fakeTime.LocalTimeZone,
         };
 
         // Act
@@ -233,7 +255,8 @@ public class MedicalEncounterServiceTests
             ExpectedDoctor = CreateDoctor(doctorId),
             TargetAppointment = CreateAppointment(appointmentId),
             AppointmentType = appointmentType,
-            CompletedAt = _fakeTime.GetUtcNow().UtcDateTime,
+            CompletedAt = _fakeTime.GetUtcNow(),
+            ClinicTimeZone = _fakeTime.LocalTimeZone,
         };
 
         // Act
@@ -259,7 +282,8 @@ public class MedicalEncounterServiceTests
             ExpectedDoctor = CreateDoctor(doctorId),
             TargetAppointment = CreateAppointment(appointmentId),
             AppointmentType = appointmentType,
-            CompletedAt = _fakeTime.GetUtcNow().UtcDateTime,
+            CompletedAt = _fakeTime.GetUtcNow(),
+            ClinicTimeZone = _fakeTime.LocalTimeZone,
         };
 
         // Act
@@ -288,7 +312,8 @@ public class MedicalEncounterServiceTests
             ExpectedDoctor = CreateDoctor(doctorId),
             TargetAppointment = CreateAppointment(appointmentId),
             AppointmentType = appointmentType,
-            CompletedAt = _fakeTime.GetUtcNow().UtcDateTime,
+            CompletedAt = _fakeTime.GetUtcNow(),
+            ClinicTimeZone = _fakeTime.LocalTimeZone,
         };
 
         // Act
@@ -608,7 +633,7 @@ public class MedicalEncounterServiceTests
     {
         // Arrange
         var appointment = CreateAppointment();
-        appointment.Complete(_fakeTime.GetUtcNow().UtcDateTime);
+        appointment.Complete(_fakeTime.GetUtcNow(), _fakeTime.LocalTimeZone);
         var record = CreateMedicalRecordWithCategoryForAppointment(
             ProtectedCategory.ResidentialShelter,
             appointment.Id
@@ -648,7 +673,8 @@ public class MedicalEncounterServiceTests
             ExpectedDoctor = CreateDoctor(Guid.CreateVersion7()),
             TargetAppointment = CreateAppointment(Guid.CreateVersion7()),
             AppointmentType = CreateAppointmentType(),
-            CompletedAt = _fakeTime.GetUtcNow().UtcDateTime,
+            CompletedAt = _fakeTime.GetUtcNow(),
+            ClinicTimeZone = _fakeTime.LocalTimeZone,
         };
 
     private static DoctorGuardianInvolvementArgs CreateValidInvolvementArgs() =>
@@ -706,7 +732,11 @@ public class MedicalEncounterServiceTests
         appointment.CheckIn(appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start));
         appointment.Start(
             appointment.DoctorId,
-            appointment.ScheduledDate.ToDateTime(new TimeOnly(10, 15))
+            new DateTimeOffset(
+                appointment.ScheduledDate.ToDateTime(new TimeOnly(10, 15)),
+                TimeSpan.Zero
+            ),
+            _fakeTime.LocalTimeZone
         );
 
         return appointment;
@@ -726,7 +756,11 @@ public class MedicalEncounterServiceTests
         appointment.CheckIn(appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start));
         appointment.Start(
             appointment.DoctorId,
-            appointment.ScheduledDate.ToDateTime(new TimeOnly(10, 15))
+            new DateTimeOffset(
+                appointment.ScheduledDate.ToDateTime(new TimeOnly(10, 15)),
+                TimeSpan.Zero
+            ),
+            _fakeTime.LocalTimeZone
         );
 
         return appointment;

@@ -54,7 +54,7 @@ public sealed class GetFamilyMemberMedicalRecordsByPatientIdQueryHandler(
             authorizedRecordIds = await consentGrantRepository.GetEffectiveRecordIdsAsync(
                 request.PatientId,
                 membership.Id,
-                timeProvider.GetLocalNow().DateTime,
+                timeProvider.GetUtcNow(),
                 cancellationToken
             );
         }

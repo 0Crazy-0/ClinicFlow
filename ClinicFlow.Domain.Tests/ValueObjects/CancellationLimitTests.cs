@@ -48,11 +48,11 @@ public class CancellationLimitTests
     {
         // Arrange
         var limit = CancellationLimit.FromHours(24);
-        var referenceTime = _fakeTime.GetUtcNow().UtcDateTime;
-        var appointmentDateTime = referenceTime.AddHours(48);
+        var referenceTime = _fakeTime.GetUtcNow();
+        var appointmentStart = referenceTime.AddHours(48);
 
         // Act
-        var result = limit.IsNoticePeriodMet(appointmentDateTime, referenceTime);
+        var result = limit.IsNoticePeriodMet(appointmentStart, referenceTime);
 
         // Assert
         result.Should().BeTrue();
@@ -63,11 +63,11 @@ public class CancellationLimitTests
     {
         // Arrange
         var limit = CancellationLimit.FromHours(24);
-        var referenceTime = _fakeTime.GetUtcNow().UtcDateTime;
-        var appointmentDateTime = referenceTime.AddHours(12);
+        var referenceTime = _fakeTime.GetUtcNow();
+        var appointmentStart = referenceTime.AddHours(12);
 
         // Act
-        var result = limit.IsNoticePeriodMet(appointmentDateTime, referenceTime);
+        var result = limit.IsNoticePeriodMet(appointmentStart, referenceTime);
 
         // Assert
         result.Should().BeFalse();
@@ -78,11 +78,11 @@ public class CancellationLimitTests
     {
         // Arrange
         var limit = CancellationLimit.FromHours(24);
-        var referenceTime = _fakeTime.GetUtcNow().UtcDateTime;
-        var appointmentDateTime = referenceTime.AddHours(24);
+        var referenceTime = _fakeTime.GetUtcNow();
+        var appointmentStart = referenceTime.AddHours(24);
 
         // Act
-        var result = limit.IsNoticePeriodMet(appointmentDateTime, referenceTime);
+        var result = limit.IsNoticePeriodMet(appointmentStart, referenceTime);
 
         // Assert
         result.Should().BeTrue();
@@ -93,22 +93,22 @@ public class CancellationLimitTests
     {
         // Arrange
         var limit = CancellationLimit.FromHours(0);
-        var referenceTime = _fakeTime.GetUtcNow().UtcDateTime;
-        var appointmentDateTime = referenceTime.AddMinutes(1);
+        var referenceTime = _fakeTime.GetUtcNow();
+        var appointmentStart = referenceTime.AddMinutes(1);
 
         // Act
-        var result = limit.IsNoticePeriodMet(appointmentDateTime, referenceTime);
+        var result = limit.IsNoticePeriodMet(appointmentStart, referenceTime);
 
         // Assert
         result.Should().BeTrue();
     }
 
     [Fact]
-    public void IsNoticePeriodMet_ShouldThrowException_WhenAppointmentDateTimeIsDefault()
+    public void IsNoticePeriodMet_ShouldThrowException_WhenAppointmentStartIsDefault()
     {
         // Arrange
         var limit = CancellationLimit.FromHours(24);
-        var referenceTime = _fakeTime.GetUtcNow().UtcDateTime;
+        var referenceTime = _fakeTime.GetUtcNow();
 
         // Act
         var act = () => limit.IsNoticePeriodMet(default, referenceTime);
@@ -124,10 +124,10 @@ public class CancellationLimitTests
     {
         // Arrange
         var limit = CancellationLimit.FromHours(24);
-        var appointmentDateTime = _fakeTime.GetUtcNow().UtcDateTime.AddHours(24);
+        var appointmentStart = _fakeTime.GetUtcNow().AddHours(24);
 
         // Act
-        var act = () => limit.IsNoticePeriodMet(appointmentDateTime, default);
+        var act = () => limit.IsNoticePeriodMet(appointmentStart, default);
 
         // Assert
         act.Should()

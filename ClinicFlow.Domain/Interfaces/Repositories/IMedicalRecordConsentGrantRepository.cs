@@ -20,14 +20,14 @@ public interface IMedicalRecordConsentGrantRepository
     Task<bool> HasEffectiveGrantAsync(
         Guid medicalRecordId,
         Guid recipientMembershipId,
-        DateTime referenceTime,
+        DateTimeOffset referenceTime,
         CancellationToken cancellationToken = default
     );
 
     Task<IReadOnlyList<Guid>> GetEffectiveRecordIdsAsync(
         Guid patientId,
         Guid recipientMembershipId,
-        DateTime referenceTime,
+        DateTimeOffset referenceTime,
         CancellationToken cancellationToken = default
     );
 

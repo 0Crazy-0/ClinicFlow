@@ -58,7 +58,7 @@ public class RegisterDoctorUserCommandHandlerTests
         capturedUser.Phone.Value.Should().Be(command.PhoneNumber);
         capturedUser.Role.Should().Be(UserRole.Doctor);
         capturedUser.IsActive.Should().BeTrue();
-        capturedUser.ActivatedAt.Should().Be(_fakeTime.GetUtcNow().DateTime);
+        capturedUser.ActivatedAt.Should().Be(_fakeTime.GetUtcNow());
     }
 
     [Fact]

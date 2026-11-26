@@ -75,7 +75,7 @@ public sealed class GrantMedicalRecordConsentCommandHandler(
                         request.RecipientMembershipId
                     );
 
-                var referenceTime = timeProvider.GetLocalNow().DateTime;
+                var referenceTime = timeProvider.GetUtcNow();
 
                 var hasEffectiveGrant = await consentGrantRepository.HasEffectiveGrantAsync(
                     request.MedicalRecordId,
@@ -94,6 +94,7 @@ public sealed class GrantMedicalRecordConsentCommandHandler(
                         HasEffectiveGrant = hasEffectiveGrant,
                         RequesterUserId = request.RequesterUserId,
                         ReferenceTime = referenceTime,
+                        ClinicTimeZone = timeProvider.LocalTimeZone,
                     }
                 );
 

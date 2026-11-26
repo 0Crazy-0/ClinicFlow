@@ -35,7 +35,7 @@ public class GetLockedOutUsersQueryHandlerTests
         _userRepositoryMock
             .Setup(x =>
                 x.GetLockedOutUsersPaginatedAsync(
-                    It.IsAny<DateTime>(),
+                    It.IsAny<DateTimeOffset>(),
                     1,
                     10,
                     It.IsAny<CancellationToken>()
@@ -69,7 +69,7 @@ public class GetLockedOutUsersQueryHandlerTests
         _userRepositoryMock.Verify(
             x =>
                 x.GetLockedOutUsersPaginatedAsync(
-                    It.IsAny<DateTime>(),
+                    It.IsAny<DateTimeOffset>(),
                     1,
                     10,
                     It.IsAny<CancellationToken>()
@@ -85,7 +85,7 @@ public class GetLockedOutUsersQueryHandlerTests
         _userRepositoryMock
             .Setup(x =>
                 x.GetLockedOutUsersPaginatedAsync(
-                    It.IsAny<DateTime>(),
+                    It.IsAny<DateTimeOffset>(),
                     1,
                     10,
                     It.IsAny<CancellationToken>()
@@ -108,7 +108,7 @@ public class GetLockedOutUsersQueryHandlerTests
         _userRepositoryMock.Verify(
             x =>
                 x.GetLockedOutUsersPaginatedAsync(
-                    It.IsAny<DateTime>(),
+                    It.IsAny<DateTimeOffset>(),
                     1,
                     10,
                     It.IsAny<CancellationToken>()
@@ -128,7 +128,7 @@ public class GetLockedOutUsersQueryHandlerTests
         _userRepositoryMock
             .Setup(x =>
                 x.GetLockedOutUsersPaginatedAsync(
-                    It.IsAny<DateTime>(),
+                    It.IsAny<DateTimeOffset>(),
                     1,
                     10,
                     It.IsAny<CancellationToken>()
@@ -141,13 +141,7 @@ public class GetLockedOutUsersQueryHandlerTests
 
         // Assert
         _userRepositoryMock.Verify(
-            x =>
-                x.GetLockedOutUsersPaginatedAsync(
-                    now.UtcDateTime,
-                    1,
-                    10,
-                    It.IsAny<CancellationToken>()
-                ),
+            x => x.GetLockedOutUsersPaginatedAsync(now, 1, 10, It.IsAny<CancellationToken>()),
             Times.Once
         );
     }

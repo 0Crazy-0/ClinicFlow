@@ -32,7 +32,7 @@ public sealed class AppointmentConsentGrantRepository(ApplicationDbContext dbCon
         Guid patientId,
         Guid recipientMembershipId,
         ProtectedCategory protectedCareCategory,
-        DateTime referenceTime,
+        DateTimeOffset referenceTime,
         CancellationToken cancellationToken = default
     ) =>
         await dbContext.AppointmentConsentGrants.AnyAsync(
@@ -50,7 +50,7 @@ public sealed class AppointmentConsentGrantRepository(ApplicationDbContext dbCon
         Guid patientId,
         Guid recipientMembershipId,
         Guid appointmentId,
-        DateTime referenceTime,
+        DateTimeOffset referenceTime,
         CancellationToken cancellationToken = default
     ) =>
         await dbContext.AppointmentConsentGrants.AnyAsync(
@@ -67,7 +67,7 @@ public sealed class AppointmentConsentGrantRepository(ApplicationDbContext dbCon
     public async Task<IReadOnlyCollection<ProtectedCategory>> GetEffectiveCategoriesAsync(
         Guid patientId,
         Guid recipientMembershipId,
-        DateTime referenceTime,
+        DateTimeOffset referenceTime,
         CancellationToken cancellationToken = default
     ) =>
         await dbContext
@@ -87,7 +87,7 @@ public sealed class AppointmentConsentGrantRepository(ApplicationDbContext dbCon
     public async Task<IReadOnlyCollection<Guid>> GetEffectiveAppointmentIdsAsync(
         Guid patientId,
         Guid recipientMembershipId,
-        DateTime referenceTime,
+        DateTimeOffset referenceTime,
         CancellationToken cancellationToken = default
     ) =>
         await dbContext

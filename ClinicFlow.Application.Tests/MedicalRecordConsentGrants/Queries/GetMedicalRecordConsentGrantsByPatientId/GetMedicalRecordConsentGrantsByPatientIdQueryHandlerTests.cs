@@ -71,7 +71,7 @@ public class GetMedicalRecordConsentGrantsByPatientIdQueryHandlerTests
         var result = await _sut.Handle(query, TestContext.Current.CancellationToken);
 
         // Assert
-        var referenceTime = _fakeTime.GetLocalNow().DateTime;
+        var referenceTime = _fakeTime.GetUtcNow();
         var expectedDtos = new List<MedicalRecordConsentGrant>
         {
             effectiveGrant,

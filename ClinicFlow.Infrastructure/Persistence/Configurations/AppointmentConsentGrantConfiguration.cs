@@ -10,9 +10,6 @@ public sealed class AppointmentConsentGrantConfiguration
     public void Configure(EntityTypeBuilder<AppointmentConsentGrant> builder)
     {
         builder.Property(g => g.Scope).HasConversion<string>();
-        builder.Property(g => g.SignedAt).HasColumnType("timestamp without time zone");
-        builder.Property(g => g.ExpiresAt).HasColumnType("timestamp without time zone");
-        builder.Property(g => g.RevokedAt).HasColumnType("timestamp without time zone");
 
         builder
             .HasOne<Patient>()

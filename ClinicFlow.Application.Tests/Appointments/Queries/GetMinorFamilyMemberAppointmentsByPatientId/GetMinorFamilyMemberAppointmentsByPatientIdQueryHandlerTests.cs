@@ -87,7 +87,7 @@ public class GetMinorFamilyMemberAppointmentsByPatientIdQueryHandlerTests
                 x.GetEffectiveCategoriesAsync(
                     patientId,
                     membership.Id,
-                    It.IsAny<DateTime>(),
+                    It.IsAny<DateTimeOffset>(),
                     It.IsAny<CancellationToken>()
                 )
             )
@@ -98,7 +98,7 @@ public class GetMinorFamilyMemberAppointmentsByPatientIdQueryHandlerTests
                 x.GetEffectiveAppointmentIdsAsync(
                     patientId,
                     membership.Id,
-                    It.IsAny<DateTime>(),
+                    It.IsAny<DateTimeOffset>(),
                     It.IsAny<CancellationToken>()
                 )
             )
@@ -192,7 +192,7 @@ public class GetMinorFamilyMemberAppointmentsByPatientIdQueryHandlerTests
                 x.GetEffectiveCategoriesAsync(
                     patientId,
                     membership.Id,
-                    It.IsAny<DateTime>(),
+                    It.IsAny<DateTimeOffset>(),
                     It.IsAny<CancellationToken>()
                 )
             )
@@ -203,7 +203,7 @@ public class GetMinorFamilyMemberAppointmentsByPatientIdQueryHandlerTests
                 x.GetEffectiveAppointmentIdsAsync(
                     patientId,
                     membership.Id,
-                    It.IsAny<DateTime>(),
+                    It.IsAny<DateTimeOffset>(),
                     It.IsAny<CancellationToken>()
                 )
             )
@@ -355,7 +355,7 @@ public class GetMinorFamilyMemberAppointmentsByPatientIdQueryHandlerTests
                 x.GetEffectiveCategoriesAsync(
                     It.IsAny<Guid>(),
                     It.IsAny<Guid>(),
-                    It.IsAny<DateTime>(),
+                    It.IsAny<DateTimeOffset>(),
                     It.IsAny<CancellationToken>()
                 ),
             Times.Never
@@ -412,7 +412,7 @@ public class GetMinorFamilyMemberAppointmentsByPatientIdQueryHandlerTests
                 x.GetEffectiveCategoriesAsync(
                     It.IsAny<Guid>(),
                     It.IsAny<Guid>(),
-                    It.IsAny<DateTime>(),
+                    It.IsAny<DateTimeOffset>(),
                     It.IsAny<CancellationToken>()
                 ),
             Times.Never
@@ -512,7 +512,7 @@ public class GetMinorFamilyMemberAppointmentsByPatientIdQueryHandlerTests
                 x.GetEffectiveCategoriesAsync(
                     It.IsAny<Guid>(),
                     It.IsAny<Guid>(),
-                    It.IsAny<DateTime>(),
+                    It.IsAny<DateTimeOffset>(),
                     It.IsAny<CancellationToken>()
                 ),
             Times.Never

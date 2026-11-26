@@ -49,7 +49,7 @@ public sealed class CancelAppointmentByDoctorCommandHandler(
             new DoctorCancellationContext
             {
                 InitiatorDoctor = initiatorDoctor,
-                CancelledAt = timeProvider.GetLocalNow().DateTime,
+                CancelledAt = timeProvider.GetUtcNow(),
             }
         );
 

@@ -67,7 +67,8 @@ public sealed class CompleteMedicalEncounterCommandHandler(
             ExpectedDoctor = doctor,
             TargetAppointment = appointment,
             AppointmentType = appointmentType,
-            CompletedAt = timeProvider.GetLocalNow().DateTime,
+            CompletedAt = timeProvider.GetUtcNow(),
+            ClinicTimeZone = timeProvider.LocalTimeZone,
         };
 
         medicalEncounterService.ValidateAndCompleteRecord(medicalRecord, context);

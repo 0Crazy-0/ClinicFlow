@@ -55,7 +55,7 @@ public class RevokeFamilyMemberCommandHandlerTests
         var membership = CreateFamilyMembership(patientId, ownerUserId, startedAt);
 
         _fakeTime.Advance(TimeSpan.FromDays(1));
-        var revokeTime = _fakeTime.GetUtcNow().UtcDateTime;
+        var revokeTime = _fakeTime.GetUtcNow();
 
         var command = new RevokeFamilyMemberCommand(ownerUserId, patientId);
 

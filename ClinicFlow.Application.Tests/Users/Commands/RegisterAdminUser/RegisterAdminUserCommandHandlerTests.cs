@@ -58,7 +58,7 @@ public class RegisterAdminUserCommandHandlerTests
         capturedUser.Phone.Value.Should().Be(command.PhoneNumber);
         capturedUser.Role.Should().Be(UserRole.Admin);
         capturedUser.IsActive.Should().BeTrue();
-        capturedUser.ActivatedAt.Should().Be(_fakeTime.GetUtcNow().DateTime);
+        capturedUser.ActivatedAt.Should().Be(_fakeTime.GetUtcNow());
     }
 
     [Fact]

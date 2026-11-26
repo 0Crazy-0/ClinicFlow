@@ -40,7 +40,7 @@ public sealed class StartAppointmentByDoctorCommandHandler(
                 request.InitiatorUserId
             );
 
-        appointment.Start(initiatorDoctor.Id, timeProvider.GetLocalNow().DateTime);
+        appointment.Start(initiatorDoctor.Id, timeProvider.GetUtcNow(), timeProvider.LocalTimeZone);
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }

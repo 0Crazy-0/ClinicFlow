@@ -38,7 +38,7 @@ public sealed class CancelAppointmentByStaffCommandHandler(
             new StaffCancellationContext
             {
                 InitiatorUserId = request.InitiatorUserId,
-                CancelledAt = timeProvider.GetLocalNow().DateTime,
+                CancelledAt = timeProvider.GetUtcNow(),
             }
         );
 

@@ -90,7 +90,7 @@ public class ApplicationDbContextIntegrationTests(PostgresFixture fixture) : IAs
             "password",
             PhoneNumber.Create($"+1555{Random.Shared.Next(1000000, 9999999)}"),
             UserRole.Doctor,
-            _fakeTime.GetLocalNow().DateTime
+            _fakeTime.GetUtcNow()
         );
 
         _sut.Users.Add(user);

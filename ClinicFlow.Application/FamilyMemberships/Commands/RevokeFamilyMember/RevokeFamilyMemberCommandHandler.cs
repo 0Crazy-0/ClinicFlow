@@ -48,7 +48,7 @@ public sealed class RevokeFamilyMemberCommandHandler(
                 membership.Revoke(
                     patientHasOwnSelfMembership,
                     hasUpcomingAppointmentRequiringGuardianForMinor,
-                    timeProvider.GetLocalNow().DateTime
+                    timeProvider.GetUtcNow()
                 );
 
                 await unitOfWork.SaveChangesAsync(cancellationToken);

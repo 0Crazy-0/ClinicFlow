@@ -10,5 +10,6 @@ public sealed record class MedicalEncounterContext
     public required Doctor ExpectedDoctor { get; init; }
     public required Appointment TargetAppointment { get; init; }
     public required AppointmentTypeDefinition AppointmentType { get; init; }
-    public DateTime CompletedAt { get; init; }
+    public DateTimeOffset CompletedAt { get; init; }
+    public required TimeZoneInfo ClinicTimeZone { get; init; }
 }

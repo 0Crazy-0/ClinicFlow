@@ -11,28 +11,6 @@ public class TimeProviderUsageTests
         ArchitectureContext.FullSolutionArchitecture;
 
     [Fact]
-    public void GetUtcNow_ShouldNotBeCalled_ByAnyProductionApplicationType()
-    {
-        // Arrange
-        var forbiddenMethod = MethodMembers()
-            .That()
-            .AreDeclaredIn(typeof(TimeProvider))
-            .And()
-            .HaveNameStartingWith(nameof(TimeProvider.GetUtcNow));
-
-        var rule = ArchitectureLayers
-            .ApplicationLayer.Should()
-            .NotCallAny(forbiddenMethod)
-            .Because(
-                "timeProvider.GetLocalNow().DateTime must always be used for business rules, "
-                    + "so dates come from the clinic timezone instead of raw UTC"
-            );
-
-        // Act & Assert
-        rule.Check(Architecture);
-    }
-
-    [Fact]
     public void DateTimeOffsetUtcDateTimeGetter_ShouldNotBeCalled_ByAnyProductionApplicationType()
     {
         // Arrange

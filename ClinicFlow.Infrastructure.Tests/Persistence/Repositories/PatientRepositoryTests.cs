@@ -287,7 +287,7 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
             PatientRelationship.Parent,
             FamilyMembershipAccessLevel.Full,
             FamilyMembership.MinimumAdultAge,
-            _fakeTime.GetLocalNow().DateTime
+            _fakeTime.GetUtcNow()
         );
 
         var expectedCandidateWithoutContact = CreateExpectedCandidateWithoutContact(patient);
@@ -317,15 +317,11 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         // Arrange
         var patient = await CreatePatientAsync("John", "Doe");
         var user = await CreatePendingUserAsync();
-        var membership = FamilyMembership.CreateSelf(
-            patient.Id,
-            user.Id,
-            _fakeTime.GetLocalNow().DateTime
-        );
+        var membership = FamilyMembership.CreateSelf(patient.Id, user.Id, _fakeTime.GetUtcNow());
 
         var expectedCandidateWithoutContact = CreateExpectedCandidateWithoutContact(patient);
 
-        membership.CloseSelfMembership(_fakeTime.GetLocalNow().DateTime.AddHours(1));
+        membership.CloseSelfMembership(_fakeTime.GetUtcNow().AddHours(1));
 
         Context.FamilyMemberships.Add(membership);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -532,11 +528,7 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
     private async Task<User> CreateAccountAsync(Guid patientId)
     {
         var user = await CreatePendingUserAsync();
-        var membership = FamilyMembership.CreateSelf(
-            patientId,
-            user.Id,
-            _fakeTime.GetLocalNow().DateTime
-        );
+        var membership = FamilyMembership.CreateSelf(patientId, user.Id, _fakeTime.GetUtcNow());
 
         Context.FamilyMemberships.Add(membership);
 

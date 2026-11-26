@@ -34,7 +34,7 @@ public sealed class RegisterAdminUserCommandHandler(
             passwordHash,
             phone,
             UserRole.Admin,
-            timeProvider.GetLocalNow().DateTime
+            timeProvider.GetUtcNow()
         );
 
         await userRepository.CreateAsync(user, cancellationToken);

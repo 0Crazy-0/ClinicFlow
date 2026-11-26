@@ -204,10 +204,7 @@ public static class DbSeeder
         var users = new List<User>();
         var doctorUsers = new List<User>();
         var patientUsers = new List<User>();
-        var refTime = DateTime.SpecifyKind(
-            timeProvider.GetLocalNow().DateTime,
-            DateTimeKind.Unspecified
-        );
+        var refTime = timeProvider.GetUtcNow();
 
         // Admins (3)
         var adminLoginOffsets = new (int Days, int Hours)[] { (1, 3), (4, 11), (2, 17) };
@@ -379,6 +376,7 @@ public static class DbSeeder
     {
         var patients = new List<Patient>();
         var refTime = timeProvider.GetLocalNow().DateTime;
+        var utcNow = timeProvider.GetUtcNow();
         var faker = seederContext.Faker;
 
         var familyMemberships = new List<FamilyMembership>();
@@ -396,7 +394,7 @@ public static class DbSeeder
                 i % 2 == 0 ? BiologicalSex.Male : BiologicalSex.Female
             );
             patients.Add(patient);
-            familyMemberships.Add(FamilyMembership.CreateSelf(patient.Id, pUser.Id, refTime));
+            familyMemberships.Add(FamilyMembership.CreateSelf(patient.Id, pUser.Id, utcNow));
         }
 
         // Self old
@@ -412,13 +410,14 @@ public static class DbSeeder
                 i % 2 == 0 ? BiologicalSex.Male : BiologicalSex.Female
             );
             patients.Add(patient);
-            familyMemberships.Add(FamilyMembership.CreateSelf(patient.Id, pUser.Id, refTime));
+            familyMemberships.Add(FamilyMembership.CreateSelf(patient.Id, pUser.Id, utcNow));
         }
 
         CreateDependentPatientsAndMemberships(
             faker,
             seederContext,
             refTime,
+            utcNow,
             patientUsers,
             patients,
             familyMemberships
@@ -492,7 +491,7 @@ public static class DbSeeder
     )
     {
         var baseDate = timeProvider.GetLocalNow().DateTime.Date;
-        var generator = new AppointmentGenerator(args, baseDate);
+        var generator = new AppointmentGenerator(args, baseDate, timeProvider.LocalTimeZone);
         var appointments = Enumerable.Range(0, 500).Select(generator.Generate).ToList();
 
         await context.Appointments.AddRangeAsync(appointments, cancellationToken);
@@ -613,7 +612,7 @@ public static class DbSeeder
         return "GEN_INTAKE_V1";
     }
 
-    private static void ApplyPatientVariety(User user, int index, DateTime refTime)
+    private static void ApplyPatientVariety(User user, int index, DateTimeOffset refTime)
     {
         var profile = _variantCycle[index % _variantCycle.Length];
 
@@ -844,6 +843,7 @@ public static class DbSeeder
         Faker faker,
         SeederContext seederContext,
         DateTime refTime,
+        DateTimeOffset utcNow,
         IReadOnlyList<User> patientUsers,
         List<Patient> patients,
         List<FamilyMembership> familyMemberships
@@ -901,7 +901,7 @@ public static class DbSeeder
                         relationship,
                         legalAuthority,
                         patientAge,
-                        refTime
+                        utcNow
                     )
                     : FamilyMembership.CreateAdultFamilyMember(
                         patient.Id,
@@ -909,7 +909,7 @@ public static class DbSeeder
                         relationship,
                         accessLevel,
                         patientAge,
-                        refTime
+                        utcNow
                     )
             );
         }

@@ -31,7 +31,7 @@ public sealed class LeaveFamilyMembershipCommandHandler(
                 request.PatientId
             );
 
-        var referenceTime = timeProvider.GetLocalNow().DateTime;
+        var referenceTime = timeProvider.GetUtcNow();
 
         var patient = await patientRepository.GetByIdAsync(request.PatientId, cancellationToken)
             ?? throw new EntityNotFoundException(
@@ -40,7 +40,7 @@ public sealed class LeaveFamilyMembershipCommandHandler(
                 request.PatientId
             );
 
-        var memberAge = patient.GetAge(DateOnly.FromDateTime(referenceTime));
+        var memberAge = patient.GetAge(DateOnly.FromDateTime(timeProvider.GetLocalNow().DateTime));
 
         membership.Leave(memberAge, referenceTime);
 

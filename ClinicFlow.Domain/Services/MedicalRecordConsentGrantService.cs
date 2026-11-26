@@ -26,6 +26,7 @@ public static class MedicalRecordConsentGrantService
         ArgumentNullException.ThrowIfNull(context.RequesterMembership);
         ArgumentNullException.ThrowIfNull(context.TargetMedicalRecord);
         ArgumentNullException.ThrowIfNull(context.RecipientMembership);
+        ArgumentNullException.ThrowIfNull(context.ClinicTimeZone);
 
         context.RequesterMembership.EnsureConsentGrantSigner(
             context.RequesterUserId,
@@ -33,7 +34,11 @@ public static class MedicalRecordConsentGrantService
             DomainErrors.MedicalRecordConsentGrant.UnauthorizedCreation
         );
 
-        var patientAge = context.TargetPatient.GetAge(DateOnly.FromDateTime(context.ReferenceTime));
+        var referenceDate = DateOnly.FromDateTime(
+            TimeZoneInfo.ConvertTime(context.ReferenceTime, context.ClinicTimeZone).DateTime
+        );
+
+        var patientAge = context.TargetPatient.GetAge(referenceDate);
 
         if (patientAge >= DomainRules.AdultAge)
             throw new DomainValidationException(

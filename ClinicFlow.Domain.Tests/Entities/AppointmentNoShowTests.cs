@@ -94,11 +94,7 @@ public class AppointmentNoShowTests
         // Arrange
         var appointment = CreateAppointment();
 
-        appointment.Cancel(
-            Guid.CreateVersion7(),
-            "Reason",
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime)
-        );
+        appointment.Cancel(Guid.CreateVersion7(), "Reason", _fakeTime.GetUtcNow());
 
         // Act && Assert
         appointment

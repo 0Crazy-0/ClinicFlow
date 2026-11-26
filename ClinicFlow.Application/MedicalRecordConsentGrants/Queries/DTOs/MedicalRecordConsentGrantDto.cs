@@ -6,8 +6,8 @@ public sealed record MedicalRecordConsentGrantDto(
     Guid RecipientMembershipId,
     Guid MedicalRecordId,
     Guid SignedByUserId,
-    DateTime SignedAt,
-    DateTime ExpiresAt,
-    DateTime? RevokedAt,
+    DateTimeOffset SignedAt,
+    DateTimeOffset ExpiresAt,
+    DateTimeOffset? RevokedAt,
     bool IsEffective
 );

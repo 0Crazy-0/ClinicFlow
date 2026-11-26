@@ -35,7 +35,7 @@ public sealed class RevokeAppointmentConsentGrantCommandHandler(
             cancellationToken
         );
 
-        grant.Revoke(requesterIsAuthorized, timeProvider.GetLocalNow().DateTime);
+        grant.Revoke(requesterIsAuthorized, timeProvider.GetUtcNow());
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
     }

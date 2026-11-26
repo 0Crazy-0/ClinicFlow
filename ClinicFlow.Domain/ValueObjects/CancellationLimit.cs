@@ -34,12 +34,12 @@ public record CancellationLimit
         return new CancellationLimit(hours);
     }
 
-    internal bool IsNoticePeriodMet(DateTime appointmentDateTime, DateTime referenceTime)
+    internal bool IsNoticePeriodMet(DateTimeOffset appointmentStart, DateTimeOffset referenceTime)
     {
-        Guard.NotDefault(appointmentDateTime);
+        Guard.NotDefault(appointmentStart);
         Guard.NotDefault(referenceTime);
 
-        var timeUntilAppointment = (appointmentDateTime - referenceTime).TotalHours;
+        var timeUntilAppointment = (appointmentStart - referenceTime).TotalHours;
         return timeUntilAppointment >= Hours;
     }
 }

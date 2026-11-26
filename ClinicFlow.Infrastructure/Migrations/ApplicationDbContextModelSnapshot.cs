@@ -17,7 +17,7 @@ partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     // If you encounter a merge conflict in the line below, it means you need to
     // discard one of the migration branches and recreate its migrations on top of
     // the other branch. See https://aka.ms/efcore-docs-migrations-conflicts for more info.
-    public override string LastMigrationId => "20261120195812_RenamePatientFullNameColumns";
+    public override string LastMigrationId => "20261126005803_ConvertTimestampColumnsToTimestampWithTimeZone";
 
     protected override void BuildModel(ModelBuilder modelBuilder)
     {
@@ -57,8 +57,8 @@ partial class ApplicationDbContextModelSnapshot : ModelSnapshot
                 b.Property<string>("CancellationReason")
                     .HasColumnType("text");
 
-                b.Property<DateOnly?>("CancelledAt")
-                    .HasColumnType("date");
+                b.Property<DateTimeOffset?>("CancelledAt")
+                    .HasColumnType("timestamp with time zone");
 
                 b.Property<Guid?>("CancelledByUserId")
                     .HasColumnType("uuid");
@@ -66,8 +66,8 @@ partial class ApplicationDbContextModelSnapshot : ModelSnapshot
                 b.Property<DateOnly?>("CheckedInAt")
                     .HasColumnType("date");
 
-                b.Property<DateTime?>("CompletedAt")
-                    .HasColumnType("timestamp without time zone");
+                b.Property<DateTimeOffset?>("CompletedAt")
+                    .HasColumnType("timestamp with time zone");
 
                 b.Property<Guid>("DoctorId")
                     .HasColumnType("uuid");
@@ -109,8 +109,8 @@ partial class ApplicationDbContextModelSnapshot : ModelSnapshot
                     .IsRequired()
                     .HasColumnType("text");
 
-                b.Property<DateTime?>("StartedAt")
-                    .HasColumnType("timestamp without time zone");
+                b.Property<DateTimeOffset?>("StartedAt")
+                    .HasColumnType("timestamp with time zone");
 
                 b.Property<string>("Status")
                     .IsRequired()
@@ -162,8 +162,8 @@ partial class ApplicationDbContextModelSnapshot : ModelSnapshot
                 b.Property<Guid?>("AppointmentId")
                     .HasColumnType("uuid");
 
-                b.Property<DateTime>("ExpiresAt")
-                    .HasColumnType("timestamp without time zone");
+                b.Property<DateTimeOffset>("ExpiresAt")
+                    .HasColumnType("timestamp with time zone");
 
                 b.Property<Guid>("PatientId")
                     .HasColumnType("uuid");
@@ -174,8 +174,8 @@ partial class ApplicationDbContextModelSnapshot : ModelSnapshot
                 b.Property<Guid>("RecipientMembershipId")
                     .HasColumnType("uuid");
 
-                b.Property<DateTime?>("RevokedAt")
-                    .HasColumnType("timestamp without time zone");
+                b.Property<DateTimeOffset?>("RevokedAt")
+                    .HasColumnType("timestamp with time zone");
 
                 b.Property<string>("Scope")
                     .IsRequired()
@@ -187,8 +187,8 @@ partial class ApplicationDbContextModelSnapshot : ModelSnapshot
 
                 NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(sequenceNumber);
 
-                b.Property<DateTime>("SignedAt")
-                    .HasColumnType("timestamp without time zone");
+                b.Property<DateTimeOffset>("SignedAt")
+                    .HasColumnType("timestamp with time zone");
 
                 b.Property<Guid>("SignedByUserId")
                     .HasColumnType("uuid");
@@ -436,8 +436,8 @@ partial class ApplicationDbContextModelSnapshot : ModelSnapshot
                     .IsRequired()
                     .HasColumnType("text[]");
 
-                b.Property<DateTime?>("EndedAt")
-                    .HasColumnType("timestamp without time zone");
+                b.Property<DateTimeOffset?>("EndedAt")
+                    .HasColumnType("timestamp with time zone");
 
                 b.Property<string>("LegalAuthority")
                     .IsRequired()
@@ -456,8 +456,8 @@ partial class ApplicationDbContextModelSnapshot : ModelSnapshot
 
                 NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(sequenceNumber);
 
-                b.Property<DateTime>("StartedAt")
-                    .HasColumnType("timestamp without time zone");
+                b.Property<DateTimeOffset>("StartedAt")
+                    .HasColumnType("timestamp with time zone");
 
                 b.Property<string>("Status")
                     .IsRequired()
@@ -543,8 +543,8 @@ partial class ApplicationDbContextModelSnapshot : ModelSnapshot
                     .ValueGeneratedOnAdd()
                     .HasColumnType("uuid");
 
-                b.Property<DateTime>("ExpiresAt")
-                    .HasColumnType("timestamp without time zone");
+                b.Property<DateTimeOffset>("ExpiresAt")
+                    .HasColumnType("timestamp with time zone");
 
                 b.Property<Guid>("MedicalRecordId")
                     .HasColumnType("uuid");
@@ -555,8 +555,8 @@ partial class ApplicationDbContextModelSnapshot : ModelSnapshot
                 b.Property<Guid>("RecipientMembershipId")
                     .HasColumnType("uuid");
 
-                b.Property<DateTime?>("RevokedAt")
-                    .HasColumnType("timestamp without time zone");
+                b.Property<DateTimeOffset?>("RevokedAt")
+                    .HasColumnType("timestamp with time zone");
 
                 var sequenceNumber = b.Property<long>("SequenceNumber")
                     .ValueGeneratedOnAdd()
@@ -564,8 +564,8 @@ partial class ApplicationDbContextModelSnapshot : ModelSnapshot
 
                 NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(sequenceNumber);
 
-                b.Property<DateTime>("SignedAt")
-                    .HasColumnType("timestamp without time zone");
+                b.Property<DateTimeOffset>("SignedAt")
+                    .HasColumnType("timestamp with time zone");
 
                 b.Property<Guid>("SignedByUserId")
                     .HasColumnType("uuid");
@@ -762,17 +762,17 @@ partial class ApplicationDbContextModelSnapshot : ModelSnapshot
                     .IsUnicode(false)
                     .HasColumnType("character varying(64)");
 
-                b.Property<DateTime?>("ConsumedAt")
-                    .HasColumnType("timestamp without time zone");
+                b.Property<DateTimeOffset?>("ConsumedAt")
+                    .HasColumnType("timestamp with time zone");
 
-                b.Property<DateTime>("ExpiresAt")
-                    .HasColumnType("timestamp without time zone");
+                b.Property<DateTimeOffset>("ExpiresAt")
+                    .HasColumnType("timestamp with time zone");
 
                 b.Property<int>("FailedAttempts")
                     .HasColumnType("integer");
 
-                b.Property<DateTime>("IssuedAt")
-                    .HasColumnType("timestamp without time zone");
+                b.Property<DateTimeOffset>("IssuedAt")
+                    .HasColumnType("timestamp with time zone");
 
                 b.Property<Guid>("IssuedByUserId")
                     .HasColumnType("uuid");
@@ -783,8 +783,8 @@ partial class ApplicationDbContextModelSnapshot : ModelSnapshot
 
                 NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(sequenceNumber);
 
-                b.Property<DateTime?>("SupersededAt")
-                    .HasColumnType("timestamp without time zone");
+                b.Property<DateTimeOffset?>("SupersededAt")
+                    .HasColumnType("timestamp with time zone");
 
                 b.Property<Guid>("UserId")
                     .HasColumnType("uuid");
@@ -899,8 +899,8 @@ partial class ApplicationDbContextModelSnapshot : ModelSnapshot
                     .ValueGeneratedOnAdd()
                     .HasColumnType("uuid");
 
-                b.Property<DateTime?>("ActivatedAt")
-                    .HasColumnType("timestamp without time zone");
+                b.Property<DateTimeOffset?>("ActivatedAt")
+                    .HasColumnType("timestamp with time zone");
 
                 b.Property<string>("Email")
                     .IsRequired()
@@ -913,11 +913,11 @@ partial class ApplicationDbContextModelSnapshot : ModelSnapshot
                 b.Property<bool>("IsActive")
                     .HasColumnType("boolean");
 
-                b.Property<DateTime?>("LastLoginAt")
-                    .HasColumnType("timestamp without time zone");
+                b.Property<DateTimeOffset?>("LastLoginAt")
+                    .HasColumnType("timestamp with time zone");
 
-                b.Property<DateTime?>("LockoutEnd")
-                    .HasColumnType("timestamp without time zone");
+                b.Property<DateTimeOffset?>("LockoutEnd")
+                    .HasColumnType("timestamp with time zone");
 
                 b.Property<string>("PasswordHash")
                     .HasColumnType("text");
