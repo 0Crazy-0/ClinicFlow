@@ -265,10 +265,7 @@ public class MedicalSpecialtyTests
     public void IsCancellationAllowed_ShouldReturnTrue_WhenSufficientNotice() =>
         MedicalSpecialty
             .Create("Cardiology", "Description", 30, 24)
-            .IsCancellationAllowed(
-                _fakeTime.GetUtcNow().UtcDateTime.AddHours(48).Date,
-                _fakeTime.GetUtcNow().UtcDateTime
-            )
+            .IsCancellationAllowed(_fakeTime.GetUtcNow().AddHours(48), _fakeTime.GetUtcNow())
             .Should()
             .BeTrue(); // Arrange & Act & Assert
 
@@ -276,10 +273,7 @@ public class MedicalSpecialtyTests
     public void IsCancellationAllowed_ShouldReturnFalse_WhenInsufficientNotice() =>
         MedicalSpecialty
             .Create("Cardiology", "Description", 30, 24)
-            .IsCancellationAllowed(
-                _fakeTime.GetUtcNow().UtcDateTime.AddHours(2).Date,
-                _fakeTime.GetUtcNow().UtcDateTime
-            )
+            .IsCancellationAllowed(_fakeTime.GetUtcNow().AddHours(2), _fakeTime.GetUtcNow())
             .Should()
             .BeFalse(); // Arrange & Act & Assert
 

@@ -2028,7 +2028,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             TimeRange.Create(new TimeOnly(9, 0), new TimeOnly(10, 0)),
             Guid.CreateVersion7()
         );
-        appointment.Cancel(Guid.CreateVersion7(), "Reason", scheduledDate);
+        appointment.Cancel(Guid.CreateVersion7(), "Reason", _fakeTime.GetUtcNow());
         Context.Appointments.Add(appointment);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
 
@@ -2336,11 +2336,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             TimeRange.Create(new TimeOnly(9), new TimeOnly(10)),
             Guid.CreateVersion7()
         );
-        appointment.Cancel(
-            Guid.CreateVersion7(),
-            "Patient request",
-            DateOnly.FromDateTime(_fakeTime.GetLocalNow().DateTime)
-        );
+        appointment.Cancel(Guid.CreateVersion7(), "Patient request", _fakeTime.GetUtcNow());
 
         Context.Appointments.Add(appointment);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);
@@ -2746,7 +2742,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             scheduledDate,
             TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0))
         );
-        existingAppointment.Cancel(Guid.CreateVersion7(), "Reason", scheduledDate);
+        existingAppointment.Cancel(Guid.CreateVersion7(), "Reason", _fakeTime.GetUtcNow());
 
         Context.Appointments.Add(existingAppointment);
 
@@ -2775,7 +2771,11 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             TimeRange.Create(new TimeOnly(10, 0), new TimeOnly(11, 0))
         );
 
-        existingAppointment.CancelLate(Guid.CreateVersion7(), "Late Cancelled", scheduledDate);
+        existingAppointment.CancelLate(
+            Guid.CreateVersion7(),
+            "Late Cancelled",
+            _fakeTime.GetUtcNow()
+        );
 
         Context.Appointments.Add(existingAppointment);
 
@@ -2862,7 +2862,7 @@ public class AppointmentRepositoryTests(PostgresFixture fixture) : IAsyncLifetim
             Guid.CreateVersion7()
         );
 
-        appointment3.Cancel(Guid.CreateVersion7(), "cancelled", baseDate);
+        appointment3.Cancel(Guid.CreateVersion7(), "cancelled", _fakeTime.GetUtcNow());
 
         Context.Appointments.Add(appointment3);
         await Context.SaveChangesAsync(TestContext.Current.CancellationToken);

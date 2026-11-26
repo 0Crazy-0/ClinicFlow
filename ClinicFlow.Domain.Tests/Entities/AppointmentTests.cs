@@ -177,19 +177,13 @@ public class AppointmentTests
         var userId = Guid.CreateVersion7();
 
         // Act
-        appointment.Cancel(
-            userId,
-            "Reason",
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime)
-        );
+        appointment.Cancel(userId, "Reason", _fakeTime.GetUtcNow());
 
         // Assert
         appointment.Status.Should().Be(AppointmentStatus.Cancelled);
         appointment.CancelledByUserId.Should().Be(userId);
         appointment.CancellationReason.Should().Be("Reason");
-        appointment
-            .CancelledAt.Should()
-            .Be(DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime));
+        appointment.CancelledAt.Should().Be(_fakeTime.GetUtcNow());
         appointment.DomainEvents.OfType<AppointmentCancelledEvent>().Should().ContainSingle();
     }
 
@@ -198,7 +192,7 @@ public class AppointmentTests
     {
         // Arrange
         var appointment = CreateAppointment();
-        var cancelledAt = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+        var cancelledAt = _fakeTime.GetUtcNow();
 
         // Act
         var act = () => appointment.Cancel(Guid.Empty, "Reason", cancelledAt);
@@ -217,7 +211,7 @@ public class AppointmentTests
         // Arrange
         var appointment = CreateAppointment();
         var userId = Guid.CreateVersion7();
-        var cancelledAt = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+        var cancelledAt = _fakeTime.GetUtcNow();
 
         // Act
         var act = () => appointment.Cancel(userId, reason, cancelledAt);
@@ -251,19 +245,10 @@ public class AppointmentTests
         var appointment = CreateAppointment();
         var userId = Guid.CreateVersion7();
 
-        appointment.Cancel(
-            userId,
-            "First",
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime)
-        );
+        appointment.Cancel(userId, "First", _fakeTime.GetUtcNow());
 
         // Act
-        var act = () =>
-            appointment.Cancel(
-                userId,
-                "Second",
-                DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime)
-            );
+        var act = () => appointment.Cancel(userId, "Second", _fakeTime.GetUtcNow());
 
         // Assert
         act.Should()
@@ -279,19 +264,10 @@ public class AppointmentTests
         var appointment = CreateAppointment();
         var userId = Guid.CreateVersion7();
 
-        appointment.CancelLate(
-            userId,
-            "Late",
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime)
-        );
+        appointment.CancelLate(userId, "Late", _fakeTime.GetUtcNow());
 
         // Act
-        var act = () =>
-            appointment.Cancel(
-                userId,
-                "Second",
-                DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime)
-            );
+        var act = () => appointment.Cancel(userId, "Second", _fakeTime.GetUtcNow());
 
         // Assert
         act.Should()
@@ -308,12 +284,7 @@ public class AppointmentTests
         var reason = new string('A', Appointment.MaxCancellationReasonLength + 1);
 
         // Act
-        var act = () =>
-            appointment.Cancel(
-                Guid.CreateVersion7(),
-                reason,
-                DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime)
-            );
+        var act = () => appointment.Cancel(Guid.CreateVersion7(), reason, _fakeTime.GetUtcNow());
 
         // Assert
         act.Should()
@@ -328,7 +299,7 @@ public class AppointmentTests
         var appointment = CreateAppointment();
         var userId = Guid.CreateVersion7();
         var reason = new string('A', Appointment.MaxCancellationReasonLength);
-        var cancelledAt = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+        var cancelledAt = _fakeTime.GetUtcNow();
 
         // Act
         appointment.Cancel(userId, reason, cancelledAt);
@@ -347,7 +318,7 @@ public class AppointmentTests
         // Arrange
         var appointment = CreateAppointment();
         var userId = Guid.CreateVersion7();
-        var cancelledAt = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+        var cancelledAt = _fakeTime.GetUtcNow();
 
         // Act
         appointment.Cancel(userId, null, cancelledAt);
@@ -381,7 +352,7 @@ public class AppointmentTests
     {
         // Arrange
         var appointment = CreateAppointment();
-        var cancelledAt = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+        var cancelledAt = _fakeTime.GetUtcNow();
 
         // Act
         var act = () => appointment.CancelLate(Guid.Empty, "Reason", cancelledAt);
@@ -400,7 +371,7 @@ public class AppointmentTests
         // Arrange
         var appointment = CreateAppointment();
         var userId = Guid.CreateVersion7();
-        var cancelledAt = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+        var cancelledAt = _fakeTime.GetUtcNow();
 
         // Act
         var act = () => appointment.CancelLate(userId, reason, cancelledAt);
@@ -420,11 +391,7 @@ public class AppointmentTests
 
         // Act
         var act = () =>
-            appointment.CancelLate(
-                Guid.CreateVersion7(),
-                reason,
-                DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime)
-            );
+            appointment.CancelLate(Guid.CreateVersion7(), reason, _fakeTime.GetUtcNow());
 
         // Assert
         act.Should()
@@ -439,7 +406,7 @@ public class AppointmentTests
         var appointment = CreateAppointment();
         var userId = Guid.CreateVersion7();
         var reason = new string('A', Appointment.MaxCancellationReasonLength);
-        var cancelledAt = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+        var cancelledAt = _fakeTime.GetUtcNow();
 
         // Act
         appointment.CancelLate(userId, reason, cancelledAt);
@@ -458,7 +425,7 @@ public class AppointmentTests
         // Arrange
         var appointment = CreateAppointment();
         var userId = Guid.CreateVersion7();
-        var cancelledAt = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+        var cancelledAt = _fakeTime.GetUtcNow();
 
         // Act
         appointment.CancelLate(userId, null, cancelledAt);
@@ -479,19 +446,13 @@ public class AppointmentTests
         var userId = Guid.CreateVersion7();
 
         // Act
-        appointment.CancelLate(
-            userId,
-            "Late reason",
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime)
-        );
+        appointment.CancelLate(userId, "Late reason", _fakeTime.GetUtcNow());
 
         // Assert
         appointment.Status.Should().Be(AppointmentStatus.LateCancellation);
         appointment.CancelledByUserId.Should().Be(userId);
         appointment.CancellationReason.Should().Be("Late reason");
-        appointment
-            .CancelledAt.Should()
-            .Be(DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime));
+        appointment.CancelledAt.Should().Be(_fakeTime.GetUtcNow());
         appointment.DomainEvents.OfType<AppointmentLateCancelledEvent>().Should().ContainSingle();
     }
 
@@ -502,19 +463,10 @@ public class AppointmentTests
         var appointment = CreateAppointment();
         var userId = Guid.CreateVersion7();
 
-        appointment.Cancel(
-            userId,
-            "First",
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime)
-        );
+        appointment.Cancel(userId, "First", _fakeTime.GetUtcNow());
 
         // Act
-        var act = () =>
-            appointment.CancelLate(
-                userId,
-                "Second",
-                DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime)
-            );
+        var act = () => appointment.CancelLate(userId, "Second", _fakeTime.GetUtcNow());
 
         // Assert
         act.Should()
@@ -530,19 +482,10 @@ public class AppointmentTests
         var appointment = CreateAppointment();
         var userId = Guid.CreateVersion7();
 
-        appointment.CancelLate(
-            userId,
-            "First",
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime)
-        );
+        appointment.CancelLate(userId, "First", _fakeTime.GetUtcNow());
 
         // Act
-        var act = () =>
-            appointment.CancelLate(
-                userId,
-                "Second",
-                DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime)
-            );
+        var act = () => appointment.CancelLate(userId, "Second", _fakeTime.GetUtcNow());
 
         // Assert
         act.Should()
@@ -614,11 +557,7 @@ public class AppointmentTests
         // Arrange
         var appointment = CreateAppointment();
 
-        appointment.Cancel(
-            Guid.CreateVersion7(),
-            "Reason",
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime)
-        );
+        appointment.Cancel(Guid.CreateVersion7(), "Reason", _fakeTime.GetUtcNow());
 
         var newDate = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddDays(2));
         var newTimeRange = TimeRange.Create(new TimeOnly(14), new TimeOnly(15));
@@ -762,11 +701,7 @@ public class AppointmentTests
         // Arrange
         var appointment = CreateAppointment();
 
-        appointment.Cancel(
-            Guid.CreateVersion7(),
-            "Reason",
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime)
-        );
+        appointment.Cancel(Guid.CreateVersion7(), "Reason", _fakeTime.GetUtcNow());
 
         // Act
         var act = () =>
@@ -1192,11 +1127,7 @@ public class AppointmentTests
     {
         // Arrange
         var appointment = CreateAppointment();
-        appointment.Cancel(
-            Guid.CreateVersion7(),
-            "Reason",
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime)
-        );
+        appointment.Cancel(Guid.CreateVersion7(), "Reason", _fakeTime.GetUtcNow());
 
         // Act & Assert
         appointment
@@ -1319,7 +1250,7 @@ public class AppointmentTests
         var appointment = CreateAppointment();
 
         appointment.MarkAsRequiresReassignment();
-        var cancelledAt = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime);
+        var cancelledAt = _fakeTime.GetUtcNow();
 
         // Act
         appointment.CancelDueToSystemTimeout(cancelledAt);
@@ -1355,10 +1286,7 @@ public class AppointmentTests
         var appointment = CreateAppointment();
 
         // Act
-        var act = () =>
-            appointment.CancelDueToSystemTimeout(
-                DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime)
-            );
+        var act = () => appointment.CancelDueToSystemTimeout(_fakeTime.GetUtcNow());
 
         // Assert
         act.Should()
@@ -1838,11 +1766,7 @@ public class AppointmentTests
         var appointment = CreateAppointment();
 
         appointment.UpdatePatientNotes("notes");
-        appointment.Cancel(
-            Guid.CreateVersion7(),
-            "Reason",
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime)
-        );
+        appointment.Cancel(Guid.CreateVersion7(), "Reason", _fakeTime.GetUtcNow());
 
         // Act & Assert
         appointment
@@ -1861,11 +1785,7 @@ public class AppointmentTests
         var appointment = CreateAppointment();
 
         appointment.UpdatePatientNotes("notes");
-        appointment.CancelLate(
-            Guid.CreateVersion7(),
-            "Reason",
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime)
-        );
+        appointment.CancelLate(Guid.CreateVersion7(), "Reason", _fakeTime.GetUtcNow());
 
         // Act & Assert
         appointment
@@ -2049,11 +1969,7 @@ public class AppointmentTests
         var authorId = Guid.CreateVersion7();
 
         appointment.UpdateGuardianNotes("notes", authorId);
-        appointment.Cancel(
-            Guid.CreateVersion7(),
-            "Reason",
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime)
-        );
+        appointment.Cancel(Guid.CreateVersion7(), "Reason", _fakeTime.GetUtcNow());
 
         // Act & Assert
         appointment
@@ -2074,11 +1990,7 @@ public class AppointmentTests
         var authorId = Guid.CreateVersion7();
 
         appointment.UpdateGuardianNotes("notes", authorId);
-        appointment.CancelLate(
-            Guid.CreateVersion7(),
-            "Reason",
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime)
-        );
+        appointment.CancelLate(Guid.CreateVersion7(), "Reason", _fakeTime.GetUtcNow());
 
         // Act & Assert
         appointment
@@ -2226,11 +2138,7 @@ public class AppointmentTests
         // Arrange
         var appointment = CreateAppointment();
 
-        appointment.Cancel(
-            Guid.CreateVersion7(),
-            "Reason",
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime)
-        );
+        appointment.Cancel(Guid.CreateVersion7(), "Reason", _fakeTime.GetUtcNow());
 
         // Act & Assert
         appointment
@@ -2246,11 +2154,7 @@ public class AppointmentTests
         // Arrange
         var appointment = CreateAppointment();
 
-        appointment.CancelLate(
-            Guid.CreateVersion7(),
-            "Reason",
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime)
-        );
+        appointment.CancelLate(Guid.CreateVersion7(), "Reason", _fakeTime.GetUtcNow());
 
         // Act & Assert
         appointment
@@ -2374,11 +2278,7 @@ public class AppointmentTests
         // Arrange
         var appointment = CreateAppointment();
 
-        appointment.Cancel(
-            Guid.CreateVersion7(),
-            "Reason",
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime)
-        );
+        appointment.Cancel(Guid.CreateVersion7(), "Reason", _fakeTime.GetUtcNow());
 
         // Act & Assert
         appointment
@@ -2394,11 +2294,7 @@ public class AppointmentTests
         // Arrange
         var appointment = CreateAppointment();
 
-        appointment.CancelLate(
-            Guid.CreateVersion7(),
-            "Reason",
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime)
-        );
+        appointment.CancelLate(Guid.CreateVersion7(), "Reason", _fakeTime.GetUtcNow());
 
         // Act & Assert
         appointment

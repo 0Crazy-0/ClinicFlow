@@ -100,7 +100,7 @@ public class AppointmentCancellationServiceTests
             new StaffCancellationContext
             {
                 InitiatorUserId = initiatorUserId,
-                CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
+                CancelledAt = _fakeTime.GetUtcNow(),
             }
         );
 
@@ -124,7 +124,7 @@ public class AppointmentCancellationServiceTests
             new StaffCancellationContext
             {
                 InitiatorUserId = initiatorUserId,
-                CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
+                CancelledAt = _fakeTime.GetUtcNow(),
             }
         );
 
@@ -168,7 +168,7 @@ public class AppointmentCancellationServiceTests
                 new DoctorCancellationContext
                 {
                     InitiatorDoctor = CreateDoctor(),
-                    CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
+                    CancelledAt = _fakeTime.GetUtcNow(),
                 }
             );
 
@@ -190,7 +190,7 @@ public class AppointmentCancellationServiceTests
                 new DoctorCancellationContext
                 {
                     InitiatorDoctor = CreateDoctor(),
-                    CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
+                    CancelledAt = _fakeTime.GetUtcNow(),
                 }
             );
 
@@ -230,7 +230,7 @@ public class AppointmentCancellationServiceTests
                 new DoctorCancellationContext
                 {
                     InitiatorDoctor = null!,
-                    CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
+                    CancelledAt = _fakeTime.GetUtcNow(),
                 }
             );
 
@@ -263,7 +263,7 @@ public class AppointmentCancellationServiceTests
             new DoctorCancellationContext
             {
                 InitiatorDoctor = doctor,
-                CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
+                CancelledAt = _fakeTime.GetUtcNow(),
             }
         );
 
@@ -298,7 +298,7 @@ public class AppointmentCancellationServiceTests
                 new DoctorCancellationContext
                 {
                     InitiatorDoctor = otherDoctor,
-                    CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
+                    CancelledAt = _fakeTime.GetUtcNow(),
                 }
             );
 
@@ -425,6 +425,24 @@ public class AppointmentCancellationServiceTests
         act.Should().Throw<ArgumentNullException>();
     }
 
+    [Fact]
+    public void CancelByPatient_ShouldThrowArgumentNullException_WhenClinicTimeZoneIsNull()
+    {
+        // Arrange & Act
+        var act = () =>
+            AppointmentCancellationService.CancelByPatient(
+                CreateAppointment(),
+                CreateValidArgs(),
+                CreateValidContext() with
+                {
+                    ClinicTimeZone = null!,
+                }
+            );
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>();
+    }
+
     [Theory]
     [InlineData(30, AppointmentPurpose.Checkup)]
     [InlineData(30, AppointmentPurpose.Emergency)]
@@ -435,7 +453,7 @@ public class AppointmentCancellationServiceTests
         var patientId = Guid.CreateVersion7();
         var patient = CreatePatient(patientId, age);
         var appointment = CreateAppointment(patientId);
-        var cancelledAt = _fakeTime.GetUtcNow().UtcDateTime;
+        var cancelledAt = _fakeTime.GetUtcNow();
 
         var context = new AppointmentCancellationContext
         {
@@ -448,6 +466,7 @@ public class AppointmentCancellationServiceTests
                 initiatorUserId,
                 _fakeTime.GetUtcNow().UtcDateTime
             ),
+            ClinicTimeZone = TimeZoneInfo.Local,
         };
 
         var args = new PatientCancellationArgs { Reason = "Patient reason" };
@@ -458,7 +477,7 @@ public class AppointmentCancellationServiceTests
         // Assert
         appointment.Status.Should().Be(AppointmentStatus.Cancelled);
         appointment.CancelledByUserId.Should().Be(initiatorUserId);
-        appointment.CancelledAt.Should().Be(DateOnly.FromDateTime(cancelledAt));
+        appointment.CancelledAt.Should().Be(cancelledAt);
         appointment.CancellationReason.Should().Be(args.Reason);
         appointment.DomainEvents.OfType<AppointmentCancelledEvent>().Should().ContainSingle();
     }
@@ -471,7 +490,7 @@ public class AppointmentCancellationServiceTests
         var patientId = Guid.CreateVersion7();
         var patient = CreatePatient(patientId, 10);
         var appointment = CreateAppointment(patientId);
-        var cancelledAt = _fakeTime.GetUtcNow().UtcDateTime;
+        var cancelledAt = _fakeTime.GetUtcNow();
 
         var context = new AppointmentCancellationContext
         {
@@ -487,6 +506,7 @@ public class AppointmentCancellationServiceTests
                 FamilyMembership.MinimumAdultAge - 1,
                 _fakeTime.GetUtcNow().UtcDateTime
             ),
+            ClinicTimeZone = TimeZoneInfo.Local,
         };
 
         var args = new PatientCancellationArgs { Reason = "Patient reason" };
@@ -497,7 +517,7 @@ public class AppointmentCancellationServiceTests
         // Assert
         appointment.Status.Should().Be(AppointmentStatus.Cancelled);
         appointment.CancelledByUserId.Should().Be(initiatorUserId);
-        appointment.CancelledAt.Should().Be(DateOnly.FromDateTime(cancelledAt));
+        appointment.CancelledAt.Should().Be(cancelledAt);
         appointment.CancellationReason.Should().Be(args.Reason);
         appointment.DomainEvents.OfType<AppointmentCancelledEvent>().Should().ContainSingle();
     }
@@ -506,7 +526,6 @@ public class AppointmentCancellationServiceTests
     public void CancelByPatient_ShouldThrowUnauthorized_WhenPatientIsSelfButCategoryIsProcedure()
     {
         // Arrange
-        var initiatorUserId = Guid.CreateVersion7();
         var patientId = Guid.CreateVersion7();
         var patient = CreatePatient(patientId, 30);
         var appointment = CreateAppointment(patientId);
@@ -515,9 +534,10 @@ public class AppointmentCancellationServiceTests
         {
             TargetPatient = patient,
             AppointmentType = CreateAppointmentType(AppointmentPurpose.Procedure),
-            CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
+            CancelledAt = _fakeTime.GetUtcNow(),
             Specialty = CreateSpecialty(),
             InitiatorMembership = CreateSelfMembership(),
+            ClinicTimeZone = TimeZoneInfo.Local,
         };
 
         var args = new PatientCancellationArgs { Reason = "Patient reason" };
@@ -550,9 +570,10 @@ public class AppointmentCancellationServiceTests
         {
             TargetPatient = patient,
             AppointmentType = CreateAppointmentType(AppointmentPurpose.Checkup),
-            CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
+            CancelledAt = _fakeTime.GetUtcNow(),
             Specialty = CreateSpecialty(),
             InitiatorMembership = membership,
+            ClinicTimeZone = TimeZoneInfo.Local,
         };
         var args = new PatientCancellationArgs { Reason = "Patient reason" };
 
@@ -578,7 +599,7 @@ public class AppointmentCancellationServiceTests
         {
             TargetPatient = patient,
             AppointmentType = CreateAppointmentType(AppointmentPurpose.Emergency),
-            CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
+            CancelledAt = _fakeTime.GetUtcNow(),
             Specialty = CreateSpecialty(),
             InitiatorMembership = FamilyMembership.CreateAdultFamilyMember(
                 patientId,
@@ -588,6 +609,7 @@ public class AppointmentCancellationServiceTests
                 FamilyMembership.MinimumAdultAge,
                 _fakeTime.GetUtcNow().UtcDateTime
             ),
+            ClinicTimeZone = TimeZoneInfo.Local,
         };
 
         var args = new PatientCancellationArgs { Reason = "Patient reason" };
@@ -614,7 +636,7 @@ public class AppointmentCancellationServiceTests
         {
             TargetPatient = patient,
             AppointmentType = CreateAppointmentType(AppointmentPurpose.Emergency),
-            CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
+            CancelledAt = _fakeTime.GetUtcNow(),
             Specialty = CreateSpecialty(),
 
             // Membership created when the patient was a minor and still Active.
@@ -627,6 +649,7 @@ public class AppointmentCancellationServiceTests
                 FamilyMembership.MinimumAdultAge - 1,
                 _fakeTime.GetUtcNow().UtcDateTime
             ),
+            ClinicTimeZone = TimeZoneInfo.Local,
         };
 
         var args = new PatientCancellationArgs { Reason = "Patient reason" };
@@ -653,7 +676,7 @@ public class AppointmentCancellationServiceTests
         {
             TargetPatient = patient,
             AppointmentType = CreateAppointmentType(AppointmentPurpose.Emergency),
-            CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
+            CancelledAt = _fakeTime.GetUtcNow(),
             Specialty = CreateSpecialty(),
 
             // Membership created when the patient was a minor and still Active.
@@ -666,6 +689,7 @@ public class AppointmentCancellationServiceTests
                 FamilyMembership.MinimumAdultAge - 1,
                 _fakeTime.GetUtcNow().UtcDateTime
             ),
+            ClinicTimeZone = TimeZoneInfo.Local,
         };
 
         var args = new PatientCancellationArgs { Reason = "Patient reason" };
@@ -690,9 +714,10 @@ public class AppointmentCancellationServiceTests
         {
             TargetPatient = patient,
             AppointmentType = CreateAppointmentType(AppointmentPurpose.Checkup),
-            CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
+            CancelledAt = _fakeTime.GetUtcNow(),
             Specialty = CreateSpecialty(),
             InitiatorMembership = CreateSelfMembership(),
+            ClinicTimeZone = TimeZoneInfo.Local,
         };
 
         var args = new PatientCancellationArgs { Reason = "Patient reason" };
@@ -739,6 +764,7 @@ public class AppointmentCancellationServiceTests
                 initiatorUserId,
                 _fakeTime.GetUtcNow().UtcDateTime
             ),
+            ClinicTimeZone = TimeZoneInfo.Local,
         };
 
         var args = new PatientCancellationArgs { Reason = "Too late" };
@@ -749,7 +775,7 @@ public class AppointmentCancellationServiceTests
         // Assert
         appointment.Status.Should().Be(AppointmentStatus.LateCancellation);
         appointment.CancelledByUserId.Should().Be(initiatorUserId);
-        appointment.CancelledAt.Should().Be(DateOnly.FromDateTime(cancelledAt));
+        appointment.CancelledAt.Should().Be(cancelledAt);
         appointment.CancellationReason.Should().Be(args.Reason);
         appointment.DomainEvents.OfType<AppointmentLateCancelledEvent>().Should().ContainSingle();
     }
@@ -804,7 +830,8 @@ public class AppointmentCancellationServiceTests
 
     private Patient CreatePatient(Guid id, int age)
     {
-        var dateOfBirth = DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-age));
+        var localNow = TimeZoneInfo.ConvertTime(_fakeTime.GetUtcNow(), TimeZoneInfo.Local).DateTime;
+        var dateOfBirth = DateOnly.FromDateTime(localNow.AddYears(-age));
         var patient = Patient.CreateProfile(
             PersonName.Create("Test", null, "Test"),
             dateOfBirth,
@@ -830,15 +857,12 @@ public class AppointmentCancellationServiceTests
             AppointmentType = CreateAppointmentType(),
             Specialty = CreateSpecialty(),
             InitiatorMembership = CreateSelfMembership(),
-            CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
+            CancelledAt = _fakeTime.GetUtcNow(),
+            ClinicTimeZone = TimeZoneInfo.Local,
         };
 
     private StaffCancellationContext CreateValidStaffContext() =>
-        new()
-        {
-            InitiatorUserId = Guid.CreateVersion7(),
-            CancelledAt = _fakeTime.GetUtcNow().UtcDateTime,
-        };
+        new() { InitiatorUserId = Guid.CreateVersion7(), CancelledAt = _fakeTime.GetUtcNow() };
 
     private FamilyMembership CreateSelfMembership() =>
         FamilyMembership.CreateSelf(

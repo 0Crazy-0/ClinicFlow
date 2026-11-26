@@ -46,11 +46,7 @@ public class AppointmentLateCancelledEventHandlerTests
             Guid.CreateVersion7()
         );
 
-        appointment.CancelLate(
-            Guid.CreateVersion7(),
-            "Late",
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddHours(-2))
-        );
+        appointment.CancelLate(Guid.CreateVersion7(), "Late", _fakeTime.GetUtcNow().AddHours(-2));
 
         var domainEvent = new AppointmentLateCancelledEvent(
             appointment,
@@ -102,11 +98,7 @@ public class AppointmentLateCancelledEventHandlerTests
             Guid.CreateVersion7()
         );
 
-        appointment.CancelLate(
-            Guid.CreateVersion7(),
-            "Late",
-            DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddHours(-2))
-        );
+        appointment.CancelLate(Guid.CreateVersion7(), "Late", _fakeTime.GetUtcNow().AddHours(-2));
 
         var domainEvent = new AppointmentLateCancelledEvent(
             appointment,

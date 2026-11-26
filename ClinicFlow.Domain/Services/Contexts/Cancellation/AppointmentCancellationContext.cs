@@ -12,5 +12,6 @@ public sealed record class AppointmentCancellationContext
     public required AppointmentTypeDefinition AppointmentType { get; init; }
     public required MedicalSpecialty Specialty { get; init; }
     public required FamilyMembership InitiatorMembership { get; init; }
-    public DateTime CancelledAt { get; init; }
+    public DateTimeOffset CancelledAt { get; init; }
+    public required TimeZoneInfo ClinicTimeZone { get; init; }
 }

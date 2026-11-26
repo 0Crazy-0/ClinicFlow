@@ -61,7 +61,7 @@ public class Appointment : BaseEntity
 
     public DateTimeOffset? CompletedAt { get; private set; }
 
-    public DateOnly? CancelledAt { get; private set; }
+    public DateTimeOffset? CancelledAt { get; private set; }
 
     public string? CancellationReason { get; private set; }
 
@@ -143,7 +143,7 @@ public class Appointment : BaseEntity
         AddDomainEvent(new AppointmentRescheduledEvent(this, previousDate, previousTimeRange));
     }
 
-    internal void Cancel(Guid cancelledByUserId, string? reason, DateOnly cancelledAt)
+    internal void Cancel(Guid cancelledByUserId, string? reason, DateTimeOffset cancelledAt)
     {
         Guard.NotEmpty(cancelledByUserId);
 
@@ -163,7 +163,7 @@ public class Appointment : BaseEntity
         AddDomainEvent(new AppointmentCancelledEvent(this, cancelledByUserId, reason));
     }
 
-    internal void CancelLate(Guid cancelledByUserId, string? reason, DateOnly cancelledAt)
+    internal void CancelLate(Guid cancelledByUserId, string? reason, DateTimeOffset cancelledAt)
     {
         Guard.NotEmpty(cancelledByUserId);
 
@@ -307,7 +307,7 @@ public class Appointment : BaseEntity
     /// Cancels a displaced appointment that was never reassigned before its scheduled time.
     /// No patient penalty is applied since the cancellation is due to clinic inaction.
     /// </remarks>
-    public void CancelDueToSystemTimeout(DateOnly cancelledAt)
+    public void CancelDueToSystemTimeout(DateTimeOffset cancelledAt)
     {
         Guard.NotDefault(cancelledAt);
 
@@ -447,7 +447,11 @@ public class Appointment : BaseEntity
             );
     }
 
-    private void ApplyCancellation(Guid? cancelledByUserId, string? reason, DateOnly cancelledAt)
+    private void ApplyCancellation(
+        Guid? cancelledByUserId,
+        string? reason,
+        DateTimeOffset cancelledAt
+    )
     {
         CancelledAt = cancelledAt;
         CancelledByUserId = cancelledByUserId;

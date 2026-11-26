@@ -251,28 +251,30 @@ public class AppointmentGenerator(
                 if (index % 5 is 0) // 20% of cancelled appointments are system timeouts
                 {
                     appointment.MarkAsRequiresReassignment();
-                    appointment.CancelDueToSystemTimeout(
-                        DateOnly.FromDateTime(actionTime.AddDays(-1))
-                    );
+                    var cancelledTime = new DateTimeOffset(
+                        actionTime.AddDays(-1),
+                        _clinicTimeZone.GetUtcOffset(actionTime.AddDays(-1))
+                    ).ToUniversalTime();
+                    appointment.CancelDueToSystemTimeout(cancelledTime);
                 }
                 else
                 {
                     var reason = GetCancellationReason(index);
-                    appointment.Cancel(
-                        patientUserId,
-                        reason,
-                        DateOnly.FromDateTime(actionTime.AddDays(-2))
-                    );
+                    var cancelledTime = new DateTimeOffset(
+                        actionTime.AddDays(-2),
+                        _clinicTimeZone.GetUtcOffset(actionTime.AddDays(-2))
+                    ).ToUniversalTime();
+                    appointment.Cancel(patientUserId, reason, cancelledTime);
                 }
                 break;
 
             case AppointmentStatus.LateCancellation:
                 var lateReason = GetLateCancellationReason(index);
-                appointment.CancelLate(
-                    patientUserId,
-                    lateReason,
-                    DateOnly.FromDateTime(actionTime.AddMinutes(-30))
-                );
+                var lateCancelledTime = new DateTimeOffset(
+                    actionTime.AddMinutes(-30),
+                    _clinicTimeZone.GetUtcOffset(actionTime.AddMinutes(-30))
+                ).ToUniversalTime();
+                appointment.CancelLate(patientUserId, lateReason, lateCancelledTime);
                 break;
 
             case AppointmentStatus.NoShow:

@@ -107,6 +107,8 @@ public class MedicalSpecialty : SoftDeletableEntity
         MarkAsDeleted();
     }
 
-    internal bool IsCancellationAllowed(DateTime appointmentDateTime, DateTime referenceTime) =>
-        CancellationPolicy.IsNoticePeriodMet(appointmentDateTime, referenceTime);
+    internal bool IsCancellationAllowed(
+        DateTimeOffset appointmentStart,
+        DateTimeOffset referenceTime
+    ) => CancellationPolicy.IsNoticePeriodMet(appointmentStart, referenceTime);
 }

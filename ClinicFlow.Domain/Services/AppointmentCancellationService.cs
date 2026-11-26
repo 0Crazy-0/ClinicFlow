@@ -25,6 +25,7 @@ public static class AppointmentCancellationService
         ArgumentNullException.ThrowIfNull(context.AppointmentType);
         ArgumentNullException.ThrowIfNull(context.Specialty);
         ArgumentNullException.ThrowIfNull(context.InitiatorMembership);
+        ArgumentNullException.ThrowIfNull(context.ClinicTimeZone);
         ArgumentNullException.ThrowIfNull(args);
 
         context.InitiatorMembership.EnsureAppointmentAccess(context.AppointmentType.Category);
@@ -37,24 +38,30 @@ public static class AppointmentCancellationService
                 DomainErrors.Appointment.CannotCancel
             );
 
+        var localCancelledDateTime = TimeZoneInfo
+            .ConvertTime(context.CancelledAt, context.ClinicTimeZone)
+            .DateTime;
+
         if (context.AppointmentType.Purpose is AppointmentPurpose.Emergency)
             ValidateEmergencyCancellation(
                 context.TargetPatient,
                 context.InitiatorMembership,
-                DateOnly.FromDateTime(context.CancelledAt)
+                DateOnly.FromDateTime(localCancelledDateTime)
             );
 
-        if (
-            context.Specialty.IsCancellationAllowed(
-                appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start),
-                context.CancelledAt
-            )
-        )
+        var localStart = appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start);
+
+        var appointmentStart = new DateTimeOffset(
+            localStart,
+            context.ClinicTimeZone.GetUtcOffset(localStart)
+        );
+
+        if (context.Specialty.IsCancellationAllowed(appointmentStart, context.CancelledAt))
         {
             appointment.Cancel(
                 context.InitiatorMembership.UserId,
                 args.Reason,
-                DateOnly.FromDateTime(context.CancelledAt)
+                context.CancelledAt
             );
         }
         else
@@ -62,7 +69,7 @@ public static class AppointmentCancellationService
             appointment.CancelLate(
                 context.InitiatorMembership.UserId,
                 args.Reason,
-                DateOnly.FromDateTime(context.CancelledAt)
+                context.CancelledAt
             );
         }
     }
@@ -83,11 +90,7 @@ public static class AppointmentCancellationService
                 DomainErrors.Appointment.UnauthorizedCancellation
             );
 
-        appointment.Cancel(
-            context.InitiatorDoctor.UserId,
-            args.Reason,
-            DateOnly.FromDateTime(context.CancelledAt)
-        );
+        appointment.Cancel(context.InitiatorDoctor.UserId, args.Reason, context.CancelledAt);
     }
 
     public static void CancelByStaff(
@@ -106,11 +109,7 @@ public static class AppointmentCancellationService
                 DomainErrors.Appointment.MissingCancellationReason
             );
 
-        appointment.Cancel(
-            context.InitiatorUserId,
-            args.Reason,
-            DateOnly.FromDateTime(context.CancelledAt)
-        );
+        appointment.Cancel(context.InitiatorUserId, args.Reason, context.CancelledAt);
     }
 
     /// <summary>
