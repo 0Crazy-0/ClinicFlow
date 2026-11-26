@@ -37,6 +37,7 @@ public class MedicalRecordConsentGrantServiceTests
             TargetMedicalRecord = medicalRecord,
             RecipientMembership = recipientMembership,
             HasEffectiveGrant = false,
+            ClinicTimeZone = _fakeTime.LocalTimeZone,
         };
 
         // Act
@@ -82,6 +83,7 @@ public class MedicalRecordConsentGrantServiceTests
             TargetMedicalRecord = CreateProtectedRecord(patient.Id),
             RecipientMembership = CreateRecipientMembership(patient.Id),
             HasEffectiveGrant = false,
+            ClinicTimeZone = _fakeTime.LocalTimeZone,
         };
 
         // Act
@@ -105,6 +107,7 @@ public class MedicalRecordConsentGrantServiceTests
             TargetMedicalRecord = CreateProtectedRecord(patient.Id),
             RecipientMembership = CreateRecipientMembership(patient.Id),
             HasEffectiveGrant = false,
+            ClinicTimeZone = _fakeTime.LocalTimeZone,
         };
 
         // Act
@@ -133,6 +136,7 @@ public class MedicalRecordConsentGrantServiceTests
             TargetMedicalRecord = null!,
             RecipientMembership = CreateRecipientMembership(patient.Id),
             HasEffectiveGrant = false,
+            ClinicTimeZone = _fakeTime.LocalTimeZone,
         };
 
         // Act
@@ -161,6 +165,7 @@ public class MedicalRecordConsentGrantServiceTests
             TargetMedicalRecord = CreateProtectedRecord(patient.Id),
             RecipientMembership = null!,
             HasEffectiveGrant = false,
+            ClinicTimeZone = _fakeTime.LocalTimeZone,
         };
 
         // Act
@@ -168,6 +173,35 @@ public class MedicalRecordConsentGrantServiceTests
 
         // Assert
         act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void Grant_ShouldThrowArgumentNullException_WhenClinicTimeZoneIsNull()
+    {
+        // Arrange
+        var patient = CreateMinorPatient();
+        var requesterUserId = Guid.CreateVersion7();
+        var context = new MedicalRecordConsentGrantContext
+        {
+            RequesterUserId = requesterUserId,
+            ReferenceTime = _fakeTime.GetUtcNow().UtcDateTime,
+            TargetPatient = patient,
+            RequesterMembership = FamilyMembership.CreateSelf(
+                patient.Id,
+                requesterUserId,
+                _fakeTime.GetUtcNow().UtcDateTime
+            ),
+            TargetMedicalRecord = CreateProtectedRecord(patient.Id),
+            RecipientMembership = CreateRecipientMembership(patient.Id),
+            HasEffectiveGrant = false,
+            ClinicTimeZone = null!,
+        };
+
+        // Act
+        var act = () => MedicalRecordConsentGrantService.Grant(context);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>().WithParameterName("context.ClinicTimeZone");
     }
 
     [Fact]
@@ -186,6 +220,7 @@ public class MedicalRecordConsentGrantServiceTests
             TargetMedicalRecord = CreateProtectedRecord(patient.Id),
             RecipientMembership = CreateRecipientMembership(patient.Id),
             HasEffectiveGrant = false,
+            ClinicTimeZone = _fakeTime.LocalTimeZone,
         };
 
         // Act
@@ -231,6 +266,7 @@ public class MedicalRecordConsentGrantServiceTests
             TargetMedicalRecord = CreateProtectedRecord(patient.Id),
             RecipientMembership = CreateRecipientMembership(patient.Id),
             HasEffectiveGrant = false,
+            ClinicTimeZone = _fakeTime.LocalTimeZone,
         };
 
         // Act
@@ -262,6 +298,7 @@ public class MedicalRecordConsentGrantServiceTests
             TargetMedicalRecord = CreateProtectedRecord(Guid.CreateVersion7()),
             RecipientMembership = CreateRecipientMembership(patient.Id),
             HasEffectiveGrant = false,
+            ClinicTimeZone = _fakeTime.LocalTimeZone,
         };
 
         // Act
@@ -302,6 +339,7 @@ public class MedicalRecordConsentGrantServiceTests
             TargetMedicalRecord = record,
             RecipientMembership = CreateRecipientMembership(patient.Id),
             HasEffectiveGrant = false,
+            ClinicTimeZone = _fakeTime.LocalTimeZone,
         };
 
         // Act
@@ -345,6 +383,7 @@ public class MedicalRecordConsentGrantServiceTests
             TargetMedicalRecord = CreateProtectedRecord(patient.Id), // the category is MentalHealthCounseling, which is not grantable for a 10 year-old
             RecipientMembership = CreateRecipientMembership(patient.Id),
             HasEffectiveGrant = false,
+            ClinicTimeZone = _fakeTime.LocalTimeZone,
         };
 
         // Act
@@ -380,6 +419,7 @@ public class MedicalRecordConsentGrantServiceTests
                 referenceTime
             ),
             HasEffectiveGrant = false,
+            ClinicTimeZone = _fakeTime.LocalTimeZone,
         };
 
         // Act
@@ -411,6 +451,7 @@ public class MedicalRecordConsentGrantServiceTests
             TargetMedicalRecord = CreateProtectedRecord(patient.Id),
             RecipientMembership = CreateRecipientMembership(patient.Id),
             HasEffectiveGrant = true,
+            ClinicTimeZone = _fakeTime.LocalTimeZone,
         };
 
         // Act

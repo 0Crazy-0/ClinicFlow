@@ -94,6 +94,7 @@ public sealed class GrantMedicalRecordConsentCommandHandler(
                         HasEffectiveGrant = hasEffectiveGrant,
                         RequesterUserId = request.RequesterUserId,
                         ReferenceTime = referenceTime,
+                        ClinicTimeZone = timeProvider.LocalTimeZone,
                     }
                 );
 
