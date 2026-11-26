@@ -83,6 +83,7 @@ public sealed class GrantAppointmentCategoryConsentCommandHandler(
                         HasEffectiveGrant = hasEffectiveGrant,
                         RequesterUserId = request.RequesterUserId,
                         ReferenceTime = referenceTime,
+                        ClinicTimeZone = timeProvider.LocalTimeZone,
                     }
                 );
 

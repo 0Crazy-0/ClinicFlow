@@ -38,6 +38,7 @@ public class AppointmentConsentGrantServiceTests
             RecipientMembership = recipientMembership,
             ProtectedCareCategory = category,
             HasEffectiveGrant = false,
+            ClinicTimeZone = _fakeTime.LocalTimeZone,
         };
 
         // Act
@@ -85,6 +86,7 @@ public class AppointmentConsentGrantServiceTests
             RecipientMembership = CreateRecipientMembership(patient.Id),
             ProtectedCareCategory = ProtectedCategory.MentalHealthCounseling,
             HasEffectiveGrant = false,
+            ClinicTimeZone = _fakeTime.LocalTimeZone,
         };
 
         // Act
@@ -108,6 +110,7 @@ public class AppointmentConsentGrantServiceTests
             RecipientMembership = CreateRecipientMembership(patient.Id),
             ProtectedCareCategory = ProtectedCategory.MentalHealthCounseling,
             HasEffectiveGrant = false,
+            ClinicTimeZone = _fakeTime.LocalTimeZone,
         };
 
         // Act
@@ -115,6 +118,35 @@ public class AppointmentConsentGrantServiceTests
 
         // Assert
         act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void GrantCategory_ShouldThrowArgumentNullException_WhenClinicTimeZoneIsNull()
+    {
+        // Arrange
+        var patient = CreateMinorPatient();
+        var requesterUserId = Guid.CreateVersion7();
+        var context = new AppointmentCategoryConsentGrantContext
+        {
+            RequesterUserId = requesterUserId,
+            ReferenceTime = _fakeTime.GetUtcNow().UtcDateTime,
+            TargetPatient = patient,
+            RequesterMembership = FamilyMembership.CreateSelf(
+                patient.Id,
+                requesterUserId,
+                _fakeTime.GetUtcNow().UtcDateTime
+            ),
+            RecipientMembership = CreateRecipientMembership(patient.Id),
+            ProtectedCareCategory = ProtectedCategory.MentalHealthCounseling,
+            HasEffectiveGrant = false,
+            ClinicTimeZone = null!,
+        };
+
+        // Act
+        var act = () => AppointmentConsentGrantService.GrantCategory(context);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>().WithParameterName("context.ClinicTimeZone");
     }
 
     [Fact]
@@ -136,6 +168,7 @@ public class AppointmentConsentGrantServiceTests
             RecipientMembership = null!,
             ProtectedCareCategory = ProtectedCategory.MentalHealthCounseling,
             HasEffectiveGrant = false,
+            ClinicTimeZone = _fakeTime.LocalTimeZone,
         };
 
         // Act
@@ -161,6 +194,7 @@ public class AppointmentConsentGrantServiceTests
             RecipientMembership = CreateRecipientMembership(patient.Id),
             ProtectedCareCategory = ProtectedCategory.MentalHealthCounseling,
             HasEffectiveGrant = false,
+            ClinicTimeZone = _fakeTime.LocalTimeZone,
         };
 
         // Act
@@ -206,6 +240,7 @@ public class AppointmentConsentGrantServiceTests
             RecipientMembership = CreateRecipientMembership(patient.Id),
             ProtectedCareCategory = ProtectedCategory.MentalHealthCounseling,
             HasEffectiveGrant = false,
+            ClinicTimeZone = _fakeTime.LocalTimeZone,
         };
 
         // Act
@@ -249,6 +284,7 @@ public class AppointmentConsentGrantServiceTests
             RecipientMembership = CreateRecipientMembership(patient.Id),
             ProtectedCareCategory = ProtectedCategory.MentalHealthCounseling,
             HasEffectiveGrant = false,
+            ClinicTimeZone = _fakeTime.LocalTimeZone,
         };
 
         // Act
@@ -284,6 +320,7 @@ public class AppointmentConsentGrantServiceTests
             ),
             ProtectedCareCategory = ProtectedCategory.MentalHealthCounseling,
             HasEffectiveGrant = false,
+            ClinicTimeZone = _fakeTime.LocalTimeZone,
         };
 
         // Act
@@ -315,6 +352,7 @@ public class AppointmentConsentGrantServiceTests
             RecipientMembership = CreateRecipientMembership(patient.Id),
             ProtectedCareCategory = ProtectedCategory.MentalHealthCounseling,
             HasEffectiveGrant = true,
+            ClinicTimeZone = _fakeTime.LocalTimeZone,
         };
 
         // Act
@@ -353,6 +391,7 @@ public class AppointmentConsentGrantServiceTests
             TargetAppointment = appointment,
             AppointmentType = appointmentType,
             HasEffectiveGrant = false,
+            ClinicTimeZone = _fakeTime.LocalTimeZone,
         };
 
         // Act
@@ -403,6 +442,7 @@ public class AppointmentConsentGrantServiceTests
             TargetAppointment = CreateAppointment(patient.Id, appointmentType.Id),
             AppointmentType = appointmentType,
             HasEffectiveGrant = false,
+            ClinicTimeZone = _fakeTime.LocalTimeZone,
         };
 
         // Act
@@ -428,6 +468,7 @@ public class AppointmentConsentGrantServiceTests
             TargetAppointment = CreateAppointment(patient.Id, appointmentType.Id),
             AppointmentType = appointmentType,
             HasEffectiveGrant = false,
+            ClinicTimeZone = _fakeTime.LocalTimeZone,
         };
 
         // Act
@@ -458,6 +499,7 @@ public class AppointmentConsentGrantServiceTests
             TargetAppointment = CreateAppointment(patient.Id, appointmentType.Id),
             AppointmentType = appointmentType,
             HasEffectiveGrant = false,
+            ClinicTimeZone = _fakeTime.LocalTimeZone,
         };
 
         // Act
@@ -487,6 +529,7 @@ public class AppointmentConsentGrantServiceTests
             TargetAppointment = null!,
             AppointmentType = CreateProtectedAppointmentType(),
             HasEffectiveGrant = false,
+            ClinicTimeZone = _fakeTime.LocalTimeZone,
         };
 
         // Act
@@ -517,6 +560,7 @@ public class AppointmentConsentGrantServiceTests
             TargetAppointment = CreateAppointment(patient.Id, appointmentType.Id),
             AppointmentType = null!,
             HasEffectiveGrant = false,
+            ClinicTimeZone = _fakeTime.LocalTimeZone,
         };
 
         // Act
@@ -524,6 +568,37 @@ public class AppointmentConsentGrantServiceTests
 
         // Assert
         act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void GrantAppointment_ShouldThrowArgumentNullException_WhenClinicTimeZoneIsNull()
+    {
+        // Arrange
+        var patient = CreateMinorPatient();
+        var requesterUserId = Guid.CreateVersion7();
+        var appointmentType = CreateProtectedAppointmentType();
+        var context = new SpecificAppointmentConsentGrantContext
+        {
+            RequesterUserId = requesterUserId,
+            ReferenceTime = _fakeTime.GetUtcNow().UtcDateTime,
+            TargetPatient = patient,
+            RequesterMembership = FamilyMembership.CreateSelf(
+                patient.Id,
+                requesterUserId,
+                _fakeTime.GetUtcNow().UtcDateTime
+            ),
+            RecipientMembership = CreateRecipientMembership(patient.Id),
+            TargetAppointment = CreateAppointment(patient.Id, appointmentType.Id),
+            AppointmentType = appointmentType,
+            HasEffectiveGrant = false,
+            ClinicTimeZone = null!,
+        };
+
+        // Act
+        var act = () => AppointmentConsentGrantService.GrantAppointment(context);
+
+        // Assert
+        act.Should().Throw<ArgumentNullException>().WithParameterName("context.ClinicTimeZone");
     }
 
     [Fact]
@@ -545,6 +620,7 @@ public class AppointmentConsentGrantServiceTests
             TargetAppointment = CreateAppointment(patient.Id, appointmentType.Id),
             AppointmentType = appointmentType,
             HasEffectiveGrant = false,
+            ClinicTimeZone = _fakeTime.LocalTimeZone,
         };
 
         // Act
@@ -592,6 +668,7 @@ public class AppointmentConsentGrantServiceTests
             TargetAppointment = CreateAppointment(patient.Id, appointmentType.Id),
             AppointmentType = appointmentType,
             HasEffectiveGrant = false,
+            ClinicTimeZone = _fakeTime.LocalTimeZone,
         };
 
         // Act
@@ -625,6 +702,7 @@ public class AppointmentConsentGrantServiceTests
             TargetAppointment = CreateAppointment(Guid.CreateVersion7(), appointmentType.Id),
             AppointmentType = appointmentType,
             HasEffectiveGrant = false,
+            ClinicTimeZone = _fakeTime.LocalTimeZone,
         };
 
         // Act
@@ -658,6 +736,7 @@ public class AppointmentConsentGrantServiceTests
             TargetAppointment = CreateAppointment(patient.Id, Guid.CreateVersion7()),
             AppointmentType = appointmentType,
             HasEffectiveGrant = false,
+            ClinicTimeZone = _fakeTime.LocalTimeZone,
         };
 
         // Act
@@ -700,6 +779,7 @@ public class AppointmentConsentGrantServiceTests
             TargetAppointment = CreateAppointment(patient.Id, appointmentType.Id),
             AppointmentType = appointmentType,
             HasEffectiveGrant = false,
+            ClinicTimeZone = _fakeTime.LocalTimeZone,
         };
 
         // Act
@@ -745,6 +825,7 @@ public class AppointmentConsentGrantServiceTests
             TargetAppointment = CreateAppointment(patient.Id, appointmentType.Id),
             AppointmentType = appointmentType,
             HasEffectiveGrant = false,
+            ClinicTimeZone = _fakeTime.LocalTimeZone,
         };
 
         // Act
@@ -782,6 +863,7 @@ public class AppointmentConsentGrantServiceTests
             TargetAppointment = CreateAppointment(patient.Id, appointmentType.Id),
             AppointmentType = appointmentType,
             HasEffectiveGrant = false,
+            ClinicTimeZone = _fakeTime.LocalTimeZone,
         };
 
         // Act
@@ -815,6 +897,7 @@ public class AppointmentConsentGrantServiceTests
             TargetAppointment = CreateAppointment(patient.Id, appointmentType.Id),
             AppointmentType = appointmentType,
             HasEffectiveGrant = true,
+            ClinicTimeZone = _fakeTime.LocalTimeZone,
         };
 
         // Act

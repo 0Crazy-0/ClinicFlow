@@ -21,6 +21,7 @@ public static class AppointmentConsentGrantService
         ArgumentNullException.ThrowIfNull(context.TargetPatient);
         ArgumentNullException.ThrowIfNull(context.RequesterMembership);
         ArgumentNullException.ThrowIfNull(context.RecipientMembership);
+        ArgumentNullException.ThrowIfNull(context.ClinicTimeZone);
 
         context.RequesterMembership.EnsureConsentGrantSigner(
             context.RequesterUserId,
@@ -28,9 +29,11 @@ public static class AppointmentConsentGrantService
             DomainErrors.AppointmentConsentGrant.UnauthorizedCreation
         );
 
-        var patientAge = context.TargetPatient.GetAge(
-            DateOnly.FromDateTime(context.ReferenceTime.DateTime)
+        var referenceDate = DateOnly.FromDateTime(
+            TimeZoneInfo.ConvertTime(context.ReferenceTime, context.ClinicTimeZone).DateTime
         );
+
+        var patientAge = context.TargetPatient.GetAge(referenceDate);
 
         if (patientAge >= DomainRules.AdultAge)
             throw new DomainValidationException(
@@ -75,6 +78,7 @@ public static class AppointmentConsentGrantService
         ArgumentNullException.ThrowIfNull(context.RecipientMembership);
         ArgumentNullException.ThrowIfNull(context.TargetAppointment);
         ArgumentNullException.ThrowIfNull(context.AppointmentType);
+        ArgumentNullException.ThrowIfNull(context.ClinicTimeZone);
 
         context.RequesterMembership.EnsureConsentGrantSigner(
             context.RequesterUserId,
@@ -82,9 +86,11 @@ public static class AppointmentConsentGrantService
             DomainErrors.AppointmentConsentGrant.UnauthorizedCreation
         );
 
-        var patientAge = context.TargetPatient.GetAge(
-            DateOnly.FromDateTime(context.ReferenceTime.DateTime)
+        var referenceDate = DateOnly.FromDateTime(
+            TimeZoneInfo.ConvertTime(context.ReferenceTime, context.ClinicTimeZone).DateTime
         );
+
+        var patientAge = context.TargetPatient.GetAge(referenceDate);
 
         if (patientAge >= DomainRules.AdultAge)
             throw new DomainValidationException(

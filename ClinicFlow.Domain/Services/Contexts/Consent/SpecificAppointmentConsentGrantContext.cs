@@ -12,4 +12,5 @@ public sealed record SpecificAppointmentConsentGrantContext
     public bool HasEffectiveGrant { get; init; }
     public Guid RequesterUserId { get; init; }
     public DateTimeOffset ReferenceTime { get; init; }
+    public required TimeZoneInfo ClinicTimeZone { get; init; }
 }
