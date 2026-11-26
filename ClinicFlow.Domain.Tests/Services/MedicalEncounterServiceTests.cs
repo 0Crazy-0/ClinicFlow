@@ -732,7 +732,10 @@ public class MedicalEncounterServiceTests
         appointment.CheckIn(appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start));
         appointment.Start(
             appointment.DoctorId,
-            appointment.ScheduledDate.ToDateTime(new TimeOnly(10, 15)),
+            new DateTimeOffset(
+                appointment.ScheduledDate.ToDateTime(new TimeOnly(10, 15)),
+                TimeSpan.Zero
+            ),
             _fakeTime.LocalTimeZone
         );
 
@@ -753,7 +756,10 @@ public class MedicalEncounterServiceTests
         appointment.CheckIn(appointment.ScheduledDate.ToDateTime(appointment.TimeSlot.Start));
         appointment.Start(
             appointment.DoctorId,
-            appointment.ScheduledDate.ToDateTime(new TimeOnly(10, 15)),
+            new DateTimeOffset(
+                appointment.ScheduledDate.ToDateTime(new TimeOnly(10, 15)),
+                TimeSpan.Zero
+            ),
             _fakeTime.LocalTimeZone
         );
 
