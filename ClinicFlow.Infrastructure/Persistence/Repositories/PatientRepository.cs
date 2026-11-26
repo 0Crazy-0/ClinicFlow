@@ -30,7 +30,6 @@ public sealed class PatientRepository(ApplicationDbContext dbContext) : IPatient
     public async Task<IReadOnlyList<PatientDuplicateCandidate>> GetFuzzyMatchesBySearchNameAsync(
         string searchName,
         DateOnly dateOfBirth,
-        string? ssnLast4Hash,
         CancellationToken cancellationToken = default
     )
     {
@@ -59,7 +58,6 @@ public sealed class PatientRepository(ApplicationDbContext dbContext) : IPatient
                     )
                     .Select(u => new { u.Email, u.Phone })
                     .FirstOrDefault(),
-                SsnLast4Matches = ssnLast4Hash != null && patient.SsnLast4Hash == ssnLast4Hash,
             })
             .ToListAsync(cancellationToken);
 
@@ -74,7 +72,8 @@ public sealed class PatientRepository(ApplicationDbContext dbContext) : IPatient
                 HomeAddress = m.Patient.HomeAddress,
                 Email = m.Contact?.Email,
                 Phone = m.Contact?.Phone,
-                SsnLast4Matches = m.SsnLast4Matches,
+                SsnLast4Hash = m.Patient.SsnLast4Hash,
+                SsnLast4Matches = false,
             }),
         ];
     }

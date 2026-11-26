@@ -136,7 +136,6 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         var result = await _sut.GetFuzzyMatchesBySearchNameAsync(
             patient.FullName.SearchName,
             patient.DateOfBirth,
-            ssnLast4Hash: null,
             TestContext.Current.CancellationToken
         );
         // Assert
@@ -153,7 +152,6 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         var result = await _sut.GetFuzzyMatchesBySearchNameAsync(
             patient.FullName.SearchName,
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime),
-            ssnLast4Hash: null,
             TestContext.Current.CancellationToken
         );
 
@@ -172,7 +170,6 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         var result = await _sut.GetFuzzyMatchesBySearchNameAsync(
             "john doe",
             patient.DateOfBirth,
-            ssnLast4Hash: null,
             TestContext.Current.CancellationToken
         );
 
@@ -192,7 +189,6 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         var result = await _sut.GetFuzzyMatchesBySearchNameAsync(
             "jo bob",
             patient.DateOfBirth,
-            ssnLast4Hash: null,
             TestContext.Current.CancellationToken
         );
 
@@ -214,7 +210,6 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         var result = await _sut.GetFuzzyMatchesBySearchNameAsync(
             exactMatch.FullName.SearchName,
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-67)),
-            ssnLast4Hash: null,
             TestContext.Current.CancellationToken
         );
 
@@ -241,7 +236,6 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         var result = await _sut.GetFuzzyMatchesBySearchNameAsync(
             "john doe",
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-67)),
-            ssnLast4Hash: null,
             TestContext.Current.CancellationToken
         );
 
@@ -263,7 +257,6 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         var result = await _sut.GetFuzzyMatchesBySearchNameAsync(
             patient.FullName.SearchName,
             patient.DateOfBirth,
-            ssnLast4Hash: null,
             TestContext.Current.CancellationToken
         );
 
@@ -299,7 +292,6 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         var result = await _sut.GetFuzzyMatchesBySearchNameAsync(
             patient.FullName.SearchName,
             patient.DateOfBirth,
-            ssnLast4Hash: null,
             TestContext.Current.CancellationToken
         );
 
@@ -330,7 +322,6 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         var result = await _sut.GetFuzzyMatchesBySearchNameAsync(
             patient.FullName.SearchName,
             patient.DateOfBirth,
-            ssnLast4Hash: null,
             TestContext.Current.CancellationToken
         );
 
@@ -357,7 +348,6 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
         var result = await _sut.GetFuzzyMatchesBySearchNameAsync(
             patient1.FullName.SearchName,
             DateOnly.FromDateTime(_fakeTime.GetUtcNow().UtcDateTime.AddYears(-67)),
-            ssnLast4Hash: null,
             TestContext.Current.CancellationToken
         );
 
@@ -371,20 +361,16 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
     }
 
     [Fact]
-    public async Task GetFuzzyMatchesBySearchNameAsync_ShouldReturnSsnLast4MatchesTrue_WhenHashMatches()
+    public async Task GetFuzzyMatchesBySearchNameAsync_ShouldReturnSsnLast4Hash_WhenStored()
     {
         // Arrange
         var patient = await CreateHashedPatientAsync();
-        var expectedCandidateWithoutContact = CreateExpectedCandidateWithoutContact(
-            patient,
-            ssnLast4Matches: true
-        );
+        var expectedCandidateWithoutContact = CreateExpectedCandidateWithoutContact(patient);
 
         // Act
         var result = await _sut.GetFuzzyMatchesBySearchNameAsync(
             patient.FullName.SearchName,
             patient.DateOfBirth,
-            patient.SsnLast4Hash,
             TestContext.Current.CancellationToken
         );
 
@@ -397,46 +383,16 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
     }
 
     [Fact]
-    public async Task GetFuzzyMatchesBySearchNameAsync_ShouldReturnSsnLast4MatchesFalse_WhenHashDoesNotMatch()
+    public async Task GetFuzzyMatchesBySearchNameAsync_ShouldReturnNullSsnLast4Hash_WhenPatientHasNoHash()
     {
         // Arrange
-        var patient = await CreateHashedPatientAsync();
-        var expectedCandidateWithoutContact = CreateExpectedCandidateWithoutContact(
-            patient,
-            ssnLast4Matches: false
-        );
+        var patient = await CreateSelfPatientAsync(); // patient has no SSN hash assigned
+        var expectedCandidateWithoutContact = CreateExpectedCandidateWithoutContact(patient);
 
         // Act
         var result = await _sut.GetFuzzyMatchesBySearchNameAsync(
             patient.FullName.SearchName,
             patient.DateOfBirth,
-            "fedcba9876543321fedcba9876543321fedcba9876543321fedcba9876543321",
-            TestContext.Current.CancellationToken
-        );
-
-        // Assert
-        result
-            .Should()
-            .ContainSingle()
-            .Which.Should()
-            .BeEquivalentTo(expectedCandidateWithoutContact);
-    }
-
-    [Fact]
-    public async Task GetFuzzyMatchesBySearchNameAsync_ShouldReturnSsnLast4MatchesFalse_WhenHashIsNullAndPatientHasNoHash()
-    {
-        // Arrange
-        var patient = await CreateSelfPatientAsync();
-        var expectedCandidateWithoutContact = CreateExpectedCandidateWithoutContact(
-            patient,
-            ssnLast4Matches: false
-        );
-
-        // Act
-        var result = await _sut.GetFuzzyMatchesBySearchNameAsync(
-            patient.FullName.SearchName,
-            patient.DateOfBirth,
-            ssnLast4Hash: null,
             TestContext.Current.CancellationToken
         );
 
@@ -462,6 +418,7 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
             HomeAddress = patient.HomeAddress,
             Email = user.Email,
             Phone = user.Phone,
+            SsnLast4Hash = patient.SsnLast4Hash,
             SsnLast4Matches = ssnLast4Matches,
         };
 
@@ -476,6 +433,7 @@ public class PatientRepositoryTests(PostgresFixture fixture) : IAsyncLifetime
             DateOfBirth = patient.DateOfBirth,
             SexAtBirth = patient.SexAtBirth,
             HomeAddress = patient.HomeAddress,
+            SsnLast4Hash = patient.SsnLast4Hash,
             SsnLast4Matches = ssnLast4Matches,
         };
 

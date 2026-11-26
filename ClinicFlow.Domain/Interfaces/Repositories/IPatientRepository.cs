@@ -15,7 +15,6 @@ public interface IPatientRepository
     Task<IReadOnlyList<PatientDuplicateCandidate>> GetFuzzyMatchesBySearchNameAsync(
         string searchName,
         DateOnly dateOfBirth,
-        string? ssnLast4Hash,
         CancellationToken cancellationToken = default
     );
 }

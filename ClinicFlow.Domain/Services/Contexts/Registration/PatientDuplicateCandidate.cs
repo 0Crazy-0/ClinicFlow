@@ -24,6 +24,11 @@ public sealed record PatientDuplicateCandidate
     public PhoneNumber? Phone { get; init; }
 
     /// <summary>
+    /// Holds the candidate's stored SSN last 4 digits hash, or null when the candidate has no stored hash.
+    /// </summary>
+    public string? SsnLast4Hash { get; init; }
+
+    /// <summary>
     /// Holds the verification result the Application layer computes by hashing the form's SSN last four digits against this candidate's stored hash.
     /// </summary>
     public bool SsnLast4Matches { get; init; }
