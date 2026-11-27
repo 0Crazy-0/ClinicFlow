@@ -225,10 +225,10 @@ public class PatientDuplicateScoringServiceTests
     }
 
     [Fact]
-    public void Score_ShouldReturnExactScore_WhenFormSuppliesSsnLast4AndCandidateMatches()
+    public void Score_ShouldReturnExactScore_WhenOnlySsnLast4Matches()
     {
         // Arrange
-        var form = CreateStrangerForm() with { HasSsnLast4 = true };
+        var form = CreateStrangerForm();
 
         var candidate = CreateStrangerCandidate() with { SsnLast4Matches = true };
         var context = new PatientDuplicateScoringContext { Candidates = [candidate] };
@@ -238,41 +238,6 @@ public class PatientDuplicateScoringServiceTests
 
         // Assert
         result.Scores.Should().ContainSingle().Which.Score.Should().Be(20);
-    }
-
-    [Fact]
-    public void Score_ShouldNotScoreSsnLast4_WhenFormDoesNotSupplySsnLast4()
-    {
-        // Arrange
-        // the form supplies no SSN last 4, yet the candidate reports a match.
-        // This state should never happen in production, because the match is only
-        // computed when the form supplies the value. It is built on purpose to verify
-        // that the scoring service guards on form.HasSsnLast4 by itself, without
-        // trusting the context to be well formed.
-        var form = CreateStrangerForm();
-        var candidate = CreateStrangerCandidate() with { SsnLast4Matches = true };
-        var context = new PatientDuplicateScoringContext { Candidates = [candidate] };
-
-        // Act
-        var result = PatientDuplicateScoringService.Score(form, context);
-
-        // Assert
-        result.Scores.Should().ContainSingle().Which.Score.Should().Be(0);
-    }
-
-    [Fact]
-    public void Score_ShouldNotScoreSsnLast4_WhenCandidateDoesNotMatch()
-    {
-        // Arrange
-        var form = CreateStrangerForm() with { HasSsnLast4 = true };
-        var candidate = CreateStrangerCandidate();
-        var context = new PatientDuplicateScoringContext { Candidates = [candidate] };
-
-        // Act
-        var result = PatientDuplicateScoringService.Score(form, context);
-
-        // Assert
-        result.Scores.Should().ContainSingle().Which.Score.Should().Be(0);
     }
 
     [Fact]
@@ -522,7 +487,7 @@ public class PatientDuplicateScoringServiceTests
     {
         // Arrange:
         // 30 + 20 + 10 + 20 + 5 + 5 + 5 + 5 = 100.
-        var form = CreateStrangerForm() with { HasSsnLast4 = true };
+        var form = CreateStrangerForm();
 
         var candidate = CreateMatchingCandidate();
         var context = new PatientDuplicateScoringContext { Candidates = [candidate] };

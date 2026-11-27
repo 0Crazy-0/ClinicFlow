@@ -17,10 +17,5 @@ public sealed record PatientRegistrationArgs
     public required Address HomeAddress { get; init; }
     public required EmailAddress Email { get; init; }
     public required PhoneNumber Phone { get; init; }
-
-    /// <summary>
-    /// Holds whether the registration form supplied the SSN last four digits, so the candidate match weight applies only when the Application layer verified against them.
-    /// </summary>
-    public bool HasSsnLast4 { get; init; }
     public string? DuplicateOverrideReason { get; init; }
 }

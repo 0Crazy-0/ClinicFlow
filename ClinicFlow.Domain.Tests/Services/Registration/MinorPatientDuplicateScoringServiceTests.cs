@@ -136,7 +136,7 @@ public class MinorPatientDuplicateScoringServiceTests
     public void Score_ShouldReturnExactScore_WhenOnlySsnLast4Matches()
     {
         // Arrange
-        var form = CreateStrangerForm() with { HasSsnLast4 = true };
+        var form = CreateStrangerForm();
 
         var candidate = CreateStrangerCandidate() with { SsnLast4Matches = true };
         var context = new PatientDuplicateScoringContext { Candidates = [candidate] };
@@ -146,26 +146,6 @@ public class MinorPatientDuplicateScoringServiceTests
 
         // Assert
         result.Scores.Should().ContainSingle().Which.Score.Should().Be(20);
-    }
-
-    [Fact]
-    public void Score_ShouldNotCountSsnLast4_WhenFormLacksSsnLast4()
-    {
-        // Arrange
-        // the form supplies no SSN last 4, yet the candidate reports a match.
-        // This state should never happen in production, because the match is only
-        // computed when the form supplies the value. It is built on purpose to verify
-        // that the scoring service guards on form.HasSsnLast4 by itself, without
-        // trusting the context to be well formed.
-        var form = CreateStrangerForm();
-        var candidate = CreateStrangerCandidate() with { SsnLast4Matches = true };
-        var context = new PatientDuplicateScoringContext { Candidates = [candidate] };
-
-        // Act
-        var result = MinorPatientDuplicateScoringService.Score(form, context);
-
-        // Assert
-        result.Scores.Should().ContainSingle().Which.Score.Should().Be(0);
     }
 
     [Fact]
@@ -215,7 +195,7 @@ public class MinorPatientDuplicateScoringServiceTests
         // Arrange
         // the minor form carries no contact data, so the maximum reachable score
         // is 90: date of birth 30, surname 20, given name 10, ssn 20, sex 5, address 5.
-        var form = CreateStrangerForm() with { HasSsnLast4 = true };
+        var form = CreateStrangerForm();
 
         var candidate = CreateStrangerCandidate() with
         {
@@ -241,7 +221,7 @@ public class MinorPatientDuplicateScoringServiceTests
         // Arrange
         // date of birth 30, surname 20, given name 10 and ssn 20 total 80,
         // which crosses the 70 threshold without any contact dimension.
-        var form = CreateStrangerForm() with { HasSsnLast4 = true };
+        var form = CreateStrangerForm();
 
         var candidate = CreateStrangerCandidate() with
         {

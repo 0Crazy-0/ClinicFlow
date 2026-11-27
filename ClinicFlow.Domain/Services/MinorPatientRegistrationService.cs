@@ -50,7 +50,6 @@ public static class MinorPatientRegistrationService
                 DateOfBirth = args.DateOfBirth,
                 SexAtBirth = args.SexAtBirth,
                 HomeAddress = args.HomeAddress,
-                HasSsnLast4 = args.HasSsnLast4,
             },
             new PatientDuplicateScoringContext { Candidates = context.DuplicateCandidates }
         );

@@ -336,7 +336,6 @@ public class MinorPatientRegistrationServiceTests
                 "90210",
                 Country.UnitedStates
             ),
-            HasSsnLast4 = false,
             DuplicateOverrideReason = null,
             Relationship = PatientRelationship.Parent,
             LegalAuthority = LegalAuthorityType.Parent,

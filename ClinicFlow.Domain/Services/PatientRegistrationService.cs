@@ -56,7 +56,6 @@ public static class PatientRegistrationService
                 DateOfBirth = args.DateOfBirth,
                 SexAtBirth = args.SexAtBirth,
                 HomeAddress = args.HomeAddress,
-                HasSsnLast4 = args.HasSsnLast4,
                 Email = args.Email,
                 Phone = args.Phone,
             },
