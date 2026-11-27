@@ -13,11 +13,6 @@ public sealed record PatientDuplicateScoringArgs
     public DateOnly DateOfBirth { get; init; }
     public BiologicalSex SexAtBirth { get; init; }
     public required Address HomeAddress { get; init; }
-
-    /// <summary>
-    /// Holds whether the registration form supplied the SSN last four digits, so the match weight applies only when the candidate verified against them.
-    /// </summary>
-    public bool HasSsnLast4 { get; init; }
     public required EmailAddress Email { get; init; }
     public required PhoneNumber Phone { get; init; }
 }

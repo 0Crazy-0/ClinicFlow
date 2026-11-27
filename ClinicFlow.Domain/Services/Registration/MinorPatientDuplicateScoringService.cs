@@ -64,7 +64,7 @@ public static class MinorPatientDuplicateScoringService
                 StringNormalizer.Canonicalize(candidate.FullName.FirstName)
             );
 
-        if (form.HasSsnLast4 && candidate.SsnLast4Matches)
+        if (candidate.SsnLast4Matches)
             score += SsnLast4MatchWeight;
 
         if (form.SexAtBirth == candidate.SexAtBirth)
