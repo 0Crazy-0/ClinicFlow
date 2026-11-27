@@ -24,10 +24,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.Extensions.TimeProvider.Testing (v10.11.0)
+License notice for Microsoft.Extensions.TimeProvider.Testing (v11.0.1)
 ------------------------------------
 
-https://github.com/dotnet/extensions at 25f07afa51034e37b334210642d7dc5f191c142d
+https://github.com/dotnet/extensions at 1e8c914781cf8378f3bbb547bcb024518a2be74c
 
 https://dot.net/
 
@@ -142,20 +142,6 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.Extensions.Configuration.Abstractions (v10.0.14)
-------------------------------------
-
-https://github.com/dotnet/dotnet at 0427b9abbead3fa64c6655eb4290c537397131fa
-
-https://dot.net/
-
-Copyright © Microsoft Corporation. All rights reserved.
-
-Licensed under MIT
-
-Available at https://licenses.nuget.org/MIT
-
-
 License notice for Microsoft.Extensions.Configuration.FileExtensions (v10.0.14)
 ------------------------------------
 
@@ -198,34 +184,6 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.Extensions.DependencyInjection.Abstractions (v10.0.14)
-------------------------------------
-
-https://github.com/dotnet/dotnet at 0427b9abbead3fa64c6655eb4290c537397131fa
-
-https://dot.net/
-
-Copyright © Microsoft Corporation. All rights reserved.
-
-Licensed under MIT
-
-Available at https://licenses.nuget.org/MIT
-
-
-License notice for Microsoft.Extensions.FileProviders.Abstractions (v10.0.14)
-------------------------------------
-
-https://github.com/dotnet/dotnet at 0427b9abbead3fa64c6655eb4290c537397131fa
-
-https://dot.net/
-
-Copyright © Microsoft Corporation. All rights reserved.
-
-Licensed under MIT
-
-Available at https://licenses.nuget.org/MIT
-
-
 License notice for Microsoft.Extensions.FileProviders.Physical (v10.0.14)
 ------------------------------------
 
@@ -241,20 +199,6 @@ Available at https://licenses.nuget.org/MIT
 
 
 License notice for Microsoft.Extensions.FileSystemGlobbing (v10.0.14)
-------------------------------------
-
-https://github.com/dotnet/dotnet at 0427b9abbead3fa64c6655eb4290c537397131fa
-
-https://dot.net/
-
-Copyright © Microsoft Corporation. All rights reserved.
-
-Licensed under MIT
-
-Available at https://licenses.nuget.org/MIT
-
-
-License notice for Microsoft.Extensions.Primitives (v10.0.14)
 ------------------------------------
 
 https://github.com/dotnet/dotnet at 0427b9abbead3fa64c6655eb4290c537397131fa
@@ -494,20 +438,6 @@ Available at https://aka.ms/deprecateLicenseUrl
 LICENSE.md
 
 
-License notice for Microsoft.Extensions.DependencyInjection.Abstractions (v10.0.15)
-------------------------------------
-
-https://github.com/dotnet/dotnet at 8e0f8ed2312954727f8919d7d1c2f78b483b4ee7
-
-https://dot.net/
-
-Copyright © Microsoft Corporation. All rights reserved.
-
-Licensed under MIT
-
-Available at https://licenses.nuget.org/MIT
-
-
 License notice for FluentValidation (v12.2.0)
 ------------------------------------
 
@@ -532,20 +462,6 @@ Copyright Jimmy Bogard
 Licensed under Apache-2.0
 
 Available at https://licenses.nuget.org/Apache-2.0
-
-
-License notice for Microsoft.Extensions.Logging.Abstractions (v10.0.0)
-------------------------------------
-
-https://github.com/dotnet/dotnet at b0f34d51fccc69fd334253924abd8d6853fad7aa
-
-https://dot.net/
-
-Copyright © Microsoft Corporation. All rights reserved.
-
-Licensed under MIT
-
-Available at https://licenses.nuget.org/MIT
 
 
 License notice for Microsoft.IdentityModel.Abstractions (v8.14.0)
@@ -606,20 +522,10 @@ Available at https://aka.ms/deprecateLicenseUrl
 LICENSE
 
 
-License notice for EFCore.ComplexIndexes (v5.6.0)
+License notice for Microsoft.EntityFrameworkCore (v11.0.0)
 ------------------------------------
 
-https://github.com/CaffeinatedCoder/EFCore.ComplexIndexes at 8975493be8045bf3e3efe5aa286e6cd907a8679d
-
-Licensed under MIT
-
-Available at https://licenses.nuget.org/MIT
-
-
-License notice for Microsoft.EntityFrameworkCore (v10.0.15)
-------------------------------------
-
-https://github.com/dotnet/dotnet at 8e0f8ed2312954727f8919d7d1c2f78b483b4ee7
+https://github.com/dotnet/dotnet at 297acf930fb0f5c07fd4e51d78e521b4ad2e5d1f
 
 https://docs.microsoft.com/ef/core/
 
@@ -630,10 +536,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.EntityFrameworkCore.Relational (v10.0.15)
+License notice for Microsoft.EntityFrameworkCore.Relational (v11.0.0)
 ------------------------------------
 
-https://github.com/dotnet/dotnet at 8e0f8ed2312954727f8919d7d1c2f78b483b4ee7
+https://github.com/dotnet/dotnet at 297acf930fb0f5c07fd4e51d78e521b4ad2e5d1f
 
 https://docs.microsoft.com/ef/core/
 
@@ -644,10 +550,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.Extensions.Configuration.Binder (v10.0.15)
+License notice for Microsoft.Extensions.Configuration.Binder (v11.0.0)
 ------------------------------------
 
-https://github.com/dotnet/dotnet at 8e0f8ed2312954727f8919d7d1c2f78b483b4ee7
+https://github.com/dotnet/dotnet at 297acf930fb0f5c07fd4e51d78e521b4ad2e5d1f
 
 https://dot.net/
 
@@ -658,10 +564,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Npgsql.EntityFrameworkCore.PostgreSQL (v10.0.3)
+License notice for Npgsql.EntityFrameworkCore.PostgreSQL (v11.0.0)
 ------------------------------------
 
-https://github.com/npgsql/efcore.pg at 5e912bf071068a44e5abbdab497b313ba99d3ee1
+https://github.com/npgsql/efcore.pg at fd3674f72e848a597fe2c0273cfffb925572190c
 
 Copyright 2025 © The Npgsql Development Team
 
@@ -670,10 +576,10 @@ Licensed under PostgreSQL
 Available at https://licenses.nuget.org/PostgreSQL
 
 
-License notice for Humanizer.Core (v2.14.1)
+License notice for Humanizer.Core (v3.0.10)
 ------------------------------------
 
-https://github.com/Humanizr/Humanizer at 3ebc38de585fc641a04b0e78ed69468453b0f8a1
+https://github.com/Humanizr/Humanizer at 90f0cb1d7427635f38b46350bb1dc5fca2164f2d
 
 Copyright (c) .NET Foundation and Contributors
 
@@ -682,10 +588,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.Build.Framework (v18.0.2)
+License notice for Microsoft.Build.Framework (v18.9.6)
 ------------------------------------
 
-https://github.com/dotnet/msbuild at 995a3dce41788caebf2b8ca6602a7431f08bfd06
+https://github.com/dotnet/msbuild at b0e826c1f29e30dfe49535b4194f960cafbc3510
 
 http://go.microsoft.com/fwlink/?LinkId=624683
 
@@ -696,10 +602,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.CodeAnalysis.Common (v5.0.0)
+License notice for Microsoft.CodeAnalysis.Common (v5.9.0)
 ------------------------------------
 
-https://github.com/dotnet/roslyn at 6c4a46a31302167b425d5e0a31ea83c9a9aa1d09
+https://github.com/dotnet/roslyn at 35d9211b841e7613c1d2f8f5af6d628ace696c4c
 
 Copyright © Microsoft Corporation. All rights reserved.
 
@@ -708,10 +614,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.CodeAnalysis.CSharp (v5.0.0)
+License notice for Microsoft.CodeAnalysis.CSharp (v5.9.0)
 ------------------------------------
 
-https://github.com/dotnet/roslyn at 6c4a46a31302167b425d5e0a31ea83c9a9aa1d09
+https://github.com/dotnet/roslyn at 35d9211b841e7613c1d2f8f5af6d628ace696c4c
 
 Copyright © Microsoft Corporation. All rights reserved.
 
@@ -720,10 +626,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.CodeAnalysis.CSharp.Workspaces (v5.0.0)
+License notice for Microsoft.CodeAnalysis.CSharp.Workspaces (v5.9.0)
 ------------------------------------
 
-https://github.com/dotnet/roslyn at 6c4a46a31302167b425d5e0a31ea83c9a9aa1d09
+https://github.com/dotnet/roslyn at 35d9211b841e7613c1d2f8f5af6d628ace696c4c
 
 Copyright © Microsoft Corporation. All rights reserved.
 
@@ -732,10 +638,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.CodeAnalysis.Workspaces.Common (v5.0.0)
+License notice for Microsoft.CodeAnalysis.Workspaces.Common (v5.9.0)
 ------------------------------------
 
-https://github.com/dotnet/roslyn at 6c4a46a31302167b425d5e0a31ea83c9a9aa1d09
+https://github.com/dotnet/roslyn at 35d9211b841e7613c1d2f8f5af6d628ace696c4c
 
 Copyright © Microsoft Corporation. All rights reserved.
 
@@ -744,10 +650,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.CodeAnalysis.Workspaces.MSBuild (v5.0.0)
+License notice for Microsoft.CodeAnalysis.Workspaces.MSBuild (v5.9.0)
 ------------------------------------
 
-https://github.com/dotnet/roslyn at 6c4a46a31302167b425d5e0a31ea83c9a9aa1d09
+https://github.com/dotnet/roslyn at 35d9211b841e7613c1d2f8f5af6d628ace696c4c
 
 Copyright © Microsoft Corporation. All rights reserved.
 
@@ -756,10 +662,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.EntityFrameworkCore.Abstractions (v10.0.15)
+License notice for Microsoft.EntityFrameworkCore.Abstractions (v11.0.0)
 ------------------------------------
 
-https://github.com/dotnet/dotnet at 8e0f8ed2312954727f8919d7d1c2f78b483b4ee7
+https://github.com/dotnet/dotnet at 297acf930fb0f5c07fd4e51d78e521b4ad2e5d1f
 
 https://docs.microsoft.com/ef/core/
 
@@ -770,10 +676,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.EntityFrameworkCore.Analyzers (v10.0.15)
+License notice for Microsoft.EntityFrameworkCore.Analyzers (v11.0.0)
 ------------------------------------
 
-https://github.com/dotnet/dotnet at 8e0f8ed2312954727f8919d7d1c2f78b483b4ee7
+https://github.com/dotnet/dotnet at 297acf930fb0f5c07fd4e51d78e521b4ad2e5d1f
 
 https://docs.microsoft.com/ef/core/
 
@@ -784,10 +690,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.Extensions.Caching.Abstractions (v10.0.15)
+License notice for Microsoft.Extensions.Caching.Memory (v11.0.0)
 ------------------------------------
 
-https://github.com/dotnet/dotnet at 8e0f8ed2312954727f8919d7d1c2f78b483b4ee7
+https://github.com/dotnet/dotnet at 297acf930fb0f5c07fd4e51d78e521b4ad2e5d1f
 
 https://dot.net/
 
@@ -798,10 +704,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.Extensions.Caching.Memory (v10.0.15)
+License notice for Microsoft.Extensions.Configuration (v11.0.0)
 ------------------------------------
 
-https://github.com/dotnet/dotnet at 8e0f8ed2312954727f8919d7d1c2f78b483b4ee7
+https://github.com/dotnet/dotnet at 297acf930fb0f5c07fd4e51d78e521b4ad2e5d1f
 
 https://dot.net/
 
@@ -812,10 +718,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.Extensions.Configuration (v10.0.15)
+License notice for Microsoft.Extensions.DependencyInjection (v11.0.0)
 ------------------------------------
 
-https://github.com/dotnet/dotnet at 8e0f8ed2312954727f8919d7d1c2f78b483b4ee7
+https://github.com/dotnet/dotnet at 297acf930fb0f5c07fd4e51d78e521b4ad2e5d1f
 
 https://dot.net/
 
@@ -826,10 +732,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.Extensions.Configuration.Abstractions (v10.0.15)
+License notice for Microsoft.Extensions.DependencyModel (v11.0.0)
 ------------------------------------
 
-https://github.com/dotnet/dotnet at 8e0f8ed2312954727f8919d7d1c2f78b483b4ee7
+https://github.com/dotnet/dotnet at 297acf930fb0f5c07fd4e51d78e521b4ad2e5d1f
 
 https://dot.net/
 
@@ -840,10 +746,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.Extensions.DependencyInjection (v10.0.15)
+License notice for Microsoft.Extensions.Logging (v11.0.0)
 ------------------------------------
 
-https://github.com/dotnet/dotnet at 8e0f8ed2312954727f8919d7d1c2f78b483b4ee7
+https://github.com/dotnet/dotnet at 297acf930fb0f5c07fd4e51d78e521b4ad2e5d1f
 
 https://dot.net/
 
@@ -854,68 +760,12 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.Extensions.DependencyModel (v10.0.15)
+License notice for Microsoft.NET.StringTools (v18.9.6)
 ------------------------------------
 
-https://github.com/dotnet/dotnet at 8e0f8ed2312954727f8919d7d1c2f78b483b4ee7
+https://github.com/dotnet/msbuild at b0e826c1f29e30dfe49535b4194f960cafbc3510
 
-https://dot.net/
-
-Copyright © Microsoft Corporation. All rights reserved.
-
-Licensed under MIT
-
-Available at https://licenses.nuget.org/MIT
-
-
-License notice for Microsoft.Extensions.Logging (v10.0.15)
-------------------------------------
-
-https://github.com/dotnet/dotnet at 8e0f8ed2312954727f8919d7d1c2f78b483b4ee7
-
-https://dot.net/
-
-Copyright © Microsoft Corporation. All rights reserved.
-
-Licensed under MIT
-
-Available at https://licenses.nuget.org/MIT
-
-
-License notice for Microsoft.Extensions.Logging.Abstractions (v10.0.15)
-------------------------------------
-
-https://github.com/dotnet/dotnet at 8e0f8ed2312954727f8919d7d1c2f78b483b4ee7
-
-https://dot.net/
-
-Copyright © Microsoft Corporation. All rights reserved.
-
-Licensed under MIT
-
-Available at https://licenses.nuget.org/MIT
-
-
-License notice for Microsoft.Extensions.Options (v10.0.15)
-------------------------------------
-
-https://github.com/dotnet/dotnet at 8e0f8ed2312954727f8919d7d1c2f78b483b4ee7
-
-https://dot.net/
-
-Copyright © Microsoft Corporation. All rights reserved.
-
-Licensed under MIT
-
-Available at https://licenses.nuget.org/MIT
-
-
-License notice for Microsoft.Extensions.Primitives (v10.0.15)
-------------------------------------
-
-https://github.com/dotnet/dotnet at 8e0f8ed2312954727f8919d7d1c2f78b483b4ee7
-
-https://dot.net/
+http://go.microsoft.com/fwlink/?LinkId=624683
 
 Copyright © Microsoft Corporation. All rights reserved.
 
@@ -946,26 +796,12 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Newtonsoft.Json (v13.0.4)
+License notice for Npgsql (v11.0.0)
 ------------------------------------
 
-https://github.com/JamesNK/Newtonsoft.Json at 4e13299d4b0ec96bd4df9954ef646bd2d1b5bf2a
+https://github.com/npgsql/npgsql at 4d174200ed48e3e3ab16419dbf84dd655da59de6
 
-https://www.newtonsoft.com/json
-
-Copyright © James Newton-King 2008
-
-Licensed under MIT
-
-Available at https://licenses.nuget.org/MIT
-
-
-License notice for Npgsql (v10.0.3)
-------------------------------------
-
-https://github.com/npgsql/npgsql at d3768398c17877b3a916c3c4d87e8e11698991fc
-
-Copyright 2025 © The Npgsql Development Team
+Copyright 2026 © The Npgsql Development Team
 
 Licensed under PostgreSQL
 
@@ -986,10 +822,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for System.Composition (v9.0.0)
+License notice for System.Composition (v10.0.1)
 ------------------------------------
 
-https://github.com/dotnet/runtime at 9d5a6a9aa463d6d10b0b0ba6d5982cc82f363dc3
+https://github.com/dotnet/dotnet at fad253f51b461736dfd3cd9c15977bb7493becef
 
 https://dot.net/
 
@@ -1000,10 +836,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for System.Composition.AttributedModel (v9.0.0)
+License notice for System.Composition.AttributedModel (v10.0.1)
 ------------------------------------
 
-https://github.com/dotnet/runtime at 9d5a6a9aa463d6d10b0b0ba6d5982cc82f363dc3
+https://github.com/dotnet/dotnet at fad253f51b461736dfd3cd9c15977bb7493becef
 
 https://dot.net/
 
@@ -1014,10 +850,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for System.Composition.Convention (v9.0.0)
+License notice for System.Composition.Convention (v10.0.1)
 ------------------------------------
 
-https://github.com/dotnet/runtime at 9d5a6a9aa463d6d10b0b0ba6d5982cc82f363dc3
+https://github.com/dotnet/dotnet at fad253f51b461736dfd3cd9c15977bb7493becef
 
 https://dot.net/
 
@@ -1028,10 +864,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for System.Composition.Hosting (v9.0.0)
+License notice for System.Composition.Hosting (v10.0.1)
 ------------------------------------
 
-https://github.com/dotnet/runtime at 9d5a6a9aa463d6d10b0b0ba6d5982cc82f363dc3
+https://github.com/dotnet/dotnet at fad253f51b461736dfd3cd9c15977bb7493becef
 
 https://dot.net/
 
@@ -1042,10 +878,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for System.Composition.Runtime (v9.0.0)
+License notice for System.Composition.Runtime (v10.0.1)
 ------------------------------------
 
-https://github.com/dotnet/runtime at 9d5a6a9aa463d6d10b0b0ba6d5982cc82f363dc3
+https://github.com/dotnet/dotnet at fad253f51b461736dfd3cd9c15977bb7493becef
 
 https://dot.net/
 
@@ -1056,10 +892,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for System.Composition.TypedParts (v9.0.0)
+License notice for System.Composition.TypedParts (v10.0.1)
 ------------------------------------
 
-https://github.com/dotnet/runtime at 9d5a6a9aa463d6d10b0b0ba6d5982cc82f363dc3
+https://github.com/dotnet/dotnet at fad253f51b461736dfd3cd9c15977bb7493becef
 
 https://dot.net/
 
@@ -1070,10 +906,10 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for Microsoft.EntityFrameworkCore.InMemory (v10.0.15)
+License notice for Microsoft.EntityFrameworkCore.InMemory (v11.0.0)
 ------------------------------------
 
-https://github.com/dotnet/dotnet at 8e0f8ed2312954727f8919d7d1c2f78b483b4ee7
+https://github.com/dotnet/dotnet at 297acf930fb0f5c07fd4e51d78e521b4ad2e5d1f
 
 https://docs.microsoft.com/ef/core/
 
@@ -1290,12 +1126,14 @@ Licensed under MIT
 Available at https://licenses.nuget.org/MIT
 
 
-License notice for System.ValueTuple (v4.6.2)
+License notice for Newtonsoft.Json (v13.0.4)
 ------------------------------------
 
-https://github.com/dotnet/maintenance-packages at 84b081710c66cc560b77d4de38cee493c3a38e9d
+https://github.com/JamesNK/Newtonsoft.Json at 4e13299d4b0ec96bd4df9954ef646bd2d1b5bf2a
 
-Copyright © Microsoft Corporation. All rights reserved.
+https://www.newtonsoft.com/json
+
+Copyright © James Newton-King 2008
 
 Licensed under MIT
 
