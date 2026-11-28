@@ -313,7 +313,7 @@ public class PreCheckMinorPatientDuplicatesQueryValidatorTests
             "Tests",
             new DateOnly(1999, 5, 15),
             (BiologicalSex)999,
-            "The Caravan",
+            "Changeling Kingdom",
             AddressState.California,
             "90210",
             Country.UnitedStates,
