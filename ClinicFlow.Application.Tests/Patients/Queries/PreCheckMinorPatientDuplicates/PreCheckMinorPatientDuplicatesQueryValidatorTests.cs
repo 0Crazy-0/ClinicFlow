@@ -522,6 +522,8 @@ public class PreCheckMinorPatientDuplicatesQueryValidatorTests
     [InlineData("12345")]
     [InlineData("12a4")]
     [InlineData("abcd")]
+    [InlineData("1234\n")]
+    [InlineData("1234\r\n")]
     public void Validate_ShouldHaveError_WhenSsnLast4HasInvalidFormat(string ssnLast4)
     {
         // Arrange

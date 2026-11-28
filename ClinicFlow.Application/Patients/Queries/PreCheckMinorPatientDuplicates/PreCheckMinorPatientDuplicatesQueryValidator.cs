@@ -55,7 +55,7 @@ public sealed class PreCheckMinorPatientDuplicatesQueryValidator
             x => x.SsnLast4 is not null,
             () =>
                 RuleFor(x => x.SsnLast4)
-                    .Matches(@"^[0-9]{4}$")
+                    .Matches(@"^[0-9]{4}\z")
                     .WithMessage(DomainErrors.Validation.InvalidValue)
         );
     }
